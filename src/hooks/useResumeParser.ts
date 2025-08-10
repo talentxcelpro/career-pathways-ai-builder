@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import mammoth from 'mammoth';
+import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 // pdfjs-dist ESM build
 // @ts-ignore - pdfjs typing path
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
@@ -8,6 +9,7 @@ import pdfWorker from 'pdfjs-dist/build/pdf.worker?url';
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = pdfWorker;
 
+// Legacy interface for backward compatibility
 export interface ResumeJSON {
   profile: { name?: string; email?: string; phone?: string; location?: string };
   summary?: string;
@@ -16,7 +18,7 @@ export interface ResumeJSON {
   skills: string[];
 }
 
-const emptyResume: ResumeJSON = {
+const emptyLegacyResume: ResumeJSON = {
   profile: {},
   summary: '',
   experience: [],
@@ -53,7 +55,7 @@ const naiveParse = (plain: string): ResumeJSON => {
   const locationCandidate = fullText.match(/\b([A-Z][a-zA-Z]+(?:[,\s]+[A-Z][a-zA-Z]+)*)\b\s*(?:\(|,)?\s*(Netherlands|India|USA|United\s+States|UK|United\s+Kingdom|Canada|Germany|France|Netherlands|Amsterdam|Bengaluru|Bangalore|London|New\s+York|Delhi|Hyderabad|Chennai)?/i)?.[0];
 
   const res: ResumeJSON = {
-    ...emptyResume,
+    ...emptyLegacyResume,
     profile: {
       name: nameCandidate && nameCandidate.length < 120 ? nameCandidate : undefined,
       email,
@@ -137,6 +139,64 @@ const naiveParse = (plain: string): ResumeJSON => {
   return res;
 };
 
+// Convert legacy format to EditorResume format
+const legacyToEditor = (legacy: ResumeJSON): EditorResume => {
+  const editor = createEmptyEditorResume();
+  
+  editor.personalInfo.fullName = legacy.profile.name || '';
+  editor.personalInfo.email = legacy.profile.email || '';
+  editor.personalInfo.phone = legacy.profile.phone || '';
+  editor.personalInfo.location = legacy.profile.location || '';
+  editor.personalInfo.summary = legacy.summary || '';
+  editor.personalInfo.professionalTitle = (legacy.profile as any).title || '';
+  editor.personalInfo.linkedin = (legacy.profile as any).linkedin || '';
+  editor.personalInfo.website = (legacy.profile as any).website || '';
+
+  editor.experience = legacy.experience.map((exp, i) => ({
+    id: `exp-${i + 1}`,
+    title: exp.title || '',
+    company: exp.company || '',
+    location: '',
+    startDate: exp.startDate || '',
+    endDate: exp.endDate || '',
+    description: exp.bullets.join('\n'),
+    achievements: exp.bullets || [],
+    technologies: [],
+  }));
+
+  editor.education = legacy.education.map((edu, i) => ({
+    id: `edu-${i + 1}`,
+    degree: edu.degree || '',
+    institution: edu.school || '',
+    location: '',
+    startDate: '',
+    endDate: edu.year || '',
+    description: '',
+    achievements: [],
+  }));
+
+  // Group skills into categories
+  const skills = legacy.skills || [];
+  const technical: string[] = [];
+  const soft: string[] = [];
+  const tools: string[] = [];
+
+  skills.forEach(skill => {
+    const lower = skill.toLowerCase();
+    if (lower.includes('communication') || lower.includes('leadership') || lower.includes('teamwork')) {
+      soft.push(skill);
+    } else if (lower.includes('tool') || lower.includes('software') || lower.includes('platform')) {
+      tools.push(skill);
+    } else {
+      technical.push(skill);
+    }
+  });
+
+  editor.skills = { technical, soft, languages: [], tools };
+
+  return editor;
+};
+
 export const useResumeParser = () => {
   const parseDocx = useCallback(async (file: File): Promise<ResumeJSON> => {
     const arrayBuffer = await file.arrayBuffer();
@@ -162,8 +222,14 @@ export const useResumeParser = () => {
     if (ext.endsWith('.docx')) return parseDocx(file);
     if (ext.endsWith('.pdf')) return parsePdf(file);
     // fallback: try docx by default
-    try { return await parseDocx(file); } catch { return emptyResume; }
+    try { return await parseDocx(file); } catch { return emptyLegacyResume; }
   }, [parseDocx, parsePdf]);
 
-  return { parseFile };
+  // New methods for EditorResume format
+  const parseToEditor = useCallback(async (file: File): Promise<EditorResume> => {
+    const legacy = await parseFile(file);
+    return legacyToEditor(legacy);
+  }, [parseFile]);
+
+  return { parseFile, parseToEditor, legacyToEditor };
 };

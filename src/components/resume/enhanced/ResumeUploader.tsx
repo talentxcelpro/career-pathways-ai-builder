@@ -7,9 +7,11 @@ import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAIService } from '@/hooks/useAIService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { aiDataToEditor } from '@/utils/aiParsingAdapters';
+import { EditorResume } from '@/types/editor-resume';
 
 interface ResumeUploaderProps {
-  onResumeExtracted: (extractedData: any) => void;
+  onResumeExtracted: (extractedData: EditorResume) => void;
   onClose: () => void;
 }
 
@@ -19,7 +21,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [extractedData, setExtractedData] = useState<any>(null);
+  const [extractedData, setExtractedData] = useState<EditorResume | null>(null);
   const { invokeAITool } = useAIService();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -72,7 +74,9 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       setUploadProgress(70);
 
       if (result.success && result.data) {
-        setExtractedData(result.data);
+        // Convert AI result to canonical EditorResume format
+        const editorResume = aiDataToEditor(result.data);
+        setExtractedData(editorResume);
         setUploadProgress(100);
         toast.success('Resume parsed successfully!');
       } else {
@@ -118,34 +122,34 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
         <div className="max-h-60 overflow-y-auto space-y-3">
           {/* Personal Info */}
-          {extractedData.personal && (
+          {extractedData.personalInfo && (
             <div>
               <h4 className="font-medium text-sm mb-2">Personal Information</h4>
               <div className="text-sm text-muted-foreground space-y-1">
-                {extractedData.personal.fullName && (
-                  <p><strong>Name:</strong> {extractedData.personal.fullName}</p>
+                {extractedData.personalInfo.fullName && (
+                  <p><strong>Name:</strong> {extractedData.personalInfo.fullName}</p>
                 )}
-                {extractedData.personal.email && (
-                  <p><strong>Email:</strong> {extractedData.personal.email}</p>
+                {extractedData.personalInfo.email && (
+                  <p><strong>Email:</strong> {extractedData.personalInfo.email}</p>
                 )}
-                {extractedData.personal.phone && (
-                  <p><strong>Phone:</strong> {extractedData.personal.phone}</p>
+                {extractedData.personalInfo.phone && (
+                  <p><strong>Phone:</strong> {extractedData.personalInfo.phone}</p>
                 )}
-                {extractedData.personal.location && (
-                  <p><strong>Location:</strong> {extractedData.personal.location}</p>
+                {extractedData.personalInfo.location && (
+                  <p><strong>Location:</strong> {extractedData.personalInfo.location}</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Summary */}
-          {extractedData.summary && (
+          {extractedData.personalInfo.summary && (
             <div>
               <h4 className="font-medium text-sm mb-2">Summary</h4>
               <p className="text-sm text-muted-foreground">
-                {extractedData.summary.length > 200 
-                  ? `${extractedData.summary.substring(0, 200)}...`
-                  : extractedData.summary
+                {extractedData.personalInfo.summary.length > 200 
+                  ? `${extractedData.personalInfo.summary.substring(0, 200)}...`
+                  : extractedData.personalInfo.summary
                 }
               </p>
             </div>
@@ -174,23 +178,23 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
           )}
 
           {/* Skills */}
-          {extractedData.skills && extractedData.skills.length > 0 && (
+          {extractedData.skills && (
             <div>
               <h4 className="font-medium text-sm mb-2">
-                Skills ({extractedData.skills.length} items)
+                Skills ({[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].length} items)
               </h4>
               <div className="flex flex-wrap gap-1">
-                {extractedData.skills.slice(0, 10).map((skill: any, index: number) => (
+                {[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].slice(0, 10).map((skill, index) => (
                   <span 
                     key={index}
                     className="px-2 py-1 bg-muted text-xs rounded"
                   >
-                    {typeof skill === 'string' ? skill : skill.name}
+                    {skill}
                   </span>
                 ))}
-                {extractedData.skills.length > 10 && (
+                {[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].length > 10 && (
                   <span className="px-2 py-1 bg-muted text-xs rounded">
-                    +{extractedData.skills.length - 10} more
+                    +{[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].length - 10} more
                   </span>
                 )}
               </div>

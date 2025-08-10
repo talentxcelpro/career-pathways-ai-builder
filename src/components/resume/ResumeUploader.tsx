@@ -11,6 +11,9 @@ import type { ExtractionResult } from '@/types/resume';
 import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import { useAIService } from '@/hooks/useAIService';
+import { aiDataToEditor } from '@/utils/aiParsingAdapters';
+import { EditorResume } from '@/types/editor-resume';
+import { editorToEnhanced } from '@/utils/resumeAdapters';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
@@ -122,54 +125,48 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
       if (aiRes.success && aiRes.data) {
         setProgress(90);
         setStatus('Mapping parsed data...');
-        const data = aiRes.data as any;
-        const toArray = (v: any) => (Array.isArray(v) ? v : v ? [v] : []);
-
+        
+        // Convert AI result to canonical EditorResume format
+        const editorResume = aiDataToEditor(aiRes.data);
+        
+        // Convert to ExtractionResult with Enhanced format for compatibility
+        const enhanced = editorToEnhanced(editorResume);
+        
         const mapped: ExtractionResult = {
           success: true,
           resume: {
-            personalInfo: {
-              fullName: data.personal?.fullName || data.personal?.name || '',
-              email: data.personal?.email || '',
-              phone: data.personal?.phone || '',
-              location: data.personal?.location || '',
-              website: data.personal?.website || data.personal?.portfolio,
-              linkedin: data.personal?.linkedin,
-            },
-            summary: data.summary || data.profile?.summary || '',
-            experience: toArray(data.experience).map((e: any, i: number) => ({
-              id: e.id || `exp-${i + 1}`,
-              title: e.title || e.role || '',
-              company: e.company || e.companyName || '',
-              location: e.location || '',
-              startDate: e.startDate || e.start || '',
-              endDate: e.endDate || e.end || '',
-              current: !(e.endDate || e.end) || /present|current/i.test((e.endDate || e.end || '').toString()),
-              description: e.description || '',
-              achievements: e.bullets || e.achievements || [],
+            personalInfo: enhanced.personalInfo,
+            summary: enhanced.personalInfo.summary,
+            experience: enhanced.experience.map(e => ({
+              id: e.id,
+              title: e.title,
+              company: e.company,
+              location: e.location,
+              startDate: e.startDate,
+              endDate: e.endDate,
+              current: e.current,
+              description: e.description,
+              achievements: e.achievements,
             })),
-            education: toArray(data.education).map((ed: any, i: number) => ({
-              id: ed.id || `edu-${i + 1}`,
-              degree: ed.degree || ed.title || '',
-              school: ed.institution || ed.school || ed.institutionName || '',
-              location: ed.location || '',
-              startDate: ed.startDate || ed.start || '',
-              endDate: ed.endDate || ed.end || '',
-              gpa: ed.gpa || ed.grade || ed.cgpa || undefined,
+            education: enhanced.education.map(ed => ({
+              id: ed.id,
+              degree: ed.degree,
+              school: ed.school,
+              location: ed.location,
+              startDate: ed.startDate,
+              endDate: ed.endDate,
+              gpa: ed.gpa,
             })),
-            skills: toArray(data.skills).map((s: any, i: number) => {
-              const name = typeof s === 'string' ? s : (s.name || s.skill || '');
-              return {
-                id: `skill-${i + 1}`,
-                name,
-                category: typeof s === 'object' && s.category ? s.category : 'technical',
-                level: typeof s === 'object' && s.level ? s.level : undefined,
-              } as any;
-            }),
+            skills: enhanced.skills.map(s => ({
+              id: s.id,
+              name: s.name,
+              category: s.category as any,
+              level: s.level as any,
+            })),
             selectedTemplate: 'modern-professional',
           },
           confidence: 0.85,
-          suggestions: data.suggestions || [],
+          suggestions: aiRes.data.suggestions || [],
         };
 
         setProgress(100);

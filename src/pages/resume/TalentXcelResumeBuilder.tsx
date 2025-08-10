@@ -302,7 +302,7 @@ const TalentXcelResumeBuilder: React.FC = () => {
   };
 
   const handleResumeExtracted = (extractedData: any) => {
-    // Apply extracted data to sections; create missing ones if needed
+    // Apply extracted EditorResume data to sections; create missing ones if needed
     const ensureSection = (type: string) => {
       let s = sections.find(sec => sec.type === type);
       if (!s) {
@@ -314,14 +314,15 @@ const TalentXcelResumeBuilder: React.FC = () => {
 
     const newSections = [...sections];
 
-    if (extractedData.personal) {
+    // Handle EditorResume format
+    if (extractedData.personalInfo) {
       const personalSection = ensureSection('personal');
-      personalSection.content = extractedData.personal;
+      personalSection.content = extractedData.personalInfo;
     }
 
-    if (extractedData.summary) {
+    if (extractedData.personalInfo?.summary) {
       const summarySection = ensureSection('summary');
-      summarySection.content = { text: extractedData.summary };
+      summarySection.content = { text: extractedData.personalInfo.summary };
     }
 
     if (Array.isArray(extractedData.experience)) {
@@ -334,9 +335,16 @@ const TalentXcelResumeBuilder: React.FC = () => {
       educationSection.content = { items: extractedData.education };
     }
 
-    if (Array.isArray(extractedData.skills)) {
+    if (extractedData.skills) {
       const skillsSection = ensureSection('skills');
-      skillsSection.content = { items: extractedData.skills };
+      // Flatten skills object to items array for section editor
+      const skillsArray = [
+        ...extractedData.skills.technical.map((s: string) => ({ name: s, category: 'technical' })),
+        ...extractedData.skills.soft.map((s: string) => ({ name: s, category: 'soft' })),
+        ...extractedData.skills.tools.map((s: string) => ({ name: s, category: 'tools' })),
+        ...extractedData.skills.languages.map((s: string) => ({ name: s, category: 'languages' })),
+      ];
+      skillsSection.content = { items: skillsArray };
     }
 
     if (Array.isArray(extractedData.projects)) {
@@ -354,19 +362,14 @@ const TalentXcelResumeBuilder: React.FC = () => {
       awardsSection.content = { items: extractedData.awards };
     }
 
-    if (Array.isArray(extractedData.languages)) {
-      const languagesSection = ensureSection('languages');
-      languagesSection.content = { items: extractedData.languages };
-    }
-
-    if (Array.isArray(extractedData.volunteer)) {
+    if (Array.isArray(extractedData.volunteerExperience)) {
       const volSection = ensureSection('volunteer');
-      volSection.content = { items: extractedData.volunteer };
+      volSection.content = { items: extractedData.volunteerExperience };
     }
 
     if (Array.isArray(extractedData.interests)) {
       const interestsSection = ensureSection('interests');
-      interestsSection.content = { items: extractedData.interests };
+      interestsSection.content = { items: extractedData.interests.map((interest: string) => ({ name: interest })) };
     }
 
     if (Array.isArray(extractedData.references)) {
@@ -375,6 +378,7 @@ const TalentXcelResumeBuilder: React.FC = () => {
     }
 
     setSections([...newSections]);
+    toast.success('Resume data extracted and applied successfully!');
   };
 
   const handleATSScoreUpdate = (score: number, feedback: any) => {
