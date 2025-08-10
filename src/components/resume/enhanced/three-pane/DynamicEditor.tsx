@@ -7,10 +7,10 @@ import { ExperienceSection } from '../sections/ExperienceSection';
 import { EducationSection } from '../sections/EducationSection';
 import { SkillsSection } from '../sections/SkillsSection';
 import { ProjectsSection } from '../sections/ProjectsSection';
-import { CertificationsSection } from '../sections/CertificationsSection';
-import { AwardsSection } from '../sections/AwardsSection';
+import { CertificationsSection } from './CertificationsSection';
+import { AwardsSection } from './AwardsSection';
 import { VolunteerSection } from '../sections/VolunteerSection';
-import { ReferencesSection } from '../sections/ReferencesSection';
+import { ReferencesSection } from './ReferencesSection';
 import { SummarySection } from '../sections/SummarySection';
 import { InterestsSection } from '../sections/InterestsSection';
 
@@ -104,8 +104,6 @@ export const DynamicEditor: React.FC<DynamicEditorProps> = ({
           <CertificationsSection
             data={data.certifications}
             onChange={(certifications) => onChange({ ...data, certifications })}
-            selectedItemIndex={selectedItemIndex}
-            onItemIndexChange={onItemIndexChange}
           />
         );
       
@@ -114,8 +112,6 @@ export const DynamicEditor: React.FC<DynamicEditorProps> = ({
           <AwardsSection
             data={data.awards}
             onChange={(awards) => onChange({ ...data, awards })}
-            selectedItemIndex={selectedItemIndex}
-            onItemIndexChange={onItemIndexChange}
           />
         );
       
@@ -142,8 +138,6 @@ export const DynamicEditor: React.FC<DynamicEditorProps> = ({
           <ReferencesSection
             data={data.references}
             onChange={(references) => onChange({ ...data, references })}
-            selectedItemIndex={selectedItemIndex}
-            onItemIndexChange={onItemIndexChange}
           />
         );
       

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { UnifiedResumeInterface } from './UnifiedResumeInterface';
+import { ThreePaneResumeBuilder } from './ThreePaneResumeBuilder';
 import { useResumeData } from '@/hooks/useResumeData';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
@@ -102,10 +102,9 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   const effectiveMode = isNewResume ? 'create' : mode;
   return (
     <div className="min-h-screen bg-background relative">
-      <UnifiedResumeInterface 
-        mode={effectiveMode}
-        initialData={enhancedToEditor(resumeData)}
-        onDataChange={(editorData) => setResumeData(editorToEnhanced(editorData))}
+      <ThreePaneResumeBuilder
+        data={enhancedToEditor(resumeData)}
+        onChange={(editorData) => setResumeData(editorToEnhanced(editorData))}
       />
 
       <Button 

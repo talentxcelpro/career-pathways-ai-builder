@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Trash2, Plus, Award, Calendar, ExternalLink } from "lucide-react";
-import { Certification } from "@/types/enhanced-resume";
+import { EditorCertificationItem } from "@/types/editor-resume";
 
 interface CertificationsSectionProps {
-  data: Certification[];
-  onChange: (data: Certification[]) => void;
+  data: EditorCertificationItem[];
+  onChange: (data: EditorCertificationItem[]) => void;
 }
 
 export const CertificationsSection: React.FC<CertificationsSectionProps> = ({
