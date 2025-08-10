@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { DndContext, closestCenter } from "@dnd-kit/core";
@@ -8,9 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useResumeExport, ExportSettings } from "@/hooks/useResumeExport";
 import { useSectionEnhancer } from "@/hooks/useSectionEnhancer";
-import { useJobTargeting } from "@/hooks/useJobTargeting";
+// import { useJobTargeting } from "@/hooks/useJobTargeting";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
+import { JobTargetingPanel } from "@/components/resume/enhanced/JobTargetingPanel";
+import { TemplateRenderer } from "@/components/resume/templates/TemplateRenderer";
 
 // Simple Sortable item for sections list
 function SortableItem({ id, label, selected, onSelect }: { id: string; label: string; selected: boolean; onSelect: (id: string) => void }) {
@@ -107,7 +109,13 @@ const Toolbar = ({
               <div className="text-xs font-medium line-clamp-1">{t.name}</div>
               {t.preview_url && (
                 <img src={t.preview_url} alt={`${t.name} resume template preview`} loading="lazy"
-                  className="mt-1 h-16 w-full object-cover rounded" />
+                  className="mt-1 h-16 w-full object-cover rounded"
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement;
+                    img.src = '/placeholder.svg';
+                    img.onerror = null;
+                  }}
+                />
               )}
             </button>
           ))}
@@ -135,84 +143,91 @@ const Toolbar = ({
   );
 };
 
-const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templateId?: string; variant?: 'sidebar' | 'full' }) => {
-  const p = data?.personalInfo || data?.profile || {};
-  const summary = data?.summary || data?.profileSummary || '';
-  const experience = Array.isArray(data?.experience) ? data.experience : [];
-  const skills = Array.isArray(data?.skills) ? data.skills : [];
+const defaultCustomization = {
+  colors: {},
+  typography: {},
+  layout: {},
+  sections: { showPhoto: false, showSummary: true }
+};
 
+const Preview = ({ data, templateId, variant = 'sidebar', sectionOrder }: { data: any; templateId?: string; variant?: 'sidebar' | 'full'; sectionOrder?: string[] }) => {
+  const [showJSON, setShowJSON] = useState(false);
   const Wrapper: React.ElementType = variant === 'sidebar' ? 'aside' : 'div';
   const wrapperCls = variant === 'sidebar'
     ? 'w-[38%] border-l px-5 py-5 overflow-auto'
     : 'flex-1 px-6 py-6 overflow-auto';
 
+  const buildRendererData = useCallback((source: any) => {
+    if (!source) return {};
+
+    const personal = source.personalInfo || source.profile || {};
+    const experience = Array.isArray(source.experience) ? source.experience.map((it: any) => ({
+      title: it.title || it.role || '',
+      company: it.company || '',
+      location: it.location || '',
+      startDate: it.startDate || it.start || '',
+      endDate: it.endDate || it.end || '',
+      description: it.description || '',
+      achievements: it.achievements || it.bullets || [],
+      technologies: it.technologies || [],
+    })) : [];
+
+    const education = Array.isArray(source.education) ? source.education.map((it: any) => ({
+      degree: it.degree || '',
+      school: it.school || it.institution || '',
+      location: it.location || '',
+      startDate: it.startDate || '',
+      endDate: it.endDate || it.dates || '',
+      gpa: it.gpa || '',
+      honors: it.honors || '',
+    })) : [];
+
+    const rawSkills = source.skills;
+    const skills = Array.isArray(rawSkills)
+      ? { technical: rawSkills }
+      : (rawSkills || { technical: [] });
+
+    const certifications = Array.isArray(source.certifications)
+      ? source.certifications.map((c: any) => (typeof c === 'string' ? { name: c } : c))
+      : [];
+
+    return {
+      personalInfo: {
+        fullName: personal.fullName || personal.name || '',
+        email: personal.email || '',
+        phone: personal.phone || '',
+        location: personal.location || '',
+        linkedin: personal.linkedin || '',
+        github: personal.github || '',
+        website: personal.website || personal.portfolio || '',
+        professionalTitle: personal.professionalTitle || personal.title || '',
+        summary: source.summary || personal.summary || '',
+      },
+      experience,
+      education,
+      skills,
+      projects: Array.isArray(source.projects) ? source.projects : [],
+      certifications,
+    };
+  }, []);
+
+  const rendererData = useMemo(() => buildRendererData(data), [buildRendererData, data]);
+
   return (
     <Wrapper className={wrapperCls}>
       <div className="max-w-3xl mx-auto bg-background shadow-sm rounded-md p-6">
-        {templateId === 'two-col' ? (
-          <div className="grid grid-cols-3 gap-6">
-            <div className="col-span-2">
-              <h1 className="text-2xl font-bold">{p.fullName || p.name || 'Your Name'}</h1>
-              <div className="text-sm opacity-70">{p.title || 'Your Title'}</div>
-
-              <section className="mt-4">
-                <h3 className="font-semibold">Experience</h3>
-                <div className="mt-2 space-y-3">
-                  {experience.map((exp: any, i: number) => (
-                    <article key={i} className="">
-                      <div className="font-medium">{exp.role || exp.title} <span className="opacity-70">— {exp.company}</span></div>
-                      {Array.isArray(exp.bullets) && (
-                        <ul className="list-disc ml-5 text-sm mt-1">
-                          {exp.bullets.map((b: string, idx: number) => (<li key={idx}>{b}</li>))}
-                        </ul>
-                      )}
-                    </article>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            <div className="col-span-1">
-              <section>
-                <h3 className="font-semibold">Summary</h3>
-                <p className="text-sm mt-2 whitespace-pre-line">{summary}</p>
-              </section>
-
-              <section className="mt-4">
-                <h3 className="font-semibold">Skills</h3>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {skills.map((s: any, i: number) => (
-                    <span key={i} className="text-xs border rounded px-2 py-1">{typeof s === 'string' ? s : (s?.name || '')}</span>
-                  ))}
-                </div>
-              </section>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <h1 className="text-2xl font-bold">{p.fullName || p.name || 'Your Name'}</h1>
-            <div className="text-sm opacity-70">{p.title || 'Your Title'}</div>
-
-            <section className="mt-4">
-              <h3 className="font-semibold">Summary</h3>
-              <p className="mt-2 whitespace-pre-line">{summary}</p>
-            </section>
-
-            <section className="mt-4">
-              <h3 className="font-semibold">Experience</h3>
-              <div className="mt-2 space-y-3">
-                {experience.map((exp: any, i: number) => (
-                  <article key={i}>
-                    <div className="font-medium">{exp.role || exp.title} <span className="opacity-70">— {exp.company}</span></div>
-                    {Array.isArray(exp.bullets) && (
-                      <ul className="list-disc ml-5 text-sm mt-1">
-                        {exp.bullets.map((b: string, idx: number) => (<li key={idx}>{b}</li>))}
-                      </ul>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-medium">Preview</h2>
+          <button className="text-xs rounded border px-2 py-1" onClick={() => setShowJSON(v => !v)}>
+            {showJSON ? 'Hide' : 'Show'} parsed JSON
+          </button>
+        </div>
+        <TemplateRenderer template={templateId || 'two-col'} resumeData={rendererData} customization={defaultCustomization} sectionOrder={sectionOrder} />
+        {showJSON && (
+          <div className="mt-4">
+            <pre className="text-xs max-h-64 overflow-auto border rounded p-2 bg-muted/30">
+              {JSON.stringify(rendererData, null, 2)}
+            </pre>
           </div>
         )}
       </div>
@@ -220,13 +235,25 @@ const Preview = ({ data, templateId, variant = 'sidebar' }: { data: any; templat
   );
 };
 
-const SectionEditor = ({ section, data, onChange }: { section: string; data: any; onChange: (next: any) => void }) => {
+const SectionEditor = ({ section, data, onChange, onLiveChange }: { section: string; data: any; onChange: (next: any) => void; onLiveChange?: (next: any) => void }) => {
   const [local, setLocal] = useState<any>(data || {});
   const { enhanceSection } = useSectionEnhancer();
+  // Cover letter generator UI state (used only when editing cover letter)
+  const [clCompany, setClCompany] = useState<string>('');
+  const [clRole, setClRole] = useState<string>('');
+  const [clTone, setClTone] = useState<'professional' | 'bold' | 'conservative'>('professional');
+  const [clJD, setClJD] = useState<string>('');
+  const [isGeneratingCL, setIsGeneratingCL] = useState<boolean>(false);
 
   useEffect(() => setLocal(data || {}), [data]);
 
   const save = () => onChange(local);
+  
+  // Real-time preview updates
+  const updateLive = (newData: any) => {
+    setLocal(newData);
+    onLiveChange?.(newData);
+  };
 
   if (section === 'header') {
     const p = local.personalInfo || local.profile || {};
@@ -238,7 +265,8 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.fullName || p.name || ''}
               onChange={(e) => {
                 const nextP = { ...p, fullName: e.target.value };
-                setLocal({ ...local, personalInfo: nextP });
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
               }} />
           </div>
           <div>
@@ -246,7 +274,8 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.title || ''}
               onChange={(e) => {
                 const nextP = { ...p, title: e.target.value };
-                setLocal({ ...local, personalInfo: nextP });
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
               }} />
           </div>
         </div>
@@ -254,30 +283,50 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
           <div>
             <label className="text-sm">Email</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.email || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, email: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, email: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
           <div>
             <label className="text-sm">Phone</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.phone || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, phone: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, phone: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-sm">Location</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.location || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, location: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, location: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
           <div>
             <label className="text-sm">LinkedIn</label>
             <input className="mt-1 w-full border rounded px-3 py-2" value={p.linkedin || ''}
-              onChange={(e) => setLocal({ ...local, personalInfo: { ...p, linkedin: e.target.value } })} />
+              onChange={(e) => {
+                const nextP = { ...p, linkedin: e.target.value };
+                const nextData = { ...local, personalInfo: nextP };
+                updateLive(nextData);
+              }} />
           </div>
         </div>
         <div>
           <label className="text-sm">Website/Portfolio</label>
           <input className="mt-1 w-full border rounded px-3 py-2" value={p.website || p.portfolio || ''}
-            onChange={(e) => setLocal({ ...local, personalInfo: { ...p, website: e.target.value, portfolio: e.target.value } })} />
+            onChange={(e) => {
+              const nextP = { ...p, website: e.target.value, portfolio: e.target.value };
+              const nextData = { ...local, personalInfo: nextP };
+              updateLive(nextData);
+            }} />
         </div>
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
@@ -289,7 +338,8 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const enhance = async () => {
       try {
         const improved = await enhanceSection({ section: 'summary' as any, text, targetRole: undefined, atsJson: undefined });
-        setLocal({ ...local, summary: improved });
+        const nextData = { ...local, summary: improved };
+        updateLive(nextData);
       } catch {}
     };
     return (
@@ -299,7 +349,10 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
           <button onClick={enhance} className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"><Sparkles className="h-3 w-3" /> Enhance</button>
         </div>
         <textarea className="mt-1 w-full border rounded px-3 py-2 h-40" value={text}
-          onChange={(e) => setLocal({ ...local, summary: e.target.value })} />
+          onChange={(e) => {
+            const nextData = { ...local, summary: e.target.value };
+            updateLive(nextData);
+          }} />
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
     );
@@ -377,7 +430,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const list = Array.isArray(local.education) ? local.education : [];
     return (
       <div className="space-y-3">
-        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, education: [...list, { degree: '', school: '', startDate: '', endDate: '', gpa: '' }] })}>+ Add education</button>
+        <div className="flex items-center justify-between">
+          <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, education: [...list, { degree: '', school: '', startDate: '', endDate: '', gpa: '' }] })}>+ Add education</button>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const educationText = list.map((item: any) => `${item.degree} at ${item.school}`).join(', ');
+                const improved = await enhanceSection({ section: 'education' as any, field: 'education', text: educationText, targetRole: undefined, atsJson: undefined });
+                toast.success('Education section enhanced');
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance all
+          </button>
+        </div>
         <div className="space-y-3">
           {list.map((item: any, i: number) => (
             <div key={i} className="border rounded p-3 space-y-2">
@@ -429,7 +496,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const asText = list.map((s: any) => (typeof s === 'string' ? s : s?.name)).filter(Boolean).join(', ');
     return (
       <div className="space-y-3">
-        <label className="text-sm">Skills (comma separated)</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm">Skills (comma separated)</label>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const improved = await enhanceSection({ section: 'skills' as any, field: 'skills', text: asText, targetRole: undefined, atsJson: undefined });
+                const names = improved.split(',').map((x: string) => x.trim()).filter(Boolean);
+                setLocal({ ...local, skills: names });
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance skills
+          </button>
+        </div>
         <input className="mt-1 w-full border rounded px-3 py-2" defaultValue={asText}
           onBlur={(e) => {
             const names = e.target.value.split(',').map((x) => x.trim()).filter(Boolean);
@@ -450,7 +531,21 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
     const list = Array.isArray(local[key]) ? local[key] : [];
     return (
       <div className="space-y-3">
-        <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, [key]: [...list, { title: '', org: '', date: '', description: '' }] })}>+ Add {SECTION_LABELS[key] || key}</button>
+        <div className="flex items-center justify-between">
+          <button className="rounded border px-3 py-2" onClick={() => setLocal({ ...local, [key]: [...list, { title: '', org: '', date: '', description: '' }] })}>+ Add {SECTION_LABELS[key] || key}</button>
+          <button
+            className="text-xs inline-flex items-center gap-1 rounded border px-2 py-1"
+            onClick={async () => {
+              try {
+                const sectionText = list.map((item: any) => `${item.title || item.name} - ${item.description || ''}`).join('\n');
+                const improved = await enhanceSection({ section: key as any, field: 'all', text: sectionText, targetRole: undefined, atsJson: undefined });
+                toast.success(`${SECTION_LABELS[key]} section enhanced`);
+              } catch {}
+            }}
+          >
+            <Sparkles className="h-3 w-3" /> Enhance all
+          </button>
+        </div>
         <div className="space-y-3">
           {list.map((item: any, i: number) => (
             <div key={i} className="border rounded p-3 space-y-2">
@@ -482,7 +577,7 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
                       next[i] = { ...next[i], description: improved };
                       setLocal({ ...local, [key]: next });
                     } catch {}
-                  }}
+                    }}
                 >
                   <Sparkles className="h-3 w-3" /> Enhance description
                 </button>
@@ -514,15 +609,93 @@ const SectionEditor = ({ section, data, onChange }: { section: string; data: any
             onClick={async () => {
               try {
                 const improved = await enhanceSection({ section: 'coverLetter' as any, field: 'coverLetter', text: local.coverLetter || '', targetRole: undefined, atsJson: undefined });
-                setLocal({ ...local, coverLetter: improved });
+                const nextData = { ...local, coverLetter: improved };
+                updateLive(nextData);
               } catch {}
             }}
           >
             <Sparkles className="h-3 w-3" /> Enhance
           </button>
         </div>
-        <textarea className="mt-1 w-full border rounded px-3 py-2 h-80" value={local.coverLetter || ''}
-          onChange={(e) => setLocal({ ...local, coverLetter: e.target.value })} />
+
+        {/* Generator controls */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded border p-3 bg-muted/10">
+          <input
+            placeholder="Company (optional)"
+            className="w-full border rounded px-3 py-2"
+            value={clCompany}
+            onChange={(e) => setClCompany(e.target.value)}
+          />
+          <input
+            placeholder="Role (optional)"
+            className="w-full border rounded px-3 py-2"
+            value={clRole}
+            onChange={(e) => setClRole(e.target.value)}
+          />
+          <div>
+            <label className="text-xs text-muted-foreground">Tone</label>
+            <select
+              className="mt-1 w-full border rounded px-3 py-2"
+              value={clTone}
+              onChange={(e) => setClTone(e.target.value as any)}
+            >
+              <option value="professional">Professional</option>
+              <option value="bold">Bold</option>
+              <option value="conservative">Conservative</option>
+            </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className="text-xs text-muted-foreground">Paste Job Description (optional)</label>
+            <textarea
+              className="mt-1 w-full border rounded px-3 py-2 h-28"
+              placeholder="Paste the JD here to tailor the cover letter"
+              value={clJD}
+              onChange={(e) => setClJD(e.target.value)}
+            />
+          </div>
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              className="text-xs rounded border px-3 py-2"
+              disabled={isGeneratingCL}
+              onClick={async () => {
+                try {
+                  setIsGeneratingCL(true);
+                  const { data, error } = await supabase.functions.invoke('ai-resume-enhancer', {
+                    body: {
+                      action: 'cover_letter',
+                      resumeData: local,
+                      jobDescription: clJD,
+                      tone: clTone,
+                      company: clCompany,
+                      role: clRole,
+                    },
+                  });
+                  if (error || !data?.success) throw error || new Error('Generation failed');
+                  const text = data.coverLetter || data.content || '';
+                  const nextData = { ...local, coverLetter: text };
+                  updateLive(nextData);
+                  toast.success('Cover letter generated');
+                } catch (e) {
+                  console.error(e);
+                  toast.error('Failed to generate cover letter');
+                } finally {
+                  setIsGeneratingCL(false);
+                }
+              }}
+            >
+              {isGeneratingCL ? 'Generating…' : 'Generate from JD'}
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          className="mt-1 w-full border rounded px-3 py-2 h-80"
+          value={local.coverLetter || ''}
+          onChange={(e) => {
+            const nextData = { ...local, coverLetter: e.target.value };
+            updateLive(nextData);
+          }}
+        />
         <button onClick={save} className="rounded border px-3 py-2">Save</button>
       </div>
     );
@@ -545,10 +718,43 @@ const ResumeEditorV1: React.FC = () => {
   const [templates, setTemplates] = useState<ResumeTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(undefined);
   const [mode, setMode] = useState<'editor' | 'preview'>('editor');
+  const [livePreviewData, setLivePreviewData] = useState<any>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { exportResume, isExporting } = useResumeExport();
   const { enhanceSection } = useSectionEnhancer();
-  const { analyze } = useJobTargeting(resumeData);
+  const [isATSOpen, setIsATSOpen] = useState(false);
+
+  // Real-time preview data - updates immediately when editing
+  const previewData = livePreviewData || resumeData;
+  
+  // Debounced autosave
+  const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const triggerAutosave = useCallback(async () => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current);
+    }
+    autosaveTimeoutRef.current = setTimeout(async () => {
+      if (hasUnsavedChanges && resumeData) {
+        try {
+          const { error } = await supabase.from('ai_resumes').update({ content: resumeData as any, updated_at: new Date().toISOString() }).eq('id', id as string);
+          if (error) throw error;
+          setHasUnsavedChanges(false);
+          toast.success('Auto-saved');
+        } catch (error) {
+          console.error('Autosave failed:', error);
+        }
+      }
+    }, 2000); // 2 second delay
+  }, [hasUnsavedChanges, resumeData, id]);
+  
+  // Real-time section update handler
+  const handleSectionLiveChange = useCallback((sectionData: any) => {
+    setLivePreviewData(sectionData);
+    setHasUnsavedChanges(true);
+    triggerAutosave();
+  }, [triggerAutosave]);
 
   // Resilient hydration: ensure resumeData is always set
   useEffect(() => {
@@ -594,8 +800,12 @@ const ResumeEditorV1: React.FC = () => {
       if (error) {
         console.error('Failed to load templates', error);
       } else if (mounted) {
-        setTemplates(data as any);
-        setSelectedTemplateId((data?.[0]?.id as string) || 'two-col');
+        const mapped = (data as any[] || []).map((t) => ({
+          ...t,
+          preview_url: t.preview_image_url || t.preview_url || '/placeholder.svg',
+        }));
+        setTemplates(mapped as any);
+        setSelectedTemplateId((mapped?.[0]?.id as string) || 'two-col');
       }
     })();
     return () => { mounted = false; };
@@ -653,18 +863,38 @@ const ResumeEditorV1: React.FC = () => {
     }
   }, [resumeData, selectedSection, enhanceSection, setResumeData]);
 
-  const handleATS = useCallback(async () => {
-    const jd = prompt('Paste job description to analyze against your resume:');
-    if (!jd) return;
-    await analyze(jd);
-  }, [analyze]);
+  const handleATS = useCallback(() => {
+    setIsATSOpen(true);
+  }, []);
 
-  const onDragEnd = (event: any) => {
+  const onDragEnd = async (event: any) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = sections.indexOf(active.id);
     const newIndex = sections.indexOf(over.id);
-    setSections((items) => arrayMove(items, oldIndex, newIndex));
+    const newOrder = arrayMove(sections, oldIndex, newIndex);
+    setSections(newOrder);
+    
+    // Persist section order to database
+    try {
+      const updatedContent = {
+        ...(resumeData as any),
+        sectionOrder: newOrder
+      };
+      
+      const { error } = await supabase
+        .from('ai_resumes')
+        .update({ content: updatedContent as any })
+        .eq('id', id);
+      
+      if (error) throw error;
+      toast.success('Section order saved');
+    } catch (error) {
+      console.error('Failed to save section order:', error);
+      toast.error('Failed to save section order');
+      // Revert on failure
+      setSections(sections);
+    }
   };
 
   const pageTitle = useMemo(() => `Resume Editor | Modern 3‑Pane Builder`, []);
@@ -724,6 +954,63 @@ const ResumeEditorV1: React.FC = () => {
               </button>
             </div>
             <button className="rounded border px-3 py-2" onClick={handleSave}>Save</button>
+            <button className="rounded border px-3 py-2" onClick={() => {
+              const input = window.prompt('Paste resume JSON');
+              if (!input) return;
+              try {
+                const parsed = JSON.parse(input);
+                // Transform section-array JSON into editor-friendly object if needed
+                const toEditorShape = (arr: any[]): any => {
+                  const obj: any = {};
+                  for (const s of arr) {
+                    const t = (s.type || '').toLowerCase();
+                    if (t === 'header') {
+                      obj.personalInfo = {
+                        fullName: s.data?.name || '',
+                        title: s.data?.title || '',
+                        email: s.data?.email || '',
+                        phone: s.data?.phone || '',
+                        location: s.data?.location || '',
+                        linkedin: s.data?.linkedin || '',
+                      };
+                    } else if (t === 'summary') {
+                      obj.summary = s.data?.text || '';
+                    } else if (t === 'experience') {
+                      obj.experience = Array.isArray(s.data) ? s.data.map((it: any) => ({
+                        role: it.role || '',
+                        company: it.company || '',
+                        location: it.location || '',
+                        start: it.start || it.startDate || '',
+                        end: it.end || it.endDate || '',
+                        bullets: it.bullets || it.achievements || [],
+                      })) : [];
+                    } else if (t === 'education') {
+                      obj.education = Array.isArray(s.data) ? s.data.map((it: any) => ({
+                        degree: it.degree || '',
+                        school: it.institution || it.school || '',
+                        startDate: '',
+                        endDate: it.dates || '',
+                      })) : [];
+                    } else if (t === 'skills') {
+                      obj.skills = Array.isArray(s.data) ? s.data : [];
+                    } else if (t === 'certifications') {
+                      obj.certifications = Array.isArray(s.data) ? s.data : [];
+                    } else if (t === 'awards') {
+                      obj.awards = Array.isArray(s.data) ? s.data : [];
+                    } else if (t === 'cover_letter') {
+                      obj.coverLetter = s.data?.text || '';
+                    }
+                  }
+                  return obj;
+                };
+                const next = Array.isArray(parsed) ? toEditorShape(parsed) : parsed;
+                setResumeData(next);
+                toast.success('Imported JSON');
+              } catch (e) {
+                console.error(e);
+                toast.error('Invalid JSON');
+              }
+            }}>Import JSON</button>
           </div>
         </header>
 
@@ -746,20 +1033,26 @@ const ResumeEditorV1: React.FC = () => {
             </div>
 
             <div className="col-span-8 border rounded p-4 overflow-auto">
-              <h2 className="text-sm font-medium mb-3">Edit: {SECTION_LABELS[selectedSection] || selectedSection}</h2>
+              <h2 className="text-sm font-medium mb-3">
+                Edit: {SECTION_LABELS[selectedSection] || selectedSection}
+                {hasUnsavedChanges && <span className="ml-2 text-xs text-orange-600">• Unsaved changes</span>}
+              </h2>
               <SectionEditor
                 section={selectedSection}
                 data={resumeData}
                 onChange={(next) => setResumeData(next)}
+                onLiveChange={handleSectionLiveChange}
               />
             </div>
           </div>
         ) : (
-          <Preview data={resumeData} templateId={selectedTemplateId} variant="full" />
+          <Preview data={resumeData} templateId={selectedTemplateId} variant="full" sectionOrder={sections} />
         )}
       </main>
 
-      {mode === 'editor' && <Preview data={resumeData} templateId={selectedTemplateId} />}
+      {mode === 'editor' && <Preview data={previewData} templateId={selectedTemplateId} sectionOrder={sections} />}
+
+      <JobTargetingPanel isOpen={isATSOpen} onClose={() => setIsATSOpen(false)} resumeData={resumeData} />
     </div>
   );
 };

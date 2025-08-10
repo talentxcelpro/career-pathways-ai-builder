@@ -4,12 +4,18 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAIService } from '@/hooks/useAIService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
+import * as pdfjsLib from 'pdfjs-dist';
+import mammoth from 'mammoth';
+import { aiDataToEditor } from '@/utils/aiParsingAdapters';
+// Set PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface ResumeUploaderProps {
-  onResumeExtracted: (extractedData: any) => void;
+  onResumeExtracted: (extractedData: EditorResume) => void;
   onClose: () => void;
 }
 
@@ -19,8 +25,33 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [extractedData, setExtractedData] = useState<any>(null);
-  const { invokeAITool } = useAIService();
+  const [extractedData, setExtractedData] = useState<EditorResume | null>(null);
+
+  // Extract text from PDF
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+    let text = '';
+    
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .filter((item: any) => 'str' in item)
+        .map((item: any) => item.str)
+        .join(' ');
+      text += pageText + '\n';
+    }
+    
+    return text;
+  };
+
+  // Extract text from DOCX
+  const extractTextFromDOCX = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -46,46 +77,247 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
     setIsUploading(true);
     setUploadProgress(10);
+    
+    let uploadData: any = null;
 
     try {
-      // Convert file to base64
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      setUploadProgress(30);
-
-      // Extract text content using AI service
-      const result = await invokeAITool({
-        toolSlug: 'resume-parser',
-        inputData: {
-          file: base64,
-          fileName: file.name,
-          fileType: file.type
-        },
-        category: 'resume'
-      });
-
-      setUploadProgress(70);
-
-      if (result.success && result.data) {
-        setExtractedData(result.data);
-        setUploadProgress(100);
-        toast.success('Resume parsed successfully!');
-      } else {
-        throw new Error(result.error || 'Failed to parse resume');
+      // Extract text content based on file type
+      let extractedText = '';
+      if (file.type === 'application/pdf') {
+        extractedText = await extractTextFromPDF(file);
+      } else if (file.type.includes('word') || file.type.includes('doc')) {
+        extractedText = await extractTextFromDOCX(file);
       }
-    } catch (error) {
+
+      setUploadProgress(40);
+
+      // Upload file to Supabase Storage (smaller payload, more reliable)
+      const filePath = `uploads/${Date.now()}-${file.name}`;
+      const uploadResult = await supabase.storage
+        .from('resumes')
+        .upload(filePath, file);
+
+      if (uploadResult.error) {
+        throw new Error(`Upload failed: ${uploadResult.error.message}`);
+      }
+
+      uploadData = uploadResult.data;
+
+      setUploadProgress(60);
+
+      // Invoke extract-resume Edge Function with storage path
+      const payload = {
+        filePath,
+        fileName: file.name,
+        fileType: file.type,
+      };
+
+      console.log('Invoking extract-resume with payload:', payload);
+
+      const invokeOnce = async () => supabase.functions.invoke('extract-resume', { body: payload });
+
+      let parsingResult: any = null;
+      let parsingError: any = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        const { data, error } = await invokeOnce();
+        parsingResult = data;
+        parsingError = error;
+        if (!error) break;
+        console.warn(`extract-resume attempt ${attempt} failed:`, error?.message || error);
+        if (attempt < 2) await new Promise(r => setTimeout(r, 600));
+      }
+
+      setUploadProgress(90);
+
+      console.log('extract-resume response:', { parsingResult, parsingError });
+
+      if (parsingError) {
+        throw new Error(`Resume parsing failed: ${parsingError.message || JSON.stringify(parsingError)}`);
+      }
+
+      if (!parsingResult) {
+        throw new Error('Resume parsing failed: No response from parser');
+      }
+
+      if (parsingResult.success === false && !parsingResult.resume) {
+        throw new Error(`Resume parsing failed: ${parsingResult.error || 'Invalid response from parser'}`);
+      }
+
+      // Convert the parsed result to EditorResume format
+      const aiParsed = parsingResult.resume || parsingResult.data || parsingResult;
+      const editorResume = aiDataToEditor ? aiDataToEditor(aiParsed) : convertResumeParserToEditor(aiParsed);
+      setExtractedData(editorResume);
+      setUploadProgress(100);
+      toast.success('Resume parsed successfully!');
+
+      // Clean up uploaded file
+      try {
+        await supabase.storage
+          .from('resumes')
+          .remove([uploadData.path]);
+      } catch (cleanupError) {
+        console.warn('Failed to cleanup uploaded file:', cleanupError);
+        // Don't fail the main operation for cleanup issues
+      }
+
+    } catch (error: any) {
       console.error('Resume upload error:', error);
-      toast.error('Failed to parse resume. Please try again.');
+      
+      // Clean up uploaded file on error
+      if (uploadData?.path) {
+        try {
+          await supabase.storage
+            .from('resumes')
+            .remove([uploadData.path]);
+        } catch (cleanupError) {
+          console.warn('Failed to cleanup file after error:', cleanupError);
+        }
+      }
+      
+      let errorMessage = 'Failed to parse resume. Please try again.';
+      
+      if (error.message) {
+        if (error.message.includes('Failed to send a request to the Edge Function')) {
+          errorMessage = 'Resume parser service is temporarily unavailable. Please try again in a moment.';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
       setUploadProgress(0);
     } finally {
       setIsUploading(false);
     }
-  }, [invokeAITool]);
+  }, []);
+
+  // Convert parsed CV data to EditorResume format
+  const convertParsedCVToEditor = (parsedCV: any): EditorResume => {
+    const resume = createEmptyEditorResume();
+    
+    if (parsedCV?.personal_info) {
+      resume.personalInfo = {
+        fullName: parsedCV.personal_info.full_name || '',
+        professionalTitle: parsedCV.personal_info.professional_title || '',
+        email: parsedCV.personal_info.email || '',
+        phone: parsedCV.personal_info.phone || '',
+        location: parsedCV.personal_info.location || '',
+        linkedin: parsedCV.personal_info.linkedin_url || '',
+        github: parsedCV.personal_info.github_url || '',
+        website: parsedCV.personal_info.portfolio_url || '',
+        summary: parsedCV.professional_summary || '',
+      };
+    }
+
+    if (parsedCV?.work_experience) {
+      resume.experience = parsedCV.work_experience.map((exp: any, index: number) => ({
+        id: `exp-${index}`,
+        title: exp.position || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.start_date || '',
+        endDate: exp.end_date === 'current' ? '' : (exp.end_date || ''),
+        description: exp.responsibilities?.join('\n') || '',
+        achievements: exp.key_achievements || [],
+        technologies: [],
+      }));
+    }
+
+    if (parsedCV?.education) {
+      resume.education = parsedCV.education.map((edu: any, index: number) => ({
+        id: `edu-${index}`,
+        degree: edu.degree || '',
+        institution: edu.institution || '',
+        location: '',
+        startDate: '',
+        endDate: edu.graduation_date || '',
+        description: edu.relevant_coursework?.join(', ') || '',
+        achievements: edu.academic_projects || [],
+      }));
+    }
+
+    if (parsedCV?.skills) {
+      resume.skills = {
+        technical: Array.isArray(parsedCV.skills) ? parsedCV.skills : [],
+        soft: [],
+        languages: parsedCV.languages || [],
+        tools: [],
+      };
+    }
+
+    if (parsedCV?.certifications) {
+      resume.certifications = parsedCV.certifications.map((cert: string, index: number) => ({
+        id: `cert-${index}`,
+        name: cert,
+        issuer: '',
+        issueDate: '',
+        expiryDate: '',
+        credentialId: '',
+        credentialUrl: '',
+      }));
+    }
+
+    return resume;
+  };
+
+  // Convert resume-parser data to EditorResume format  
+  const convertResumeParserToEditor = (parsedData: any): EditorResume => {
+    const resume = createEmptyEditorResume();
+    
+    if (parsedData?.personal) {
+      resume.personalInfo = {
+        fullName: parsedData.personal.fullName || '',
+        professionalTitle: '',
+        email: parsedData.personal.email || '',
+        phone: parsedData.personal.phone || '',
+        location: parsedData.personal.location || '',
+        linkedin: '',
+        github: '',
+        website: '',
+        summary: parsedData.summary || '',
+      };
+    }
+
+    if (parsedData?.experience) {
+      resume.experience = parsedData.experience.map((exp: any, index: number) => ({
+        id: `exp-${index}`,
+        title: exp.title || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate === 'Present' ? '' : (exp.endDate || ''),
+        description: exp.description || '',
+        achievements: [],
+        technologies: [],
+      }));
+    }
+
+    if (parsedData?.education) {
+      resume.education = parsedData.education.map((edu: any, index: number) => ({
+        id: `edu-${index}`,
+        degree: edu.degree || '',
+        institution: edu.school || '',
+        location: edu.location || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        description: '',
+        achievements: [],
+      }));
+    }
+
+    if (parsedData?.skills) {
+      resume.skills = {
+        technical: parsedData.skills.map((skill: any) => skill.name || skill).filter(Boolean),
+        soft: [],
+        languages: [],
+        tools: [],
+      };
+    }
+
+    return resume;
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -118,34 +350,34 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
         <div className="max-h-60 overflow-y-auto space-y-3">
           {/* Personal Info */}
-          {extractedData.personal && (
+          {extractedData.personalInfo && (
             <div>
               <h4 className="font-medium text-sm mb-2">Personal Information</h4>
               <div className="text-sm text-muted-foreground space-y-1">
-                {extractedData.personal.fullName && (
-                  <p><strong>Name:</strong> {extractedData.personal.fullName}</p>
+                {extractedData.personalInfo.fullName && (
+                  <p><strong>Name:</strong> {extractedData.personalInfo.fullName}</p>
                 )}
-                {extractedData.personal.email && (
-                  <p><strong>Email:</strong> {extractedData.personal.email}</p>
+                {extractedData.personalInfo.email && (
+                  <p><strong>Email:</strong> {extractedData.personalInfo.email}</p>
                 )}
-                {extractedData.personal.phone && (
-                  <p><strong>Phone:</strong> {extractedData.personal.phone}</p>
+                {extractedData.personalInfo.phone && (
+                  <p><strong>Phone:</strong> {extractedData.personalInfo.phone}</p>
                 )}
-                {extractedData.personal.location && (
-                  <p><strong>Location:</strong> {extractedData.personal.location}</p>
+                {extractedData.personalInfo.location && (
+                  <p><strong>Location:</strong> {extractedData.personalInfo.location}</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Summary */}
-          {extractedData.summary && (
+          {extractedData.personalInfo.summary && (
             <div>
               <h4 className="font-medium text-sm mb-2">Summary</h4>
               <p className="text-sm text-muted-foreground">
-                {extractedData.summary.length > 200 
-                  ? `${extractedData.summary.substring(0, 200)}...`
-                  : extractedData.summary
+                {extractedData.personalInfo.summary.length > 200 
+                  ? `${extractedData.personalInfo.summary.substring(0, 200)}...`
+                  : extractedData.personalInfo.summary
                 }
               </p>
             </div>
@@ -174,23 +406,23 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
           )}
 
           {/* Skills */}
-          {extractedData.skills && extractedData.skills.length > 0 && (
+          {extractedData.skills && (
             <div>
               <h4 className="font-medium text-sm mb-2">
-                Skills ({extractedData.skills.length} items)
+                Skills ({[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].length} items)
               </h4>
               <div className="flex flex-wrap gap-1">
-                {extractedData.skills.slice(0, 10).map((skill: any, index: number) => (
+                {[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].slice(0, 10).map((skill, index) => (
                   <span 
                     key={index}
                     className="px-2 py-1 bg-muted text-xs rounded"
                   >
-                    {typeof skill === 'string' ? skill : skill.name}
+                    {skill}
                   </span>
                 ))}
-                {extractedData.skills.length > 10 && (
+                {[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].length > 10 && (
                   <span className="px-2 py-1 bg-muted text-xs rounded">
-                    +{extractedData.skills.length - 10} more
+                    +{[...extractedData.skills.technical, ...extractedData.skills.soft, ...extractedData.skills.tools].length - 10} more
                   </span>
                 )}
               </div>

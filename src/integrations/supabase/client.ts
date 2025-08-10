@@ -3,19 +3,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Safe storage for Safari Private Mode and restricted environments
-const safeLocalStorage = {
-  getItem: (key: string) => {
-    try { return window.localStorage.getItem(key); } catch { return null; }
-  },
-  setItem: (key: string, value: string) => {
-    try { window.localStorage.setItem(key, value); } catch {}
-  },
-  removeItem: (key: string) => {
-    try { window.localStorage.removeItem(key); } catch {}
-  }
-};
-
 const SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
 
@@ -24,7 +11,7 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: safeLocalStorage,
+    storage: window.localStorage,
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
@@ -57,7 +44,7 @@ export const getSupabaseFunctions = () => {
       SUPABASE_PUBLISHABLE_KEY,
       {
         auth: {
-          storage: safeLocalStorage,
+          storage: window.localStorage,
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: false, // Prevent duplicate session detection

@@ -9,33 +9,25 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Check authentication status
-useEffect(() => {
-  const checkUser = async () => {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) console.warn('Auth getUser error:', error.message);
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
-    } catch (err) {
-      console.warn('Auth check failed, continuing as guest:', err);
-      setIsLoggedIn(false);
-    } finally {
       setIsLoading(false);
-    }
-  };
+    };
+    checkUser();
 
-  checkUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      setIsLoading(false);
+    });
 
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-    setIsLoggedIn(!!session);
-    setIsLoading(false);
-  });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  return () => subscription.unsubscribe();
-}, []);
-
-if (isLoading) {
-  return <div className="min-h-[50vh] flex items-center justify-center text-muted-foreground">Loading…</div>;
-}
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   // Redirect logged-in users to network page
   if (isLoggedIn) {
