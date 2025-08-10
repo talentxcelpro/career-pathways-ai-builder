@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight } from 'lucide-react';
+import handshakeHero from '@/assets/handshake-hero.png';
 
 export const AppleHeroSection = () => {
   return (
@@ -71,8 +72,8 @@ export const AppleHeroSection = () => {
             <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-200/40 via-purple-200/30 to-blue-200/40 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-slate-200/50">
               <img
-                src="/lovable-uploads/b2b11916-7030-4136-b908-ca59a4b9fec3.png"
-                alt="Handshake partnership powering global career growth"
+                src={handshakeHero}
+                alt="Clean vector handshake illustration for global career growth"
                 loading="lazy"
                 className="block w-full h-auto object-cover"
               />
