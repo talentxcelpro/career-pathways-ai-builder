@@ -163,3 +163,6 @@ verify_jwt = false
 
 [functions.ai-resume-content]
 verify_jwt = false
+
+[functions.yt-create-upload-session]
+verify_jwt = true
