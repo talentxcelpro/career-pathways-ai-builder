@@ -20,40 +20,44 @@ export async function handler(req: Request): Promise<Response> {
     const {
       title,
       description = '',
-      privacyStatus = 'unlisted',
-      channelIndex = 1,
+      privacyStatus,
+      channelIndex,
       fileSize,
-      contentType = 'video/mp4',
+      contentType,
     } = await req.json();
 
-    if (!title || !fileSize || typeof fileSize !== 'number') {
-      return new Response(JSON.stringify({ error: 'title and numeric fileSize are required' }), {
+    if (
+      !title ||
+      typeof fileSize !== 'number' ||
+      !contentType ||
+      !privacyStatus ||
+      channelIndex === undefined
+    ) {
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Enforce optional max size
-    const maxMb = Number(Deno.env.get('UPLOAD_MAX_FILE_SIZE_MB') || '0');
-    if (maxMb > 0) {
-      const maxBytes = maxMb * 1024 * 1024;
-      if (fileSize > maxBytes) {
-        return new Response(
-          JSON.stringify({ error: `File too large. Max ${maxMb} MB`, code: 'file_too_large' }),
-          { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+    // Enforce max size (default 100MB if not specified)
+    const maxMb = parseInt(Deno.env.get('UPLOAD_MAX_FILE_SIZE_MB') || '100', 10);
+    const maxBytes = maxMb * 1024 * 1024;
+    if (fileSize > maxBytes) {
+      return new Response(
+        JSON.stringify({ error: 'File size exceeds max limit' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Resolve refresh token for selected channel
-    const idx = Math.max(1, Math.min(5, Number(channelIndex) || 1));
+    // Resolve refresh token for selected channel (0-based -> 1..5)
+    const idx = Math.max(1, Math.min(5, (Number(channelIndex) || 0) + 1));
     const refreshToken = Deno.env.get(`YT_CHANNEL_REFRESH_TOKEN_${idx}`);
     const clientId = Deno.env.get('YT_OAUTH_CLIENT_ID');
     const clientSecret = Deno.env.get('YT_OAUTH_CLIENT_SECRET');
 
-    if (!clientId || !clientSecret || !refreshToken) {
+    if (!refreshToken || !clientId || !clientSecret) {
       return new Response(
-        JSON.stringify({ error: 'YouTube OAuth secrets missing for requested channel' }),
+        JSON.stringify({ error: 'Missing YouTube OAuth credentials' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

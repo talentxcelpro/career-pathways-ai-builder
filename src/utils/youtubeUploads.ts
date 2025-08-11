@@ -4,11 +4,11 @@ type Privacy = 'private' | 'unlisted' | 'public';
 
 export async function createYouTubeUploadSession(params: {
   title: string;
-  description?: string;
-  privacyStatus?: Privacy;
-  channelIndex?: number;
   fileSize: number;
-  contentType?: string;
+  contentType: string;
+  privacyStatus: Privacy; // required per spec
+  channelIndex: number;   // 0-based index
+  description?: string;
 }) {
   const { data, error } = await supabase.functions.invoke('yt-create-upload-session', {
     body: params,
