@@ -13716,6 +13716,63 @@ export type Database = {
         }
         Relationships: []
       }
+      reels: {
+        Row: {
+          channel_index: number
+          created_at: string
+          description: string | null
+          duration_seconds: number | null
+          error_message: string | null
+          id: string
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          video_url: string | null
+          youtube_video_id: string | null
+        }
+        Insert: {
+          channel_index?: number
+          created_at?: string
+          description?: string | null
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+          youtube_video_id?: string | null
+        }
+        Update: {
+          channel_index?: number
+          created_at?: string
+          description?: string | null
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+          youtube_video_id?: string | null
+        }
+        Relationships: []
+      }
       references_info: {
         Row: {
           contact_info: string | null
