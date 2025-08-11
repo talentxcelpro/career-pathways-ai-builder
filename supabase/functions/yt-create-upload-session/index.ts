@@ -42,13 +42,8 @@ async function handler(req: Request): Promise<Response> {
   try {
     console.log(`[${requestId}] Parsing request body...`);
     const body = await req.json();
-    console.log(`[${requestId}] Request body parsed:`, { 
-      hasTitle: !!body.title, 
-      fileSize: body.fileSize, 
-      contentType: body.contentType,
-      privacyStatus: body.privacyStatus
-    });
-
+    console.log(`[${requestId}] Raw request body:`, JSON.stringify(body, null, 2));
+    
     const {
       title,
       description = '',
@@ -57,15 +52,32 @@ async function handler(req: Request): Promise<Response> {
       contentType,
     } = body;
 
-    // Validate required fields
-    if (
-      !title ||
-      typeof fileSize !== 'number' ||
-      !contentType ||
-      !privacyStatus
-    ) {
-      console.log(`[${requestId}] Validation failed - missing required fields`);
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+    console.log(`[${requestId}] Extracted fields:`, {
+      title: title,
+      titleType: typeof title,
+      titleExists: !!title,
+      fileSize: fileSize,
+      fileSizeType: typeof fileSize,
+      fileSizeIsNumber: typeof fileSize === 'number',
+      contentType: contentType,
+      contentTypeExists: !!contentType,
+      privacyStatus: privacyStatus,
+      privacyStatusExists: !!privacyStatus
+    });
+
+    // Validate required fields with detailed logging
+    const validationErrors = [];
+    if (!title) validationErrors.push('title is missing or empty');
+    if (typeof fileSize !== 'number') validationErrors.push(`fileSize is not a number (got ${typeof fileSize}: ${fileSize})`);
+    if (!contentType) validationErrors.push('contentType is missing or empty');
+    if (!privacyStatus) validationErrors.push('privacyStatus is missing or empty');
+
+    if (validationErrors.length > 0) {
+      console.log(`[${requestId}] Validation failed:`, validationErrors);
+      return new Response(JSON.stringify({ 
+        error: 'Missing required fields', 
+        details: validationErrors 
+      }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
