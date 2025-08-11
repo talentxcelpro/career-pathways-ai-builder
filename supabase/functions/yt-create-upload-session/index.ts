@@ -46,15 +46,13 @@ async function handler(req: Request): Promise<Response> {
       hasTitle: !!body.title, 
       fileSize: body.fileSize, 
       contentType: body.contentType,
-      privacyStatus: body.privacyStatus,
-      channelIndex: body.channelIndex 
+      privacyStatus: body.privacyStatus
     });
 
     const {
       title,
       description = '',
       privacyStatus,
-      channelIndex,
       fileSize,
       contentType,
     } = body;
@@ -64,8 +62,7 @@ async function handler(req: Request): Promise<Response> {
       !title ||
       typeof fileSize !== 'number' ||
       !contentType ||
-      !privacyStatus ||
-      channelIndex === undefined
+      !privacyStatus
     ) {
       console.log(`[${requestId}] Validation failed - missing required fields`);
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -87,11 +84,10 @@ async function handler(req: Request): Promise<Response> {
       );
     }
 
-    // Resolve refresh token for selected channel (0-based -> 1..5)
-    const idx = Math.max(1, Math.min(5, (Number(channelIndex) || 0) + 1));
-    console.log(`[${requestId}] Using channel index: ${channelIndex} -> token ${idx}`);
+    // Use single YouTube token for now
+    console.log(`[${requestId}] Using single YouTube token`);
     
-    const refreshToken = Deno.env.get(`YT_CHANNEL_REFRESH_TOKEN_${idx}`);
+    const refreshToken = Deno.env.get('YT_REFRESH_TOKEN');
     const clientId = Deno.env.get('YT_OAUTH_CLIENT_ID');
     const clientSecret = Deno.env.get('YT_OAUTH_CLIENT_SECRET');
 
@@ -99,8 +95,7 @@ async function handler(req: Request): Promise<Response> {
       console.log(`[${requestId}] Missing OAuth credentials:`, {
         hasRefreshToken: !!refreshToken,
         hasClientId: !!clientId,
-        hasClientSecret: !!clientSecret,
-        tokenIndex: idx
+        hasClientSecret: !!clientSecret
       });
       return new Response(
         JSON.stringify({ error: 'Missing YouTube OAuth credentials' }),

@@ -7,7 +7,6 @@ export async function createYouTubeUploadSession(params: {
   fileSize: number;
   contentType: string;
   privacyStatus: Privacy; // required per spec
-  channelIndex: number;   // 0-based index
   description?: string;
 }) {
   const { data, error } = await supabase.functions.invoke('yt-create-upload-session', {
