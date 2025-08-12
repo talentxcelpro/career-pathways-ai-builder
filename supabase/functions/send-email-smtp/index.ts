@@ -66,10 +66,10 @@ Deno.serve(async (req) => {
 
     // Get SMTP config from environment variables
     const smtpConfig = {
-      host: Deno.env.get('SMTP_HOST'),
-      port: parseInt(Deno.env.get('SMTP_PORT') || '587'),
-      user: Deno.env.get('SMTP_USER'),
-      pass: Deno.env.get('SMTP_PASS'),
+      host: emailData.smtp?.host || Deno.env.get('SMTP_HOST'),
+      port: parseInt(emailData.smtp?.port || Deno.env.get('SMTP_PORT') || '587'),
+      user: emailData.smtp?.user || Deno.env.get('SMTP_USER'),
+      pass: emailData.smtp?.pass || Deno.env.get('SMTP_PASS'),
     };
 
     if (!smtpConfig.host || !smtpConfig.user || !smtpConfig.pass) {
@@ -79,13 +79,14 @@ Deno.serve(async (req) => {
     console.log('🔧 Creating SMTP client...');
     console.log('📡 SMTP Host:', smtpConfig.host);
     console.log('📡 SMTP Port:', smtpConfig.port);
+    console.log('🔒 SMTP user configured:', smtpConfig.user ? 'yes' : 'no');
 
     // Create SMTP client with denomailer
     const client = new SMTPClient({
       connection: {
         hostname: smtpConfig.host,
         port: smtpConfig.port,
-        tls: true,
+        tls: smtpConfig.port === 465,
         auth: {
           username: smtpConfig.user,
           password: smtpConfig.pass,
@@ -161,14 +162,19 @@ Deno.serve(async (req) => {
 
   } catch (error: any) {
     console.error('❌ SMTP email service error:', error);
+    const message = error?.message || 'Unknown error occurred';
+    const status = message.includes('535') ? 401 : 500;
+    const friendly = message.includes('535')
+      ? 'SMTP authentication failed (535). Verify SMTP_USER/PASS and that you are using SES SMTP credentials for the correct region.'
+      : message;
     
     return new Response(JSON.stringify({
       success: false,
-      error: error.message || 'Unknown error occurred',
+      error: friendly,
       stack: error.stack,
       timestamp: new Date().toISOString()
     }), {
-      status: 500,
+      status,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
