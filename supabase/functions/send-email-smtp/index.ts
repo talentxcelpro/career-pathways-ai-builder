@@ -12,6 +12,7 @@ interface EmailRequest {
   html?: string;
   text?: string; // optional plain-text body
   messageId?: string;
+  replyTo?: string;
   headers?: Record<string, string>;
   smtp?: {
     host?: string;
@@ -50,11 +51,17 @@ Deno.serve(async (req) => {
 
     // Validate required fields
     if (!to) {
-      throw new Error('Missing required email field: to');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Missing required field: to' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
     }
 
     if (!html && !text) {
-      throw new Error('Missing email body: provide html or text');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Missing email body: provide html or text' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
     }
 
     // Get SMTP config from environment variables
@@ -117,7 +124,10 @@ Deno.serve(async (req) => {
     }
 
     if (!htmlFinal && !textFinal) {
-      throw new Error('Email content is empty after normalization');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Email content is empty after normalization' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+      );
     }
 
     // Send the email with explicit HTML + text parts (multipart/alternative)
@@ -127,6 +137,10 @@ Deno.serve(async (req) => {
       subject: subject,
       content: textFinal || ' ',
       html: htmlFinal,
+      headers: {
+        ...(emailData.headers || {}),
+        ...(emailData.replyTo ? { 'Reply-To': emailData.replyTo } : {}),
+      },
     });
 
     console.log('📤 Closing SMTP connection...');
