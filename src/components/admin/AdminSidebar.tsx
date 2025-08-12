@@ -170,6 +170,12 @@ const adminMenuItems = [
     description: 'Manage email templates & triggers'
   },
   {
+    title: 'Bulk Resume Upload',
+    url: '/admin/talent-database?bulk=1',
+    icon: Upload,
+    description: 'Upload thousands of CVs'
+  },
+  {
     title: 'AI/ML Training Center',
     url: '/admin/ai-ml-training',
     icon: Brain,

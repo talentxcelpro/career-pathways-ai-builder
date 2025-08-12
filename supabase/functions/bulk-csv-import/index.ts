@@ -43,6 +43,36 @@ Deno.serve(async (req) => {
     const startTime = Date.now();
     console.log('=== BULK CSV IMPORT STARTED ===');
 
+    // Get and validate request body EARLY so test path can bypass env checks
+    let requestBody: any = {};
+    try {
+      requestBody = await req.json();
+      console.log('Request body received:', {
+        isTest: !!requestBody.test,
+        hasCsvData: !!requestBody.csvData,
+        csvDataLength: requestBody.csvData?.length || 0,
+        batchSize: requestBody.batchSize,
+        maxConcurrent: requestBody.maxConcurrent
+      });
+    } catch (error) {
+      console.error('Failed to parse request body:', error);
+      requestBody = {};
+    }
+
+    // Handle test connection requests BEFORE env checks so UI "Test Connection" works
+    if (requestBody.test) {
+      console.log('=== CONNECTION TEST SUCCESSFUL ===');
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Connection test successful',
+        timestamp: new Date().toISOString(),
+        service: 'bulk-csv-import'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      });
+    }
+
     // Initialize Supabase client with service role for admin operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -62,36 +92,6 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
-
-    // Get and validate request body
-    let requestBody;
-    try {
-      requestBody = await req.json();
-      console.log('Request body received:', {
-        isTest: !!requestBody.test,
-        hasCsvData: !!requestBody.csvData,
-        csvDataLength: requestBody.csvData?.length || 0,
-        batchSize: requestBody.batchSize,
-        maxConcurrent: requestBody.maxConcurrent
-      });
-    } catch (error) {
-      console.error('Failed to parse request body:', error);
-      throw new Error('Invalid JSON in request body');
-    }
-
-    // Handle test connection requests
-    if (requestBody.test) {
-      console.log('=== CONNECTION TEST SUCCESSFUL ===');
-      return new Response(JSON.stringify({
-        success: true,
-        message: 'Connection test successful',
-        timestamp: new Date().toISOString(),
-        service: 'bulk-csv-import'
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
-      });
-    }
 
     const { csvData, batchSize = 100, maxConcurrent = 5 } = requestBody;
     

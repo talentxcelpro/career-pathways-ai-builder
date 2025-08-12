@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, Users, Database, Search, Settings, File } from 'lucide-react';
@@ -13,6 +13,17 @@ import { CVFilesManager } from '@/components/talent-database/CVFilesManager';
 
 const TalentDatabase = () => {
   const [activeTab, setActiveTab] = useState('setup');
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('bulk') === '1') {
+        setActiveTab('upload');
+      }
+    } catch (e) {
+      console.warn('Could not parse query params', e);
+    }
+  }, []);
 
   const features = [
     {
