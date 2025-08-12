@@ -38,6 +38,11 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Missing required fields: to, subject, and either html or template');
     }
 
+    // Perform simple token replacement for provided raw HTML (e.g., {{candidate_name}})
+    const processedHtml = html && templateData
+      ? replaceTemplateVariables(html, templateData)
+      : html;
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -81,9 +86,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     let result: EmailResponse;
 
-    try {
+  try {
       // Try primary provider
-      result = await sendWithProvider(primaryProvider, { to, subject, html, template, templateData });
+      result = await sendWithProvider(primaryProvider, { to, subject, html: processedHtml, template, templateData });
       console.log(`Email sent successfully via ${primaryProvider}`);
     } catch (primaryError) {
       console.log(`Primary provider ${primaryProvider} failed:`, primaryError);
@@ -91,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
       // Try fallback provider if available
       if (fallbackProvider) {
         try {
-          result = await sendWithProvider(fallbackProvider, { to, subject, html, template, templateData });
+          result = await sendWithProvider(fallbackProvider, { to, subject, html: processedHtml, template, templateData });
           result.fallback = true;
           console.log(`Email sent successfully via fallback provider ${fallbackProvider}`);
         } catch (fallbackError) {
@@ -195,68 +200,42 @@ async function sendWithResend(to: string, subject: string, html: string, templat
 }
 
 async function sendWithSES(to: string, subject: string, html: string, template?: string, templateData?: any): Promise<EmailResponse> {
-  const SES_CONFIG = {
-    host: Deno.env.get('SMTP_HOST'),
-    port: Deno.env.get('SMTP_PORT'),
-    user: Deno.env.get('SMTP_USER'),
-    pass: Deno.env.get('SMTP_PASS'),
-  };
-  
-  if (!SES_CONFIG.host || !SES_CONFIG.user || !SES_CONFIG.pass) {
-    throw new Error('Amazon SES SMTP configuration not complete');
-  }
-
-  // Add tracking pixel for open tracking
-  const messageId = crypto.randomUUID();
-  const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
-  const htmlWithTracking = html + trackingPixel;
-
-  // Use nodemailer-compatible SMTP via fetch for Deno
-  const emailData = {
-    from: 'TalentXcel <admin@talentxcel.in>',
-    to: to,
-    subject: subject,
-    html: htmlWithTracking,
-    messageId: messageId,
-    headers: {
-      'X-Template': template || 'default',
-      'X-Provider': 'ses'
-    }
-  };
-
-  // For Deno environment, we'll use a simple SMTP implementation
   try {
-    // Create the Supabase client and call the SMTP function directly
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-    
-    const response = await supabase.functions.invoke('send-email-smtp', {
+
+    // Call the AWS SES API-based sender (no SMTP) to avoid encoding artifacts
+    const response = await supabase.functions.invoke('send-email-aws-ses', {
       body: {
-        ...emailData,
-        smtp: SES_CONFIG
+        to,
+        subject,
+        html,
+        template,
+        data: templateData || {}
       }
     });
 
     if (response.error) {
-      throw new Error(`Amazon SES Error: ${JSON.stringify(response.error)}`);
+      throw new Error(`Amazon SES API Error: ${JSON.stringify(response.error)}`);
     }
-    
+
     if (!response.data?.success) {
-      throw new Error(`Amazon SES Error: ${response.data?.error || 'Unknown error'}`);
+      throw new Error(`Amazon SES API Error: ${response.data?.error || 'Unknown error'}`);
     }
 
     return {
       success: true,
-      messageId: messageId,
+      messageId: response.data.messageId,
       provider: 'ses'
     };
   } catch (error) {
-    console.error('SES SMTP Error:', error);
+    console.error('SES API Error:', error);
     throw error;
   }
 }
+
 
 async function sendWithReactEmail(to: string, subject: string, template: string, templateData?: any): Promise<EmailResponse> {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -296,6 +275,20 @@ async function sendWithReactEmail(to: string, subject: string, template: string,
   } catch (error) {
     console.error('React Email Error:', error);
     throw error;
+  }
+}
+
+
+// Simple mustache-style token replacement: replaces {{ token }} with data[token]
+function replaceTemplateVariables(html: string, data: Record<string, any> = {}): string {
+  if (!html) return html;
+  try {
+    return html.replace(/{{\s*([\w.-]+)\s*}}/g, (_match, key) => {
+      const value = data?.[key];
+      return value !== undefined && value !== null ? String(value) : '';
+    });
+  } catch (_e) {
+    return html;
   }
 }
 

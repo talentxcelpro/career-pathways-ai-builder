@@ -171,21 +171,14 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('Template not found or error, using default:', templateError.message);
     }
 
-    // Send email directly via SMTP (bypass unified service for now)
-    console.log('Sending email via direct SMTP...');
+    // Send email via Amazon SES API (avoid SMTP encoding issues)
+    console.log('Sending email via Amazon SES API...');
     
-    const emailResponse = await supabase.functions.invoke('send-email-smtp', {
+    const emailResponse = await supabase.functions.invoke('send-email-aws-ses', {
       body: {
         to: email.recipient_email,
-        from: 'TalentXcel <noreply@talentxcel.in>',
         subject: emailSubject,
-        html: emailHtml,
-        smtp: {
-          host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
-          port: Deno.env.get('SMTP_PORT') || '587',
-          user: 'WILL_BE_SET_FROM_SUPABASE_SECRETS',
-          pass: 'WILL_BE_SET_FROM_SUPABASE_SECRETS'
-        }
+        html: emailHtml
       }
     });
 
