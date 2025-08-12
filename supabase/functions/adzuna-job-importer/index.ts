@@ -239,6 +239,7 @@ serve(async (req) => {
           is_active: true,
           employment_type: mapEmploymentType(adzunaJob.contract_type),
           category: adzunaJob.category?.label || 'general',
+          role_category: adzunaJob.category?.label || 'General',
           is_featured: false,
           is_government_job: false,
           views_count: 0,
