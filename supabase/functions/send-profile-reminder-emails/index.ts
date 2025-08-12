@@ -103,22 +103,16 @@ const handler = async (req: Request): Promise<Response> => {
           (new Date().getTime() - new Date(user.created_at).getTime()) / (1000 * 3600 * 24)
         );
 
-        // Use React Email template for consistent, fully-styled HTML
-        const reactEmail = await supabase.functions.invoke('send-email-react', {
-          body: {
-            to: user.email,
-            subject: 'Complete Your Profile | Unlock better job opportunities',
-            template: 'profile_completion_reminder',
-            data: { candidate_name: user.full_name || 'there' }
-          }
+        const emailContent = generateEmailContent(user.full_name, daysSinceCreated);
+        
+        const emailResponse = await resend.emails.send({
+          from: "TalentXcel <noreply@talentxcel.in>",
+          to: [user.email],
+          subject: "Complete Your TalentXcel Profile - Unlock Your Career Potential",
+          html: emailContent,
         });
 
-        if (reactEmail.error || !reactEmail.data?.success) {
-          throw new Error(reactEmail.error?.message || reactEmail.data?.error || 'Failed to send via React Email');
-        }
-
-
-        console.log(`Email sent successfully to ${user.email}:`, reactEmail.data);
+        console.log(`Email sent successfully to ${user.email}:`, emailResponse);
         
         // Log email activity to database
         await supabase
@@ -139,7 +133,7 @@ const handler = async (req: Request): Promise<Response> => {
         results.push({
           email: user.email,
           status: 'sent',
-          message_id: reactEmail.data?.messageId
+          message_id: emailResponse.data?.id
         });
 
       } catch (emailError) {
