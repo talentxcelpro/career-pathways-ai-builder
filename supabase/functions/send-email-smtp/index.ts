@@ -76,6 +76,11 @@ Deno.serve(async (req) => {
       pass: emailData.smtp?.pass || Deno.env.get('SMTP_PASS'),
     };
 
+    // Force implicit TLS on port 465 for Amazon SES hosts regardless of incoming port/env
+    if (smtpConfig.host && smtpConfig.host.includes('email-smtp.') && smtpConfig.port !== 465) {
+      console.log('⚠️ Overriding SES SMTP port to 465 (implicit TLS)');
+      smtpConfig.port = 465;
+    }
     if (!smtpConfig.host || !smtpConfig.user || !smtpConfig.pass) {
       throw new Error('Missing SMTP configuration in environment variables');
     }
