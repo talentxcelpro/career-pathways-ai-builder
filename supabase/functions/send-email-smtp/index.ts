@@ -78,11 +78,24 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email...');
 
-    // Send the email with proper HTML content - let library set correct headers
+    // Generate a plain-text fallback from HTML to ensure proper multipart/alternative
+    const plainText = (html || '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Send the email with explicit HTML + text parts (multipart/alternative)
     await client.send({
       from: from,
       to: to,
       subject: subject,
+      content: plainText || ' ',
       html: html,
     });
 
