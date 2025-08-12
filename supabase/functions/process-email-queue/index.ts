@@ -174,21 +174,38 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email via Amazon SES API (avoid SMTP encoding issues)
     console.log('Sending email via Amazon SES API...');
     
-    const emailResponse = await supabase.functions.invoke('send-email-aws-ses', {
-      body: {
-        to: email.recipient_email,
-        subject: emailSubject,
-        html: emailHtml
+    const maxAttempts = 2;
+    let lastSendError: any = null;
+    let emailResponse: any = null;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(`SES API send attempt ${attempt} for ${email.recipient_email}`);
+        emailResponse = await supabase.functions.invoke('send-email-aws-ses', {
+          body: {
+            to: email.recipient_email,
+            subject: emailSubject,
+            html: emailHtml
+          }
+        });
+
+        if (emailResponse.error) throw new Error(JSON.stringify(emailResponse.error));
+        if (emailResponse.data?.error) throw new Error(emailResponse.data.error);
+
+        // success
+        break;
+      } catch (sendErr: any) {
+        lastSendError = sendErr;
+        console.error(`SES send attempt ${attempt} failed:`, sendErr?.message || sendErr);
+        if (attempt < maxAttempts) {
+          await new Promise((r) => setTimeout(r, attempt * 300));
+          continue;
+        }
       }
-    });
+    }
 
-        if (emailResponse.error) {
-          throw new Error(JSON.stringify(emailResponse.error));
-        }
-
-        if (emailResponse.data?.error) {
-          throw new Error(emailResponse.data.error);
-        }
+    if (!emailResponse || emailResponse.data?.error) {
+      throw lastSendError || new Error('SES send failed after retries');
+    }
 
         console.log(`Email sent successfully to ${email.recipient_email}`);
 

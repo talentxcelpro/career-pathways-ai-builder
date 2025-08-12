@@ -200,41 +200,53 @@ async function sendWithResend(to: string, subject: string, html: string, templat
 }
 
 async function sendWithSES(to: string, subject: string, html: string, template?: string, templateData?: any): Promise<EmailResponse> {
-  try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
 
-    // Call the AWS SES API-based sender (no SMTP) to avoid encoding artifacts
-    const response = await supabase.functions.invoke('send-email-aws-ses', {
-      body: {
-        to,
-        subject,
-        html,
-        template,
-        data: templateData || {}
+  const maxAttempts = 3;
+  let lastError: any = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      console.log(`SES API send attempt ${attempt} for ${to}`);
+      const response = await supabase.functions.invoke('send-email-aws-ses', {
+        body: {
+          to,
+          subject,
+          html,
+          template,
+          data: templateData || {}
+        }
+      });
+
+      if (response.error) {
+        throw new Error(`Amazon SES API Error: ${JSON.stringify(response.error)}`);
       }
-    });
+      if (!response.data?.success) {
+        throw new Error(`Amazon SES API Error: ${response.data?.error || 'Unknown error'}`);
+      }
 
-    if (response.error) {
-      throw new Error(`Amazon SES API Error: ${JSON.stringify(response.error)}`);
+      return {
+        success: true,
+        messageId: response.data.messageId,
+        provider: 'ses'
+      };
+    } catch (error: any) {
+      lastError = error;
+      console.error(`SES API attempt ${attempt} failed:`, error?.message || error);
+      if (attempt < maxAttempts) {
+        const backoff = attempt * 300;
+        await new Promise((r) => setTimeout(r, backoff));
+        continue;
+      }
     }
-
-    if (!response.data?.success) {
-      throw new Error(`Amazon SES API Error: ${response.data?.error || 'Unknown error'}`);
-    }
-
-    return {
-      success: true,
-      messageId: response.data.messageId,
-      provider: 'ses'
-    };
-  } catch (error) {
-    console.error('SES API Error:', error);
-    throw error;
   }
+
+  console.error('SES API Error (after retries):', lastError);
+  throw lastError || new Error('SES API failed after retries');
 }
+
 
 
 async function sendWithReactEmail(to: string, subject: string, template: string, templateData?: any): Promise<EmailResponse> {
