@@ -65,13 +65,16 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email via Resend...')
 
-    // Send the email using Resend
+    // Send the email using Resend with proper HTML headers
     const { data: emailResult, error } = await resend.emails.send({
       from,
       to: [to],
       subject,
       html,
       headers: {
+        'Content-Type': 'text/html; charset=UTF-8',
+        'MIME-Version': '1.0',
+        'Content-Transfer-Encoding': '8bit',
         'X-Template': template,
         'X-Provider': 'resend-react',
         ...(messageId && { 'X-Message-ID': messageId }),
