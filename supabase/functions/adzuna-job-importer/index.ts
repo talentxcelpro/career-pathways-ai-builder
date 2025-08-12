@@ -225,7 +225,11 @@ serve(async (req) => {
           salary_max: adzunaJob.salary_max || null,
           salary_range: adzunaJob.salary_min && adzunaJob.salary_max 
             ? `₹${adzunaJob.salary_min.toLocaleString()} - ₹${adzunaJob.salary_max.toLocaleString()}`
-            : null,
+            : adzunaJob.salary_min
+              ? `₹${adzunaJob.salary_min.toLocaleString()}+`
+              : adzunaJob.salary_max
+                ? `Up to ₹${adzunaJob.salary_max.toLocaleString()}`
+                : 'Not disclosed',
           external_url: adzunaJob.redirect_url,
           source: 'adzuna.com',
           is_external: true,
