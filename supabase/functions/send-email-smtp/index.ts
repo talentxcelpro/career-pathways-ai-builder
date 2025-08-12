@@ -6,17 +6,18 @@ const corsHeaders = {
 };
 
 interface EmailRequest {
-  to: string;
-  from: string;
-  subject: string;
-  html: string;
+  to?: string;
+  from?: string;
+  subject?: string;
+  html?: string;
+  text?: string; // optional plain-text body
   messageId?: string;
   headers?: Record<string, string>;
   smtp?: {
-    host: string;
-    port: string;
-    user: string;
-    pass: string;
+    host?: string;
+    port?: string;
+    user?: string;
+    pass?: string;
   };
 }
 
@@ -38,13 +39,22 @@ Deno.serve(async (req) => {
     }
 
     const emailData: EmailRequest = JSON.parse(requestBody);
-    const { to, from, subject, html, messageId } = emailData;
+    let to = emailData.to;
+    let from = emailData.from || Deno.env.get('SMTP_FROM') || Deno.env.get('SES_FROM_EMAIL') || 'TalentXcel <noreply@talentxcel.in>';
+    let subject = emailData.subject || 'TalentXcel Notification';
+    let html = emailData.html;
+    let text = (emailData as any).text ?? (emailData as any).content;
+    const messageId = emailData.messageId;
 
     console.log(`📧 Sending email via SMTP to: ${to}`);
 
     // Validate required fields
-    if (!to || !from || !subject || !html) {
-      throw new Error('Missing required email fields: to, from, subject, html');
+    if (!to) {
+      throw new Error('Missing required email field: to');
+    }
+
+    if (!html && !text) {
+      throw new Error('Missing email body: provide html or text');
     }
 
     // Get SMTP config from environment variables
@@ -78,25 +88,45 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email...');
 
-    // Generate a plain-text fallback from HTML to ensure proper multipart/alternative
-    const plainText = (html || '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/\s+/g, ' ')
-      .trim();
+    // Build text/html bodies robustly
+    const htmlToText = (h: string) =>
+      (h || '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    let textFinal = text || (html ? htmlToText(html) : undefined);
+    let htmlFinal = html;
+
+    if (!htmlFinal && textFinal) {
+      const escaped = textFinal
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      htmlFinal = `<pre style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; white-space: pre-wrap;">${escaped}</pre>`;
+    }
+
+    if (!textFinal && htmlFinal) {
+      textFinal = htmlToText(htmlFinal);
+    }
+
+    if (!htmlFinal && !textFinal) {
+      throw new Error('Email content is empty after normalization');
+    }
 
     // Send the email with explicit HTML + text parts (multipart/alternative)
     await client.send({
       from: from,
       to: to,
       subject: subject,
-      content: plainText || ' ',
-      html: html,
+      content: textFinal || ' ',
+      html: htmlFinal,
     });
 
     console.log('📤 Closing SMTP connection...');
