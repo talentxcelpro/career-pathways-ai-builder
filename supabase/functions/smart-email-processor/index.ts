@@ -1,340 +1,276 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
+
+import { SESClient, SendEmailCommand } from "npm:@aws-sdk/client-ses@3.490.0";
+import Handlebars from "npm:handlebars@4.7.8";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const handler = async (req: Request): Promise<Response> => {
+type AnyJson = Record<string, any>;
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+// SES client singletons
+let sesClient: SESClient | null = null;
+function initSes() {
+  if (sesClient) return sesClient;
+  let region = Deno.env.get("SES_REGION") || Deno.env.get("AWS_REGION") || "eu-north-1";
+  if (region.includes("http") || region.includes("amazonaws.com")) {
+    console.log("⚠️ Detected malformed region, cleaning up:", region);
+    region = "eu-north-1";
+  }
+  sesClient = new SESClient({
+    region,
+    credentials: {
+      accessKeyId: Deno.env.get("SES_ACCESS_KEY_ID") || Deno.env.get("AWS_ACCESS_KEY_ID") || "",
+      secretAccessKey: Deno.env.get("SES_SECRET_ACCESS_KEY") || Deno.env.get("AWS_SECRET_ACCESS_KEY") || "",
+    },
+  });
+  console.log("✅ SES Client initialized (smart-email-processor) with region:", region);
+  return sesClient;
+}
+
+// Master template
+const MASTER_TEMPLATE_SOURCE = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{email_title}}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body{margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI','Helvetica Neue',sans-serif;color:#1a1a1a;}
+    .container{max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.05);}
+    .header{background:linear-gradient(to right,#1e3a8a,#2563eb);padding:24px;text-align:center;color:#fff;}
+    .logo{font-size:24px;font-weight:700;text-decoration:none;display:block;color:#fff;}
+    .logo span{color:#facc15;}
+    .subheader{font-size:14px;margin-top:6px;color:#e0e7ff;}
+    .body{padding:32px 24px;}
+    .body p{font-size:15px;line-height:1.6;margin-bottom:16px;}
+    .body ul{padding-left:20px;margin-bottom:24px;}
+    .body ul li{margin-bottom:10px;}
+    .cta{text-align:center;margin-top:20px;}
+    .cta a{background:#1e40af;color:#fff;text-decoration:none;padding:14px 28px;font-weight:700;border-radius:6px;display:inline-block;}
+    .footer{padding:20px;background:#f1f5f9;font-size:12px;text-align:center;color:#6b7280;}
+    .footer a{color:#2563eb;margin:0 6px;text-decoration:none;}
+    @media (prefers-color-scheme:dark){
+      body{background:#111827;color:#f3f4f6;}
+      .container{background:#1f2937;}
+      .header{background:#1e3a8a;}
+      .footer{background:#111827;color:#9ca3af;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="https://talentxcel.in" class="logo">Talent<span>Xcel</span></a>
+      <h2 style="margin:10px 0">{{email_title}}</h2>
+      <div class="subheader">{{email_subheader}}</div>
+    </div>
+    <div class="body">
+      {{{email_body_html}}}
+      <div class="cta">
+        <a href="{{cta_link}}">{{cta_text}}</a>
+      </div>
+      <p style="font-size:13px;color:#6b7280;text-align:center;margin-top:40px">
+        This email was sent automatically by TalentXcel. Please do not reply.
+      </p>
+    </div>
+    <div class="footer">
+      © 2025 TalentXcel Services | <a href="https://talentxcel.in">talentxcel.in</a><br />
+      <div style="margin-top:10px">
+        <a href="https://talentxcel.in/network">Network</a>
+        <a href="https://talentxcel.in/jobs">Jobs</a>
+        <a href="https://talentxcel.in/employer">Employer</a>
+        <a href="https://talentxcel.in/companies">Companies</a>
+        <a href="https://talentxcel.in/resume">Resume Builder</a>
+        <a href="https://talentxcel.in/tools">Tools</a>
+        <a href="https://talentxcel.in/services">Services</a>
+        <a href="https://talentxcel.in/learning">Learning</a>
+        <a href="https://talentxcel.in/colleges">Colleges</a>
+        <a href="https://talentxcel.in/career-map">Career Map</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+const MASTER_TEMPLATE = Handlebars.compile(MASTER_TEMPLATE_SOURCE);
+
+function toSnakeKey(s?: string) {
+  if (!s) return "";
+  return s.trim().toLowerCase().replace(/[\s\-]+/g, "_");
+}
+
+function appendUtm(link: string, eventKey: string) {
+  if (!link) return "https://talentxcel.in";
+  const url = new URL(link, "https://talentxcel.in");
+  url.searchParams.set("utm_source", "email");
+  url.searchParams.set("utm_medium", "transactional");
+  url.searchParams.set("utm_campaign", eventKey || "generic");
+  return url.toString();
+}
+
+async function fetchEventDefinition(eventKey: string) {
+  const { data, error } = await supabase
+    .from("email_event_definitions")
+    .select("*")
+    .eq("event_key", eventKey)
+    .single();
+  if (error || !data) {
+    throw new Error(`Unknown or disabled email event: ${eventKey}`);
+  }
+  return data;
+}
+
+function renderFromDefinition(def: any, variables: AnyJson) {
+  const title = Handlebars.compile(def.email_title_template)(variables);
+  const subheader = Handlebars.compile(def.email_subheader_template || "")(variables);
+  const bodyHtml = Handlebars.compile(def.email_body_html_template)(variables);
+  const ctaText = Handlebars.compile(def.cta_text_template || "Visit TalentXcel")(variables);
+  const rawCtaLink = Handlebars.compile(def.cta_link_template || "https://talentxcel.in")(variables);
+  return { title, subheader, bodyHtml, ctaText, rawCtaLink };
+}
+
+async function sendViaSES(to: string, subject: string, html: string, tags: { Name: string; Value: string }[], textFallback?: string) {
+  const ses = initSes();
+  if (!ses) throw new Error("SES client not initialized");
+  const Source = Deno.env.get("SES_FROM_EMAIL") || "no-reply@talentxcel.in";
+  const plainText = textFallback || html.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").trim();
+
+  const cmd = new SendEmailCommand({
+    Source,
+    Destination: { ToAddresses: [to] },
+    Message: {
+      Subject: { Data: subject, Charset: "UTF-8" },
+      Body: {
+        Html: { Data: html, Charset: "UTF-8" },
+        Text: { Data: plainText, Charset: "UTF-8" },
+      },
+    },
+    Tags: tags,
+  });
+
+  const start = Date.now();
+  const result = await ses.send(cmd);
+  const responseTime = Date.now() - start;
+  return { result, responseTime };
+}
+
+async function processBatch(limit = 20) {
+  // Fetch pending and scheduled
+  const { data: queue, error } = await supabase
+    .from("email_automation_queue")
+    .select("*")
+    .eq("status", "pending")
+    .lte("scheduled_at", new Date().toISOString())
+    .order("created_at", { ascending: true })
+    .limit(limit);
+
+  if (error) throw error;
+  if (!queue || queue.length === 0) return { processed: 0, sent: 0, failed: 0 };
+
+  let sent = 0;
+  let failed = 0;
+
+  for (const item of queue) {
+    const id = item.id;
+    const recipient = item.recipient_email;
+    const eventKey = toSnakeKey(item.trigger_type);
+    const vars = item.template_data || {};
+    const priority = "medium";
+
+    // Mark processing (best-effort)
+    await supabase.from("email_automation_queue").update({ status: "processing" }).eq("id", id);
+
+    try {
+      const def = await fetchEventDefinition(eventKey);
+      const rendered = renderFromDefinition(def, vars);
+
+      const html = MASTER_TEMPLATE({
+        email_title: rendered.title,
+        email_subheader: rendered.subheader || "",
+        email_body_html: rendered.bodyHtml,
+        cta_text: rendered.ctaText || "Visit TalentXcel",
+        cta_link: appendUtm(rendered.rawCtaLink || "https://talentxcel.in", eventKey),
+      });
+
+      const trackingId = crypto.randomUUID();
+      const finalHtml = html + `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" style="display:none;" alt="" />`;
+
+      const { result, responseTime } = await sendViaSES(recipient, rendered.title, finalHtml, [
+        { Name: "source", Value: "talentxcel" },
+        { Name: "provider", Value: "aws_ses" },
+        { Name: "priority", Value: priority },
+        { Name: "event_key", Value: eventKey },
+      ]);
+
+      // Log delivery
+      await supabase.from("email_delivery_events").insert({
+        message_id: (result as any).MessageId,
+        email_address: recipient,
+        subject: rendered.title,
+        template_name: eventKey,
+        template_data: vars,
+        status: "sent",
+        provider: "aws_ses",
+        response_time_ms: responseTime,
+        tracking_id: trackingId,
+        event_key: eventKey,
+        created_at: new Date().toISOString(),
+      });
+
+      // Mark sent
+      await supabase.from("email_automation_queue").update({
+        status: "sent",
+        sent_at: new Date().toISOString(),
+      }).eq("id", id);
+
+      sent++;
+    } catch (err: any) {
+      console.error("Email processing failed for item", id, err?.message || err);
+      await supabase.from("email_automation_queue").update({
+        status: "failed",
+        error_message: err?.message || "Unknown error",
+      }).eq("id", id);
+
+      // Log failure
+      await supabase.from("email_delivery_events").insert({
+        email_address: recipient || "unknown",
+        subject: "Automated email failed",
+        status: "failed",
+        provider: "aws_ses",
+        error_message: err?.message || "Unknown error",
+        event_key: eventKey,
+        created_at: new Date().toISOString(),
+      });
+
+      failed++;
+    }
+  }
+
+  return { processed: queue.length, sent, failed };
+}
+
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('Smart email processor started...');
-    
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // Get pending emails from both automation queue and simple queue
-    const [automationQueue, simpleQueue] = await Promise.all([
-      supabase
-        .from('email_automation_queue')
-        .select('*, settings:email_automation_settings!inner(html_template)')
-        .eq('status', 'pending')
-        .lte('scheduled_at', new Date().toISOString())
-        .lt('attempts', 3)
-        .order('created_at', { ascending: true })
-        .limit(25),
-      
-      supabase
-        .from('email_queue_simple')
-        .select('*')
-        .eq('status', 'pending')
-        .lt('retry_count', 3)
-        .order('created_at', { ascending: true })
-        .limit(25)
-    ]);
-
-    const automationEmails = automationQueue.data || [];
-    const simpleEmails = simpleQueue.data || [];
-    const totalEmails = automationEmails.length + simpleEmails.length;
-
-    if (totalEmails === 0) {
-      console.log('No pending emails to process');
-      return new Response(JSON.stringify({ 
-        message: 'No pending emails to process',
-        processed: 0,
-        failed: 0,
-        timestamp: new Date().toISOString()
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
-    }
-
-    console.log(`Found ${totalEmails} emails to process (${automationEmails.length} automation, ${simpleEmails.length} simple)`);
-
-    let processed = 0;
-    let failed = 0;
-    const results = [];
-
-    // Process automation emails
-    for (const email of automationEmails) {
-      try {
-        console.log(`Processing automation email ${email.id} to ${email.recipient_email}`);
-
-        // Use HTML template from settings or generate from template type
-        let html = email.settings?.html_template;
-        if (!html) {
-          html = generateEmailHTML(email.trigger_type, email.template_data || {}, email.recipient_name);
-        } else {
-          // Replace variables in the HTML template
-          html = replaceTemplateVariables(html, email.template_data || {}, email.recipient_name);
-        }
-        
-        // Send via unified email service
-        const { data, error } = await supabase.functions.invoke('unified-email-service', {
-          body: {
-            to: email.recipient_email,
-            subject: generateSubject(email.trigger_type, email.template_data || {}),
-            html,
-            template: email.trigger_type,
-            templateData: email.template_data,
-            priority: getPriority(email.trigger_type),
-            provider: 'auto'
-          }
-        });
-
-        if (error || !data?.success) {
-          throw new Error(data?.error || 'Unknown error from unified email service');
-        }
-
-        // Update status to sent
-        await supabase
-          .from('email_automation_queue')
-          .update({
-            status: 'sent',
-            sent_at: new Date().toISOString(),
-            error_message: null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', email.id);
-
-        processed++;
-        results.push({
-          email_id: email.id,
-          recipient: email.recipient_email,
-          status: 'sent',
-          template: email.trigger_type,
-          provider: data.provider
-        });
-
-      } catch (error: any) {
-        console.error(`Failed to send automation email ${email.id}:`, error);
-        
-        const currentAttempts = (email.attempts || 0) + 1;
-        const newStatus = currentAttempts >= 3 ? 'failed' : 'pending';
-        
-        await supabase
-          .from('email_automation_queue')
-          .update({
-            status: newStatus,
-            error_message: error.message,
-            attempts: currentAttempts,
-            updated_at: new Date().toISOString(),
-            ...(newStatus === 'pending' && {
-              scheduled_at: new Date(Date.now() + 10 * 60 * 1000).toISOString() // Retry in 10 minutes
-            })
-          })
-          .eq('id', email.id);
-
-        if (newStatus === 'failed') failed++;
-      }
-    }
-
-    // Process simple emails
-    for (const email of simpleEmails) {
-      try {
-        console.log(`Processing simple email ${email.id} to ${email.to_email}`);
-
-        // Send via unified email service
-        const { data, error } = await supabase.functions.invoke('unified-email-service', {
-          body: {
-            to: email.to_email,
-            subject: email.subject,
-            html: email.html_content,
-            template: email.template_name,
-            templateData: email.template_data || {},
-            priority: 'medium',
-            provider: 'auto'
-          }
-        });
-
-        if (error || !data?.success) {
-          throw new Error(data?.error || 'Unknown error from unified email service');
-        }
-
-        // Update status to sent
-        await supabase
-          .from('email_queue_simple')
-          .update({
-            status: 'sent',
-            sent_at: new Date().toISOString(),
-            error_message: null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', email.id);
-
-        processed++;
-        results.push({
-          email_id: email.id,
-          recipient: email.to_email,
-          status: 'sent',
-          template: email.template_name,
-          provider: data.provider
-        });
-
-      } catch (error: any) {
-        console.error(`Failed to send simple email ${email.id}:`, error);
-        
-        const currentRetries = (email.retry_count || 0) + 1;
-        const newStatus = currentRetries >= 3 ? 'failed' : 'pending';
-        
-        await supabase
-          .from('email_queue_simple')
-          .update({
-            status: newStatus,
-            error_message: error.message,
-            retry_count: currentRetries,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', email.id);
-
-        if (newStatus === 'failed') failed++;
-      }
-    }
-
-    const summary = {
-      message: 'Smart email processing complete',
-      processed,
-      failed,
-      retrying: totalEmails - processed - failed,
-      total: totalEmails,
-      timestamp: new Date().toISOString(),
-      results
-    };
-
-    console.log('Processing summary:', JSON.stringify(summary, null, 2));
-
-    return new Response(JSON.stringify(summary), {
+    const result = await processBatch(20);
+    return new Response(JSON.stringify({ success: true, ...result, timestamp: new Date().toISOString() }), {
       status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-
   } catch (error: any) {
-    console.error("Smart email processor error:", error);
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      timestamp: new Date().toISOString()
-    }), {
+    console.error("❌ smart-email-processor error:", error?.message || error);
+    return new Response(JSON.stringify({ success: false, error: error?.message || "Unknown error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-};
-
-function generateEmailHTML(triggerType: string, data: any, recipientName?: string): string {
-  const name = recipientName || data.name || 'there';
-  
-  const templates: Record<string, (data: any) => string> = {
-    welcome_email: (data) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2563eb;">Welcome to TalentXcel! 🎉</h2>
-        <p>Hi ${name}!</p>
-        <p>We're excited to have you join our professional community.</p>
-        <p><strong>Powering Global Career Growth</strong></p>
-        <p>Best regards,<br>The TalentXcel Team</p>
-      </div>
-    `,
-    
-    job_recommendation: (data) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2563eb;">New Job Match for You! 💼</h2>
-        <p>Hi ${name}!</p>
-        <p>We found a job opportunity that matches your profile:</p>
-        <div style="border: 1px solid #e5e7eb; padding: 20px; margin: 20px 0; border-radius: 8px;">
-          <h3 style="color: #1f2937; margin: 0 0 10px 0;">${data.job_title || 'Job Title'}</h3>
-          <p style="margin: 5px 0;"><strong>${data.company_name || 'Company'}</strong> • ${data.location || 'Location'}</p>
-          <p style="margin: 5px 0;">Salary: ${data.salary_range || 'Competitive'}</p>
-          ${data.requirements ? `<p style="margin: 5px 0;">Requirements: ${data.requirements.join(', ')}</p>` : ''}
-        </div>
-        <p>Best regards,<br>The TalentXcel Team</p>
-      </div>
-    `,
-    
-    connection_request: (data) => `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2563eb;">New Connection Request</h2>
-        <p>Hi ${data.recipient_name || name}!</p>
-        <p><strong>${data.requester_name}</strong> wants to connect with you.</p>
-        ${data.requester_title ? `<p>Title: ${data.requester_title}</p>` : ''}
-        ${data.requester_company ? `<p>Company: ${data.requester_company}</p>` : ''}
-        <p>Best regards,<br>The TalentXcel Team</p>
-      </div>
-    `
-  };
-
-  return templates[triggerType]?.(data) || `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #2563eb;">TalentXcel Notification</h2>
-      <p>Hi ${name}!</p>
-      <p>Thank you for using TalentXcel!</p>
-      <p>Best regards,<br>The TalentXcel Team</p>
-    </div>
-  `;
-}
-
-function generateSubject(triggerType: string, data: any): string {
-  const subjects: Record<string, (data: any) => string> = {
-    welcome_email: () => 'Welcome to TalentXcel! 🎉',
-    job_recommendation: (data) => `New job match: ${data.job_title || 'Job Opportunity'} at ${data.company_name || 'Great Company'}`,
-    connection_request: (data) => `${data.requester_name || 'Someone'} wants to connect with you`,
-    application_confirmation: (data) => `Application confirmed: ${data.job_title || 'Job Application'}`,
-    team_invitation: (data) => `You've been invited to join ${data.company_name || 'a company'}`,
-    interview_scheduled: (data) => `Interview scheduled: ${data.job_title || 'Interview'} at ${data.company_name || 'Company'}`,
-    password_reset: () => 'Reset your password - TalentXcel',
-    monthly_digest: () => 'Your monthly TalentXcel digest'
-  };
-
-  return subjects[triggerType]?.(data) || 'Notification from TalentXcel';
-}
-
-function getPriority(triggerType: string): 'low' | 'medium' | 'high' {
-  const priorities: Record<string, 'low' | 'medium' | 'high'> = {
-    welcome_email: 'high',
-    password_reset: 'high',
-    interview_scheduled: 'high',
-    application_confirmation: 'medium',
-    team_invitation: 'medium',
-    connection_request: 'medium',
-    job_recommendation: 'low',
-    monthly_digest: 'low'
-  };
-
-  return priorities[triggerType] || 'medium';
-}
-
-function replaceTemplateVariables(html: string, data: any, recipientName?: string): string {
-  const name = recipientName || data.name || 'there';
-  
-  // Replace all template variables
-  return html
-    .replace(/\{\{name\}\}/g, name)
-    .replace(/\{\{recipient_name\}\}/g, name)
-    .replace(/\{\{email\}\}/g, data.email || '')
-    .replace(/\{\{company_name\}\}/g, data.company_name || '')
-    .replace(/\{\{job_title\}\}/g, data.job_title || '')
-    .replace(/\{\{requester_name\}\}/g, data.requester_name || '')
-    .replace(/\{\{requester_title\}\}/g, data.requester_title || '')
-    .replace(/\{\{requester_company\}\}/g, data.requester_company || '')
-    .replace(/\{\{salary_range\}\}/g, data.salary_range || '')
-    .replace(/\{\{location\}\}/g, data.location || '')
-    .replace(/\{\{job_id\}\}/g, data.job_id || '')
-    .replace(/\{\{application_id\}\}/g, data.application_id || '')
-    .replace(/\{\{invite_token\}\}/g, data.invite_token || '')
-    .replace(/\{\{reset_link\}\}/g, data.reset_link || '')
-    .replace(/\{\{interview_date\}\}/g, data.interview_date ? new Date(data.interview_date).toLocaleDateString() : '')
-    .replace(/\{\{interview_time\}\}/g, data.interview_time || '')
-    .replace(/\{\{interview_type\}\}/g, data.interview_type || '')
-    .replace(/\{\{meeting_link\}\}/g, data.meeting_link || '')
-    .replace(/\{\{profile_views\}\}/g, data.profile_views?.toString() || '0')
-    .replace(/\{\{applications_sent\}\}/g, data.applications_sent?.toString() || '0')
-    .replace(/\{\{new_connections\}\}/g, data.new_connections?.toString() || '0')
-    .replace(/\{\{interviews\}\}/g, data.interviews?.toString() || '0');
-}
-
-serve(handler);
+});

@@ -1,296 +1,322 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 
+import { SESClient, SendEmailCommand } from "npm:@aws-sdk/client-ses@3.490.0";
+import Handlebars from "npm:handlebars@4.7.8";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// CORS
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface EmailRequest {
+type AnyJson = Record<string, any>;
+
+interface UnifiedEmailRequest {
   to: string;
-  subject: string;
-  html: string;
-  template?: string;
-  templateData?: Record<string, any>;
-  priority?: 'low' | 'medium' | 'high';
-  provider?: 'ses' | 'resend' | 'auto';
+  event_key?: string;             // e.g., "profile_completion_reminder"
+  template?: string;              // alias for event_key for compatibility
+  data?: AnyJson;                 // template variables
+  subject?: string;               // passthrough mode: subject + html
+  html?: string;                  // passthrough mode: raw HTML (will be wrapped in master)
+  from?: string;                  // optional from
+  trackingPixel?: boolean;        // default true
+  priority?: "high" | "medium" | "low";
 }
 
-interface EmailResponse {
-  success: boolean;
-  messageId?: string;
-  provider?: string;
-  error?: string;
-  fallback?: boolean;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+// Initialize AWS SES Client safely
+let sesClient: SESClient | null = null;
+function initSes() {
+  if (sesClient) return sesClient;
+  let region = Deno.env.get("SES_REGION") || Deno.env.get("AWS_REGION") || "eu-north-1";
+  if (region.includes("http") || region.includes("amazonaws.com")) {
+    console.log("⚠️ Detected malformed region, cleaning up:", region);
+    region = "eu-north-1";
+  }
+  sesClient = new SESClient({
+    region,
+    credentials: {
+      accessKeyId: Deno.env.get("SES_ACCESS_KEY_ID") || Deno.env.get("AWS_ACCESS_KEY_ID") || "",
+      secretAccessKey: Deno.env.get("SES_SECRET_ACCESS_KEY") || Deno.env.get("AWS_SECRET_ACCESS_KEY") || "",
+    },
+  });
+  console.log("✅ SES Client initialized (unified-email-service) with region:", region);
+  return sesClient;
 }
 
-const handler = async (req: Request): Promise<Response> => {
+// Master template per spec (Handlebars)
+const MASTER_TEMPLATE_SOURCE = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{email_title}}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body{margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI','Helvetica Neue',sans-serif;color:#1a1a1a;}
+    .container{max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.05);}
+    .header{background:linear-gradient(to right,#1e3a8a,#2563eb);padding:24px;text-align:center;color:#fff;}
+    .logo{font-size:24px;font-weight:700;text-decoration:none;display:block;color:#fff;}
+    .logo span{color:#facc15;}
+    .subheader{font-size:14px;margin-top:6px;color:#e0e7ff;}
+    .body{padding:32px 24px;}
+    .body p{font-size:15px;line-height:1.6;margin-bottom:16px;}
+    .body ul{padding-left:20px;margin-bottom:24px;}
+    .body ul li{margin-bottom:10px;}
+    .cta{text-align:center;margin-top:20px;}
+    .cta a{background:#1e40af;color:#fff;text-decoration:none;padding:14px 28px;font-weight:700;border-radius:6px;display:inline-block;}
+    .footer{padding:20px;background:#f1f5f9;font-size:12px;text-align:center;color:#6b7280;}
+    .footer a{color:#2563eb;margin:0 6px;text-decoration:none;}
+    @media (prefers-color-scheme:dark){
+      body{background:#111827;color:#f3f4f6;}
+      .container{background:#1f2937;}
+      .header{background:#1e3a8a;}
+      .footer{background:#111827;color:#9ca3af;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="https://talentxcel.in" class="logo">Talent<span>Xcel</span></a>
+      <h2 style="margin:10px 0">{{email_title}}</h2>
+      <div class="subheader">{{email_subheader}}</div>
+    </div>
+    <div class="body">
+      {{{email_body_html}}}
+      <div class="cta">
+        <a href="{{cta_link}}">{{cta_text}}</a>
+      </div>
+      <p style="font-size:13px;color:#6b7280;text-align:center;margin-top:40px">
+        This email was sent automatically by TalentXcel. Please do not reply.
+      </p>
+    </div>
+    <div class="footer">
+      © 2025 TalentXcel Services | <a href="https://talentxcel.in">talentxcel.in</a><br />
+      <div style="margin-top:10px">
+        <a href="https://talentxcel.in/network">Network</a>
+        <a href="https://talentxcel.in/jobs">Jobs</a>
+        <a href="https://talentxcel.in/employer">Employer</a>
+        <a href="https://talentxcel.in/companies">Companies</a>
+        <a href="https://talentxcel.in/resume">Resume Builder</a>
+        <a href="https://talentxcel.in/tools">Tools</a>
+        <a href="https://talentxcel.in/services">Services</a>
+        <a href="https://talentxcel.in/learning">Learning</a>
+        <a href="https://talentxcel.in/colleges">Colleges</a>
+        <a href="https://talentxcel.in/career-map">Career Map</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+const MASTER_TEMPLATE = Handlebars.compile(MASTER_TEMPLATE_SOURCE);
+
+function toSnakeKey(s?: string) {
+  if (!s) return "";
+  return s.trim().toLowerCase().replace(/[\s\-]+/g, "_");
+}
+
+function appendUtm(link: string, eventKey: string) {
+  if (!link) return "https://talentxcel.in";
+  const url = new URL(link, "https://talentxcel.in");
+  url.searchParams.set("utm_source", "email");
+  url.searchParams.set("utm_medium", "transactional");
+  url.searchParams.set("utm_campaign", eventKey || "generic");
+  return url.toString();
+}
+
+async function fetchEventDefinition(eventKey: string) {
+  const { data, error } = await supabase
+    .from("email_event_definitions")
+    .select("*")
+    .eq("event_key", eventKey)
+    .single();
+  if (error || !data) {
+    throw new Error(`Unknown or disabled email event: ${eventKey}`);
+  }
+  return data;
+}
+
+function renderFromDefinition(def: any, variables: AnyJson) {
+  const title = Handlebars.compile(def.email_title_template)(variables);
+  const subheader = Handlebars.compile(def.email_subheader_template || "")(variables);
+  const bodyHtml = Handlebars.compile(def.email_body_html_template)(variables);
+  const ctaText = Handlebars.compile(def.cta_text_template || "Visit TalentXcel")(variables);
+  const rawCtaLink = Handlebars.compile(def.cta_link_template || "https://talentxcel.in")(variables);
+  return {
+    title,
+    subheader,
+    bodyHtml,
+    ctaText,
+    ctaLink: rawCtaLink,
+  };
+}
+
+async function sendViaSES(to: string, subject: string, html: string, tags: { Name: string; Value: string }[], textFallback?: string) {
+  const ses = initSes();
+  if (!ses) throw new Error("SES client not initialized");
+
+  const Source = Deno.env.get("SES_FROM_EMAIL") || "no-reply@talentxcel.in";
+  const plainText = textFallback || html.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").trim();
+
+  const cmd = new SendEmailCommand({
+    Source,
+    Destination: { ToAddresses: [to] },
+    Message: {
+      Subject: { Data: subject, Charset: "UTF-8" },
+      Body: {
+        Html: { Data: html, Charset: "UTF-8" },
+        Text: { Data: plainText, Charset: "UTF-8" },
+      },
+    },
+    Tags: tags,
+  });
+
+  const start = Date.now();
+  const result = await ses.send(cmd);
+  const responseTime = Date.now() - start;
+  return { result, responseTime };
+}
+
+Deno.serve(async (req) => {
+  // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { to, subject, html, template, templateData, priority = 'medium', provider = 'auto' }: EmailRequest = await req.json();
-    
-    console.log(`Processing email request: ${to}, provider: ${provider}, priority: ${priority}`);
-
-    if (!to || !subject || !html) {
-      throw new Error('Missing required fields: to, subject, html');
-    }
-
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    // Get API keys
-    const SES_CONFIG = {
-      host: Deno.env.get('SMTP_HOST'),
-      port: Deno.env.get('SMTP_PORT'),
-      user: Deno.env.get('SMTP_USER'),
-      pass: Deno.env.get('SMTP_PASS'),
-    };
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-
-    if (!SES_CONFIG.host && !RESEND_API_KEY) {
-      throw new Error('No email service providers configured. Please set Amazon SES SMTP credentials or RESEND_API_KEY');
-    }
-
-    // Determine which provider to use
-    let primaryProvider = provider;
-    let fallbackProvider = null;
-
-    if (provider === 'auto') {
-      // Intelligent provider selection based on availability and priority
-      if (RESEND_API_KEY && SES_CONFIG.host) {
-        // Use Resend for high priority, SES for others
-        primaryProvider = priority === 'high' ? 'resend' : 'ses';
-        fallbackProvider = primaryProvider === 'resend' ? 'ses' : 'resend';
-      } else if (RESEND_API_KEY) {
-        primaryProvider = 'resend';
-      } else {
-        primaryProvider = 'ses';
-      }
-    }
-
-    let result: EmailResponse;
-
-    try {
-      // Try primary provider
-      result = await sendWithProvider(primaryProvider, { to, subject, html, template, templateData });
-      console.log(`Email sent successfully via ${primaryProvider}`);
-    } catch (primaryError) {
-      console.log(`Primary provider ${primaryProvider} failed:`, primaryError);
-      
-      // Try fallback provider if available
-      if (fallbackProvider) {
-        try {
-          result = await sendWithProvider(fallbackProvider, { to, subject, html, template, templateData });
-          result.fallback = true;
-          console.log(`Email sent successfully via fallback provider ${fallbackProvider}`);
-        } catch (fallbackError) {
-          console.error(`Fallback provider ${fallbackProvider} also failed:`, fallbackError);
-          throw new Error(`Both providers failed. Primary: ${primaryError.message}, Fallback: ${fallbackError.message}`);
-        }
-      } else {
-        throw primaryError;
-      }
-    }
-
-    // Log delivery event
-    try {
-      await supabase.from('email_delivery_events').insert({
-        recipient_email: to,
-        subject,
-        provider_used: result.provider,
-        message_id: result.messageId,
-        event_type: 'sent',
-        event_data: {
-          template,
-          priority,
-          fallback: result.fallback || false
-        }
+    const raw = await req.text();
+    if (!raw) {
+      return new Response(JSON.stringify({ success: false, error: "Empty body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-    } catch (logError) {
-      console.error('Failed to log email event:', logError);
     }
 
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    const payload: UnifiedEmailRequest = JSON.parse(raw);
+    const to = payload.to;
+    const trackingPixel = payload.trackingPixel !== false;
+    const priority = payload.priority || "medium";
+    const eventKeyInput = toSnakeKey(payload.event_key || payload.template);
+    const variables = payload.data || {};
 
+    if (!to) {
+      return new Response(JSON.stringify({ success: false, error: "Missing 'to' address" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Decide mode: event-driven or passthrough (subject+html)
+    let subject = payload.subject || "";
+    let finalHtml = "";
+    let usedEventKey = eventKeyInput || "passthrough";
+
+    if (eventKeyInput) {
+      // Fetch event definition and render
+      const def = await fetchEventDefinition(eventKeyInput);
+      const rendered = renderFromDefinition(def, variables);
+
+      const compiledHtml = MASTER_TEMPLATE({
+        email_title: rendered.title,
+        email_subheader: rendered.subheader || "",
+        email_body_html: rendered.bodyHtml,
+        cta_text: rendered.ctaText || "Visit TalentXcel",
+        cta_link: appendUtm(rendered.ctaLink || "https://talentxcel.in", eventKeyInput),
+      });
+
+      subject = rendered.title;
+      finalHtml = compiledHtml;
+    } else if (payload.subject && payload.html) {
+      // Backward-compatible passthrough wrapped in master template
+      const ctaText = "Open TalentXcel";
+      const ctaLink = "https://talentxcel.in";
+      const compiledHtml = MASTER_TEMPLATE({
+        email_title: payload.subject,
+        email_subheader: "",
+        email_body_html: payload.html,
+        cta_text: ctaText,
+        cta_link: appendUtm(ctaLink, usedEventKey),
+      });
+      subject = payload.subject;
+      finalHtml = compiledHtml;
+    } else {
+      return new Response(JSON.stringify({ success: false, error: "Provide either event_key/template or subject+html" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Tracking pixel
+    const trackingId = crypto.randomUUID();
+    if (trackingPixel) {
+      const pixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" style="display:none;" alt="" />`;
+      finalHtml += pixel;
+    }
+
+    // Send
+    const { result, responseTime } = await sendViaSES(to, subject, finalHtml, [
+      { Name: "source", Value: "talentxcel" },
+      { Name: "provider", Value: "aws_ses" },
+      { Name: "priority", Value: priority },
+      { Name: "event_key", Value: usedEventKey },
+    ]);
+
+    // Log delivery
+    try {
+      await supabase.from("email_delivery_events").insert({
+        message_id: (result as any).MessageId,
+        email_address: to,
+        subject,
+        template_name: usedEventKey,
+        template_data: variables,
+        status: "sent",
+        provider: "aws_ses",
+        response_time_ms: responseTime,
+        tracking_id: trackingPixel ? trackingId : null,
+        event_key: usedEventKey,
+        created_at: new Date().toISOString(),
+      });
+    } catch (logErr) {
+      console.log("⚠️ Log insert failed:", logErr);
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: "Email sent",
+      messageId: (result as any).MessageId,
+      provider: "aws_ses",
+      event_key: usedEventKey,
+      responseTime,
+      trackingId: trackingPixel ? trackingId : null,
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error: any) {
-    console.error("Unified email service error:", error);
-    
-    return new Response(JSON.stringify({ 
+    console.error("❌ unified-email-service error:", error?.message || error);
+    // Attempt failure log
+    try {
+      await supabase.from("email_delivery_events").insert({
+        email_address: "unknown",
+        subject: "Unified email failed",
+        status: "failed",
+        provider: "aws_ses",
+        error_message: error?.message || "Unknown error",
+        event_key: "unknown",
+        created_at: new Date().toISOString(),
+      });
+    } catch (_) {}
+
+    return new Response(JSON.stringify({
       success: false,
-      error: error.message 
+      error: error?.message || "Unknown error",
     }), {
       status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-};
-
-async function sendWithProvider(provider: string, { to, subject, html, template, templateData }: any): Promise<EmailResponse> {
-  if (provider === 'resend') {
-    return await sendWithResend(to, subject, html, template, templateData);
-  } else if (provider === 'react-email') {
-    return await sendWithReactEmail(to, subject, template, templateData);
-  } else if (provider === 'ses') {
-    return await sendWithSES(to, subject, html, template, templateData);
-  } else {
-    throw new Error(`Unsupported provider: ${provider}`);
-  }
-}
-
-async function sendWithResend(to: string, subject: string, html: string, template?: string, templateData?: any): Promise<EmailResponse> {
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY not configured');
-  }
-
-  // Add tracking pixel for open tracking
-  const messageId = crypto.randomUUID();
-  const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
-  const htmlWithTracking = html + trackingPixel;
-
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: 'TalentXcel <noreply@talentxcel.in>',
-      to: [to],
-      subject,
-      html: htmlWithTracking,
-      tags: [
-        { name: 'template', value: template || 'default' },
-        { name: 'provider', value: 'resend' }
-      ]
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Resend Error: ${error}`);
-  }
-
-  const data = await response.json();
-  
-  return {
-    success: true,
-    messageId: data.id,
-    provider: 'resend'
-  };
-}
-
-async function sendWithSES(to: string, subject: string, html: string, template?: string, templateData?: any): Promise<EmailResponse> {
-  const SES_CONFIG = {
-    host: Deno.env.get('SMTP_HOST'),
-    port: Deno.env.get('SMTP_PORT'),
-    user: Deno.env.get('SMTP_USER'),
-    pass: Deno.env.get('SMTP_PASS'),
-  };
-  
-  if (!SES_CONFIG.host || !SES_CONFIG.user || !SES_CONFIG.pass) {
-    throw new Error('Amazon SES SMTP configuration not complete');
-  }
-
-  // Add tracking pixel for open tracking
-  const messageId = crypto.randomUUID();
-  const trackingPixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/email-webhook?event=opened&id=${messageId}" width="1" height="1" style="display:none;" />`;
-  const htmlWithTracking = html + trackingPixel;
-
-  // Use nodemailer-compatible SMTP via fetch for Deno
-  const emailData = {
-    from: 'TalentXcel <admin@talentxcel.in>',
-    to: to,
-    subject: subject,
-    html: htmlWithTracking,
-    messageId: messageId,
-    headers: {
-      'X-Template': template || 'default',
-      'X-Provider': 'ses'
-    }
-  };
-
-  // For Deno environment, we'll use a simple SMTP implementation
-  try {
-    // Create the Supabase client and call the SMTP function directly
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-    
-    const response = await supabase.functions.invoke('send-email-smtp', {
-      body: {
-        ...emailData,
-        smtp: SES_CONFIG
-      }
-    });
-
-    if (response.error) {
-      throw new Error(`Amazon SES Error: ${JSON.stringify(response.error)}`);
-    }
-    
-    if (!response.data?.success) {
-      throw new Error(`Amazon SES Error: ${response.data?.error || 'Unknown error'}`);
-    }
-
-    return {
-      success: true,
-      messageId: messageId,
-      provider: 'ses'
-    };
-  } catch (error) {
-    console.error('SES SMTP Error:', error);
-    throw error;
-  }
-}
-
-async function sendWithReactEmail(to: string, subject: string, template: string, templateData?: any): Promise<EmailResponse> {
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY not configured for React Email');
-  }
-
-  try {
-    // Create the Supabase client and call the React Email function directly
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-    
-    const response = await supabase.functions.invoke('send-email-react', {
-      body: {
-        to: to,
-        subject: subject,
-        template: template,
-        data: templateData || {}
-      }
-    });
-
-    if (response.error) {
-      throw new Error(`React Email Error: ${JSON.stringify(response.error)}`);
-    }
-    
-    if (!response.data?.success) {
-      throw new Error(`React Email Error: ${response.data?.error || 'Unknown error'}`);
-    }
-
-    return {
-      success: true,
-      messageId: response.data.messageId,
-      provider: 'react-email'
-    };
-  } catch (error) {
-    console.error('React Email Error:', error);
-    throw error;
-  }
-}
-
-serve(handler);
+});

@@ -166,3 +166,10 @@ verify_jwt = false
 
 [functions.yt-create-upload-session]
 verify_jwt = true
+
+# Newly added unified email functions
+[functions.unified-email-service]
+verify_jwt = false
+
+[functions.smart-email-processor]
+verify_jwt = false

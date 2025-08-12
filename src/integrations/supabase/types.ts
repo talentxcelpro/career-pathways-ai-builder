@@ -7291,6 +7291,7 @@ export type Database = {
           created_at: string
           email_id: string | null
           event_data: Json | null
+          event_key: string | null
           event_type: string
           external_id: string | null
           id: string
@@ -7303,6 +7304,7 @@ export type Database = {
           created_at?: string
           email_id?: string | null
           event_data?: Json | null
+          event_key?: string | null
           event_type: string
           external_id?: string | null
           id?: string
@@ -7315,6 +7317,7 @@ export type Database = {
           created_at?: string
           email_id?: string | null
           event_data?: Json | null
+          event_key?: string | null
           event_type?: string
           external_id?: string | null
           id?: string
@@ -7375,6 +7378,51 @@ export type Database = {
           recipient_email?: string
           spam_score?: number | null
           unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      email_event_definitions: {
+        Row: {
+          created_at: string
+          cta_link_template: string
+          cta_text_template: string
+          email_body_html_template: string
+          email_subheader_template: string
+          email_title_template: string
+          event_key: string
+          id: string
+          is_enabled: boolean
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          cta_link_template?: string
+          cta_text_template?: string
+          email_body_html_template: string
+          email_subheader_template?: string
+          email_title_template: string
+          event_key: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          cta_link_template?: string
+          cta_text_template?: string
+          email_body_html_template?: string
+          email_subheader_template?: string
+          email_title_template?: string
+          event_key?: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
         }
         Relationships: []
       }
@@ -20942,6 +20990,16 @@ export type Database = {
           suggested_min: number
           suggested_max: number
         }[]
+      }
+      enqueue_email_event: {
+        Args: {
+          p_event_key: string
+          p_recipient_email: string
+          p_recipient_name?: string
+          p_template_data?: Json
+          p_delay_minutes?: number
+        }
+        Returns: string
       }
       ensure_unique_college_slug: {
         Args: { base_slug: string; college_id?: string }
