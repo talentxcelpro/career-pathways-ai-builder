@@ -34,8 +34,8 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log(`Processing email request: ${to}, provider: ${provider}, priority: ${priority}`);
 
-    if (!to || !subject || !html) {
-      throw new Error('Missing required fields: to, subject, html');
+    if (!to || !subject || (!html && !template)) {
+      throw new Error('Missing required fields: to, subject, and either html or template');
     }
 
     const supabase = createClient(
@@ -61,15 +61,21 @@ const handler = async (req: Request): Promise<Response> => {
     let fallbackProvider = null;
 
     if (provider === 'auto') {
-      // Intelligent provider selection based on availability and priority
-      if (RESEND_API_KEY && SES_CONFIG.host) {
-        // Use Resend for high priority, SES for others
-        primaryProvider = priority === 'high' ? 'resend' : 'ses';
-        fallbackProvider = primaryProvider === 'resend' ? 'ses' : 'resend';
-      } else if (RESEND_API_KEY) {
-        primaryProvider = 'resend';
+      // Prefer React Email when a template is provided
+      if (template) {
+        primaryProvider = 'react-email';
+        fallbackProvider = RESEND_API_KEY ? 'resend' : (SES_CONFIG.host ? 'ses' : null);
       } else {
-        primaryProvider = 'ses';
+        // Intelligent provider selection based on availability and priority
+        if (RESEND_API_KEY && SES_CONFIG.host) {
+          // Use Resend for high priority, SES for others
+          primaryProvider = priority === 'high' ? 'resend' : 'ses';
+          fallbackProvider = primaryProvider === 'resend' ? 'ses' : 'resend';
+        } else if (RESEND_API_KEY) {
+          primaryProvider = 'resend';
+        } else {
+          primaryProvider = 'ses';
+        }
       }
     }
 
