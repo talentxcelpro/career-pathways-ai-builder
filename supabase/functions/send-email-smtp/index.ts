@@ -64,10 +64,14 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get SMTP config from environment variables
+    const host = emailData.smtp?.host || Deno.env.get('SMTP_HOST');
+    const portFromReq = emailData.smtp?.port ? parseInt(emailData.smtp.port) : undefined;
+    const portFromEnv = Deno.env.get('SMTP_PORT') ? parseInt(Deno.env.get('SMTP_PORT')!) : undefined;
+    const inferredDefaultPort = host && host.includes('email-smtp.') ? 465 : 587;
+
     const smtpConfig = {
-      host: emailData.smtp?.host || Deno.env.get('SMTP_HOST'),
-      port: parseInt(emailData.smtp?.port || Deno.env.get('SMTP_PORT') || '587'),
+      host,
+      port: portFromReq ?? portFromEnv ?? inferredDefaultPort,
       user: emailData.smtp?.user || Deno.env.get('SMTP_USER'),
       pass: emailData.smtp?.pass || Deno.env.get('SMTP_PASS'),
     };
@@ -80,6 +84,7 @@ Deno.serve(async (req) => {
     console.log('📡 SMTP Host:', smtpConfig.host);
     console.log('📡 SMTP Port:', smtpConfig.port);
     console.log('🔒 SMTP user configured:', smtpConfig.user ? 'yes' : 'no');
+    console.log('🔐 TLS mode:', smtpConfig.port === 465 ? 'implicit TLS (465)' : 'STARTTLS (587)');
 
     // Create SMTP client with denomailer
     const client = new SMTPClient({
