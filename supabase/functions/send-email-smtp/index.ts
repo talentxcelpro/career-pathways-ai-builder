@@ -69,11 +69,16 @@ Deno.serve(async (req) => {
     const portFromEnv = Deno.env.get('SMTP_PORT') ? parseInt(Deno.env.get('SMTP_PORT')!) : undefined;
     const inferredDefaultPort = host && host.includes('email-smtp.') ? 465 : 587;
 
+    // Prefer env SMTP creds when request includes placeholders or missing values
+    const isPlaceholder = (v?: string) => !v || /WILL_BE_SET|YOUR_|PLACEHOLDER|xxxxx?|test|example/i.test(v);
+    const userProvided = emailData.smtp?.user;
+    const passProvided = emailData.smtp?.pass;
+
     const smtpConfig = {
       host,
       port: portFromReq ?? portFromEnv ?? inferredDefaultPort,
-      user: emailData.smtp?.user || Deno.env.get('SMTP_USER'),
-      pass: emailData.smtp?.pass || Deno.env.get('SMTP_PASS'),
+      user: isPlaceholder(userProvided) ? Deno.env.get('SMTP_USER') : userProvided,
+      pass: isPlaceholder(passProvided) ? Deno.env.get('SMTP_PASS') : passProvided,
     };
 
     // Force implicit TLS on port 465 for Amazon SES hosts regardless of incoming port/env

@@ -20,6 +20,15 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { userEmail, userName, completionPercentage, customMessage }: ProfileReminderRequest = await req.json();
 
+    // Validate required recipient email
+    if (!userEmail || typeof userEmail !== 'string' || !userEmail.trim()) {
+      console.error('Missing userEmail in request body');
+      return new Response(JSON.stringify({ success: false, error: 'Missing required field: userEmail' }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     // Build HTML email content using provided template and dynamic name
     const candidateName = userName || 'Candidate';
     const subject = 'Complete Your Profile';
