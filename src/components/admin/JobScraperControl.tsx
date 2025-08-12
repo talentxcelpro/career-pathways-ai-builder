@@ -234,26 +234,41 @@ export const JobScraperControl = () => {
       console.log('🌐 Adzuna import started:', payload);
       console.log('🔧 Supabase client available:', !!supabase);
       
-      // Add detailed logging for the function call
-      console.log('📞 Calling edge function: adzuna-job-importer');
-      console.log('📦 Payload:', JSON.stringify(payload, null, 2));
-      
-      const { data, error } = await supabase.functions.invoke('adzuna-job-importer', {
-        body: payload
-      });
-      
-      console.log('📨 Function response - data:', data);
-      console.log('📨 Function response - error:', error);
-      
-      if (error) {
-        console.error('❌ Adzuna import error details:', {
-          name: error.name,
-          message: error.message,
-          stack: error.stack,
-          cause: error.cause,
-          context: error.context
+      // Prefer direct GET to avoid browser preflight issues; fallback to supabase.invoke
+      const directUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/adzuna-job-importer?limit=${limit}&keywords=${encodeURIComponent(keywords)}&location=${encodeURIComponent(location)}&page=1`;
+      console.log('📞 Trying direct GET:', directUrl);
+
+      let data: any | null = null;
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        const response = await fetch(directUrl, {
+          method: 'GET',
+          headers: {
+            apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+          },
+          signal: controller.signal
         });
-        throw error;
+        clearTimeout(timeoutId);
+
+        console.log('📡 Direct GET status:', response.status, 'ok:', response.ok);
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`HTTP ${response.status}: ${text}`);
+        }
+        data = await response.json();
+        console.log('✅ Direct GET successful');
+      } catch (directErr) {
+        console.warn('🔄 Direct GET failed, falling back to supabase.invoke...', directErr);
+        const { data: invokeData, error: invokeError } = await supabase.functions.invoke('adzuna-job-importer', {
+          body: payload
+        });
+        if (invokeError) {
+          console.error('❌ supabase.invoke error:', invokeError);
+          throw invokeError;
+        }
+        data = invokeData;
       }
 
       if (!data) {
@@ -269,7 +284,6 @@ export const JobScraperControl = () => {
       // Check for errors in the response (like validation errors)
       if (data.errors && data.errors.length > 0) {
         console.warn('⚠️ Some jobs had validation errors:', data.errors);
-        // Don't throw error, just log the warnings
       }
 
       setAdzunaStats(data.stats || { total_scraped: 0, valid_jobs: 0, published_jobs: 0, next_run: new Date().toISOString() });
@@ -286,18 +300,18 @@ export const JobScraperControl = () => {
     } catch (error) {
       console.error('❌ Adzuna import comprehensive error:', {
         error: error,
-        message: error?.message,
-        stack: error?.stack,
-        name: error?.name,
+        message: (error as any)?.message,
+        stack: (error as any)?.stack,
+        name: (error as any)?.name,
         type: typeof error,
         stringified: JSON.stringify(error, null, 2)
       });
       
       let errorMessage = 'Unknown error occurred';
-      if (error?.message) {
-        errorMessage = error.message;
+      if ((error as any)?.message) {
+        errorMessage = (error as any).message;
       } else if (typeof error === 'string') {
-        errorMessage = error;
+        errorMessage = error as string;
       }
       
       toast.error(`❌ Adzuna import failed: ${errorMessage}`, { 
