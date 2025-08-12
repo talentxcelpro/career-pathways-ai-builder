@@ -78,16 +78,12 @@ Deno.serve(async (req) => {
 
     console.log('✉️ Sending email...');
 
-    // Send the email with proper HTML content - force raw HTML mode
+    // Send the email with proper HTML content - let library set correct headers
     await client.send({
       from: from,
       to: to,
       subject: subject,
       html: html,
-      content: undefined, // Ensure no text content that could trigger quoted-printable
-      headers: {
-        'Content-Transfer-Encoding': '8bit'
-      }
     });
 
     console.log('📤 Closing SMTP connection...');
