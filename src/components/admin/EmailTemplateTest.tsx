@@ -145,7 +145,7 @@ const EmailTemplateTest = () => {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Uses unified-email-service with provider: 'ses' and your full HTML. Tokens like {{candidate_name}} are replaced.
+            Uses unified-email-service with provider: 'ses' and your full HTML. Tokens like {'{{candidate_name}}'} are replaced.
           </p>
         </div>
 
