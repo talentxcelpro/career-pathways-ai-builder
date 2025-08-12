@@ -229,6 +229,8 @@ serve(async (req) => {
           external_url: adzunaJob.redirect_url,
           source: 'adzuna.com',
           is_external: true,
+          // Ensure visibility on public /jobs listing across different RLS policies
+          status: 'active', // many queries/policies rely on this
           job_status: 'open',
           is_active: true,
           employment_type: mapEmploymentType(adzunaJob.contract_type),
