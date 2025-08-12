@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -52,6 +52,17 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
     setVerificationFilter('all');
     setCompletionFilter('all');
   };
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('bulk') === '1') {
+        setShowBulkImport(true);
+      }
+    } catch (e) {
+      console.warn('Could not read query params', e);
+    }
+  }, []);
 
   return (
     <>

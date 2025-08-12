@@ -22,7 +22,8 @@ import {
   Mail,
   Brain,
   Crown,
-  Bot
+  Bot,
+  Upload
 } from 'lucide-react';
 import {
   Sidebar,
@@ -52,6 +53,12 @@ const adminMenuItems = [
     url: '/admin/users',
     icon: Users,
     description: 'Manage all users'
+  },
+  {
+    title: 'Bulk CSV Import',
+    url: '/admin/users?bulk=1',
+    icon: Upload,
+    description: 'Import 100-10,000 users'
   },
   {
     title: 'Pro Users',
