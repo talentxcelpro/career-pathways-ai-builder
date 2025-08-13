@@ -78,9 +78,12 @@ Deno.serve(async (req) => {
     case 'reel':
       tableName = 'posts';
       insertData = {
-        ...insertData,
         user_id: user.id,
-        type: 'video_reel'
+        content: title,
+        media_urls: [watchUrl],
+        post_type: 'video',
+        tags: tags,
+        created_at: new Date().toISOString()
       };
       break;
     case 'podcast':
