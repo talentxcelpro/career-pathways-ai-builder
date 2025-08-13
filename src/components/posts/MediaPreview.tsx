@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import VideoPlayer from './VideoPlayer';
 
 interface MediaPreviewProps {
   content: string;
@@ -93,81 +95,10 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                   title={`YouTube Video ${index + 1}`}
                 />
               ) : isVideo ? (
-                <video 
-                  src={url}
-                  poster={`${url}#t=0.5`} // Generate thumbnail from first frame
+                <VideoPlayer
+                  url={url}
                   className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg cursor-pointer`}
-                  controls
-                  preload="metadata"
-                  playsInline
-                  webkit-playsinline="true"
-                  muted
-                  crossOrigin="anonymous"
-                  onLoadStart={() => {
-                    console.log('MediaPreview: Video load started:', url);
-                  }}
-                  onLoadedMetadata={() => {
-                    console.log('MediaPreview: Video metadata loaded:', url);
-                  }}
-                  onLoadedData={() => {
-                    console.log('MediaPreview: Video loaded successfully:', url);
-                  }}
-                  onCanPlay={() => {
-                    console.log('MediaPreview: Video can play:', url);
-                  }}
-                  onCanPlayThrough={() => {
-                    console.log('MediaPreview: Video can play through:', url);
-                  }}
-                  onPlay={() => {
-                    console.log('MediaPreview: Video started playing:', url);
-                  }}
-                  onPause={() => {
-                    console.log('MediaPreview: Video paused:', url);
-                  }}
-                  onWaiting={() => {
-                    console.log('MediaPreview: Video waiting for data:', url);
-                  }}
-                  onStalled={() => {
-                    console.log('MediaPreview: Video stalled:', url);
-                  }}
-                  onError={(e) => {
-                    const video = e.currentTarget;
-                    console.error('MediaPreview: Video error:', {
-                      url,
-                      error: video.error?.message || 'Unknown error',
-                      code: video.error?.code || 'No code',
-                      networkState: video.networkState,
-                      readyState: video.readyState,
-                      src: video.src,
-                      currentSrc: video.currentSrc
-                    });
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const video = e.currentTarget;
-                    console.log('MediaPreview: Video clicked, paused:', video.paused);
-                    
-                    if (video.paused) {
-                      // First unmute for user interaction
-                      video.muted = false;
-                      video.play().then(() => {
-                        console.log('MediaPreview: Video playing successfully');
-                      }).catch(err => {
-                        console.error('MediaPreview: Play failed:', err);
-                        // Try with muted playback as fallback
-                        video.muted = true;
-                        video.play().catch(mutedErr => {
-                          console.error('MediaPreview: Muted play also failed:', mutedErr);
-                        });
-                      });
-                    } else {
-                      video.pause();
-                    }
-                  }}
-                  style={{ 
-                    display: 'block',
-                    backgroundColor: 'rgba(0,0,0,0.1)' 
-                  }}
+                  isMessage={isMessage}
                 />
               ) : (
                 <img 
