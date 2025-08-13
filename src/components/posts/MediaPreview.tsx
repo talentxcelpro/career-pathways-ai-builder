@@ -59,7 +59,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                            '1fr 1fr'
       }}>
         {mediaItems.slice(0, 4).map((url: string, index: number) => {
-          const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg');
+          const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || 
+                          (url.includes('supabase.co/storage') && url.includes('.mp4'));
           const isYouTube = url.includes('youtube.com/watch') || url.includes('youtu.be/');
           
           // Extract YouTube video ID for embedding
