@@ -4549,6 +4549,54 @@ export type Database = {
           },
         ]
       }
+      college_videos: {
+        Row: {
+          ad_placement: string | null
+          admin_id: string
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          video_url: string | null
+          visibility: string
+          yt_video_id: string | null
+        }
+        Insert: {
+          ad_placement?: string | null
+          admin_id: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
+        }
+        Update: {
+          ad_placement?: string | null
+          admin_id?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
+        }
+        Relationships: []
+      }
       colleges: {
         Row: {
           accreditation_grade: string | null
@@ -6537,6 +6585,54 @@ export type Database = {
           },
         ]
       }
+      course_videos: {
+        Row: {
+          ad_placement: string | null
+          admin_id: string
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          video_url: string | null
+          visibility: string
+          yt_video_id: string | null
+        }
+        Insert: {
+          ad_placement?: string | null
+          admin_id: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
+        }
+        Update: {
+          ad_placement?: string | null
+          admin_id?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           category: string | null
@@ -7707,6 +7803,54 @@ export type Database = {
           submitted_at?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      employer_videos: {
+        Row: {
+          ad_placement: string | null
+          admin_id: string
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          video_url: string | null
+          visibility: string
+          yt_video_id: string | null
+        }
+        Insert: {
+          ad_placement?: string | null
+          admin_id: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
+        }
+        Update: {
+          ad_placement?: string | null
+          admin_id?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
         }
         Relationships: []
       }
@@ -10696,6 +10840,36 @@ export type Database = {
           },
         ]
       }
+      moderation_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          row_id: string
+          table_name: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          row_id: string
+          table_name: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          row_id?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       monitoring_alerts: {
         Row: {
           alert_data: Json | null
@@ -11664,6 +11838,57 @@ export type Database = {
           period_end?: string
           period_start?: string
           time_period?: string | null
+        }
+        Relationships: []
+      }
+      podcasts: {
+        Row: {
+          category: string
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          host_name: string | null
+          id: string
+          promoted: boolean | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          user_id: string | null
+          video_url: string | null
+          visibility: string
+          yt_video_id: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          host_name?: string | null
+          id?: string
+          promoted?: boolean | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          user_id?: string | null
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          host_name?: string | null
+          id?: string
+          promoted?: boolean | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          user_id?: string | null
+          video_url?: string | null
+          visibility?: string
+          yt_video_id?: string | null
         }
         Relationships: []
       }
@@ -20817,6 +21042,39 @@ export type Database = {
           id?: number
           label?: string | null
           refresh_token?: string
+        }
+        Relationships: []
+      }
+      youtube_connections: {
+        Row: {
+          access_token: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          owner: string
+          refresh_token: string
+          token_scope: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          owner?: string
+          refresh_token: string
+          token_scope?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          owner?: string
+          refresh_token?: string
+          token_scope?: string[] | null
+          updated_at?: string | null
         }
         Relationships: []
       }
