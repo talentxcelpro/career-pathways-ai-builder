@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 interface VideoPlayerProps {
   url: string;
@@ -17,19 +18,60 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [videoSrc, setVideoSrc] = useState<string>('');
+
+  useEffect(() => {
+    const processVideoUrl = async () => {
+      setIsLoading(true);
+      setHasError(false);
+      
+      console.log('VideoPlayer: Processing URL:', url);
+      
+      // Check if it's a Supabase storage URL that needs processing
+      if (url.includes('supabase.co/storage') && url.includes('post-media')) {
+        try {
+          // Extract the file path from the URL
+          const urlParts = url.split('/object/public/post-media/');
+          if (urlParts.length > 1) {
+            const filePath = urlParts[1];
+            console.log('VideoPlayer: Extracted file path:', filePath);
+            
+            // Get public URL for the file
+            const { data } = supabase.storage
+              .from('post-media')
+              .getPublicUrl(filePath);
+            
+            console.log('VideoPlayer: Generated public URL:', data.publicUrl);
+            setVideoSrc(data.publicUrl);
+          } else {
+            console.log('VideoPlayer: Using original URL as-is');
+            setVideoSrc(url);
+          }
+        } catch (error) {
+          console.error('VideoPlayer: Error processing Supabase URL:', error);
+          setVideoSrc(url); // Fallback to original URL
+        }
+      } else {
+        console.log('VideoPlayer: Using URL directly');
+        setVideoSrc(url);
+      }
+    };
+
+    processVideoUrl();
+  }, [url]);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !videoSrc) return;
 
     const handleLoadedData = () => {
-      console.log('VideoPlayer: Video loaded successfully:', url);
+      console.log('VideoPlayer: Video loaded successfully:', videoSrc);
       setIsLoading(false);
       setHasError(false);
     };
 
     const handleError = (e: Event) => {
-      console.error('VideoPlayer: Video error for URL:', url, e);
+      console.error('VideoPlayer: Video error for URL:', videoSrc, e);
       if (video) {
         console.error('VideoPlayer: Video error details:', {
           error: video.error,
@@ -43,7 +85,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
     };
 
     const handleLoadStart = () => {
-      console.log('VideoPlayer: Starting to load:', url);
+      console.log('VideoPlayer: Starting to load:', videoSrc);
       setIsLoading(true);
       setHasError(false);
     };
@@ -57,7 +99,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
       video.removeEventListener('error', handleError);
       video.removeEventListener('loadstart', handleLoadStart);
     };
-  }, [url]);
+  }, [videoSrc]);
 
   const togglePlay = async () => {
     const video = videoRef.current;
@@ -89,7 +131,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
       <div className={`${className} bg-destructive/10 border border-destructive/20 rounded-lg flex items-center justify-center p-8`}>
         <div className="text-destructive text-sm text-center">
           <div className="mb-2">Unable to load video</div>
-          <div className="text-xs opacity-70">Please check the video URL</div>
+          <div className="text-xs opacity-70">The video file may not be accessible</div>
         </div>
       </div>
     );
@@ -101,18 +143,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
-      <video
-        ref={videoRef}
-        src={url}
-        className="w-full h-full object-cover"
-        muted={isMuted}
-        playsInline
-        preload="metadata"
-        crossOrigin="anonymous"
-        onClick={togglePlay}
-        onCanPlay={() => console.log('VideoPlayer: Can play:', url)}
-        onLoadedMetadata={() => console.log('VideoPlayer: Metadata loaded:', url)}
-      />
+      {videoSrc && (
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          className="w-full h-full object-cover"
+          muted={isMuted}
+          playsInline
+          preload="metadata"
+          crossOrigin="anonymous"
+          onClick={togglePlay}
+          onCanPlay={() => console.log('VideoPlayer: Can play:', videoSrc)}
+          onLoadedMetadata={() => console.log('VideoPlayer: Metadata loaded:', videoSrc)}
+        />
+      )}
 
       {/* Loading state */}
       {isLoading && (
