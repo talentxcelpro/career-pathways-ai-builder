@@ -14,10 +14,10 @@ Deno.serve(async (req) => {
   const code = url.searchParams.get('code');
   const label = url.searchParams.get('state') ? decodeURIComponent(url.searchParams.get('state') as string) : 'TalentXcel Channel';
 
-  const clientId = Deno.env.get('YT_OAUTH_CLIENT_ID') || '';
-  const clientSecret = Deno.env.get('YT_OAUTH_CLIENT_SECRET') || '';
-  const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
-  const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const clientId = Deno.env.get('TX_GOOGLE_CLIENT_ID') || '';
+  const clientSecret = Deno.env.get('TX_GOOGLE_CLIENT_SECRET') || '';
+  const supabaseUrl = Deno.env.get('TX_SUPABASE_URL') || '';
+  const serviceRole = Deno.env.get('TX_SUPABASE_SERVICE_ROLE_KEY') || '';
   const redirectUri = `${new URL(req.url).origin}/yt-admin-youtube-callback`;
 
   if (!code) return new Response('Missing code', { status: 400, headers: corsHeaders });

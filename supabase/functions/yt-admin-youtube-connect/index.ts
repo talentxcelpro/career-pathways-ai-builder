@@ -24,12 +24,12 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const label = url.searchParams.get('label') || 'TalentXcel Channel';
 
-  const clientId = Deno.env.get('YT_OAUTH_CLIENT_ID') || '';
+  const clientId = Deno.env.get('TX_GOOGLE_CLIENT_ID') || '';
   const redirectBase = new URL(req.url).origin;
   const redirectUri = `${redirectBase}/yt-admin-youtube-callback`;
 
   if (!clientId) {
-    return new Response('Missing YT_OAUTH_CLIENT_ID secret', { status: 500, headers: corsHeaders });
+    return new Response('Missing TX_GOOGLE_CLIENT_ID secret', { status: 500, headers: corsHeaders });
   }
 
   const authUrl = buildGoogleAuthUrl({
