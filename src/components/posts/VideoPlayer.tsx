@@ -15,24 +15,45 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className, isMessage = f
 
   useEffect(() => {
     const loadVideo = async () => {
-      try {
-        setLoading(true);
-        setError('');
+      setLoading(true);
+      setError('');
+      
+      console.log('VideoPlayer: Loading URL:', url);
+      
+      // Check if it's a Supabase storage URL that needs signed access
+      if (url.includes('supabase.co/storage')) {
+        console.log('VideoPlayer: Processing Supabase URL:', url);
         
-        // Check if it's a Supabase storage URL that needs signed access
-        if (url.includes('supabase.co/storage')) {
-          // Extract bucket and file path from URL
-          const urlParts = url.split('/storage/v1/object/public/');
-          if (urlParts.length > 1) {
-            const [bucketAndPath] = urlParts[1].split('/');
-            const bucket = bucketAndPath;
-            const filePath = urlParts[1].substring(bucket.length + 1);
-            
-            console.log('VideoPlayer: Loading from bucket:', bucket, 'path:', filePath);
-            
-            // Try to generate signed URL for private access
+        // For public URLs like: https://domain.supabase.co/storage/v1/object/public/bucket/path
+        let bucketName = '';
+        let filePath = '';
+        
+        if (url.includes('/object/public/')) {
+          const parts = url.split('/object/public/');
+          if (parts.length > 1) {
+            const pathParts = parts[1].split('/');
+            bucketName = pathParts[0];
+            filePath = pathParts.slice(1).join('/');
+          }
+        } else if (url.includes('/storage/v1/object/')) {
+          // Handle other storage URL formats
+          const parts = url.split('/storage/v1/object/');
+          if (parts.length > 1) {
+            const pathParts = parts[1].split('/');
+            if (pathParts[0] === 'public') {
+              bucketName = pathParts[1];
+              filePath = pathParts.slice(2).join('/');
+            }
+          }
+        }
+        
+        console.log('VideoPlayer: Extracted bucket:', bucketName, 'path:', filePath);
+        
+        if (bucketName && filePath) {
+          // Try to generate signed URL for private access
+          try {
             const { data: signedData, error: signedError } = await supabase.storage
-              .from(bucket)
+              .from(bucketName)
               .createSignedUrl(filePath, 3600); // 1 hour validity
             
             if (signedError) {
@@ -42,20 +63,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className, isMessage = f
               console.log('VideoPlayer: Using signed URL');
               setVideoSrc(signedData.signedUrl);
             }
-          } else {
-            setVideoSrc(url);
+          } catch (err) {
+            console.warn('VideoPlayer: Signed URL generation failed:', err);
+            setVideoSrc(url); // Fallback to direct URL
           }
         } else {
+          console.log('VideoPlayer: Could not parse URL, using direct URL');
           setVideoSrc(url);
         }
-        
-        setLoading(false);
-      } catch (err) {
-        console.error('VideoPlayer: Error loading video:', err);
-        setError('Failed to load video');
-        setVideoSrc(url); // Fallback to original URL
-        setLoading(false);
+      } else {
+        console.log('VideoPlayer: Using direct URL (not Supabase)');
+        setVideoSrc(url);
       }
+      
+      setLoading(false);
     };
 
     loadVideo();
