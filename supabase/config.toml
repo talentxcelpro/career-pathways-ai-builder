@@ -167,9 +167,29 @@ verify_jwt = false
 [functions.yt-create-upload-session]
 verify_jwt = true
 
-# Newly added unified email functions
-[functions.unified-email-service]
+[functions.yt-admin-youtube-connect]
 verify_jwt = false
 
-[functions.smart-email-processor]
+[functions.yt-admin-youtube-callback]
+verify_jwt = false
+
+[functions.yt-upload-complete]
+verify_jwt = true
+
+[functions.yt-feed]
+verify_jwt = false
+
+[functions.yt-learning]
+verify_jwt = false
+
+[functions.ai-career-content]
+verify_jwt = false
+
+[functions.ai-post-rewriter]
+verify_jwt = false
+
+[functions.ai-assessment-generator]
+verify_jwt = false
+
+[functions.ai-skill-enricher]
 verify_jwt = false

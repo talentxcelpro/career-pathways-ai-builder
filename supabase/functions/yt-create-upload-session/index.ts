@@ -1,3 +1,5 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -50,6 +52,7 @@ async function handler(req: Request): Promise<Response> {
       privacyStatus,
       fileSize,
       contentType,
+      type,
     } = body;
 
     console.log(`[${requestId}] Extracted fields:`, {
@@ -62,7 +65,9 @@ async function handler(req: Request): Promise<Response> {
       contentType: contentType,
       contentTypeExists: !!contentType,
       privacyStatus: privacyStatus,
-      privacyStatusExists: !!privacyStatus
+      privacyStatusExists: !!privacyStatus,
+      type: type,
+      typeExists: !!type
     });
 
     // Validate required fields with detailed logging
@@ -71,6 +76,7 @@ async function handler(req: Request): Promise<Response> {
     if (typeof fileSize !== 'number') validationErrors.push(`fileSize is not a number (got ${typeof fileSize}: ${fileSize})`);
     if (!contentType) validationErrors.push('contentType is missing or empty');
     if (!privacyStatus) validationErrors.push('privacyStatus is missing or empty');
+    if (!type) validationErrors.push('type is missing or empty');
 
     if (validationErrors.length > 0) {
       console.log(`[${requestId}] Validation failed:`, validationErrors);
@@ -96,16 +102,88 @@ async function handler(req: Request): Promise<Response> {
       );
     }
 
-    // Use single YouTube token for now
-    console.log(`[${requestId}] Using single YouTube token`);
-    
-    const refreshToken = Deno.env.get('YT_REFRESH_TOKEN');
+    // Prepare Supabase clients
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+    const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
+
+    if (!supabaseUrl || !serviceRole) {
+      console.log(`[${requestId}] Missing Supabase secrets`);
+      return new Response(JSON.stringify({ error: 'Server not configured (Supabase secrets missing)' }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, serviceRole);
+
+    // Check auth and admin privileges
+    const authHeader = req.headers.get('Authorization') || '';
+    const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+    let userId: string | null = null;
+    let isAdmin = false;
+
+    if (bearer && anonKey) {
+      const supabaseUser = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: `Bearer ${bearer}` } } });
+      const { data: userRes } = await supabaseUser.auth.getUser();
+      userId = userRes?.user?.id ?? null;
+
+      // Use DB function to check admin
+      const { data: adminCheck } = await supabaseUser.rpc('is_current_user_admin');
+      isAdmin = !!adminCheck;
+      console.log(`[${requestId}] Authenticated user: ${userId}, isAdmin=${isAdmin}`);
+    } else {
+      console.log(`[${requestId}] Missing Authorization header or SUPABASE_ANON_KEY; treating as unauthenticated for admin check`);
+    }
+
+    // Gate by type
+    if (['discussion','podcast','learning'].includes(type)) {
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: 'Admin only upload type' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+    // Ensure signed-in for reels
+    if (type === 'reel' && !userId) {
+      return new Response(JSON.stringify({ error: 'Authentication required for reels' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Round-robin YouTube channel refresh token from DB, fallback to env
+    let refreshToken = '';
+    let channelIndex = 1;
+
+    const { data: channels, error: chErr } = await supabaseAdmin
+      .from('youtube_channels')
+      .select('id, refresh_token')
+      .order('id', { ascending: true });
+
+    if (chErr) {
+      console.log(`[${requestId}] Error fetching channels: `, chErr);
+    }
+    if (channels && channels.length > 0) {
+      const idx = Math.floor(Date.now() / 60000) % channels.length;
+      refreshToken = channels[idx].refresh_token;
+      channelIndex = idx + 1;
+      console.log(`[${requestId}] Using DB refresh token (channel ${channelIndex})`);
+    } else {
+      // Fallback to single token in env for bootstrap
+      refreshToken = Deno.env.get('YT_REFRESH_TOKEN') || '';
+      if (!refreshToken) {
+        return new Response(JSON.stringify({ error: 'No YouTube channels configured' }), {
+          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      console.log(`[${requestId}] Using env YT_REFRESH_TOKEN as fallback`);
+    }
+
     const clientId = Deno.env.get('YT_OAUTH_CLIENT_ID');
     const clientSecret = Deno.env.get('YT_OAUTH_CLIENT_SECRET');
 
-    if (!refreshToken || !clientId || !clientSecret) {
+    if (!clientId || !clientSecret) {
       console.log(`[${requestId}] Missing OAuth credentials:`, {
-        hasRefreshToken: !!refreshToken,
         hasClientId: !!clientId,
         hasClientSecret: !!clientSecret
       });
@@ -192,11 +270,36 @@ async function handler(req: Request): Promise<Response> {
       );
     }
 
+    // Insert pending video row
+    const allowOnWall = type !== 'learning';
+    const { data: insertData, error: insertErr } = await supabaseAdmin
+      .from('videos')
+      .insert([{
+        type,
+        title,
+        caption: description || '',
+        user_id: userId,
+        storage_provider: 'youtube',
+        status: 'processing',
+        allow_on_wall: allowOnWall,
+        channel_index: channelIndex,
+        privacy: privacyStatus || 'unlisted'
+      }])
+      .select()
+      .maybeSingle();
+
+    if (insertErr) {
+      console.error(`[${requestId}] Failed to insert pending video: `, insertErr);
+      return new Response(JSON.stringify({ error: 'Failed to create DB record', details: insertErr.message }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const duration = Date.now() - startTime;
     console.log(`[${requestId}] Success! Upload session created in ${duration}ms`);
 
     return new Response(
-      JSON.stringify({ uploadUrl }),
+      JSON.stringify({ uploadUrl, video_record_id: insertData?.id }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
