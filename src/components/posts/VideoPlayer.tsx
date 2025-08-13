@@ -20,8 +20,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className, isMessage = f
       
       console.log('VideoPlayer: Loading URL:', url);
       
-      // Check if URL is actually a video file
-      const isVideoFile = /\.(mp4|webm|ogg|mov|avi|mkv)(\?.*)?$/i.test(url);
+      // More flexible video file detection - check if URL contains video extensions
+      const isVideoFile = /\.(mp4|webm|ogg|mov|avi|mkv)/i.test(url);
       if (!isVideoFile) {
         console.warn('VideoPlayer: URL does not appear to be a video file:', url);
         setError('Not a video file');
