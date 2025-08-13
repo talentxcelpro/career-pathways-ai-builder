@@ -97,9 +97,27 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                   src={url}
                   className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`}
                   controls
+                  preload="metadata"
+                  crossOrigin="anonymous"
+                  onLoadStart={() => {
+                    console.log('MediaPreview: Video load started:', url);
+                  }}
+                  onLoadedData={() => {
+                    console.log('MediaPreview: Video loaded successfully:', url);
+                  }}
                   onError={(e) => {
-                    console.error('Video failed to load:', url);
-                    e.currentTarget.style.display = 'none';
+                    console.error('MediaPreview: Video failed to load:', {
+                      url,
+                      error: e.currentTarget.error,
+                      networkState: e.currentTarget.networkState,
+                      readyState: e.currentTarget.readyState
+                    });
+                    // Don't hide the video on error, show a fallback
+                    e.currentTarget.poster = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggNVYxOUwxOSAxMkw4IDVaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo=';
+                  }}
+                  style={{ 
+                    display: 'block',
+                    backgroundColor: 'rgba(0,0,0,0.1)' 
                   }}
                 />
               ) : (
@@ -107,8 +125,11 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                   src={url}
                   alt={`Media ${index + 1}`}
                   className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`}
+                  onLoad={() => {
+                    console.log('MediaPreview: Image loaded successfully:', url);
+                  }}
                   onError={(e) => {
-                    console.error('Image failed to load:', url);
+                    console.error('MediaPreview: Image failed to load:', url);
                     e.currentTarget.style.display = 'none';
                   }}
                 />
