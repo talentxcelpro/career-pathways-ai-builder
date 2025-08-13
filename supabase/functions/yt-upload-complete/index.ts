@@ -1,4 +1,3 @@
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
@@ -16,37 +15,145 @@ Deno.serve(async (req) => {
     });
   }
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
-  const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+  const supabaseUrl = Deno.env.get('TX_SUPABASE_URL') || '';
+  const serviceRole = Deno.env.get('TX_SUPABASE_SERVICE_ROLE_KEY') || '';
+  
   if (!supabaseUrl || !serviceRole) {
     return new Response(JSON.stringify({ error: 'Missing Supabase secrets' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
-  const { video_record_id, youtube_video_id } = await req.json();
-  if (!video_record_id || !youtube_video_id) {
-    return new Response(JSON.stringify({ error: 'Missing ids' }), {
+  const supabase = createClient(supabaseUrl, serviceRole);
+  const authHeader = req.headers.get('Authorization');
+  
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: 'No authorization header' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  // Get user from auth header
+  const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: 'Invalid auth token' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  const {
+    ytDraftId,
+    ytVideoId,
+    title,
+    description,
+    tags = [],
+    category,
+    visibility = 'public',
+    thumbnailUrl
+  } = await req.json();
+
+  if (!ytVideoId || !title || !category) {
+    return new Response(JSON.stringify({ error: 'Missing required fields' }), {
       status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
-  const thumb = `https://img.youtube.com/vi/${youtube_video_id}/hqdefault.jpg`;
-  const supabase = createClient(supabaseUrl, serviceRole);
+  const watchUrl = `https://www.youtube.com/watch?v=${ytVideoId}`;
+  const thumb = thumbnailUrl || `https://img.youtube.com/vi/${ytVideoId}/hqdefault.jpg`;
+
+  // Determine which table to insert into based on category
+  let tableName: string;
+  let insertData: any = {
+    title,
+    description,
+    tags,
+    video_url: watchUrl,
+    yt_video_id: ytVideoId,
+    thumbnail_url: thumb,
+    visibility,
+    created_at: new Date().toISOString()
+  };
+
+  switch (category) {
+    case 'reel':
+      tableName = 'posts';
+      insertData = {
+        ...insertData,
+        user_id: user.id,
+        type: 'video_reel'
+      };
+      break;
+    case 'podcast':
+      tableName = 'podcasts';
+      insertData = {
+        ...insertData,
+        user_id: user.id,
+        category: 'General' // Default category
+      };
+      break;
+    case 'course':
+      tableName = 'course_videos';
+      insertData = {
+        ...insertData,
+        admin_id: user.id
+      };
+      break;
+    case 'employer':
+      tableName = 'employer_videos';
+      insertData = {
+        ...insertData,
+        admin_id: user.id
+      };
+      break;
+    case 'college':
+      tableName = 'college_videos';
+      insertData = {
+        ...insertData,
+        admin_id: user.id
+      };
+      break;
+    default:
+      return new Response(JSON.stringify({ error: 'Invalid category' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+  }
+
+  // Check permissions for admin categories
+  const adminCategories = ['course', 'employer', 'college'];
+  if (adminCategories.includes(category)) {
+    const { data: userRole } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (!userRole || userRole.role !== 'admin') {
+      return new Response(JSON.stringify({ error: 'Insufficient permissions for this category' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  // Insert the video record
   const { data, error } = await supabase
-    .from('videos')
-    .update({ provider_video_id: youtube_video_id, thumbnail_url: thumb, status: 'published' })
-    .eq('id', video_record_id)
+    .from(tableName)
+    .insert(insertData)
     .select()
-    .maybeSingle();
+    .single();
 
   if (error) {
+    console.error('Database insert error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
-  return new Response(JSON.stringify({ ok: true, video: data }), {
+  return new Response(JSON.stringify({ 
+    videoId: data.id, 
+    watchUrl, 
+    table: tableName, 
+    rowId: data.id 
+  }), {
     status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
   });
 });

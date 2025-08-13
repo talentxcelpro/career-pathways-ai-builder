@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
 
   const clientId = Deno.env.get('TX_GOOGLE_CLIENT_ID') || '';
   const redirectBase = new URL(req.url).origin;
-  const redirectUri = `${redirectBase}/yt-admin-youtube-callback`;
+  const redirectUri = `${redirectBase}/yt-youtube-callback`;
 
   if (!clientId) {
     return new Response('Missing TX_GOOGLE_CLIENT_ID secret', { status: 500, headers: corsHeaders });
