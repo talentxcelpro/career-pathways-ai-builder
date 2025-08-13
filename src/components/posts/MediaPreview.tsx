@@ -14,17 +14,22 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
   // Combine media URLs with URLs found in content
   const allMediaUrls = [...mediaUrls, ...urlsInContent];
   
-  // Filter for image and video URLs (including YouTube URLs)
+  // Filter for image and video URLs (including YouTube URLs and Supabase storage)
   const mediaItems = allMediaUrls.filter(url => {
     const lowercaseUrl = url.toLowerCase();
-    return (
-      lowercaseUrl.includes('supabase.co/storage') ||
-      lowercaseUrl.match(/\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)(\?|$)/) ||
-      lowercaseUrl.includes('/post-media/') ||
-      lowercaseUrl.includes('/media/') ||
-      lowercaseUrl.includes('youtube.com/watch') ||
-      lowercaseUrl.includes('youtu.be/')
-    );
+    const isSupabaseStorage = lowercaseUrl.includes('supabase.co/storage');
+    const isDirectMedia = lowercaseUrl.match(/\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)(\?|$)/);
+    const isPostMedia = lowercaseUrl.includes('/post-media/');
+    const isMediaFolder = lowercaseUrl.includes('/media/');
+    const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
+    
+    const isValidMedia = isSupabaseStorage || isDirectMedia || isPostMedia || isMediaFolder || isYouTube;
+    
+    if (isValidMedia) {
+      console.log('MediaPreview: Found valid media URL:', url);
+    }
+    
+    return isValidMedia;
   });
 
   // Remove URLs from content that will be displayed as media
@@ -62,6 +67,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
           const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || 
                           (url.includes('supabase.co/storage') && url.includes('.mp4'));
           const isYouTube = url.includes('youtube.com/watch') || url.includes('youtu.be/');
+          
+          console.log('MediaPreview: Rendering media item:', { url, isVideo, isYouTube });
           
           // Extract YouTube video ID for embedding
           const getYouTubeEmbedUrl = (url: string) => {
