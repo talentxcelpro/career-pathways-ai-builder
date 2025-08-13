@@ -95,25 +95,45 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
               ) : isVideo ? (
                 <video 
                   src={url}
-                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`}
+                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg cursor-pointer`}
                   controls
                   preload="metadata"
-                  crossOrigin="anonymous"
+                  playsInline
+                  webkit-playsinline="true"
+                  muted={false}
                   onLoadStart={() => {
                     console.log('MediaPreview: Video load started:', url);
                   }}
                   onLoadedData={() => {
                     console.log('MediaPreview: Video loaded successfully:', url);
                   }}
+                  onCanPlay={() => {
+                    console.log('MediaPreview: Video can play:', url);
+                  }}
+                  onPlay={() => {
+                    console.log('MediaPreview: Video started playing:', url);
+                  }}
+                  onPause={() => {
+                    console.log('MediaPreview: Video paused:', url);
+                  }}
                   onError={(e) => {
-                    console.error('MediaPreview: Video failed to load:', {
+                    console.error('MediaPreview: Video error:', {
                       url,
-                      error: e.currentTarget.error,
+                      error: e.currentTarget.error?.message || 'Unknown error',
+                      code: e.currentTarget.error?.code || 'No code',
                       networkState: e.currentTarget.networkState,
                       readyState: e.currentTarget.readyState
                     });
-                    // Don't hide the video on error, show a fallback
-                    e.currentTarget.poster = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggNVYxOUwxOSAxMkw4IDVaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo=';
+                  }}
+                  onClick={(e) => {
+                    const video = e.currentTarget;
+                    if (video.paused) {
+                      video.play().catch(err => {
+                        console.error('MediaPreview: Play failed:', err);
+                      });
+                    } else {
+                      video.pause();
+                    }
                   }}
                   style={{ 
                     display: 'block',
