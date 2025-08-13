@@ -71,7 +71,7 @@ export const useVideoUpload = () => {
       
       return data;
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create upload session');
+      toast.error(error.message || 'Failed to start upload process');
       setUploading(false);
       throw error;
     }
@@ -79,7 +79,7 @@ export const useVideoUpload = () => {
 
   const uploadFile = async (file: File) => {
     if (!uploadUrl) {
-      throw new Error('Upload session not created');
+      throw new Error('Upload process not initialized');
     }
 
     try {
@@ -93,7 +93,7 @@ export const useVideoUpload = () => {
       });
 
       if (!uploadResponse.ok) {
-        throw new Error('Upload failed');
+        throw new Error('Content processing failed');
       }
 
       // Extract video ID from response
@@ -134,7 +134,7 @@ export const useVideoUpload = () => {
 
       if (error) throw error;
 
-      toast.success('Video uploaded successfully!');
+      toast.success('Content published successfully!');
       return data;
     } catch (error: any) {
       toast.error(error.message || 'Failed to complete upload');

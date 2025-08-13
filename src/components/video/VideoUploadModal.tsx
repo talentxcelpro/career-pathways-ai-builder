@@ -93,7 +93,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Video className="w-5 h-5" />
-            Upload {category === 'reel' ? 'Reel' : category === 'podcast' ? 'Podcast' : 'Video'}
+            Share Your {category === 'reel' ? 'Reel' : category === 'podcast' ? 'Podcast' : 'Video'}
             {category === 'reel' && <Badge variant="secondary">≤ 60s</Badge>}
           </DialogTitle>
         </DialogHeader>
@@ -115,7 +115,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
             >
               <Upload className="w-8 h-8 text-muted-foreground mb-2" />
               <p className="text-sm text-muted-foreground">
-                {file ? file.name : 'Click to select video file'}
+                {file ? file.name : 'Select your video to share on TalentXcel'}
               </p>
               {category === 'reel' && (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -129,7 +129,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
           {uploading && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Uploading...</span>
+                <span>Processing your content...</span>
                 <span>{progress}%</span>
               </div>
               <Progress value={progress} />
@@ -142,7 +142,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter video title"
+              placeholder={`What's your ${category === 'reel' ? 'reel' : 'video'} about?`}
               disabled={uploading}
             />
           </div>
@@ -233,7 +233,7 @@ export const VideoUploadModal: React.FC<VideoUploadModalProps> = ({
               onClick={handleUpload}
               disabled={!file || !title.trim() || uploading}
             >
-              {uploading ? 'Uploading...' : 'Upload Video'}
+              {uploading ? 'Publishing...' : `Share ${category === 'reel' ? 'Reel' : category === 'podcast' ? 'Podcast' : 'Video'}`}
             </Button>
           </div>
         </div>
