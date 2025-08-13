@@ -9,6 +9,8 @@ interface VideoPlayerProps {
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessage = false }) => {
+  console.log('VideoPlayer: Initializing with URL:', url);
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -21,16 +23,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
     if (!video) return;
 
     const handleLoadedData = () => {
+      console.log('VideoPlayer: Video loaded successfully:', url);
       setIsLoading(false);
       setHasError(false);
     };
 
-    const handleError = () => {
+    const handleError = (e: Event) => {
+      console.error('VideoPlayer: Video error for URL:', url, e);
+      if (video) {
+        console.error('VideoPlayer: Video error details:', {
+          error: video.error,
+          networkState: video.networkState,
+          readyState: video.readyState,
+          currentSrc: video.currentSrc
+        });
+      }
       setIsLoading(false);
       setHasError(true);
     };
 
     const handleLoadStart = () => {
+      console.log('VideoPlayer: Starting to load:', url);
       setIsLoading(true);
       setHasError(false);
     };
@@ -95,7 +108,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
         muted={isMuted}
         playsInline
         preload="metadata"
+        crossOrigin="anonymous"
         onClick={togglePlay}
+        onCanPlay={() => console.log('VideoPlayer: Can play:', url)}
+        onLoadedMetadata={() => console.log('VideoPlayer: Metadata loaded:', url)}
       />
 
       {/* Loading state */}
