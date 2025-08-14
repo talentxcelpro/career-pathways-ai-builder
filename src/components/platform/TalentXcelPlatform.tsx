@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link } from 'react-router-dom';
 import { 
   Users, 
   Briefcase, 
@@ -23,7 +24,9 @@ import {
   TrendingUp,
   Star,
   Clock,
-  Award
+  Award,
+  Shield,
+  Zap
 } from 'lucide-react';
 
 // Module configurations
@@ -297,9 +300,11 @@ function PlatformOverview({ userProfile, careerPassport }: PlatformOverviewProps
               </CardHeader>
               
               <CardContent>
-                <Button className="w-full" variant="outline">
-                  Access {module.title}
-                </Button>
+                <Link to={module.route}>
+                  <Button className="w-full" variant="outline">
+                    Access {module.title}
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}

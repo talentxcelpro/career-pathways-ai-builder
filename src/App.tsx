@@ -39,6 +39,8 @@ import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobA
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
+import Platform from "./pages/Platform";
+import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
 // import { CVDatabase } from "@/components/employer/CVDatabase";
 // import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
 
@@ -57,6 +59,9 @@ const queryClient = new QueryClient({
 // Routes that don't require authentication - updated to include job viewing
 const publicRoutes = [
   '/', 
+  '/platform',
+  '/passport',
+  '/passport/:userId',
   '/auth/login', 
   '/auth/register', 
   '/auth/forgot-password', 
@@ -130,7 +135,10 @@ const App = () => {
                           />
                         );
                        })}
-                      <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
+                       <Route path="/platform" element={<Platform />} />
+                       <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
+                       <Route path="/passport/:userId" element={<CareerPassportDashboard />} />
+                       <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                       <Route path="/resume/new" element={<ResumeNew />} />
                       <Route path="/resume/edit/:id" element={<ResumeEdit />} />
