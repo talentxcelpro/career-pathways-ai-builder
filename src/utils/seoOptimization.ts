@@ -136,9 +136,12 @@ export const preloadCriticalResources = () => {
   fontLink.as = 'style';
   document.head.appendChild(fontLink);
 
-  // Preload critical images
-  const heroImage = new Image();
-  heroImage.src = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
+  // Load hero image with high priority instead of preloading
+  const heroImage = document.querySelector('img[src*="711de76d-0f05-4939-b8b5-4acd21eb3119"]') as HTMLImageElement;
+  if (heroImage) {
+    heroImage.fetchPriority = 'high';
+    heroImage.loading = 'eager';
+  }
 };
 
 // Create XML sitemap for specific content type (fixed type issues)

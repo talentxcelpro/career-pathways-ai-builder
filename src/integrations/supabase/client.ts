@@ -30,6 +30,11 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   realtime: {
     params: {
       eventsPerSecond: 10
+    },
+    // Add error handling for realtime connections
+    heartbeatIntervalMs: 30000,
+    reconnectAfterMs: (tries: number) => {
+      return Math.min(tries * 1000, 10000);
     }
   }
 });
