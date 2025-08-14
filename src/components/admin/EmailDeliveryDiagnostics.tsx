@@ -34,7 +34,7 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
       const { data: recentDeliveries, error: deliveryError } = await supabase
         .from('email_automation_queue')
         .select('status, sent_at, error_message')
-        .eq('status', 'sent')
+        .eq('status', 'sent' as any)
         .gte('sent_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .limit(1);
 
@@ -83,7 +83,7 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
       const { count: pendingCount, error: pendingError } = await supabase
         .from('email_automation_queue')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
+        .eq('status', 'pending' as any);
 
       const { count: totalCount, error: totalError } = await supabase
         .from('email_automation_queue')
@@ -149,15 +149,18 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
           message: 'Could not check recent email delivery stats'
         });
       } else {
-        // Combine data from both sources
-        const queueSent = queueEmails?.filter(e => e.status === 'sent').length || 0;
-        const queueFailed = queueEmails?.filter(e => e.status === 'failed').length || 0;
-        const queueTotal = queueEmails?.length || 0;
+        // Combine data from both sources with safe access
+        const safeQueueEmails = (queueEmails as any) || [];
+        const safeDeliveryEvents = (deliveryEvents as any) || [];
         
-        const eventsSent = deliveryEvents?.filter(e => e.event_type === 'sent').length || 0;
-        const eventsDelivered = deliveryEvents?.filter(e => e.event_type === 'delivered').length || 0;
-        const eventsBounced = deliveryEvents?.filter(e => e.event_type === 'bounced').length || 0;
-        const eventsFailed = deliveryEvents?.filter(e => e.event_type === 'failed').length || 0;
+        const queueSent = safeQueueEmails.filter((e: any) => e && e.status === 'sent').length || 0;
+        const queueFailed = safeQueueEmails.filter((e: any) => e && e.status === 'failed').length || 0;
+        const queueTotal = safeQueueEmails.length || 0;
+        
+        const eventsSent = safeDeliveryEvents.filter((e: any) => e && e.event_type === 'sent').length || 0;
+        const eventsDelivered = safeDeliveryEvents.filter((e: any) => e && e.event_type === 'delivered').length || 0;
+        const eventsBounced = safeDeliveryEvents.filter((e: any) => e && e.event_type === 'bounced').length || 0;
+        const eventsFailed = safeDeliveryEvents.filter((e: any) => e && e.event_type === 'failed').length || 0;
         
         // Use the more comprehensive data source
         const totalSent = Math.max(queueSent, eventsSent);
@@ -315,8 +318,9 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                   return;
                 }
                 
-                const sentEmails = recentEmails?.filter(e => e.status === 'sent').length || 0;
-                const totalEmails = recentEmails?.length || 0;
+                const safeRecentEmails = (recentEmails as any) || [];
+                const sentEmails = safeRecentEmails.filter((e: any) => e && e.status === 'sent').length || 0;
+                const totalEmails = safeRecentEmails.length || 0;
                 
                 if (sentEmails > 0) {
                   toast.success(`✅ SES working! ${sentEmails}/${totalEmails} emails sent successfully`);
@@ -343,7 +347,7 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                 const { data: pendingEmails, error: fetchError } = await supabase
                   .from('email_automation_queue')
                   .select('*')
-                  .eq('status', 'pending')
+                  .eq('status', 'pending' as any)
                   .limit(10);
                 
                 if (fetchError) {
@@ -365,16 +369,19 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                     // Mark as processing
                     await supabase
                       .from('email_automation_queue')
-                      .update({ status: 'processing', updated_at: new Date().toISOString() })
-                      .eq('id', email.id);
+                      .update({ 
+                        status: 'processing', 
+                        updated_at: new Date().toISOString() 
+                      } as any)
+                      .eq('id', (email as any).id as any);
                     
                     // Try to send via unified service
                     const { data: sendData, error: sendError } = await supabase.functions.invoke('unified-email-service', {
                       body: {
-                        to: email.recipient_email,
-                        subject: `Welcome to TalentXcel - ${email.recipient_name}!`,
-                        template: email.trigger_type,
-                        templateData: email.template_data,
+                        to: (email as any).recipient_email,
+                        subject: `Welcome to TalentXcel - ${(email as any).recipient_name}!`,
+                        template: (email as any).trigger_type,
+                        templateData: (email as any).template_data,
                         priority: 'normal'
                       }
                     });
@@ -387,8 +394,8 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                           status: 'failed', 
                           error_message: sendError?.message || 'Send failed',
                           updated_at: new Date().toISOString()
-                        })
-                        .eq('id', email.id);
+                        } as any)
+                        .eq('id', (email as any).id as any);
                       failed++;
                     } else {
                       // Mark as sent
@@ -398,8 +405,8 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                           status: 'sent', 
                           sent_at: new Date().toISOString(),
                           updated_at: new Date().toISOString()
-                        })
-                        .eq('id', email.id);
+                        } as any)
+                        .eq('id', (email as any).id as any);
                       processed++;
                     }
                   } catch (err: any) {
@@ -410,8 +417,8 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                         status: 'failed', 
                         error_message: err.message,
                         updated_at: new Date().toISOString()
-                      })
-                      .eq('id', email.id);
+                      } as any)
+                      .eq('id', (email as any).id as any);
                     failed++;
                   }
                 }
@@ -505,7 +512,7 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                         template_data: { name: testName || 'User', custom_test: true },
                         status: 'pending',
                         scheduled_at: new Date().toISOString()
-                      });
+                      } as any);
                       
                     if (error) {
                       toast.error(`Database error: ${error.message}`);
@@ -546,7 +553,7 @@ export const EmailDeliveryDiagnostics: React.FC = () => {
                           template_data: { name: `Test User ${i + 1}`, batch_test: true },
                           status: 'pending',
                           scheduled_at: new Date().toISOString()
-                        });
+                        } as any);
                     }
                     
                     toast.success('Batch test emails queued! Click "Process Queue" to send to multiple providers.');

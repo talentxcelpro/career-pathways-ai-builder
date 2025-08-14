@@ -66,13 +66,20 @@ export const ContentAutomationDashboard: React.FC = () => {
         .select('content_type');
 
       if (todayContent && allContent) {
-        const todayStats = todayContent.reduce((acc, item) => {
-          acc[item.content_type] = (acc[item.content_type] || 0) + 1;
+        const safeToday = (todayContent as any) || [];
+        const safeAll = (allContent as any) || [];
+        
+        const todayStats = safeToday.reduce((acc: Record<string, number>, item: any) => {
+          if (item && typeof item === 'object' && item.content_type) {
+            acc[item.content_type] = (acc[item.content_type] || 0) + 1;
+          }
           return acc;
         }, {} as Record<string, number>);
 
-        const allStats = allContent.reduce((acc, item) => {
-          acc[item.content_type] = (acc[item.content_type] || 0) + 1;
+        const allStats = safeAll.reduce((acc: Record<string, number>, item: any) => {
+          if (item && typeof item === 'object' && item.content_type) {
+            acc[item.content_type] = (acc[item.content_type] || 0) + 1;
+          }
           return acc;
         }, {} as Record<string, number>);
 

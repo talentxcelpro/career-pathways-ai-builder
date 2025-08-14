@@ -37,7 +37,7 @@ export const EmailDeliveryTracker = () => {
         return;
       }
 
-      setDeliveryRecords(data || []);
+      setDeliveryRecords((data as any) || []);
     } catch (error) {
       console.error('Error in fetchDeliveryRecords:', error);
       toast.error('Failed to load delivery records');

@@ -104,10 +104,11 @@ export const EmailAutomationManager: React.FC = () => {
         console.error('Error fetching triggers:', error);
         setTriggers(defaultTriggers);
       } else if (data && data.length > 0) {
-        const mappedTriggers = data.map(trigger => ({
-          ...trigger,
-          name: getDisplayName(trigger.trigger_type),
-          description: getDescription(trigger.trigger_type)
+        const safeData = (data as any) || [];
+        const mappedTriggers = safeData.map((trigger: any) => ({
+          ...(trigger || {}),
+          name: getDisplayName(trigger?.trigger_type || 'unknown'),
+          description: getDescription(trigger?.trigger_type || 'unknown')
         }));
         setTriggers(mappedTriggers);
       } else {
@@ -153,8 +154,8 @@ export const EmailAutomationManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('email_automation_settings')
-        .update({ is_enabled: isEnabled })
-        .eq('id', triggerId);
+        .update({ is_enabled: isEnabled } as any)
+        .eq('id', triggerId as any);
 
       if (error) throw error;
 

@@ -50,13 +50,14 @@ export function EmailQueueManager() {
         return;
       }
 
-      setEmails(emailData || []);
+      setEmails((emailData as any) || []);
 
-      // Calculate stats
-      const pending = emailData?.filter(e => e.status === 'pending').length || 0;
-      const sent = emailData?.filter(e => e.status === 'sent').length || 0;
-      const failed = emailData?.filter(e => e.status === 'failed').length || 0;
-      const total = emailData?.length || 0;
+      // Calculate stats with safe access
+      const safeData = (emailData as any) || [];
+      const pending = safeData.filter((e: any) => e && e.status === 'pending').length || 0;
+      const sent = safeData.filter((e: any) => e && e.status === 'sent').length || 0;
+      const failed = safeData.filter((e: any) => e && e.status === 'failed').length || 0;
+      const total = safeData.length || 0;
 
       setStats({ pending, sent, failed, total });
 

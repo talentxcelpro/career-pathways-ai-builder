@@ -52,8 +52,11 @@ export const EmailQueueMonitor = () => {
 
       if (error) throw error;
 
-      const stats = data.reduce((acc, item) => {
-        acc[item.status as keyof EmailQueueStats] = (acc[item.status as keyof EmailQueueStats] || 0) + 1;
+      const safeData = (data as any) || [];
+      const stats = safeData.reduce((acc: any, item: any) => {
+        if (item && typeof item === 'object' && item.status) {
+          acc[item.status] = (acc[item.status] || 0) + 1;
+        }
         acc.total++;
         return acc;
       }, { pending: 0, sent: 0, failed: 0, total: 0 } as any);
@@ -80,7 +83,7 @@ export const EmailQueueMonitor = () => {
         .limit(50);
 
       if (error) throw error;
-      setQueueItems(data || []);
+      setQueueItems((data as any) || []);
     } catch (error: any) {
       console.error('Error fetching queue items:', error);
       toast({
@@ -124,7 +127,7 @@ export const EmailQueueMonitor = () => {
       const { error } = await supabase
         .from('email_automation_queue')
         .delete()
-        .eq('status', 'failed');
+        .eq('status', 'failed' as any);
 
       if (error) throw error;
 
@@ -153,8 +156,8 @@ export const EmailQueueMonitor = () => {
           attempts: 0, 
           error_message: null,
           scheduled_at: new Date().toISOString()
-        })
-        .eq('id', emailId);
+        } as any)
+        .eq('id', emailId as any);
 
       if (error) throw error;
 

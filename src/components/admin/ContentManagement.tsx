@@ -60,7 +60,7 @@ export const ContentManagement = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setContentItems(data || []);
+      setContentItems((data as any) || []);
     } catch (error) {
       console.error('Error fetching content:', error);
       toast.error('Failed to load content');
@@ -73,8 +73,8 @@ export const ContentManagement = () => {
     try {
       const { error } = await supabase
         .from('ai_content_library')
-        .update({ is_approved: approved })
-        .eq('id', id);
+        .update({ is_approved: approved } as any)
+        .eq('id', id as any);
 
       if (error) throw error;
 
@@ -98,7 +98,7 @@ export const ContentManagement = () => {
       const { error } = await supabase
         .from('ai_content_library')
         .delete()
-        .eq('id', id);
+        .eq('id', id as any);
 
       if (error) throw error;
 

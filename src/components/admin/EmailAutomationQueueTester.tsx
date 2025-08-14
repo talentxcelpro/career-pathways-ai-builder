@@ -61,11 +61,11 @@ export const EmailAutomationQueueTester = () => {
       const { data, error } = await supabase
         .from('email_templates')
         .select('id, name, template_type, subject, content')
-        .eq('is_active', true)
+        .eq('is_active', true as any)
         .order('name', { ascending: true });
 
       if (error) throw error;
-      setTemplates(data || []);
+      setTemplates((data as any) || []);
     } catch (error) {
       console.error('Error fetching templates:', error);
       toast({
@@ -122,7 +122,7 @@ export const EmailAutomationQueueTester = () => {
           template_data: templateData,
           status: 'pending',
           scheduled_at: new Date().toISOString()
-        }]);
+        } as any]);
 
       if (error) throw error;
 

@@ -69,7 +69,7 @@ export const EmailConfigurationPanel = () => {
         .order('setting_key');
 
       if (error) throw error;
-      setSettings(data || []);
+      setSettings((data as any) || []);
     } catch (error) {
       console.error('Error fetching email settings:', error);
       toast({
@@ -105,8 +105,8 @@ export const EmailConfigurationPanel = () => {
           .update({ 
             setting_value: update.setting_value,
             updated_at: update.updated_at 
-          })
-          .eq('setting_key', update.setting_key);
+          } as any)
+          .eq('setting_key', update.setting_key as any);
 
         if (error) throw error;
       }
