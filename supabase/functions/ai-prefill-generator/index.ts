@@ -42,13 +42,35 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
-    const { module, userContext, generateType, contentType }: PrefillRequest = await req.json();
+    // Safe JSON parsing with error handling
+    let requestBody: Partial<PrefillRequest>;
+    try {
+      const rawBody = await req.text();
+      console.log('Raw request body:', rawBody);
+      requestBody = JSON.parse(rawBody);
+    } catch (parseError) {
+      console.error('Invalid JSON in request body:', parseError);
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Safe destructuring with fallbacks
+    const module = requestBody.module || 'network';
+    const userContext = requestBody.userContext || {};
+    const generateType = requestBody.generateType || 'basic';
+    const contentType = requestBody.contentType;
 
     console.log('AI Prefill Generator called:', { module, generateType, contentType });
 
-    // Get user profile data if user ID provided
-    let fullUserContext = userContext;
-    if (userContext.id) {
+    // Get user profile data if user ID provided - safe access
+    let fullUserContext = { ...userContext };
+    const userId = userContext?.id;
+    if (userId) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name, email, headline, location, primary_role, industry')
@@ -118,12 +140,12 @@ const handler = async (req: Request): Promise<Response> => {
         usage_count: 1
       });
 
-    // Update user's prefill cache
-    if (userContext.id) {
+    // Update user's prefill cache - safe access
+    if (userId) {
       await supabase
         .from('user_prefill_cache')
         .upsert({
-          user_id: userContext.id,
+          user_id: userId,
           module_name: module,
           prefill_data: aiContent,
           ai_generated_at: new Date().toISOString(),
