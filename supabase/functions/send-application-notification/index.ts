@@ -67,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { data: templateData, error: templateError } = await supabase
       .from('email_templates')
       .select('subject, html_template')
-      .eq('name', 'application_notification')
+      .eq('name', 'Application Notification Template')
       .eq('is_active', true)
       .maybeSingle();
 
