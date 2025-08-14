@@ -34,8 +34,12 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     // Add error handling for realtime connections
     heartbeatIntervalMs: 30000,
     reconnectAfterMs: (tries: number) => {
-      return Math.min(tries * 1000, 10000);
-    }
+      return Math.min(tries * 1000, 30000);
+    },
+    // Add more robust error handling
+    timeout: 60000,
+    // Improve connection stability
+    transport: 'websocket'
   }
 });
 
