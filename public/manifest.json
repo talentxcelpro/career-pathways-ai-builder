@@ -10,21 +10,18 @@
   "scope": "/",
   "lang": "en",
   "categories": ["business", "education", "productivity"],
-  "screenshots": [
-    {
-      "src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "platform": "wide",
-      "label": "TalentXcel Dashboard"
-    }
-  ],
+  "screenshots": [],
   "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
     {
       "src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png",
