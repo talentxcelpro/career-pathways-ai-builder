@@ -80,7 +80,7 @@ export const DatasetManager: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setDatasets(data || []);
+      setDatasets((data as any) || []);
     } catch (error) {
       console.error('Error fetching datasets:', error);
       toast.error('Failed to load datasets');
@@ -106,7 +106,7 @@ export const DatasetManager: React.FC = () => {
           processing_status: 'pending',
           quality_score: 0,
           data_schema: {}
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -124,7 +124,7 @@ export const DatasetManager: React.FC = () => {
       const { error } = await supabase
         .from('ai_datasets')
         .delete()
-        .eq('id', datasetId);
+        .eq('id', datasetId as any);
 
       if (error) throw error;
 

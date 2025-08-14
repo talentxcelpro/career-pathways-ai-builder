@@ -85,7 +85,7 @@ export const AIMonitoringDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (selectedModule !== 'all') {
-        logsQuery = logsQuery.eq('ai_deployments.module_name', selectedModule);
+        logsQuery = logsQuery.eq('ai_deployments.module_name', selectedModule as any);
       }
 
       const { data: logs, error: logsError } = await logsQuery;
@@ -102,16 +102,16 @@ export const AIMonitoringDashboard: React.FC = () => {
             task_type
           )
         `)
-        .eq('is_live', true);
+        .eq('is_live', true as any);
 
       if (deploymentsError) throw deploymentsError;
 
       // Calculate metrics
       const totalRequests = logs?.length || 0;
-      const successfulRequests = logs?.filter(log => log.success).length || 0;
+      const successfulRequests = logs?.filter((log: any) => log.success).length || 0;
       const errorRequests = totalRequests - successfulRequests;
       const averageResponseTime = logs?.length ? 
-        logs.reduce((sum, log) => sum + (log.response_time_ms || 0), 0) / logs.length : 0;
+        logs.reduce((sum: number, log: any) => sum + (log.response_time_ms || 0), 0) / logs.length : 0;
 
       setMonitoringData({
         totalRequests,

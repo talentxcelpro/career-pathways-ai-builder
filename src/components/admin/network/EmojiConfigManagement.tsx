@@ -31,7 +31,7 @@ export const EmojiConfigManagement: React.FC = () => {
         .order('display_order');
       
       if (error) throw error;
-      return data as EmojiConfig[];
+      return (data as any) as EmojiConfig[];
     }
   });
 
@@ -50,7 +50,7 @@ export const EmojiConfigManagement: React.FC = () => {
           emoji_code: newEmoji.code,
           emoji_name: newEmoji.name.toLowerCase().replace(/\s+/g, '_'),
           display_order: maxOrder + 1
-        });
+        } as any);
       
       if (error) throw error;
     },
@@ -70,8 +70,8 @@ export const EmojiConfigManagement: React.FC = () => {
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<EmojiConfig> }) => {
       const { error } = await supabase
         .from('emoji_configs')
-        .update(updates)
-        .eq('id', id);
+        .update(updates as any)
+        .eq('id', id as any);
       
       if (error) throw error;
     },
@@ -91,7 +91,7 @@ export const EmojiConfigManagement: React.FC = () => {
       const { error } = await supabase
         .from('emoji_configs')
         .delete()
-        .eq('id', id);
+        .eq('id', id as any);
       
       if (error) throw error;
     },

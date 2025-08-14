@@ -64,11 +64,11 @@ export const AILogsViewer: React.FC = () => {
       
       // Apply filters
       if (statusFilter !== 'all') {
-        query = query.eq('success', statusFilter === 'success');
+        query = query.eq('success', (statusFilter === 'success') as any);
       }
       
       if (moduleFilter !== 'all') {
-        query = query.eq('ai_deployments.module_name', moduleFilter);
+        query = query.eq('ai_deployments.module_name', moduleFilter as any);
       }
       
       const { data, error } = await query;

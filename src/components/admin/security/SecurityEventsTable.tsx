@@ -14,7 +14,7 @@ export const SecurityEventsTable = () => {
   const [severityFilter, setSeverityFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
-  const filteredEvents = securityEvents?.filter(event => {
+  const filteredEvents = securityEvents?.filter((event: any) => {
     const matchesSearch = !searchTerm || 
       event.event_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (typeof event.profiles === 'object' && event.profiles && 'email' in event.profiles && (event.profiles as any).email && (event.profiles as any).email.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -135,7 +135,7 @@ export const SecurityEventsTable = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredEvents.map((event) => (
+                  {filteredEvents.map((event: any) => (
                     <tr key={event.id} className="border-b hover:bg-muted/25">
                       <td className="p-3">
                         <div>

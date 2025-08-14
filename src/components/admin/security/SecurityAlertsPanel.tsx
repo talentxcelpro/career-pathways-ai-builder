@@ -56,8 +56,8 @@ export const SecurityAlertsPanel = () => {
   }
 
   // Filter unacknowledged alerts
-  const unacknowledgedAlerts = securityAlerts?.filter(alert => !alert.is_acknowledged) || [];
-  const acknowledgedAlerts = securityAlerts?.filter(alert => alert.is_acknowledged).slice(0, 5) || [];
+  const unacknowledgedAlerts = securityAlerts?.filter((alert: any) => !alert.is_acknowledged) || [];
+  const acknowledgedAlerts = securityAlerts?.filter((alert: any) => alert.is_acknowledged).slice(0, 5) || [];
 
   return (
     <div className="space-y-6">
@@ -77,7 +77,7 @@ export const SecurityAlertsPanel = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {unacknowledgedAlerts.map((alert) => {
+              {unacknowledgedAlerts.map((alert: any) => {
                 const SeverityIcon = getSeverityIcon(alert.severity);
                 
                 return (
@@ -137,7 +137,7 @@ export const SecurityAlertsPanel = () => {
             </p>
           ) : (
             <div className="space-y-3">
-              {acknowledgedAlerts.map((alert) => (
+              {acknowledgedAlerts.map((alert: any) => (
                 <div key={alert.id} className="border rounded-lg p-3 bg-green-50 dark:bg-green-950 opacity-75">
                   <div className="flex items-center gap-2 mb-1">
                     <CheckCircle className="w-4 h-4 text-green-500" />

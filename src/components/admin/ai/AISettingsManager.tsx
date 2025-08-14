@@ -73,7 +73,7 @@ export const AISettingsManager: React.FC = () => {
         .order('tool_name');
 
       if (error) throw error;
-      setToolConfigs(data || []);
+      setToolConfigs((data as any) || []);
     } catch (error) {
       console.error('Error fetching tool configs:', error);
       toast.error('Failed to load AI tool configurations');
@@ -86,8 +86,8 @@ export const AISettingsManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('ai_tools_config')
-        .update(updates)
-        .eq('id', toolId);
+        .update(updates as any)
+        .eq('id', toolId as any);
 
       if (error) throw error;
 
@@ -113,7 +113,7 @@ export const AISettingsManager: React.FC = () => {
           tool_slug: 'global_ai_settings',
           ai_settings: globalSettings,
           status: 'active'
-        });
+        } as any);
 
       if (error) throw error;
       toast.success('Global settings saved successfully');

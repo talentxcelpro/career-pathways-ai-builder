@@ -98,13 +98,13 @@ export const AIDeploymentManager: React.FC = () => {
       const { data: modelsData, error: modelsError } = await supabase
         .from('ai_models')
         .select('*')
-        .eq('is_active', true)
+        .eq('is_active', true as any)
         .order('model_name');
 
       if (modelsError) throw modelsError;
 
-      setDeployments(deploymentsData || []);
-      setModels(modelsData || []);
+      setDeployments((deploymentsData as any) || []);
+      setModels((modelsData as any) || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load deployment data');
@@ -135,7 +135,7 @@ export const AIDeploymentManager: React.FC = () => {
           is_live: isLive,
           health_status: 'unknown',
           deployment_config: {}
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -152,8 +152,8 @@ export const AIDeploymentManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('ai_deployments')
-        .update({ is_live: !currentStatus })
-        .eq('id', deploymentId);
+        .update({ is_live: !currentStatus } as any)
+        .eq('id', deploymentId as any);
 
       if (error) throw error;
 
@@ -170,7 +170,7 @@ export const AIDeploymentManager: React.FC = () => {
       const { error } = await supabase
         .from('ai_deployments')
         .delete()
-        .eq('id', deploymentId);
+        .eq('id', deploymentId as any);
 
       if (error) throw error;
 

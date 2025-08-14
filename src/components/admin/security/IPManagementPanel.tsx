@@ -78,7 +78,7 @@ export const IPManagementPanel = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {failedLogins.slice(0, 10).map((attempt) => (
+              {failedLogins.slice(0, 10).map((attempt: any) => (
                 <div key={attempt.id} className="border rounded-lg p-4 bg-yellow-50 dark:bg-yellow-950">
                   <div className="flex items-start justify-between">
                     <div>
@@ -106,7 +106,7 @@ export const IPManagementPanel = () => {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      {!blockedIPs?.some(blocked => blocked.ip_address === attempt.ip_address) && (
+                      {!blockedIPs?.some((blocked: any) => blocked.ip_address === attempt.ip_address) && (
                         <Button
                           size="sm"
                           variant="destructive"
@@ -231,7 +231,7 @@ export const IPManagementPanel = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {blockedIPs.map((blockedIP) => {
+              {blockedIPs.map((blockedIP: any) => {
                 const isExpired = blockedIP.expires_at && new Date(blockedIP.expires_at) <= new Date();
                 const isActive = blockedIP.is_permanent || (!isExpired && (!blockedIP.expires_at || new Date(blockedIP.expires_at) > new Date()));
                 

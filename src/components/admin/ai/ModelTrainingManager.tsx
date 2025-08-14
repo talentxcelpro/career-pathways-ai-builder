@@ -96,7 +96,7 @@ export const ModelTrainingManager: React.FC = () => {
       const { data: modelsData, error: modelsError } = await supabase
         .from('ai_models')
         .select('*')
-        .eq('is_active', true);
+        .eq('is_active', true as any);
 
       if (modelsError) throw modelsError;
 
@@ -104,13 +104,13 @@ export const ModelTrainingManager: React.FC = () => {
       const { data: datasetsData, error: datasetsError } = await supabase
         .from('ai_datasets')
         .select('*')
-        .eq('processing_status', 'processed');
+        .eq('processing_status', 'processed' as any);
 
       if (datasetsError) throw datasetsError;
 
-      setTrainingJobs(jobsData || []);
-      setModels(modelsData || []);
-      setDatasets(datasetsData || []);
+      setTrainingJobs((jobsData as any) || []);
+      setModels((modelsData as any) || []);
+      setDatasets((datasetsData as any) || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load training data');
@@ -144,7 +144,7 @@ export const ModelTrainingManager: React.FC = () => {
             optimizer: 'adam',
             loss_function: 'cross_entropy'
           }
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -164,8 +164,8 @@ export const ModelTrainingManager: React.FC = () => {
         .update({ 
           status: 'running',
           start_time: new Date().toISOString()
-        })
-        .eq('id', jobId);
+        } as any)
+        .eq('id', jobId as any);
 
       if (error) throw error;
 
@@ -184,8 +184,8 @@ export const ModelTrainingManager: React.FC = () => {
         .update({ 
           status: 'stopped',
           end_time: new Date().toISOString()
-        })
-        .eq('id', jobId);
+        } as any)
+        .eq('id', jobId as any);
 
       if (error) throw error;
 

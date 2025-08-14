@@ -64,7 +64,7 @@ export const AIModelVersionManager: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setModels(data || []);
+      setModels((data as any) || []);
     } catch (error) {
       console.error('Error fetching models:', error);
       toast.error('Failed to load model versions');
@@ -92,7 +92,7 @@ export const AIModelVersionManager: React.FC = () => {
           is_active: true,
           model_config: {},
           performance_metrics: {}
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -109,8 +109,8 @@ export const AIModelVersionManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('ai_models')
-        .update({ is_active: !currentStatus })
-        .eq('id', modelId);
+        .update({ is_active: !currentStatus } as any)
+        .eq('id', modelId as any);
 
       if (error) throw error;
 
@@ -127,7 +127,7 @@ export const AIModelVersionManager: React.FC = () => {
       const { error } = await supabase
         .from('ai_models')
         .delete()
-        .eq('id', modelId);
+        .eq('id', modelId as any);
 
       if (error) throw error;
 
@@ -152,7 +152,7 @@ export const AIModelVersionManager: React.FC = () => {
           is_active: false,
           model_config: model.model_config,
           performance_metrics: model.performance_metrics
-        });
+        } as any);
 
       if (error) throw error;
 
