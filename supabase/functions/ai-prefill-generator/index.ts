@@ -1,10 +1,27 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+interface PrefillRequest {
+  name?: string;
+  user?: { id?: string };
+  user_id?: string;
+  module?: string;
+  generateType?: 'comprehensive' | 'basic' | 'suggestions';
+  contentType?: string;
+  userContext?: Record<string, any>;
+  data?: Record<string, any>;
+}
+
+interface PrefillResponse {
+  id: string;
+  module: string;
+  user_id: string;
+  data: Record<string, any>;
+  generated_at: string;
+  success: boolean;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,7 +30,7 @@ serve(async (req) => {
 
   try {
     // Parse request body safely
-    let body: any;
+    let body: PrefillRequest;
     try {
       body = await req.json();
     } catch (err) {
@@ -29,22 +46,43 @@ serve(async (req) => {
 
     console.log("Request body:", body);
 
-    // Validate and safely extract required fields with fallbacks
+    // Enhanced safe extraction with role-awareness and multi-module support
     const module = body.module || "network";
     const generateType = body.generateType || "basic";
     const contentType = body.contentType || "";
     
-    // Safe user context extraction
+    // Enhanced user context extraction with role detection
     const userContext = body.userContext || {};
     const userId = userContext?.id || body.user?.id || body.user_id || "anonymous";
-    const userName = userContext?.name || body.user?.name || "Professional";
-    const userRole = userContext?.role || "Professional";
+    const userName = userContext?.name || body.name || "Professional";
+    
+    // Role-aware detection logic
+    const detectRole = (name: string, context: any): string => {
+      const nameLC = (name || '').toLowerCase();
+      if (nameLC.includes('cto') || nameLC.includes('chief technology')) return 'CTO';
+      if (nameLC.includes('ceo') || nameLC.includes('chief executive')) return 'CEO';
+      if (nameLC.includes('manager') || nameLC.includes('lead')) return 'Manager';
+      if (nameLC.includes('senior') || nameLC.includes('sr.')) return 'Senior Professional';
+      if (nameLC.includes('developer') || nameLC.includes('engineer')) return 'Developer';
+      if (context?.role) return context.role;
+      return 'Professional';
+    };
+    
+    const userRole = detectRole(userName, userContext) || userContext?.role || "Professional";
     const userIndustry = userContext?.industry || "Technology";
     const userExperience = userContext?.experience_years || 2;
-    const userLocation = userContext?.location || "Location";
-    const userEmail = userContext?.email || "email@example.com";
+    const userLocation = userContext?.location || "Remote";
+    const userEmail = userContext?.email || `${userName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
 
-    console.log("Parsed data:", { module, generateType, userId, userName });
+    console.log("Parsed data:", { 
+      module, 
+      generateType, 
+      userId, 
+      userName, 
+      userRole, 
+      userIndustry,
+      roleDetected: detectRole(userName, userContext)
+    });
 
     // Initialize Supabase client
     const supabase = createClient(
