@@ -97,7 +97,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
           role_filter: roleFilter,
           subject: customSubject
         }
-      });
+      } as any);
 
       toast.success(`Email campaign sent to ${filteredUsers.length} users`);
       setIsEmailDialogOpen(false);
@@ -131,7 +131,7 @@ export const BulkActionsToolbar: React.FC<BulkActionsToolbarProps> = ({
           affected_users: selectedUsers.length,
           user_ids: selectedUsers.map(u => u.id)
         }
-      });
+      } as any);
 
       toast.success(`${selectedUsers.length} users ${action}d successfully`);
       onClearSelection();

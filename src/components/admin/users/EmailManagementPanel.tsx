@@ -47,7 +47,7 @@ export const EmailManagementPanel: React.FC = () => {
         .limit(100);
 
       if (error) throw error;
-      setEmails(data || []);
+      setEmails(data as any || []);
     } catch (error) {
       console.error('Error fetching emails:', error);
       toast.error('Failed to fetch email queue');

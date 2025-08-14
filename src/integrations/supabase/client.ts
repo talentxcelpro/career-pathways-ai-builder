@@ -37,9 +37,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
       return Math.min(tries * 1000, 30000);
     },
     // Add more robust error handling
-    timeout: 60000,
-    // Improve connection stability
-    transport: 'websocket'
+    timeout: 60000
   }
 });
 

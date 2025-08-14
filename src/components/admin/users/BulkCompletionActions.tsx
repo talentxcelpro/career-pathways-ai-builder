@@ -162,7 +162,7 @@ export const BulkCompletionActions: React.FC<BulkCompletionActionsProps> = ({
           failed_sends: errorCount,
           include_never_logged_in: includeNeverLoggedIn
         }
-      });
+      } as any);
 
       if (logError) {
         console.error('Error logging bulk action:', logError);
