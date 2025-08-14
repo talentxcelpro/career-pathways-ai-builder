@@ -94,10 +94,10 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Final subject:', subject);
 
     // Import nodemailer dynamically
-    const nodemailer = await import("npm:nodemailer@6.9.7");
+    const { createTransport } = await import("npm:nodemailer");
 
     // Configure SMTP transporter using environment variables
-    const transporter = nodemailer.default.createTransporter({
+    const transporter = createTransport({
       host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
       port: Number(Deno.env.get('SMTP_PORT')) || 465,
       secure: true, // Use SSL
