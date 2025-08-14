@@ -8183,6 +8183,33 @@ export type Database = {
           },
         ]
       }
+      event_email_mapping: {
+        Row: {
+          created_at: string | null
+          event_name: string
+          id: string
+          is_active: boolean | null
+          template_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_name: string
+          id?: string
+          is_active?: boolean | null
+          template_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_name?: string
+          id?: string
+          is_active?: boolean | null
+          template_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       event_rsvps: {
         Row: {
           event_id: string | null
