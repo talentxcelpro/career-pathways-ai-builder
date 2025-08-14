@@ -30,6 +30,31 @@ interface ActivityItem {
   };
 }
 
+interface ProfileData {
+  updated_at: string | null;
+  created_at: string;
+  full_name: string | null;
+  profile_picture_url: string | null;
+  last_login_at: string | null;
+  login_count: number | null;
+  profile_views_count: number | null;
+}
+
+interface PostData {
+  id: string;
+  headline: string | null;
+  content: string | null;
+  created_at: string;
+  post_type: string | null;
+  likes_count: number;
+  comments_count: number;
+}
+
+interface ProfileViewData {
+  viewed_at: string;
+  viewer_id: string | null;
+}
+
 export const RecentActivity: React.FC<RecentActivityProps> = ({
   userId,
   isOwnProfile = false
@@ -37,69 +62,100 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
   // Fetch profile data to show recent profile activity
   const { data: profile } = useQuery({
     queryKey: ['profile-activity', userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('updated_at, created_at, full_name, profile_picture_url, last_login_at, login_count, profile_views_count')
-        .eq('id', userId)
-        .single();
+    queryFn: async (): Promise<ProfileData | null> => {
+      if (!userId) return null;
       
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('updated_at, created_at, full_name, profile_picture_url, last_login_at, login_count, profile_views_count')
+          .eq('id', userId as any)
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Error fetching profile activity:', error);
+          return null;
+        }
+        return data as ProfileData | null;
+      } catch (err) {
+        console.error('Profile query failed:', err);
+        return null;
+      }
     },
+    enabled: !!userId,
   });
 
   // Fetch recent posts
   const { data: posts } = useQuery({
     queryKey: ['user-posts-activity', userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('id, headline, content, created_at, post_type, likes_count, comments_count')
-        .eq('user_id', userId)
-        .eq('is_deleted', false)
-        .order('created_at', { ascending: false })
-        .limit(5);
+    queryFn: async (): Promise<PostData[]> => {
+      if (!userId) return [];
       
-      if (error) throw error;
-      return data || [];
+      try {
+        const { data, error } = await supabase
+          .from('posts')
+          .select('id, headline, content, created_at, post_type, likes_count, comments_count')
+          .eq('user_id', userId as any)
+          .eq('is_deleted', false as any)
+          .order('created_at', { ascending: false })
+          .limit(5);
+        
+        if (error) {
+          console.error('Error fetching user posts:', error);
+          return [];
+        }
+        return (data as PostData[]) || [];
+      } catch (err) {
+        console.error('Posts query failed:', err);
+        return [];
+      }
     },
+    enabled: !!userId,
   });
 
   // Fetch analytics data for insights
   const { data: profileViews } = useQuery({
     queryKey: ['profile-views-analytics', userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profile_views')
-        .select('viewed_at, viewer_id')
-        .eq('profile_id', userId)
-        .order('viewed_at', { ascending: false })
-        .limit(10);
+    queryFn: async (): Promise<ProfileViewData[]> => {
+      if (!userId) return [];
       
-      if (error) throw error;
-      return data || [];
+      try {
+        const { data, error } = await supabase
+          .from('profile_views')
+          .select('viewed_at, viewer_id')
+          .eq('profile_id', userId as any)
+          .order('viewed_at', { ascending: false })
+          .limit(10);
+        
+        if (error) {
+          console.error('Error fetching profile views:', error);
+          return [];
+        }
+        return (data as ProfileViewData[]) || [];
+      } catch (err) {
+        console.error('Profile views query failed:', err);
+        return [];
+      }
     },
+    enabled: !!userId,
   });
 
   // Generate activity items from available data
   const generateActivityItems = (): ActivityItem[] => {
     const items: ActivityItem[] = [];
 
-    if (profile) {
+    if (profile && profile.created_at) {
       // Profile creation activity
-      if (profile.created_at) {
-        items.push({
-          id: `profile-created-${profile.created_at}`,
-          type: 'profile_update',
-          title: 'Joined the platform',
-          description: 'Created their professional profile',
-          timestamp: profile.created_at,
-          icon: User,
-          color: 'text-green-500',
-          bgColor: 'bg-green-50'
-        });
-      }
+      items.push({
+        id: `profile-created-${profile.created_at}`,
+        type: 'profile_update',
+        title: 'Joined the platform',
+        description: 'Created their professional profile',
+        timestamp: profile.created_at,
+        icon: User,
+        color: 'text-green-500',
+        bgColor: 'bg-green-50'
+      });
 
       // Profile updates (only if actually updated after creation)
       if (profile.updated_at && profile.updated_at !== profile.created_at) {
@@ -135,7 +191,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       }
 
       // Login activity (only if has logged in)
-      if (profile.last_login_at && profile.login_count > 0) {
+      if (profile.last_login_at && profile.login_count && profile.login_count > 0) {
         items.push({
           id: `login-${profile.last_login_at}`,
           type: 'profile_view',
@@ -150,32 +206,39 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     }
 
     // Real posts activity
-    if (posts && posts.length > 0) {
+    if (posts && Array.isArray(posts) && posts.length > 0) {
       posts.forEach(post => {
-        const postTitle = post.headline || 'Shared a post';
-        const engagement = post.likes_count + post.comments_count;
-        const engagementText = engagement > 0 ? ` (${engagement} ${engagement === 1 ? 'interaction' : 'interactions'})` : '';
-        
-        items.push({
-          id: `post-${post.id}`,
-          type: 'post',
-          title: postTitle,
-          description: (post.content?.substring(0, 120) || 'Shared content on the platform') + engagementText,
-          timestamp: post.created_at,
-          icon: FileText,
-          color: 'text-purple-500',
-          bgColor: 'bg-purple-50'
-        });
+        if (post && post.created_at) {
+          const postTitle = post.headline || 'Shared a post';
+          const likesCount = post.likes_count || 0;
+          const commentsCount = post.comments_count || 0;
+          const engagement = likesCount + commentsCount;
+          const engagementText = engagement > 0 ? ` (${engagement} ${engagement === 1 ? 'interaction' : 'interactions'})` : '';
+          
+          items.push({
+            id: `post-${post.id}`,
+            type: 'post',
+            title: postTitle,
+            description: (post.content?.substring(0, 120) || 'Shared content on the platform') + engagementText,
+            timestamp: post.created_at,
+            icon: FileText,
+            color: 'text-purple-500',
+            bgColor: 'bg-purple-50'
+          });
+        }
       });
     }
 
     // Analytics insights (glimpse for /profile/analytics)
-    if (profileViews && profileViews.length > 0) {
+    if (profileViews && Array.isArray(profileViews) && profileViews.length > 0) {
       // Recent profile view trend
       const recentViews = profileViews.filter(view => {
-        const viewDate = new Date(view.viewed_at);
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        return viewDate > weekAgo;
+        if (view && view.viewed_at) {
+          const viewDate = new Date(view.viewed_at);
+          const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+          return viewDate > weekAgo;
+        }
+        return false;
       });
 
       if (recentViews.length > 0) {
@@ -197,7 +260,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       }
 
       // Unique viewers analytics
-      const uniqueViewers = new Set(profileViews.map(v => v.viewer_id)).size;
+      const uniqueViewers = new Set(profileViews.filter(v => v && v.viewer_id).map(v => v.viewer_id)).size;
       if (uniqueViewers > 1) {
         items.push({
           id: `analytics-unique-${Date.now()}`,
@@ -218,8 +281,14 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     }
 
     // Engagement analytics from posts
-    if (posts && posts.length > 0) {
-      const totalEngagement = posts.reduce((sum, post) => sum + post.likes_count + post.comments_count, 0);
+    if (posts && Array.isArray(posts) && posts.length > 0) {
+      const totalEngagement = posts.reduce((sum, post) => {
+        if (post && typeof post.likes_count === 'number' && typeof post.comments_count === 'number') {
+          return sum + post.likes_count + post.comments_count;
+        }
+        return sum;
+      }, 0);
+      
       if (totalEngagement > 0) {
         items.push({
           id: `analytics-engagement-${Date.now()}`,
@@ -293,7 +362,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 interface ActivityItemComponentProps {
   activity: ActivityItem;
   isLast: boolean;
-  profile: any;
+  profile: ProfileData | null;
 }
 
 const ActivityItemComponent: React.FC<ActivityItemComponentProps> = ({ 
