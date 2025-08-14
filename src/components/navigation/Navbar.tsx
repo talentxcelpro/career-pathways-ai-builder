@@ -103,6 +103,7 @@ export const Navbar = () => {
     { to: "/learning", label: "Learning" },
     { to: "/colleges", label: "Colleges" },
     { to: "/career-map", label: "Career Map" },
+    { to: "/passport", label: "Career Passport" },
   ];
 
   const isCurrentPath = (path: string) => {
