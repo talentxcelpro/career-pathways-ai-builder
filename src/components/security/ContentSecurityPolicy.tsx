@@ -7,18 +7,18 @@ export const ContentSecurityPolicy = () => {
     meta.httpEquiv = 'Content-Security-Policy';
     meta.content = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http: data:",
-      "style-src 'self' 'unsafe-inline' https: http:",
-      "font-src 'self' https: http: data:",
-      "img-src 'self' data: blob: https: http:",
-      "connect-src 'self' https: http: wss: ws:",
-      "frame-src 'self' https: http:",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com",
+      "style-src 'self' 'unsafe-inline' https:",
+      "font-src 'self' https: data:",
+      "img-src 'self' data: blob: https://auth.talentxcel.in https://dthlgsnakhoftinssokm.supabase.co https://www.google-analytics.com https://ssl.google-analytics.com",
+      "connect-src 'self' https://auth.talentxcel.in https://dthlgsnakhoftinssokm.supabase.co wss://dthlgsnakhoftinssokm.supabase.co https://www.google-analytics.com https://ssl.google-analytics.com",
+      "frame-src 'self' https://www.youtube.com https://youtube.com",
       "object-src 'none'",
       "base-uri 'self'",
-      "form-action 'self' https: http:",
+      "form-action 'self'",
       "frame-ancestors 'self'",
-      "worker-src 'self' blob: https: http:",
-      "media-src 'self' data: blob: https: http:",
+      "worker-src 'self' blob:",
+      "media-src 'self' data: blob: https://auth.talentxcel.in https://dthlgsnakhoftinssokm.supabase.co",
       "manifest-src 'self'"
     ].join('; ');
     
@@ -27,7 +27,7 @@ export const ContentSecurityPolicy = () => {
     // Add X-Frame-Options for additional clickjacking protection
     const frameOptions = document.createElement('meta');
     frameOptions.httpEquiv = 'X-Frame-Options';
-    frameOptions.content = 'DENY';
+    frameOptions.content = 'SAMEORIGIN';
     document.head.appendChild(frameOptions);
 
     // Add X-Content-Type-Options
@@ -48,10 +48,10 @@ export const ContentSecurityPolicy = () => {
     permissionsPolicy.content = 'camera=(), microphone=(), geolocation=(), payment=()';
     document.head.appendChild(permissionsPolicy);
 
-    // Add Cross-Origin-Embedder-Policy
+    // Add Cross-Origin-Embedder-Policy (less restrictive)
     const coep = document.createElement('meta');
     coep.httpEquiv = 'Cross-Origin-Embedder-Policy';
-    coep.content = 'require-corp';
+    coep.content = 'credentialless';
     document.head.appendChild(coep);
 
     // Add Cross-Origin-Opener-Policy
