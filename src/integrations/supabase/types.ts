@@ -1157,6 +1157,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_prefill_cache: {
+        Row: {
+          content_hash: string
+          created_at: string
+          expires_at: string | null
+          generated_content: Json
+          generation_model: string | null
+          id: string
+          input_context: Json
+          module_name: string
+          usage_count: number | null
+        }
+        Insert: {
+          content_hash: string
+          created_at?: string
+          expires_at?: string | null
+          generated_content: Json
+          generation_model?: string | null
+          id?: string
+          input_context: Json
+          module_name: string
+          usage_count?: number | null
+        }
+        Update: {
+          content_hash?: string
+          created_at?: string
+          expires_at?: string | null
+          generated_content?: Json
+          generation_model?: string | null
+          id?: string
+          input_context?: Json
+          module_name?: string
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       ai_prompt_cache: {
         Row: {
           access_count: number | null
@@ -3235,6 +3271,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      bulk_prefill_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_premium: boolean | null
+          modules: Json
+          target_roles: string[] | null
+          template_data: Json
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_premium?: boolean | null
+          modules?: Json
+          target_roles?: string[] | null
+          template_data?: Json
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_premium?: boolean | null
+          modules?: Json
+          target_roles?: string[] | null
+          template_data?: Json
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       bulk_upload_batches: {
         Row: {
@@ -10894,6 +10969,42 @@ export type Database = {
           notes?: string | null
           row_id?: string
           table_name?: string
+        }
+        Relationships: []
+      }
+      module_defaults: {
+        Row: {
+          content_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          module_name: string
+          priority: number | null
+          target_audience: Json | null
+          template_data: Json
+          updated_at: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          module_name: string
+          priority?: number | null
+          target_audience?: Json | null
+          template_data?: Json
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          module_name?: string
+          priority?: number | null
+          target_audience?: Json | null
+          template_data?: Json
+          updated_at?: string
         }
         Relationships: []
       }
@@ -20315,6 +20426,42 @@ export type Database = {
           title?: string
           updated_at?: string | null
           views_count?: number | null
+        }
+        Relationships: []
+      }
+      user_prefill_cache: {
+        Row: {
+          ai_generated_at: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          module_name: string
+          prefill_data: Json
+          updated_at: string
+          usage_count: number | null
+          user_id: string
+        }
+        Insert: {
+          ai_generated_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          module_name: string
+          prefill_data?: Json
+          updated_at?: string
+          usage_count?: number | null
+          user_id: string
+        }
+        Update: {
+          ai_generated_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          module_name?: string
+          prefill_data?: Json
+          updated_at?: string
+          usage_count?: number | null
+          user_id?: string
         }
         Relationships: []
       }
