@@ -19,6 +19,7 @@ interface ApplicationNotificationRequest {
   application_link?: string;
   applicant_name?: string;
   job_id?: string;
+  template_name?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -37,9 +38,11 @@ const handler = async (req: Request): Promise<Response> => {
       company = "TalentXcel",
       application_link = "https://talentxcel.in/jobs",
       applicant_name,
-      job_id
+      job_id,
+      template_name = "application_notification"
     }: ApplicationNotificationRequest = await req.json();
     
+    // Validate required fields
     if (!recipient_email || !user_name || !job_title) {
       throw new Error('Missing required fields: recipient_email, user_name, job_title');
     }
@@ -54,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Get the application_notification template
     const { data: templateData, error: templateError } = await supabase
       .from('email_templates')
-      .select('subject, html_template')
+      .select('subject, html_template, is_active')
       .eq('name', 'Application Notification Template')
       .eq('is_active', true)
       .maybeSingle();
@@ -78,6 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
       applicant_name: applicant_name || user_name,
       job_id,
       current_year: new Date().getFullYear().toString(),
+      current_date: new Date().toLocaleDateString(),
       platform_name: "TalentXcel",
       support_email: "support@talentxcel.in"
     };
@@ -89,40 +93,38 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Template variables:', templateVariables);
     console.log('Final subject:', subject);
 
-    // Call the unified email service with the processed content
-    const emailServiceUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/unified-email-service';
-    
-    const emailPayload = {
+    // Import nodemailer dynamically
+    const nodemailer = await import("npm:nodemailer@6.9.7");
+
+    // Configure SMTP transporter using environment variables
+    const transporter = nodemailer.default.createTransporter({
+      host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
+      port: Number(Deno.env.get('SMTP_PORT')) || 465,
+      secure: true, // Use SSL
+      auth: {
+        user: Deno.env.get('SMTP_USER'),
+        pass: Deno.env.get('SMTP_PASS'),
+      },
+    });
+
+    console.log('Sending email via SMTP...');
+
+    // Send email using nodemailer
+    const mailResult = await transporter.sendMail({
+      from: `TalentXcel <${Deno.env.get('SMTP_FROM_EMAIL') || 'noreply@talentxcel.in'}>`,
       to: recipient_email,
       subject,
       html: htmlContent,
-      priority: 'high',
-      trackingPixel: true
-    };
-
-    console.log('Calling unified email service...');
-    const response = await fetch(emailServiceUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`
-      },
-      body: JSON.stringify(emailPayload),
+      text: htmlContent.replace(/<[^>]+>/g, ''), // Plain text fallback
     });
 
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(`Email service error: ${JSON.stringify(result)}`);
-    }
-
-    console.log('Application notification email sent successfully');
+    console.log('Email sent successfully:', mailResult.messageId);
 
     return new Response(JSON.stringify({
       success: true,
       message: 'Application notification email sent successfully',
-      messageId: result.messageId,
-      provider: result.provider,
+      messageId: mailResult.messageId,
+      provider: 'smtp',
       recipient: recipient_email,
       job_title
     }), {
