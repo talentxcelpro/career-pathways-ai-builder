@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { apiClient, safeApiCall } from '@/utils/api';
+import { useCareerPassport } from '@/hooks/useCareerPassport';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,59 +33,53 @@ interface CareerPassportData {
 
 export function CareerPassportDashboard() {
   const { user } = useAuth();
-  const [data, setData] = useState<CareerPassportData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone } = useCareerPassport();
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [publicProfile, setPublicProfile] = useState<any>(null);
 
-  const loadPassportData = async () => {
-    if (!user?.id) return;
+  useEffect(() => {
+    // Load public profile data
+    const loadPublicProfile = async () => {
+      if (!user?.id) return;
+      
+      // Try to get public profile - using any type to bypass TypeScript error
+      const { data } = await (supabase as any)
+        .from('public_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (data) {
+        setPublicProfile(data);
+      }
+    };
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Load passport data
-      const passportData = await safeApiCall(() => 
-        apiClient.getCareerPassport(user.id)
-      );
-
-      // Load analytics
-      const analyticsData = await safeApiCall(() =>
-        apiClient.getPlatformAnalytics(user.id)
-      );
-
-      setData({
-        profile: passportData?.profile,
-        passport: passportData?.passport,
-        completion: passportData?.completion,
-        analytics: analyticsData
-      });
-    } catch (err) {
-      console.error('Failed to load passport data:', err);
-      setError('Failed to load career passport data. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    loadPublicProfile();
+  }, [user?.id]);
 
   const generateQRCode = async () => {
     if (!user?.id) return;
 
     setIsGeneratingQR(true);
     try {
-      const result = await apiClient.generateQRCode(user.id);
-      if (result.success && result.data) {
-        setData(prev => prev ? {
-          ...prev,
-          publicProfile: {
-            qr_code_data: result.data.qrCodeData,
-            public_url: result.data.publicUrl
-          }
-        } : null);
+      const { data, error } = await supabase.functions.invoke('qr-generator', {
+        body: { 
+          userId: user.id,
+          profileData: careerPassport 
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setPublicProfile({
+          qr_code_data: data.qrCodeData,
+          public_url: data.publicUrl,
+          is_active: true
+        });
         toast.success('QR code generated successfully!');
       } else {
-        toast.error(result.error || 'Failed to generate QR code');
+        toast.error(data?.error || 'Failed to generate QR code');
       }
     } catch (error) {
       console.error('QR generation error:', error);
@@ -95,15 +90,14 @@ export function CareerPassportDashboard() {
   };
 
   const copyPublicUrl = () => {
-    if (data?.publicProfile?.public_url) {
-      navigator.clipboard.writeText(data.publicProfile.public_url);
+    if (publicProfile?.public_url) {
+      navigator.clipboard.writeText(publicProfile.public_url);
       toast.success('Public URL copied to clipboard!');
     }
   };
 
-  useEffect(() => {
-    loadPassportData();
-  }, [user?.id]);
+  const completion = getCompletionBreakdown();
+  const nextMilestone = getNextMilestone();
 
   if (isLoading) {
     return (
@@ -130,25 +124,18 @@ export function CareerPassportDashboard() {
     );
   }
 
-  if (error) {
+  if (!careerPassport && !isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <Alert variant="destructive">
+        <Alert>
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span>{error}</span>
-            <Button variant="outline" size="sm" onClick={loadPassportData}>
-              Retry
-            </Button>
+          <AlertDescription>
+            No career passport found. Complete your profile to get started.
           </AlertDescription>
         </Alert>
       </div>
     );
   }
-
-  const profile = data?.profile || {};
-  const passport = data?.passport || {};
-  const completion = data?.completion || {};
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -167,7 +154,7 @@ export function CareerPassportDashboard() {
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="px-3 py-1">
               <Award className="h-3 w-3 mr-1" />
-              {profile.member_id || 'TXL001'}
+              TXL{String(careerPassport?.id).slice(-3) || '001'}
             </Badge>
             
             <Button onClick={generateQRCode} disabled={isGeneratingQR} size="sm">
@@ -182,10 +169,10 @@ export function CareerPassportDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <div className="text-2xl">👤</div>
-              {profile.name || 'TalentXcel Professional'}
+              TalentXcel Professional
             </CardTitle>
             <CardDescription className="text-lg">
-              {profile.tagline || 'Transforming careers, one step at a time'}
+              Building an exceptional career journey
             </CardDescription>
           </CardHeader>
           
@@ -195,30 +182,30 @@ export function CareerPassportDashboard() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Profile Completion</span>
                   <span className="text-sm text-muted-foreground">
-                    {completion.percentage || 0}%
+                    {careerPassport?.completion_percentage || 0}%
                   </span>
                 </div>
-                <Progress value={completion.percentage || 0} className="h-2" />
+                <Progress value={careerPassport?.completion_percentage || 0} className="h-2" />
               </div>
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Career Readiness</span>
                   <span className="text-sm text-muted-foreground">
-                    {profile.career_readiness_score || 0}/100
+                    {careerPassport?.career_readiness_score || 0}/100
                   </span>
                 </div>
-                <Progress value={profile.career_readiness_score || 0} className="h-2" />
+                <Progress value={careerPassport?.career_readiness_score || 0} className="h-2" />
               </div>
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Market Competitiveness</span>
                   <span className="text-sm text-muted-foreground">
-                    {profile.market_competitiveness_score || 0}/100
+                    {careerPassport?.market_competitiveness_score || 0}/100
                   </span>
                 </div>
-                <Progress value={profile.market_competitiveness_score || 0} className="h-2" />
+                <Progress value={careerPassport?.market_competitiveness_score || 0} className="h-2" />
               </div>
             </div>
           </CardContent>
@@ -231,7 +218,7 @@ export function CareerPassportDashboard() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {passport.resumes_created || 0}
+                {careerPassport?.resumes_count || 0}
               </div>
               <div className="text-sm text-muted-foreground">Resumes Created</div>
             </div>
@@ -242,7 +229,7 @@ export function CareerPassportDashboard() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {passport.jobs_applied || 0}
+                {careerPassport?.jobs_applied_count || 0}
               </div>
               <div className="text-sm text-muted-foreground">Jobs Applied</div>
             </div>
@@ -253,7 +240,7 @@ export function CareerPassportDashboard() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {passport.certifications || 0}
+                {careerPassport?.certifications_count || 0}
               </div>
               <div className="text-sm text-muted-foreground">Certifications</div>
             </div>
@@ -264,7 +251,7 @@ export function CareerPassportDashboard() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {passport.network_connections || 0}
+                {careerPassport?.connections_count || 0}
               </div>
               <div className="text-sm text-muted-foreground">Connections</div>
             </div>
@@ -273,7 +260,7 @@ export function CareerPassportDashboard() {
       </div>
 
       {/* QR Code & Sharing */}
-      {data?.publicProfile && (
+      {publicProfile && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -291,7 +278,7 @@ export function CareerPassportDashboard() {
               <div className="text-center space-y-4">
                 <div className="inline-block p-4 bg-white rounded-lg border">
                   <img 
-                    src={data.publicProfile.qr_code_data} 
+                    src={publicProfile.qr_code_data} 
                     alt="Career Passport QR Code"
                     className="w-32 h-32"
                   />
@@ -314,7 +301,7 @@ export function CareerPassportDashboard() {
                   <div className="flex mt-2">
                     <input
                       type="text"
-                      value={data.publicProfile.public_url || ''}
+                      value={publicProfile.public_url || ''}
                       readOnly
                       className="flex-1 px-3 py-2 border rounded-l-md bg-muted text-sm"
                     />
@@ -342,23 +329,57 @@ export function CareerPassportDashboard() {
       )}
 
       {/* Next Steps */}
-      {completion?.next_steps && completion.next_steps.length > 0 && (
+      {nextMilestone && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              Recommended Next Steps
+              Next Milestone
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium">{nextMilestone.message}</p>
+                <p className="text-sm text-muted-foreground">
+                  +{nextMilestone.points} points
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recent Achievements */}
+      {achievements && achievements.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5" />
+              Recent Achievements
             </CardTitle>
           </CardHeader>
           
           <CardContent>
             <div className="space-y-3">
-              {completion.next_steps.map((step: string, index: number) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                    {index + 1}
+              {achievements.slice(0, 3).map((achievement: any) => (
+                <div key={achievement.id} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="h-4 w-4 text-primary" />
                   </div>
-                  <span className="text-sm">{step}</span>
+                  <div>
+                    <p className="font-medium">{achievement.achievement_title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {achievement.achievement_description}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="ml-auto">
+                    +{achievement.points_awarded}
+                  </Badge>
                 </div>
               ))}
             </div>
