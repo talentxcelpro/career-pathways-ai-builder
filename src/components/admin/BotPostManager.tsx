@@ -56,11 +56,11 @@ export const BotPostManager: React.FC = () => {
       const { data, error } = await supabase
         .from('ai_bots')
         .select('*')
-        .eq('is_active', true)
+        .eq('is_active', true as any)
         .order('name');
 
       if (error) throw error;
-      setBots(data || []);
+      setBots((data as any) || []);
     } catch (error) {
       console.error('Error loading bots:', error);
       toast({
@@ -85,16 +85,17 @@ export const BotPostManager: React.FC = () => {
           origin,
           ai_bots!inner(name, role, profile_picture_url)
         `)
-        .eq('is_bot_post', true)
+        .eq('is_bot_post', true as any)
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
       
-      const formattedPosts = data?.map(post => ({
+      const safeData = (data as any) || [];
+      const formattedPosts = safeData.map((post: any) => ({
         ...post,
         bot: Array.isArray(post.ai_bots) ? post.ai_bots[0] : post.ai_bots
-      })) || [];
+      }));
       
       setRecentPosts(formattedPosts);
     } catch (error) {

@@ -94,27 +94,27 @@ export const BulkWelcomeEmailSender = () => {
             .from('email_automation_queue')
             .insert({
               trigger_type: 'welcome',
-              recipient_email: user.email,
-              recipient_name: user.full_name || 'there',
+              recipient_email: (user as any).email,
+              recipient_name: (user as any).full_name || 'there',
               template_data: {
-                name: user.full_name || 'there',
-                first_name: user.full_name || 'there'
+                name: (user as any).full_name || 'there',
+                first_name: (user as any).full_name || 'there'
               },
               scheduled_at: new Date().toISOString()
-            });
+            } as any);
 
           if (error) {
-            console.error(`Failed to queue welcome email for ${user.email}:`, error);
+            console.error(`Failed to queue welcome email for ${(user as any).email}:`, error);
             results.push({
-              email: user.email,
+              email: (user as any).email,
               status: 'failed',
               error: error.message
             });
             emailsFailed++;
           } else {
-            console.log(`Welcome email queued for: ${user.email}`);
+            console.log(`Welcome email queued for: ${(user as any).email}`);
             results.push({
-              email: user.email,
+              email: (user as any).email,
               status: 'sent'
             });
             emailsSent++;
@@ -126,12 +126,12 @@ export const BulkWelcomeEmailSender = () => {
         } catch (error) {
           const errorMsg = error instanceof Error ? error.message : 'Unknown error';
           results.push({
-            email: user.email,
+            email: (user as any).email,
             status: 'failed',
             error: errorMsg
           });
           emailsFailed++;
-          console.error(`Error queuing welcome email for ${user.email}:`, error);
+          console.error(`Error queuing welcome email for ${(user as any).email}:`, error);
         }
       }
 

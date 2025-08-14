@@ -50,7 +50,7 @@ export function AIToolsManager() {
         .order('tool_name');
 
       if (error) throw error;
-      setTools(data || []);
+      setTools((data as any) || []);
     } catch (error) {
       console.error('Error fetching AI tools:', error);
       toast({
@@ -67,8 +67,8 @@ export function AIToolsManager() {
     try {
       const { error } = await supabase
         .from('ai_tools_config')
-        .update({ is_enabled: isEnabled })
-        .eq('id', toolId);
+        .update({ is_enabled: isEnabled } as any)
+        .eq('id', toolId as any);
 
       if (error) throw error;
 
@@ -108,8 +108,8 @@ export function AIToolsManager() {
           prompt_template: tool.prompt_template,
           system_message: tool.system_message,
           admin_notes: tool.admin_notes,
-        })
-        .eq('id', tool.id);
+        } as any)
+        .eq('id', tool.id as any);
 
       if (error) throw error;
 

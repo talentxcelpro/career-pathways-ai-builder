@@ -99,13 +99,15 @@ export function CareerContentAdmin() {
 
       if (error) throw error;
       
-      setArticles(data || []);
+      setArticles((data as any) || []);
       
-      // Calculate stats
-      const totalViews = (data || []).reduce((sum, article) => sum + (article.views || 0), 0);
+      // Calculate stats with safe access
+      const safeData = (data as any) || [];
+      const totalViews = safeData.reduce((sum: number, article: any) => 
+        sum + (article && typeof article === 'object' ? (article.views || 0) : 0), 0);
       setStats({
-        total: data?.length || 0,
-        published: data?.filter(a => a.is_published).length || 0,
+        total: safeData.length || 0,
+        published: safeData.filter((a: any) => a && typeof a === 'object' && a.is_published).length || 0,
         totalViews
       });
     } catch (error) {
@@ -190,12 +192,12 @@ export function CareerContentAdmin() {
       if (selectedArticle) {
         result = await supabase
           .from('career_articles')
-          .update(articleData)
-          .eq('id', selectedArticle.id);
+          .update(articleData as any)
+          .eq('id', selectedArticle.id as any);
       } else {
         result = await supabase
           .from('career_articles')
-          .insert(articleData);
+          .insert(articleData as any);
       }
 
       if (result.error) throw result.error;
@@ -222,8 +224,8 @@ export function CareerContentAdmin() {
     try {
       const { error } = await supabase
         .from('career_articles')
-        .update({ is_published: !currentStatus })
-        .eq('id', id);
+        .update({ is_published: !currentStatus } as any)
+        .eq('id', id as any);
 
       if (error) throw error;
 
@@ -250,7 +252,7 @@ export function CareerContentAdmin() {
       const { error } = await supabase
         .from('career_articles')
         .delete()
-        .eq('id', id);
+        .eq('id', id as any);
 
       if (error) throw error;
 

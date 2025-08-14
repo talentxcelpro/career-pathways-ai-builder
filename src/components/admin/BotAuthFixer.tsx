@@ -15,7 +15,7 @@ export const BotAuthFixer: React.FC = () => {
       const { data: botProfiles, error } = await supabase
         .from('profiles')
         .select('email, is_ai_bot')
-        .eq('is_ai_bot', true);
+        .eq('is_ai_bot', true as any);
 
       if (error) {
         toast.error('Failed to check bot profiles');

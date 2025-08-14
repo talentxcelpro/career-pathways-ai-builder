@@ -48,11 +48,11 @@ export const AdminScrapedJobApplications: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {!applications?.length ? (
+        {!(applications as any)?.length ? (
           <p className="text-gray-500 text-center py-8">No scraped job applications found.</p>
         ) : (
           <div className="space-y-4">
-            {applications.map((app: any) => (
+            {(applications as any).map((app: any) => (
               <div key={app.application_id} className="border rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">

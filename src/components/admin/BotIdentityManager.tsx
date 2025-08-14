@@ -45,17 +45,17 @@ export const BotIdentityManager: React.FC = () => {
         .order('name');
 
       if (botsError) throw botsError;
-      setBots(botsData || []);
+      setBots((botsData as any) || []);
 
       // Load users (admin users who can manage bots)
       const { data: usersData, error: usersError } = await supabase
         .from('profiles')
         .select('id, email, full_name')
-        .eq('is_ai_bot', false)
+        .eq('is_ai_bot', false as any)
         .order('full_name');
 
       if (usersError) throw usersError;
-      setUsers(usersData || []);
+      setUsers((usersData as any) || []);
     } catch (error) {
       console.error('Error loading data:', error);
       toast({
@@ -73,8 +73,8 @@ export const BotIdentityManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('ai_bots')
-        .update({ user_id: userId })
-        .eq('id', botId);
+        .update({ user_id: userId } as any)
+        .eq('id', botId as any);
 
       if (error) throw error;
 

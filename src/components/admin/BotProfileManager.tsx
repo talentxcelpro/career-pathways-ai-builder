@@ -387,7 +387,7 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                               is_ai_bot: true,
                               social_links: socialLinks,
                               is_profile_public: true
-                            });
+                            } as any);
                           
                           if (profileError) {
                             console.error('Profile update error:', profileError);
@@ -796,8 +796,8 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                             .update({
                               profile_picture_url: bot.profile_picture_url,
                               banner_url: bot.banner_picture_url
-                            })
-                            .eq('id', bot.user_id);
+                            } as any)
+                            .eq('id', bot.user_id as any);
                         }
                         
                         // Bot configuration updated successfully

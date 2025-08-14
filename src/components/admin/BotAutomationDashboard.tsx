@@ -65,11 +65,18 @@ export const BotAutomationDashboard: React.FC = () => {
     await publishQueue.mutateAsync();
   };
 
-  // Calculate automation metrics
-  const totalQueuedContent = queueItems?.filter(item => item.status === 'generated').length || 0;
-  const failedContent = queueItems?.filter(item => item.status === 'failed').length || 0;
-  const publishedToday = queueItems?.filter(item => 
+  // Calculate automation metrics with safe access
+  const safeQueueItems = (queueItems as any) || [];
+  const totalQueuedContent = safeQueueItems.filter((item: any) => 
+    item && typeof item === 'object' && item.status === 'generated'
+  ).length || 0;
+  const failedContent = safeQueueItems.filter((item: any) => 
+    item && typeof item === 'object' && item.status === 'failed'
+  ).length || 0;
+  const publishedToday = safeQueueItems.filter((item: any) => 
+    item && typeof item === 'object' && 
     item.status === 'published' && 
+    item.created_at &&
     new Date(item.created_at).toDateString() === new Date().toDateString()
   ).length || 0;
 
@@ -174,7 +181,7 @@ export const BotAutomationDashboard: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {queueItems && queueItems.length > 0 ? (
+              {safeQueueItems && safeQueueItems.length > 0 ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
@@ -194,29 +201,32 @@ export const BotAutomationDashboard: React.FC = () => {
                   <div className="space-y-2">
                     <h4 className="font-medium">Recent Queue Items</h4>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {queueItems.slice(0, 10).map((item) => (
-                        <div key={item.id} className="flex items-center justify-between p-3 border rounded">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.ai_bots?.name}</span>
-                              <Badge variant="outline">{item.bot_prompt_library?.category}</Badge>
+                      {safeQueueItems.slice(0, 10).map((item: any) => {
+                        if (!item || typeof item !== 'object') return null;
+                        return (
+                          <div key={item.id || Math.random()} className="flex items-center justify-between p-3 border rounded">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{item.ai_bots?.name || 'Unknown Bot'}</span>
+                                <Badge variant="outline">{item.bot_prompt_library?.category || 'General'}</Badge>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                Scheduled: {item.scheduled_for ? new Date(item.scheduled_for).toLocaleString() : 'Not scheduled'}
+                              </div>
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                              Scheduled: {new Date(item.scheduled_for).toLocaleString()}
-                            </div>
+                            
+                            <Badge 
+                              variant={
+                                item.status === 'generated' ? 'default' :
+                                item.status === 'published' ? 'secondary' :
+                                item.status === 'failed' ? 'destructive' : 'outline'
+                              }
+                            >
+                              {item.status || 'unknown'}
+                            </Badge>
                           </div>
-                          
-                          <Badge 
-                            variant={
-                              item.status === 'generated' ? 'default' :
-                              item.status === 'published' ? 'secondary' :
-                              item.status === 'failed' ? 'destructive' : 'outline'
-                            }
-                          >
-                            {item.status}
-                          </Badge>
-                        </div>
-                      ))}
+                        );
+                      }).filter(Boolean)}
                     </div>
                   </div>
                 </div>
@@ -251,7 +261,7 @@ export const BotAutomationDashboard: React.FC = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All Active Bots</SelectItem>
-                      {bots?.map((bot) => (
+                      {(bots as any)?.map((bot: any) => (
                         <SelectItem key={bot.id} value={bot.id}>
                           <div className="flex items-center gap-2">
                             {bot.profile_picture_url && (
