@@ -30,13 +30,13 @@ export const ProUsersPage: React.FC = () => {
           expires_at,
           features
         `)
-        .eq('status', 'active')
+        .eq('status', 'active' as any)
         .order('created_at', { ascending: false });
 
       if (subscriptionsError) throw subscriptionsError;
 
       // Get user IDs for profiles lookup
-      const userIds = subscriptionsData?.map(sub => sub.user_id) || [];
+      const userIds = subscriptionsData?.map((sub: any) => sub?.user_id) || [];
       
       // Get user profiles
       const { data: profiles, error: profilesError } = await supabase
@@ -74,17 +74,17 @@ export const ProUsersPage: React.FC = () => {
       if (serviceProfilesError) throw serviceProfilesError;
 
       // Merge all data
-      const usersWithSubscriptions = subscriptionsData?.map(subscription => {
-        const profile = profiles?.find(p => p.id === subscription.user_id);
-        const serviceProfile = serviceProfiles?.find(sp => sp.user_id === subscription.user_id);
+      const usersWithSubscriptions = subscriptionsData?.map((subscription: any) => {
+        const profile = profiles?.find((p: any) => p?.id === subscription?.user_id);
+        const serviceProfile = serviceProfiles?.find((sp: any) => sp?.user_id === subscription?.user_id);
         
         return {
-          id: subscription.user_id,
-          full_name: profile?.full_name,
-          title: profile?.title,
-          location: serviceProfile?.location || profile?.location,
-          phone: serviceProfile?.contact_phone || profile?.phone,
-          created_at: profile?.created_at,
+          id: subscription?.user_id,
+          full_name: (profile as any)?.full_name,
+          title: (profile as any)?.title,
+          location: (serviceProfile as any)?.location || (profile as any)?.location,
+          phone: (serviceProfile as any)?.contact_phone || (profile as any)?.phone,
+          created_at: (profile as any)?.created_at,
           subscription,
           serviceProfile
         };
@@ -101,14 +101,14 @@ export const ProUsersPage: React.FC = () => {
       const { data: subscriptions, error } = await supabase
         .from('pro_subscriptions')
         .select('*')
-        .eq('status', 'active');
+        .eq('status', 'active' as any);
 
       if (error) throw error;
 
-      const totalRevenue = subscriptions?.reduce((sum, sub) => sum + (sub.price_amount || 0), 0) || 0;
-      const eliteUsers = subscriptions?.filter(sub => sub.plan_name === 'Elite').length || 0;
-      const premiumUsers = subscriptions?.filter(sub => sub.plan_name === 'Premium').length || 0;
-      const basicUsers = subscriptions?.filter(sub => sub.plan_name === 'Basic').length || 0;
+      const totalRevenue = subscriptions?.reduce((sum: number, sub: any) => sum + (sub?.price_amount || 0), 0) || 0;
+      const eliteUsers = subscriptions?.filter((sub: any) => sub?.plan_name === 'Elite').length || 0;
+      const premiumUsers = subscriptions?.filter((sub: any) => sub?.plan_name === 'Premium').length || 0;
+      const basicUsers = subscriptions?.filter((sub: any) => sub?.plan_name === 'Basic').length || 0;
 
       return {
         totalUsers: subscriptions?.length || 0,
@@ -270,19 +270,19 @@ export const ProUsersPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground">ID: {user.id.slice(0, 8)}...</p>
                   </div>
                 </div>
-                <Badge className={getPlanColor(user.subscription?.plan_name || user.serviceProfile?.subscription_tier || 'Basic')}>
-                  {user.subscription?.plan_name || user.serviceProfile?.subscription_tier || 'Basic'}
+                <Badge className={getPlanColor((user.subscription as any)?.plan_name || (user.serviceProfile as any)?.subscription_tier || 'Basic')}>
+                  {(user.subscription as any)?.plan_name || (user.serviceProfile as any)?.subscription_tier || 'Basic'}
                 </Badge>
               </div>
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {(user.title || user.serviceProfile?.business_name) && (
+              {(user.title || (user.serviceProfile as any)?.business_name) && (
                 <div className="flex items-center gap-2 text-sm">
                   <span className="font-medium">
-                    {user.serviceProfile?.business_name ? 'Business:' : 'Title:'}
+                    {(user.serviceProfile as any)?.business_name ? 'Business:' : 'Title:'}
                   </span>
-                  <span>{user.serviceProfile?.business_name || user.title}</span>
+                  <span>{(user.serviceProfile as any)?.business_name || user.title}</span>
                 </div>
               )}
 
@@ -304,7 +304,7 @@ export const ProUsersPage: React.FC = () => {
                 <div className="pt-2 border-t">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium">Pro Service Profile</span>
-                    {user.serviceProfile.is_verified && (
+                    {(user.serviceProfile as any)?.is_verified && (
                       <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
                         Verified
                       </Badge>
@@ -312,19 +312,19 @@ export const ProUsersPage: React.FC = () => {
                   </div>
                   
                   <div className="text-sm space-y-1">
-                    {user.serviceProfile.total_reviews > 0 && (
+                    {(user.serviceProfile as any)?.total_reviews > 0 && (
                       <div className="flex justify-between">
                         <span>Reviews:</span>
                         <span className="font-medium">
-                          {user.serviceProfile.total_reviews} ({user.serviceProfile.average_rating?.toFixed(1)}⭐)
+                          {(user.serviceProfile as any)?.total_reviews} ({(user.serviceProfile as any)?.average_rating?.toFixed(1)}⭐)
                         </span>
                       </div>
                     )}
                     
-                    {user.serviceProfile.total_bookings > 0 && (
+                    {(user.serviceProfile as any)?.total_bookings > 0 && (
                       <div className="flex justify-between">
                         <span>Bookings:</span>
-                        <span className="font-medium">{user.serviceProfile.total_bookings}</span>
+                        <span className="font-medium">{(user.serviceProfile as any)?.total_bookings}</span>
                       </div>
                     )}
                   </div>
@@ -336,28 +336,28 @@ export const ProUsersPage: React.FC = () => {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium">Subscription</span>
                     <Badge variant="outline" className="text-xs">
-                      {user.subscription.status}
+                      {(user.subscription as any)?.status}
                     </Badge>
                   </div>
                   
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between">
                       <span>Plan:</span>
-                      <span className="font-medium">{user.subscription.plan_name}</span>
+                      <span className="font-medium">{(user.subscription as any)?.plan_name}</span>
                     </div>
                     
                     <div className="flex justify-between">
                       <span>Price:</span>
                       <span className="font-medium">
-                        {formatCurrency(user.subscription.price_amount || 0)}
+                        {formatCurrency((user.subscription as any)?.price_amount || 0)}
                       </span>
                     </div>
                     
-                    {user.subscription.expires_at && (
+                    {(user.subscription as any)?.expires_at && (
                       <div className="flex justify-between">
                         <span>Expires:</span>
                         <span className="font-medium">
-                          {format(new Date(user.subscription.expires_at), 'MMM dd, yyyy')}
+                          {format(new Date((user.subscription as any).expires_at), 'MMM dd, yyyy')}
                         </span>
                       </div>
                     )}

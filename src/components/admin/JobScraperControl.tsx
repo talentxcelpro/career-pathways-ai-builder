@@ -328,12 +328,12 @@ export const JobScraperControl = () => {
       const { data: jobCount } = await supabase
         .from('jobs')
         .select('id', { count: 'exact' })
-        .eq('status', 'active');
+        .eq('status', 'active' as any);
 
       const { data: recentJobsData } = await supabase
         .from('jobs')
         .select('id, title, company_name, source, created_at, salary_range, location')
-        .eq('status', 'active')
+        .eq('status', 'active' as any)
         .order('created_at', { ascending: false })
         .limit(10);
 

@@ -70,14 +70,14 @@ export const JobDataManager: React.FC = () => {
       if (error) throw error;
 
       const totalJobs = jobs.length;
-      const activeJobs = jobs.filter(j => j.status === 'active').length;
-      const flaggedJobs = jobs.filter(j => j.status === 'flagged').length;
-      const rejectedJobs = jobs.filter(j => j.status === 'rejected').length;
+      const activeJobs = jobs.filter((j: any) => j?.status === 'active').length;
+      const flaggedJobs = jobs.filter((j: any) => j?.status === 'flagged').length;
+      const rejectedJobs = jobs.filter((j: any) => j?.status === 'rejected').length;
       
       // Analyze data quality issues
-      const salaryIssues = jobs.filter(j => j.salary_max && j.salary_max > 15000000).length;
-      const missingCompany = jobs.filter(j => !j.company_name || j.company_name.trim() === '').length;
-      const missingSkills = jobs.filter(j => !j.skills_required || j.skills_required.length === 0).length;
+      const salaryIssues = jobs.filter((j: any) => j?.salary_max && j?.salary_max > 15000000).length;
+      const missingCompany = jobs.filter((j: any) => !j?.company_name || j?.company_name.trim() === '').length;
+      const missingSkills = jobs.filter((j: any) => !j?.skills_required || j?.skills_required.length === 0).length;
 
       setStats({
         totalJobs,
@@ -122,20 +122,20 @@ export const JobDataManager: React.FC = () => {
         for (const job of suspiciousJobs) {
           let shouldUpdate = false;
           let newFrequency = 'yearly';
-          let newMin = job.salary_min;
-          let newMax = job.salary_max;
+          let newMin = (job as any)?.salary_min;
+          let newMax = (job as any)?.salary_max;
           
           // Detect likely monthly salaries (very high amounts for non-executives)
-          if (job.salary_max && job.salary_max > 5000000 && 
-              !['executive', 'director', 'vp', 'cxo'].includes(job.experience_level || '')) {
+          if ((job as any)?.salary_max && (job as any)?.salary_max > 5000000 && 
+              !['executive', 'director', 'vp', 'cxo'].includes((job as any)?.experience_level || '')) {
             shouldUpdate = true;
             newFrequency = 'monthly';
-            newMin = job.salary_min ? Math.round(job.salary_min / 12) : null;
-            newMax = Math.round(job.salary_max / 12);
+            newMin = (job as any)?.salary_min ? Math.round((job as any).salary_min / 12) : null;
+            newMax = Math.round((job as any).salary_max / 12);
           }
           
           // Detect likely hourly rates (very small amounts for non-interns)
-          else if (job.salary_max && job.salary_max < 50000 && job.experience_level !== 'intern') {
+          else if ((job as any)?.salary_max && (job as any)?.salary_max < 50000 && (job as any)?.experience_level !== 'intern') {
             shouldUpdate = true;
             newFrequency = 'hourly';
             // Keep the amounts as-is for hourly
@@ -149,8 +149,8 @@ export const JobDataManager: React.FC = () => {
                 salary_min: newMin,
                 salary_max: newMax,
                 notes: `Auto-corrected salary frequency to ${newFrequency}`
-              })
-              .eq('id', job.id);
+              } as any)
+              .eq('id', (job as any)?.id);
 
             if (!updateError) {
               cleanupResults.salary_frequency_fixes++;
@@ -165,7 +165,7 @@ export const JobDataManager: React.FC = () => {
         .update({ 
           status: 'flagged',
           notes: 'Flagged: Still unrealistic salary after frequency correction'
-        })
+        } as any)
         .gt('salary_max', 10000000)
         .select('id');
 
@@ -179,7 +179,7 @@ export const JobDataManager: React.FC = () => {
         .update({
           status: 'flagged',
           notes: 'Flagged: Missing company information'
-        })
+        } as any)
         .or('company_name.is.null,company_name.eq.')
         .select('id');
 
@@ -196,12 +196,12 @@ export const JobDataManager: React.FC = () => {
 
       if (!jobsError && jobs) {
         for (const job of jobs) {
-          const hasReactSkills = job.skills_required?.some((skill: string) => 
+          const hasReactSkills = (job as any)?.skills_required?.some((skill: string) => 
             ['React', 'Vue.js', 'Angular', 'JavaScript', 'TypeScript'].includes(skill));
-          const isNonTechRole = job.title?.toLowerCase().includes('sales') || 
-                                job.title?.toLowerCase().includes('recruitment') ||
-                                job.title?.toLowerCase().includes('marketing') ||
-                                job.title?.toLowerCase().includes('hr');
+          const isNonTechRole = (job as any)?.title?.toLowerCase().includes('sales') || 
+                                (job as any)?.title?.toLowerCase().includes('recruitment') ||
+                                (job as any)?.title?.toLowerCase().includes('marketing') ||
+                                (job as any)?.title?.toLowerCase().includes('hr');
 
           if (hasReactSkills && isNonTechRole) {
             await supabase
@@ -209,8 +209,8 @@ export const JobDataManager: React.FC = () => {
               .update({
                 status: 'flagged',
                 notes: 'Flagged: Skill-role mismatch detected'
-              })
-              .eq('id', job.id);
+              } as any)
+              .eq('id', (job as any)?.id);
             cleanupResults.skill_mismatches++;
           }
         }
@@ -264,16 +264,16 @@ export const JobDataManager: React.FC = () => {
         
         try {
           // Check if job already has good skills
-          const hasGoodSkills = job.ai_skill_tags && job.ai_skill_tags.length >= 5;
+          const hasGoodSkills = (job as any)?.ai_skill_tags && (job as any)?.ai_skill_tags.length >= 5;
           if (hasGoodSkills) continue;
 
           // Enrich skills using AI
           const enrichmentData = {
-            job_title: job.title,
-            industry: job.industry || undefined,
-            description: job.description ? job.description.slice(0, 500) : undefined,
-            experience_level: job.experience_level || undefined,
-            employment_type: job.employment_type || undefined,
+            job_title: (job as any)?.title,
+            industry: (job as any)?.industry || undefined,
+            description: (job as any)?.description ? (job as any)?.description.slice(0, 500) : undefined,
+            experience_level: (job as any)?.experience_level || undefined,
+            employment_type: (job as any)?.employment_type || undefined,
           };
 
           let newSkills: string[] = [];
@@ -285,7 +285,7 @@ export const JobDataManager: React.FC = () => {
             }
           } catch (aiError) {
             console.warn('AI skill enrichment failed, using fallback:', aiError);
-            newSkills = getFallbackSkills(job.title);
+            newSkills = getFallbackSkills((job as any)?.title);
           }
 
           if (newSkills.length === 0) continue;
@@ -295,10 +295,10 @@ export const JobDataManager: React.FC = () => {
             .from('jobs')
             .update({
               ai_skill_tags: newSkills,
-              skills_required: job.skills_required || newSkills,
+              skills_required: (job as any)?.skills_required || newSkills,
               updated_at: new Date().toISOString()
-            })
-            .eq('id', job.id);
+            } as any)
+            .eq('id', (job as any)?.id);
 
           if (updateError) {
             console.error('Failed to update job skills:', updateError);
@@ -310,7 +310,7 @@ export const JobDataManager: React.FC = () => {
           await new Promise(resolve => setTimeout(resolve, 100));
 
         } catch (jobError) {
-          console.error(`Failed to enrich skills for job ${job.id}:`, jobError);
+          console.error(`Failed to enrich skills for job ${(job as any)?.id}:`, jobError);
         }
       }
 
@@ -340,7 +340,7 @@ export const JobDataManager: React.FC = () => {
       const { data: job, error: jobError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('id', jobId)
+        .eq('id', jobId as any)
         .single();
 
       if (jobError) throw jobError;

@@ -97,7 +97,7 @@ export const EmailSystemTester = () => {
       const { data, error } = await supabase
         .from('email_automation_settings')
         .select('template_name, is_enabled, subject_template')
-        .in('template_name' as any, ['test_email', 'welcome']);
+        .in('template_name', ['test_email', 'welcome'] as any);
       
       if (error) throw error;
       

@@ -69,7 +69,7 @@ export const JobAnalyticsDashboard: React.FC = () => {
         .limit(30);
       
       if (error) throw error;
-      return data as ScrapedLogData[];
+      return (data as any) as ScrapedLogData[];
     }
   });
 
@@ -84,7 +84,7 @@ export const JobAnalyticsDashboard: React.FC = () => {
         .limit(20);
       
       if (error) throw error;
-      return data as SystemAlert[];
+      return (data as any) as SystemAlert[];
     }
   });
 

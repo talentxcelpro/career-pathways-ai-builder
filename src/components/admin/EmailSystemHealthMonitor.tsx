@@ -196,14 +196,14 @@ export const EmailSystemHealthMonitor: React.FC = () => {
       const { data: pendingEmails, error: pendingError } = await supabase
         .from('email_automation_queue')
         .select('*')
-        .eq('status' as any, 'pending')
+        .eq('status', 'pending' as any)
         .limit(100);
 
       // Check failed emails  
       const { data: failedEmails, error: failedError } = await supabase
         .from('email_automation_queue')
         .select('*')
-        .eq('status' as any, 'failed')
+        .eq('status', 'failed' as any)
         .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
       const responseTime = Date.now() - startTime;

@@ -69,7 +69,7 @@ export const EmailTemplateManager = () => {
         const { error } = await supabase
           .from('email_templates')
           .update(formData as any)
-          .eq('id' as any, selectedTemplate.id);
+          .eq('id', selectedTemplate.id as any);
 
         if (error) throw error;
         toast({
@@ -117,7 +117,7 @@ export const EmailTemplateManager = () => {
       const { error } = await supabase
         .from('email_templates')
         .delete()
-        .eq('id' as any, templateId);
+        .eq('id', templateId as any);
 
       if (error) throw error;
 

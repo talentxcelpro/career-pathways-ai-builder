@@ -65,14 +65,14 @@ export const InstantAnalyticsRefresh: React.FC<{ onComplete?: () => void }> = ({
 
       // Calculate old stats (using basic counts)
       const oldStats = {
-        totalSent: queueData?.filter(q => q.status === 'sent').length || 0,
-        delivered: eventsData?.filter(e => e.event_type === 'delivered').length || 0,
-        opened: eventsData?.filter(e => e.event_type === 'opened').length || 0,
-        clicked: eventsData?.filter(e => e.event_type === 'clicked').length || 0,
+        totalSent: queueData?.filter((q: any) => q?.status === 'sent').length || 0,
+        delivered: eventsData?.filter((e: any) => e?.event_type === 'delivered').length || 0,
+        opened: eventsData?.filter((e: any) => e?.event_type === 'opened').length || 0,
+        clicked: eventsData?.filter((e: any) => e?.event_type === 'clicked').length || 0,
       };
 
       // Calculate new stats (using correct correlation logic)
-      const sentEmails = queueData?.filter(q => q.status === 'sent') || [];
+      const sentEmails = queueData?.filter((q: any) => q?.status === 'sent') || [];
       const totalSent = sentEmails.length;
       const delivered = totalSent; // All sent emails are considered delivered
 
@@ -80,13 +80,13 @@ export const InstantAnalyticsRefresh: React.FC<{ onComplete?: () => void }> = ({
       const uniqueOpeners = new Set<string>();
       const uniqueClickers = new Set<string>();
 
-      eventsData?.forEach(event => {
-        const email = event.recipient_email;
+      eventsData?.forEach((event: any) => {
+        const email = event?.recipient_email;
         if (!email) return;
 
-        if (event.event_type === 'opened') {
+        if (event?.event_type === 'opened') {
           uniqueOpeners.add(email);
-        } else if (event.event_type === 'clicked') {
+        } else if (event?.event_type === 'clicked') {
           uniqueClickers.add(email);
         }
       });
@@ -105,16 +105,16 @@ export const InstantAnalyticsRefresh: React.FC<{ onComplete?: () => void }> = ({
         await supabase
           .from('email_analytics_daily')
           .upsert({
-            date: today,
+            stat_date: today,
             emails_sent: newStats.totalSent,
             emails_delivered: newStats.delivered,
             emails_opened: newStats.opened,
             emails_clicked: newStats.clicked,
             emails_bounced: 0,
-            emails_failed: queueData?.filter(q => q.status === 'failed').length || 0,
+            emails_failed: queueData?.filter((q: any) => q?.status === 'failed').length || 0,
             updated_at: new Date().toISOString()
-          }, {
-            onConflict: 'date'
+          } as any, {
+            onConflict: 'stat_date'
           });
       } catch (upsertError) {
         console.log('Daily analytics update failed (this is OK):', upsertError);

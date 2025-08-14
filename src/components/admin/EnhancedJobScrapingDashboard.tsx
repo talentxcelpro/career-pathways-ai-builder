@@ -49,7 +49,7 @@ export const EnhancedJobScrapingDashboard = () => {
 
       // Execute high-volume scraping
       await executeHighVolume.mutateAsync({
-        batchId: batch.id,
+        batchId: (batch as any)?.id,
         targetJobCount,
         enableAISalaryNormalization: true,
         enableSEOOptimization: true
