@@ -57,15 +57,15 @@ export const SecurityMonitoringDashboard = () => {
           .contains('metadata', { severity: 'critical' })
           .gte('created_at', yesterday.toISOString()),
         supabase.from('security_events').select('*', { count: 'exact', head: true })
-          .eq('event_type', 'login_failed')
+          .eq('event_type', 'login_failed' as any)
           .gte('created_at', yesterday.toISOString()),
         supabase.from('security_events').select('*', { count: 'exact', head: true })
-          .in('event_type', ['admin_operation_denied', 'privilege_escalation_attempt'])
+          .in('event_type', ['admin_operation_denied', 'privilege_escalation_attempt'] as any)
           .gte('created_at', yesterday.toISOString()),
         supabase.from('admin_activity_log').select('*', { count: 'exact', head: true })
           .gte('created_at', yesterday.toISOString()),
         supabase.from('admin_activity_log').select('*', { count: 'exact', head: true })
-          .eq('action_type', 'role_assignment')
+          .eq('action_type', 'role_assignment' as any)
           .gte('created_at', yesterday.toISOString())
       ]);
 
@@ -92,7 +92,7 @@ export const SecurityMonitoringDashboard = () => {
         .limit(50);
 
       if (error) throw error;
-      return (data as SecurityEvent[]) || [];
+      return (data as any) || [];
     },
     refetchInterval: 15000 // Refresh every 15 seconds
   });

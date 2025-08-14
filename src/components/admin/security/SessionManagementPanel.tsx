@@ -12,7 +12,7 @@ export const SessionManagementPanel = () => {
   const { userSessions, sessionsLoading, terminateSession } = useSecurityManagement();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredSessions = userSessions?.filter(session => {
+  const filteredSessions = userSessions?.filter((session: any) => {
     const matchesSearch = !searchTerm || 
       (typeof session.profiles === 'object' && session.profiles && 'full_name' in session.profiles && (session.profiles as any).full_name && (session.profiles as any).full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (typeof session.profiles === 'object' && session.profiles && 'email' in session.profiles && (session.profiles as any).email && (session.profiles as any).email.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -99,7 +99,7 @@ export const SessionManagementPanel = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredSessions.map((session) => {
+            {filteredSessions.map((session: any) => {
               const DeviceIcon = getDeviceIcon(session.user_agent as string);
               
               return (
