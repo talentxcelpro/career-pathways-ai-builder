@@ -66,8 +66,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Get the application_notification template
     const { data: templateData, error: templateError } = await supabase
       .from('email_templates')
-      .select('subject_template, html_content')
-      .eq('template_name', 'application_notification')
+      .select('subject, html_template')
+      .eq('name', 'application_notification')
       .eq('is_active', true)
       .maybeSingle();
 
@@ -95,8 +95,8 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     // Replace template variables in subject and content
-    const subject = replaceTemplateVariables(templateData.subject_template, templateVariables);
-    const htmlContent = replaceTemplateVariables(templateData.html_content, templateVariables);
+    const subject = replaceTemplateVariables(templateData.subject, templateVariables);
+    const htmlContent = replaceTemplateVariables(templateData.html_template, templateVariables);
     
     console.log('Template variables:', templateVariables);
     console.log('Final subject:', subject);
