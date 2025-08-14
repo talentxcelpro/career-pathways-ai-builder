@@ -49,7 +49,7 @@ export const EmailTemplateManager = () => {
         .order('template_type', { ascending: true });
 
       if (error) throw error;
-      setTemplates(data || []);
+      setTemplates((data as any) || []);
     } catch (error) {
       console.error('Error fetching templates:', error);
       toast({
@@ -68,8 +68,8 @@ export const EmailTemplateManager = () => {
         // Update existing template
         const { error } = await supabase
           .from('email_templates')
-          .update(formData)
-          .eq('id', selectedTemplate.id);
+          .update(formData as any)
+          .eq('id' as any, selectedTemplate.id);
 
         if (error) throw error;
         toast({
@@ -87,7 +87,7 @@ export const EmailTemplateManager = () => {
             content: formData.content,
             html_template: formData.html_template,
             is_active: formData.is_active
-          }]);
+          } as any]);
 
         if (error) throw error;
         toast({
@@ -117,7 +117,7 @@ export const EmailTemplateManager = () => {
       const { error } = await supabase
         .from('email_templates')
         .delete()
-        .eq('id', templateId);
+        .eq('id' as any, templateId);
 
       if (error) throw error;
 

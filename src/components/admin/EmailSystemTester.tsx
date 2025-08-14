@@ -97,14 +97,14 @@ export const EmailSystemTester = () => {
       const { data, error } = await supabase
         .from('email_automation_settings')
         .select('template_name, is_enabled, subject_template')
-        .in('template_name', ['test_email', 'welcome']);
+        .in('template_name' as any, ['test_email', 'welcome']);
       
       if (error) throw error;
       
       setResults(prev => ({ ...prev, templates: data }));
       
-      const hasTestEmail = data?.find(t => t.template_name === 'test_email');
-      const hasWelcome = data?.find(t => t.template_name === 'welcome');
+      const hasTestEmail = (data as any)?.find((t: any) => t?.template_name === 'test_email');
+      const hasWelcome = (data as any)?.find((t: any) => t?.template_name === 'welcome');
       
       if (hasTestEmail && hasWelcome) {
         toast({

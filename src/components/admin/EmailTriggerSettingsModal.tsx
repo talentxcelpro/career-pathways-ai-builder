@@ -69,8 +69,8 @@ export const EmailTriggerSettingsModal: React.FC<EmailTriggerSettingsModalProps>
           subject_template: formData.subject_template,
           html_template: formData.html_template,
           delay_minutes: formData.delay_minutes,
-        })
-        .eq('id', trigger.id);
+        } as any)
+        .eq('id' as any, trigger.id);
 
       if (error) throw error;
 
