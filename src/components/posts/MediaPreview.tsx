@@ -1,12 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import VideoPlayer from './VideoPlayer';
 
 interface MediaPreviewProps {
   content: string;
   mediaUrls?: string[];
   isMessage?: boolean; // For different styling in messages vs posts
 }
+
+interface MediaItemProps {
+  mediaUrl: string;
+  isVideo: boolean;
+  className: string;
+  index: number;
+}
+
+const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, index }) => {
+  const [fixedUrl, setFixedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!mediaUrl) return;
+
+    // Always swap project URL with custom domain
+    const correctedUrl = mediaUrl.replace(
+      "https://dthlgsnakhoftinssokm.supabase.co",
+      "https://auth.talentxcel.in"
+    );
+
+    setFixedUrl(correctedUrl);
+  }, [mediaUrl]);
+
+  if (!fixedUrl) {
+    return (
+      <div className={`${className} bg-muted/20 border border-muted/40 rounded-lg flex items-center justify-center`}>
+        <p className="text-muted-foreground text-sm">Loading media...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {isVideo ? (
+        <video
+          controls
+          preload="metadata"
+          className={className}
+        >
+          <source src={fixedUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <img
+          src={fixedUrl}
+          alt={`Media ${index + 1}`}
+          className={className}
+          onError={(e) => {
+            console.error('MediaPreview: Image failed to load:', fixedUrl);
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], isMessage = false }) => {
   // Extract URLs from content
@@ -26,10 +80,6 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
     const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
     
     const isValidMedia = isSupabaseStorage || isDirectMedia || isPostMedia || isMediaFolder || isYouTube;
-    
-    if (isValidMedia) {
-      console.log('MediaPreview: Found valid media URL:', url);
-    }
     
     return isValidMedia;
   });
@@ -70,8 +120,6 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                           (url.includes('supabase.co/storage') && url.includes('.mp4'));
           const isYouTube = url.includes('youtube.com/watch') || url.includes('youtu.be/');
           
-          console.log('MediaPreview: Rendering media item:', { url, isVideo, isYouTube });
-          
           // Extract YouTube video ID for embedding
           const getYouTubeEmbedUrl = (url: string) => {
             let videoId = '';
@@ -94,24 +142,12 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                   allowFullScreen
                   title={`YouTube Video ${index + 1}`}
                 />
-              ) : isVideo ? (
-                <VideoPlayer
-                  url={url}
-                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg cursor-pointer`}
-                  isMessage={isMessage}
-                />
               ) : (
-                <img 
-                  src={url}
-                  alt={`Media ${index + 1}`}
-                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`}
-                  onLoad={() => {
-                    console.log('MediaPreview: Image loaded successfully:', url);
-                  }}
-                  onError={(e) => {
-                    console.error('MediaPreview: Image failed to load:', url);
-                    e.currentTarget.style.display = 'none';
-                  }}
+                <MediaItem
+                  mediaUrl={url}
+                  isVideo={isVideo}
+                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg${isVideo ? ' cursor-pointer' : ''}`}
+                  index={index}
                 />
               )}
               {index === 3 && mediaItems.length > 4 && (
