@@ -74,10 +74,10 @@ const SecurityMonitoring = () => {
       }
 
       // Type-safe event handling
-      const typedEvents = (events || []).map(event => ({
+      const typedEvents = (events || []).map((event: any) => ({
         ...event,
-        metadata: event.metadata as Record<string, any> || {},
-        ip_address: event.ip_address as string | null
+        metadata: event?.metadata as Record<string, any> || {},
+        ip_address: event?.ip_address as string | null
       }));
 
       setSecurityEvents(typedEvents);

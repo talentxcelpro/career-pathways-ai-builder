@@ -27,11 +27,11 @@ export const TestimonialsManagement: React.FC = () => {
 
       if (statusFilter !== 'all') {
         if (statusFilter === 'verified') {
-          query = query.eq('is_verified', true);
+          query = query.filter('is_verified', 'eq', true);
         } else if (statusFilter === 'pending') {
-          query = query.eq('is_verified', false);
+          query = query.filter('is_verified', 'eq', false);
         } else if (statusFilter === 'featured') {
-          query = query.eq('is_featured', true);
+          query = query.filter('is_featured', 'eq', true);
         }
       }
 
@@ -46,8 +46,8 @@ export const TestimonialsManagement: React.FC = () => {
     mutationFn: async ({ id, isVerified }: { id: string; isVerified: boolean }) => {
       const { error } = await supabase
         .from('service_testimonials')
-        .update({ is_verified: isVerified })
-        .eq('id', id);
+        .update({ is_verified: isVerified } as any)
+        .filter('id', 'eq', id);
       
       if (error) throw error;
     },
@@ -65,8 +65,8 @@ export const TestimonialsManagement: React.FC = () => {
     mutationFn: async ({ id, isFeatured }: { id: string; isFeatured: boolean }) => {
       const { error } = await supabase
         .from('service_testimonials')
-        .update({ is_featured: isFeatured })
-        .eq('id', id);
+        .update({ is_featured: isFeatured } as any)
+        .filter('id', 'eq', id);
       
       if (error) throw error;
     },
@@ -79,8 +79,8 @@ export const TestimonialsManagement: React.FC = () => {
     }
   });
 
-  const filteredTestimonials = testimonials?.filter(testimonial =>
-    testimonial.testimonial_text?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTestimonials = testimonials?.filter((testimonial: any) =>
+    testimonial?.testimonial_text?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusColor = (testimonial: any) => {
@@ -150,8 +150,8 @@ export const TestimonialsManagement: React.FC = () => {
 
       {/* Testimonials List */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredTestimonials?.map((testimonial) => (
-          <Card key={testimonial.id} className="hover:shadow-md transition-shadow">
+        {filteredTestimonials?.map((testimonial: any) => (
+          <Card key={testimonial?.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -159,13 +159,13 @@ export const TestimonialsManagement: React.FC = () => {
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold">User ID: {testimonial.user_id}</h3>
+                    <h3 className="font-semibold">User ID: {testimonial?.user_id}</h3>
                     <div className="flex items-center">
-                      {[...Array(testimonial.rating)].map((_, i) => (
+                      {[...Array(testimonial?.rating || 0)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                       ))}
                       <span className="ml-2 text-sm text-muted-foreground">
-                        {testimonial.rating}/5
+                        {testimonial?.rating || 0}/5
                       </span>
                     </div>
                   </div>
@@ -179,28 +179,28 @@ export const TestimonialsManagement: React.FC = () => {
             <CardContent className="space-y-4">
               {/* Service Info */}
               <div className="text-sm">
-                <span className="font-medium">Service Order ID:</span> {testimonial.service_order_id}
+                <span className="font-medium">Service Order ID:</span> {testimonial?.service_order_id}
               </div>
 
               {/* Testimonial Text */}
               <div>
                 <p className="text-sm text-gray-700 line-clamp-3">
-                  "{testimonial.testimonial_text}"
+                  "{testimonial?.testimonial_text}"
                 </p>
               </div>
 
               {/* Service Experience */}
-              {testimonial.service_experience && (
+              {testimonial?.service_experience && (
                 <div>
                   <span className="text-xs font-medium text-muted-foreground">Experience:</span>
                   <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                    {testimonial.service_experience}
+                    {testimonial?.service_experience}
                   </p>
                 </div>
               )}
 
               {/* Recommendation */}
-              {testimonial.would_recommend && (
+              {testimonial?.would_recommend && (
                 <div className="flex items-center text-sm text-green-600">
                   <ThumbsUp className="w-4 h-4 mr-1" />
                   Would recommend
@@ -209,15 +209,15 @@ export const TestimonialsManagement: React.FC = () => {
 
               {/* Date */}
               <div className="text-xs text-muted-foreground">
-                Submitted: {format(new Date(testimonial.created_at), 'MMM dd, yyyy')}
+                Submitted: {format(new Date(testimonial?.created_at), 'MMM dd, yyyy')}
               </div>
 
               {/* Actions */}
               <div className="flex gap-2 pt-2">
-                {!testimonial.is_verified ? (
+                {!testimonial?.is_verified ? (
                   <Button
                     size="sm"
-                    onClick={() => verifyTestimonial.mutate({ id: testimonial.id, isVerified: true })}
+                    onClick={() => verifyTestimonial.mutate({ id: testimonial?.id, isVerified: true })}
                     disabled={verifyTestimonial.isPending}
                   >
                     <CheckCircle className="w-4 h-4 mr-1" />
@@ -227,7 +227,7 @@ export const TestimonialsManagement: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => verifyTestimonial.mutate({ id: testimonial.id, isVerified: false })}
+                    onClick={() => verifyTestimonial.mutate({ id: testimonial?.id, isVerified: false })}
                     disabled={verifyTestimonial.isPending}
                   >
                     <X className="w-4 h-4 mr-1" />
@@ -237,15 +237,15 @@ export const TestimonialsManagement: React.FC = () => {
 
                 <Button
                   size="sm"
-                  variant={testimonial.is_featured ? "default" : "outline"}
+                  variant={testimonial?.is_featured ? "default" : "outline"}
                   onClick={() => featureTestimonial.mutate({ 
-                    id: testimonial.id, 
-                    isFeatured: !testimonial.is_featured 
+                    id: testimonial?.id, 
+                    isFeatured: !testimonial?.is_featured 
                   })}
                   disabled={featureTestimonial.isPending}
                 >
                   <Star className="w-4 h-4 mr-1" />
-                  {testimonial.is_featured ? 'Unfeature' : 'Feature'}
+                  {testimonial?.is_featured ? 'Unfeature' : 'Feature'}
                 </Button>
               </div>
             </CardContent>

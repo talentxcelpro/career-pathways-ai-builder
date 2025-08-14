@@ -31,8 +31,8 @@ export const ProfileCompletionInsights = () => {
         return;
       }
 
-      if (data && data.length > 0) {
-        setInsights(data[0]);
+      if (data && Array.isArray(data) && data.length > 0) {
+        setInsights(data[0] as ProfileInsights);
       }
     } catch (error) {
       console.error('Error in fetchInsights:', error);

@@ -57,33 +57,33 @@ export const RealTimeEmailAnalytics: React.FC = () => {
       const combinedEmails: EmailQueueItem[] = [];
 
       // Process automation queue emails
-      if (automationResponse.data) {
-        const automationEmails: EmailQueueItem[] = automationResponse.data.map(item => ({
-          id: item.id,
-          recipient_email: item.recipient_email,
-          recipient_name: item.recipient_name,
-          trigger_type: item.trigger_type,
-          status: item.status as 'pending' | 'processing' | 'sent' | 'failed',
-          created_at: item.created_at,
-          sent_at: item.sent_at,
-          error_message: item.error_message,
-          attempts: item.attempts || 0
+      if (automationResponse.data && Array.isArray(automationResponse.data)) {
+        const automationEmails: EmailQueueItem[] = automationResponse.data.map((item: any) => ({
+          id: item?.id || '',
+          recipient_email: item?.recipient_email || '',
+          recipient_name: item?.recipient_name,
+          trigger_type: item?.trigger_type || '',
+          status: (item?.status as 'pending' | 'processing' | 'sent' | 'failed') || 'pending',
+          created_at: item?.created_at || '',
+          sent_at: item?.sent_at,
+          error_message: item?.error_message,
+          attempts: item?.attempts || 0
         }));
         combinedEmails.push(...automationEmails);
       }
 
       // Process simple queue emails
-      if (simpleResponse.data) {
-        const simpleEmails: EmailQueueItem[] = simpleResponse.data.map(item => ({
-          id: item.id,
-          recipient_email: item.to_email,
+      if (simpleResponse.data && Array.isArray(simpleResponse.data)) {
+        const simpleEmails: EmailQueueItem[] = simpleResponse.data.map((item: any) => ({
+          id: item?.id || '',
+          recipient_email: item?.to_email || '',
           recipient_name: undefined,
-          trigger_type: item.template_name || 'manual',
-          status: item.status as 'pending' | 'processing' | 'sent' | 'failed',
-          created_at: item.created_at,
-          sent_at: item.sent_at,
-          error_message: item.error_message,
-          attempts: item.retry_count || 0
+          trigger_type: item?.template_name || 'manual',
+          status: (item?.status as 'pending' | 'processing' | 'sent' | 'failed') || 'pending',
+          created_at: item?.created_at || '',
+          sent_at: item?.sent_at,
+          error_message: item?.error_message,
+          attempts: item?.retry_count || 0
         }));
         combinedEmails.push(...simpleEmails);
       }

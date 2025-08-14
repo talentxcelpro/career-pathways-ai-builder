@@ -85,7 +85,7 @@ export const RobustEmailProcessor: React.FC<{ onComplete?: () => void }> = ({ on
       const { data: pendingEmails, error: fetchError } = await supabase
         .from('email_automation_queue')
         .select('*')
-        .in('status', ['pending'])
+        .filter('status', 'eq', 'pending')
         .lt('attempts', 3)
         .order('created_at', { ascending: true })
         .limit(50);
@@ -109,10 +109,10 @@ export const RobustEmailProcessor: React.FC<{ onComplete?: () => void }> = ({ on
           // Call the reliable email function directly
           const { data, error } = await supabase.functions.invoke('send-automated-email', {
             body: {
-              to: email.recipient_email,
-              triggerType: email.trigger_type,
-              templateData: email.template_data || {},
-              recipientName: email.recipient_name || 'User'
+              to: (email as any)?.recipient_email,
+              triggerType: (email as any)?.trigger_type,
+              templateData: (email as any)?.template_data || {},
+              recipientName: (email as any)?.recipient_name || 'User'
             }
           });
 
@@ -126,16 +126,16 @@ export const RobustEmailProcessor: React.FC<{ onComplete?: () => void }> = ({ on
             .update({
               status: 'sent',
               sent_at: new Date().toISOString(),
-              attempts: (email.attempts || 0) + 1
-            })
-            .eq('id', email.id);
+              attempts: ((email as any)?.attempts || 0) + 1
+            } as any)
+            .eq('id', (email as any)?.id);
 
           stats.processed++;
 
         } catch (emailError: any) {
-          console.error(`Failed to process email ${email.id}:`, emailError);
+          console.error(`Failed to process email ${(email as any)?.id}:`, emailError);
           
-          const newAttempts = (email.attempts || 0) + 1;
+          const newAttempts = ((email as any)?.attempts || 0) + 1;
           const shouldRetry = newAttempts < 3;
           
           await supabase
@@ -145,8 +145,8 @@ export const RobustEmailProcessor: React.FC<{ onComplete?: () => void }> = ({ on
               attempts: newAttempts,
               error_message: emailError.message,
               next_retry_at: shouldRetry ? new Date(Date.now() + (newAttempts * 60000)).toISOString() : null
-            })
-            .eq('id', email.id);
+            } as any)
+            .eq('id', (email as any)?.id);
 
           if (shouldRetry) {
             stats.retrying++;

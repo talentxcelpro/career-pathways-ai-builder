@@ -43,11 +43,11 @@ export const VerificationManagement: React.FC = () => {
         .order('submitted_at', { ascending: false });
 
       if (statusFilter !== 'all') {
-        query = query.eq('verification_status', statusFilter);
+        query = query.filter('verification_status', 'eq', statusFilter);
       }
 
       if (typeFilter !== 'all') {
-        query = query.eq('verification_type', typeFilter);
+        query = query.filter('verification_type', 'eq', typeFilter);
       }
 
       const { data, error } = await query;
@@ -66,31 +66,31 @@ export const VerificationManagement: React.FC = () => {
           admin_notes: notes,
           reviewed_at: new Date().toISOString(),
           reviewed_by: (await supabase.auth.getUser()).data.user?.id
-        })
-        .eq('id', id);
+        } as any)
+        .filter('id', 'eq', id);
       
       if (error) throw error;
 
       // Update user profile verification status
-      const request = requests?.find(r => r.id === id);
+      const request = requests?.find((r: any) => r?.id === id);
       if (request) {
         // Get current user badges
         const { data: profile } = await supabase
           .from('profiles')
           .select('verification_badges')
-          .eq('id', request.user_id)
+          .filter('id', 'eq', (request as any)?.user_id)
           .single();
         
-        const badges = Array.isArray(profile?.verification_badges) ? profile.verification_badges : [];
-        const newBadges = [...badges, request.verification_type];
+        const badges = Array.isArray((profile as any)?.verification_badges) ? (profile as any)?.verification_badges : [];
+        const newBadges = [...badges, (request as any)?.verification_type];
         
         await supabase
           .from('profiles')
           .update({ 
             verification_status: 'verified',
             verification_badges: newBadges
-          })
-          .eq('id', request.user_id);
+          } as any)
+          .filter('id', 'eq', (request as any)?.user_id);
       }
     },
     onSuccess: () => {
@@ -115,8 +115,8 @@ export const VerificationManagement: React.FC = () => {
           admin_notes: notes,
           reviewed_at: new Date().toISOString(),
           reviewed_by: (await supabase.auth.getUser()).data.user?.id
-        })
-        .eq('id', id);
+        } as any)
+        .filter('id', 'eq', id);
       
       if (error) throw error;
     },
@@ -132,8 +132,8 @@ export const VerificationManagement: React.FC = () => {
     }
   });
 
-  const filteredRequests = requests?.filter(request =>
-    request.verification_type?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRequests = requests?.filter((request: any) =>
+    request?.verification_type?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusColor = (status: string) => {
@@ -190,7 +190,7 @@ export const VerificationManagement: React.FC = () => {
             {filteredRequests?.length || 0} Requests
           </Badge>
           <Badge variant="outline" className="bg-yellow-50">
-            {requests?.filter(r => r.verification_status === 'pending').length || 0} Pending
+            {requests?.filter((r: any) => r?.verification_status === 'pending').length || 0} Pending
           </Badge>
         </div>
       </div>
@@ -237,8 +237,8 @@ export const VerificationManagement: React.FC = () => {
 
       {/* Requests List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredRequests?.map((request) => (
-          <Card key={request.id} className="hover:shadow-md transition-shadow">
+        {filteredRequests?.map((request: any) => (
+          <Card key={request?.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -246,15 +246,15 @@ export const VerificationManagement: React.FC = () => {
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold">User ID: {request.user_id}</h3>
+                    <h3 className="font-semibold">User ID: {request?.user_id}</h3>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      {getTypeIcon(request.verification_type)}
-                      <span className="capitalize">{request.verification_type}</span>
+                      {getTypeIcon(request?.verification_type)}
+                      <span className="capitalize">{request?.verification_type}</span>
                     </div>
                   </div>
                 </div>
-                <Badge className={getStatusColor(request.verification_status)}>
-                  {request.verification_status.replace('_', ' ')}
+                <Badge className={getStatusColor(request?.verification_status)}>
+                  {request?.verification_status?.replace('_', ' ')}
                 </Badge>
               </div>
             </CardHeader>
@@ -264,28 +264,28 @@ export const VerificationManagement: React.FC = () => {
               <div>
                 <span className="text-sm font-medium">Documents:</span>
                 <div className="text-sm text-muted-foreground">
-                  {Array.isArray(request.submitted_documents) ? request.submitted_documents.length : 0} files submitted
+                  {Array.isArray(request?.submitted_documents) ? request?.submitted_documents?.length : 0} files submitted
                 </div>
               </div>
 
               {/* Date */}
               <div className="text-xs text-muted-foreground">
-                Submitted: {format(new Date(request.submitted_at), 'MMM dd, yyyy HH:mm')}
+                Submitted: {format(new Date(request?.submitted_at), 'MMM dd, yyyy HH:mm')}
               </div>
 
               {/* Admin Notes */}
-              {request.admin_notes && (
+              {request?.admin_notes && (
                 <div className="p-2 bg-gray-50 rounded text-sm">
                   <span className="font-medium">Admin Notes:</span>
-                  <p className="mt-1">{request.admin_notes}</p>
+                  <p className="mt-1">{request?.admin_notes}</p>
                 </div>
               )}
 
               {/* Rejection Reason */}
-              {request.rejection_reason && (
+              {request?.rejection_reason && (
                 <div className="p-2 bg-red-50 rounded text-sm">
                   <span className="font-medium text-red-800">Rejection Reason:</span>
-                  <p className="mt-1 text-red-700">{request.rejection_reason}</p>
+                  <p className="mt-1 text-red-700">{request?.rejection_reason}</p>
                 </div>
               )}
 

@@ -95,10 +95,10 @@ export const SEODashboardNew = () => {
       const { data: jobsData } = await supabase
         .from('jobs')
         .select('id, meta_title, seo_slug, updated_at')
-        .eq('is_active', true);
+        .filter('is_active', 'eq', true);
 
       const totalJobs = jobsData?.length || 0;
-      const jobsWithSEO = jobsData?.filter(job => job.meta_title && job.seo_slug)?.length || 0;
+      const jobsWithSEO = jobsData?.filter((job: any) => job?.meta_title && job?.seo_slug)?.length || 0;
 
       setStats({
         totalJobs,
