@@ -31,16 +31,14 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log('Application notification email started...');
     
+    // Get the full request body for placeholder replacement
+    const requestBody = await req.json();
     const {
       recipient_email,
       user_name,
       job_title,
-      company = "TalentXcel",
-      application_link = "https://talentxcel.in/jobs",
-      applicant_name,
-      job_id,
       template_name = "application_notification"
-    }: ApplicationNotificationRequest = await req.json();
+    } = requestBody;
     
     // Validate required fields
     if (!recipient_email || !user_name || !job_title) {
@@ -72,25 +70,36 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Application notification template not found or disabled');
     }
 
-    // Prepare template data with all variables
-    const templateVariables = {
-      user_name,
-      job_title,
-      company,
-      application_link,
-      applicant_name: applicant_name || user_name,
-      job_id,
+    // Add default values to ensure all common placeholders are available
+    const placeholderData = {
+      ...requestBody,
       current_year: new Date().getFullYear().toString(),
       current_date: new Date().toLocaleDateString(),
       platform_name: "TalentXcel",
-      support_email: "support@talentxcel.in"
+      support_email: "support@talentxcel.in",
+      applicant_name: requestBody.applicant_name || requestBody.user_name
     };
 
-    // Replace template variables in subject and content
-    const subject = replaceTemplateVariables(templateData.subject, templateVariables);
-    const htmlContent = replaceTemplateVariables(templateData.html_template, templateVariables);
+    // Replace placeholders automatically - any {{key}} will be replaced with placeholderData[key]
+    const subject = templateData.subject.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+      const value = placeholderData[key];
+      if (!value) {
+        console.warn(`Missing placeholder value for: ${key}`);
+        return match; // Keep original placeholder if no value found
+      }
+      return value;
+    });
     
-    console.log('Template variables:', templateVariables);
+    const htmlContent = templateData.html_template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+      const value = placeholderData[key];
+      if (!value) {
+        console.warn(`Missing placeholder value for: ${key}`);
+        return match; // Keep original placeholder if no value found
+      }
+      return value;
+    });
+    
+    console.log('Placeholder data:', placeholderData);
     console.log('Final subject:', subject);
 
     // Import nodemailer dynamically
