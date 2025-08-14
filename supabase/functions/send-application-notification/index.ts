@@ -6,21 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Template variable replacement helper - handles {{variable}} patterns
+// Template variable replacement helper - simplified approach
 function replaceTemplateVariables(template: string, data: any): string {
-  let result = template;
-  
-  // Replace {{variable}} patterns
-  const variables = template.match(/\{\{([^}]+)\}\}/g);
-  if (variables) {
-    variables.forEach(variable => {
-      const key = variable.replace(/\{\{|\}\}/g, '').trim();
-      const value = data[key] || data[key.toLowerCase()] || `{{${key}}}`;
-      result = result.replace(new RegExp(variable.replace(/[{}]/g, '\\$&'), 'g'), value);
-    });
-  }
-  
-  return result;
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => data[key] || '');
 }
 
 interface ApplicationNotificationRequest {
