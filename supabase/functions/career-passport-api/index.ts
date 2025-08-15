@@ -124,6 +124,28 @@ async function upsertCareerPassport(
   payload: Record<string, unknown>
 ) {
   try {
+    // Ensure a profile row exists to satisfy the FK on career_passport.user_id
+    const { data: existingProfile, error: profileSelectError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profileSelectError) {
+      console.warn("Profile select warning:", profileSelectError);
+    }
+
+    if (!existingProfile) {
+      const { error: profileInsertError } = await supabase
+        .from("profiles")
+        .insert({ id: userId });
+
+      if (profileInsertError) {
+        console.error("Profile ensure insert error:", profileInsertError);
+        return { success: false, error: "Profile missing and could not be created", timestamp: now() };
+      }
+    }
+
     const { data, error } = await supabase
       .from("career_passport")
       .upsert({ ...payload, user_id: userId, updated_at: now() }, { onConflict: "user_id" })
