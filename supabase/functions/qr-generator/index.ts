@@ -5,6 +5,18 @@ import { corsHeaders } from "../_shared/cors.ts";
 // Use QR Code generator from esm.sh
 import QRCode from "https://esm.sh/qrcode@1.5.3";
 
+const FALLBACK_TEXT = "https://talentxcel.in/error";
+const DEFAULT_SIZE = 384;
+const DEFAULT_MARGIN = 2;
+const DEFAULT_ECL = "H" as const;
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms)) as Promise<T>,
+  ]);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -14,7 +26,12 @@ serve(async (req) => {
       body = await req.json();
     } catch (err) {
       console.error("Invalid JSON:", err);
-      return json({ success: false, error: "Invalid JSON in request body", timestamp: now() }, 400);
+      const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+        errorCorrectionLevel: DEFAULT_ECL,
+        width: DEFAULT_SIZE,
+        margin: DEFAULT_MARGIN,
+      });
+      return json({ success: false, error: "Invalid JSON in request body", qrCodeData: fallback, timestamp: now() }, 200);
     }
 
     console.log("QR Generator called:", body);
@@ -25,21 +42,70 @@ serve(async (req) => {
     );
 
     const userId: string | null = body.userId ?? body.user_id ?? null;
+    const textInput = (body.text ?? body.data ?? body.url ?? "").toString().trim();
+
+    // Generic QR mode (no userId provided) - return QR directly
     if (!userId) {
-      return json({ success: false, error: "userId is required", timestamp: now() }, 400);
+      if (textInput.length > 0) {
+        try {
+          const dataUrl = await withTimeout(
+            QRCode.toDataURL(textInput, {
+              errorCorrectionLevel: DEFAULT_ECL,
+              width: DEFAULT_SIZE,
+              margin: DEFAULT_MARGIN,
+            }),
+            5000
+          );
+          return json({ success: true, mode: "generic", qrCodeData: dataUrl, timestamp: now() });
+        } catch (genErr) {
+          console.error("QR generation error (generic):", genErr);
+          const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+            errorCorrectionLevel: DEFAULT_ECL,
+            width: DEFAULT_SIZE,
+            margin: DEFAULT_MARGIN,
+          });
+          return json({ success: false, mode: "generic", error: "QR generation failed", qrCodeData: fallback, timestamp: now() });
+        }
+      } else {
+        const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+          errorCorrectionLevel: DEFAULT_ECL,
+          width: DEFAULT_SIZE,
+          margin: DEFAULT_MARGIN,
+        });
+        return json({ success: false, mode: "generic", error: "userId or text is required", qrCodeData: fallback, timestamp: now() });
+      }
     }
 
     const custom = (body.customUrl ?? "").toString().trim();
-    const publicSlug = custom ? validateCustomSlug(custom) : generateUniqueSlug(userId);
-    if (!publicSlug) {
-      return json({ success: false, error: "customUrl contains invalid characters", timestamp: now() }, 400);
+    let publicSlug: string;
+    if (custom) {
+      const sanitized = sanitizeSlug(custom);
+      publicSlug = sanitized ?? generateUniqueSlug(userId);
+    } else {
+      publicSlug = generateUniqueSlug(userId);
     }
 
     const publicUrl = `https://talentxcel.lovable.app/passport/${publicSlug}`;
 
-    // Generate QR code using QRCode library
-    const qrSvg = await QRCode.toString(publicUrl, { type: "svg" });
-    const dataUrl = `data:image/svg+xml;base64,${btoa(qrSvg)}`;
+    // Generate QR code (with timeout + resilient options)
+    let dataUrl: string;
+    try {
+      dataUrl = await withTimeout(
+        QRCode.toDataURL(publicUrl, {
+          errorCorrectionLevel: DEFAULT_ECL,
+          width: DEFAULT_SIZE,
+          margin: DEFAULT_MARGIN,
+        }),
+        5000
+      );
+    } catch (genErr) {
+      console.error("QR generation error (profile):", genErr);
+      dataUrl = await QRCode.toDataURL(FALLBACK_TEXT, {
+        errorCorrectionLevel: DEFAULT_ECL,
+        width: DEFAULT_SIZE,
+        margin: DEFAULT_MARGIN,
+      });
+    }
 
     // Upsert public profile
     const { data: upserted, error: upsertErr } = await supabase
@@ -59,7 +125,7 @@ serve(async (req) => {
 
     if (upsertErr) {
       console.error("Public profile save error:", upsertErr);
-      return json({ success: false, error: "Failed to save public profile", timestamp: now() }, 500);
+      return json({ success: false, error: "Failed to save public profile", publicUrl, qrCodeData: dataUrl, timestamp: now() });
     }
 
     // Log analytics (best effort)
@@ -84,7 +150,12 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("QR Generator error:", error);
-    return json({ success: false, error: getErrMsg(error), timestamp: now() }, 500);
+    const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+      errorCorrectionLevel: DEFAULT_ECL,
+      width: DEFAULT_SIZE,
+      margin: DEFAULT_MARGIN,
+    });
+    return json({ success: false, error: getErrMsg(error), qrCodeData: fallback, timestamp: now() });
   }
 });
 
