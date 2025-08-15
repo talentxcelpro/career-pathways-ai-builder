@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Search, Brain, Filter, TrendingUp, Building, MapPin } from 'lucide-react';
+import { Search, Brain, Filter, TrendingUp, Building, MapPin, Users, Plus, BookOpen, Eye } from 'lucide-react';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { JobsBanner } from '@/components/jobs/JobsBanner';
 import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
@@ -23,13 +23,17 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 import { SocialPagination } from '@/components/ui/social-pagination';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Jobs = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [filters, setFilters] = useState({
     search: '',
@@ -76,6 +80,23 @@ const Jobs = () => {
     };
     getCurrentUser();
   }, []);
+
+  // Get profile data
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      return profileData;
+    },
+    enabled: !!user?.id
+  });
 
   // Meta tags and structured data for SEO
   useEffect(() => {
@@ -228,17 +249,6 @@ const Jobs = () => {
   const featuredJobs = sortedJobs.filter(job => job.is_featured);
   const regularJobs = sortedJobs.filter(job => !job.is_featured);
 
-  // Debug logging for both issues
-  console.log('📊 Jobs Data Debug:', {
-    totalCount,
-    allJobsLength: allJobs?.length,
-    sortedJobsLength: sortedJobs?.length,
-    regularJobsLength: regularJobs?.length,
-    isLoading,
-    currentPage,
-    sampleJob: sortedJobs[0]
-  });
-
   const handleSaveJob = async (jobId: string) => {
     if (!currentUser) {
       toast.error('Please login to save jobs');
@@ -327,273 +337,368 @@ const Jobs = () => {
     refetch();
   };
 
-  const TagButton = ({ label, isActive = false }: { label: string; isActive?: boolean }) => (
-    <button
-      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-        isActive 
-          ? 'bg-[#1E2A78] text-white' 
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-      }`}
-      onClick={() => handleCategoryClick(label.split(' ')[1] || label)}
-    >
-      {label}
-    </button>
-  );
+  const getInitials = () => {
+    if (profile?.full_name) {
+      return profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    return user?.email?.[0]?.toUpperCase() || 'U';
+  };
 
-  const tagSuggestions = [
-    'Remote Jobs',
-    '10+ LPA',
-    'MNCs',
-    'Top Startups',
-    'Walk-ins Today',
-    'React Developer',
-    'Data Scientist',
-    'Product Manager'
+  // Mock data for "People you may know" and "Trending skills"
+  const peopleYouMayKnow = [
+    { 
+      name: "Akash Verma", 
+      title: "Senior Data Scientist", 
+      company: "Microsoft",
+      connections: "6 mutual connections",
+      avatar: "/lovable-uploads/f873a6b0-6b3b-4b61-8d92-f992fc8a5051.png"
+    },
+    { 
+      name: "Ritu Khanna", 
+      title: "Software Engineer", 
+      company: "Google",
+      connections: "5 mutual connections",
+      avatar: "/lovable-uploads/f873a6b0-6b3b-4b61-8d92-f992fc8a5051.png"
+    }
   ];
 
+  const trendingSkills = [
+    { name: "Product Management", followers: "20,550 followers" },
+    { name: "Data Science", followers: "15,240 followers" },
+    { name: "Python", followers: "10,430 followers" }
+  ];
+
+  const learningCourses = [
+    { 
+      title: "Introduction to Python", 
+      progress: "80% completed",
+      image: "/lovable-uploads/f873a6b0-6b3b-4b61-8d92-f992fc8a5051.png"
+    },
+    { 
+      title: "Design Thinking", 
+      progress: "50% completed",
+      image: "/lovable-uploads/f873a6b0-6b3b-4b61-8d92-f992fc8a5051.png"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
       
-
-      {/* Header with TalentXcel branding */}
-      <div className="bg-gradient-to-r from-[#1E2A78]/10 to-[#28C76F]/10 border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg"
-              />
-              <div className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-[#1E2A78]" />
-                <h1 className="text-xl font-bold text-[#1E2A78] font-display">
-                  Find Jobs Faster – Powered by TalentXcel AI Matching
-                </h1>
-              </div>
-              <div className="hidden md:flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <Filter className="h-4 w-4 text-[#28C76F]" />
-                  <span>AI Filters</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Building className="h-4 w-4 text-[#28C76F]" />
-                  <span>Top Companies</span>
-                </div>
-              </div>
-            </div>
-            <div className="bg-[#28C76F]/10 text-[#28C76F] px-3 py-1 rounded-full text-sm font-medium">
-              {totalCount} Jobs
-            </div>
-          </div>
+      {/* LinkedIn-style Three Column Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          {/* 2. Condensed Search Bar (Single Row) */}
-          <div className="flex flex-col lg:flex-row gap-2 items-center max-w-5xl mx-auto">
-            <div className="flex-1 flex gap-2 w-full overflow-x-auto">
-              <div className="flex-1 min-w-[200px]">
+          {/* Left Sidebar - Profile & Quick Links */}
+          <div className="lg:col-span-3 space-y-4">
+            {/* User Profile Card */}
+            {user && (
+              <Card className="bg-card border border-border">
+                <CardContent className="p-6 text-center">
+                  <div className="relative mb-4">
+                    <div className="w-20 h-20 mx-auto">
+                      <Avatar className="w-20 h-20">
+                        <AvatarImage src={profile?.profile_picture_url} />
+                        <AvatarFallback className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-lg">
+                          {getInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  </div>
+                  <h3 className="font-semibold text-lg text-foreground mb-1">
+                    {profile?.full_name || 'User'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    {profile?.headline || 'Senior Software Engineer'}
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {profile?.location || 'San Francisco, CA'}
+                  </p>
+                  <Button className="w-full" size="sm">
+                    Update profile
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Quick Links */}
+            <Card className="bg-card border border-border">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold">Quick links</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button variant="ghost" className="w-full justify-start text-sm h-8" asChild>
+                  <div>My Items</div>
+                </Button>
+                <Button variant="ghost" className="w-full justify-start text-sm h-8" asChild>
+                  <div>Saved jobs</div>
+                </Button>
+                <Button variant="ghost" className="w-full justify-start text-sm h-8" asChild>
+                  <div>Create job</div>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Recommended Jobs */}
+            <Card className="bg-card border border-border">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold">Recommended jobs</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-1">
+                  <p className="font-medium text-sm">Product Manager</p>
+                  <p className="text-xs text-muted-foreground">Google</p>
+                  <p className="text-xs text-muted-foreground">San Francisco, CA</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium text-sm">UI/UX Designer</p>
+                  <p className="text-xs text-muted-foreground">Microsoft</p>
+                  <p className="text-xs text-muted-foreground">New York, NY</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Center Column - Jobs Feed */}
+          <div className="lg:col-span-6 space-y-4">
+            {/* Header with Tagline */}
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-foreground mb-2">Jobs</h1>
+              <p className="text-sm text-muted-foreground mb-4">
+                Find Jobs Faster – Powered by TalentXcel AI Matching
+              </p>
+              
+              {/* Search and Filters */}
+              <div className="space-y-3">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Skills / Designations"
+                    placeholder="Keywords"
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
+                    className="pl-10"
                   />
+                </div>
+                
+                <div className="flex gap-2">
+                  <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bangalore">Bangalore</SelectItem>
+                      <SelectItem value="mumbai">Mumbai</SelectItem>
+                      <SelectItem value="delhi">Delhi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={experienceLevel} onValueChange={setExperienceLevel}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Experience level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="entry">Entry level</SelectItem>
+                      <SelectItem value="mid">Mid level</SelectItem>
+                      <SelectItem value="senior">Senior level</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Date posted" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="week">Past week</SelectItem>
+                      <SelectItem value="month">Past month</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               
-              <div className="min-w-[140px]">
-                <Select value={experienceLevel} onValueChange={setExperienceLevel}>
-                  <SelectTrigger className="h-9 text-sm border-gray-200">
-                    <SelectValue placeholder="Experience ⌄" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border shadow-lg z-50">
-                    <SelectItem value="entry">Fresher (0-1y)</SelectItem>
-                    <SelectItem value="junior">Junior (1-3y)</SelectItem>
-                    <SelectItem value="mid">Mid-level (3-6y)</SelectItem>
-                    <SelectItem value="senior">Senior (6+y)</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Navigation Tabs */}
+              <div className="flex gap-6 mt-4 border-b border-border">
+                <button className="text-sm font-medium pb-2 border-b-2 border-primary text-primary">
+                  All content
+                </button>
+                <button className="text-sm font-medium pb-2 text-muted-foreground hover:text-foreground">
+                  My network
+                </button>
+                <button className="text-sm font-medium pb-2 text-muted-foreground hover:text-foreground">
+                  Jobs
+                </button>
+                <button className="text-sm font-medium pb-2 text-muted-foreground hover:text-foreground">
+                  Learning
+                </button>
               </div>
-              
-              <div className="min-w-[120px]">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Location"
-                    value={filters.location}
-                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-              </div>
-              
-              <label className="flex items-center gap-2 cursor-pointer min-w-[80px]">
-                <input
-                  type="checkbox"
-                  checked={filters.is_remote}
-                  onChange={(e) => setFilters(prev => ({ ...prev, is_remote: e.target.checked }))}
-                  className="w-4 h-4 text-primary"
-                />
-                <span className="text-sm text-gray-700">Remote</span>
-              </label>
             </div>
-            
-            <Button 
-              size="sm" 
-              className="h-9 px-4 bg-[#1E2A78] hover:bg-[#1E2A78]/90 text-white text-sm whitespace-nowrap"
-              onClick={() => refetch()}
-            >
-              <Search className="h-4 w-4 mr-1" />
-              Search
-            </Button>
-          </div>
-          
-          {/* 3. Focused CTA */}
-          <div className="text-center mt-3">
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="text-sm font-medium border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white"
-              onClick={() => handleUniversalSearch("Ask AI to suggest best jobs for me")}
-            >
-              <Brain className="h-4 w-4 mr-1" />
-              🧠 Let AI Match Me to Jobs
-            </Button>
-          </div>
-          
-        </div>
-      </div>
 
-      {/* Main Content - Featured Jobs Above the Fold */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        {/* Featured Jobs Section - Immediately Visible */}
-        {featuredJobs.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">✨</span>
-              <h2 className="text-xl font-bold text-gray-900">Featured Jobs (Top Priority)</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredJobs.slice(0, 6).map((job) => (
-                <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      {job.companies?.logo_url && (
-                        <img src={job.companies.logo_url} alt={job.companies.name} className="w-8 h-8 rounded" />
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-sm">{job.title}</h3>
-                        <p className="text-xs text-gray-600">{job.companies?.name}</p>
+            {/* Job Listings */}
+            <div className="space-y-4">
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Card key={i} className="p-4">
+                      <div className="animate-pulse">
+                        <div className="flex items-start gap-3">
+                          <div className="w-12 h-12 bg-muted rounded"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-muted rounded w-3/4"></div>
+                            <div className="h-3 bg-muted rounded w-1/2"></div>
+                            <div className="h-3 bg-muted rounded w-1/4"></div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">Featured</Badge>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">{job.location} • {job.employment_type}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-primary">
-                      {job.salary_min && job.salary_max ? `₹${job.salary_min/100000}L - ₹${job.salary_max/100000}L` : 'Salary not disclosed'}
-                    </span>
-                    <Button size="sm" className="text-xs h-7 px-3">Apply</Button>
-                  </div>
+                    </Card>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                sortedJobs.map((job) => (
+                  <Card key={job.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                          {job.companies?.logo_url ? (
+                            <img 
+                              src={job.companies.logo_url} 
+                              alt={job.companies.name} 
+                              className="w-12 h-12 rounded object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                              <Building className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-foreground text-sm hover:text-primary cursor-pointer">
+                                {job.title}
+                              </h3>
+                              <p className="text-sm text-foreground font-medium mt-1">
+                                {job.companies?.name}
+                              </p>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {job.location}
+                              </p>
+                              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                                {job.description}
+                              </p>
+                              <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                                <span>{job.salary_min && job.salary_max ? `₹${job.salary_min/100000}L - ₹${job.salary_max/100000}L` : 'Salary not disclosed'}</span>
+                                <span>1 hour ago</span>
+                              </div>
+                            </div>
+                            
+                            {job.is_featured && (
+                              <Badge variant="secondary" className="ml-2">
+                                600K+
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
-          </div>
-        )}
 
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <LiveJobFilters
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              onClearFilters={handleClearFilters}
-              totalJobs={totalCount}
-            />
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8">
+                <SocialPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalCount={totalCount}
+                  onPageChange={goToPage}
+                />
+              </div>
+            )}
           </div>
 
-          {/* Jobs Content */}
-          <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
-                <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{totalCount} jobs found</span>
-              </div>
-            </div>
+          {/* Right Sidebar - People & Trending */}
+          <div className="lg:col-span-3 space-y-4">
+            {/* People you may know */}
+            <Card className="bg-card border border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">People you may know</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {peopleYouMayKnow.map((person, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarFallback className="bg-muted text-sm">
+                        {person.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">{person.name}</p>
+                      <p className="text-xs text-muted-foreground">{person.title}</p>
+                      <p className="text-xs text-muted-foreground">{person.connections}</p>
+                    </div>
+                    <Button size="sm" variant="outline" className="text-xs h-7">
+                      Connect
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-            <JobsListOptimized 
-              jobs={sortedJobs}
-              totalCount={totalCount}
-              hasMore={hasMore}
-              isLoading={isLoading}
-              mode="pagination"
-              onPageChange={goToPage}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              savedJobs={savedJobs}
-              onSaveJob={handleSaveJob}
-            />
+            {/* Trending skills */}
+            <Card className="bg-card border border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Trending skills</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {trendingSkills.map((skill, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{skill.name}</p>
+                      <p className="text-xs text-muted-foreground">{skill.followers}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" className="text-xs h-7">
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Learning */}
+            <Card className="bg-card border border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold">Learning</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {learningCourses.map((course, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="w-12 h-8 bg-muted rounded flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{course.title}</p>
+                      <p className="text-xs text-muted-foreground">{course.progress}</p>
+                    </div>
+                  </div>
+                ))}
+                <Button className="w-full mt-4" size="sm">
+                  Post
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-8">
-            <SocialPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              onPageChange={goToPage}
-            />
-          </div>
-        )}
       </div>
 
-      {/* Top Companies Hiring - Moved up */}
-      <TopCompaniesHiring />
-
-      {/* Mock Interview Banner - Moved to bottom */}
-      <JobsBanner />
-
-      {/* Trust & FOMO Section */}
-      <TrustSection />
-
-          {/* Footer Note */}
-          <div className="text-center py-8 mt-12">
-            <p className="text-sm text-gray-600">
-              Powered by TalentXcel AI – India's Intelligent Career Platform
-            </p>
-          </div>
-
-          {/* Floating Apply Widget (Mobile) */}
-      <div className="fixed bottom-4 left-4 right-4 lg:hidden z-50">
-        <div className="bg-[#1E2A78] text-white rounded-2xl p-4 shadow-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold">🔎 {allJobs.length} Jobs Matched</p>
-              <p className="text-sm text-white/80">Find your perfect role</p>
-            </div>
-            <Button 
-              size="sm" 
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/90"
-            >
-              Apply Now
-            </Button>
-          </div>
-        </div>
+      {/* Keep existing functionality components hidden but functional */}
+      <div style={{ display: 'none' }}>
+        <TopCompaniesHiring />
+        <JobsBanner />
+        <TrustSection />
+        <BrandedFooter />
       </div>
-
-      {/* TalentXcel Branded Footer */}
-      <BrandedFooter />
     </div>
   );
 };
