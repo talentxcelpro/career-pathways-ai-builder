@@ -102,16 +102,8 @@ return json({ success: true, mode: "generic", warning: "userId or text is requir
       }
     }
 
-    const custom = (body.customUrl ?? "").toString().trim();
-    let publicSlug: string;
-    if (custom) {
-      const sanitized = validateCustomSlug(custom);
-      publicSlug = sanitized ?? generateUniqueSlug(userId);
-    } else {
-      publicSlug = generateUniqueSlug(userId);
-    }
-
-    const publicUrl = `https://talentxcel.lovable.app/passport/${publicSlug}`;
+    // Use production domain with direct userId
+    const publicUrl = `https://talentxcel.in/passport/${userId}`;
 
     // Generate QR code (with timeout + resilient options)
     let dataUrl: string;
@@ -155,7 +147,7 @@ return json({ success: true, mode: "generic", warning: "userId or text is requir
           await supabase.from("public_profiles").upsert(
             {
               user_id: userId,
-              public_url_slug: publicSlug,
+              public_url_slug: userId,
               qr_code_data: dataUrl,
               is_active: true,
               updated_at: now(),
@@ -166,7 +158,7 @@ return json({ success: true, mode: "generic", warning: "userId or text is requir
             user_id: userId,
             event_type: "qr_code_generated",
             module_name: "passport",
-            event_data: { public_url: publicUrl, slug: publicSlug },
+            event_data: { public_url: publicUrl, user_id: userId },
             session_id: generateSessionId(),
             timestamp: now(),
           });
@@ -178,7 +170,7 @@ return json({ success: true, mode: "generic", warning: "userId or text is requir
       console.warn("waitUntil not available or failed:", waitErr);
     }
 
-    console.log("QR code generated successfully:", { userId, publicSlug });
+    console.log("QR code generated successfully:", { userId, publicUrl });
 
 return json(
       { success: true, qrCodeData: dataUrl, publicUrl, timestamp: now() },
