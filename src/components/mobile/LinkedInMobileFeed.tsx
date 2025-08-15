@@ -92,14 +92,14 @@ const LinkedInPostCard: React.FC<{
     : post.caption;
 
   return (
-    <Card className="bg-white border-0 border-b border-gray-200 rounded-none shadow-none">
+    <Card className="bg-white border-0 border-b border-gray-100 rounded-3xl shadow-sm mb-4 mx-3 overflow-hidden backdrop-blur-xl">
       {/* Post Header */}
-      <div className="p-4 pb-3">
+      <div className="p-5 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3 flex-1">
-            <Avatar className="w-12 h-12">
+            <Avatar className="w-12 h-12 ring-2 ring-white shadow-lg">
               <AvatarImage src={post.user.avatar} alt={post.user.name} />
-              <AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
                 <User className="w-6 h-6" />
               </AvatarFallback>
             </Avatar>
@@ -109,19 +109,19 @@ const LinkedInPostCard: React.FC<{
                   {post.user.name}
                 </h3>
                 {post.isPromoted && (
-                  <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                  <Badge variant="secondary" className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700">
                     Promoted
                   </Badge>
                 )}
               </div>
-              <p className="text-xs text-gray-600 truncate">{post.user.title}</p>
+              <p className="text-xs text-gray-600 truncate font-medium">{post.user.title}</p>
               {post.user.company && (
                 <p className="text-xs text-gray-500 truncate">{post.user.company}</p>
               )}
               <div className="flex items-center space-x-2 mt-1">
                 <span className="text-xs text-gray-500">{post.timestamp}</span>
                 {post.isJobPost && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs rounded-full border-blue-200 bg-blue-50 text-blue-600">
                     <Briefcase className="w-3 h-3 mr-1" />
                     Job
                   </Badge>
@@ -134,15 +134,15 @@ const LinkedInPostCard: React.FC<{
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 px-3 text-xs border-primary text-primary hover:bg-primary hover:text-white"
+                className="h-8 px-4 text-xs border-blue-500 text-blue-600 hover:bg-blue-50 rounded-full font-medium shadow-sm"
                 onClick={() => onConnect?.(post.user.id)}
               >
                 <Plus className="w-3 h-3 mr-1" />
                 Connect
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="w-8 h-8">
-              <MoreHorizontal className="w-4 h-4" />
+            <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-gray-100 rounded-full">
+              <MoreHorizontal className="w-4 h-4 text-gray-500" />
             </Button>
           </div>
         </div>
@@ -150,7 +150,7 @@ const LinkedInPostCard: React.FC<{
 
       {/* Post Content */}
       {post.caption && (
-        <div className="px-4 pb-3">
+        <div className="px-5 pb-4">
           <p className="text-sm text-gray-800 leading-relaxed">
             {showFullCaption ? post.caption : truncatedCaption}
             {post.caption.length > 150 && (
@@ -167,12 +167,12 @@ const LinkedInPostCard: React.FC<{
 
       {/* Media Content */}
       {post.content.url && (
-        <div className="relative">
+        <div className="relative rounded-2xl overflow-hidden mx-4 mb-4 shadow-sm">
           {post.content.type === 'video' ? (
-            <div className="aspect-video bg-black">
+            <div className="aspect-video bg-black rounded-2xl overflow-hidden">
               <VideoPlayer
                 url={post.content.url}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-2xl"
                 isMessage={false}
               />
             </div>
@@ -180,7 +180,7 @@ const LinkedInPostCard: React.FC<{
             <img
               src={post.content.url}
               alt="Post content"
-              className="w-full max-h-96 object-cover"
+              className="w-full max-h-96 object-cover rounded-2xl"
             />
           ) : null}
         </div>
@@ -188,8 +188,8 @@ const LinkedInPostCard: React.FC<{
 
       {/* Job Details */}
       {post.isJobPost && post.jobDetails && (
-        <div className="mx-4 my-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
+        <div className="mx-4 my-4 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl shadow-sm">
+          <div className="flex items-center space-x-2 mb-3">
             <Briefcase className="w-4 h-4 text-blue-600" />
             <span className="text-blue-600 text-sm font-medium">Job Opportunity</span>
           </div>
@@ -199,7 +199,7 @@ const LinkedInPostCard: React.FC<{
           {post.jobDetails.applyUrl && (
             <Button
               size="sm"
-              className="w-full h-8 bg-primary text-primary-foreground hover:bg-primary/90"
+              className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-xl font-medium shadow-md"
               onClick={() => onApply?.(post.jobDetails.applyUrl!)}
             >
               Apply Now
@@ -210,34 +210,34 @@ const LinkedInPostCard: React.FC<{
 
       {/* Engagement Info */}
       {(post.stats.likes > 0 || post.stats.comments > 0) && (
-        <div className="px-4 py-2 border-b border-gray-100">
+        <div className="px-5 py-3 border-b border-gray-50">
           <div className="flex items-center justify-between text-xs text-gray-500">
             {post.stats.likes > 0 && (
               <div className="flex items-center space-x-1">
                 <div className="flex items-center space-x-1">
-                  <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                  <div className="w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-sm">
                     <ThumbsUp className="w-2.5 h-2.5 text-white fill-current" />
                   </div>
-                  <span>{likesCount} likes</span>
+                  <span className="font-medium">{likesCount} likes</span>
                 </div>
               </div>
             )}
             {post.stats.comments > 0 && (
-              <span>{post.stats.comments} comments</span>
+              <span className="font-medium">{post.stats.comments} comments</span>
             )}
           </div>
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className="px-4 py-3">
+      <div className="px-5 py-4">
         <div className="flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"
             className={cn(
-              "flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3",
-              isLiked && "text-primary"
+              "flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200",
+              isLiked && "text-blue-600 bg-blue-50"
             )}
             onClick={handleLike}
           >
@@ -248,7 +248,7 @@ const LinkedInPostCard: React.FC<{
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3"
+            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
             onClick={() => onComment?.(post.id)}
           >
             <MessageCircle className="w-4 h-4" />
@@ -258,7 +258,7 @@ const LinkedInPostCard: React.FC<{
           <Button
             variant="ghost"
             size="sm"
-            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3"
+            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
             onClick={() => onShare?.(post.id)}
           >
             <Share className="w-4 h-4" />
@@ -269,8 +269,8 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className={cn(
-              "flex items-center space-x-2 text-gray-600 hover:bg-gray-100 px-3",
-              isBookmarked && "text-primary"
+              "flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200",
+              isBookmarked && "text-amber-600 bg-amber-50"
             )}
             onClick={handleBookmark}
           >
@@ -281,17 +281,17 @@ const LinkedInPostCard: React.FC<{
 
       {/* Top Comment Preview */}
       {post.engagement?.topComment && (
-        <div className="px-4 pb-3 pt-0">
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="flex items-start space-x-2">
-              <Avatar className="w-6 h-6">
-                <AvatarFallback className="text-xs">
+        <div className="px-5 pb-4 pt-0">
+          <div className="bg-gray-50 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <Avatar className="w-7 h-7 ring-1 ring-white shadow-sm">
+                <AvatarFallback className="text-xs bg-gradient-to-br from-gray-400 to-gray-500 text-white">
                   <User className="w-3 h-3" />
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-xs">
-                  <span className="font-medium text-gray-900">{post.engagement.topComment.user}</span>{' '}
+                <p className="text-xs leading-relaxed">
+                  <span className="font-semibold text-gray-900">{post.engagement.topComment.user}</span>{' '}
                   <span className="text-gray-700">{post.engagement.topComment.text}</span>
                 </p>
               </div>
@@ -316,11 +316,14 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-        <div className="text-center bg-white rounded-lg p-8 shadow-lg max-w-sm">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-6">
+        <div className="text-center bg-white rounded-3xl p-8 shadow-2xl max-w-sm border border-gray-100 backdrop-blur-xl">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
+            <User className="w-8 h-8 text-white" />
+          </div>
           <h2 className="text-xl font-bold text-gray-900 mb-4">Sign in to view feed</h2>
-          <p className="text-gray-600 mb-6">Join TalentXcel to see personalized content and connect with professionals</p>
-          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+          <p className="text-gray-600 mb-6 leading-relaxed">Join TalentXcel to see personalized content and connect with professionals</p>
+          <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 rounded-xl h-12 font-medium shadow-lg">
             Sign In
           </Button>
         </div>
@@ -329,8 +332,8 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
+      <div className="max-w-2xl mx-auto pt-4 pb-20">
         {posts.map((post) => (
           <LinkedInPostCard
             key={post.id}

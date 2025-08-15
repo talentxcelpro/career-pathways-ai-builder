@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface LinkedInPost {
   id: string;
@@ -47,292 +49,231 @@ interface LinkedInPost {
 
 export const useLinkedInFeed = () => {
   const { user } = useAuth();
-  const [posts, setPosts] = useState<LinkedInPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Mock LinkedIn-style posts with videos
-  const mockPosts: LinkedInPost[] = [
-    {
-      id: '1',
-      user: {
-        id: 'user1',
-        name: 'Sarah Chen',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612c632?w=150&h=150&fit=crop&crop=face',
-        title: 'Senior Product Manager',
-        company: 'Microsoft',
-        isConnection: true
-      },
-      content: {
-        type: 'video',
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-        duration: 45
-      },
-      caption: 'Excited to share our latest product demo! 🚀 Our team has been working tirelessly to deliver this new feature that will revolutionize how teams collaborate. The response from beta users has been incredible.\n\nWhat features do you think are most important for team productivity? Would love to hear your thoughts! #ProductManagement #Innovation #Microsoft',
-      stats: {
-        likes: 234,
-        comments: 18,
-        shares: 7,
-        isLiked: false,
-        isBookmarked: false
-      },
-      timestamp: '2h ago',
-      engagement: {
-        likedBy: ['John Smith', 'Emily Johnson', 'Alex Chen'],
-        topComment: {
-          user: 'John Smith',
-          text: 'This looks amazing! Can\'t wait to try it out with my team.'
-        }
-      }
-    },
-    {
-      id: '2',
-      user: {
-        id: 'user2',
-        name: 'TechCorp Recruiting',
-        avatar: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop',
-        title: 'Official Company Page',
-        company: 'TechCorp Inc.',
-        isConnection: false
-      },
-      content: {
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop'
-      },
-      caption: 'We\'re hiring! 🔥 Join our growing engineering team and help us build the future of technology. We offer competitive compensation, flexible work arrangements, and amazing growth opportunities.',
-      stats: {
-        likes: 89,
-        comments: 12,
-        shares: 23,
-        isLiked: true,
-        isBookmarked: true
-      },
-      isJobPost: true,
-      isPromoted: true,
-      jobDetails: {
-        company: 'TechCorp Inc.',
-        position: 'Senior Full Stack Developer',
-        location: 'San Francisco, CA (Remote)',
-        applyUrl: 'https://techcorp.com/careers'
-      },
-      timestamp: '4h ago',
-      engagement: {
-        likedBy: ['Sarah Chen', 'Mike Wilson'],
-        topComment: {
-          user: 'Mike Wilson',
-          text: 'Great opportunity! Just applied through the website.'
-        }
-      }
-    },
-    {
-      id: '3',
-      user: {
-        id: 'user3',
-        name: 'Alex Rodriguez',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-        title: 'Software Engineer',
-        company: 'Google',
-        isConnection: false
-      },
-      content: {
-        type: 'text',
-        text: 'Just completed my first marathon! 🏃‍♂️ Training for the past 6 months has taught me so much about consistency, goal-setting, and pushing through challenges - lessons that directly apply to software development.'
-      },
-      caption: 'Personal achievement that translates to professional growth 💪 The discipline required for marathon training mirrors what we need in our careers: consistency, patience, and the ability to break down big goals into manageable steps.\n\nWhat personal challenges have helped you grow professionally?',
-      stats: {
-        likes: 156,
-        comments: 24,
-        shares: 5,
-        isLiked: false,
-        isBookmarked: false
-      },
-      timestamp: '6h ago',
-      engagement: {
-        likedBy: ['Emma Watson', 'David Kim'],
-        topComment: {
-          user: 'Emma Watson',
-          text: 'Congratulations! That\'s an amazing achievement. The parallels to software development are spot on.'
-        }
-      }
-    },
-    {
-      id: '4',
-      user: {
-        id: 'user4',
-        name: 'Emily Johnson',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-        title: 'UX Designer',
-        company: 'Figma',
-        isConnection: true
-      },
-      content: {
-        type: 'video',
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
-        duration: 30
-      },
-      caption: 'Behind the scenes of our design process ✨ Here\'s how we went from initial wireframes to final high-fidelity designs in just one week. The key was rapid iteration and constant user feedback.\n\nDesign isn\'t just about making things look pretty - it\'s about solving real user problems. #UXDesign #ProductDesign #DesignThinking',
-      stats: {
-        likes: 298,
-        comments: 31,
-        shares: 12,
-        isLiked: true,
-        isBookmarked: true
-      },
-      timestamp: '8h ago',
-      engagement: {
-        likedBy: ['Sarah Chen', 'Alex Rodriguez', 'Mike Wilson'],
-        topComment: {
-          user: 'David Kim',
-          text: 'Love seeing the design process! The attention to user feedback really shows in the final product.'
-        }
-      }
-    },
-    {
-      id: '5',
-      user: {
-        id: 'user5',
-        name: 'David Kim',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-        title: 'Data Scientist',
-        company: 'Netflix',
-        isConnection: true
-      },
-      content: {
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop'
-      },
-      caption: 'Just wrapped up an incredible data science conference! 📊 The insights on machine learning trends and AI ethics were mind-blowing. It\'s amazing to see how our field is evolving.\n\nKey takeaway: The future of AI isn\'t just about more powerful models, but about making them more transparent, fair, and accessible to everyone.',
-      stats: {
-        likes: 187,
-        comments: 15,
-        shares: 8,
-        isLiked: false,
-        isBookmarked: false
-      },
-      timestamp: '12h ago',
-      engagement: {
-        likedBy: ['Emily Johnson', 'Sarah Chen'],
-        topComment: {
-          user: 'Alex Rodriguez',
-          text: 'Great insights! AI ethics is such an important topic that often gets overlooked.'
-        }
-      }
-    },
-    {
-      id: '6',
-      user: {
-        id: 'user6',
-        name: 'Startup Accelerator',
-        avatar: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop',
-        title: 'Leading Startup Accelerator',
-        company: 'TechStart Ventures',
-        isConnection: false
-      },
-      content: {
-        type: 'video',
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-        duration: 60
-      },
-      caption: '🚀 Demo Day highlights from our latest cohort! These startups are solving real-world problems with innovative technology. From AI-powered healthcare solutions to sustainable energy platforms, the future is bright.\n\nApplications for our next cohort open next month! #Startups #Innovation #Entrepreneurship',
-      stats: {
-        likes: 412,
-        comments: 67,
-        shares: 89,
-        isLiked: false,
-        isBookmarked: true
-      },
-      timestamp: '1d ago',
-      engagement: {
-        likedBy: ['Sarah Chen', 'Emily Johnson', 'David Kim'],
-        topComment: {
-          user: 'Mike Wilson',
-          text: 'Incredible innovation! Looking forward to seeing how these startups grow.'
-        }
-      }
-    }
-  ];
+  // Fetch real posts from Supabase
+  const { data: posts = [], isLoading: loading, error } = useQuery({
+    queryKey: ['linkedInMobilePosts'],
+    queryFn: async () => {
+      if (!user) return [];
 
-  useEffect(() => {
-    const loadFeed = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setPosts(mockPosts);
-      } catch (err) {
-        setError('Failed to load feed');
-        console.error('Error loading feed:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Fetch posts with related data
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          post_likes!left(id, user_id),
+          post_comments!left(id, content, created_at),
+          post_shares!left(id)
+        `)
+        .eq('visibility', 'public')
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: false })
+        .limit(20);
 
-    if (user) {
-      loadFeed();
-    }
-  }, [user]);
+      if (postsError) throw postsError;
 
-  const handleLike = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? {
-            ...post,
-            stats: {
-              ...post.stats,
-              isLiked: !post.stats.isLiked,
-              likes: post.stats.isLiked ? post.stats.likes - 1 : post.stats.likes + 1
-            }
+      // Get unique author IDs
+      const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
+
+      // Get profiles for all authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title, headline, current_company')
+        .in('id', authorIds);
+
+      if (profilesError) throw profilesError;
+
+      // Get current user's connections
+      const { data: connectionsData } = await supabase
+        .from('connections')
+        .select('requester_id, recipient_id, status')
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .eq('status', 'accepted');
+
+      const connections = new Set();
+      connectionsData?.forEach(conn => {
+        if (conn.requester_id === user.id) connections.add(conn.recipient_id);
+        if (conn.recipient_id === user.id) connections.add(conn.requester_id);
+      });
+
+      // Get user's likes
+      const { data: userLikes } = await supabase
+        .from('post_likes')
+        .select('post_id')
+        .eq('user_id', user.id);
+
+      const likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
+
+      // Create profiles map
+      const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
+
+      // Transform posts to LinkedInPost format
+      const transformedPosts: LinkedInPost[] = postsData.map(post => {
+        const profile = profilesMap.get(post.author_id);
+        const isConnection = connections.has(post.author_id);
+        const isLiked = likedPosts.has(post.id);
+        
+        // Get top comment
+        const topComment = post.post_comments && post.post_comments.length > 0 
+          ? post.post_comments[0] 
+          : null;
+
+        // Determine content type and URL
+        let contentType: 'video' | 'image' | 'text' | 'article' = 'text';
+        let contentUrl: string | undefined;
+
+        if (post.media_urls && post.media_urls.length > 0) {
+          const firstMedia = post.media_urls[0];
+          if (firstMedia.includes('.mp4') || firstMedia.includes('.mov') || firstMedia.includes('.avi')) {
+            contentType = 'video';
+          } else {
+            contentType = 'image';
           }
-        : post
-    ));
+          contentUrl = firstMedia;
+        } else if (post.content_type === 'article') {
+          contentType = 'article';
+        }
+
+        return {
+          id: post.id,
+          user: {
+            id: post.author_id,
+            name: profile?.full_name || 'Professional User',
+            avatar: profile?.profile_picture_url,
+            title: profile?.title,
+            company: profile?.current_company,
+            isConnection,
+            isFollowing: isConnection
+          },
+          content: {
+            type: contentType,
+            url: contentUrl,
+            text: post.content
+          },
+          caption: post.content,
+          stats: {
+            likes: post.post_likes?.length || 0,
+            comments: post.post_comments?.length || 0,
+            shares: post.post_shares?.length || 0,
+            isLiked,
+            isBookmarked: false // TODO: Implement bookmarks
+          },
+          isJobPost: post.content_type === 'job' || post.tags?.includes('job'),
+          isPromoted: false, // TODO: Implement promoted posts
+          jobDetails: post.content_type === 'job' ? {
+            company: profile?.current_company || 'Company',
+            position: post.headline || 'Job Position',
+            location: 'Location', // TODO: Add location field
+            applyUrl: post.featured_image_url // Using featured_image_url as placeholder for apply URL
+          } : undefined,
+          timestamp: formatTimeAgo(post.created_at),
+          engagement: {
+            likedBy: [], // TODO: Get liked by users
+            topComment: topComment ? {
+              user: 'User', // TODO: Get commenter name
+              text: topComment.content || 'Comment'
+            } : undefined
+          }
+        };
+      });
+
+      return transformedPosts;
+    },
+    enabled: !!user
+  });
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
+    return `${Math.floor(diffInSeconds / 86400)}d`;
+  };
+
+  const handleLike = async (postId: string) => {
+    if (!user) return;
+
+    try {
+      // Check if already liked
+      const { data: existingLike } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingLike) {
+        // Unlike
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+      } else {
+        // Like
+        await supabase
+          .from('post_likes')
+          .insert({
+            post_id: postId,
+            user_id: user.id
+          });
+      }
+
+      // Refresh the posts
+      queryClient.invalidateQueries({ queryKey: ['linkedInMobilePosts'] });
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
   };
 
   const handleBookmark = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? {
-            ...post,
-            stats: {
-              ...post.stats,
-              isBookmarked: !post.stats.isBookmarked
-            }
-          }
-        : post
-    ));
+    // TODO: Implement bookmarking
+    console.log('Bookmark post:', postId);
   };
 
   const handleShare = (postId: string) => {
+    // TODO: Implement sharing
     console.log('Share post:', postId);
   };
 
   const handleComment = (postId: string) => {
+    // TODO: Implement comment modal
     console.log('Comment on post:', postId);
   };
 
-  const handleConnect = (userId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.user.id === userId 
-        ? {
-            ...post,
-            user: {
-              ...post.user,
-              isConnection: true
-            }
-          }
-        : post
-    ));
+  const handleConnect = async (userId: string) => {
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('connections')
+        .insert({
+          requester_id: user.id,
+          recipient_id: userId,
+          status: 'pending'
+        });
+
+      // Refresh the posts to update connection status
+      queryClient.invalidateQueries({ queryKey: ['linkedInMobilePosts'] });
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+    }
   };
 
   const handleApply = (jobUrl: string) => {
-    window.open(jobUrl, '_blank');
+    if (jobUrl) {
+      window.open(jobUrl, '_blank');
+    }
   };
 
   return {
     posts,
     loading,
-    error,
+    error: error?.message || null,
     handleLike,
     handleBookmark,
     handleShare,
