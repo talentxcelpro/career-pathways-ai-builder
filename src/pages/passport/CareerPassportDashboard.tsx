@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   QrCode, 
   Share2, 
@@ -19,7 +20,15 @@ import {
   Zap,
   TrendingUp,
   Users,
-  Award
+  Award,
+  Briefcase,
+  FileText,
+  Shield,
+  ArrowRight,
+  Plus,
+  Trophy,
+  Target,
+  MoreHorizontal
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -38,19 +47,21 @@ export function CareerPassportDashboard() {
   const [publicProfile, setPublicProfile] = useState<any>(null);
 
   useEffect(() => {
-    // Load public profile data
     const loadPublicProfile = async () => {
       if (!user?.id) return;
       
-      // Try to get public profile - using any type to bypass TypeScript error
-      const { data } = await (supabase as any)
-        .from('public_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (data) {
-        setPublicProfile(data);
+      try {
+        const { data } = await supabase
+          .from('public_profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (data) {
+          setPublicProfile(data);
+        }
+      } catch (error) {
+        console.error('Error loading public profile:', error);
       }
     };
 
@@ -71,7 +82,7 @@ export function CareerPassportDashboard() {
 
       if (error) throw error;
 
-      if (data?.success) {
+      if (data?.success || data?.qrCodeData) {
         setPublicProfile({
           qr_code_data: data.qrCodeData,
           public_url: data.publicUrl,
@@ -79,7 +90,7 @@ export function CareerPassportDashboard() {
         });
         toast.success('QR code generated successfully!');
       } else {
-        toast.error(data?.error || 'Failed to generate QR code');
+        toast.error(data?.error || data?.warning || 'QR code generation completed with warnings');
       }
     } catch (error) {
       console.error('QR generation error:', error);
@@ -99,62 +110,54 @@ export function CareerPassportDashboard() {
   const completion = getCompletionBreakdown();
   const nextMilestone = getNextMilestone();
 
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user?.user_metadata?.full_name) return 'U';
+    return user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
+  };
+
+  const getCompletionPercentage = () => careerPassport?.completion_percentage || 40;
+  const getCareerReadiness = () => careerPassport?.career_readiness_score || 60;
+  const getMarketCompetitiveness = () => careerPassport?.market_competitiveness_score || 45;
+
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 space-y-8">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-96" />
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto p-6 space-y-8">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <Skeleton className="h-64 w-full" />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-32 w-full" />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-6">
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-48" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-24 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (!careerPassport && !isLoading) {
-    return (
-      <div className="container mx-auto p-6">
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            No career passport found. Complete your profile to get started.
-          </AlertDescription>
-        </Alert>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Career Passport
-            </h1>
-            <p className="text-muted-foreground">
-              Your comprehensive professional profile and achievements
-            </p>
-          </div>
-          
+          <h1 className="text-3xl font-bold tracking-tight">Career Passport</h1>
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="px-3 py-1">
               <Award className="h-3 w-3 mr-1" />
-              TXL{String(careerPassport?.id).slice(-3) || '001'}
+              TXL{String(careerPassport?.id).slice(-3) || user?.id?.slice(-3) || '001'}
             </Badge>
             
             <Button onClick={generateQRCode} disabled={isGeneratingQR} size="sm">
@@ -164,228 +167,310 @@ export function CareerPassportDashboard() {
           </div>
         </div>
 
-        {/* Profile Overview */}
-        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="text-2xl">👤</div>
-              TalentXcel Professional
-            </CardTitle>
-            <CardDescription className="text-lg">
-              Building an exceptional career journey
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Profile Completion</span>
-                  <span className="text-sm text-muted-foreground">
-                    {careerPassport?.completion_percentage || 0}%
-                  </span>
-                </div>
-                <Progress value={careerPassport?.completion_percentage || 0} className="h-2" />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Career Readiness</span>
-                  <span className="text-sm text-muted-foreground">
-                    {careerPassport?.career_readiness_score || 0}/100
-                  </span>
-                </div>
-                <Progress value={careerPassport?.career_readiness_score || 0} className="h-2" />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Market Competitiveness</span>
-                  <span className="text-sm text-muted-foreground">
-                    {careerPassport?.market_competitiveness_score || 0}/100
-                  </span>
-                </div>
-                <Progress value={careerPassport?.market_competitiveness_score || 0} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {careerPassport?.resumes_count || 0}
-              </div>
-              <div className="text-sm text-muted-foreground">Resumes Created</div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {careerPassport?.jobs_applied_count || 0}
-              </div>
-              <div className="text-sm text-muted-foreground">Jobs Applied</div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {careerPassport?.certifications_count || 0}
-              </div>
-              <div className="text-sm text-muted-foreground">Certifications</div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {careerPassport?.connections_count || 0}
-              </div>
-              <div className="text-sm text-muted-foreground">Connections</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* QR Code & Sharing */}
-      {publicProfile && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Share2 className="h-5 w-5" />
-              Share Your Profile
-            </CardTitle>
-            <CardDescription>
-              Share your career passport with employers and connections
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* QR Code */}
-              <div className="text-center space-y-4">
-                <div className="inline-block p-4 bg-white rounded-lg border">
-                  <img 
-                    src={publicProfile.qr_code_data} 
-                    alt="Career Passport QR Code"
-                    className="w-32 h-32"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Scan to view profile
-                  </p>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download QR
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Public URL */}
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Public Profile URL</label>
-                  <div className="flex mt-2">
-                    <input
-                      type="text"
-                      value={publicProfile.public_url || ''}
-                      readOnly
-                      className="flex-1 px-3 py-2 border rounded-l-md bg-muted text-sm"
-                    />
-                    <Button
-                      onClick={copyPublicUrl}
-                      variant="outline"
-                      size="sm"
-                      className="rounded-l-none"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View Public Profile
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Next Steps */}
-      {nextMilestone && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Next Milestone
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Zap className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">{nextMilestone.message}</p>
-                <p className="text-sm text-muted-foreground">
-                  +{nextMilestone.points} points
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Recent Achievements */}
-      {achievements && achievements.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Recent Achievements
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent>
-            <div className="space-y-3">
-              {achievements.slice(0, 3).map((achievement: any) => (
-                <div key={achievement.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Hero Section */}
+            <Card className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 text-white border-0 overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
+              <CardContent className="p-8 relative">
+                <div className="flex items-start gap-4 mb-6">
+                  <Avatar className="h-16 w-16 border-4 border-white/20">
+                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
                   <div>
-                    <p className="font-medium">{achievement.achievement_title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {achievement.achievement_description}
+                    <h2 className="text-2xl font-bold mb-2">
+                      Hi {user?.user_metadata?.full_name?.split(' ')[0] || 'User'}, you're {getCompletionPercentage()}% Career Ready!
+                    </h2>
+                    <p className="text-white/80">
+                      Complete your profile to unlock more job opportunities
                     </p>
                   </div>
-                  <Badge variant="secondary" className="ml-auto">
-                    +{achievement.points_awarded}
-                  </Badge>
                 </div>
-              ))}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-white/90">Profile Completion</span>
+                      <span className="text-sm font-bold">{getCompletionPercentage()}%</span>
+                    </div>
+                    <Progress value={getCompletionPercentage()} className="h-2 bg-white/20" />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-white/90">Career Readiness</span>
+                      <span className="text-sm font-bold">{getCareerReadiness()}%</span>
+                    </div>
+                    <Progress value={getCareerReadiness()} className="h-2 bg-white/20" />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-white/90">Market Competitiveness</span>
+                      <span className="text-sm font-bold">{getMarketCompetitiveness()}%</span>
+                    </div>
+                    <Progress value={getMarketCompetitiveness()} className="h-2 bg-white/20" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                      <FileText className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                      {careerPassport?.resumes_count || 0}
+                    </div>
+                    <div className="text-sm text-gray-600">Resumes Created</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      Create your first resume to boost resultless by +15%
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                      <Briefcase className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                      {careerPassport?.jobs_applied_count || 0}
+                    </div>
+                    <div className="text-sm text-gray-600">Jobs Applied</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                      <Shield className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                      {careerPassport?.certifications_count || 0}
+                    </div>
+                    <div className="text-sm text-gray-600">Certifications</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
+                      <Users className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 mb-1">
+                      {careerPassport?.connections_count || 0}
+                    </div>
+                    <div className="text-sm text-gray-600">Connections</div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-      )}
+
+            {/* AI Career Coach */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <Zap className="h-4 w-4 text-white" />
+                    </div>
+                    <CardTitle>AI Career Coach</CardTitle>
+                  </div>
+                  <Button variant="ghost" size="sm">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <ArrowRight className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <p className="font-medium">Add 2 more skills</p>
+                      <p className="text-sm text-gray-600">to increase competitiveness by +10%</p>
+                    </div>
+                  </div>
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    Add Skills
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Next Milestone */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Next Milestone
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600">+24 points</span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-gray-400" />
+                    <div>
+                      <span className="text-sm text-gray-600">Next Milestone</span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-gray-400" />
+                    <div className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-orange-500" />
+                      <span className="text-sm font-medium">Career Builder Badge</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button className="w-full" variant="outline">
+                    Complete Profile Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Career Passport Card */}
+            <Card className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 text-white border-0">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Career Passport</CardTitle>
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-start gap-3 mb-4">
+                  <Avatar className="h-12 w-12 border-2 border-white/20">
+                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-white/20 text-white font-bold">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      Hi {user?.user_metadata?.full_name?.split(' ')[0] || 'User'}
+                    </h3>
+                    <p className="text-white/80 text-sm">you're {getCompletionPercentage()}% Career Ready!</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-white/90">Profile Completion</span>
+                      <span>{getCompletionPercentage()}%</span>
+                    </div>
+                    <Progress value={getCompletionPercentage()} className="h-1.5 bg-white/20" />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-white/90">Market Competitiveness</span>
+                      <span>{getMarketCompetitiveness()}%</span>
+                    </div>
+                    <Progress value={getMarketCompetitiveness()} className="h-1.5 bg-white/20" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div>
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <FileText className="h-4 w-4" />
+                    </div>
+                    <div className="text-sm font-medium">Resumes Created</div>
+                  </div>
+                  <div>
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Shield className="h-4 w-4" />
+                    </div>
+                    <div className="text-sm font-medium">Certifications</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Career Coach Sidebar */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-md flex items-center justify-center">
+                    <Zap className="h-3 w-3 text-white" />
+                  </div>
+                  AI Career Coach
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <ArrowRight className="h-4 w-4 text-blue-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium">Complete your work experience to unlock Professional badge</p>
+                    </div>
+                  </div>
+                  <Button size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    Add Work Experience
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* QR Code Section */}
+            {publicProfile?.qr_code_data && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <QrCode className="h-4 w-4" />
+                    Share Profile
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="inline-block p-3 bg-white rounded-lg border mb-3">
+                    <img 
+                      src={publicProfile.qr_code_data} 
+                      alt="Career Passport QR Code"
+                      className="w-20 h-20"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={copyPublicUrl}
+                      className="w-full"
+                    >
+                      <Copy className="h-3 w-3 mr-2" />
+                      Copy Link
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
