@@ -15,16 +15,15 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
-import { ReelsFeed } from "@/components/mobile/ReelsFeed";
-import { ReelsHeader } from "@/components/mobile/ReelsHeader";
+import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
+import { LinkedInMobileHeader } from "@/components/mobile/LinkedInMobileHeader";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
-import { useReelsFeed } from "@/hooks/useReelsFeed";
+import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
   const { user } = useAuth();
-  const [reelsTab, setReelsTab] = useState<'following' | 'explore'>('explore');
   
   const {
     posts,
@@ -34,9 +33,9 @@ const Network = () => {
     handleBookmark,
     handleShare,
     handleComment,
-    handleFollow,
+    handleConnect,
     handleApply
-  } = useReelsFeed(reelsTab);
+  } = useLinkedInFeed();
 
   // SEO meta tags and structured data
   React.useEffect(() => {
@@ -83,26 +82,26 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile Reels-style interface
+  // Mobile LinkedIn-style interface
   if (isMobile && user) {
     return (
-      <div className="fixed inset-0 bg-black">
-        <ReelsHeader
-          activeTab={reelsTab}
-          onTabChange={setReelsTab}
+      <div className="min-h-screen bg-gray-100">
+        <LinkedInMobileHeader
           onSearch={() => console.log('Search')}
-          onNotifications={() => console.log('Notifications')}
           onMessages={() => console.log('Messages')}
-          notificationCount={3}
+          onNotifications={() => console.log('Notifications')}
+          onProfile={() => console.log('Profile')}
+          onMenu={() => console.log('Menu')}
           messageCount={5}
+          notificationCount={3}
         />
-        <ReelsFeed
+        <LinkedInMobileFeed
           posts={posts}
           onLike={handleLike}
           onBookmark={handleBookmark}
           onShare={handleShare}
           onComment={handleComment}
-          onFollow={handleFollow}
+          onConnect={handleConnect}
           onApply={handleApply}
         />
       </div>
