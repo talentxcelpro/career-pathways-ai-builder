@@ -2,7 +2,6 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
-// Use QR Code generator from esm.sh
 import QRCode from "npm:qrcode@1.5.3";
 
 const FALLBACK_TEXT = "https://talentxcel.in/error";
@@ -17,18 +16,16 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
-// Helper: generate SVG data URL without canvas (safe for Deno runtime)
-async function generateSvgDataUrl(
+// Generate QR as data URL - safe for Deno runtime
+async function generateQRDataUrl(
   text: string,
   opts?: { width?: number; margin?: number; errorCorrectionLevel?: "L" | "M" | "Q" | "H" }
-) {
-  const svg = await QRCode.toString(text, {
-    type: "svg",
+): Promise<string> {
+  return await QRCode.toDataURL(text, {
     errorCorrectionLevel: opts?.errorCorrectionLevel ?? DEFAULT_ECL,
     width: opts?.width ?? DEFAULT_SIZE,
     margin: opts?.margin ?? DEFAULT_MARGIN,
-  } as any);
-  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  });
 }
 
 serve(async (req) => {
@@ -40,7 +37,7 @@ serve(async (req) => {
       body = await req.json();
     } catch (err) {
       console.error("Invalid JSON:", err);
-      const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
+      const fallback = await generateQRDataUrl(FALLBACK_TEXT, {
         errorCorrectionLevel: DEFAULT_ECL,
         width: DEFAULT_SIZE,
         margin: DEFAULT_MARGIN,
@@ -63,7 +60,7 @@ serve(async (req) => {
       if (textInput.length > 0) {
         try {
           const dataUrl = await withTimeout(
-            generateSvgDataUrl(textInput, {
+            generateQRDataUrl(textInput, {
               errorCorrectionLevel: DEFAULT_ECL,
               width: DEFAULT_SIZE,
               margin: DEFAULT_MARGIN,
@@ -73,7 +70,21 @@ serve(async (req) => {
           return json({ success: true, mode: "generic", qrCodeData: dataUrl, timestamp: now() });
         } catch (genErr) {
           console.error("QR generation error (generic):", genErr);
-          const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
+          // Log error to platform_analytics
+          try {
+            await supabase.from("platform_analytics").insert({
+              user_id: "system",
+              event_type: "qr_generation_error",
+              module_name: "qr-generator",
+              event_data: { error: getErrMsg(genErr), text: textInput },
+              session_id: generateSessionId(),
+              timestamp: now(),
+            });
+          } catch (logErr) {
+            console.warn("Failed to log error:", logErr);
+          }
+          
+          const fallback = await generateQRDataUrl(FALLBACK_TEXT, {
             errorCorrectionLevel: DEFAULT_ECL,
             width: DEFAULT_SIZE,
             margin: DEFAULT_MARGIN,
@@ -81,7 +92,7 @@ serve(async (req) => {
           return json({ success: false, mode: "generic", error: "QR generation failed", qrCodeData: fallback, timestamp: now() });
         }
       } else {
-        const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
+        const fallback = await generateQRDataUrl(FALLBACK_TEXT, {
           errorCorrectionLevel: DEFAULT_ECL,
           width: DEFAULT_SIZE,
           margin: DEFAULT_MARGIN,
@@ -105,7 +116,7 @@ serve(async (req) => {
     let dataUrl: string;
     try {
       dataUrl = await withTimeout(
-        generateSvgDataUrl(publicUrl, {
+        generateQRDataUrl(publicUrl, {
           errorCorrectionLevel: DEFAULT_ECL,
           width: DEFAULT_SIZE,
           margin: DEFAULT_MARGIN,
@@ -114,7 +125,21 @@ serve(async (req) => {
       );
     } catch (genErr) {
       console.error("QR generation error (profile):", genErr);
-      dataUrl = await generateSvgDataUrl(FALLBACK_TEXT, {
+      // Log error to platform_analytics
+      try {
+        await supabase.from("platform_analytics").insert({
+          user_id: userId,
+          event_type: "qr_generation_error",
+          module_name: "qr-generator",
+          event_data: { error: getErrMsg(genErr), url: publicUrl },
+          session_id: generateSessionId(),
+          timestamp: now(),
+        });
+      } catch (logErr) {
+        console.warn("Failed to log error:", logErr);
+      }
+      
+      dataUrl = await generateQRDataUrl(FALLBACK_TEXT, {
         errorCorrectionLevel: DEFAULT_ECL,
         width: DEFAULT_SIZE,
         margin: DEFAULT_MARGIN,
@@ -164,12 +189,19 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("QR Generator error:", error);
-    const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
-      errorCorrectionLevel: DEFAULT_ECL,
-      width: DEFAULT_SIZE,
-      margin: DEFAULT_MARGIN,
-    });
-    return json({ success: false, error: getErrMsg(error), qrCodeData: fallback, timestamp: now() });
+    
+    // Always return a fallback QR code, never fail completely
+    try {
+      const fallback = await generateQRDataUrl(FALLBACK_TEXT, {
+        errorCorrectionLevel: DEFAULT_ECL,
+        width: DEFAULT_SIZE,
+        margin: DEFAULT_MARGIN,
+      });
+      return json({ success: false, error: getErrMsg(error), qrCodeData: fallback, timestamp: now() });
+    } catch (fallbackErr) {
+      console.error("Even fallback QR failed:", fallbackErr);
+      return json({ success: false, error: "Complete QR generation failure", timestamp: now() }, 500);
+    }
   }
 });
 
