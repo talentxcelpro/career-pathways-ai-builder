@@ -164,7 +164,8 @@ serve(async (req) => {
 
     if (upsertErr) {
       console.error("Public profile save error:", upsertErr);
-      return json({ success: false, error: "Failed to save public profile", publicUrl, qrCodeData: dataUrl, timestamp: now() });
+      // Do not fail QR generation if DB save fails; return QR and URL with a warning
+      return json({ success: true, warning: "Public profile not saved", publicUrl, qrCodeData: dataUrl, timestamp: now() });
     }
 
     // Log analytics (best effort)
