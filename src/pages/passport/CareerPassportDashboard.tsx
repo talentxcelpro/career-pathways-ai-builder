@@ -75,8 +75,7 @@ export function CareerPassportDashboard() {
     try {
       const { data, error } = await supabase.functions.invoke('qr-generator', {
         body: { 
-          userId: user.id,
-          profileData: careerPassport 
+          userId: user.id
         }
       });
 
