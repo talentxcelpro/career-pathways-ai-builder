@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
 // Use QR Code generator from esm.sh
-import QRCode from "https://esm.sh/qrcode@1.5.3";
+import QRCode from "npm:qrcode@1.5.3";
 
 const FALLBACK_TEXT = "https://talentxcel.in/error";
 const DEFAULT_SIZE = 384;
@@ -17,6 +17,20 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+// Helper: generate SVG data URL without canvas (safe for Deno runtime)
+async function generateSvgDataUrl(
+  text: string,
+  opts?: { width?: number; margin?: number; errorCorrectionLevel?: "L" | "M" | "Q" | "H" }
+) {
+  const svg = await QRCode.toString(text, {
+    type: "svg",
+    errorCorrectionLevel: opts?.errorCorrectionLevel ?? DEFAULT_ECL,
+    width: opts?.width ?? DEFAULT_SIZE,
+    margin: opts?.margin ?? DEFAULT_MARGIN,
+  } as any);
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -26,7 +40,7 @@ serve(async (req) => {
       body = await req.json();
     } catch (err) {
       console.error("Invalid JSON:", err);
-      const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+      const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
         errorCorrectionLevel: DEFAULT_ECL,
         width: DEFAULT_SIZE,
         margin: DEFAULT_MARGIN,
@@ -49,7 +63,7 @@ serve(async (req) => {
       if (textInput.length > 0) {
         try {
           const dataUrl = await withTimeout(
-            QRCode.toDataURL(textInput, {
+            generateSvgDataUrl(textInput, {
               errorCorrectionLevel: DEFAULT_ECL,
               width: DEFAULT_SIZE,
               margin: DEFAULT_MARGIN,
@@ -59,7 +73,7 @@ serve(async (req) => {
           return json({ success: true, mode: "generic", qrCodeData: dataUrl, timestamp: now() });
         } catch (genErr) {
           console.error("QR generation error (generic):", genErr);
-          const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+          const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
             errorCorrectionLevel: DEFAULT_ECL,
             width: DEFAULT_SIZE,
             margin: DEFAULT_MARGIN,
@@ -67,7 +81,7 @@ serve(async (req) => {
           return json({ success: false, mode: "generic", error: "QR generation failed", qrCodeData: fallback, timestamp: now() });
         }
       } else {
-        const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+        const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
           errorCorrectionLevel: DEFAULT_ECL,
           width: DEFAULT_SIZE,
           margin: DEFAULT_MARGIN,
@@ -79,7 +93,7 @@ serve(async (req) => {
     const custom = (body.customUrl ?? "").toString().trim();
     let publicSlug: string;
     if (custom) {
-      const sanitized = sanitizeSlug(custom);
+      const sanitized = validateCustomSlug(custom);
       publicSlug = sanitized ?? generateUniqueSlug(userId);
     } else {
       publicSlug = generateUniqueSlug(userId);
@@ -91,7 +105,7 @@ serve(async (req) => {
     let dataUrl: string;
     try {
       dataUrl = await withTimeout(
-        QRCode.toDataURL(publicUrl, {
+        generateSvgDataUrl(publicUrl, {
           errorCorrectionLevel: DEFAULT_ECL,
           width: DEFAULT_SIZE,
           margin: DEFAULT_MARGIN,
@@ -100,7 +114,7 @@ serve(async (req) => {
       );
     } catch (genErr) {
       console.error("QR generation error (profile):", genErr);
-      dataUrl = await QRCode.toDataURL(FALLBACK_TEXT, {
+      dataUrl = await generateSvgDataUrl(FALLBACK_TEXT, {
         errorCorrectionLevel: DEFAULT_ECL,
         width: DEFAULT_SIZE,
         margin: DEFAULT_MARGIN,
@@ -150,7 +164,7 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("QR Generator error:", error);
-    const fallback = await QRCode.toDataURL(FALLBACK_TEXT, {
+    const fallback = await generateSvgDataUrl(FALLBACK_TEXT, {
       errorCorrectionLevel: DEFAULT_ECL,
       width: DEFAULT_SIZE,
       margin: DEFAULT_MARGIN,
