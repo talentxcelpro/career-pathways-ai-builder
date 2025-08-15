@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
@@ -15,8 +15,29 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
+import { ReelsFeed } from "@/components/mobile/ReelsFeed";
+import { ReelsHeader } from "@/components/mobile/ReelsHeader";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { useReelsFeed } from "@/hooks/useReelsFeed";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Network = () => {
+  const { isMobile } = useMobileDetection();
+  const { user } = useAuth();
+  const [reelsTab, setReelsTab] = useState<'following' | 'explore'>('explore');
+  
+  const {
+    posts,
+    loading,
+    error,
+    handleLike,
+    handleBookmark,
+    handleShare,
+    handleComment,
+    handleFollow,
+    handleApply
+  } = useReelsFeed(reelsTab);
+
   // SEO meta tags and structured data
   React.useEffect(() => {
     updateMetaTags({
@@ -62,6 +83,33 @@ const Network = () => {
     };
   }, []);
 
+  // Mobile Reels-style interface
+  if (isMobile && user) {
+    return (
+      <div className="fixed inset-0 bg-black">
+        <ReelsHeader
+          activeTab={reelsTab}
+          onTabChange={setReelsTab}
+          onSearch={() => console.log('Search')}
+          onNotifications={() => console.log('Notifications')}
+          onMessages={() => console.log('Messages')}
+          notificationCount={3}
+          messageCount={5}
+        />
+        <ReelsFeed
+          posts={posts}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+          onShare={handleShare}
+          onComment={handleComment}
+          onFollow={handleFollow}
+          onApply={handleApply}
+        />
+      </div>
+    );
+  }
+
+  // Desktop interface
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       {/* Main Content with Tabs */}
