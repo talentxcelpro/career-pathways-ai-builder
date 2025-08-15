@@ -2,8 +2,8 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
-// Deno QR code generator that outputs SVG
-import { QRCode } from "https://deno.land/x/qrcode@v2.0.0/mod.ts";
+// Use a reliable QR generator from JSR
+import { qrcode } from "https://deno.land/x/qrcode@v2.0.0/mod.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -37,9 +37,9 @@ serve(async (req) => {
 
     const publicUrl = `https://talentxcel.lovable.app/passport/${publicSlug}`;
 
-    // Real QR SVG
-    const svg = await QRCode.render(publicUrl, { type: "svg", scale: 4 });
-    const dataUrl = `data:image/svg+xml;base64,${btoa(svg)}`;
+    // Generate QR code using qrcode function
+    const qrSvg = qrcode(publicUrl, { type: "svg" });
+    const dataUrl = `data:image/svg+xml;base64,${btoa(qrSvg)}`;
 
     // Upsert public profile
     const { data: upserted, error: upsertErr } = await supabase
