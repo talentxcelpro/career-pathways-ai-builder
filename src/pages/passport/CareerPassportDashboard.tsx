@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useProfile } from '@/hooks/useProfile';
@@ -47,7 +47,8 @@ export function CareerPassportDashboard() {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone } = useCareerPassport();
+  const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone, trackJourneyEvent, updateCareerPassport } = useCareerPassport();
+  const navigate = useNavigate();
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [publicProfile, setPublicProfile] = useState<any>(null);
   const [publicPassportData, setPublicPassportData] = useState<any>(null);
@@ -198,6 +199,154 @@ export function CareerPassportDashboard() {
       navigator.clipboard.writeText(publicProfile.public_url);
       toast.success('Public URL copied to clipboard!');
     }
+  };
+
+  // Quick Action Handlers
+  const handleAddWorkExperience = async () => {
+    if (!displayData.isOwner) {
+      toast.error('Please sign in to add work experience');
+      return;
+    }
+    
+    try {
+      trackJourneyEvent.mutate({
+        eventType: 'profile_action',
+        eventModule: 'work_experience',
+        eventData: { action: 'add_experience_clicked' }
+      });
+      navigate('/profile/edit?section=experience');
+      toast.success('Redirecting to add work experience...');
+    } catch (error) {
+      console.error('Error tracking experience action:', error);
+      navigate('/profile/edit?section=experience');
+    }
+  };
+
+  const handleGetCertified = async () => {
+    if (!displayData.isOwner) {
+      toast.error('Please sign in to access certifications');
+      return;
+    }
+    
+    try {
+      trackJourneyEvent.mutate({
+        eventType: 'learning_action',
+        eventModule: 'certifications',
+        eventData: { action: 'get_certified_clicked' }
+      });
+      navigate('/learning');
+      toast.success('Redirecting to learning hub...');
+    } catch (error) {
+      console.error('Error tracking certification action:', error);
+      navigate('/learning');
+    }
+  };
+
+  const handleBuildNetwork = async () => {
+    if (!displayData.isOwner) {
+      toast.error('Please sign in to build your network');
+      return;
+    }
+    
+    try {
+      trackJourneyEvent.mutate({
+        eventType: 'network_action',
+        eventModule: 'connections',
+        eventData: { action: 'build_network_clicked' }
+      });
+      navigate('/network');
+      toast.success('Redirecting to network...');
+    } catch (error) {
+      console.error('Error tracking network action:', error);
+      navigate('/network');
+    }
+  };
+
+  const handleCompleteProfile = async () => {
+    if (!displayData.isOwner) {
+      toast.error('Please sign in to complete profile');
+      return;
+    }
+    
+    try {
+      trackJourneyEvent.mutate({
+        eventType: 'profile_action',
+        eventModule: 'complete_profile',
+        eventData: { current_completion: getCompletionPercentage() }
+      });
+      navigate('/profile/edit');
+      toast.success('Redirecting to complete profile...');
+    } catch (error) {
+      console.error('Error tracking profile completion:', error);
+      navigate('/profile/edit');
+    }
+  };
+
+  const handleCreateResume = async () => {
+    if (!displayData.isOwner) {
+      toast.error('Please sign in to create resume');
+      return;
+    }
+    
+    try {
+      trackJourneyEvent.mutate({
+        eventType: 'resume_action',
+        eventModule: 'create_resume',
+        eventData: { action: 'create_resume_clicked' }
+      });
+      navigate('/resume/create');
+      toast.success('Redirecting to resume builder...');
+    } catch (error) {
+      console.error('Error tracking resume action:', error);
+      navigate('/resume/create');
+    }
+  };
+
+  const handleApplyJobs = async () => {
+    if (!displayData.isOwner) {
+      toast.error('Please sign in to apply for jobs');
+      return;
+    }
+    
+    try {
+      trackJourneyEvent.mutate({
+        eventType: 'job_action',
+        eventModule: 'apply_jobs',
+        eventData: { action: 'apply_jobs_clicked' }
+      });
+      navigate('/jobs');
+      toast.success('Redirecting to job board...');
+    } catch (error) {
+      console.error('Error tracking job application action:', error);
+      navigate('/jobs');
+    }
+  };
+
+  const handleSendConnectionRequest = async () => {
+    if (!userId || userId === user?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .insert([{
+          requester_id: user?.id,
+          recipient_id: userId,
+          status: 'pending'
+        }]);
+
+      if (error) throw error;
+      
+      toast.success('Connection request sent!');
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast.error('Failed to send connection request');
+    }
+  };
+
+  const handleShareProfile = () => {
+    const shareUrl = `https://talentxcel.in/passport/${userId}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Profile link copied to clipboard!');
   };
 
   const completion = getCompletionBreakdown();
@@ -399,7 +548,10 @@ export function CareerPassportDashboard() {
 
             {/* Enhanced Career Metrics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="hover:shadow-lg transition-all hover:scale-105 border-l-4 border-l-blue-500">
+              <Card 
+                className={`hover:shadow-lg transition-all border-l-4 border-l-blue-500 ${displayData.isOwner ? 'hover:scale-105 cursor-pointer' : ''}`}
+                onClick={displayData.isOwner ? handleCreateResume : undefined}
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
                     <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4 relative">
@@ -423,7 +575,10 @@ export function CareerPassportDashboard() {
                 </CardContent>
               </Card>
               
-              <Card className="hover:shadow-lg transition-all hover:scale-105 border-l-4 border-l-purple-500">
+              <Card 
+                className={`hover:shadow-lg transition-all border-l-4 border-l-purple-500 ${displayData.isOwner ? 'hover:scale-105 cursor-pointer' : ''}`}
+                onClick={displayData.isOwner ? handleApplyJobs : undefined}
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
                     <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4 relative">
@@ -447,7 +602,10 @@ export function CareerPassportDashboard() {
                 </CardContent>
               </Card>
               
-              <Card className="hover:shadow-lg transition-all hover:scale-105 border-l-4 border-l-green-500">
+              <Card 
+                className={`hover:shadow-lg transition-all border-l-4 border-l-green-500 ${displayData.isOwner ? 'hover:scale-105 cursor-pointer' : ''}`}
+                onClick={displayData.isOwner ? handleGetCertified : undefined}
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
                     <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4 relative">
@@ -471,7 +629,10 @@ export function CareerPassportDashboard() {
                 </CardContent>
               </Card>
               
-              <Card className="hover:shadow-lg transition-all hover:scale-105 border-l-4 border-l-orange-500">
+              <Card 
+                className={`hover:shadow-lg transition-all border-l-4 border-l-orange-500 ${displayData.isOwner ? 'hover:scale-105 cursor-pointer' : ''}`}
+                onClick={displayData.isOwner ? handleBuildNetwork : undefined}
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
                     <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4 relative">
@@ -531,10 +692,14 @@ export function CareerPassportDashboard() {
                             }
                           </p>
                           <div className="flex gap-2">
-                            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button 
+                              size="sm" 
+                              className="bg-indigo-600 hover:bg-indigo-700"
+                              onClick={getCompletionPercentage() < 70 ? handleCompleteProfile : handleAddWorkExperience}
+                            >
                               {getCompletionPercentage() < 70 ? 'Complete Profile' : 'Add Skills'}
                             </Button>
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" onClick={handleCompleteProfile}>
                               View All Tips
                             </Button>
                           </div>
@@ -544,11 +709,21 @@ export function CareerPassportDashboard() {
                     
                     {/* Quick Actions */}
                     <div className="grid grid-cols-2 gap-3">
-                      <Button variant="outline" size="sm" className="h-auto p-3 flex flex-col items-center gap-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-auto p-3 flex flex-col items-center gap-1"
+                        onClick={handleAddWorkExperience}
+                      >
                         <Plus className="h-4 w-4" />
                         <span className="text-xs">Add Experience</span>
                       </Button>
-                      <Button variant="outline" size="sm" className="h-auto p-3 flex flex-col items-center gap-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-auto p-3 flex flex-col items-center gap-1"
+                        onClick={handleGetCertified}
+                      >
                         <Award className="h-4 w-4" />
                         <span className="text-xs">Get Certified</span>
                       </Button>
@@ -628,7 +803,10 @@ export function CareerPassportDashboard() {
                       </div>
                     </div>
                     
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button 
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      onClick={getCompletionPercentage() < 70 ? handleCompleteProfile : handleAddWorkExperience}
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Complete Next Action
                     </Button>
@@ -715,15 +893,30 @@ export function CareerPassportDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <Button size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700" variant="outline">
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-indigo-600 hover:bg-indigo-700" 
+                      variant="outline"
+                      onClick={handleAddWorkExperience}
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Work Experience
                     </Button>
-                    <Button size="sm" className="w-full" variant="outline">
+                    <Button 
+                      size="sm" 
+                      className="w-full" 
+                      variant="outline"
+                      onClick={handleGetCertified}
+                    >
                       <Award className="h-4 w-4 mr-2" />
                       Get Certified
                     </Button>
-                    <Button size="sm" className="w-full" variant="outline">
+                    <Button 
+                      size="sm" 
+                      className="w-full" 
+                      variant="outline"
+                      onClick={handleBuildNetwork}
+                    >
                       <Users className="h-4 w-4 mr-2" />
                       Build Network
                     </Button>
@@ -743,11 +936,19 @@ export function CareerPassportDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      onClick={handleSendConnectionRequest}
+                      disabled={!user}
+                    >
                       <Users className="h-4 w-4 mr-2" />
-                      Send Connection Request
+                      {!user ? 'Sign in to Connect' : 'Send Connection Request'}
                     </Button>
-                    <Button variant="outline" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleShareProfile}
+                    >
                       <Share2 className="h-4 w-4 mr-2" />
                       Share Profile
                     </Button>
