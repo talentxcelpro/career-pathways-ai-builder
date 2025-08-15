@@ -2,8 +2,8 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
-// Use a reliable QR generator from JSR
-import { qrcode } from "https://deno.land/x/qrcode@v2.0.0/mod.ts";
+// Use QR Code generator from esm.sh
+import QRCode from "https://esm.sh/qrcode@1.5.3";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -37,8 +37,8 @@ serve(async (req) => {
 
     const publicUrl = `https://talentxcel.lovable.app/passport/${publicSlug}`;
 
-    // Generate QR code using qrcode function
-    const qrSvg = qrcode(publicUrl, { type: "svg" });
+    // Generate QR code using QRCode library
+    const qrSvg = await QRCode.toString(publicUrl, { type: "svg" });
     const dataUrl = `data:image/svg+xml;base64,${btoa(qrSvg)}`;
 
     // Upsert public profile
