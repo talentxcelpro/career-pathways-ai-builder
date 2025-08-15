@@ -44,8 +44,8 @@ export const MobileBottomNav = () => {
 
   const navItems: NavItem[] = [
     { to: '/network', icon: HomeIcon, label: 'Home' },
-    { to: '/jobs', icon: Search, label: 'Search' },
     { to: '/jobs', icon: Briefcase, label: 'Jobs' },
+    { to: '/passport', icon: Users, label: 'Passport' },
     { to: '/network/notifications', icon: Bell, label: 'Activity', badge: unreadCount > 0 },
     { to: '/profile', icon: User, label: 'Profile' },
   ];

@@ -39,6 +39,7 @@ import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { AuthDialog } from '@/components/auth/AuthDialog';
 import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,6 +47,7 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isMobile } = useMobileDetection();
   const dropdownRef = React.useRef(null);
 
   // Get profile data
@@ -134,6 +136,11 @@ export const Navbar = () => {
     if (employerStatus === 'pending') return () => navigate('/employer/request-access');
     return () => navigate('/employer/request-access');
   };
+
+  // Hide navbar on mobile when user is authenticated (use mobile header instead)
+  if (isMobile && user) {
+    return null;
+  }
 
   return (
     <nav className="bg-white shadow-sm border-b sticky top-0 z-50">

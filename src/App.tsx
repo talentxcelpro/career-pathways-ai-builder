@@ -28,6 +28,7 @@ import { SearchConsoleVerification } from "./components/analytics/SearchConsoleV
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
+import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
 import { ResumeEditorPage as ResumeEdit } from './pages/resume/ResumeEditorPage';
@@ -103,11 +104,12 @@ const App = () => {
                 <MobileAppInitializer />
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
-                <div className="min-h-screen flex flex-col">
-                  <OfflineIndicator />
-                  <Navbar />
-                  <main className="flex-1">
-                    <Routes>
+                <MobileAppWrapper>
+                  <div className="min-h-screen flex flex-col">
+                    <OfflineIndicator />
+                    <Navbar />
+                    <main className="flex-1">
+                      <Routes>
                       {navItems.map((item: NavItem) => {
                          // Check if route is explicitly marked as public or in our public routes list
                          const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
@@ -171,10 +173,11 @@ const App = () => {
                       <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                       
 {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
-                    </Routes>
-                  </main>
-                  <Footer />
-                </div>
+                      </Routes>
+                    </main>
+                    <Footer />
+                  </div>
+                </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
                 {/* </AIProvider> */}

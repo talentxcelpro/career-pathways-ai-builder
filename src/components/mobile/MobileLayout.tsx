@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { MobileBottomNav } from './MobileBottomNav';
+import { MobileHeader } from './MobileHeader';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface MobileLayoutProps {
@@ -24,12 +25,16 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
 
   return (
     <div className={cn(
-      "mobile-layout",
+      "mobile-layout relative",
       fullHeight && "min-h-screen",
       showBottomNav && "pb-20", // Account for bottom navigation
       className
     )}>
-      <div className="mobile-content">
+      {/* Mobile Header */}
+      <MobileHeader />
+      
+      {/* Mobile Content */}
+      <div className="mobile-content pt-0">
         {children}
       </div>
       
