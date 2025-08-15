@@ -3,250 +3,161 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 import { corsHeaders } from "../_shared/cors.ts";
 
-interface CareerPassportRequest {
-  action: 'get' | 'update' | 'create';
-  userId: string;
-  updates?: Record<string, any>;
-}
-
-interface CareerPassportResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-  timestamp: string;
-}
-
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    let body: CareerPassportRequest;
+    let body: any;
     try {
       body = await req.json();
     } catch (err) {
       console.error("Invalid JSON:", err);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Invalid JSON in request body",
-          timestamp: new Date().toISOString()
-        }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
-        }
-      );
+      return json({ success: false, error: "Invalid JSON in request body", timestamp: now() }, 400);
     }
 
     console.log("Career Passport API called:", body);
 
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    let result: CareerPassportResponse = {
-      success: false,
-      timestamp: new Date().toISOString()
-    };
-
-    switch (body.action) {
-      case 'get':
-        result = await getCareerPassport(supabase, body.userId);
-        break;
-      case 'update':
-        result = await updateCareerPassport(supabase, body.userId, body.updates || {});
-        break;
-      case 'create':
-        result = await createCareerPassport(supabase, body.userId);
-        break;
-      default:
-        result = {
-          success: false,
-          error: 'Invalid action. Use: get, update, or create',
-          timestamp: new Date().toISOString()
-        };
+    const action = body.action;
+    const userId: string | null = body.userId ?? body.user_id ?? null;
+    if (!userId) {
+      return json({ success: false, error: "userId is required", timestamp: now() }, 400);
     }
 
-    console.log("Career Passport API result:", result);
-
-    return new Response(
-      JSON.stringify(result),
-      {
-        status: result.success ? 200 : 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+    switch (action) {
+      case "get": {
+        const result = await getCareerPassport(supabase, userId);
+        return json(result, result.success ? 200 : 400);
       }
-    );
+
+      case "create": {
+        const result = await upsertCareerPassport(supabase, userId, getDefaultPassport(userId));
+        return json(result, result.success ? 200 : 400);
+      }
+
+      case "update": {
+        const updates = isPlainObject(body.updates) ? body.updates : {};
+        // If the record doesn't exist, we create it first, then merge updates.
+        const ensure = await upsertCareerPassport(supabase, userId, getDefaultPassport(userId));
+        if (!ensure.success) return json(ensure, 400);
+
+        const { data, error } = await supabase
+          .from("career_passport")
+          .update({ ...updates, updated_at: now() })
+          .eq("user_id", userId)
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Career passport update error:", error);
+          return json({ success: false, error: "Failed to update career passport", timestamp: now() }, 400);
+        }
+
+        return json({ success: true, data, timestamp: now() });
+      }
+
+      default:
+        return json(
+          { success: false, error: "Invalid action. Use: get, update, or create", timestamp: now() },
+          400
+        );
+    }
   } catch (error) {
     console.error("Career Passport API error:", error);
-    
-    const errorResponse: CareerPassportResponse = {
-      success: false,
-      error: error instanceof Error ? error.message : 'Internal server error',
-      timestamp: new Date().toISOString()
-    };
-
-    return new Response(
-      JSON.stringify(errorResponse),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      }
-    );
+    return json({ success: false, error: getErrMsg(error), timestamp: now() }, 500);
   }
 });
 
-async function getCareerPassport(supabase: any, userId: string): Promise<CareerPassportResponse> {
+/** Logic */
+async function getCareerPassport(supabase: ReturnType<typeof createClient>, userId: string) {
   try {
-    // Get user profile
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profileError) console.warn("Profile fetch warning:", profileError);
 
-    if (profileError) {
-      console.error("Profile fetch error:", profileError);
-    }
-
-    // Get career passport data
     const { data: passport, error: passportError } = await supabase
-      .from('career_passport')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
+      .from("career_passport")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-    // If passport doesn't exist, create one
-    if (passportError && passportError.code === 'PGRST116') {
-      console.log("Creating new career passport for user:", userId);
-      return await createCareerPassport(supabase, userId);
-    }
-
-    if (passportError) {
-      console.error("Career passport fetch error:", passportError);
+    // Not found → create default
+    if (!passport) {
+      const created = await upsertCareerPassport(supabase, userId, getDefaultPassport(userId));
+      if (!created.success) return created;
       return {
-        success: false,
-        error: 'Failed to fetch career passport data',
-        timestamp: new Date().toISOString()
+        success: true,
+        data: {
+          profile: profile ?? getDefaultProfile(userId),
+          passport: created.data,
+          completion: calculateCompletion(profile ?? getDefaultProfile(userId), created.data),
+        },
+        timestamp: now(),
       };
     }
-
-    // Calculate completion percentage
-    const completionData = calculateCompletion(profile, passport);
 
     return {
       success: true,
       data: {
-        profile: profile || getDefaultProfile(userId),
-        passport: passport || getDefaultPassport(userId),
-        completion: completionData
+        profile: profile ?? getDefaultProfile(userId),
+        passport,
+        completion: calculateCompletion(profile ?? getDefaultProfile(userId), passport),
       },
-      timestamp: new Date().toISOString()
+      timestamp: now(),
     };
   } catch (error) {
     console.error("Get career passport error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to get career passport',
-      timestamp: new Date().toISOString()
-    };
+    return { success: false, error: getErrMsg(error), timestamp: now() };
   }
 }
 
-async function createCareerPassport(supabase: any, userId: string): Promise<CareerPassportResponse> {
+async function upsertCareerPassport(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  payload: Record<string, unknown>
+) {
   try {
-    const defaultPassport = getDefaultPassport(userId);
-    
     const { data, error } = await supabase
-      .from('career_passport')
-      .insert([defaultPassport])
+      .from("career_passport")
+      .upsert({ ...payload, user_id: userId, updated_at: now() }, { onConflict: "user_id" })
       .select()
       .single();
 
     if (error) {
-      console.error("Career passport creation error:", error);
-      return {
-        success: false,
-        error: 'Failed to create career passport',
-        timestamp: new Date().toISOString()
-      };
+      console.error("Career passport upsert error:", error);
+      return { success: false, error: "Failed to create career passport", timestamp: now() };
     }
 
-    console.log("Created career passport:", data);
-
-    return {
-      success: true,
-      data: {
-        passport: data,
-        completion: calculateCompletion(null, data)
-      },
-      timestamp: new Date().toISOString()
-    };
+    return { success: true, data, timestamp: now() };
   } catch (error) {
-    console.error("Create career passport error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to create career passport',
-      timestamp: new Date().toISOString()
-    };
+    console.error("Create/update career passport error:", error);
+    return { success: false, error: getErrMsg(error), timestamp: now() };
   }
 }
 
-async function updateCareerPassport(supabase: any, userId: string, updates: Record<string, any>): Promise<CareerPassportResponse> {
-  try {
-    const { data, error } = await supabase
-      .from('career_passport')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', userId)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Career passport update error:", error);
-      return {
-        success: false,
-        error: 'Failed to update career passport',
-        timestamp: new Date().toISOString()
-      };
-    }
-
-    console.log("Updated career passport:", data);
-
-    return {
-      success: true,
-      data: data,
-      timestamp: new Date().toISOString()
-    };
-  } catch (error) {
-    console.error("Update career passport error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to update career passport',
-      timestamp: new Date().toISOString()
-    };
-  }
-}
-
+/** Utils / Scoring */
 function getDefaultProfile(userId: string) {
   return {
     id: userId,
-    name: 'TalentXcel Professional',
-    tagline: 'Transforming careers, one step at a time',
-    location: 'Remote',
-    email: 'user@talentxcel.com',
+    name: "TalentXcel Professional",
+    tagline: "Transforming careers, one step at a time",
+    location: "Remote",
+    email: "user@talentxcel.com",
     website: null,
-    member_id: `TXL${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+    member_id: `TXL${(Math.random().toString(36).slice(2, 8)).toUpperCase()}`,
     profile_completion: 25,
     career_readiness_score: 30,
     market_competitiveness_score: 25,
-    last_activity: new Date().toISOString(),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    last_activity: now(),
+    created_at: now(),
+    updated_at: now(),
   };
 }
 
@@ -260,62 +171,61 @@ function getDefaultPassport(userId: string) {
     milestones: {},
     achievements: {},
     journey: {
-      started_at: new Date().toISOString(),
-      current_phase: 'exploration',
-      goals: []
+      started_at: now(),
+      current_phase: "exploration",
+      goals: [],
     },
     completion_percentage: 0,
-    last_activity_at: new Date().toISOString(),
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    last_activity_at: now(),
+    created_at: now(),
+    updated_at: now(),
   };
 }
 
 function calculateCompletion(profile: any, passport: any) {
   let score = 0;
-  let maxScore = 100;
-
-  // Profile completion (40%)
+  // Profile (40)
   if (profile) {
-    if (profile.name && profile.name !== 'TalentXcel Professional') score += 10;
+    if (profile.name && profile.name !== "TalentXcel Professional") score += 10;
     if (profile.tagline) score += 10;
     if (profile.location) score += 5;
     if (profile.email) score += 5;
     if (profile.website) score += 10;
   }
-
-  // Career passport progress (60%)
+  // Passport (60)
   if (passport) {
-    score += Math.min(passport.resumes_created * 10, 20); // Max 20 points
-    score += Math.min(passport.jobs_applied * 2, 20); // Max 20 points
-    score += Math.min(passport.certifications * 5, 10); // Max 10 points
-    score += Math.min(passport.tests_completed * 5, 10); // Max 10 points
+    score += Math.min((passport.resumes_created ?? 0) * 10, 20);
+    score += Math.min((passport.jobs_applied ?? 0) * 2, 20);
+    score += Math.min((passport.certifications ?? 0) * 5, 10);
+    score += Math.min((passport.tests_completed ?? 0) * 5, 10);
   }
-
   return {
-    percentage: Math.min(score, maxScore),
+    percentage: Math.min(score, 100),
     profile_score: Math.min(40, score),
-    career_score: Math.min(60, score - 40),
-    next_steps: getNextSteps(score)
+    career_score: Math.min(60, Math.max(0, score - 40)),
+    next_steps: getNextSteps(score),
   };
 }
 
-function getNextSteps(currentScore: number): string[] {
-  const steps = [];
-  
+function getNextSteps(currentScore: number) {
+  const steps: string[] = [];
   if (currentScore < 30) {
-    steps.push("Complete your profile information");
-    steps.push("Upload a professional photo");
-    steps.push("Create your first resume");
+    steps.push("Complete your profile information", "Upload a professional photo", "Create your first resume");
   } else if (currentScore < 60) {
-    steps.push("Apply to relevant job openings");
-    steps.push("Earn a professional certification");
-    steps.push("Take skills assessments");
+    steps.push("Apply to relevant job openings", "Earn a professional certification", "Take skills assessments");
   } else {
-    steps.push("Expand your professional network");
-    steps.push("Update your career goals");
-    steps.push("Explore advanced learning paths");
+    steps.push("Expand your professional network", "Update your career goals", "Explore advanced learning paths");
   }
-  
   return steps;
 }
+
+/** response helpers */
+function json(payload: unknown, status = 200) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+function now() { return new Date().toISOString(); }
+function getErrMsg(e: unknown) { return e instanceof Error ? e.message : "Internal server error"; }
+function isPlainObject(v: unknown) { return v !== null && typeof v === "object" && !Array.isArray(v); }
