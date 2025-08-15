@@ -193,3 +193,6 @@ verify_jwt = false
 
 [functions.ai-skill-enricher]
 verify_jwt = false
+
+[functions.qr-generator]
+verify_jwt = false
