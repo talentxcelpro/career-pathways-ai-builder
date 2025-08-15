@@ -164,19 +164,19 @@ function getDefaultProfile(userId: string) {
 function getDefaultPassport(userId: string) {
   return {
     user_id: userId,
-    resumes_created: 0,
-    jobs_applied: 0,
-    certifications: 0,
-    tests_completed: 0,
-    milestones: {},
-    achievements: {},
-    journey: {
-      started_at: now(),
-      current_phase: "exploration",
-      goals: [],
-    },
     completion_percentage: 0,
+    career_readiness_score: 30,
+    market_competitiveness_score: 25,
+    resumes_count: 0,
+    jobs_applied_count: 0,
+    certifications_count: 0,
+    tests_completed_count: 0,
+    skills_verified_count: 0,
+    connections_count: 0,
     last_activity_at: now(),
+    career_milestones: [],
+    learning_progress: {},
+    recommendation_engine_data: {},
     created_at: now(),
     updated_at: now(),
   };
@@ -194,10 +194,10 @@ function calculateCompletion(profile: any, passport: any) {
   }
   // Passport (60)
   if (passport) {
-    score += Math.min((passport.resumes_created ?? 0) * 10, 20);
-    score += Math.min((passport.jobs_applied ?? 0) * 2, 20);
-    score += Math.min((passport.certifications ?? 0) * 5, 10);
-    score += Math.min((passport.tests_completed ?? 0) * 5, 10);
+    score += Math.min((passport.resumes_count ?? 0) * 10, 20);
+    score += Math.min((passport.jobs_applied_count ?? 0) * 2, 20);
+    score += Math.min((passport.certifications_count ?? 0) * 5, 10);
+    score += Math.min((passport.tests_completed_count ?? 0) * 5, 10);
   }
   return {
     percentage: Math.min(score, 100),
