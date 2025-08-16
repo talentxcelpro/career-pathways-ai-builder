@@ -5,8 +5,8 @@ import {
   Briefcase, 
   Users, 
   User, 
-  Bell,
-  Search
+  Play,
+  MessageCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -25,16 +25,16 @@ export const MobileBottomNav = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  // Get unread notifications count
-  const { data: unreadCount = 0 } = useQuery({
-    queryKey: ['notifications-count', user?.id],
+  // Get unread messages count
+  const { data: unreadMessages = 0 } = useQuery({
+    queryKey: ['unread-messages-count', user?.id],
     queryFn: async () => {
       if (!user?.id) return 0;
       
       const { count } = await supabase
-        .from('notifications')
+        .from('messages')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
+        .eq('recipient_id', user.id)
         .eq('is_read', false);
       
       return count || 0;
@@ -44,22 +44,23 @@ export const MobileBottomNav = () => {
 
   const navItems: NavItem[] = [
     { to: '/network', icon: HomeIcon, label: 'Home' },
-    { to: '/jobs', icon: Briefcase, label: 'Jobs' },
-    { to: '/passport', icon: Users, label: 'Passport' },
-    { to: '/network/notifications', icon: Bell, label: 'Activity', badge: unreadCount > 0 },
-    { to: '/profile', icon: User, label: 'Profile' },
+    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs' },
+    { to: '/mobile/reels', icon: Play, label: 'Reels' },
+    { to: '/mobile/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
+    { to: '/mobile/profile', icon: User, label: 'Profile' },
   ];
 
   const isCurrentPath = (path: string) => {
-    if (path === '/network' && location.pathname === '/') return true;
+    if (path === '/network' && (location.pathname === '/' || location.pathname === '/network')) return true;
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   if (!user) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 md:hidden">
-      <div className="flex items-center justify-around px-2 py-2 safe-area-padding-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-50 md:hidden shadow-lg">
+      <div className="safe-area-padding-bottom" />
+      <div className="flex items-center justify-around px-4 py-3">
         {navItems.map((item) => {
           const isActive = isCurrentPath(item.to);
           const Icon = item.icon;
@@ -69,21 +70,34 @@ export const MobileBottomNav = () => {
               key={item.to}
               to={item.to}
               className={cn(
-                "flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-colors relative min-w-0 flex-1",
+                "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-300 relative min-w-0 flex-1",
                 isActive 
-                  ? "text-primary bg-accent" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-primary scale-110" 
+                  : "text-gray-600 hover:text-primary hover:scale-105"
               )}
             >
               <div className="relative">
-                <Icon className="h-5 w-5 mb-1" />
-                {item.badge && unreadCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-4 w-4 p-0 text-[10px] min-w-[16px] flex items-center justify-center">
-                    {unreadCount > 99 ? '99+' : unreadCount}
+                <div className={cn(
+                  "p-2 rounded-2xl transition-all duration-300",
+                  isActive 
+                    ? "bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg" 
+                    : "hover:bg-gray-50"
+                )}>
+                  <Icon className={cn(
+                    "transition-all duration-300",
+                    isActive ? "h-6 w-6" : "h-5 w-5"
+                  )} />
+                </div>
+                {item.badge && (item.to === '/mobile/network' ? unreadMessages > 0 : false) && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-[10px] min-w-[20px] flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-pulse">
+                    {(item.to === '/mobile/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/mobile/network' ? unreadMessages : 0)}
                   </Badge>
                 )}
               </div>
-              <span className="text-xs font-medium truncate w-full text-center">
+              <span className={cn(
+                "text-[10px] font-medium truncate w-full text-center mt-1 transition-all duration-300",
+                isActive ? "font-semibold" : ""
+              )}>
                 {item.label}
               </span>
             </Link>
