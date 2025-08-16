@@ -43,17 +43,17 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
         </div>
 
         {/* Right side - Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           {/* Messages */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative w-11 h-11 hover:bg-gray-100/80 rounded-full transition-all duration-200"
+            className="relative w-10 h-10 hover:bg-gray-100/80 rounded-full transition-all duration-200"
             onClick={onMessages}
           >
-            <MessageSquare className="w-5 h-5 text-gray-600" />
+            <MessageSquare className="w-4 h-4 text-gray-600" />
             {messageCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 text-xs bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-sm">
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 p-0 text-xs bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-sm">
                 {messageCount > 99 ? '99+' : messageCount}
               </Badge>
             )}
@@ -63,12 +63,12 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="relative w-11 h-11 hover:bg-gray-100/80 rounded-full transition-all duration-200"
+            className="relative w-10 h-10 hover:bg-gray-100/80 rounded-full transition-all duration-200"
             onClick={onNotifications}
           >
-            <Bell className="w-5 h-5 text-gray-600" />
+            <Bell className="w-4 h-4 text-gray-600" />
             {notificationCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 text-xs bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-sm">
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 p-0 text-xs bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-sm">
                 {notificationCount > 99 ? '99+' : notificationCount}
               </Badge>
             )}
@@ -78,10 +78,10 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="w-11 h-11 p-0 hover:bg-gray-100/80 rounded-full transition-all duration-200"
+            className="w-10 h-10 p-0 hover:bg-gray-100/80 rounded-full transition-all duration-200"
             onClick={onProfile}
           >
-            <Avatar className="w-9 h-9 ring-2 ring-white shadow-md">
+            <Avatar className="w-8 h-8 ring-2 ring-white shadow-md">
               <AvatarImage src={user?.user_metadata?.avatar_url} alt="Profile" />
               <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                 {user?.email?.charAt(0).toUpperCase() || 'U'}

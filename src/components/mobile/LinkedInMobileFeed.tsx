@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { MobileCreatePost } from './MobileCreatePost';
 
 interface LinkedInPost {
   id: string;
@@ -334,6 +335,10 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
       <div className="max-w-2xl mx-auto pt-4 pb-20">
+        {/* Create Post Section */}
+        <MobileCreatePost onPostCreate={() => window.location.reload()} />
+        
+        {/* Posts Feed */}
         {posts.map((post) => (
           <LinkedInPostCard
             key={post.id}
