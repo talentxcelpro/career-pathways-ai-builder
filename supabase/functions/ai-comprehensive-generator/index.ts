@@ -137,9 +137,10 @@ async function processContentQueue(supabase: any) {
       let generatedContent = '';
       let apiUsed = 'stub';
 
-      // Try OpenAI first, then DeepSeek, then fallback to stub
+      // Try OpenAI first
       if (openaiApiKey) {
         try {
+          console.log(`🤖 Trying OpenAI for job ${job.id}`);
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -161,15 +162,19 @@ async function processContentQueue(supabase: any) {
             const data = await response.json();
             generatedContent = data.choices[0].message.content;
             apiUsed = 'openai';
+            console.log(`✅ OpenAI succeeded for job ${job.id}`);
+          } else {
+            console.warn(`⚠️ OpenAI failed for job ${job.id}: ${response.status}`);
           }
         } catch (error) {
-          console.warn('OpenAI failed, trying DeepSeek:', error.message);
+          console.warn(`⚠️ OpenAI error for job ${job.id}:`, error.message);
         }
       }
 
-      // Fallback to DeepSeek
+      // Try DeepSeek if OpenAI failed
       if (!generatedContent && deepseekApiKey) {
         try {
+          console.log(`🤖 Trying DeepSeek for job ${job.id}`);
           const response = await fetch('https://api.deepseek.com/chat/completions', {
             method: 'POST',
             headers: {
@@ -191,20 +196,22 @@ async function processContentQueue(supabase: any) {
             const data = await response.json();
             generatedContent = data.choices[0].message.content;
             apiUsed = 'deepseek';
+            console.log(`✅ DeepSeek succeeded for job ${job.id}`);
           } else {
             const errorText = await response.text();
-            console.warn(`DeepSeek API error (${response.status}): ${errorText}`);
+            console.warn(`⚠️ DeepSeek failed for job ${job.id}: ${response.status} - ${errorText}`);
             if (response.status === 402) {
-              console.warn('DeepSeek quota exceeded or payment required');
+              console.warn(`💳 DeepSeek quota exceeded or payment required for job ${job.id}`);
             }
           }
         } catch (error) {
-          console.warn('DeepSeek failed, using stub:', error.message);
+          console.warn(`⚠️ DeepSeek error for job ${job.id}:`, error.message);
         }
       }
 
-      // Final fallback to stub content
+      // Always fall back to stub content if APIs failed
       if (!generatedContent) {
+        console.log(`📝 Using stub content for job ${job.id} (API fallback)`);
         generatedContent = generateStubContent(job.content_type, job.tone);
         apiUsed = 'stub';
       }
@@ -227,6 +234,7 @@ async function processContentQueue(supabase: any) {
         .single();
 
       if (saveError) {
+        console.error(`❌ Save error for job ${job.id}:`, saveError);
         throw saveError;
       }
 
@@ -248,6 +256,8 @@ async function processContentQueue(supabase: any) {
         word_count: generatedContent.split(' ').length,
         api_used: apiUsed
       });
+
+      console.log(`✅ Completed job ${job.id} using ${apiUsed}`);
 
     } catch (error) {
       console.error(`❌ Error processing job ${job.id}:`, error);
