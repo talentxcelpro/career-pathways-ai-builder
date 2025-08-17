@@ -6,13 +6,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// DeepSeek completely removed - OpenAI only mode - FORCE REDEPLOY v1.1
-console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active - v1.1');
+// DeepSeek completely removed - OpenAI only mode - FORCE REDEPLOY v1.2
+console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active - v1.2');
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+  // Health check endpoint
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator', version: '1.2', mode: 'openai-only' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 
   try {
