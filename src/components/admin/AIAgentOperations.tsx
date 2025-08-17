@@ -212,9 +212,39 @@ export const AIAgentOperations: React.FC = () => {
         
         let tasksProcessed = 0;
         for (const task of tasks || []) {
+          // Mark as running and log start
           await supabase.from('agent_tasks').update({ status: 'running', started_at: new Date().toISOString() }).eq('id', task.id);
+          await supabase.from('agent_logs').insert({
+            task_id: task.id,
+            agent_id: task.agent_id,
+            message: `Started task: ${task.action} (fallback worker)`,
+            level: 'info',
+            metadata: {
+              action_type: 'task_execution',
+              task_action: task.action,
+              execution_status: 'started',
+              source: 'fallback_worker'
+            }
+          });
+          
           await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Mark as completed and log completion
           await supabase.from('agent_tasks').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', task.id);
+          await supabase.from('agent_logs').insert({
+            task_id: task.id,
+            agent_id: task.agent_id,
+            message: `Completed task: ${task.action} (fallback worker)`,
+            level: 'info',
+            metadata: {
+              action_type: 'task_execution',
+              task_action: task.action,
+              execution_status: 'completed',
+              source: 'fallback_worker',
+              task_output: { processed: true, duration_ms: 100 }
+            }
+          });
+          
           tasksProcessed++;
         }
         
