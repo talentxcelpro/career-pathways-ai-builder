@@ -31,6 +31,7 @@ export const ContentAutomationDashboard: React.FC = () => {
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
+      // Primary path: invoke via Supabase client
       const { data, error } = await supabase.functions.invoke('ai-comprehensive-generator', {
         body: { manual_trigger: true }
       });
@@ -38,15 +39,38 @@ export const ContentAutomationDashboard: React.FC = () => {
       if (error) throw error;
 
       toast.success(`Content generation started! Processing ${data.stats?.total_jobs || 0} jobs`);
-      
+
       // Refresh stats after a delay
       setTimeout(() => {
         loadStats();
       }, 2000);
-      
-    } catch (error) {
-      console.error('Generation error:', error);
-      toast.error('Failed to start content generation');
+    } catch (err: any) {
+      console.error('Generation error (primary):', err);
+      // Fallback: direct fetch to Edge Function URL (handles occasional FunctionsFetchError)
+      try {
+        const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-comprehensive-generator';
+        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+        const resp = await fetch(functionsUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': anonKey,
+          },
+          body: JSON.stringify({ manual_trigger: true }),
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`Fallback call failed (${resp.status}): ${text}`);
+        }
+
+        const json = await resp.json();
+        toast.success(`Content generation started! Processing ${json.stats?.total_jobs || 0} jobs`);
+        setTimeout(() => loadStats(), 2000);
+      } catch (fallbackErr) {
+        console.error('Generation error (fallback):', fallbackErr);
+        toast.error('Failed to start content generation');
+      }
     } finally {
       setIsGenerating(false);
     }
