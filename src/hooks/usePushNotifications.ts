@@ -1,108 +1,57 @@
-import { useEffect, useState } from 'react';
-import { PushNotifications } from '@capacitor/push-notifications';
-import { Capacitor } from '@capacitor/core';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { playAppleMessageTone } from '@/utils/notificationSound';
-
-interface PushNotificationState {
-  isRegistered: boolean;
-  token: string | null;
-  isSupported: boolean;
-}
 
 export const usePushNotifications = () => {
-  const [notificationState, setNotificationState] = useState<PushNotificationState>({
-    isRegistered: false,
-    token: null,
-    isSupported: Capacitor.isNativePlatform()
-  });
+  const [isSupported] = useState('serviceWorker' in navigator && 'PushManager' in window);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
 
   useEffect(() => {
-    if (!Capacitor.isNativePlatform()) {
-      console.log('Push notifications are only supported on native platforms');
-      return;
+    if (isSupported) {
+      setPermission(Notification.permission);
     }
+  }, [isSupported]);
 
-    const initializePushNotifications = async () => {
-      try {
-        // Request permission to use push notifications
-        const permStatus = await PushNotifications.requestPermissions();
-        
-        if (permStatus.receive === 'granted') {
-          // Register with Apple / Google to receive push via APNS/FCM
-          await PushNotifications.register();
-        } else {
-          console.log('Push notification permission denied');
-        }
-
-        // On success, we should be able to receive notifications
-        PushNotifications.addListener('registration', async (token) => {
-          console.log('Push registration success, token: ' + token.value);
-          setNotificationState(prev => ({
-            ...prev,
-            isRegistered: true,
-            token: token.value
-          }));
-
-          // Store token via edge function
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            try {
-              await supabase.functions.invoke('register-push-token', {
-                body: {
-                  push_token: token.value,
-                  platform: Capacitor.getPlatform()
-                }
-              });
-            } catch (error) {
-              console.error('Failed to store push token:', error);
-            }
-          }
-        });
-
-        // Some issue with our setup and push will not work
-        PushNotifications.addListener('registrationError', (error) => {
-          console.error('Error on registration: ' + JSON.stringify(error));
-          toast.error('Failed to register for push notifications');
-        });
-
-        // Show us the notification payload if the app is open on our device
-        PushNotifications.addListener('pushNotificationReceived', (notification) => {
-          console.log('Push notification received: ', notification);
-          
-          // Play Apple message tone
-          playAppleMessageTone();
-          
-          toast.info(notification.title || 'New notification', {
-            description: notification.body
-          });
-        });
-
-        // Method called when tapping on a notification
-        PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-          console.log('Push notification action performed', notification.actionId, notification.inputValue);
-          
-          // Handle notification tap - could navigate to specific screen
-          const data = notification.notification.data;
-          if (data?.route) {
-            // Navigate to specific route if provided
-            window.location.href = data.route;
-          }
-        });
-        
-      } catch (error) {
-        console.error('Error initializing push notifications:', error);
-        toast.error('Failed to initialize push notifications');
+  const subscribeToPush = async () => {
+    setIsLoading(true);
+    try {
+      const permission = await Notification.requestPermission();
+      setPermission(permission);
+      if (permission === 'granted') {
+        setIsSubscribed(true);
+        toast.success('Push notifications enabled!');
       }
-    };
+    } catch (error) {
+      toast.error('Failed to enable notifications');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    initializePushNotifications();
+  const unsubscribeFromPush = async () => {
+    setIsLoading(true);
+    setIsSubscribed(false);
+    toast.success('Push notifications disabled');
+    setIsLoading(false);
+  };
 
-    return () => {
-      PushNotifications.removeAllListeners();
-    };
-  }, []);
+  const sendTestNotification = () => {
+    if (permission === 'granted') {
+      new Notification('Test Notification', {
+        body: 'This is a test from TalentXcel!',
+        icon: '/favicon.ico'
+      });
+    }
+  };
 
-  return notificationState;
+  return {
+    isSupported,
+    isSubscribed,
+    isLoading,
+    permission,
+    subscribeToPush,
+    unsubscribeFromPush,
+    sendTestNotification
+  };
 };

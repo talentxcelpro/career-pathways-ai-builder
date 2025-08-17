@@ -7,6 +7,7 @@ import { MobileProfile } from "../pages/mobile/MobileProfile";
 import { MobileNotifications } from "../components/mobile/MobileNotifications";
 import { MobilePendingConnections } from "../pages/mobile/MobilePendingConnections";
 import { MobileQRScanner } from "../pages/mobile/MobileQRScanner";
+import { MobileSearch } from "../pages/mobile/MobileSearch";
 
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Jobs", to: "/mobile/jobs", page: <MobileJobs /> },
@@ -16,4 +17,5 @@ export const mobileRoutes: NavItem[] = [
   { title: "Mobile Notifications", to: "/mobile/notifications", page: <MobileNotifications /> },
   { title: "Pending Connections", to: "/mobile/pending-connections", page: <MobilePendingConnections /> },
   { title: "QR Scanner", to: "/mobile/qr-scanner", page: <MobileQRScanner /> },
+  { title: "Mobile Search", to: "/mobile/search", page: <MobileSearch /> },
 ];
