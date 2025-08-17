@@ -14,6 +14,13 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+  // Health check endpoint
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator-v2', version: '2.1' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   try {
     const supabase = createClient(

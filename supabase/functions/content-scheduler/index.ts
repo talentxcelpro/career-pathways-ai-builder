@@ -10,6 +10,12 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+  // Health check endpoint
+  if (req.method === 'GET') {
+    return new Response(JSON.stringify({ ok: true, function: 'content-scheduler' }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
 
   try {
     console.log('📅 Content Scheduler Starting...');
