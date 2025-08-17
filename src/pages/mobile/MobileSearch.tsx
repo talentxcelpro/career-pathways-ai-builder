@@ -95,8 +95,6 @@ export const MobileSearch: React.FC = () => {
 
   return (
     <MobileLayout>
-      <TalentXcelMobileHeader />
-      
       <div className="bg-white">
         {/* Search Bar */}
         <div className="p-4 border-b">
