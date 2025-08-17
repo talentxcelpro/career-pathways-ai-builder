@@ -6,9 +6,9 @@ import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { MobileSearchHeader } from '@/components/search/MobileSearchHeader';
 import { 
   MapPin, 
   Clock, 
@@ -192,7 +192,13 @@ export const MobileJobs = () => {
                     <div className="flex gap-2">
                       <Button 
                         className="flex-1 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg"
-                        onClick={() => (job as any).external_url && window.open((job as any).external_url, '_blank')}
+                        onClick={() => {
+                          if ((job as any).external_url) {
+                            window.open((job as any).external_url, '_blank');
+                          } else {
+                            navigate(`/jobs/${job.id}`);
+                          }
+                        }}
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Apply Now
