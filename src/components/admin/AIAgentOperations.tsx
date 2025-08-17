@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Play, RefreshCw, AlertTriangle, CheckCircle, Clock, Users } from 'lucide-react';
+import { Play, RefreshCw, AlertTriangle, CheckCircle, Clock, Users, Activity } from 'lucide-react';
+import { AgentActivityDashboard } from './AgentActivityDashboard';
 
 interface Agent {
   id: string;
@@ -331,6 +333,14 @@ export const AIAgentOperations: React.FC = () => {
         </div>
       </div>
 
+      <Tabs defaultValue="operations" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="operations">Operations</TabsTrigger>
+          <TabsTrigger value="activity">Activity Dashboard</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="operations" className="space-y-6">
+
       {/* System Health Overview */}
       {systemHealth && (
         <Card>
@@ -516,6 +526,12 @@ export const AIAgentOperations: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="activity">
+          <AgentActivityDashboard />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
