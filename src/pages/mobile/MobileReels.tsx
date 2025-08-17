@@ -254,6 +254,10 @@ export const MobileReels = () => {
               loop
               muted={isMuted}
               playsInline
+              preload="metadata"
+              onLoadStart={() => console.log('Video loading started:', reel.video_url)}
+              onCanPlay={() => console.log('Video can play:', reel.video_url)}
+              onError={(e) => console.error('Video error:', e, reel.video_url)}
               onClick={togglePlayPause}
             />
 
@@ -388,6 +392,10 @@ export const MobileReels = () => {
                     variant="ghost"
                     size="icon"
                     className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                    onClick={() => {
+                      // Handle bookmark functionality
+                      console.log('Bookmark reel:', reel.id);
+                    }}
                   >
                     <Bookmark className={`h-6 w-6 ${reel.is_bookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
                   </Button>

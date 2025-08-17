@@ -36,7 +36,7 @@ export default function SupportingDocumentsForm({ formData, onInputChange }: Sup
   
   const { uploadFile } = useFileUpload({
     bucket: 'documents',
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 50 * 1024 * 1024, // 50MB
     allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
   });
 
@@ -50,9 +50,9 @@ export default function SupportingDocumentsForm({ formData, onInputChange }: Sup
       return;
     }
 
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('File size must be less than 10MB');
+    // Validate file size (50MB)
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error('File size must be less than 50MB');
       return;
     }
 
@@ -117,7 +117,7 @@ export default function SupportingDocumentsForm({ formData, onInputChange }: Sup
           📎 Upload Supporting Documents (Optional)
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          You can upload up to 3 files (PDF or DOCX). Maximum file size: 10MB each.
+          You can upload up to 3 files (PDF or DOCX). Maximum file size: 50MB each.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -196,7 +196,7 @@ export default function SupportingDocumentsForm({ formData, onInputChange }: Sup
           <p className="font-medium mb-1">📋 Document Guidelines:</p>
           <ul className="space-y-1">
             <li>• Accepted formats: PDF, DOC, DOCX</li>
-            <li>• Maximum file size: 10MB per document</li>
+            <li>• Maximum file size: 50MB per document</li>
             <li>• Documents will be shared with shortlisted candidates</li>
             <li>• Ensure documents don't contain sensitive information</li>
           </ul>

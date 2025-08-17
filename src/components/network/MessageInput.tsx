@@ -25,7 +25,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadFile, uploading } = useFileUpload({ 
     bucket: 'post-media',
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 50 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
   });
 

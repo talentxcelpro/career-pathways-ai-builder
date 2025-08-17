@@ -66,9 +66,9 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
         continue;
       }
 
-      // Validate file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error(`${file.name} is too large. Maximum size is 10MB.`);
+      // Validate file size (50MB limit)
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Maximum size is 50MB.`);
         continue;
       }
 

@@ -20,7 +20,7 @@ export const PostCreation = () => {
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'post-media',
     allowedTypes: ['image/*', 'video/*'],
-    maxSize: 10 * 1024 * 1024 // 10MB
+    maxSize: 50 * 1024 * 1024 // 50MB
   });
   
   const { createPost } = useProfilePosts('global');

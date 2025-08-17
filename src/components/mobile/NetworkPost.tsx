@@ -3,6 +3,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Heart, 
   MessageCircle, 
@@ -33,18 +36,107 @@ interface NetworkPostProps {
       comments: number;
       shares: number;
     };
+    author?: {
+      name: string;
+      avatar?: string;
+    };
   };
 }
 
 export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
-  const [isInterested, setIsInterested] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [likes, setLikes] = useState(post.interactions.interested);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}k`;
     }
     return num.toString();
+  };
+
+  const handleLike = async () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to like posts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const newLikedState = !isLiked;
+      setIsLiked(newLikedState);
+      setLikes(prev => newLikedState ? prev + 1 : prev - 1);
+
+      if (newLikedState) {
+        await supabase
+          .from('post_likes')
+          .upsert({
+            post_id: post.id,
+            user_id: user.id
+          });
+      } else {
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', post.id)
+          .eq('user_id', user.id);
+      }
+    } catch (error) {
+      console.error('Like error:', error);
+      // Revert on error
+      setIsLiked(!isLiked);
+      setLikes(prev => isLiked ? prev + 1 : prev - 1);
+    }
+  };
+
+  const handleComment = () => {
+    // Navigate to post detail with comments
+    window.location.href = `/posts/${post.id}`;
+  };
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/posts/${post.id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: post.title,
+        text: post.description,
+        url: shareUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Link Copied",
+        description: "Post link copied to clipboard!",
+      });
+    }
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    toast({
+      title: isBookmarked ? "Removed from bookmarks" : "Bookmarked",
+      description: isBookmarked ? "Post removed from your bookmarks." : "Post saved to your bookmarks.",
+    });
+  };
+
+  const handleApplyNow = () => {
+    if (post.type === 'job') {
+      window.location.href = `/jobs/${post.id}`;
+    }
+  };
+
+  const handleViewDetails = () => {
+    if (post.type === 'job') {
+      window.location.href = `/jobs/${post.id}`;
+    } else {
+      window.location.href = `/posts/${post.id}`;
+    }
   };
 
   return (
@@ -54,13 +146,13 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src="" />
+              <AvatarImage src={post.author?.avatar} />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-semibold">
-                {post.company?.[0] || 'C'}
+                {post.company?.[0] || post.author?.name?.[0] || 'C'}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold text-sm text-gray-900">{post.company || 'Company'}</h3>
+              <h3 className="font-semibold text-sm text-gray-900">{post.company || post.author?.name || 'Company'}</h3>
               <div className="flex items-center gap-1 text-xs text-gray-500">
                 <Clock className="h-3 w-3" />
                 <span>{post.timeAgo}</span>
@@ -142,11 +234,18 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           {/* Action Buttons for Jobs */}
           {post.type === 'job' && (
             <div className="flex gap-2 mb-4">
-              <Button className="flex-1 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+              <Button 
+                className="flex-1 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                onClick={handleApplyNow}
+              >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Apply Now
               </Button>
-              <Button variant="outline" className="flex-1 rounded-2xl">
+              <Button 
+                variant="outline" 
+                className="flex-1 rounded-2xl"
+                onClick={handleViewDetails}
+              >
                 <Eye className="h-4 w-4 mr-2" />
                 View Details
               </Button>
@@ -154,47 +253,51 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           )}
 
           {/* Interaction Stats */}
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-3 pb-3 border-b border-gray-100">
+          <div className="flex items-center justify-between text-sm text-gray-500 mb-3 px-1">
             <div className="flex items-center gap-4">
-              <span>{formatNumber(post.interactions.interested)} interested</span>
-              <span>{formatNumber(post.interactions.comments)} comments</span>
-              <span>{formatNumber(post.interactions.shares)} shares</span>
+              <span>{likes} interested</span>
+              <span>{post.interactions.comments} comments</span>
+              <span>{post.interactions.shares} shares</span>
             </div>
+            <span>{post.timeAgo}</span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 ${isInterested ? 'text-red-500' : 'text-gray-600'}`}
-                onClick={() => setIsInterested(!isInterested)}
-              >
-                <Heart className={`h-5 w-5 ${isInterested ? 'fill-current' : ''}`} />
-                <span className="text-sm font-medium">
-                  {post.type === 'job' ? 'Interested' : 'Like'}
-                </span>
-              </Button>
-              
-              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600">
-                <MessageCircle className="h-5 w-5" />
-                <span className="text-sm font-medium">Comment</span>
-              </Button>
-              
-              <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600">
-                <Share className="h-5 w-5" />
-                <span className="text-sm font-medium">Share</span>
-              </Button>
-            </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`${isSaved ? 'text-primary' : 'text-gray-600'}`}
-              onClick={() => setIsSaved(!isSaved)}
+          <div className="flex items-center justify-between border-t pt-3">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex-1 gap-2"
+              onClick={handleLike}
             >
-              <Bookmark className={`h-5 w-5 ${isSaved ? 'fill-current' : ''}`} />
+              <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+              {post.type === 'job' ? 'Interested' : 'Like'}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex-1 gap-2"
+              onClick={handleComment}
+            >
+              <MessageCircle className="h-4 w-4" />
+              Comment
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex-1 gap-2"
+              onClick={handleShare}
+            >
+              <Share className="h-4 w-4" />
+              Share
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="ml-2"
+              onClick={handleBookmark}
+            >
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
             </Button>
           </div>
         </div>

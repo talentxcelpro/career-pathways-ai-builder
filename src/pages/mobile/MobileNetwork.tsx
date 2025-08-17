@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,10 +6,16 @@ import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { StoryBubbles } from '@/components/mobile/StoryBubbles';
 import { NetworkPost } from '@/components/mobile/NetworkPost';
 import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
+import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Plus } from 'lucide-react';
 
 export const MobileNetwork = () => {
   const { user } = useAuth();
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   // Fetch real posts data from Supabase
   const { data: posts = [], isLoading } = useQuery({
@@ -144,6 +150,35 @@ export const MobileNetwork = () => {
       <div className="min-h-screen bg-gray-50">
         <StoryBubbles />
         
+        {/* Quick Post Creation */}
+        <div className="p-4">
+          <Card className="p-3 bg-white/95 backdrop-blur-sm border-0 shadow-sm rounded-2xl">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user?.user_metadata?.picture} />
+                <AvatarFallback className="bg-primary text-white text-sm">
+                  {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                className="flex-1 justify-start text-gray-500 h-9 rounded-xl bg-gray-50"
+                onClick={() => setShowCreatePost(true)}
+              >
+                Share your thoughts...
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="rounded-xl"
+                onClick={() => setShowCreatePost(true)}
+              >
+                <Plus className="h-5 w-5" />
+              </Button>
+            </div>
+          </Card>
+        </div>
+        
         <ScrollArea className="h-[calc(100vh-140px)]">
           <div className="pb-20">
             {/* Posts Feed */}
@@ -163,6 +198,19 @@ export const MobileNetwork = () => {
             )}
           </div>
         </ScrollArea>
+
+        {/* Post Creation Modal */}
+        {showCreatePost && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+            <MobilePostCreation
+              onClose={() => setShowCreatePost(false)}
+              onPostCreated={() => {
+                setShowCreatePost(false);
+                // Refetch posts here if needed
+              }}
+            />
+          </div>
+        )}
       </div>
     </MobileLayout>
   );
