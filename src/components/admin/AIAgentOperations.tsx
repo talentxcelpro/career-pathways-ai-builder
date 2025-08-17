@@ -65,30 +65,45 @@ export const AIAgentOperations: React.FC = () => {
 
   const fetchSystemHealth = async () => {
     try {
+      console.log('Fetching system health...');
       const { data, error } = await supabase.functions.invoke('ai-adminbot', {
         body: {},
         headers: { 'Content-Type': 'application/json' }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('AdminBot error:', error);
+        throw new Error(error.message || 'Failed to fetch system health');
+      }
+      
+      console.log('AdminBot response:', data);
       setSystemHealth(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching system health:', error);
-      toast.error('Failed to fetch system health');
+      toast.error(`Failed to fetch system health: ${error.message}`);
     }
   };
 
   const triggerScheduler = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-agent-scheduler');
+      console.log('Triggering scheduler...');
+      const { data, error } = await supabase.functions.invoke('ai-agent-scheduler', {
+        body: {},
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Scheduler error:', error);
+        throw new Error(error.message || 'Failed to trigger scheduler');
+      }
+      
+      console.log('Scheduler response:', data);
       toast.success('Scheduler triggered successfully');
       await fetchTasks();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error triggering scheduler:', error);
-      toast.error('Failed to trigger scheduler');
+      toast.error(`Failed to trigger scheduler: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -97,14 +112,23 @@ export const AIAgentOperations: React.FC = () => {
   const triggerWorker = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-agent-worker');
+      console.log('Triggering worker...');
+      const { data, error } = await supabase.functions.invoke('ai-agent-worker', {
+        body: {},
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Worker error:', error);
+        throw new Error(error.message || 'Failed to trigger worker');
+      }
+      
+      console.log('Worker response:', data);
       toast.success('Worker triggered successfully');
       await fetchTasks();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error triggering worker:', error);
-      toast.error('Failed to trigger worker');
+      toast.error(`Failed to trigger worker: ${error.message}`);
     } finally {
       setIsLoading(false);
     }

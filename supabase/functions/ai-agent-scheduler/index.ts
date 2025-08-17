@@ -69,9 +69,9 @@ serve(async (req) => {
         continue;
       }
 
-      // Enqueue default tasks per agent role (exact names from agents table)
+      // Enqueue default tasks per agent role (using exact role names from database)
       const defaults: Record<string, any[]> = {
-        'System Administrator': [{ 
+        'Admin Bot': [{ 
           kind: 'platform_announcement', 
           payload: { message: 'Daily system health check completed' } 
         }],
@@ -79,11 +79,11 @@ serve(async (req) => {
           kind: 'post_community', 
           payload: { title: 'Welcome to TalentXcel Community', url: 'https://talentxcel.in' } 
         }],
-        'Support Specialist': [{ 
+        'Application Support Specialist': [{ 
           kind: 'support_reply', 
           payload: { issue: 'Login assistance needed' } 
         }],
-        'Career Coach': [{ 
+        'Career Coach (Pro)': [{ 
           kind: 'career_advice', 
           payload: { roleOrDomain: 'Software Development' } 
         }],
@@ -91,7 +91,7 @@ serve(async (req) => {
           kind: 'mentor_match', 
           payload: { topic: 'Career Transition' } 
         }],
-        'Learning Assistant': [{ 
+        'Learning Path Assistant': [{ 
           kind: 'learning_path', 
           payload: { skillTarget: 'Data Science', audience: 'Freshers' } 
         }],
@@ -107,7 +107,7 @@ serve(async (req) => {
           kind: 'learning_path', 
           payload: { skillTarget: 'AI/ML Basics', audience: 'Working Professionals' } 
         }],
-        'Customer Service': [{ 
+        'Customer Service Representative': [{ 
           kind: 'support_reply', 
           payload: { issue: 'Account access support' } 
         }],
