@@ -295,71 +295,146 @@ export type Database = {
           ref_task?: string | null
           topic?: string
         }
+        Relationships: []
+      }
+      agent_logs: {
+        Row: {
+          agent_id: string | null
+          created_at: string | null
+          id: string
+          level: string | null
+          message: string
+          metadata: Json | null
+          task_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          level?: string | null
+          message: string
+          metadata?: Json | null
+          task_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          level?: string | null
+          message?: string
+          metadata?: Json | null
+          task_id?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: "agent_events_ref_task_fkey"
-            columns: ["ref_task"]
+            foreignKeyName: "agent_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_logs_task_id_fkey"
+            columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "agent_tasks"
             referencedColumns: ["id"]
           },
         ]
       }
-      agent_tasks: {
+      agent_metrics: {
         Row: {
           agent_id: string | null
-          attempts: number
           created_at: string | null
-          created_by: string | null
-          error: string | null
-          finished_at: string | null
           id: string
-          kind: Database["public"]["Enums"]["task_kind"]
-          max_attempts: number
-          payload: Json
-          priority: number
-          scheduled_at: string
-          started_at: string | null
-          status: Database["public"]["Enums"]["task_status"]
+          metadata: Json | null
+          metric_date: string | null
+          metric_name: string
+          metric_value: number
         }
         Insert: {
           agent_id?: string | null
-          attempts?: number
           created_at?: string | null
-          created_by?: string | null
-          error?: string | null
-          finished_at?: string | null
           id?: string
-          kind: Database["public"]["Enums"]["task_kind"]
-          max_attempts?: number
-          payload: Json
-          priority?: number
-          scheduled_at?: string
-          started_at?: string | null
-          status?: Database["public"]["Enums"]["task_status"]
+          metadata?: Json | null
+          metric_date?: string | null
+          metric_name: string
+          metric_value: number
         }
         Update: {
           agent_id?: string | null
-          attempts?: number
           created_at?: string | null
-          created_by?: string | null
-          error?: string | null
-          finished_at?: string | null
           id?: string
-          kind?: Database["public"]["Enums"]["task_kind"]
-          max_attempts?: number
-          payload?: Json
-          priority?: number
-          scheduled_at?: string
+          metadata?: Json | null
+          metric_date?: string | null
+          metric_name?: string
+          metric_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_metrics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_tasks: {
+        Row: {
+          action: string
+          agent_id: string | null
+          attempts: number | null
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_attempts: number | null
+          payload: Json | null
+          run_at: string | null
+          source: string
+          started_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          action: string
+          agent_id?: string | null
+          attempts?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          payload?: Json | null
+          run_at?: string | null
+          source: string
           started_at?: string | null
-          status?: Database["public"]["Enums"]["task_status"]
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          action?: string
+          agent_id?: string | null
+          attempts?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          payload?: Json | null
+          run_at?: string | null
+          source?: string
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "agent_tasks_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
-            referencedRelation: "ai_agents"
+            referencedRelation: "agents"
             referencedColumns: ["id"]
           },
         ]
@@ -392,6 +467,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      agents: {
+        Row: {
+          assigned_to: string | null
+          content_domains: Json | null
+          created_at: string | null
+          department: string | null
+          email: string
+          frequency: string | null
+          id: string
+          name: string
+          role: string
+          status: string | null
+          tone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          content_domains?: Json | null
+          created_at?: string | null
+          department?: string | null
+          email: string
+          frequency?: string | null
+          id?: string
+          name: string
+          role: string
+          status?: string | null
+          tone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          content_domains?: Json | null
+          created_at?: string | null
+          department?: string | null
+          email?: string
+          frequency?: string | null
+          id?: string
+          name?: string
+          role?: string
+          status?: string | null
+          tone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       ai_admin_inputs: {
         Row: {
@@ -1058,13 +1178,6 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "ai_agents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ai_drafts_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "agent_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -21810,6 +21923,10 @@ export type Database = {
         Args: { url: string }
         Returns: boolean
       }
+      claim_agent_task: {
+        Args: { task_id: string }
+        Returns: boolean
+      }
       claim_next_task: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -21834,6 +21951,10 @@ export type Database = {
       cleanup_old_notifications: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      complete_agent_task: {
+        Args: { error_msg?: string; success?: boolean; task_id: string }
+        Returns: boolean
       }
       complete_onboarding: {
         Args: {
@@ -22079,6 +22200,25 @@ export type Database = {
       get_or_create_user_referral: {
         Args: { user_uuid: string }
         Returns: string
+      }
+      get_pending_agent_tasks: {
+        Args: { limit_count?: number }
+        Returns: {
+          action: string
+          agent_id: string | null
+          attempts: number | null
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_attempts: number | null
+          payload: Json | null
+          run_at: string | null
+          source: string
+          started_at: string | null
+          status: string | null
+          updated_at: string | null
+        }[]
       }
       get_post_reaction_counts: {
         Args: { post_uuid: string }
