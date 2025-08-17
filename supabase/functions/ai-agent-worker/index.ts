@@ -333,9 +333,36 @@ serve(async (req) => {
 
     console.log(`Processing task ${task.id} of kind ${task.kind}`);
 
+    // Log task started
+    await supabaseAdmin.from('agent_logs').insert({
+      task_id: task.id,
+      agent_id: task.agent_id,
+      message: `Started task: ${task.kind}`,
+      level: 'info',
+      metadata: {
+        action_type: 'task_execution',
+        task_action: task.kind,
+        execution_status: 'started'
+      }
+    });
+
     const result = await runPipeline(task);
     await markTaskDone(task.id);
     await emitEvent('task.completed', 'worker', task.id, result);
+
+    // Log task completed
+    await supabaseAdmin.from('agent_logs').insert({
+      task_id: task.id,
+      agent_id: task.agent_id,
+      message: `Completed task: ${task.kind}`,
+      level: 'info',
+      metadata: {
+        action_type: 'task_execution',
+        task_action: task.kind,
+        execution_status: 'completed',
+        task_output: result
+      }
+    });
 
     return new Response(`Task ${task.id} completed successfully`, {
       headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
@@ -347,6 +374,20 @@ serve(async (req) => {
     if (error.task) {
       await failTask(error.task, error);
       await emitEvent('task.failed', 'worker', error.task.id, { error: error.message });
+      
+      // Log task failure
+      await supabaseAdmin.from('agent_logs').insert({
+        task_id: error.task.id,
+        agent_id: error.task.agent_id,
+        message: `Failed task: ${error.task.kind} - ${error.message}`,
+        level: 'error',
+        metadata: {
+          action_type: 'task_execution',
+          task_action: error.task.kind,
+          execution_status: 'failed',
+          error_message: error.message
+        }
+      });
     }
 
     return new Response(`Worker failed: ${error.message}`, {

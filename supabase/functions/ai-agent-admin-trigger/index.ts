@@ -115,6 +115,20 @@ serve(async (req) => {
               started_at: new Date().toISOString() 
             })
             .eq('id', task.id);
+
+          // Log start
+          await supabase.from('agent_logs').insert({
+            task_id: task.id,
+            agent_id: task.agent_id,
+            message: `Started task: ${task.action || task.kind || 'task'}`,
+            level: 'info',
+            metadata: {
+              action_type: 'task_execution',
+              task_action: task.action || task.kind || 'task',
+              execution_status: 'started',
+              task_source: task.source
+            }
+          });
           
           // Simulate processing
           await new Promise(resolve => setTimeout(resolve, 100));
@@ -130,6 +144,19 @@ serve(async (req) => {
           
           if (!updateError) {
             tasksProcessed++;
+            
+            // Log completion
+            await supabase.from('agent_logs').insert({
+              task_id: task.id,
+              agent_id: task.agent_id,
+              message: `Completed task: ${task.action || task.kind || 'task'}`,
+              level: 'info',
+              metadata: {
+                action_type: 'task_execution',
+                task_action: task.action || task.kind || 'task',
+                execution_status: 'completed'
+              }
+            });
           }
         }
 
