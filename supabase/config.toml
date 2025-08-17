@@ -1,14 +1,5 @@
 project_id = "dthlgsnakhoftinssokm"
 
-[functions.ai-comprehensive-generator]
-verify_jwt = false
-
-[functions.ai-comprehensive-generator-v2]
-verify_jwt = false
-
-[functions.content-queue-processor]
-verify_jwt = false
-
 [functions.bulk-job-upload]
 verify_jwt = true
 
@@ -64,7 +55,7 @@ verify_jwt = true
 [functions.razorpay-create-order]
 verify_jwt = true
 
-[functions.razorpay-verify-payment]  
+[functions.razorpay-verify-payment]
 verify_jwt = true
 
 [functions.check-razorpay-subscription]
@@ -132,9 +123,6 @@ verify_jwt = false
 
 [functions.seo-job-enhancer]
 verify_jwt = true
-
-[functions.send-automated-email]
-verify_jwt = false
 
 [functions.admin-health-check]
 verify_jwt = false
@@ -229,16 +217,14 @@ verify_jwt = false
 [functions.ai-agent-worker-simple]
 verify_jwt = false
 
+# Added public AI generators (OpenAI-only)
 [functions.ai-comprehensive-generator]
-verify_jwt = false
-
-[functions.content-queue-processor]
 verify_jwt = false
 
 [functions.ai-comprehensive-generator-v2]
 verify_jwt = false
 
-[functions.content-scheduler]
+[functions.content-queue-processor]
 verify_jwt = false
 
 [functions.generate-bot-content]
