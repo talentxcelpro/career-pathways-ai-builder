@@ -330,6 +330,13 @@ export type Database = {
             foreignKeyName: "agent_logs_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
+            referencedRelation: "agent_performance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
@@ -339,6 +346,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "agent_tasks"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_logs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "all_agent_tasks"
+            referencedColumns: ["task_id"]
           },
         ]
       }
@@ -371,6 +385,13 @@ export type Database = {
           metric_value?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "agent_metrics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agent_performance"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "agent_metrics_agent_id_fkey"
             columns: ["agent_id"]
@@ -430,6 +451,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "agent_tasks_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agent_performance"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "agent_tasks_agent_id_fkey"
             columns: ["agent_id"]
@@ -21723,6 +21751,52 @@ export type Database = {
       }
     }
     Views: {
+      agent_performance: {
+        Row: {
+          completed_tasks: number | null
+          department: string | null
+          failed_tasks: number | null
+          id: string | null
+          name: string | null
+          role: string | null
+          status: string | null
+          success_rate: number | null
+          tasks_24h: number | null
+          total_tasks: number | null
+        }
+        Relationships: []
+      }
+      agent_task_summary: {
+        Row: {
+          last_24h: number | null
+          last_hour: number | null
+          status: string | null
+          task_source: string | null
+          total: number | null
+        }
+        Relationships: []
+      }
+      all_agent_tasks: {
+        Row: {
+          action: string | null
+          agent_name: string | null
+          agent_role: string | null
+          attempts: number | null
+          completed_at: string | null
+          created_at: string | null
+          department: string | null
+          duration_seconds: number | null
+          error_message: string | null
+          max_attempts: number | null
+          run_at: string | null
+          started_at: string | null
+          status: string | null
+          status_emoji: string | null
+          task_id: string | null
+          task_source: string | null
+        }
+        Relationships: []
+      }
       employer_cv_database: {
         Row: {
           application_id: string | null
@@ -21977,6 +22051,16 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      create_agent_task: {
+        Args: {
+          p_action: string
+          p_agent_id: string
+          p_payload?: Json
+          p_run_at?: string
+          p_source: string
+        }
+        Returns: string
+      }
       create_bot_post: {
         Args: {
           bot_uuid: string
@@ -22133,6 +22217,20 @@ export type Database = {
       generate_vanity_url_suggestions: {
         Args: { base_name: string }
         Returns: string[]
+      }
+      get_agent_by_role: {
+        Args: { p_role: string }
+        Returns: {
+          content_domains: Json
+          department: string
+          email: string
+          frequency: string
+          id: string
+          name: string
+          role: string
+          status: string
+          tone: string
+        }[]
       }
       get_bot_display_info: {
         Args: { bot_uuid: string }
@@ -22341,6 +22439,16 @@ export type Database = {
       is_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      log_agent_activity: {
+        Args: {
+          p_agent_id: string
+          p_level?: string
+          p_message: string
+          p_metadata?: Json
+          p_task_id: string
+        }
+        Returns: string
       }
       log_enterprise_audit: {
         Args: {
