@@ -157,8 +157,11 @@ const App = () => {
                       <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                       
-                      {/* Privacy policy redirect for consistency */}
-                      <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
+                       {/* Privacy policy redirect for consistency */}
+                       <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
+                       
+                       {/* Onboarding redirect */}
+                       <Route path="/onboarding" element={<Navigate to="/auth/register" replace />} />
                       
 {/* SEO Routes - Dynamic categories */}
                       <Route path="/jobs/role/:role" element={<JobsByRole />} />
