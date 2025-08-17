@@ -96,12 +96,12 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
 
   const handleComment = () => {
     // Navigate to post detail with comments
-    window.location.href = `/posts/${post.id}`;
+    window.location.href = `/network/posts/${post.id}`;
   };
 
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}/posts/${post.id}`;
-    
+    const shareUrl = `${window.location.origin}/network/posts/${post.id}`;
+  
     if (navigator.share) {
       navigator.share({
         title: post.title,

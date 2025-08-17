@@ -22,7 +22,7 @@ interface SocialShareProps {
 }
 
 export const SocialShare: React.FC<SocialShareProps> = ({
-  url = window.location.href,
+  url,
   title = 'TalentXcel - AI-Powered Career Platform',
   description = 'Discover your dream job and advance your career with AI-powered tools',
   hashtags = ['TalentXcel', 'CareerGrowth', 'JobSearch', 'AI'],
@@ -31,8 +31,18 @@ export const SocialShare: React.FC<SocialShareProps> = ({
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
+  // Avoid sharing raw storage URLs if window.location points to media
+  const safeUrl = (() => {
+    const current = typeof window !== 'undefined' ? window.location.href : '';
+    const isStorage = current.includes('/storage/v1/object');
+    const base = typeof window !== 'undefined' ? window.location.origin : '';
+    const fallback = `${base}`;
+    return url || (isStorage ? fallback : current);
+  })();
+
+
   const shareData = {
-    url: encodeURIComponent(url),
+    url: encodeURIComponent(safeUrl),
     title: encodeURIComponent(title),
     description: encodeURIComponent(description),
     hashtags: hashtags.map(tag => encodeURIComponent(tag)).join(',')
@@ -84,7 +94,7 @@ export const SocialShare: React.FC<SocialShareProps> = ({
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(safeUrl);
       setCopied(true);
       toast({
         title: "Link copied!",
@@ -184,7 +194,7 @@ export const SocialShare: React.FC<SocialShareProps> = ({
 
         {/* URL Display */}
         <div className="text-xs text-muted-foreground bg-muted p-2 rounded truncate">
-          {url}
+          {safeUrl}
         </div>
       </CardContent>
     </Card>

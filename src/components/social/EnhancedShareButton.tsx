@@ -54,8 +54,18 @@ export const EnhancedShareButton: React.FC<EnhancedShareButtonProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [shareMessage, setShareMessage] = useState('');
 
-  // Get the current page URL or construct share URL
-  const shareUrl = content.url || `${window.location.origin}/post/${content.id}`;
+  // Build a canonical app URL (avoid sharing raw storage URLs)
+  const getShareUrl = () => {
+    const base = window.location.origin;
+    const pathMap: Record<string, string> = {
+      post: `/network/posts/${content.id}`,
+      reel: `/network/posts/${content.id}`,
+      job: `/jobs/${content.id}`,
+      article: `/network/articles/${content.id}`,
+    };
+    return `${base}${pathMap[content.type] ?? `/network/posts/${content.id}`}`;
+  };
+  const shareUrl = getShareUrl();
   const shareTitle = content.title;
   const shareDescription = content.description || '';
 
