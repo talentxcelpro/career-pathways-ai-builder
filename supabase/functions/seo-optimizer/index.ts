@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+const BUILD_VERSION = 'seo-optimizer:2025-08-17T20:45Z';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -20,7 +22,7 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
+  try { console.log('🔄 ' + BUILD_VERSION);
     const rawBody = await req.text();
     const requestBody = (() => { try { return rawBody ? JSON.parse(rawBody) : {}; } catch { return {}; } })();
     console.log('🎯 Request received:', JSON.stringify(requestBody, null, 2));
