@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom'],
-          'ui': ['@radix-ui/react-avatar', '@radix-ui/react-button', '@radix-ui/react-card'],
+          'ui': ['@radix-ui/react-avatar'],
           'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom'],
           'utils': ['date-fns', 'clsx', 'class-variance-authority']
         }
