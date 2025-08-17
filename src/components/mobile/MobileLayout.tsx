@@ -4,6 +4,8 @@ import { MobileBottomNav } from './MobileBottomNav';
 import { MobileHeader } from './MobileHeader';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
 
+const MobileLayoutContext = React.createContext(false);
+
 interface MobileLayoutProps {
   children: React.ReactNode;
   showBottomNav?: boolean;
@@ -18,29 +20,32 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
   fullHeight = false
 }) => {
   const { isMobile } = useMobileDetection();
+  const isNested = React.useContext(MobileLayoutContext);
 
   if (!isMobile) {
     return <div className={className}>{children}</div>;
   }
 
   return (
-    <div className={cn(
-      "mobile-layout relative",
-      fullHeight && "min-h-screen",
-      showBottomNav && "pb-20", // Account for bottom navigation
-      className
-    )}>
-      {/* Mobile Header */}
-      <MobileHeader />
-      
-      {/* Mobile Content */}
-      <div className="mobile-content pt-0">
-        {children}
+    <MobileLayoutContext.Provider value={true}>
+      <div className={cn(
+        "mobile-layout relative",
+        fullHeight && "min-h-screen",
+        showBottomNav && !isNested && "pb-20", // Account for bottom navigation when not nested
+        className
+      )}>
+        {/* Mobile Header */}
+        {!isNested && <MobileHeader />}
+        
+        {/* Mobile Content */}
+        <div className="mobile-content pt-0">
+          {children}
+        </div>
+        
+        {showBottomNav && !isNested && <MobileBottomNav />}
+        
+        {/* Safe area padding is handled via CSS classes */}
       </div>
-      
-      {showBottomNav && <MobileBottomNav />}
-      
-      {/* Safe area padding is handled via CSS classes */}
-    </div>
+    </MobileLayoutContext.Provider>
   );
 };
