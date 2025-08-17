@@ -6,6 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const USE_DEEPSEEK = (Deno.env.get('USE_DEEPSEEK') || 'false').toLowerCase() === 'true';
 let deepseekCooldownUntil = 0; // epoch ms; when > now, DeepSeek is disabled
 const isDeepseekAvailable = () => Date.now() > deepseekCooldownUntil;
 
@@ -186,7 +187,7 @@ async function processContentQueue(supabase: any) {
       }
 
       // Try DeepSeek if OpenAI failed and DeepSeek isn't disabled for this batch
-      if (!generatedContent && deepseekApiKey && !deepseekDisabled && isDeepseekAvailable()) {
+      if (!generatedContent && deepseekApiKey && USE_DEEPSEEK && !deepseekDisabled && isDeepseekAvailable()) {
         try {
           console.log(`🤖 Trying DeepSeek for job ${job.id}`);
           const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -230,6 +231,8 @@ async function processContentQueue(supabase: any) {
         }
       } else if (!generatedContent && deepseekDisabled) {
         console.log(`⏭️ Skipping DeepSeek for job ${job.id} (disabled due to quota)`);
+      } else if (!generatedContent && (!USE_DEEPSEEK || !deepseekApiKey)) {
+        console.log(`⏭️ Skipping DeepSeek for job ${job.id} (disabled by config or missing key)`);
       }
 
       // Always fall back to stub content if APIs failed
