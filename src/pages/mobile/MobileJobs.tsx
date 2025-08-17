@@ -93,12 +93,12 @@ export const MobileJobs = () => {
           />
           
           <div className="flex gap-2">
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
+            <Select value={locationFilter} onValueChange={(v) => setLocationFilter(v === 'all' ? '' : v)}>
               <SelectTrigger className="flex-1 rounded-2xl border-gray-200 bg-white/80">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="remote">Remote</SelectItem>
                 <SelectItem value="new york">New York</SelectItem>
                 <SelectItem value="san francisco">San Francisco</SelectItem>
@@ -106,12 +106,12 @@ export const MobileJobs = () => {
               </SelectContent>
             </Select>
             
-            <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
+            <Select value={jobTypeFilter} onValueChange={(v) => setJobTypeFilter(v === 'all' ? '' : v)}>
               <SelectTrigger className="flex-1 rounded-2xl border-gray-200 bg-white/80">
                 <SelectValue placeholder="Job Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="full-time">Full-time</SelectItem>
                 <SelectItem value="part-time">Part-time</SelectItem>
                 <SelectItem value="contract">Contract</SelectItem>
