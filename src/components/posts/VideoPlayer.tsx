@@ -151,6 +151,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           muted={isMuted}
           playsInline
           preload="metadata"
+          controls
           crossOrigin="anonymous"
           onClick={togglePlay}
           onCanPlay={() => console.log('VideoPlayer: Can play:', videoSrc)}
