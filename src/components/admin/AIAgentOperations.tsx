@@ -86,26 +86,30 @@ export const AIAgentOperations: React.FC = () => {
 
   const triggerScheduler = async () => {
     setIsLoading(true);
+    console.log('=== TRIGGER SCHEDULER CALLED ===');
     try {
-      console.log('Triggering scheduler...');
+      console.log('About to call ai-agent-scheduler function...');
       const { data, error } = await supabase.functions.invoke('ai-agent-scheduler', {
         body: {},
         headers: { 'Content-Type': 'application/json' }
       });
       
+      console.log('Function call completed:', { data, error });
+      
       if (error) {
-        console.error('Scheduler error:', error);
+        console.error('Scheduler function returned error:', error);
         throw new Error(error.message || 'Failed to trigger scheduler');
       }
       
-      console.log('Scheduler response:', data);
+      console.log('Scheduler response data:', data);
       toast.success('Scheduler triggered successfully');
       await fetchTasks();
     } catch (error: any) {
-      console.error('Error triggering scheduler:', error);
+      console.error('Caught error in triggerScheduler:', error);
       toast.error(`Failed to trigger scheduler: ${error.message}`);
     } finally {
       setIsLoading(false);
+      console.log('=== TRIGGER SCHEDULER COMPLETED ===');
     }
   };
 
@@ -274,7 +278,10 @@ export const AIAgentOperations: React.FC = () => {
         <CardContent>
           <div className="flex flex-wrap gap-3">
             <Button 
-              onClick={triggerScheduler} 
+              onClick={() => {
+                console.log('=== SCHEDULER BUTTON CLICKED ===');
+                triggerScheduler();
+              }} 
               disabled={isLoading}
               className="flex items-center gap-2"
             >
@@ -282,7 +289,10 @@ export const AIAgentOperations: React.FC = () => {
               Run Scheduler
             </Button>
             <Button 
-              onClick={triggerWorker} 
+              onClick={() => {
+                console.log('=== WORKER BUTTON CLICKED ===');
+                triggerWorker();
+              }} 
               disabled={isLoading}
               variant="secondary"
               className="flex items-center gap-2"
