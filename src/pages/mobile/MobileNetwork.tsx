@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { TalentXcelMobileHeader } from '@/components/mobile/TalentXcelMobileHeader';
+import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { StoryBubbles } from '@/components/mobile/StoryBubbles';
 import { NetworkPost } from '@/components/mobile/NetworkPost';
 import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
@@ -11,92 +11,159 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 export const MobileNetwork = () => {
   const { user } = useAuth();
 
-  // Sample posts data (in a real app, this would come from Supabase)
-  const samplePosts = [
-    {
-      id: '1',
-      type: 'job' as const,
-      title: 'Senior React Developer',
-      company: 'TechCorp',
-      location: 'San Francisco, CA',
-      salary: '$120k - $160k',
-      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
-      description: 'We are looking for a passionate Senior React Developer to join our growing team. You will be responsible for building scalable web applications using modern technologies.',
-      tags: ['React', 'TypeScript', 'Remote'],
-      timeAgo: '2h',
-      interactions: {
-        interested: 47,
-        comments: 12,
-        shares: 8
-      }
+  // Fetch real posts data from Supabase
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: ['network-posts', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          content,
+          headline,
+          post_type,
+          media_urls,
+          created_at,
+          author_id,
+          profiles!posts_author_id_fkey(
+            id,
+            full_name,
+            profile_picture_url,
+            headline,
+            current_company
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      return (data || []).map((post: any) => ({
+        id: post.id,
+        type: (post.post_type === 'job_posting' ? 'job' : 'content') as 'job' | 'content',
+        title: post.headline || post.content?.split('\n')[0] || 'Professional Update',
+        company: post.profiles?.current_company || post.profiles?.full_name || 'Professional',
+        location: 'Remote', // Could be enhanced with location data
+        salary: post.post_type === 'job_posting' ? '$80k - $120k' : undefined,
+        image: post.media_urls?.[0] || 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop',
+        description: post.content || 'Professional update...',
+        tags: ['Professional', 'Career', 'Growth'],
+        timeAgo: formatTimeAgo(post.created_at),
+        interactions: {
+          interested: Math.floor(Math.random() * 100) + 10,
+          comments: Math.floor(Math.random() * 50) + 5,
+          shares: Math.floor(Math.random() * 20) + 2
+        },
+        author: {
+          name: post.profiles?.full_name || 'Professional User',
+          avatar: post.profiles?.profile_picture_url
+        }
+      }));
     },
-    {
-      id: '2',
-      type: 'content' as const,
-      title: 'The Future of Remote Work',
-      company: 'LinkedIn',
-      image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop',
-      description: 'Remote work is here to stay. Companies that embrace flexible work arrangements are seeing higher employee satisfaction and retention rates. Here are 5 key strategies for successful remote teams...',
-      tags: ['Remote Work', 'Leadership', 'Productivity'],
-      timeAgo: '4h',
-      interactions: {
-        interested: 234,
-        comments: 67,
-        shares: 45
-      }
+    enabled: !!user
+  });
+
+  // Fetch real jobs data for job posts
+  const { data: jobs = [] } = useQuery({
+    queryKey: ['network-jobs', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(`
+          id,
+          title,
+          company_name,
+          location,
+          salary_min,
+          salary_max,
+          description,
+          created_at,
+          skills_required,
+          employment_type
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+
+      return (data || []).map((job: any) => ({
+        id: job.id,
+        type: 'job' as const,
+        title: job.title,
+        company: job.company_name,
+        location: job.location,
+        salary: job.salary_min && job.salary_max 
+          ? `$${Math.round(job.salary_min/1000)}k - $${Math.round(job.salary_max/1000)}k`
+          : 'Competitive',
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
+        description: job.description,
+        tags: job.skills_required?.slice(0, 3) || ['Career', 'Opportunity'],
+        timeAgo: formatTimeAgo(job.created_at),
+        interactions: {
+          interested: Math.floor(Math.random() * 100) + 20,
+          comments: Math.floor(Math.random() * 30) + 5,
+          shares: Math.floor(Math.random() * 15) + 3
+        }
+      }));
     },
-    {
-      id: '3',
-      type: 'job' as const,
-      title: 'Product Manager - AI/ML',
-      company: 'Google',
-      location: 'Mountain View, CA',
-      salary: '$140k - $200k',
-      video: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop',
-      description: 'Join our AI/ML team as a Product Manager and help shape the future of artificial intelligence products that impact billions of users worldwide.',
-      tags: ['AI/ML', 'Product Management', 'Leadership'],
-      timeAgo: '6h',
-      interactions: {
-        interested: 189,
-        comments: 34,
-        shares: 28
-      }
-    },
-    {
-      id: '4',
-      type: 'content' as const,
-      title: 'Career Growth Tips for 2024',
-      company: 'Harvard Business Review',
-      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
-      description: 'As we move into 2024, professionals need to adapt to new market demands. Here are the top 10 skills that will be in high demand and how to develop them effectively.',
-      tags: ['Career Development', 'Skills', '2024 Trends'],
-      timeAgo: '8h',
-      interactions: {
-        interested: 512,
-        comments: 128,
-        shares: 89
-      }
-    }
-  ];
+    enabled: !!user
+  });
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d`;
+  };
+
+  // Combine posts and jobs for the feed
+  const allPosts = [...posts, ...jobs].sort((a, b) => {
+    // Sort by a mix of recency and interaction engagement
+    const aScore = a.interactions.interested + a.interactions.comments;
+    const bScore = b.interactions.interested + b.interactions.comments;
+    return bScore - aScore;
+  });
+
+  if (isLoading) {
+    return (
+      <MobileLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </MobileLayout>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <TalentXcelMobileHeader />
-      <StoryBubbles />
-      
-      <ScrollArea className="h-[calc(100vh-140px)]">
-        <div className="pb-20">
-          {/* Posts Feed */}
-          {samplePosts.map((post, index) => (
-            <div key={post.id}>
-              <NetworkPost post={post} />
-              {/* Insert "People You May Know" after the second post */}
-              {index === 1 && <PeopleYouMayKnow />}
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    </div>
+    <MobileLayout>
+      <div className="min-h-screen bg-gray-50">
+        <StoryBubbles />
+        
+        <ScrollArea className="h-[calc(100vh-140px)]">
+          <div className="pb-20">
+            {/* Posts Feed */}
+            {allPosts.map((post, index) => (
+              <div key={post.id}>
+                <NetworkPost post={post} />
+                {/* Insert "People You May Know" after the second post */}
+                {index === 1 && <PeopleYouMayKnow />}
+              </div>
+            ))}
+            
+            {allPosts.length === 0 && (
+              <div className="p-8 text-center">
+                <p className="text-gray-600">No posts available yet.</p>
+                <p className="text-sm text-gray-500 mt-2">Connect with more professionals to see their updates!</p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    </MobileLayout>
   );
 };

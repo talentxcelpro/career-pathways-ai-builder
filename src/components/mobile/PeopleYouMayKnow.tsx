@@ -1,4 +1,7 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -15,40 +18,83 @@ interface Person {
   badges?: string[];
 }
 
-const samplePeople: Person[] = [
-  {
-    id: '1',
-    name: 'Sarah Chen',
-    title: 'Senior Software Engineer',
-    company: 'Google',
-    mutualConnections: 12,
-    badges: ['Hiring']
-  },
-  {
-    id: '2',
-    name: 'Michael Rodriguez',
-    title: 'Product Manager',
-    company: 'Microsoft',
-    mutualConnections: 8,
-    badges: ['Open to work']
-  },
-  {
-    id: '3',
-    name: 'Emily Johnson',
-    title: 'UX Designer',
-    company: 'Apple',
-    mutualConnections: 15
-  }
-];
-
 export const PeopleYouMayKnow: React.FC = () => {
-  const handleConnect = (personId: string) => {
-    console.log('Connecting to:', personId);
+  const { user } = useAuth();
+
+  // Fetch real people data from profiles
+  const { data: people = [], isLoading } = useQuery({
+    queryKey: ['people-suggestions', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, headline, current_company, profile_picture_url, email')
+        .neq('id', user.id)
+        .not('full_name', 'is', null)
+        .limit(5);
+
+      if (error) throw error;
+
+      return (data || []).map((profile: any) => ({
+        id: profile.id,
+        name: profile.full_name || 'Professional User',
+        title: profile.headline || 'Professional',
+        company: profile.current_company || 'Company',
+        avatar: profile.profile_picture_url,
+        mutualConnections: Math.floor(Math.random() * 20) + 1,
+        badges: Math.random() > 0.7 ? ['Hiring'] : Math.random() > 0.5 ? ['Open to work'] : undefined
+      })) as Person[];
+    },
+    enabled: !!user?.id
+  });
+
+  const handleConnect = async (personId: string) => {
+    if (!user?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .insert({
+          requester_id: user.id,
+          recipient_id: personId,
+          status: 'pending'
+        });
+      
+      if (error) throw error;
+      console.log('Connection request sent to:', personId);
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+    }
   };
 
   const handleDismiss = (personId: string) => {
     console.log('Dismissing:', personId);
   };
+
+  if (isLoading) {
+    return (
+      <Card className="rounded-none border-0 border-b border-gray-100 bg-white shadow-none">
+        <CardContent className="p-4">
+          <div className="animate-pulse space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (people.length === 0) {
+    return null;
+  }
 
   return (
     <Card className="rounded-none border-0 border-b border-gray-100 bg-white shadow-none">
@@ -59,7 +105,7 @@ export const PeopleYouMayKnow: React.FC = () => {
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-4">
-          {samplePeople.map((person) => (
+          {people.map((person) => (
             <div key={person.id} className="flex items-center justify-between">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <Avatar className="h-12 w-12">

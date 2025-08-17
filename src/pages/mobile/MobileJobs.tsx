@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { LinkedInMobileHeader } from '@/components/mobile/LinkedInMobileHeader';
+import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -79,11 +79,10 @@ export const MobileJobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <LinkedInMobileHeader showCreatePost={false} />
-      
-      <div className="px-4 py-4 space-y-4">
-        {/* Search and Filters */}
+    <MobileLayout>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="px-4 py-4 space-y-4">
+          {/* Search and Filters */}
         <div className="space-y-3">
           <Input
             placeholder="Search jobs, companies, keywords..."
@@ -212,7 +211,8 @@ export const MobileJobs = () => {
             )}
           </div>
         </ScrollArea>
+        </div>
       </div>
-    </div>
+    </MobileLayout>
   );
 };
