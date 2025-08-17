@@ -208,3 +208,6 @@ verify_jwt = false
 
 [functions.ai-adminbot]
 verify_jwt = false
+
+[functions.ai-test-health]
+verify_jwt = false

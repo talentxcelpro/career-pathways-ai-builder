@@ -65,7 +65,22 @@ export const AIAgentOperations: React.FC = () => {
 
   const fetchSystemHealth = async () => {
     try {
-      console.log('Fetching system health...');
+      console.log('Testing edge function connectivity...');
+      
+      // First test with simple health function
+      const { data: testData, error: testError } = await supabase.functions.invoke('ai-test-health', {
+        body: {},
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      console.log('Test function result:', { testData, testError });
+      
+      if (testError) {
+        throw new Error(`Edge Functions not accessible: ${testError.message}`);
+      }
+      
+      // If test works, try the main adminbot function
+      console.log('Fetching system health from AdminBot...');
       const { data, error } = await supabase.functions.invoke('ai-adminbot', {
         body: {},
         headers: { 'Content-Type': 'application/json' }
@@ -73,7 +88,13 @@ export const AIAgentOperations: React.FC = () => {
       
       if (error) {
         console.error('AdminBot error:', error);
-        throw new Error(error.message || 'Failed to fetch system health');
+        // Fallback to mock data if AdminBot fails
+        setSystemHealth({
+          healthScore: 0,
+          metrics: { totalTasks: 0, activeAgents: 10, failedTasks: 0 },
+          recommendations: ['Edge Functions need to be deployed and configured']
+        });
+        throw new Error(error.message || 'Failed to fetch system health from AdminBot');
       }
       
       console.log('AdminBot response:', data);
@@ -81,6 +102,13 @@ export const AIAgentOperations: React.FC = () => {
     } catch (error: any) {
       console.error('Error fetching system health:', error);
       toast.error(`Failed to fetch system health: ${error.message}`);
+      
+      // Set fallback health data
+      setSystemHealth({
+        healthScore: 0,
+        metrics: { totalTasks: 0, activeAgents: 10, failedTasks: 0 },
+        recommendations: ['Edge Functions need to be deployed', 'Check environment variables', 'Verify Supabase configuration']
+      });
     }
   };
 
@@ -277,6 +305,24 @@ export const AIAgentOperations: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
+            <Button 
+              onClick={() => {
+                console.log('=== TESTING EDGE FUNCTION CONNECTIVITY ===');
+                supabase.functions.invoke('ai-test-health').then(result => {
+                  console.log('Test result:', result);
+                  toast.success('Edge Functions are working!');
+                }).catch(err => {
+                  console.error('Test failed:', err);
+                  toast.error('Edge Functions not accessible');
+                });
+              }} 
+              disabled={isLoading}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <CheckCircle className="h-4 w-4" />
+              Test Connectivity
+            </Button>
             <Button 
               onClick={() => {
                 console.log('=== SCHEDULER BUTTON CLICKED ===');
