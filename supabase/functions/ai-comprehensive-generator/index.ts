@@ -175,7 +175,7 @@ async function processContentQueue(supabase: any) {
       if (!generatedContent && deepseekApiKey) {
         try {
           console.log(`🤖 Trying DeepSeek for job ${job.id}`);
-          const response = await fetch('https://api.deepseek.com/chat/completions', {
+          const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${deepseekApiKey}`,
