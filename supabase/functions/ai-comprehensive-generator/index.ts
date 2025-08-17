@@ -149,6 +149,7 @@ async function processContentQueue(supabase: any) {
         .eq('id', job.id);
 
       console.log(`📝 Processing job ${job.id} - ${job.content_type}`);
+      console.log(`🚦 Job ${job.id} plan: OpenAI=${openaiApiKey ? 'yes' : 'no'}, DeepSeek=${USE_DEEPSEEK && deepseekApiKey && !deepseekDisabled && isDeepseekAvailable() ? 'yes' : 'no'} (cooldownMs=${Math.max(0, deepseekCooldownUntil - Date.now())}), Fallback=stub`);
 
       let generatedContent = '';
       let apiUsed = 'stub';
