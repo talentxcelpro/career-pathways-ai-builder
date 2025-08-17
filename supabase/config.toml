@@ -196,3 +196,15 @@ verify_jwt = false
 
 [functions.qr-generator]
 verify_jwt = false
+
+[functions.skill-gap-ai]
+verify_jwt = false
+
+[functions.ai-agent-scheduler]
+verify_jwt = false
+
+[functions.ai-agent-worker]
+verify_jwt = false
+
+[functions.ai-adminbot]
+verify_jwt = false

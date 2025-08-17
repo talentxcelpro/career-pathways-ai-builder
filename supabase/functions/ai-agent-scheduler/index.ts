@@ -1,0 +1,146 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+const supabaseAdmin = createClient(
+  Deno.env.get('SUPABASE_URL')!,
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+);
+
+const FREQ_TO_MINUTES: Record<string, number> = { 
+  daily: 1440, 
+  weekly: 10080, 
+  'as_needed': 0 
+};
+
+async function emitEvent(topic: string, origin: string, ref_task: string | null, data: any) {
+  return await supabaseAdmin.from('agent_events').insert({
+    topic,
+    origin,
+    ref_task,
+    data
+  });
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    console.log('Starting agent scheduler...');
+
+    // Find agents that are due based on last event of type 'scheduler.ran'
+    const { data: agents, error: agentsError } = await supabaseAdmin
+      .from('ai_agents')
+      .select('*')
+      .neq('status', 'paused');
+
+    if (agentsError) {
+      console.error('Error fetching agents:', agentsError);
+      throw agentsError;
+    }
+
+    console.log(`Found ${agents?.length || 0} active agents`);
+
+    for (const agent of agents || []) {
+      const freqMin = FREQ_TO_MINUTES[agent.frequency] ?? 1440;
+      if (freqMin === 0) continue; // as_needed -> skip
+
+      // Check last run
+      const { data: lastRun } = await supabaseAdmin
+        .from('agent_events')
+        .select('created_at')
+        .eq('origin', agent.handle)
+        .eq('topic', 'scheduler.ran')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const due = !lastRun?.length || 
+        (Date.now() - new Date(lastRun[0].created_at).getTime()) / 60000 > freqMin;
+
+      if (!due) {
+        console.log(`Agent ${agent.handle} not due yet`);
+        continue;
+      }
+
+      // Enqueue default tasks per agent role
+      const defaults: Record<string, any[]> = {
+        'Learning Path Assistant': [{ 
+          kind: 'learning_path', 
+          payload: { skillTarget: 'Data Science', audience: 'Freshers' } 
+        }],
+        'Career Coach (Pro)': [{ 
+          kind: 'career_advice', 
+          payload: { roleOrDomain: 'Software Engineer' } 
+        }],
+        'Job Matching AI': [{ 
+          kind: 'match_jobs', 
+          payload: { skills: 'React,Node,SQL', prefs: 'Hybrid', region: 'India' } 
+        }],
+        'Content Creator': [{ 
+          kind: 'post_community', 
+          payload: { title: 'Welcome to TalentXcel', url: 'https://talentxcel.in' } 
+        }],
+        'Community Manager': [],
+        'Application Support Specialist': [{ 
+          kind: 'support_reply', 
+          payload: { issue: 'Login not working' } 
+        }],
+        'Customer Service Representative': [{ 
+          kind: 'support_reply', 
+          payload: { issue: 'Password reset email not received' } 
+        }],
+        'Upskilling Advisor': [{ 
+          kind: 'learning_path', 
+          payload: { skillTarget: 'AI/ML Basics', audience: 'Working Professionals' } 
+        }],
+        'Mentorship Coordinator': [{ 
+          kind: 'mentor_match', 
+          payload: { topic: 'Frontend Career' } 
+        }],
+        'Admin Bot': [{ 
+          kind: 'platform_announcement', 
+          payload: { message: 'Daily system health OK' } 
+        }],
+      };
+
+      const taskList = defaults[agent.role] ?? [];
+      
+      for (const task of taskList) {
+        const { error: taskError } = await supabaseAdmin
+          .from('agent_tasks')
+          .insert({
+            agent_id: agent.id,
+            kind: task.kind,
+            payload: task.payload,
+            priority: 5,
+            status: 'pending'
+          });
+
+        if (taskError) {
+          console.error(`Error creating task for agent ${agent.handle}:`, taskError);
+        }
+      }
+
+      await emitEvent('scheduler.ran', agent.handle, null, { count: taskList.length });
+      console.log(`Scheduled ${taskList.length} tasks for agent ${agent.handle}`);
+    }
+
+    return new Response('Scheduler completed successfully', {
+      headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
+    });
+
+  } catch (error) {
+    console.error('Scheduler error:', error);
+    return new Response(`Scheduler failed: ${error.message}`, {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
+    });
+  }
+});

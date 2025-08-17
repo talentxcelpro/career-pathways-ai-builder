@@ -18,6 +18,7 @@ import { AISystemTester } from './AISystemTester';
 import { AIToolsConfiguration } from './AIToolsConfiguration';
 import { AIUsageAnalytics } from './AIUsageAnalytics';
 import { AIPerformanceMonitor } from './AIPerformanceMonitor';
+import { AIAgentsManager } from './AIAgentsManager';
 import { useAIManagementStats } from '@/hooks/useAIManagementStats';
 
 export const AIManagementDashboard = () => {
@@ -94,8 +95,9 @@ export const AIManagementDashboard = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="agents">AI Agents</TabsTrigger>
           <TabsTrigger value="tools">Tools Config</TabsTrigger>
           <TabsTrigger value="testing">Testing</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -162,9 +164,13 @@ export const AIManagementDashboard = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="tools">
-          <AIToolsConfiguration />
-        </TabsContent>
+          <TabsContent value="agents">
+            <AIAgentsManager />
+          </TabsContent>
+
+          <TabsContent value="tools">
+            <AIToolsConfiguration />
+          </TabsContent>
 
         <TabsContent value="testing">
           <AISystemTester />
