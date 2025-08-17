@@ -53,8 +53,9 @@ export const UniversalShare: React.FC<UniversalShareProps> = ({
 
   const generateShareUrl = () => {
     const baseUrl = window.location.origin;
-    if (content.url) return content.url;
     
+    // Always generate application page URL instead of using direct content URL
+    // This prevents sharing raw Supabase storage URLs for media content
     const pathMap = {
       post: `/network/posts/${content.id}`,
       job: `/jobs/${content.id}`,
