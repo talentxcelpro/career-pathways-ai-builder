@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
-import { TalentXcelMobileHeader } from '@/components/mobile/TalentXcelMobileHeader';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,7 +41,7 @@ export const MobileQRScanner: React.FC = () => {
 
     setIsGenerating(true);
     try {
-      const response = await fetch('https://dthlgsnakhoftinssokm.functions.supabase.co/qr-generator', {
+      const response = await fetch('https://dthlgsnakhoftinssokm.functions.supabase.co/functions/v1/qr-generator', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,8 +58,9 @@ export const MobileQRScanner: React.FC = () => {
       });
 
       const data = await response.json();
-      if (data.qrCodeDataUrl) {
-        setQrCodeUrl(data.qrCodeDataUrl);
+      const url = data.qrCodeData || data.qrCodeDataUrl;
+      if (url) {
+        setQrCodeUrl(url);
         toast.success('QR Code generated successfully!');
       } else {
         throw new Error('Failed to generate QR code');
@@ -121,7 +122,6 @@ export const MobileQRScanner: React.FC = () => {
 
   return (
     <MobileLayout>
-      <TalentXcelMobileHeader />
       
       <div className="p-4 space-y-6">
         {/* Header */}
