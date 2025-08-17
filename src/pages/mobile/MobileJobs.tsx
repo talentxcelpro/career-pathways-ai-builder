@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { formatSalaryRange } from '@/utils/currencyUtils';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { Button } from '@/components/ui/button';
@@ -75,28 +76,7 @@ export const MobileJobs = () => {
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  const formatSalary = (min: number, max: number) => {
-    const formatAmount = (amount: number) => {
-      if (amount >= 100000) {
-        // If amount is 6+ digits, it's likely in full amount (e.g., 600000)
-        return `$${(amount / 1000).toFixed(0)}k`;
-      } else if (amount >= 1000) {
-        // If amount is 4-5 digits, it might already be in thousands (e.g., 600)
-        return `$${amount.toFixed(0)}k`;
-      } else {
-        // If amount is small, treat as thousands
-        return `$${amount}k`;
-      }
-    };
-
-    if (min && max) {
-      return `${formatAmount(min)} - ${formatAmount(max)}`;
-    }
-    if (min) {
-      return `${formatAmount(min)}+`;
-    }
-    return 'Salary not specified';
-  };
+  // Remove the old formatSalary function since we'll use formatSalaryRange from utils
 
   const formatTimeAgo = (date: string) => {
     const now = new Date();
@@ -167,13 +147,13 @@ export const MobileJobs = () => {
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ) : jobs.length === 0 ? (
+            ) : Array.isArray(jobs) && jobs.length === 0 ? (
               <Card className="p-8 text-center rounded-3xl border-0 shadow-lg bg-white/80 backdrop-blur-sm">
                 <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">No jobs found matching your criteria</p>
               </Card>
             ) : (
-              jobs.map((job) => (
+              Array.isArray(jobs) && jobs.map((job) => (
                 <Card 
                   key={job.id} 
                   className="rounded-3xl border-0 shadow-lg bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
@@ -221,7 +201,7 @@ export const MobileJobs = () => {
                     {(job.salary_min || job.salary_max) && (
                       <div className="flex items-center gap-1 mb-4 text-green-600 font-semibold">
                         <DollarSign className="h-4 w-4" />
-                        <span>{formatSalary(job.salary_min, job.salary_max)}</span>
+                        <span>{formatSalaryRange(job.salary_min, job.salary_max, true, (job as any).salary_range)}</span>
                       </div>
                     )}
 
