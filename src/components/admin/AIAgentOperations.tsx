@@ -19,13 +19,13 @@ interface Agent {
 interface Task {
   id: string;
   agent_id: string;
-  kind: string;
+  action: string;  // This is the correct column name
   status: string;
   created_at: string;
   started_at?: string;
-  finished_at?: string;
+  completed_at?: string;
   attempts: number;
-  error?: string;
+  error_message?: string;
 }
 
 export const AIAgentOperations: React.FC = () => {
@@ -116,8 +116,8 @@ export const AIAgentOperations: React.FC = () => {
     setIsLoading(true);
     console.log('=== TRIGGER SCHEDULER CALLED ===');
     try {
-      console.log('About to call ai-agent-scheduler function...');
-      const { data, error } = await supabase.functions.invoke('ai-agent-scheduler', {
+      console.log('About to call ai-agent-scheduler-simple function...');
+      const { data, error } = await supabase.functions.invoke('ai-agent-scheduler-simple', {
         body: {},
         headers: { 'Content-Type': 'application/json' }
       });
@@ -130,7 +130,7 @@ export const AIAgentOperations: React.FC = () => {
       }
       
       console.log('Scheduler response data:', data);
-      toast.success('Scheduler triggered successfully');
+      toast.success(`Scheduler: ${data?.message || 'Success'} (${data?.tasksCreated || 0} tasks created)`);
       await fetchTasks();
     } catch (error: any) {
       console.error('Caught error in triggerScheduler:', error);
@@ -145,7 +145,7 @@ export const AIAgentOperations: React.FC = () => {
     setIsLoading(true);
     try {
       console.log('Triggering worker...');
-      const { data, error } = await supabase.functions.invoke('ai-agent-worker', {
+      const { data, error } = await supabase.functions.invoke('ai-agent-worker-simple', {
         body: {},
         headers: { 'Content-Type': 'application/json' }
       });
@@ -156,7 +156,7 @@ export const AIAgentOperations: React.FC = () => {
       }
       
       console.log('Worker response:', data);
-      toast.success('Worker triggered successfully');
+      toast.success(`Worker: ${data?.message || 'Success'} (${data?.tasksProcessed || 0} tasks processed)`);
       await fetchTasks();
     } catch (error: any) {
       console.error('Error triggering worker:', error);
@@ -175,9 +175,9 @@ export const AIAgentOperations: React.FC = () => {
           .from('agent_tasks')
           .insert({
             agent_id: agent.id,
-            kind: 'test_task',
+            source: 'manual',
+            action: 'test_task',
             payload: { test: true, trigger: 'manual' },
-            priority: 5,
             status: 'pending'
           });
         
@@ -413,7 +413,7 @@ export const AIAgentOperations: React.FC = () => {
                   <div className="flex items-center gap-3">
                     {getStatusIcon(task.status)}
                     <div>
-                      <div className="font-medium text-sm text-foreground">{task.kind}</div>
+                      <div className="font-medium text-sm text-foreground">{task.action}</div>
                       <div className="text-xs text-muted-foreground">
                         Created: {new Date(task.created_at).toLocaleString()}
                         {task.started_at && ` • Started: ${new Date(task.started_at).toLocaleString()}`}
