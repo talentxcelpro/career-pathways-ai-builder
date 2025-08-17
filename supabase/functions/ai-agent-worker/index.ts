@@ -15,6 +15,10 @@ const supabaseAdmin = createClient(
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const siteOrigin = Deno.env.get('SITE_ORIGIN') || 'https://talentxcel.in';
 
+if (!openAIApiKey) {
+  console.error('OPENAI_API_KEY environment variable is not set');
+}
+
 async function chat(prompt: string) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',

@@ -69,15 +69,31 @@ serve(async (req) => {
         continue;
       }
 
-      // Enqueue default tasks per agent role
+      // Enqueue default tasks per agent role (exact names from agents table)
       const defaults: Record<string, any[]> = {
-        'Learning Path Assistant': [{ 
+        'System Administrator': [{ 
+          kind: 'platform_announcement', 
+          payload: { message: 'Daily system health check completed' } 
+        }],
+        'Community Manager': [{ 
+          kind: 'post_community', 
+          payload: { title: 'Welcome to TalentXcel Community', url: 'https://talentxcel.in' } 
+        }],
+        'Support Specialist': [{ 
+          kind: 'support_reply', 
+          payload: { issue: 'Login assistance needed' } 
+        }],
+        'Career Coach': [{ 
+          kind: 'career_advice', 
+          payload: { roleOrDomain: 'Software Development' } 
+        }],
+        'Mentorship Coordinator': [{ 
+          kind: 'mentor_match', 
+          payload: { topic: 'Career Transition' } 
+        }],
+        'Learning Assistant': [{ 
           kind: 'learning_path', 
           payload: { skillTarget: 'Data Science', audience: 'Freshers' } 
-        }],
-        'Career Coach (Pro)': [{ 
-          kind: 'career_advice', 
-          payload: { roleOrDomain: 'Software Engineer' } 
         }],
         'Job Matching AI': [{ 
           kind: 'match_jobs', 
@@ -85,28 +101,15 @@ serve(async (req) => {
         }],
         'Content Creator': [{ 
           kind: 'post_community', 
-          payload: { title: 'Welcome to TalentXcel', url: 'https://talentxcel.in' } 
-        }],
-        'Community Manager': [],
-        'Application Support Specialist': [{ 
-          kind: 'support_reply', 
-          payload: { issue: 'Login not working' } 
-        }],
-        'Customer Service Representative': [{ 
-          kind: 'support_reply', 
-          payload: { issue: 'Password reset email not received' } 
+          payload: { title: 'TalentXcel Career Tips', url: 'https://talentxcel.in/career' } 
         }],
         'Upskilling Advisor': [{ 
           kind: 'learning_path', 
           payload: { skillTarget: 'AI/ML Basics', audience: 'Working Professionals' } 
         }],
-        'Mentorship Coordinator': [{ 
-          kind: 'mentor_match', 
-          payload: { topic: 'Frontend Career' } 
-        }],
-        'Admin Bot': [{ 
-          kind: 'platform_announcement', 
-          payload: { message: 'Daily system health OK' } 
+        'Customer Service': [{ 
+          kind: 'support_reply', 
+          payload: { issue: 'Account access support' } 
         }],
       };
 
