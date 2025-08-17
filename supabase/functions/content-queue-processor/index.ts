@@ -14,13 +14,13 @@ serve(async (req) => {
   }
   // Health check endpoint
   if (req.method === 'GET') {
-    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor' }), {
+    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '1.2' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
   try {
-    console.log('🚀 content-queue-processor v1.1 starting');
+    console.log('🚀 content-queue-processor v1.2 starting');
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
