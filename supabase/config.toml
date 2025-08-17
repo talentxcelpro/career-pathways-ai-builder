@@ -231,3 +231,6 @@ verify_jwt = true
 
 [functions.ai-comprehensive-generator-v2]
 verify_jwt = false
+
+[functions.content-scheduler]
+verify_jwt = false
