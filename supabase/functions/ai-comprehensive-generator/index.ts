@@ -132,7 +132,9 @@ async function processContentQueue(supabase: any) {
   
   const processedJobs = [];
   const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-  const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+  const deepseekApiKey = USE_DEEPSEEK ? Deno.env.get('DEEPSEEK_API_KEY') : undefined;
+
+  console.log(`⚙️ Config -> USE_DEEPSEEK=${USE_DEEPSEEK}, OpenAIKey=${openaiApiKey ? 'yes' : 'no'}, DeepSeekKey=${deepseekApiKey ? 'yes' : 'no'}`);
   
   // Track API health during this batch
   let deepseekDisabled = false;
