@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, MapPin, Clock, Building2, Users } from 'lucide-react';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
-import { TalentXcelMobileHeader } from '@/components/mobile/TalentXcelMobileHeader';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';

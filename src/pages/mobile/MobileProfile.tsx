@@ -2,7 +2,6 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { LinkedInMobileHeader } from '@/components/mobile/LinkedInMobileHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,6 +21,7 @@ import {
   Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MobileLayout } from '@/components/mobile/MobileLayout';
 
 export const MobileProfile = () => {
   const { user } = useAuth();
@@ -128,9 +128,7 @@ export const MobileProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <LinkedInMobileHeader showCreatePost={false} />
-      
+    <MobileLayout>
       <ScrollArea className="h-[calc(100vh-80px)]">
         <div className="px-4 py-4 space-y-4 pb-20">
           {/* Profile Header */}
@@ -331,6 +329,6 @@ export const MobileProfile = () => {
           </Tabs>
         </div>
       </ScrollArea>
-    </div>
+    </MobileLayout>
   );
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
-import { LinkedInMobileHeader } from '@/components/mobile/LinkedInMobileHeader';
 
 export const MobilePendingConnections: React.FC = () => {
   return (

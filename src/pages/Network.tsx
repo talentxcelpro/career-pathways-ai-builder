@@ -16,10 +16,10 @@ import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
-import { LinkedInMobileHeader } from "@/components/mobile/LinkedInMobileHeader";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
+import { MobileLayout } from "@/components/mobile/MobileLayout";
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
@@ -85,16 +85,7 @@ const Network = () => {
   // Mobile LinkedIn-style interface
   if (isMobile && user) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <LinkedInMobileHeader
-          onSearch={() => console.log('Search')}
-          onMessages={() => console.log('Messages')}
-          onNotifications={() => console.log('Notifications')}
-          onProfile={() => console.log('Profile')}
-          onMenu={() => console.log('Menu')}
-          messageCount={5}
-          notificationCount={3}
-        />
+      <MobileLayout>
         <LinkedInMobileFeed
           posts={posts}
           onLike={handleLike}
@@ -104,7 +95,7 @@ const Network = () => {
           onConnect={handleConnect}
           onApply={handleApply}
         />
-      </div>
+      </MobileLayout>
     );
   }
 
