@@ -32,7 +32,7 @@ export const ContentAutomationDashboard: React.FC = () => {
     setIsGenerating(true);
     try {
       // Step 1: queue exactly 1 job
-      const { data: queueData, error: queueError } = await supabase.functions.invoke('content-queue-processor', {
+      const { data: queueData, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
         body: { action: 'queue', count: 1 }
       });
       if (queueError) throw queueError;

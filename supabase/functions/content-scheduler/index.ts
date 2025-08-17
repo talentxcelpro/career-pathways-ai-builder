@@ -53,9 +53,9 @@ serve(async (req) => {
       if (timeSlots.includes(currentTime)) {
         console.log(`🎯 Triggering schedule: ${schedule.schedule_name}`);
         
-        // Trigger processor to handle queued jobs (OpenAI-only path)
-        const { data, error: invokeError } = await supabase.functions.invoke('content-queue-processor', {
-          body: { action: 'process' }
+        // Call comprehensive generator via Supabase client (existing function)
+        const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+          body: { schedule_id: schedule.id }
         });
 
         if (!invokeError) {
