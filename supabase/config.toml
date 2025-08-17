@@ -224,5 +224,8 @@ verify_jwt = false
 [functions.ai-comprehensive-generator]
 verify_jwt = false
 
+[functions.content-queue-processor]
+verify_jwt = false
+
 [functions.generate-bot-content]
 verify_jwt = true
