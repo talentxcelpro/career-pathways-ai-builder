@@ -160,7 +160,7 @@ Now write the complete ${contentType} content following ALL requirements above:`
     console.log('📝 Sending request to DeepSeek API...');
     
     // Call DeepSeek API
-    const deepseekResponse = await fetch('https://api.deepseek.com/chat/completions', {
+    const deepseekResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${deepseekApiKey}`,
