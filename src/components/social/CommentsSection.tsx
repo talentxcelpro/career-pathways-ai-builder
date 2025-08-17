@@ -12,7 +12,6 @@ import {
   MessageCircle, 
   Heart, 
   Reply, 
-  MoreHorizontal,
   Send,
   Trash2
 } from 'lucide-react';
@@ -159,25 +158,25 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
       if (!user) throw new Error('User not authenticated');
 
       // Check if already liked
-      const { data: existingLike } = await supabase
-        .from('comment_likes')
+      const { data: existingLike } = await (supabase as any)
+        .from('comment_likes' as any)
         .select('id')
         .eq('comment_id', commentId)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existingLike) {
         // Unlike
-        const { error } = await supabase
-          .from('comment_likes')
+        const { error } = await (supabase as any)
+          .from('comment_likes' as any)
           .delete()
           .eq('comment_id', commentId)
           .eq('user_id', user.id);
         if (error) throw error;
       } else {
         // Like
-        const { error } = await supabase
-          .from('comment_likes')
+        const { error } = await (supabase as any)
+          .from('comment_likes' as any)
           .insert({
             comment_id: commentId,
             user_id: user.id

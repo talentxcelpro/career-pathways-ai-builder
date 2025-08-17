@@ -1,6 +1,5 @@
 import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useOptimizedQuery } from '@/hooks/useOptimizedQuery';
-import { VirtualizedList } from '@/components/performance/VirtualizedList';
 import { FastImageLoader } from '@/components/performance/FastImageLoader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,9 +13,9 @@ import { formatDistanceToNow } from 'date-fns';
 interface Post {
   id: string;
   content: string;
-  media_url?: string;
-  media_type?: 'image' | 'video';
-  user_id: string;
+  media_urls?: string[];
+  user_id?: string;
+  author_id?: string;
   created_at: string;
   likes_count: number;
   comments_count: number;
@@ -36,25 +35,20 @@ interface OptimizedSocialFeedProps {
 }
 
 const PostCard = memo<{ post: Post; onInteraction: (postId: string, type: string) => void }>(({ post, onInteraction }) => {
-  const { 
-    isLiked, 
-    isBookmarked, 
-    handleLike, 
-    handleBookmark 
-  } = useSocialInteractions(post.id);
+  const { interactions, toggleLike, toggleBookmark } = useSocialInteractions(post.id);
 
   const handleInteraction = useCallback((type: string) => {
     switch (type) {
       case 'like':
-        handleLike();
+        toggleLike();
         break;
       case 'bookmark':
-        handleBookmark();
+        toggleBookmark();
         break;
       default:
         onInteraction(post.id, type);
     }
-  }, [post.id, handleLike, handleBookmark, onInteraction]);
+  }, [post.id, toggleLike, toggleBookmark, onInteraction]);
 
   const timeAgo = useMemo(() => 
     formatDistanceToNow(new Date(post.created_at), { addSuffix: true }), 
@@ -99,12 +93,12 @@ const PostCard = memo<{ post: Post; onInteraction: (postId: string, type: string
         </div>
 
         {/* Media */}
-        {post.media_url && (
+        {!!post.media_urls && post.media_urls.length > 0 && (
           <div className="mb-3 relative">
-            {post.media_type === 'video' ? (
+            {/\.(mp4|mov|webm|avi)$/i.test(post.media_urls[0] || '') ? (
               <div className="relative">
                 <FastImageLoader
-                  src={post.media_url}
+                  src={post.media_urls[0]!}
                   alt="Post video thumbnail"
                   className="rounded-lg"
                   aspectRatio="16/9"
@@ -117,7 +111,7 @@ const PostCard = memo<{ post: Post; onInteraction: (postId: string, type: string
               </div>
             ) : (
               <FastImageLoader
-                src={post.media_url}
+                src={post.media_urls[0]!}
                 alt="Post image"
                 className="rounded-lg"
                 aspectRatio="16/9"
@@ -132,10 +126,10 @@ const PostCard = memo<{ post: Post; onInteraction: (postId: string, type: string
             <Button
               variant="ghost"
               size="sm"
-              className={`gap-2 ${isLiked ? 'text-red-500' : ''}`}
+              className={`gap-2 ${interactions.isLiked ? 'text-red-500' : ''}`}
               onClick={() => handleInteraction('like')}
             >
-              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+              <Heart className={`h-4 w-4 ${interactions.isLiked ? 'fill-current' : ''}`} />
               <span className="text-xs">{post.likes_count}</span>
             </Button>
             
@@ -163,10 +157,10 @@ const PostCard = memo<{ post: Post; onInteraction: (postId: string, type: string
           <Button
             variant="ghost"
             size="sm"
-            className={isBookmarked ? 'text-blue-500' : ''}
+            className={interactions.isBookmarked ? 'text-blue-500' : ''}
             onClick={() => handleInteraction('bookmark')}
           >
-            <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+            <Bookmark className={`h-4 w-4 ${interactions.isBookmarked ? 'fill-current' : ''}`} />
           </Button>
         </div>
       </CardContent>
@@ -184,21 +178,20 @@ export const OptimizedSocialFeed = memo<OptimizedSocialFeedProps>(({
   const [allPosts, setAllPosts] = useState<Post[]>([]);
 
   const fetchPosts = useCallback(async () => {
-    let query = supabase
-      .from('posts')
+    let query = (supabase as any)
+      .from('posts' as any)
       .select(`
         id,
         content,
-        media_url,
-        media_type,
-        user_id,
+        media_urls,
+        author_id,
         created_at,
         likes_count,
         comments_count,
         shares_count,
         tags,
         location,
-        user:profiles!posts_user_id_fkey(
+        user:profiles!posts_author_id_fkey(
           id,
           full_name,
           avatar_url
@@ -214,7 +207,7 @@ export const OptimizedSocialFeed = memo<OptimizedSocialFeedProps>(({
     const { data, error } = await query;
     if (error) throw error;
 
-    return data as Post[];
+    return data as unknown as Post[];
   }, [feedType, userId, page]);
 
   const { data: posts = [], isLoading, error } = useOptimizedQuery({

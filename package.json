@@ -55,6 +55,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/papaparse": "^5.3.16",
     "@types/react-big-calendar": "^1.16.2",
+    "@types/react-window": "^1.8.8",
     "@vercel/analytics": "^1.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

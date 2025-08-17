@@ -109,9 +109,8 @@ export const QuickCreatePost = memo<QuickCreatePostProps>(({ onPostCreated, clas
         .from('posts')
         .insert({
           content,
-          media_url: mediaUrl,
-          media_type: mediaType,
-          user_id: user?.id,
+          media_urls: mediaUrl ? [mediaUrl] : null,
+          author_id: user?.id,
           tags: extractedTags.length > 0 ? extractedTags : null,
           location: location || null,
           likes_count: 0,

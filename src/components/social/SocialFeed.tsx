@@ -99,7 +99,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
 
       const { data, error } = await query.limit(20);
       if (error) throw error;
-      return data as Post[];
+      return data as unknown as Post[];
     },
     enabled: !!user
   });
@@ -257,7 +257,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={toggleLike}
+                onClick={() => toggleLike()}
                 disabled={isLiking}
                 className="gap-1"
               >
@@ -285,7 +285,7 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={toggleBookmark}
+              onClick={() => toggleBookmark()}
               disabled={isBookmarking}
             >
               <Bookmark className={`h-4 w-4 ${interactions.isBookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
