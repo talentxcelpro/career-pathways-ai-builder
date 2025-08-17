@@ -100,14 +100,14 @@ async function queueContentGeneration(supabase: any, count: number) {
 async function processContentQueue(supabase: any) {
   console.log('🔄 Processing content generation queue...');
 
-  // Get pending jobs (process 5 at a time)
+  // Get pending jobs (process in batches of 10)
   const { data: jobs } = await supabase
     .from('content_generation_queue')
     .select('*')
     .eq('status', 'pending')
     .order('priority', { ascending: false })
     .order('created_at', { ascending: true })
-    .limit(5);
+    .limit(10);
 
   if (!jobs || jobs.length === 0) {
     return new Response(
@@ -120,9 +120,15 @@ async function processContentQueue(supabase: any) {
     );
   }
 
+  console.log(`📊 Processing batch of ${jobs.length} jobs`);
+  
   const processedJobs = [];
   const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
   const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+  
+  // Track API health during this batch
+  let deepseekDisabled = false;
+  let batchStats = { openai: 0, deepseek: 0, stub: 0, errors: 0 };
 
   for (const job of jobs) {
     try {
@@ -162,6 +168,7 @@ async function processContentQueue(supabase: any) {
             const data = await response.json();
             generatedContent = data.choices[0].message.content;
             apiUsed = 'openai';
+            batchStats.openai++;
             console.log(`✅ OpenAI succeeded for job ${job.id}`);
           } else {
             console.warn(`⚠️ OpenAI failed for job ${job.id}: ${response.status}`);
@@ -171,8 +178,8 @@ async function processContentQueue(supabase: any) {
         }
       }
 
-      // Try DeepSeek if OpenAI failed
-      if (!generatedContent && deepseekApiKey) {
+      // Try DeepSeek if OpenAI failed and DeepSeek isn't disabled for this batch
+      if (!generatedContent && deepseekApiKey && !deepseekDisabled) {
         try {
           console.log(`🤖 Trying DeepSeek for job ${job.id}`);
           const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -196,17 +203,24 @@ async function processContentQueue(supabase: any) {
             const data = await response.json();
             generatedContent = data.choices[0].message.content;
             apiUsed = 'deepseek';
+            batchStats.deepseek++;
             console.log(`✅ DeepSeek succeeded for job ${job.id}`);
           } else {
             const errorText = await response.text();
             console.warn(`⚠️ DeepSeek failed for job ${job.id}: ${response.status} - ${errorText}`);
+            
+            // If DeepSeek returns 402 (Payment Required), disable it for the rest of this batch
             if (response.status === 402) {
-              console.warn(`💳 DeepSeek quota exceeded or payment required for job ${job.id}`);
+              console.warn(`💳 DeepSeek quota exceeded - disabling for remaining batch jobs`);
+              deepseekDisabled = true;
             }
           }
         } catch (error) {
           console.warn(`⚠️ DeepSeek error for job ${job.id}:`, error.message);
+          // Don't disable on network errors, only on 402s
         }
+      } else if (!generatedContent && deepseekDisabled) {
+        console.log(`⏭️ Skipping DeepSeek for job ${job.id} (disabled due to quota)`);
       }
 
       // Always fall back to stub content if APIs failed
@@ -214,6 +228,7 @@ async function processContentQueue(supabase: any) {
         console.log(`📝 Using stub content for job ${job.id} (API fallback)`);
         generatedContent = generateStubContent(job.content_type, job.tone);
         apiUsed = 'stub';
+        batchStats.stub++;
       }
 
       // Save to bot_generated_content table
@@ -261,6 +276,7 @@ async function processContentQueue(supabase: any) {
 
     } catch (error) {
       console.error(`❌ Error processing job ${job.id}:`, error);
+      batchStats.errors++;
       
       // Mark job as failed
       await supabase
@@ -274,12 +290,21 @@ async function processContentQueue(supabase: any) {
     }
   }
 
+  // Log batch completion statistics
+  console.log(`✅ Batch complete: ${processedJobs.length} success, ${batchStats.errors} errors`);
+  console.log(`📊 Content sources: OpenAI: ${batchStats.openai}, DeepSeek: ${batchStats.deepseek}, Stub: ${batchStats.stub}`);
+  if (deepseekDisabled) {
+    console.log(`⚠️ DeepSeek was disabled during this batch due to quota limits`);
+  }
+
   return new Response(
     JSON.stringify({
       success: true,
       message: `Processed ${processedJobs.length} content generation jobs`,
       processed: processedJobs.length,
-      jobs: processedJobs
+      jobs: processedJobs,
+      stats: batchStats,
+      deepseek_disabled: deepseekDisabled
     }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
