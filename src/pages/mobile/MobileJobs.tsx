@@ -34,8 +34,23 @@ export const MobileJobs = () => {
     queryFn: async () => {
       let query = supabase
         .from('jobs')
-        .select('id, title, company_name, location, created_at, salary_min, salary_max, employment_type, skills_required, description, external_url')
-        .order('created_at', { ascending: false });
+        .select(`
+          id, 
+          title, 
+          company_name, 
+          location, 
+          created_at, 
+          salary_min, 
+          salary_max, 
+          employment_type, 
+          skills_required, 
+          description, 
+          external_url,
+          is_active
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       if (searchTerm) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,company_name.ilike.%${searchTerm}%`);
@@ -45,15 +60,19 @@ export const MobileJobs = () => {
         query = query.ilike('location', `%${locationFilter}%`);
       }
 
-        if (jobTypeFilter) {
-          query = query.eq('employment_type', jobTypeFilter);
-        }
+      if (jobTypeFilter) {
+        query = query.eq('employment_type', jobTypeFilter);
+      }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error('Jobs query error:', error);
+        return [];
+      }
       return data || [];
     },
-    enabled: !!user
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const formatSalary = (min: number, max: number) => {
@@ -81,32 +100,41 @@ export const MobileJobs = () => {
   return (
     <MobileLayout>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        {/* Enhanced Search Header */}
+        <MobileSearchHeader
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onSearch={() => {}}
+          activeFilters={[
+            locationFilter && `Location: ${locationFilter}`,
+            jobTypeFilter && `Type: ${jobTypeFilter}`
+          ].filter(Boolean)}
+          onClearFilters={() => {
+            setLocationFilter('');
+            setJobTypeFilter('');
+            setSearchTerm('');
+          }}
+        />
+
         <div className="px-4 py-4 space-y-4">
-          {/* Search and Filters */}
-        <div className="space-y-3">
-          <Input
-            placeholder="Search jobs, companies, keywords..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="rounded-2xl border-gray-200 bg-white/80 backdrop-blur-sm"
-          />
-          
-          <div className="flex gap-2">
+          {/* Quick Filters */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
             <Select value={locationFilter} onValueChange={(v) => setLocationFilter(v === 'all' ? '' : v)}>
-              <SelectTrigger className="flex-1 rounded-2xl border-gray-200 bg-white/80">
+              <SelectTrigger className="min-w-[120px] rounded-2xl border-gray-200 bg-white/80">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="remote">Remote</SelectItem>
-                <SelectItem value="new york">New York</SelectItem>
-                <SelectItem value="san francisco">San Francisco</SelectItem>
-                <SelectItem value="london">London</SelectItem>
+                <SelectItem value="bangalore">Bangalore</SelectItem>
+                <SelectItem value="mumbai">Mumbai</SelectItem>
+                <SelectItem value="delhi">Delhi</SelectItem>
+                <SelectItem value="hyderabad">Hyderabad</SelectItem>
               </SelectContent>
             </Select>
             
             <Select value={jobTypeFilter} onValueChange={(v) => setJobTypeFilter(v === 'all' ? '' : v)}>
-              <SelectTrigger className="flex-1 rounded-2xl border-gray-200 bg-white/80">
+              <SelectTrigger className="min-w-[120px] rounded-2xl border-gray-200 bg-white/80">
                 <SelectValue placeholder="Job Type" />
               </SelectTrigger>
               <SelectContent>
@@ -118,7 +146,6 @@ export const MobileJobs = () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
 
         {/* Jobs List */}
         <ScrollArea className="h-[calc(100vh-200px)]">
