@@ -21,6 +21,27 @@ serve(async (req) => {
   }
 
   try {
+    const requestBody = await req.json();
+    console.log('🎯 Request received:', JSON.stringify(requestBody, null, 2));
+    
+    // Handle test requests
+    if (requestBody.name === 'Functions' || !requestBody.contentType) {
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'SEO Optimizer function is running',
+        timestamp: new Date().toISOString(),
+        example: {
+          contentType: 'job',
+          entityId: 'some-entity-id',
+          includeStructuredData: true,
+          updateMetaTags: true,
+          priority: 'medium'
+        }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -33,7 +54,7 @@ serve(async (req) => {
       priority = 'medium',
       includeStructuredData = true,
       updateMetaTags = true
-    }: SEOOptimizationRequest = await req.json();
+    }: SEOOptimizationRequest = requestBody;
 
     console.log(`🎯 Starting SEO optimization for ${contentType} ID: ${entityId}`);
 

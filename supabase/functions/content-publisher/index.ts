@@ -30,6 +30,27 @@ serve(async (req) => {
   }
 
   try {
+    const requestBody = await req.json();
+    console.log('📝 Request received:', JSON.stringify(requestBody, null, 2));
+    
+    // Handle test requests
+    if (requestBody.name === 'Functions' || !requestBody.contentType) {
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Content Publisher function is running',
+        timestamp: new Date().toISOString(),
+        example: {
+          contentType: 'job',
+          contentId: 'optional-existing-id',
+          content: { title: 'Software Engineer', company_name: 'Tech Corp' },
+          publishTo: ['website', 'social'],
+          autoOptimize: true
+        }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -42,7 +63,7 @@ serve(async (req) => {
       publishTo,
       scheduleDate,
       autoOptimize = true
-    }: ContentPublishRequest = await req.json();
+    }: ContentPublishRequest = requestBody;
 
     console.log(`📝 Starting content publishing for ${contentType}`);
 
