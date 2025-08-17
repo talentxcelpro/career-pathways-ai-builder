@@ -65,101 +65,62 @@ export const AIAgentOperations: React.FC = () => {
 
   const fetchSystemHealth = async () => {
     try {
-      console.log('Testing edge function connectivity...');
-      
-      // First test with simple health function
-      const { data: testData, error: testError } = await supabase.functions.invoke('ai-test-health', {
-        body: {},
-        headers: { 'Content-Type': 'application/json' }
+      const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
+        body: { action: 'get_system_health' }
       });
       
-      console.log('Test function result:', { testData, testError });
+      if (error) throw error;
       
-      if (testError) {
-        throw new Error(`Edge Functions not accessible: ${testError.message}`);
-      }
-      
-      // If test works, try the main adminbot function
-      console.log('Fetching system health from AdminBot...');
-      const { data, error } = await supabase.functions.invoke('ai-adminbot', {
-        body: {},
-        headers: { 'Content-Type': 'application/json' }
+      setSystemHealth(data?.data || {
+        agents: { total: 0, active: 0, error: 'No data' },
+        tasks: { total: 0, pending: 0, running: 0, completed: 0, failed: 0, error: 'No data' },
+        timestamp: new Date().toISOString()
       });
-      
-      if (error) {
-        console.error('AdminBot error:', error);
-        // Fallback to mock data if AdminBot fails
-        setSystemHealth({
-          healthScore: 0,
-          metrics: { totalTasks: 0, activeAgents: 10, failedTasks: 0 },
-          recommendations: ['Edge Functions need to be deployed and configured']
-        });
-        throw new Error(error.message || 'Failed to fetch system health from AdminBot');
-      }
-      
-      console.log('AdminBot response:', data);
-      setSystemHealth(data);
     } catch (error: any) {
-      console.error('Error fetching system health:', error);
-      toast.error(`Failed to fetch system health: ${error.message}`);
-      
-      // Set fallback health data
+      console.error('Failed to fetch system health:', error);
+      // Set fallback data
       setSystemHealth({
-        healthScore: 0,
-        metrics: { totalTasks: 0, activeAgents: 10, failedTasks: 0 },
-        recommendations: ['Edge Functions need to be deployed', 'Check environment variables', 'Verify Supabase configuration']
+        agents: { total: 0, active: 0, error: error.message },
+        tasks: { total: 0, pending: 0, running: 0, completed: 0, failed: 0, error: error.message },
+        timestamp: new Date().toISOString()
       });
     }
   };
 
   const triggerScheduler = async () => {
     setIsLoading(true);
-    console.log('=== TRIGGER SCHEDULER CALLED ===');
     try {
-      console.log('About to call ai-agent-scheduler-simple function...');
-      const { data, error } = await supabase.functions.invoke('ai-agent-scheduler-simple', {
-        body: {},
-        headers: { 'Content-Type': 'application/json' }
+      const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
+        body: { action: 'trigger_scheduler' }
       });
       
-      console.log('Function call completed:', { data, error });
+      if (error) throw error;
       
-      if (error) {
-        console.error('Scheduler function returned error:', error);
-        throw new Error(error.message || 'Failed to trigger scheduler');
-      }
-      
-      console.log('Scheduler response data:', data);
+      console.log('Scheduler response:', data);
       toast.success(`Scheduler: ${data?.message || 'Success'} (${data?.tasksCreated || 0} tasks created)`);
       await fetchTasks();
     } catch (error: any) {
-      console.error('Caught error in triggerScheduler:', error);
+      console.error('Failed to trigger scheduler:', error);
       toast.error(`Failed to trigger scheduler: ${error.message}`);
     } finally {
       setIsLoading(false);
-      console.log('=== TRIGGER SCHEDULER COMPLETED ===');
     }
   };
 
   const triggerWorker = async () => {
     setIsLoading(true);
     try {
-      console.log('Triggering worker...');
-      const { data, error } = await supabase.functions.invoke('ai-agent-worker-simple', {
-        body: {},
-        headers: { 'Content-Type': 'application/json' }
+      const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
+        body: { action: 'trigger_worker' }
       });
       
-      if (error) {
-        console.error('Worker error:', error);
-        throw new Error(error.message || 'Failed to trigger worker');
-      }
+      if (error) throw error;
       
       console.log('Worker response:', data);
       toast.success(`Worker: ${data?.message || 'Success'} (${data?.tasksProcessed || 0} tasks processed)`);
       await fetchTasks();
     } catch (error: any) {
-      console.error('Error triggering worker:', error);
+      console.error('Failed to trigger worker:', error);
       toast.error(`Failed to trigger worker: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -169,26 +130,18 @@ export const AIAgentOperations: React.FC = () => {
   const createTestTasks = async () => {
     setIsLoading(true);
     try {
-      // Create test tasks for all active agents
-      for (const agent of agents.filter(a => a.status === 'active')) {
-        const { error } = await supabase
-          .from('agent_tasks')
-          .insert({
-            agent_id: agent.id,
-            source: 'manual',
-            action: 'test_task',
-            payload: { test: true, trigger: 'manual' },
-            status: 'pending'
-          });
-        
-        if (error) throw error;
-      }
+      const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
+        body: { action: 'create_test_tasks' }
+      });
       
-      toast.success(`Created test tasks for ${agents.filter(a => a.status === 'active').length} agents`);
+      if (error) throw error;
+      
+      console.log('Test tasks response:', data);
+      toast.success(`Test tasks: ${data?.message || 'Success'} (${data?.tasksCreated || 0} tasks created)`);
       await fetchTasks();
-    } catch (error) {
-      console.error('Error creating test tasks:', error);
-      toast.error('Failed to create test tasks');
+    } catch (error: any) {
+      console.error('Failed to create test tasks:', error);
+      toast.error(`Failed to create test tasks: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -264,20 +217,20 @@ export const AIAgentOperations: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{systemHealth.healthScore}%</div>
-                <div className="text-sm text-muted-foreground">Health Score</div>
+                <div className="text-2xl font-bold text-foreground">{systemHealth.agents?.total || 0}</div>
+                <div className="text-sm text-muted-foreground">Total Agents</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">{systemHealth.metrics?.totalTasks || 0}</div>
-                <div className="text-sm text-muted-foreground">Total Tasks</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{systemHealth.metrics?.activeAgents || 0}</div>
+                <div className="text-2xl font-bold text-green-600">{systemHealth.agents?.active || 0}</div>
                 <div className="text-sm text-muted-foreground">Active Agents</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">{systemHealth.metrics?.failedTasks || 0}</div>
-                <div className="text-sm text-muted-foreground">Failed Tasks</div>
+                <div className="text-2xl font-bold text-foreground">{systemHealth.tasks?.total || 0}</div>
+                <div className="text-sm text-muted-foreground">Total Tasks</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{systemHealth.tasks?.pending || 0}</div>
+                <div className="text-sm text-muted-foreground">Pending Tasks</div>
               </div>
             </div>
             {systemHealth.recommendations && systemHealth.recommendations.length > 0 && (

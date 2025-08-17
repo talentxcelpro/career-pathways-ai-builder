@@ -212,6 +212,9 @@ verify_jwt = false
 [functions.ai-test-health]
 verify_jwt = false
 
+[functions.ai-agent-admin-trigger]
+verify_jwt = false
+
 [functions.ai-agent-scheduler-simple]
 verify_jwt = false
 
