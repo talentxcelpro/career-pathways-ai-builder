@@ -220,3 +220,9 @@ verify_jwt = false
 
 [functions.ai-agent-worker-simple]
 verify_jwt = false
+
+[functions.ai-comprehensive-generator]
+verify_jwt = false
+
+[functions.generate-bot-content]
+verify_jwt = true
