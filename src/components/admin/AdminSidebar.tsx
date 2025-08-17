@@ -22,7 +22,8 @@ import {
   Mail,
   Brain,
   Crown,
-  Bot
+  Bot,
+  Upload
 } from 'lucide-react';
 import {
   Sidebar,
@@ -155,6 +156,12 @@ const adminMenuItems = [
     url: '/admin/scraped-applications',
     icon: FileText,
     description: 'View scraped job applications and CVs'
+  },
+  {
+    title: 'Bulk CV Upload',
+    url: '/admin/bulk-cv-upload',
+    icon: Upload,
+    description: 'Upload multiple CVs for bulk processing'
   },
   {
     title: 'Email Automation',
