@@ -54,8 +54,10 @@ export const ContentAutomationDashboard: React.FC = () => {
       console.error('Generation error (primary):', err);
       // Fallback: direct fetch to Edge Function URL
       try {
-        const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/content-queue-processor';
+        const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-comprehensive-generator';
         const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+        const { data: sessionData } = await supabase.auth.getSession();
+        const authToken = sessionData?.session?.access_token ?? anonKey;
 
         // Queue one job
         const queueResp = await fetch(functionsUrl, {
@@ -63,7 +65,7 @@ export const ContentAutomationDashboard: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
             'apikey': anonKey,
-            'Authorization': `Bearer ${anonKey}`,
+            'Authorization': `Bearer ${authToken}`,
           },
           body: JSON.stringify({ action: 'queue', count: 1 }),
         });
@@ -78,7 +80,7 @@ export const ContentAutomationDashboard: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
             'apikey': anonKey,
-            'Authorization': `Bearer ${anonKey}`,
+            'Authorization': `Bearer ${authToken}`,
           },
           body: JSON.stringify({ action: 'process' }),
         });
