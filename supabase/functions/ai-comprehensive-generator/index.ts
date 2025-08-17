@@ -6,6 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+let deepseekCooldownUntil = 0; // epoch ms; when > now, DeepSeek is disabled
+const isDeepseekAvailable = () => Date.now() > deepseekCooldownUntil;
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -121,6 +124,10 @@ async function processContentQueue(supabase: any) {
   }
 
   console.log(`📊 Processing batch of ${jobs.length} jobs`);
+  if (!isDeepseekAvailable()) {
+    const remainingMs = Math.max(0, deepseekCooldownUntil - Date.now());
+    console.log(`⏳ DeepSeek on cooldown for ${(Math.ceil(remainingMs / 1000))}s; it will be skipped this batch unless OpenAI succeeds first.`);
+  }
   
   const processedJobs = [];
   const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -179,7 +186,7 @@ async function processContentQueue(supabase: any) {
       }
 
       // Try DeepSeek if OpenAI failed and DeepSeek isn't disabled for this batch
-      if (!generatedContent && deepseekApiKey && !deepseekDisabled) {
+      if (!generatedContent && deepseekApiKey && !deepseekDisabled && isDeepseekAvailable()) {
         try {
           console.log(`🤖 Trying DeepSeek for job ${job.id}`);
           const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -213,6 +220,8 @@ async function processContentQueue(supabase: any) {
             if (response.status === 402) {
               console.warn(`💳 DeepSeek quota exceeded - disabling for remaining batch jobs`);
               deepseekDisabled = true;
+              // Put provider on cooldown for 15 minutes to avoid hammering
+              deepseekCooldownUntil = Date.now() + (15 * 60 * 1000);
             }
           }
         } catch (error) {
