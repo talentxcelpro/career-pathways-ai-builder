@@ -20,26 +20,21 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Aggressive memory management for build
     rollupOptions: {
       output: {
-        // Simplified chunking to reduce memory overhead
         manualChunks: {
           'vendor': ['react', 'react-dom'],
-          'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom']
+          'ui': ['@radix-ui/react-avatar', '@radix-ui/react-button', '@radix-ui/react-card'],
+          'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom'],
+          'utils': ['date-fns', 'clsx', 'class-variance-authority']
         }
-      },
-      // Minimize parallel operations to conserve memory
-      maxParallelFileOps: 1,
-      // Additional memory optimizations
-      cache: false
+      }
     },
     target: 'esnext',
-    minify: false, // Disable minification to save memory during dev builds
-    sourcemap: false, // Disable sourcemaps to save memory
-    chunkSizeWarningLimit: 2000,
-    // Reduce build concurrency
-    assetsInlineLimit: 0
+    minify: 'terser',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    assetsInlineLimit: 4096
   },
   optimizeDeps: {
     include: [

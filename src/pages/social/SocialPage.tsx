@@ -1,7 +1,9 @@
 import React from 'react';
 import { SocialConnect } from '@/components/social/SocialConnect';
 import { SocialShare } from '@/components/social/SocialShare';
-import { SocialFeed } from '@/components/social/SocialFeed';
+import { OptimizedSocialFeed } from '@/components/social/OptimizedSocialFeed';
+import { FastStoryBubbles } from '@/components/social/FastStoryBubbles';
+import { QuickCreatePost } from '@/components/social/QuickCreatePost';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -83,12 +85,20 @@ const SocialPage = () => {
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="explore" className="mt-6">
-          <SocialFeed feedType="explore" />
+        <TabsContent value="explore" className="mt-0 space-y-4">
+          <FastStoryBubbles />
+          <div className="px-4">
+            <QuickCreatePost />
+          </div>
+          <OptimizedSocialFeed feedType="explore" />
         </TabsContent>
         
-        <TabsContent value="following" className="mt-6">
-          <SocialFeed feedType="following" />
+        <TabsContent value="following" className="mt-0 space-y-4">
+          <FastStoryBubbles />
+          <div className="px-4">
+            <QuickCreatePost />
+          </div>
+          <OptimizedSocialFeed feedType="following" />
         </TabsContent>
         
         <TabsContent value="connect" className="mt-6">
