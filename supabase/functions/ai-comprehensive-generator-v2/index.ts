@@ -4,10 +4,11 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-// OpenAI-only implementation (v2.1 - FORCE DEPLOY)
-console.log('🚀 AI Comprehensive Generator v2.2: OpenAI-only mode active - DEPLOYED');
+// OpenAI-only implementation (v2.3 - FORCE DEPLOY)
+console.log('🚀 AI Comprehensive Generator v2.3: OpenAI-only mode active - DEPLOYED');
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -17,7 +18,7 @@ serve(async (req) => {
   // Health check endpoint
   if (req.method === 'GET') {
     return new Response(
-      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator-v2', version: '2.1' }),
+      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator-v2', version: '2.3' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
