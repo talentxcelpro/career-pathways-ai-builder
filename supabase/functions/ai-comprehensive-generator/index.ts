@@ -27,6 +27,10 @@ serve(async (req) => {
     
     const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
     const useStub = !deepseekApiKey;
+    
+    console.log(`🔑 DeepSeek API Key Status: ${deepseekApiKey ? 'Found ✅' : 'Missing ❌'}`);
+    console.log(`🔄 Using stub mode: ${useStub}`);
+    
     if (useStub) {
       console.warn('DEEPSEEK_API_KEY not found. Falling back to stubbed content generation.');
     }
