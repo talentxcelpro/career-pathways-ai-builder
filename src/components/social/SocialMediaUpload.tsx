@@ -33,7 +33,7 @@ export const SocialMediaUpload: React.FC<SocialMediaUploadProps> = ({ onClose })
   const { toast } = useToast();
   const { uploadFile, uploading: imageUploading, progress: imageProgress } = useFileUpload();
   const { uploading: videoUploading, progress: videoProgress, uploadVideo } = useVideoUpload();
-  const { createPost } = useProfilePosts();
+  const { createPost } = useProfilePosts(user?.id || '');
 
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState('');
@@ -42,7 +42,7 @@ export const SocialMediaUpload: React.FC<SocialMediaUploadProps> = ({ onClose })
   const [currentTag, setCurrentTag] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
-  const [visibility, setVisibility] = useState<'public' | 'connections' | 'private'>('public');
+  const [visibility, setVisibility] = useState<'public' | 'private' | 'followers'>('public');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleMediaUpload = async (files: FileList | null, type: 'image' | 'video') => {
@@ -64,7 +64,7 @@ export const SocialMediaUpload: React.FC<SocialMediaUploadProps> = ({ onClose })
           description: content || 'Check out my latest reel!',
           category: 'reel' as const,
           tags,
-          visibility: visibility === 'public' ? 'public' as const : 'unlisted' as const
+          visibility: visibility === 'public' ? 'public' as const : 'private' as const
         };
         
         await uploadVideo(file, uploadOptions);
@@ -128,7 +128,7 @@ export const SocialMediaUpload: React.FC<SocialMediaUploadProps> = ({ onClose })
         post_type: mediaType === 'video' ? 'video' : 'general',
         tags,
         location: location || undefined,
-        visibility: visibility === 'public' ? 'public' : visibility === 'connections' ? 'connections' : 'private',
+        visibility: visibility === 'public' ? 'public' : visibility === 'followers' ? 'followers' : 'private',
       });
 
       toast({
@@ -309,12 +309,12 @@ export const SocialMediaUpload: React.FC<SocialMediaUploadProps> = ({ onClose })
                 Public
               </Button>
               <Button
-                variant={visibility === 'connections' ? 'default' : 'outline'}
+                variant={visibility === 'followers' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setVisibility('connections')}
+                onClick={() => setVisibility('followers')}
               >
                 <Users className="h-3 w-3 mr-1" />
-                Connections
+                Followers
               </Button>
               <Button
                 variant={visibility === 'private' ? 'default' : 'outline'}

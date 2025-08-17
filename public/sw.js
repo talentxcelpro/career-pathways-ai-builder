@@ -179,59 +179,193 @@ async function doBackgroundSync() {
   // e.g., retry failed API requests
 }
 
-// Push notification handling
-self.addEventListener('push', (event) => {
-  if (!event.data) return;
-
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
-    badge: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
-    vibrate: [200, 100, 200],
-    data: data.data || {},
-    actions: [
-      {
-        action: 'view',
-        title: 'View',
-        icon: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
-      }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'TalentXcel', options)
-  );
-});
-
-// Notification click handling
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  if (event.action === 'close') {
+// Enhanced Push notifications handling with background processing
+self.addEventListener('push', function(event) {
+  console.log('Push notification received:', event);
+  
+  if (!event.data) {
+    console.log('Push event but no data');
     return;
   }
 
-  const urlToOpen = event.notification.data?.url || '/';
-  
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Check if app is already open
-      for (const client of clientList) {
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      
-      // Open new window if app is not open
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
-  );
+  try {
+    const data = event.data.json();
+    console.log('Push data:', data);
+
+    // Store notification in IndexedDB for offline access
+    const storePromise = storeNotificationOffline(data);
+
+    const options = {
+      body: data.body || 'You have a new notification',
+      icon: data.icon || '/favicon.ico',
+      badge: '/favicon.ico',
+      tag: data.tag || 'general',
+      data: data.data || {},
+      requireInteraction: data.requireInteraction || false,
+      actions: data.actions || [
+        { action: 'view', title: 'View' },
+        { action: 'dismiss', title: 'Dismiss' }
+      ],
+      vibrate: [200, 100, 200],
+      timestamp: Date.now(),
+      silent: false
+    };
+
+    // Show notification even when app is closed
+    const showPromise = self.registration.showNotification(
+      data.title || 'TalentXcel', 
+      options
+    );
+
+    // Background badge update
+    const badgePromise = updateNotificationBadge();
+
+    event.waitUntil(Promise.all([storePromise, showPromise, badgePromise]));
+
+  } catch (error) {
+    console.error('Error processing push notification:', error);
+    
+    // Fallback notification
+    event.waitUntil(
+      self.registration.showNotification('TalentXcel', {
+        body: 'You have a new notification',
+        icon: '/favicon.ico',
+        tag: 'fallback'
+      })
+    );
+  }
 });
+
+// Enhanced notification click handling
+self.addEventListener('notificationclick', function(event) {
+  console.log('Notification clicked:', event);
+  
+  event.notification.close();
+
+  const clickAction = event.action || 'default';
+  const notificationData = event.notification.data || {};
+  
+  // Handle different actions
+  if (clickAction === 'dismiss') {
+    return; // Just close notification
+  }
+
+  let urlToOpen = '/';
+  
+  if (notificationData.url) {
+    urlToOpen = notificationData.url;
+  } else if (notificationData.type === 'job_alert') {
+    urlToOpen = '/mobile/jobs';
+  } else if (notificationData.type === 'message') {
+    urlToOpen = '/messages';
+  } else if (notificationData.type === 'network_update') {
+    urlToOpen = '/network';
+  } else if (clickAction === 'view') {
+    urlToOpen = notificationData.url || '/notifications';
+  }
+
+  // Mark notification as read
+  const markReadPromise = markNotificationAsRead(notificationData.id);
+
+  const openPromise = clients.matchAll({ 
+    type: 'window', 
+    includeUncontrolled: true 
+  }).then(function(clientList) {
+    // Try to find an existing window/tab
+    for (let i = 0; i < clientList.length; i++) {
+      const client = clientList[i];
+      if (client.url.includes(self.location.origin) && 'focus' in client) {
+        client.navigate(urlToOpen);
+        return client.focus();
+      }
+    }
+    
+    // If no existing window, open a new one
+    if (clients.openWindow) {
+      return clients.openWindow(urlToOpen);
+    }
+  });
+
+  event.waitUntil(Promise.all([markReadPromise, openPromise]));
+});
+
+// Background notification management
+async function storeNotificationOffline(data) {
+  try {
+    // Store in IndexedDB for offline access
+    const db = await openNotificationDB();
+    const transaction = db.transaction(['notifications'], 'readwrite');
+    const store = transaction.objectStore('notifications');
+    
+    await store.add({
+      id: data.id || Date.now(),
+      title: data.title,
+      body: data.body,
+      data: data.data,
+      timestamp: Date.now(),
+      read: false
+    });
+  } catch (error) {
+    console.error('Failed to store notification offline:', error);
+  }
+}
+
+async function openNotificationDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('TalentXcelNotifications', 1);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('notifications')) {
+        const store = db.createObjectStore('notifications', { keyPath: 'id' });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+        store.createIndex('read', 'read', { unique: false });
+      }
+    };
+  });
+}
+
+async function updateNotificationBadge() {
+  try {
+    // Update badge count
+    if ('setAppBadge' in navigator) {
+      const db = await openNotificationDB();
+      const transaction = db.transaction(['notifications'], 'readonly');
+      const store = transaction.objectStore('notifications');
+      const index = store.index('read');
+      const unreadCount = await index.count(false);
+      
+      if (unreadCount > 0) {
+        navigator.setAppBadge(unreadCount);
+      } else {
+        navigator.clearAppBadge();
+      }
+    }
+  } catch (error) {
+    console.error('Failed to update notification badge:', error);
+  }
+}
+
+async function markNotificationAsRead(notificationId) {
+  try {
+    if (!notificationId) return;
+    
+    const db = await openNotificationDB();
+    const transaction = db.transaction(['notifications'], 'readwrite');
+    const store = transaction.objectStore('notifications');
+    
+    const notification = await store.get(notificationId);
+    if (notification) {
+      notification.read = true;
+      await store.put(notification);
+    }
+    
+    // Update badge count
+    await updateNotificationBadge();
+  } catch (error) {
+    console.error('Failed to mark notification as read:', error);
+  }
+}

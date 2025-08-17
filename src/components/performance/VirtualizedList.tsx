@@ -33,6 +33,7 @@ function VirtualizedListComponent<T>({
       <List
         ref={listRef}
         height={containerHeight}
+        width="100%"
         itemCount={items.length}
         itemSize={itemHeight}
         overscanCount={overscan}

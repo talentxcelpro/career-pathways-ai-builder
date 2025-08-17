@@ -36,12 +36,12 @@ export function useOptimizedQuery<T>({
     queryKey,
     queryFn: memoizedQueryFn,
     staleTime,
-    cacheTime,
+    gcTime: cacheTime,
     refetchOnWindowFocus,
     refetchInterval,
     enabled,
     select: memoizedSelect,
-    placeholderData,
+    placeholderData: placeholderData as any,
     // Aggressive optimizations
     networkMode: 'online',
     retry: 1,
@@ -54,7 +54,6 @@ export function useOptimizedQuery<T>({
       queryKey: relatedQueryKey,
       queryFn: relatedQueryFn,
       staleTime: staleTime,
-      cacheTime: cacheTime,
     });
   }, [queryClient, staleTime, cacheTime]);
 
