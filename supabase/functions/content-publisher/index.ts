@@ -30,11 +30,12 @@ serve(async (req) => {
   }
 
   try {
-    const requestBody = await req.json();
+    const rawBody = await req.text();
+    const requestBody = (() => { try { return rawBody ? JSON.parse(rawBody) : {}; } catch { return {}; } })();
     console.log('📝 Request received:', JSON.stringify(requestBody, null, 2));
     
-    // Handle test requests
-    if (requestBody.name === 'Functions' || !requestBody.contentType) {
+    // Handle test requests and empty bodies
+    if (!rawBody || requestBody.name === 'Functions' || !requestBody.contentType) {
       return new Response(JSON.stringify({
         success: true,
         message: 'Content Publisher function is running',
@@ -57,13 +58,15 @@ serve(async (req) => {
     );
 
     const {
-      contentType,
+      contentType: _contentType,
       contentId,
       content,
-      publishTo,
+      publishTo = [],
       scheduleDate,
       autoOptimize = true
-    }: ContentPublishRequest = requestBody;
+    }: Partial<ContentPublishRequest> = requestBody as any;
+
+    const contentType = (_contentType as string) || 'post';
 
     console.log(`📝 Starting content publishing for ${contentType}`);
 

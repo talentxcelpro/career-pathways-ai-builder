@@ -21,11 +21,12 @@ serve(async (req) => {
   }
 
   try {
-    const requestBody = await req.json();
+    const rawBody = await req.text();
+    const requestBody = (() => { try { return rawBody ? JSON.parse(rawBody) : {}; } catch { return {}; } })();
     console.log('🎯 Request received:', JSON.stringify(requestBody, null, 2));
     
     // Handle test requests
-    if (requestBody.name === 'Functions' || !requestBody.contentType) {
+    if (!rawBody || requestBody.name === 'Functions' || !requestBody.contentType) {
       return new Response(JSON.stringify({
         success: true,
         message: 'SEO Optimizer function is running',
