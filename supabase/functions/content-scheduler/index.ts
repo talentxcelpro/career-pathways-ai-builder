@@ -18,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('📅 Content Scheduler Starting...');
+    console.log('📅 Content Scheduler v1.1 Starting...');
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',

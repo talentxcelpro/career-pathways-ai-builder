@@ -7,7 +7,7 @@ const corsHeaders = {
 }
 
 // OpenAI-only implementation (v2.1 - FORCE DEPLOY)
-console.log('🚀 AI Comprehensive Generator v2.1: OpenAI-only mode active - DEPLOYED');
+console.log('🚀 AI Comprehensive Generator v2.2: OpenAI-only mode active - DEPLOYED');
 
 serve(async (req) => {
   // Handle CORS preflight requests

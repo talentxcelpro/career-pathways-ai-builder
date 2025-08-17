@@ -19,11 +19,11 @@ serve(async (req) => {
   }
 
   try {
+    console.log('🚀 content-queue-processor v1.1 starting');
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-
     // Call the main processor function via Supabase client
     const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
       body: { action: 'process' }
