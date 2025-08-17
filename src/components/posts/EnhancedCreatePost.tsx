@@ -136,9 +136,11 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         continue;
       }
 
-      // Validate file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error(`${file.name} is too large. Maximum size is 10MB.`);
+      // Validate file size (50MB limit for videos, 10MB for others)
+      const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        const maxSizeMB = file.type.startsWith('video/') ? 50 : 10;
+        toast.error(`${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
         continue;
       }
 
