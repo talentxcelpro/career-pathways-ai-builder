@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// DeepSeek completely removed - OpenAI only mode
-console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active');
+// DeepSeek completely removed - OpenAI only mode - FORCE REDEPLOY v1.1
+console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active - v1.1');
 
 serve(async (req) => {
   // Handle CORS preflight requests
