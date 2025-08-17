@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Heart, 
   MessageCircle, 
@@ -47,6 +48,7 @@ interface VideoReel {
 
 export const MobileReels = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -158,18 +160,65 @@ export const MobileReels = () => {
   };
 
   const handleLike = async (reelId: string) => {
-    // Like functionality - integrate with existing like system
-    console.log('Like reel:', reelId);
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to like reels.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: existingLike } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', reelId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingLike) {
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', reelId)
+          .eq('user_id', user.id);
+      } else {
+        await supabase
+          .from('post_likes')
+          .insert({
+            post_id: reelId,
+            user_id: user.id
+          });
+      }
+    } catch (error) {
+      console.error('Like error:', error);
+    }
   };
 
   const handleComment = (reelId: string) => {
-    // Comment functionality
+    // TODO: Open comments modal
     console.log('Comment on reel:', reelId);
   };
 
   const handleShare = (reelId: string) => {
-    // Share functionality
-    console.log('Share reel:', reelId);
+    const reel = reels.find(r => r.id === reelId);
+    if (!reel) return;
+
+    const shareUrl = `${window.location.origin}/reel/${reelId}`;
+    if (navigator.share) {
+      navigator.share({
+        title: reel.title,
+        text: reel.description,
+        url: shareUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Link Copied",
+        description: "Reel link copied to clipboard!",
+      });
+    }
   };
 
   const handleConnect = (authorId: string) => {

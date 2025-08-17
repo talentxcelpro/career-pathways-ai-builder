@@ -1,9 +1,11 @@
 import React from 'react';
 import { SocialConnect } from '@/components/social/SocialConnect';
 import { SocialShare } from '@/components/social/SocialShare';
+import { SocialFeed } from '@/components/social/SocialFeed';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, TrendingUp, MessageCircle, Share2, Heart } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Users, TrendingUp, MessageCircle, Share2, Heart, Rss, UserCheck } from 'lucide-react';
 
 const SocialPage = () => {
   const communityStats = [
@@ -64,13 +66,40 @@ const SocialPage = () => {
         })}
       </div>
 
-      {/* Social Connect Section */}
-      <div className="space-y-8">
-        <SocialConnect 
-          variant="cards"
-          showDescription={true}
-        />
-      </div>
+      {/* Social Feed Tabs */}
+      <Tabs defaultValue="explore" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="explore" className="flex items-center gap-2">
+            <Rss className="h-4 w-4" />
+            Explore
+          </TabsTrigger>
+          <TabsTrigger value="following" className="flex items-center gap-2">
+            <UserCheck className="h-4 w-4" />
+            Following
+          </TabsTrigger>
+          <TabsTrigger value="connect" className="flex items-center gap-2">
+            <Share2 className="h-4 w-4" />
+            Connect
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="explore" className="mt-6">
+          <SocialFeed feedType="explore" />
+        </TabsContent>
+        
+        <TabsContent value="following" className="mt-6">
+          <SocialFeed feedType="following" />
+        </TabsContent>
+        
+        <TabsContent value="connect" className="mt-6">
+          <div className="space-y-8">
+            <SocialConnect 
+              variant="cards"
+              showDescription={true}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Benefits Section */}
       <div className="grid md:grid-cols-2 gap-8">
