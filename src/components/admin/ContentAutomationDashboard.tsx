@@ -31,20 +31,14 @@ export const ContentAutomationDashboard: React.FC = () => {
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
-      // Step 1: queue exactly 1 job
-      const { data: queueData, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
-        body: { action: 'queue', count: 1 }
-      });
-      if (queueError) throw queueError;
-
-      // Step 2: process the queue (handles 5 at a time in the function)
-      const { data: processData, error: processError } = await supabase.functions.invoke('content-queue-processor', {
+      // Use ai-comprehensive-generator-v2 for everything (OpenAI-only)
+      const { data: processData, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
         body: { action: 'process' }
       });
       if (processError) throw processError;
 
       const processedCount = processData?.processed ?? (processData?.jobs?.length ?? 0) ?? 0;
-      toast.success(`Queued 1 job and processed ${processedCount} item(s)`);
+      toast.success(`Generated ${processedCount} piece(s) of content using OpenAI`);
 
       // Refresh stats after a short delay
       setTimeout(() => {

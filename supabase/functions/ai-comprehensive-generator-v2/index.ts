@@ -7,8 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-// OpenAI-only implementation (v2.4 - FORCE DEPLOY)
-console.log('🚀 AI Comprehensive Generator v2.4: OpenAI-only mode active - DEPLOYED');
+// OpenAI-only implementation (v2.5 - FORCE DEPLOY)
+console.log('🚀 AI Comprehensive Generator v2.5: OpenAI-only mode active - DEPLOYED');
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -18,7 +18,7 @@ serve(async (req) => {
   // Health check endpoint
   if (req.method === 'GET') {
     return new Response(
-      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator-v2', version: '2.4', status: 'deployed' }),
+      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator-v2', version: '2.5', status: 'deployed' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
@@ -26,7 +26,7 @@ serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_KEY') ?? ''
     );
 
     const { action, count = 20 } = await req.json().catch(() => ({ action: 'process', count: 20 }));
