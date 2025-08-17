@@ -191,6 +191,12 @@ async function processContentQueue(supabase: any) {
             const data = await response.json();
             generatedContent = data.choices[0].message.content;
             apiUsed = 'deepseek';
+          } else {
+            const errorText = await response.text();
+            console.warn(`DeepSeek API error (${response.status}): ${errorText}`);
+            if (response.status === 402) {
+              console.warn('DeepSeek quota exceeded or payment required');
+            }
           }
         } catch (error) {
           console.warn('DeepSeek failed, using stub:', error.message);
