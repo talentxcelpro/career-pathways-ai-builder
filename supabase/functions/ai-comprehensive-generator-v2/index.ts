@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// OpenAI-only implementation (v2)
-console.log('🚀 AI Comprehensive Generator v2: OpenAI-only mode active');
+// OpenAI-only implementation (v2.1 - FORCE DEPLOY)
+console.log('🚀 AI Comprehensive Generator v2.1: OpenAI-only mode active - DEPLOYED');
 
 serve(async (req) => {
   // Handle CORS preflight requests
