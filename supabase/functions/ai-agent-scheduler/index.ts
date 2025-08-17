@@ -7,9 +7,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_KEY');
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing required environment variables:', {
+    SUPABASE_URL: !!supabaseUrl,
+    SUPABASE_SERVICE_KEY: !!supabaseServiceKey
+  });
+}
+
 const supabaseAdmin = createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  supabaseUrl!,
+  supabaseServiceKey!
 );
 
 const FREQ_TO_MINUTES: Record<string, number> = { 
@@ -34,6 +44,11 @@ serve(async (req) => {
 
   try {
     console.log('Starting agent scheduler...');
+    
+    // Check environment variables
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing required environment variables');
+    }
 
     // Find agents that are due based on last event of type 'scheduler.ran'
     const { data: agents, error: agentsError } = await supabaseAdmin

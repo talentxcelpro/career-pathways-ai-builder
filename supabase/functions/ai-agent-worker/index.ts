@@ -7,9 +7,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_KEY');
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing required environment variables:', {
+    SUPABASE_URL: !!supabaseUrl,
+    SUPABASE_SERVICE_KEY: !!supabaseServiceKey
+  });
+}
+
 const supabaseAdmin = createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  supabaseUrl!,
+  supabaseServiceKey!
 );
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -308,6 +318,11 @@ serve(async (req) => {
 
   try {
     console.log('Worker checking for tasks...');
+    
+    // Check environment variables
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing required environment variables');
+    }
 
     const task = await claimNextTask();
     if (!task) {
