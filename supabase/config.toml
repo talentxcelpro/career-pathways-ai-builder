@@ -229,3 +229,6 @@ verify_jwt = false
 
 [functions.generate-bot-content]
 verify_jwt = true
+
+[functions.ai-comprehensive-generator-v2]
+verify_jwt = false

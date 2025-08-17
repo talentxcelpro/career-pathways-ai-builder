@@ -19,7 +19,7 @@ serve(async (req) => {
     );
 
     // Call the main processor function
-    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ai-comprehensive-generator`, {
+    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ai-comprehensive-generator-v2`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,

@@ -32,13 +32,13 @@ export const ContentAutomationDashboard: React.FC = () => {
     setIsGenerating(true);
     try {
       // Step 1: queue exactly 1 job
-      const { data: queueData, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+      const { data: queueData, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
         body: { action: 'queue', count: 1 }
       });
       if (queueError) throw queueError;
 
       // Step 2: process the queue (handles 5 at a time in the function)
-      const { data: processData, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+      const { data: processData, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
         body: { action: 'process' }
       });
       if (processError) throw processError;
@@ -54,7 +54,7 @@ export const ContentAutomationDashboard: React.FC = () => {
       console.error('Generation error (primary):', err);
       // Fallback: direct fetch to Edge Function URL
       try {
-        const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-comprehensive-generator';
+        const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-comprehensive-generator-v2';
         const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 
         // Queue one job

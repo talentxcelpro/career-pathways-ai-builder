@@ -48,7 +48,7 @@ serve(async (req) => {
         console.log(`🎯 Triggering schedule: ${schedule.schedule_name}`);
         
         // Call comprehensive generator
-        const generatorResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ai-comprehensive-generator`, {
+        const generatorResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ai-comprehensive-generator-v2`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
