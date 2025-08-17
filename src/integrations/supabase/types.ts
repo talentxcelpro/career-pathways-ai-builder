@@ -270,6 +270,129 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_events: {
+        Row: {
+          created_at: string | null
+          data: Json
+          id: string
+          origin: string
+          ref_task: string | null
+          topic: string
+        }
+        Insert: {
+          created_at?: string | null
+          data: Json
+          id?: string
+          origin: string
+          ref_task?: string | null
+          topic: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json
+          id?: string
+          origin?: string
+          ref_task?: string | null
+          topic?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_events_ref_task_fkey"
+            columns: ["ref_task"]
+            isOneToOne: false
+            referencedRelation: "agent_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_tasks: {
+        Row: {
+          agent_id: string | null
+          attempts: number
+          created_at: string | null
+          created_by: string | null
+          error: string | null
+          finished_at: string | null
+          id: string
+          kind: Database["public"]["Enums"]["task_kind"]
+          max_attempts: number
+          payload: Json
+          priority: number
+          scheduled_at: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["task_status"]
+        }
+        Insert: {
+          agent_id?: string | null
+          attempts?: number
+          created_at?: string | null
+          created_by?: string | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["task_kind"]
+          max_attempts?: number
+          payload: Json
+          priority?: number
+          scheduled_at?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+        }
+        Update: {
+          agent_id?: string | null
+          attempts?: number
+          created_at?: string | null
+          created_by?: string | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["task_kind"]
+          max_attempts?: number
+          payload?: Json
+          priority?: number
+          scheduled_at?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_tasks_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_tools: {
+        Row: {
+          agent_id: string | null
+          config: Json
+          id: string
+          tool_key: string
+        }
+        Insert: {
+          agent_id?: string | null
+          config?: Json
+          id?: string
+          tool_key: string
+        }
+        Update: {
+          agent_id?: string | null
+          config?: Json
+          id?: string
+          tool_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_tools_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_admin_inputs: {
         Row: {
           category: string | null
@@ -322,6 +445,54 @@ export type Database = {
             referencedColumns: ["tool_slug"]
           },
         ]
+      }
+      ai_agents: {
+        Row: {
+          assigned_to: string | null
+          content_domains: string[]
+          created_at: string | null
+          departments: string[]
+          display_name: string
+          email: string | null
+          frequency: string
+          handle: string
+          id: string
+          role: string
+          status: string
+          tone: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          content_domains: string[]
+          created_at?: string | null
+          departments: string[]
+          display_name: string
+          email?: string | null
+          frequency?: string
+          handle: string
+          id?: string
+          role: string
+          status?: string
+          tone?: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          content_domains?: string[]
+          created_at?: string | null
+          departments?: string[]
+          display_name?: string
+          email?: string | null
+          frequency?: string
+          handle?: string
+          id?: string
+          role?: string
+          status?: string
+          tone?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       ai_bots: {
         Row: {
@@ -844,6 +1015,60 @@ export type Database = {
           },
         ]
       }
+      ai_drafts: {
+        Row: {
+          agent_id: string | null
+          body_md: string | null
+          created_at: string | null
+          id: string
+          seo: Json | null
+          slug: string | null
+          status: string
+          summary: string | null
+          task_id: string | null
+          title: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          body_md?: string | null
+          created_at?: string | null
+          id?: string
+          seo?: Json | null
+          slug?: string | null
+          status?: string
+          summary?: string | null
+          task_id?: string | null
+          title?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          body_md?: string | null
+          created_at?: string | null
+          id?: string
+          seo?: Json | null
+          slug?: string | null
+          status?: string
+          summary?: string | null
+          task_id?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_drafts_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_drafts_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "agent_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_features_status: {
         Row: {
           average_response_time: number | null
@@ -1039,6 +1264,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ai_metrics: {
+        Row: {
+          id: string
+          metric: string
+          ref_url: string | null
+          ts: string | null
+          value: number
+        }
+        Insert: {
+          id?: string
+          metric: string
+          ref_url?: string | null
+          ts?: string | null
+          value: number
+        }
+        Update: {
+          id?: string
+          metric?: string
+          ref_url?: string | null
+          ts?: string | null
+          value?: number
+        }
+        Relationships: []
       }
       ai_models: {
         Row: {
@@ -1327,6 +1576,41 @@ export type Database = {
           version?: string
         }
         Relationships: []
+      }
+      ai_published: {
+        Row: {
+          draft_id: string | null
+          id: string
+          indexable: boolean | null
+          mobile_alt_url: string | null
+          published_at: string | null
+          url: string
+        }
+        Insert: {
+          draft_id?: string | null
+          id?: string
+          indexable?: boolean | null
+          mobile_alt_url?: string | null
+          published_at?: string | null
+          url: string
+        }
+        Update: {
+          draft_id?: string | null
+          id?: string
+          indexable?: boolean | null
+          mobile_alt_url?: string | null
+          published_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_published_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "ai_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_request_logs: {
         Row: {
@@ -18336,6 +18620,36 @@ export type Database = {
         }
         Relationships: []
       }
+      sitemap_queue: {
+        Row: {
+          created_at: string | null
+          id: string
+          kind: string
+          lastmod: string
+          mobile_alt_url: string | null
+          processed: boolean
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          kind: string
+          lastmod?: string
+          mobile_alt_url?: string | null
+          processed?: boolean
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          kind?: string
+          lastmod?: string
+          mobile_alt_url?: string | null
+          processed?: boolean
+          url?: string
+        }
+        Relationships: []
+      }
       skill_assessments: {
         Row: {
           created_at: string | null
@@ -21496,6 +21810,10 @@ export type Database = {
         Args: { url: string }
         Returns: boolean
       }
+      claim_next_task: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       clean_expired_seo_cache: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -21702,6 +22020,20 @@ export type Database = {
           display_name: string
           display_role: string
           profile_picture_url: string
+        }[]
+      }
+      get_due_agents: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          content_domains: string[]
+          departments: string[]
+          display_name: string
+          frequency: string
+          handle: string
+          id: string
+          last_run: string
+          role: string
+          tone: string
         }[]
       }
       get_email_domain: {
@@ -22183,6 +22515,25 @@ export type Database = {
         | "business"
         | "other"
       interview_status: "scheduled" | "completed" | "cancelled" | "rescheduled"
+      task_kind:
+        | "plan_content"
+        | "generate_content"
+        | "optimize_seo"
+        | "publish_content"
+        | "post_community"
+        | "match_jobs"
+        | "career_advice"
+        | "learning_path"
+        | "support_reply"
+        | "mentor_match"
+        | "platform_announcement"
+      task_status:
+        | "pending"
+        | "running"
+        | "completed"
+        | "failed"
+        | "canceled"
+        | "deadletter"
       team_role: "admin" | "recruiter" | "hr_manager" | "viewer" | "owner"
       user_role: "job_seeker" | "employer" | "admin" | "candidate"
     }
@@ -22342,6 +22693,27 @@ export const Constants = {
         "other",
       ],
       interview_status: ["scheduled", "completed", "cancelled", "rescheduled"],
+      task_kind: [
+        "plan_content",
+        "generate_content",
+        "optimize_seo",
+        "publish_content",
+        "post_community",
+        "match_jobs",
+        "career_advice",
+        "learning_path",
+        "support_reply",
+        "mentor_match",
+        "platform_announcement",
+      ],
+      task_status: [
+        "pending",
+        "running",
+        "completed",
+        "failed",
+        "canceled",
+        "deadletter",
+      ],
       team_role: ["admin", "recruiter", "hr_manager", "viewer", "owner"],
       user_role: ["job_seeker", "employer", "admin", "candidate"],
     },
