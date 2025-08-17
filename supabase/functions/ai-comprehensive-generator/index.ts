@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// DeepSeek completely removed - OpenAI only mode - FORCE REDEPLOY v1.2
-console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active - v1.2');
+// DeepSeek completely removed - OpenAI only mode - FORCE REDEPLOY v1.3
+console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active - v1.3');
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -17,7 +17,7 @@ serve(async (req) => {
   // Health check endpoint
   if (req.method === 'GET') {
     return new Response(
-      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator', version: '1.2', mode: 'openai-only' }),
+      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator', version: '1.3', mode: 'openai-only' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

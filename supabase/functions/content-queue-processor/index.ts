@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-console.log('🚀 content-queue-processor v2.0: OpenAI-only with stub fallback');
+console.log('🚀 content-queue-processor v2.1: OpenAI-only with stub fallback');
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -16,7 +16,7 @@ serve(async (req) => {
   }
   // Health check endpoint
   if (req.method === 'GET') {
-    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.0' }), {
+    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.1', mode: 'openai-only' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
@@ -24,7 +24,7 @@ serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_KEY') ?? ''
     );
 
     const { action, count = 1 } = await req.json().catch(() => ({ action: 'process', count: 1 }));
