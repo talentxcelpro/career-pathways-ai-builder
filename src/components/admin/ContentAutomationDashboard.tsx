@@ -89,7 +89,38 @@ export const ContentAutomationDashboard: React.FC = () => {
         setTimeout(() => loadStats(), 1500);
       } catch (fallbackErr) {
         console.error('Generation error (fallback):', fallbackErr);
-        toast.error('Failed to start content generation');
+        try {
+          // Local stub fallback: insert one content item so you can keep working even if Edge Functions aren't deployed yet
+          const { data: bots } = await supabase
+            .from('ai_bots')
+            .select('id, tone_style')
+            .eq('is_active', true)
+            .limit(1);
+          const bot = bots?.[0];
+          if (!bot) throw new Error('No active bots found for stub content');
+
+          const stub = `# AI Content (Stub)\n\nThis is placeholder content generated locally because the Edge Function is not available yet.\n\n- Mode: OpenAI-only (pending deploy)\n- Time: ${new Date().toISOString()}`;
+
+          const insertPayload: any = {
+            bot_id: bot.id,
+            content_type: 'article',
+            content: stub,
+            generated_by: 'stub',
+            generation_prompt: 'local-stub-fallback',
+            is_published: false,
+          };
+
+          const { error: saveError } = await (supabase as any)
+            .from('bot_generated_content')
+            .insert(insertPayload);
+          if (saveError) throw saveError;
+
+          toast.success('Inserted stub content locally (Edge Function unavailable)');
+          setTimeout(() => loadStats(), 800);
+        } catch (stubErr) {
+          console.error('Stub insert failed:', stubErr);
+          toast.error('Edge Function unavailable and stub insert failed.');
+        }
       }
     } finally {
       setIsGenerating(false);
