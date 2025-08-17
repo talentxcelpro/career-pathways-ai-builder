@@ -194,14 +194,18 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             </div>
           )}
 
-          {/* Media */}
+          {/* Media - Clickable to navigate to post */}
           {post.media_urls && post.media_urls.length > 0 && (
-            <div className="rounded-lg overflow-hidden">
+            <div 
+              className="rounded-lg overflow-hidden cursor-pointer hover:opacity-95 transition-opacity"
+              onClick={() => window.location.href = `/network/posts/${post.id}`}
+              title="View full post"
+            >
               {hasVideos ? (
                 <div className="relative">
                   <video
                     ref={videoRef}
-                    className="w-full max-h-[400px] object-cover"
+                    className="w-full max-h-[400px] object-cover pointer-events-none"
                     src={post.media_urls.find(url => /\.(mp4|mov|webm|avi)$/i.test(url))}
                     loop
                     muted={videoMuted}
@@ -215,16 +219,22 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
                     <Button
                       variant="secondary"
                       size="icon"
-                      className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white"
-                      onClick={toggleVideoPlay}
+                      className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white pointer-events-auto"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleVideoPlay();
+                      }}
                     >
                       {videoPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                     </Button>
                     <Button
                       variant="secondary"
                       size="icon"
-                      className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white"
-                      onClick={toggleVideoMute}
+                      className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white pointer-events-auto"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleVideoMute();
+                      }}
                     >
                       {videoMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
                     </Button>

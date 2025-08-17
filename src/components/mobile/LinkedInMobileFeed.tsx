@@ -166,14 +166,18 @@ const LinkedInPostCard: React.FC<{
         </div>
       )}
 
-      {/* Media Content */}
+      {/* Media Content - Clickable to view full post */}
       {post.content.url && (
-        <div className="relative rounded-2xl overflow-hidden mx-4 mb-4 shadow-sm">
+        <div 
+          className="relative rounded-2xl overflow-hidden mx-4 mb-4 shadow-sm cursor-pointer hover:opacity-95 transition-opacity"
+          onClick={() => window.location.href = `/network/posts/${post.id}`}
+          title="View full post"
+        >
           {post.content.type === 'video' ? (
             <div className="aspect-video bg-black rounded-2xl overflow-hidden">
               <VideoPlayer
                 url={post.content.url}
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-cover rounded-2xl pointer-events-none"
                 isMessage={false}
               />
             </div>

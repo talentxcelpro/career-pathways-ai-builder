@@ -94,16 +94,24 @@ const ReelsFeedItem: React.FC<{
         onDoubleClick={handleDoubleClick}
       >
         {post.content.type === 'video' && post.content.url ? (
-          <VideoPlayer
-            url={post.content.url}
-            className="w-full h-full object-cover"
-            isMessage={false}
-          />
+          <div 
+            className="w-full h-full cursor-pointer"
+            onClick={() => window.location.href = `/network/posts/${post.id}`}
+            title="View full post"
+          >
+            <VideoPlayer
+              url={post.content.url}
+              className="w-full h-full object-cover pointer-events-none"
+              isMessage={false}
+            />
+          </div>
         ) : post.content.type === 'image' && post.content.url ? (
           <img
             src={post.content.url}
             alt="Post content"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover cursor-pointer"
+            onClick={() => window.location.href = `/network/posts/${post.id}`}
+            title="View full post"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center p-6">
