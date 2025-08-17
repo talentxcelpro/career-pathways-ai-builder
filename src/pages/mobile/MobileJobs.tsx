@@ -76,11 +76,24 @@ export const MobileJobs = () => {
   });
 
   const formatSalary = (min: number, max: number) => {
+    const formatAmount = (amount: number) => {
+      if (amount >= 100000) {
+        // If amount is 6+ digits, it's likely in full amount (e.g., 600000)
+        return `$${(amount / 1000).toFixed(0)}k`;
+      } else if (amount >= 1000) {
+        // If amount is 4-5 digits, it might already be in thousands (e.g., 600)
+        return `$${amount.toFixed(0)}k`;
+      } else {
+        // If amount is small, treat as thousands
+        return `$${amount}k`;
+      }
+    };
+
     if (min && max) {
-      return `$${(min / 1000).toFixed(0)}k - $${(max / 1000).toFixed(0)}k`;
+      return `${formatAmount(min)} - ${formatAmount(max)}`;
     }
     if (min) {
-      return `$${(min / 1000).toFixed(0)}k+`;
+      return `${formatAmount(min)}+`;
     }
     return 'Salary not specified';
   };
