@@ -145,7 +145,7 @@ const App = () => {
                       <Route path="/resume/new" element={<ResumeNew />} />
                       <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
-                       <Route path="/admin/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
+                       <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
                       {/* <Route path="/employer/cv-database" element={<CVDatabase />} />
