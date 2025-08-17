@@ -58,58 +58,42 @@ export const MobileReels = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select(`
-          id,
-          content,
-          video_url,
-          thumbnail_url,
-          created_at,
-          tags,
-          profiles:user_id(
-            id,
-            first_name,
-            last_name,
-            avatar_url,
-            title,
-            company
-          ),
-          likes:post_likes(count),
-          comments:post_comments(count),
-          shares:post_shares(count),
-          user_likes:post_likes!inner(user_id),
-          user_bookmarks:post_bookmarks!inner(user_id)
-        `)
-        .not('video_url', 'is', null)
+        .select('id, content, created_at, media_urls, user_id')
+        .not('media_urls', 'is', null)
         .order('created_at', { ascending: false })
         .limit(20);
 
       if (error) throw error;
 
-      return (data || []).map(post => ({
-        id: post.id,
-        video_url: post.video_url,
-        thumbnail_url: post.thumbnail_url,
-        title: post.content?.split('\n')[0] || 'Career Video',
-        description: post.content,
-        created_at: post.created_at,
-        author: {
-          id: post.profiles?.id || '',
-          first_name: post.profiles?.first_name || 'Anonymous',
-          last_name: post.profiles?.last_name || 'User',
-          avatar_url: post.profiles?.avatar_url,
-          title: post.profiles?.title,
-          company: post.profiles?.company
-        },
-        stats: {
-          likes: post.likes?.[0]?.count || 0,
-          comments: post.comments?.[0]?.count || 0,
-          shares: post.shares?.[0]?.count || 0,
-          views: Math.floor(Math.random() * 10000) + 100 // Mock views for now
-        },
-        tags: post.tags || [],
-        is_liked: post.user_likes?.some((like: any) => like.user_id === user?.id) || false,
-        is_bookmarked: post.user_bookmarks?.some((bookmark: any) => bookmark.user_id === user?.id) || false
-      })) as VideoReel[];
+      return (data as any[]).map((post: any) => {
+        const media = (post.media_urls || []) as string[];
+        const firstVideo = media.find((m) => /\.(mp4|mov|webm)$/i.test(m)) || '';
+        return {
+          id: post.id,
+          video_url: firstVideo,
+          thumbnail_url: undefined,
+          title: (post.content || '').split('\n')[0] || 'Career Video',
+          description: post.content,
+          created_at: post.created_at,
+          author: {
+            id: post.user_id || '',
+            first_name: 'Anonymous',
+            last_name: 'User',
+            avatar_url: undefined,
+            title: undefined,
+            company: undefined,
+          },
+          stats: {
+            likes: 0,
+            comments: 0,
+            shares: 0,
+            views: Math.floor(Math.random() * 10000) + 100,
+          },
+          tags: [],
+          is_liked: false,
+          is_bookmarked: false,
+        } as VideoReel;
+      });
     },
     enabled: !!user
   });

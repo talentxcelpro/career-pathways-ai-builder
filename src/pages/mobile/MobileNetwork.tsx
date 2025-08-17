@@ -195,9 +195,9 @@ export const MobileNetwork = () => {
                     </Card>
                   ) : (
                     conversations.map((conversation) => {
-                      const otherParticipant = conversation.participants?.find(
+                      const otherParticipant = (conversation as any).participants?.find(
                         (p: any) => p.user_id !== user?.id
-                      )?.profiles;
+                      )?.profiles as any;
                       
                       return (
                         <Card 
@@ -292,9 +292,6 @@ export const MobileNetwork = () => {
                                 Decline
                               </Button>
                             </div>
-                          </div>
-                        </div>
-                      </CardContent>
                           </div>
                         </div>
                       </CardContent>

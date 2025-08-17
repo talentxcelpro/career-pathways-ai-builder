@@ -55,7 +55,7 @@ export const MobileProfile = () => {
         .from('job_applications')
         .select(`
           *,
-          job:job_id(
+          job:jobs!job_id(
             title,
             company_name,
             location,
@@ -81,7 +81,7 @@ export const MobileProfile = () => {
         .from('certifications')
         .select('*')
         .eq('user_id', user.id)
-        .order('issue_date', { ascending: false });
+        .order('date_earned', { ascending: false });
 
       if (error) throw error;
       return data || [];
@@ -208,11 +208,11 @@ export const MobileProfile = () => {
           </div>
 
           {/* Bio */}
-          {profile.bio && (
+          {profile.about && (
             <Card className="rounded-3xl border-0 shadow-lg bg-white/90 backdrop-blur-sm">
               <CardContent className="p-6">
                 <h3 className="font-bold text-gray-900 mb-3">About</h3>
-                <p className="text-gray-600 leading-relaxed">{profile.bio}</p>
+                <p className="text-gray-600 leading-relaxed">{profile.about}</p>
               </CardContent>
             </Card>
           )}
@@ -305,20 +305,17 @@ export const MobileProfile = () => {
                           <Award className="h-6 w-6 text-white" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">{cert.name}</h4>
+                          <h4 className="font-semibold text-gray-900">{cert.certificate_name}</h4>
                           <p className="text-gray-600">{cert.issuer}</p>
                           <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                            <span>Issued {formatDate(cert.issue_date)}</span>
-                            {cert.expiry_date && (
-                              <span>Expires {formatDate(cert.expiry_date)}</span>
-                            )}
+                            <span>Issued {formatDate(cert.date_earned)}</span>
                           </div>
-                          {cert.credential_url && (
+                          {cert.certificate_url && (
                             <Button
                               size="sm"
                               variant="outline"
                               className="mt-3 rounded-xl"
-                              onClick={() => window.open(cert.credential_url, '_blank')}
+                              onClick={() => window.open(cert.certificate_url, '_blank')}
                             >
                               <ExternalLink className="h-3 w-3 mr-1" />
                               View Certificate
