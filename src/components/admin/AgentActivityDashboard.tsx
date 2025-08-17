@@ -19,9 +19,11 @@ import {
   Mail,
   Briefcase,
   BarChart3,
-  Activity
+  Activity,
+  History
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { TaskHistoryViewer } from './TaskHistoryViewer';
 
 interface AgentLog {
   id: string;
@@ -222,7 +224,8 @@ export const AgentActivityDashboard: React.FC = () => {
 
       <Tabs defaultValue="logs" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="logs">Activity Logs</TabsTrigger>
+          <TabsTrigger value="logs">System Logs</TabsTrigger>
+          <TabsTrigger value="business">Business Tasks</TabsTrigger>
           <TabsTrigger value="performance">Agent Performance</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
@@ -274,8 +277,8 @@ export const AgentActivityDashboard: React.FC = () => {
           {/* Activity Logs Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Activity ({filteredLogs.length})</CardTitle>
-              <CardDescription>Detailed logs of AI agent activities</CardDescription>
+              <CardTitle>System Activity Logs ({filteredLogs.length})</CardTitle>
+              <CardDescription>System heartbeats and internal operations (not business tasks)</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="max-h-96 overflow-y-auto">
@@ -375,6 +378,10 @@ export const AgentActivityDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="business" className="space-y-4">
+          <TaskHistoryViewer />
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-4">
