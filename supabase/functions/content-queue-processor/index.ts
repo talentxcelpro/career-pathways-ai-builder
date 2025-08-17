@@ -18,20 +18,15 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Call the main processor function
-    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ai-comprehensive-generator-v2`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ action: 'process' })
+    // Call the main processor function via Supabase client
+    const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
+      body: { action: 'process' }
     });
 
-    const result = await response.json();
+    if (invokeError) throw invokeError;
 
     return new Response(
-      JSON.stringify(result),
+      JSON.stringify(data),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

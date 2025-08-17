@@ -47,21 +47,16 @@ serve(async (req) => {
       if (timeSlots.includes(currentTime)) {
         console.log(`🎯 Triggering schedule: ${schedule.schedule_name}`);
         
-        // Call comprehensive generator
-        const generatorResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/ai-comprehensive-generator-v2`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ schedule_id: schedule.id })
+        // Call comprehensive generator via Supabase client
+        const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
+          body: { schedule_id: schedule.id }
         });
 
-        if (generatorResponse.ok) {
+        if (!invokeError) {
           totalTriggered++;
           console.log(`✅ Successfully triggered content generation for: ${schedule.schedule_name}`);
         } else {
-          console.error(`❌ Failed to trigger generation for: ${schedule.schedule_name}`);
+          console.error(`❌ Failed to trigger generation for: ${schedule.schedule_name}`, invokeError);
         }
       }
     }
