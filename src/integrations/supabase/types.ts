@@ -22043,6 +22043,13 @@ export type Database = {
         Args: { job_uuid: string }
         Returns: number
       }
+      count_tasks_by_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          cnt: number
+          status: string
+        }[]
+      }
       count_words: {
         Args: { content_text: string }
         Returns: number
