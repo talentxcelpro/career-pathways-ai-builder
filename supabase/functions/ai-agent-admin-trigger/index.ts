@@ -52,11 +52,10 @@ serve(async (req) => {
         for (const agent of agents || []) {
           const { error: taskError } = await supabase
             .from('agent_tasks')
-            .insert({
-              agent_id: agent.id,
+          .insert({
               source: 'admin_trigger',
               action: 'scheduled_task',
-              payload: { message: 'Task created by admin scheduler' },
+              payload: { message: 'Task created by admin scheduler', ai_agent_id: agent.id, ai_agent_handle: agent.handle },
               status: 'pending'
             });
           
@@ -168,10 +167,9 @@ serve(async (req) => {
           const { error: taskError } = await supabase
             .from('agent_tasks')
             .insert({
-              agent_id: agent.id,
               source: 'admin_test',
               action: 'test_task',
-              payload: { message: 'Test task created from admin panel' },
+              payload: { message: 'Test task created from admin panel', ai_agent_id: agent.id, ai_agent_handle: agent.handle },
               status: 'pending'
             });
           

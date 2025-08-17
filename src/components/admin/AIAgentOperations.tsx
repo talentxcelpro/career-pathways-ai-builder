@@ -170,10 +170,9 @@ export const AIAgentOperations: React.FC = () => {
         const { error: taskError } = await supabase
           .from('agent_tasks')
           .insert({
-            agent_id: agent.id,
             source: 'admin_fallback',
             action: 'scheduled_task',
-            payload: { message: 'Task created by admin (fallback method)' },
+            payload: { message: 'Task created by admin (fallback method)', ai_agent_id: agent.id, ai_agent_handle: agent.handle },
             status: 'pending'
           });
         
@@ -250,10 +249,9 @@ export const AIAgentOperations: React.FC = () => {
           const { error: taskError } = await supabase
             .from('agent_tasks')
             .insert({
-              agent_id: agent.id,
               source: 'admin_test_fallback',
               action: 'test_task',
-              payload: { message: 'Test task (fallback)' },
+              payload: { message: 'Test task (fallback)', ai_agent_id: agent.id, ai_agent_handle: agent.handle },
               status: 'pending'
             });
           
