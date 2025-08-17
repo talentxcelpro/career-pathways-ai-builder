@@ -41,6 +41,7 @@ import IntegrationHub from "../pages/admin/IntegrationHub";
 import { SEODashboard } from "../components/admin/SEODashboard";
 import { SEODashboardNew } from "../components/admin/SEODashboardNew";
 import { JobDataManager } from "../components/admin/JobDataManager";
+import AgentOperationsPage from "../pages/admin/AgentOperations";
 
 export const adminRoutes = [
   {
@@ -223,6 +224,13 @@ export const adminRoutes = [
     to: "/admin/bot-identity",
     icon: <Bot className="h-4 w-4" />,
     page: <BotIdentityManager />,
+    requiresAuth: true,
+  },
+  {
+    title: "AI Agent Operations",
+    to: "/admin/agent-operations",
+    icon: <Bot className="h-4 w-4" />,
+    page: <AgentOperationsPage />,
     requiresAuth: true,
   },
   {

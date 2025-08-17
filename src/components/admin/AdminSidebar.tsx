@@ -200,6 +200,12 @@ const adminMenuItems = [
     description: 'Assign users to bots for posting'
   },
   {
+    title: 'AI Agent Operations',
+    url: '/admin/agent-operations',
+    icon: Bot,
+    description: 'AI Agent Operations Engine - Monitor & manage AI agents'
+  },
+  {
     title: 'Admin Management',
     url: '/admin/admins',
     icon: Settings,
