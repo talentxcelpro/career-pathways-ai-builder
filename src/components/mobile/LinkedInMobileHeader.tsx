@@ -10,6 +10,12 @@ import { useNavigate } from 'react-router-dom';
 interface LinkedInMobileHeaderProps {
   onSearch?: () => void;
   showCreatePost?: boolean;
+  onMessages?: () => void;
+  onNotifications?: () => void;
+  onProfile?: () => void;
+  onMenu?: () => void;
+  messageCount?: number;
+  notificationCount?: number;
 }
 
 export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
@@ -20,35 +26,39 @@ export const LinkedInMobileHeader: React.FC<LinkedInMobileHeaderProps> = ({
   const navigate = useNavigate();
 
   // Get unread notifications count
-  const { data: notificationCount = 0 } = useQuery({
+  const { data: notificationCount = 0 } = useQuery<number>({
     queryKey: ['notifications-count', user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<number> => {
       if (!user?.id) return 0;
-      
-      const { count } = await supabase
+      const { count, error } = await supabase
         .from('notifications')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .eq('is_read', false);
-      
-      return count || 0;
+      if (error) {
+        console.warn('Failed to count notifications', error);
+        return 0;
+      }
+      return count ?? 0;
     },
     enabled: !!user?.id
   });
 
   // Get pending connection requests count
-  const { data: pendingRequests = 0 } = useQuery({
+  const { data: pendingRequests = 0 } = useQuery<number>({
     queryKey: ['pending-connections-count', user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<number> => {
       if (!user?.id) return 0;
-      
-      const { count } = await supabase
+      const { count, error } = await supabase
         .from('connections')
-        .select('*', { count: 'exact', head: true })
-        .eq('receiver_id', user.id)
+        .select('id', { count: 'exact', head: true })
+        .eq('recipient_id', user.id)
         .eq('status', 'pending');
-      
-      return count || 0;
+      if (error) {
+        console.warn('Failed to count pending connections', error);
+        return 0;
+      }
+      return count ?? 0;
     },
     enabled: !!user?.id
   });

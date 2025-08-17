@@ -57,9 +57,9 @@ export const MobileProfile = () => {
           *,
           job:job_id(
             title,
-            company,
+            company_name,
             location,
-            job_type
+            employment_type
           )
         `)
         .eq('user_id', user.id)
@@ -139,26 +139,20 @@ export const MobileProfile = () => {
             <CardContent className="p-6 -mt-12">
               <div className="flex flex-col items-center text-center">
                 <Avatar className="h-24 w-24 border-4 border-white shadow-lg mb-4">
-                  <AvatarImage src={profile.avatar_url} />
+                  <AvatarImage src={profile.profile_photo_url} />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-bold">
-                    {profile.first_name?.[0]}{profile.last_name?.[0]}
+                    {profile.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2) || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 
                 <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                  {profile.first_name} {profile.last_name}
+                  {profile.full_name}
                 </h1>
                 
-                {profile.title && (
-                  <p className="text-gray-600 font-medium mb-2">{profile.title}</p>
+                {profile.headline && (
+                  <p className="text-gray-600 font-medium mb-2">{profile.headline}</p>
                 )}
                 
-                {profile.company && (
-                  <div className="flex items-center gap-1 text-gray-500 mb-2">
-                    <Building className="h-4 w-4" />
-                    <span>{profile.company}</span>
-                  </div>
-                )}
                 
                 {profile.location && (
                   <div className="flex items-center gap-1 text-gray-500 mb-4">
@@ -269,7 +263,7 @@ export const MobileProfile = () => {
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">{application.job?.title}</h4>
-                          <p className="text-gray-600">{application.job?.company}</p>
+                          <p className="text-gray-600">{application.job?.company_name}</p>
                           <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
                             <MapPin className="h-3 w-3" />
                             <span>{application.job?.location}</span>

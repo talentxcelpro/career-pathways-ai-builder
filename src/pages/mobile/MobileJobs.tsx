@@ -29,33 +29,25 @@ export const MobileJobs = () => {
   const [jobTypeFilter, setJobTypeFilter] = useState('');
 
   // Fetch jobs from Supabase
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading } = useQuery<any[]>({
     queryKey: ['mobile-jobs', searchTerm, locationFilter, jobTypeFilter],
     queryFn: async () => {
       let query = supabase
         .from('jobs')
-        .select(`
-          *,
-          profiles:company_id(
-            id,
-            first_name,
-            last_name,
-            avatar_url
-          )
-        `)
+        .select('id, title, company_name, location, created_at, salary_min, salary_max, employment_type, skills_required, description, external_url')
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%`);
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,company_name.ilike.%${searchTerm}%`);
       }
 
       if (locationFilter) {
         query = query.ilike('location', `%${locationFilter}%`);
       }
 
-      if (jobTypeFilter) {
-        query = query.eq('job_type', jobTypeFilter);
-      }
+        if (jobTypeFilter) {
+          query = query.eq('employment_type', jobTypeFilter);
+        }
 
       const { data, error } = await query;
       if (error) throw error;
@@ -153,7 +145,7 @@ export const MobileJobs = () => {
                         <h3 className="font-bold text-lg text-gray-900 mb-1">{job.title}</h3>
                         <div className="flex items-center gap-2 mb-2">
                           <Building className="h-4 w-4 text-gray-500" />
-                          <span className="text-gray-600 font-medium">{job.company}</span>
+                          <span className="text-gray-600 font-medium">{(job as any).company_name}</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                           <div className="flex items-center gap-1">
@@ -178,9 +170,9 @@ export const MobileJobs = () => {
 
                     <div className="flex flex-wrap gap-2 mb-4">
                       <Badge className="bg-primary/10 text-primary hover:bg-primary/20 rounded-full">
-                        {job.job_type}
+                        {(job as any).employment_type}
                       </Badge>
-                      {job.skills?.slice(0, 2).map((skill, index) => (
+                      {((job as any).skills_required || []).slice(0, 2).map((skill: string, index: number) => (
                         <Badge key={index} variant="secondary" className="rounded-full">
                           {skill}
                         </Badge>
@@ -201,7 +193,7 @@ export const MobileJobs = () => {
                     <div className="flex gap-2">
                       <Button 
                         className="flex-1 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg"
-                        onClick={() => window.open(job.application_url, '_blank')}
+                        onClick={() => (job as any).external_url && window.open((job as any).external_url, '_blank')}
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Apply Now

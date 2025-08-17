@@ -67,18 +67,8 @@ export const MobileNetwork = () => {
       
       const { data, error } = await supabase
         .from('connections')
-        .select(`
-          *,
-          sender:sender_id(
-            id,
-            first_name,
-            last_name,
-            avatar_url,
-            title,
-            company
-          )
-        `)
-        .eq('receiver_id', user.id)
+        .select('*')
+        .eq('recipient_id', user.id)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
@@ -133,11 +123,11 @@ export const MobileNetwork = () => {
   const handleSendConnectionRequest = async (userId: string) => {
     const { error } = await supabase
       .from('connections')
-      .insert({
-        sender_id: user?.id,
-        receiver_id: userId,
-        status: 'pending'
-      });
+        .insert({
+          requester_id: user?.id as string,
+          recipient_id: userId,
+          status: 'pending'
+        });
 
     if (!error) {
       // Refresh suggested connections
@@ -271,20 +261,18 @@ export const MobileNetwork = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-12 w-12">
-                            <AvatarImage src={request.sender?.avatar_url} />
+                            <AvatarImage src={undefined} />
                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                              {request.sender?.first_name?.[0]}{request.sender?.last_name?.[0]}
+                              CN
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="font-semibold text-gray-900">
-                              {request.sender?.first_name} {request.sender?.last_name}
+                              Connection request
                             </h3>
-                            {request.sender?.title && (
-                              <p className="text-sm text-gray-600">
-                                {request.sender.title} {request.sender.company && `at ${request.sender.company}`}
-                              </p>
-                            )}
+                            <p className="text-sm text-gray-600">
+                              Requested by {request.requester_id?.slice(0,8)}...
+                            </p>
                             <div className="flex gap-2 mt-3">
                               <Button
                                 size="sm"
@@ -304,6 +292,9 @@ export const MobileNetwork = () => {
                                 Decline
                               </Button>
                             </div>
+                          </div>
+                        </div>
+                      </CardContent>
                           </div>
                         </div>
                       </CardContent>
@@ -335,18 +326,18 @@ export const MobileNetwork = () => {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-12 w-12">
-                            <AvatarImage src={person.avatar_url} />
+                            <AvatarImage src={person.profile_photo_url} />
                             <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                              {person.first_name?.[0]}{person.last_name?.[0]}
+                              {(person.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2)) || 'U'}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="font-semibold text-gray-900">
-                              {person.first_name} {person.last_name}
+                              {person.full_name}
                             </h3>
-                            {person.title && (
+                            {person.headline && (
                               <p className="text-sm text-gray-600">
-                                {person.title} {person.company && `at ${person.company}`}
+                                {person.headline}
                               </p>
                             )}
                             <Button
