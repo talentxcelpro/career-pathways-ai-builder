@@ -31,42 +31,66 @@ export const ContentAutomationDashboard: React.FC = () => {
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
-      // Primary path: invoke via Supabase client
-      const { data, error } = await supabase.functions.invoke('ai-comprehensive-generator', {
-        body: { manual_trigger: true }
+      // Step 1: queue exactly 1 job
+      const { data: queueData, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+        body: { action: 'queue', count: 1 }
       });
+      if (queueError) throw queueError;
 
-      if (error) throw error;
+      // Step 2: process the queue (handles 5 at a time in the function)
+      const { data: processData, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+        body: { action: 'process' }
+      });
+      if (processError) throw processError;
 
-      toast.success(`Content generation started! Processing ${data.stats?.total_jobs || 0} jobs`);
+      const processedCount = processData?.processed ?? (processData?.jobs?.length ?? 0) ?? 0;
+      toast.success(`Queued 1 job and processed ${processedCount} item(s)`);
 
-      // Refresh stats after a delay
+      // Refresh stats after a short delay
       setTimeout(() => {
         loadStats();
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
       console.error('Generation error (primary):', err);
-      // Fallback: direct fetch to Edge Function URL (handles occasional FunctionsFetchError)
+      // Fallback: direct fetch to Edge Function URL
       try {
         const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-comprehensive-generator';
         const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-        const resp = await fetch(functionsUrl, {
+
+        // Queue one job
+        const queueResp = await fetch(functionsUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
           },
-          body: JSON.stringify({ manual_trigger: true }),
+          body: JSON.stringify({ action: 'queue', count: 1 }),
         });
-
-        if (!resp.ok) {
-          const text = await resp.text();
-          throw new Error(`Fallback call failed (${resp.status}): ${text}`);
+        if (!queueResp.ok) {
+          const text = await queueResp.text();
+          throw new Error(`Fallback queue failed (${queueResp.status}): ${text}`);
         }
 
-        const json = await resp.json();
-        toast.success(`Content generation started! Processing ${json.stats?.total_jobs || 0} jobs`);
-        setTimeout(() => loadStats(), 2000);
+        // Process queue
+        const processResp = await fetch(functionsUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
+          },
+          body: JSON.stringify({ action: 'process' }),
+        });
+        if (!processResp.ok) {
+          const text = await processResp.text();
+          throw new Error(`Fallback process failed (${processResp.status}): ${text}`);
+        }
+
+        const processedJson = await processResp.json();
+        const processedCount = processedJson?.processed ?? (processedJson?.jobs?.length ?? 0) ?? 0;
+        toast.success(`Queued 1 job and processed ${processedCount} item(s)`);
+        setTimeout(() => loadStats(), 1500);
       } catch (fallbackErr) {
         console.error('Generation error (fallback):', fallbackErr);
         toast.error('Failed to start content generation');
