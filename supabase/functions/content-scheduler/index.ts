@@ -53,8 +53,8 @@ serve(async (req) => {
       if (timeSlots.includes(currentTime)) {
         console.log(`🎯 Triggering schedule: ${schedule.schedule_name}`);
         
-        // Call comprehensive generator via Supabase client
-        const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
+        // Call comprehensive generator via Supabase client (using existing function)
+        const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator', {
           body: { schedule_id: schedule.id }
         });
 

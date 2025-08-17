@@ -25,8 +25,8 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-    // Call the main processor function via Supabase client
-    const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
+    // Call the main processor function via Supabase client (using existing function)
+    const { data, error: invokeError } = await supabase.functions.invoke('ai-comprehensive-generator', {
       body: { action: 'process' }
     });
 
