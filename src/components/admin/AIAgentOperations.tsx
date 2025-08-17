@@ -65,44 +65,66 @@ export const AIAgentOperations: React.FC = () => {
 
   const fetchSystemHealth = async () => {
     try {
-      // Try the new admin trigger function first
-      const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
-        body: { action: 'get_system_health' }
-      });
+      console.log('🔍 Attempting to fetch system health...');
       
-      if (error) {
-        console.log('Admin trigger not available, using fallback data:', error);
-        // Fallback to basic data from database
-        const { data: agents } = await supabase.from('ai_agents').select('*');
-        const { data: tasks } = await supabase.from('agent_tasks').select('*').limit(100);
-        
-        setSystemHealth({
-          agents: {
-            total: agents?.length || 0,
-            active: agents?.filter(a => a.status === 'active').length || 0,
-            error: null
-          },
-          tasks: {
-            total: tasks?.length || 0,
-            pending: tasks?.filter(t => t.status === 'pending').length || 0,
-            running: tasks?.filter(t => t.status === 'running').length || 0,
-            completed: tasks?.filter(t => t.status === 'completed').length || 0,
-            failed: tasks?.filter(t => t.status === 'failed').length || 0,
-            error: null
-          },
-          timestamp: new Date().toISOString()
+      // First check if ai-agent-admin-trigger is available
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
+          body: { action: 'get_system_health' }
         });
-        return;
+        
+        if (!error && data) {
+          console.log('✅ Admin trigger function working:', data);
+          setSystemHealth(data?.data);
+          return;
+        }
+        
+        console.log('❌ Admin trigger function error:', error);
+      } catch (triggerError) {
+        console.log('❌ Admin trigger function not available:', triggerError);
       }
       
-      setSystemHealth(data?.data || {
-        agents: { total: 0, active: 0, error: 'No data' },
-        tasks: { total: 0, pending: 0, running: 0, completed: 0, failed: 0, error: 'No data' },
+      // Fallback: Direct database queries
+      console.log('🔄 Using fallback database queries...');
+      const { data: agents, error: agentsError } = await supabase
+        .from('ai_agents')
+        .select('*');
+      
+      const { data: tasks, error: tasksError } = await supabase
+        .from('agent_tasks')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      console.log('📊 Direct query results:', { 
+        agents: agents?.length, 
+        tasks: tasks?.length,
+        agentsError,
+        tasksError 
+      });
+      
+      setSystemHealth({
+        agents: {
+          total: agents?.length || 0,
+          active: agents?.filter(a => a.status === 'active').length || 0,
+          error: agentsError?.message || null
+        },
+        tasks: {
+          total: tasks?.length || 0,
+          pending: tasks?.filter(t => t.status === 'pending').length || 0,
+          running: tasks?.filter(t => t.status === 'running').length || 0,
+          completed: tasks?.filter(t => t.status === 'completed').length || 0,
+          failed: tasks?.filter(t => t.status === 'failed').length || 0,
+          error: tasksError?.message || null
+        },
         timestamp: new Date().toISOString()
       });
+      
     } catch (error: any) {
-      console.error('Failed to fetch system health:', error);
-      // Set fallback data
+      console.error('❌ Complete failure in fetchSystemHealth:', error);
+      toast.error(`Health check failed: ${error.message}`);
+      
+      // Ultimate fallback
       setSystemHealth({
         agents: { total: 0, active: 0, error: error.message },
         tasks: { total: 0, pending: 0, running: 0, completed: 0, failed: 0, error: error.message },
@@ -113,44 +135,65 @@ export const AIAgentOperations: React.FC = () => {
 
   const triggerScheduler = async () => {
     setIsLoading(true);
+    console.log('🚀 Starting scheduler trigger...');
+    
     try {
-      const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
-        body: { action: 'trigger_scheduler' }
-      });
-      
-      if (error) {
-        // Fallback to direct database operations if function not available
-        console.log('Admin trigger not available, using direct approach:', error);
-        const { data: agents } = await supabase.from('ai_agents').select('*').eq('status', 'active');
+      // Try admin trigger function first
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-agent-admin-trigger', {
+          body: { action: 'trigger_scheduler' }
+        });
         
-        let tasksCreated = 0;
-        for (const agent of agents || []) {
-          const { error: taskError } = await supabase
-            .from('agent_tasks')
-            .insert({
-              agent_id: agent.id,
-              source: 'admin_fallback',
-              action: 'scheduled_task',
-              payload: { message: 'Task created by admin (fallback)' },
-              status: 'pending'
-            });
-          
-          if (!taskError) tasksCreated++;
+        if (!error && data) {
+          console.log('✅ Admin trigger scheduler success:', data);
+          toast.success(`Scheduler: ${data?.message || 'Success'} (${data?.tasksCreated || 0} tasks created)`);
+          await fetchTasks();
+          return;
         }
         
-        toast.success(`Scheduler (fallback): Created ${tasksCreated} tasks`);
-        await fetchTasks();
-        return;
+        console.log('❌ Admin trigger scheduler error:', error);
+      } catch (funcError) {
+        console.log('❌ Scheduler function not available:', funcError);
       }
       
-      console.log('Scheduler response:', data);
-      toast.success(`Scheduler: ${data?.message || 'Success'} (${data?.tasksCreated || 0} tasks created)`);
+      // Fallback: Direct database operations
+      console.log('🔄 Using scheduler fallback...');
+      const { data: agents, error: agentsError } = await supabase
+        .from('ai_agents')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (agentsError) throw agentsError;
+      
+      let tasksCreated = 0;
+      for (const agent of agents || []) {
+        const { error: taskError } = await supabase
+          .from('agent_tasks')
+          .insert({
+            agent_id: agent.id,
+            source: 'admin_fallback',
+            action: 'scheduled_task',
+            payload: { message: 'Task created by admin (fallback method)' },
+            status: 'pending'
+          });
+        
+        if (!taskError) {
+          tasksCreated++;
+          console.log(`✅ Created task for agent: ${agent.handle}`);
+        } else {
+          console.error(`❌ Failed to create task for agent ${agent.handle}:`, taskError);
+        }
+      }
+      
+      toast.success(`Scheduler (fallback): Created ${tasksCreated} tasks from ${agents?.length || 0} agents`);
       await fetchTasks();
+      
     } catch (error: any) {
-      console.error('Failed to trigger scheduler:', error);
-      toast.error(`Failed to trigger scheduler: ${error.message}`);
+      console.error('❌ Complete scheduler failure:', error);
+      toast.error(`Scheduler failed: ${error.message}`);
     } finally {
       setIsLoading(false);
+      console.log('🏁 Scheduler trigger completed');
     }
   };
 
@@ -346,12 +389,12 @@ export const AIAgentOperations: React.FC = () => {
           <div className="flex flex-wrap gap-3">
             <Button 
               onClick={() => {
-                console.log('=== TESTING EDGE FUNCTION CONNECTIVITY ===');
+                console.log('🧪 Testing edge function connectivity...');
                 supabase.functions.invoke('ai-test-health').then(result => {
-                  console.log('Test result:', result);
+                  console.log('✅ Test result:', result);
                   toast.success('Edge Functions are working!');
                 }).catch(err => {
-                  console.error('Test failed:', err);
+                  console.error('❌ Test failed:', err);
                   toast.error('Edge Functions not accessible');
                 });
               }} 
@@ -364,14 +407,14 @@ export const AIAgentOperations: React.FC = () => {
             </Button>
             <Button 
               onClick={() => {
-                console.log('=== SCHEDULER BUTTON CLICKED ===');
+                console.log('🕐 Scheduler button clicked');
                 triggerScheduler();
               }} 
               disabled={isLoading}
               className="flex items-center gap-2"
             >
               <Clock className="h-4 w-4" />
-              Run Scheduler
+              Run Scheduler (with fallback)
             </Button>
             <Button 
               onClick={() => {
