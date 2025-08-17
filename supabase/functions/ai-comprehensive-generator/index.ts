@@ -135,6 +135,10 @@ async function processContentQueue(supabase: any) {
   const deepseekApiKey = USE_DEEPSEEK ? Deno.env.get('DEEPSEEK_API_KEY') : undefined;
 
   console.log(`⚙️ Config -> USE_DEEPSEEK=${USE_DEEPSEEK}, OpenAIKey=${openaiApiKey ? 'yes' : 'no'}, DeepSeekKey=${deepseekApiKey ? 'yes' : 'no'}`);
+  console.log(`Content generator: ${USE_DEEPSEEK ? 'OpenAI+DeepSeek' : 'OpenAI-only'}`);
+  if (!USE_DEEPSEEK) {
+    console.log('⚡ Skipping DeepSeek, using OpenAI only.');
+  }
   
   // Track API health during this batch
   let deepseekDisabled = false;
