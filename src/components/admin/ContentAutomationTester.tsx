@@ -177,7 +177,19 @@ export const ContentAutomationTester: React.FC = () => {
     setTestResults(steps);
 
     try {
-      const { data: rsp, via } = await invokeOrDirect('bot-social-posts', { limit_bots: 2, posts_per_bot: 1 });
+      const { data: rsp, via } = await invokeOrDirect('bot-social-posts', {
+        preset: 'linkedin_100',
+        total_posts: 100,
+        categories: [
+          'System & Platform Updates',
+          'Career Motivation',
+          'Jobs & Networking',
+          'Learning & Skills',
+          'Resume & Career Tools',
+          'Community & Inspiration'
+        ],
+        limit_bots: 4
+      });
 
       updateResult(0, 'success', `Created ${rsp?.created ?? 0} posts (${via})`, rsp);
 

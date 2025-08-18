@@ -7,47 +7,61 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 };
 
-// Simple, deterministic social post generator (no external AI)
-function generateSocialPost(bot: any): { content: string; tags: string[] } {
+// Simple, deterministic social post generator (no external AI, no emojis)
+function generateSocialPost(bot: any, category?: string): { content: string } {
   const domain = bot?.content_domains?.[0] || 'career growth';
-  const persona = bot?.name || 'Our AI bot';
+  const persona = bot?.name || 'TalentXcel';
 
-  const hooks = [
-    `Quick tip for ${domain}: focus on consistency over intensity.`,
-    `Most people overestimate what they can do in a week and underestimate a year.`,
-    `Small, daily improvements in ${domain} compound into big wins.`,
-    `A clear system beats motivation. Design your routine for success.`,
-  ];
+  const libraries: Record<string, string[]> = {
+    'System & Platform Updates': [
+      'Continuous improvement keeps great tools relevant. We’ve completed performance upgrades to keep your experience smooth and reliable.',
+      'Behind every seamless interaction is a system designed to work in your favor. We fine-tuned backend processes to make your journey more effortless.',
+      'Great careers need dependable tools. We’ve optimized the platform to be faster, sharper, and aligned with real use.',
+      'While you focus on growth, we focus on infrastructure. Searches and profile views now load more efficiently.',
+    ],
+    'Career Motivation': [
+      'Every career is built step by step. The small actions you take today shape the big opportunities tomorrow.',
+      'Growth rarely happens overnight. It is the outcome of persistence, learning, and resilience.',
+      'The best way to predict the future is to build it — one skill, one connection, one opportunity at a time.',
+      'Success is not about luck, but preparation meeting opportunity. Keep preparing.',
+    ],
+    'Jobs & Networking': [
+      'The right role is about alignment with your goals and values, not just skills. Stay intentional.',
+      'Networking is about cultivating meaningful professional relationships, not collecting contacts.',
+      'Fresh opportunities are always emerging. The key is to stay prepared and visible.',
+      'Referrals open doors. Nurture your network consistently.',
+    ],
+    'Learning & Skills': [
+      'The fastest-growing careers are built on continuous learning and adaptation.',
+      'Every skill you add compounds your professional value.',
+      'Knowledge is powerful, but applied knowledge is transformative.',
+      'A learning mindset keeps you competitive in an unpredictable world.',
+    ],
+    'Resume & Career Tools': [
+      'Your resume is not just a document. It is your story in professional form.',
+      'First impressions happen fast. A strong resume ensures you make the right one.',
+      'A resume should highlight achievements, not just responsibilities.',
+      'Career tools exist to amplify your effort, not replace it. Use them wisely.',
+    ],
+    'Community & Inspiration': [
+      'No career is built alone. Every journey is supported by mentors, peers, and communities.',
+      'Collaboration creates opportunities that competition never will.',
+      'Success multiplies when shared. Lift others as you rise.',
+      'A strong professional community is the backbone of resilient careers.',
+    ],
+  };
 
-  const prompts = [
-    `What blocker did you remove today?`,
-    `Which skill will move the needle this month?`,
-    `What's one habit that improved your workflow?`,
-    `Who inspires you in this space and why?`,
-  ];
+  const selectedCategory = category && libraries[category] ? category : 'Learning & Skills';
+  const pool = libraries[selectedCategory];
+  const line = pool[Math.floor(Math.random() * pool.length)];
 
-  const tags = [
-    '#AI',
-    '#Automation',
-    `#${String(domain).replace(/\s+/g, '')}`,
-    '#Career',
-    '#Growth',
-  ];
+  const body = [
+    `${line}`,
+    `${persona} • ${selectedCategory}`,
+  ].join(' ');
 
-  const sentences = [
-    `🚀 ${persona} here — sharing a quick ${domain} insight for busy professionals.`,
-    hooks[Math.floor(Math.random() * hooks.length)],
-    `In ${domain}, momentum matters more than perfection.`,
-    `Try making progress visible: track tiny wins daily to build confidence.`,
-    `Systems-thinking helps: set inputs you can control and review outcomes weekly.`,
-    `Stay curious, test ideas, and iterate — your future self will thank you.`,
-    `Question for you: ${prompts[Math.floor(Math.random() * prompts.length)]}`,
-  ];
-
-  const content = sentences.join(' ')
-    + `\n\n${tags.join(' ')}`;
-
-  return { content, tags };
+  // No emojis, minimal formatting, no hashtags
+  return { content: body };
 }
 
 serve(async (req) => {
@@ -71,8 +85,17 @@ serve(async (req) => {
     console.log('📝 bot-social-posts invoked at', now);
 
     const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
-    const limitBots = Math.max(1, Math.min(5, Number(body.limit_bots ?? 3)));
-    const postsPerBot = Math.max(1, Math.min(5, Number(body.posts_per_bot ?? 1)));
+    const limitBots = Math.max(1, Math.min(10, Number(body.limit_bots ?? 3)));
+    const preset: string | undefined = body.preset;
+    const totalPosts = Math.max(0, Number(body.total_posts ?? 0));
+    const categories: string[] | undefined = Array.isArray(body.categories) ? body.categories : undefined;
+
+    // Default posts per bot, can be overridden by preset
+    let postsPerBot = Math.max(1, Math.min(10, Number(body.posts_per_bot ?? 1)));
+    if (preset === 'linkedin_100' && totalPosts > 0) {
+      // Distribute target across selected bots
+      postsPerBot = Math.max(1, Math.ceil(totalPosts / limitBots));
+    }
 
     // Fetch active bots linked to real users
     const { data: bots, error: botsError } = await supabase
@@ -91,10 +114,13 @@ serve(async (req) => {
     }
 
     const created: any[] = [];
+    let idx = 0;
 
     for (const bot of bots) {
       for (let i = 0; i < postsPerBot; i++) {
-        const { content, tags } = generateSocialPost(bot);
+        const cat = categories && categories.length ? categories[idx % categories.length] : undefined;
+        const { content } = generateSocialPost(bot, cat);
+        idx++;
 
         const { data: inserted, error: insertErr } = await supabase
           .from('posts')
@@ -108,7 +134,7 @@ serve(async (req) => {
               bot_name: bot.name,
               automation_generated: true,
               source: 'bot-social-posts',
-              tags,
+              category: cat ?? null,
               generated_at: now,
             },
           })
@@ -120,7 +146,7 @@ serve(async (req) => {
           continue;
         }
 
-        created.push({ id: inserted?.id, bot_id: bot.id });
+        created.push({ id: inserted?.id, bot_id: bot.id, category: cat });
       }
     }
 
