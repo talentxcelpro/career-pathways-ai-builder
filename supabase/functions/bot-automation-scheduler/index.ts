@@ -17,58 +17,142 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    console.log('🤖 Bot automation scheduler triggered');
+    console.log('🤖 Bot automation scheduler triggered at:', new Date().toISOString());
 
-    // Get active bots and generate content
-    const { data: bots } = await supabase
-      .from('ai_bots')
+    // Get active schedules and bots
+    const { data: schedules } = await supabase
+      .from('bot_automation_schedule')
       .select('*')
       .eq('is_active', true);
 
-    if (!bots?.length) {
+    if (!schedules?.length) {
       return new Response(JSON.stringify({ 
         success: false, 
-        message: 'No active bots found' 
+        message: 'No active schedules found' 
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Generate social posts for each bot
-    const posts = [];
-    for (const bot of bots.slice(0, 3)) { // Limit to 3 bots for now
-      if (bot.user_id) {
-        const postContent = `🚀 AI automation is transforming how we work! As ${bot.name}, I'm excited to share insights about ${bot.content_domains?.[0] || 'technology'} and professional growth. 
+    console.log(`Found ${schedules.length} schedules to process`);
+    const results = [];
 
-What's your experience with AI tools in your field? Share your thoughts! 
+    // Process each schedule
+    for (const schedule of schedules) {
+      console.log(`Processing schedule: ${schedule.name} for bot: ${schedule.bot_name}`);
+      
+      try {
+        // Queue content generation jobs for this bot
+        const { data: queueResponse, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+          body: { 
+            action: 'queue',
+            count: schedule.posts_per_day || 3,
+            bot_id: schedule.bot_id,
+            schedule_id: schedule.id
+          }
+        });
 
-#AI #Automation #${bot.content_domains?.[0]?.replace(/\s+/g, '') || 'Tech'} #ProfessionalGrowth`;
+        if (queueError) {
+          console.error(`Failed to queue jobs for ${schedule.bot_name}:`, queueError);
+          results.push({
+            schedule: schedule.name,
+            bot: schedule.bot_name,
+            generated: 0,
+            status: 'error',
+            error: queueError.message,
+            nextExecution: new Date(Date.now() + (schedule.frequency_hours || 24) * 60 * 60 * 1000).toISOString()
+          });
+          continue;
+        }
 
-        const { data: newPost } = await supabase
-          .from('posts')
-          .insert({
-            user_id: bot.user_id,
-            content: postContent,
-            visibility: 'public',
-            is_ai_generated: true,
-            metadata: { 
-              bot_id: bot.id,
-              automation_generated: true,
-              generated_at: new Date().toISOString()
-            }
-          })
-          .select()
-          .single();
+        // Process the queued jobs
+        const { data: processResponse, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+          body: { 
+            action: 'process',
+            bot_id: schedule.bot_id
+          }
+        });
 
-        if (newPost) posts.push(newPost);
+        if (processError) {
+          console.error(`Failed to process jobs for ${schedule.bot_name}:`, processError);
+        }
+
+        const generated = processResponse?.processed || queueResponse?.jobs_queued || 0;
+        console.log(`Successfully generated ${generated} posts for ${schedule.bot_name}`);
+
+        results.push({
+          schedule: schedule.name,
+          bot: schedule.bot_name,
+          generated,
+          status: 'success',
+          nextExecution: new Date(Date.now() + (schedule.frequency_hours || 24) * 60 * 60 * 1000).toISOString()
+        });
+
+        // Update last execution time
+        await supabase
+          .from('bot_automation_schedule')
+          .update({ last_executed_at: new Date().toISOString() })
+          .eq('id', schedule.id);
+
+      } catch (error) {
+        console.error(`Error processing schedule ${schedule.name}:`, error);
+        results.push({
+          schedule: schedule.name,
+          bot: schedule.bot_name,
+          generated: 0,
+          status: 'error',
+          error: error.message,
+          nextExecution: new Date(Date.now() + (schedule.frequency_hours || 24) * 60 * 60 * 1000).toISOString()
+        });
       }
     }
 
+    // Publish any queued posts
+    const { data: posts } = await supabase
+      .from('published_content')
+      .select('*')
+      .eq('status', 'queued')
+      .limit(10);
+
+    let published = 0;
+    if (posts?.length) {
+      for (const post of posts) {
+        // Move to posts table if it has user_id
+        if (post.metadata?.user_id) {
+          const { error: postError } = await supabase
+            .from('posts')
+            .insert({
+              user_id: post.metadata.user_id,
+              content: post.content,
+              visibility: 'public',
+              is_ai_generated: true,
+              metadata: { 
+                ...post.metadata,
+                published_at: new Date().toISOString()
+              }
+            });
+
+          if (!postError) {
+            await supabase
+              .from('published_content')
+              .update({ status: 'published' })
+              .eq('id', post.id);
+            published++;
+          }
+        }
+      }
+    }
+
+    console.log(`Published ${published} posts from queue`);
+    results.push({
+      action: 'publish_queue',
+      published,
+      status: 'success'
+    });
+
     return new Response(JSON.stringify({
       success: true,
-      message: `Generated ${posts.length} posts from ${bots.length} active bots`,
-      stats: {
-        active_bots: bots.length,
-        posts_created: posts.length
-      }
+      processed: schedules.length,
+      results,
+      timestamp: new Date().toISOString()
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   } catch (error) {
