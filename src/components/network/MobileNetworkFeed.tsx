@@ -9,13 +9,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, Plus, Heart, MessageCircle, Share, Bookmark, MoreHorizontal, ThumbsUp, Repeat2 } from 'lucide-react';
+import { Loader2, Plus, Heart, MessageCircle, Share, Bookmark, MoreHorizontal, ThumbsUp, Repeat2, UserPlus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { linkifyText } from '@/utils/textUtils';
 import { CommentModal } from '@/components/mobile/CommentModal';
 import { ReshareModal } from '@/components/mobile/ReshareModal';
 import { ShareModal } from '@/components/mobile/ShareModal';
+import { MobilePeopleSuggestions } from '@/components/network/MobilePeopleSuggestions';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface MobileNetworkPostCardProps {
   post: any;
@@ -23,6 +26,7 @@ interface MobileNetworkPostCardProps {
 }
 
 const MobileNetworkPostCard: React.FC<MobileNetworkPostCardProps> = ({ post, onCommentClick }) => {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count || 0);
@@ -30,6 +34,8 @@ const MobileNetworkPostCard: React.FC<MobileNetworkPostCardProps> = ({ post, onC
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [showReshareModal, setShowReshareModal] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -38,6 +44,30 @@ const MobileNetworkPostCard: React.FC<MobileNetworkPostCardProps> = ({ post, onC
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
+  };
+
+  const handleConnect = async () => {
+    if (!user || !post.profiles?.id) return;
+    
+    setIsConnecting(true);
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .insert({
+          requester_id: user.id,
+          recipient_id: post.profiles.id,
+          status: 'pending',
+          message: `Hi ${post.profiles.full_name}! I would love to connect with you.`
+        });
+
+      if (error) throw error;
+      setIsConnected(true);
+      toast.success('Connection request sent!');
+    } catch (error) {
+      toast.error('Failed to send connection request');
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -61,8 +91,8 @@ const MobileNetworkPostCard: React.FC<MobileNetworkPostCardProps> = ({ post, onC
     description: post.content || '',
     type: 'content' as const,
     author: {
-      name: post.author?.full_name || 'Professional User',
-      avatar: post.author?.profile_picture_url
+      name: post.profiles?.full_name || 'Professional User',
+      avatar: post.profiles?.profile_picture_url
     }
   };
 
@@ -73,20 +103,20 @@ const MobileNetworkPostCard: React.FC<MobileNetworkPostCardProps> = ({ post, onC
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3 flex-1">
             <Avatar className="w-12 h-12 ring-2 ring-white shadow-lg">
-              <AvatarImage src={post.author?.profile_picture_url} alt={post.author?.full_name} />
+              <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
               <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                {post.author?.full_name?.[0] || 'U'}
+                {post.profiles?.full_name?.[0] || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
                 <h3 className="font-semibold text-gray-900 text-sm truncate">
-                  {post.author?.full_name || 'Professional User'}
+                  {post.profiles?.full_name || 'Professional User'}
                 </h3>
               </div>
-              <p className="text-xs text-gray-600 truncate font-medium">{post.author?.headline}</p>
-              {post.author?.current_company && (
-                <p className="text-xs text-gray-500 truncate">{post.author.current_company}</p>
+              <p className="text-xs text-gray-600 truncate font-medium">{post.profiles?.title}</p>
+              {post.profiles?.current_company && (
+                <p className="text-xs text-gray-500 truncate">{post.profiles.current_company}</p>
               )}
               <div className="flex items-center space-x-2 mt-1">
                 <span className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</span>
@@ -98,9 +128,37 @@ const MobileNetworkPostCard: React.FC<MobileNetworkPostCardProps> = ({ post, onC
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-gray-100 rounded-full">
-            <MoreHorizontal className="w-4 h-4 text-gray-500" />
-          </Button>
+          <div className="flex flex-col gap-2">
+            {/* Add Friend Button - only show if not current user */}
+            {user && post.profiles?.id !== user.id && (
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "text-xs px-3 py-1.5 h-auto rounded-full transition-all duration-200",
+                  isConnected 
+                    ? "bg-green-50 text-green-600 border-green-200 cursor-default" 
+                    : "border-blue-200 text-blue-600 hover:bg-blue-50"
+                )}
+                onClick={handleConnect}
+                disabled={isConnecting || isConnected}
+              >
+                {isConnecting ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : isConnected ? (
+                  'Request Sent'
+                ) : (
+                  <>
+                    <UserPlus className="w-3 h-3 mr-1" />
+                    Connect
+                  </>
+                )}
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-gray-100 rounded-full">
+              <MoreHorizontal className="w-4 h-4 text-gray-500" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -334,6 +392,9 @@ export const MobileNetworkFeed: React.FC = () => {
         
         <ScrollArea className="h-[calc(100vh-140px)]">
           <div className="pb-20">
+            {/* People Suggestions */}
+            <MobilePeopleSuggestions />
+            
             {/* Posts Feed */}
             {posts && posts.map((post) => (
               <MobileNetworkPostCard
