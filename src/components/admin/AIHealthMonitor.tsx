@@ -31,6 +31,7 @@ export const AIHealthMonitor: React.FC = () => {
           lastChecked: new Date()
         };
       } else {
+        console.warn(`Function ${functionName} returned status ${response.status}`);
         return {
           function: functionName,
           version: 'unknown',
@@ -39,6 +40,7 @@ export const AIHealthMonitor: React.FC = () => {
         };
       }
     } catch (error) {
+      console.error(`Health check failed for ${functionName}:`, error);
       return {
         function: functionName,
         version: 'unknown',
