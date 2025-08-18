@@ -173,6 +173,7 @@ serve(async (req) => {
             content,
             type: "post",
             source: "ai",
+            created_by: authUserFromReq || null,
             is_draft: false,
             published_at: now,
           })
