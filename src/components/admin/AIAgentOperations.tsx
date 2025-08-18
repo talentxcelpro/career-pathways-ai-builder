@@ -163,11 +163,11 @@ export const AIAgentOperations: React.FC = () => {
       
       // Fallback: Direct database operations
       console.log('🔄 Using scheduler fallback...');
-      const { data: agents, error: agentsError } = await supabase
-        .from('ai_agents')
+      const { data: agents, error: agentsError } = await ((supabase
+        .from('ai_agents') as any)
         .select('*')
-        .eq('status' as any, 'active' as any);
-      
+        .eq('status', 'active'));
+
       if (agentsError) throw agentsError;
       
       let tasksCreated = 0;
@@ -211,7 +211,7 @@ export const AIAgentOperations: React.FC = () => {
       if (error) {
         // Fallback to direct database operations if function not available
         console.log('Admin trigger not available for worker, using direct approach:', error);
-        const { data: tasks } = await supabase.from('agent_tasks').select('*').eq('status' as any, 'pending' as any).limit(5);
+        const { data: tasks } = await (supabase.from('agent_tasks') as any).select('*').eq('status', 'pending').limit(5);
         
         const { data: userRes } = await supabase.auth.getUser();
         const currentUserId = userRes?.user?.id;
@@ -295,7 +295,7 @@ export const AIAgentOperations: React.FC = () => {
       if (error) {
         // Fallback to direct database operations if function not available
         console.log('Admin trigger not available for test tasks, using direct approach:', error);
-        const { data: agents } = await supabase.from('ai_agents').select('*').eq('status' as any, 'active' as any).limit(3);
+        const { data: agents } = await (supabase.from('ai_agents') as any).select('*').eq('status', 'active').limit(3);
         
         let tasksCreated = 0;
         for (const agent of (agents as any[]) || []) {
