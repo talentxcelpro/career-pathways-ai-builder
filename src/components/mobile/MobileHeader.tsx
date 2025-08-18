@@ -65,11 +65,12 @@ export const MobileHeader = () => {
 
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === '/network') return 'Network';
-    if (path === '/jobs') return 'Jobs';
-    if (path === '/passport') return 'Career Passport';
-    if (path.startsWith('/network/notifications')) return 'Activity';
-    if (path === '/profile') return 'Profile';
+    if (path === '/network' || path === '/mobile/network') return 'TalentXcel';
+    if (path === '/jobs' || path === '/mobile/jobs') return 'Jobs';
+    if (path === '/passport' || path === '/mobile/passport') return 'Career Passport';
+    if (path.startsWith('/network/notifications') || path === '/mobile/notifications') return 'Activity';
+    if (path === '/profile' || path === '/mobile/profile') return 'Profile';
+    if (path === '/mobile/reels') return 'Reels';
     return 'TalentXcel';
   };
 
@@ -97,14 +98,18 @@ export const MobileHeader = () => {
           {/* Right - Actions */}
           <div className="flex items-center space-x-2">
             {/* Search */}
-            <Button variant="ghost" size="sm" className="p-2">
-              <Search className="h-5 w-5" />
-            </Button>
+            <Link to="/mobile/search">
+              <Button variant="ghost" size="sm" className="p-2">
+                <Search className="h-5 w-5" />
+              </Button>
+            </Link>
 
             {/* Messages */}
-            <Button variant="ghost" size="sm" className="p-2 relative">
-              <MessageSquare className="h-5 w-5" />
-            </Button>
+            <Link to="/network/messages">
+              <Button variant="ghost" size="sm" className="p-2 relative">
+                <MessageSquare className="h-5 w-5" />
+              </Button>
+            </Link>
 
             {/* Notifications */}
             <Link to="/network/notifications">

@@ -8,7 +8,7 @@ import {
   UserPlus,
   QrCode
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface TalentXcelMobileHeaderProps {
   showSearch?: boolean;
@@ -41,24 +41,26 @@ export const TalentXcelMobileHeader: React.FC<TalentXcelMobileHeaderProps> = ({
         {/* Right - Actions */}
         <div className="flex items-center gap-1">
           {showSearch && (
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="rounded-full hover:bg-gray-100"
-              onClick={() => navigate('/mobile/search')}
-            >
-              <Search className="h-5 w-5" />
-            </Button>
+            <Link to="/mobile/search">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="rounded-full hover:bg-gray-100"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            </Link>
           )}
           
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="rounded-full hover:bg-gray-100"
-            onClick={() => navigate('/network/messages')}
-          >
-            <MessageCircle className="h-5 w-5" />
-          </Button>
+            <Link to="/network/messages">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="rounded-full hover:bg-gray-100"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </Button>
+            </Link>
           
           <Button 
             variant="ghost" 
