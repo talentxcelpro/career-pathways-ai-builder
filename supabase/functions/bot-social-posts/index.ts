@@ -174,7 +174,7 @@ serve(async (req) => {
             published_at: now,
           })
           .select("id")
-          .maybeSingle();
+          .single();
 
         if (wallErr) {
           console.error("Insert bot_wall failed for bot", bot.id, wallErr?.message || wallErr);
