@@ -202,9 +202,14 @@ export const ContentAutomationTester: React.FC = () => {
       const totalCreated = postsCreated || wallCreated;
 
       if (!rsp || rsp.success === false || totalCreated === 0) {
-        const errorDetail = rsp?.errors?.length > 0 
-          ? `Errors: ${rsp.errors.map((e: any) => `${e.stage}: ${e.message}`).join('; ')}`
-          : rsp?.error || rsp?.message || 'Unknown error';
+        const errorDetails = [];
+        if (rsp?.errors?.length > 0) {
+          errorDetails.push(`Errors: ${rsp.errors.slice(0,3).map((e: any) => `${e.stage}: ${e.message}`).join('; ')}`);
+        }
+        if (rsp?.debug) {
+          errorDetails.push(`Debug: admin_fallback=${rsp.debug.admin_fallback ? 'found' : 'missing'}, auth_user=${rsp.debug.auth_user_from_req ? 'found' : 'missing'}`);
+        }
+        const errorDetail = errorDetails.length > 0 ? errorDetails.join(' | ') : rsp?.error || rsp?.message || 'Unknown error';
         updateResult(0, 'error', `No posts created. Active bots: ${activeBots?.length ?? 0}. ${errorDetail}`, rsp);
       } else {
         updateResult(0, 'success', `Created ${totalCreated} posts (${via}); Active bots: ${activeBots?.length ?? 0}`, rsp);

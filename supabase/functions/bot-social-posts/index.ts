@@ -210,7 +210,10 @@ serve(async (req) => {
         // 1) Insert into bot wall (primary source for admin wall)
         const now = new Date().toISOString();
         const title = `${category} — ${bot.name}`;
-        const { data: wallInserted, error: wallErr } = await supabase
+        
+        console.log(`Attempting bot_wall insert for bot ${bot.id} (${bot.name})`);
+        
+        const { data: wallInserted, error: wallErr } = await supabase // Use service role for bot_wall (admin access)
           .from("bot_wall")
           .insert({
             bot_id: bot.id,
@@ -226,8 +229,10 @@ serve(async (req) => {
           .single();
 
         if (wallErr) {
-          console.error("Insert bot_wall failed for bot", bot.id, wallErr?.message || wallErr);
+          console.error(`❌ Insert bot_wall failed for bot ${bot.id} (${bot.name}):`, wallErr?.message || wallErr);
           errors.push({ bot_id: bot.id, stage: 'bot_wall', message: wallErr?.message || String(wallErr) });
+        } else {
+          console.log(`✅ Successfully created bot_wall ${wallInserted?.id} for bot ${bot.name}`);
         }
 
         // 2) Insert into posts table with robust author ID resolution
@@ -294,6 +299,10 @@ serve(async (req) => {
         debug: {
           service_role_present: Boolean(SERVICE_ROLE),
           auth_user_from_req: authUserFromReq,
+          admin_fallback: adminFallback,
+          total_errors: errors.length,
+          wall_insert_errors: errors.filter(e => e.stage === 'bot_wall').length,
+          posts_insert_errors: errors.filter(e => e.stage === 'posts').length,
         },
         timestamp: new Date().toISOString(),
       }),
