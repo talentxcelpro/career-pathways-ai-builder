@@ -9,6 +9,7 @@ import { ContentAutomationDashboard } from '@/components/admin/ContentAutomation
 import { BotWallManagement } from '@/components/admin/BotWallManagement';
 import { BotAutomationDashboard } from '@/components/admin/BotAutomationDashboard';
 import { AIHealthMonitor } from '@/components/admin/AIHealthMonitor';
+import { ContentAutomationTester } from '@/components/admin/ContentAutomationTester';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const BotManagement: React.FC = () => {
@@ -55,12 +56,11 @@ const BotManagement: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="automation" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div className="lg:col-span-3">
-              <ContentAutomationDashboard />
-            </div>
-            <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ContentAutomationDashboard />
+            <div className="space-y-6">
               <AIHealthMonitor />
+              <ContentAutomationTester />
             </div>
           </div>
         </TabsContent>
