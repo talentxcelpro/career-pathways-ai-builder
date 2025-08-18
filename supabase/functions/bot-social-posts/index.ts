@@ -237,15 +237,23 @@ serve(async (req) => {
           console.log(`✅ Successfully created bot_wall ${wallInserted?.id} for bot ${bot.name}`);
         }
 
-      // 2) Insert into posts table with explicit author_id (trigger will handle null cases)
+      // 2) Insert into posts table with explicit author_id (ensure non-null)
       try {
         const safeAuthorId = bot.user_id || adminFallback;
         console.log(`Attempting posts insert for bot ${bot.id} with author_id: ${safeAuthorId}`);
 
+        // Skip post creation if no valid author_id available
+        if (!safeAuthorId) {
+          console.error(`❌ No valid author_id for bot ${bot.id} (${bot.name}) - skipping post creation`);
+          errors.push({ bot_id: bot.id, stage: 'posts', message: 'No valid author_id available' });
+          created.push({ id: wallInserted?.id ?? null, bot_id: bot.id, category });
+          continue;
+        }
+
         const { data: postData, error: postError } = await supabase
           .from("posts")
           .insert({
-            author_id: safeAuthorId, // Trigger will fallback if null
+            author_id: safeAuthorId, // Guaranteed non-null
             content,
             headline: title,
             is_public: true,
