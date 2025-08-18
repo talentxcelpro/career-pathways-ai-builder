@@ -81,7 +81,7 @@ export const CityJobsLanding: React.FC = () => {
             .reduce((sum, job) => sum + ((job.salary_min + job.salary_max) / 2), 0) / 
             jobsData.filter(job => job.salary_min && job.salary_max).length;
 
-          const companies = [...new Set(jobsData.map(job => job.company_name || job.companies?.name).filter(Boolean))];
+          const companies = [...new Set(jobsData.map(job => job.company_name || (job.companies as any)?.name).filter(Boolean))];
           const roles = [...new Set(jobsData.map(job => job.title))];
 
           setStats({

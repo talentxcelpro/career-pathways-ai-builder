@@ -67,11 +67,11 @@ export const AgentActivityDashboard: React.FC = () => {
         .limit(100);
 
       if (selectedAgent !== 'all') {
-        query = query.eq('agent_id' as any, selectedAgent);
+        query = query.eq('agent_id', selectedAgent as any);
       }
 
       if (selectedLevel !== 'all') {
-        query = query.eq('level' as any, selectedLevel);
+        query = query.eq('level', selectedLevel as any);
       }
 
       const { data, error } = await query;
@@ -97,7 +97,7 @@ export const AgentActivityDashboard: React.FC = () => {
       const { data: agents, error: agentsError } = await supabase
         .from('ai_agents')
         .select('*')
-        .eq('status' as any, 'active');
+        .eq('status', 'active' as any);
 
       if (agentsError) {
         console.error('Error fetching agents:', agentsError);

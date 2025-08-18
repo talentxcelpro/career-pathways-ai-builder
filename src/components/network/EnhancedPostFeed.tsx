@@ -148,7 +148,10 @@ export const EnhancedPostFeed: React.FC = () => {
         .limit(20);
 
       if (error) throw error;
-      setPosts(data || []);
+      setPosts((data || []).map(post => ({
+        ...post,
+        profiles: Array.isArray(post.profiles) ? post.profiles[0] : post.profiles
+      })));
     } catch (error) {
       console.error('Error loading posts:', error);
       toast({

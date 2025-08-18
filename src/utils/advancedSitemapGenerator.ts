@@ -107,7 +107,7 @@ export const generateNewsSitemap = async (): Promise<string> => {
         <news:language>en</news:language>
       </news:publication>
       <news:publication_date>${job.created_at}</news:publication_date>
-      <news:title>${job.title}${job.companies?.name ? ` at ${job.companies.name}` : ''}</news:title>
+      <news:title>${job.title}${(job.companies as any)?.name ? ` at ${(job.companies as any).name}` : ''}</news:title>
     </news:news>
   </url>`).join('\n');
 

@@ -149,10 +149,10 @@ export const CVFilesManager = () => {
                       <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
                         <User className="h-4 w-4 text-muted-foreground" />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm">{cvFile.profiles.full_name}</p>
-                          <p className="text-xs text-muted-foreground truncate">{cvFile.profiles.email}</p>
-                          {cvFile.profiles.location && (
-                            <p className="text-xs text-muted-foreground">{cvFile.profiles.location}</p>
+                          <p className="font-medium text-sm">{(cvFile.profiles as any)?.full_name || 'Unknown User'}</p>
+                          <p className="text-xs text-muted-foreground truncate">{(cvFile.profiles as any)?.email || 'No email'}</p>
+                          {(cvFile.profiles as any)?.location && (
+                            <p className="text-xs text-muted-foreground">{(cvFile.profiles as any)?.location}</p>
                           )}
                         </div>
                       </div>

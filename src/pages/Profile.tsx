@@ -271,7 +271,7 @@ const Profile = () => {
                 {Object.entries(profile.social_links).map(([platform, url]) => (
                   <a
                     key={platform}
-                    href={url}
+                    href={url as string}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"

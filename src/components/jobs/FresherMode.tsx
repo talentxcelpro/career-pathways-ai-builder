@@ -360,7 +360,7 @@ export const FresherMode: React.FC = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900 mb-1">{job.title}</h4>
-                        <p className="text-sm text-gray-600 mb-2">{job.companies?.name}</p>
+                        <p className="text-sm text-gray-600 mb-2">{(job.companies as any)?.name || 'Company'}</p>
                         <div className="flex items-center gap-4 text-xs text-gray-500">
                           <span>{job.location}</span>
                           {job.salary_min && job.salary_max && (

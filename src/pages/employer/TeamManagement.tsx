@@ -87,7 +87,7 @@ const TeamManagement = () => {
       return {
         user,
         companyId: companies?.[0]?.company_id || null,
-        companyName: companies?.[0]?.companies?.name || null
+        companyName: (companies?.[0]?.companies as any)?.name || null
       };
     }
   });

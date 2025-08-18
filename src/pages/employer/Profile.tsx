@@ -44,8 +44,9 @@ const EmployerProfile = () => {
   });
 
   const handleViewPublicProfile = () => {
-    if (company?.id) {
-      navigate(`/companies/${company.id}`);
+    const companyData = Array.isArray(company) ? company[0] : company;
+    if (companyData?.id) {
+      navigate(`/companies/${companyData.id}`);
     }
   };
 
@@ -74,10 +75,10 @@ const EmployerProfile = () => {
         <CardContent className="space-y-4">
           {company ? (
             <div className="flex items-center space-x-4 p-4 border rounded-lg">
-              {company.logo_url ? (
+              {(company as any)?.logo_url ? (
                 <img 
-                  src={company.logo_url} 
-                  alt={`${company.name} logo`}
+                  src={(company as any)?.logo_url} 
+                  alt={`${(company as any)?.name} logo`}
                   className="w-16 h-16 object-cover rounded-lg"
                 />
               ) : (
@@ -85,11 +86,11 @@ const EmployerProfile = () => {
                   <Building2 className="h-8 w-8 text-white" />
                 </div>
               )}
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold">{company.name}</h3>
-                <p className="text-gray-600">{company.industry}</p>
-                <p className="text-sm text-gray-500">{company.location}</p>
-              </div>
+               <div className="flex-1">
+                <h3 className="text-xl font-semibold">{(company as any)?.name}</h3>
+                <p className="text-gray-600">{(company as any)?.industry}</p>
+                <p className="text-sm text-gray-500">{(company as any)?.location}</p>
+               </div>
               <Button onClick={handleViewPublicProfile}>
                 <Globe className="h-4 w-4 mr-2" />
                 View Public Profile

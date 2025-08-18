@@ -124,7 +124,7 @@ export const generateEnhancedSitemap = async (): Promise<string> => {
         lastmod: job.updated_at,
         changefreq: 'weekly',
         priority: 0.8,
-        images: job.companies?.logo_url ? [job.companies.logo_url] : undefined
+        images: (job.companies as any)?.logo_url ? [(job.companies as any).logo_url] : undefined
       });
     });
 

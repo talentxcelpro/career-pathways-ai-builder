@@ -17,8 +17,8 @@ export const useRecentActivity = () => {
         .limit(10);
 
       return applications?.map(app => ({
-        profiles: app.profiles as { full_name: string } | null,
-        jobs: app.jobs as { title: string } | null,
+        profiles: Array.isArray(app.profiles) ? app.profiles[0] : app.profiles,
+        jobs: Array.isArray(app.jobs) ? app.jobs[0] : app.jobs,
         applied_at: app.applied_at
       })) || [];
     }

@@ -97,7 +97,13 @@ const MyApplications = () => {
         'id' in app.jobs
       ) || [];
       
-      return validApplications as JobApplication[];
+      return validApplications.map((app: any) => ({
+        ...app,
+        jobs: Array.isArray(app.jobs) ? {
+          ...app.jobs[0],
+          companies: Array.isArray(app.jobs[0]?.companies) ? app.jobs[0].companies[0] : app.jobs[0]?.companies
+        } : app.jobs
+      })) as JobApplication[];
     },
   });
 

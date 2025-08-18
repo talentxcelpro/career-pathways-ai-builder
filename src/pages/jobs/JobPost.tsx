@@ -364,10 +364,10 @@ function JobPostContent() {
       state: { 
         formData: {
           ...formData,
-          company_name: userCompany?.companies?.name || 'Your Company',
-          company_website: userCompany?.companies?.website || '',
-          industry_domain: userCompany?.companies?.industry || '',
-          company_size: userCompany?.companies?.size_range || ''
+          company_name: (userCompany?.companies as any)?.name || 'Your Company',
+          company_website: (userCompany?.companies as any)?.website || '',
+          industry_domain: (userCompany?.companies as any)?.industry || '',
+          company_size: (userCompany?.companies as any)?.size_range || ''
         }
       } 
     });

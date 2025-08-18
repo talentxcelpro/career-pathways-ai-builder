@@ -44,12 +44,15 @@ export const useOrganizationData = () => {
       }
 
       // Map companies to organization format
-      const orgs = teamMemberships?.map(membership => ({
-        id: membership.companies.id,
-        name: membership.companies.name,
-        description: membership.companies.description,
-        created_at: membership.companies.created_at
-      })) || [];
+      const orgs = teamMemberships?.map(membership => {
+        const company = Array.isArray(membership.companies) ? membership.companies[0] : membership.companies;
+        return {
+          id: company.id,
+          name: company.name,
+          description: company.description,
+          created_at: company.created_at
+        };
+      }) || [];
 
       setOrganizations(orgs);
       

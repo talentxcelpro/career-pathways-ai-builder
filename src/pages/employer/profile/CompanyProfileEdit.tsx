@@ -83,20 +83,21 @@ const CompanyProfileEdit = () => {
   // Update form data when company data is loaded
   useEffect(() => {
     if (company) {
+      const companyData = company as any;
       setFormData({
-        name: company.name || '',
-        description: company.description || '',
-        website: company.website || '',
-        industry: company.industry || '',
-        location: company.location || '',
-        employee_count_range: company.employee_count_range || '',
-        founded_year: company.founded_year?.toString() || '',
-        logo_url: company.logo_url || '',
-        cover_image_url: company.cover_image_url || '',
-        benefits: company.benefits || [],
-        tech_stack: company.tech_stack || [],
-        culture_description: company.culture_description || '',
-        social_links: company.social_links || {}
+        name: companyData.name || '',
+        description: companyData.description || '',
+        website: companyData.website || '',
+        industry: companyData.industry || '',
+        location: companyData.location || '',
+        employee_count_range: companyData.employee_count_range || '',
+        founded_year: companyData.founded_year?.toString() || '',
+        logo_url: companyData.logo_url || '',
+        cover_image_url: companyData.cover_image_url || '',
+        benefits: companyData.benefits || [],
+        tech_stack: companyData.tech_stack || [],
+        culture_description: companyData.culture_description || '',
+        social_links: companyData.social_links || {}
       });
     }
   }, [company]);
@@ -159,7 +160,7 @@ const CompanyProfileEdit = () => {
   // Update company mutation
   const updateCompanyMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      if (!company?.id) throw new Error('No company ID');
+      if (!(company as any)?.id) throw new Error('No company ID');
 
       const updateData = {
         ...data,
@@ -170,7 +171,7 @@ const CompanyProfileEdit = () => {
       const { error } = await supabase
         .from('companies')
         .update(updateData)
-        .eq('id', company.id);
+        .eq('id', (company as any).id);
 
       if (error) throw error;
     },

@@ -72,7 +72,10 @@ const JobsManage = () => {
       }
 
       console.log('Fetched jobs:', data); // Debug log
-      return data as Job[];
+      return (data || []).map((job: any) => ({
+        ...job,
+        companies: Array.isArray(job.companies) ? job.companies[0] : job.companies
+      })) as Job[];
     }
   });
 
