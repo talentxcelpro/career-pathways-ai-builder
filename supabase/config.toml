@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.arsh]
 verify_jwt = false
+
+[functions.ai-content-generator]
+verify_jwt = false
