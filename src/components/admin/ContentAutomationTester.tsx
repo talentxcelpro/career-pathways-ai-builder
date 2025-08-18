@@ -191,7 +191,27 @@ export const ContentAutomationTester: React.FC = () => {
         limit_bots: 4
       });
 
-      updateResult(0, 'success', `Created ${rsp?.created ?? 0} posts (${via})`, rsp);
+      // Also surface active bot count for clarity
+      const { data: activeBots } = await supabase
+        .from('ai_bots')
+        .select('id')
+        .eq('is_active', true);
+
+      if (!rsp || rsp.success === false || (rsp.created ?? 0) === 0) {
+        updateResult(0, 'error', `No posts created. Active bots: ${activeBots?.length ?? 0}. ${rsp?.message ?? ''}`.trim(), rsp);
+      } else {
+        updateResult(0, 'success', `Created ${rsp?.created ?? 0} posts (${via}); Active bots: ${activeBots?.length ?? 0}`, rsp);
+      }
+
+      // Verify in both bot_wall (source of truth) and posts (synced)
+      const { data: recentWall, error: wallError } = await (supabase as any)
+        .from('bot_wall')
+        .select('id, title, published_at, source, bot_id')
+        .eq('source', 'ai')
+        .order('published_at', { ascending: false })
+        .limit(5);
+
+      if (wallError) throw wallError;
 
       const { data: recentPosts, error: postsError } = await (supabase as any)
         .from('posts')
@@ -202,11 +222,16 @@ export const ContentAutomationTester: React.FC = () => {
 
       if (postsError) throw postsError;
 
-      updateResult(1, 'success', `Found ${recentPosts?.length || 0} AI posts`, recentPosts);
+      updateResult(
+        1,
+        'success',
+        `Found ${recentWall?.length || 0} AI wall items and ${recentPosts?.length || 0} AI posts`,
+        { recentWall, recentPosts }
+      );
 
       toast({
-        title: 'Social Posts Created',
-        description: `Created ${rsp?.created ?? 0} post(s) and verified in feed`,
+        title: 'Social Posts Check',
+        description: `Wall: ${recentWall?.length || 0}, Posts: ${recentPosts?.length || 0}`,
       });
     } catch (error) {
       console.error('Quick social post failed:', error);
