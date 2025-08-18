@@ -183,18 +183,73 @@ export const ContentAutomationTester: React.FC = () => {
     }
   };
 
+  // Quick path: generate social posts without waiting for full AI pipeline
+  const quickGenerateSocialPosts = async () => {
+    setIsRunning(true);
+    const steps: TestResult[] = [
+      { step: 'Generate Social Posts', status: 'pending', message: 'Creating posts from active bots...' },
+      { step: 'Verify Posts', status: 'pending', message: 'Waiting...' }
+    ];
+    setTestResults(steps);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('bot-social-posts', {
+        body: { limit_bots: 2, posts_per_bot: 1 }
+      });
+      if (error) throw error;
+
+      updateResult(0, 'success', `Created ${data?.created ?? 0} posts`, data);
+
+      const { data: recentPosts, error: postsError } = await (supabase as any)
+        .from('posts')
+        .select('id, content, created_at, metadata')
+        .eq('is_ai_generated', true)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (postsError) throw postsError;
+
+      updateResult(1, 'success', `Found ${recentPosts?.length || 0} AI posts`, recentPosts);
+
+      toast({
+        title: 'Social Posts Created',
+        description: `Created ${data?.created ?? 0} post(s) and verified in feed`,
+      });
+    } catch (error) {
+      console.error('Quick social post failed:', error);
+      const currentStep = testResults.findIndex(r => r.status === 'pending');
+      if (currentStep >= 0) {
+        updateResult(currentStep, 'error', error instanceof Error ? error.message : 'Unknown error');
+      }
+      toast({ title: 'Quick Post Failed', description: error instanceof Error ? error.message : 'Unknown error', variant: 'destructive' });
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Content Automation Tester</CardTitle>
-        <Button
-          onClick={startAutomationTest}
-          disabled={isRunning}
-          className="gap-2"
-        >
-          <Play className="h-4 w-4" />
-          {isRunning ? 'Running Test...' : 'Start Test'}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={quickGenerateSocialPosts}
+            disabled={isRunning}
+            variant="secondary"
+            className="gap-2"
+          >
+            <Play className="h-4 w-4" />
+            Quick Social Post
+          </Button>
+          <Button
+            onClick={startAutomationTest}
+            disabled={isRunning}
+            className="gap-2"
+          >
+            <Play className="h-4 w-4" />
+            {isRunning ? 'Running Test...' : 'Start Test'}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
