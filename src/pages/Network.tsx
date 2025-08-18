@@ -17,6 +17,7 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
+import { NetworkPostsFeed } from "@/components/network/NetworkPostsFeed";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
@@ -136,13 +137,13 @@ const Network = () => {
 
           <TabsContent value="feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <Posts feedType="all" />
+              <NetworkPostsFeed />
             </div>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <Posts feedType="smart" />
+              <NetworkPostsFeed />
             </div>
           </TabsContent>
 
