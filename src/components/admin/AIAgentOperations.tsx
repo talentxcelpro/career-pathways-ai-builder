@@ -475,6 +475,36 @@ export const AIAgentOperations: React.FC = () => {
               <Play className="h-4 w-4" />
               Create Test Tasks
             </Button>
+            <Button 
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  console.log('🤖 Testing bot-social-posts function...');
+                  const { data, error } = await supabase.functions.invoke('bot-social-posts', {
+                    body: { test: true }
+                  });
+                  
+                  if (error) {
+                    console.error('❌ Bot social posts error:', error);
+                    toast.error(`Bot posts failed: ${error.message}`);
+                  } else {
+                    console.log('✅ Bot social posts success:', data);
+                    toast.success(`Bot posts: ${data?.message || 'Success'} (${data?.postsCreated || 0} posts created)`);
+                  }
+                } catch (err: any) {
+                  console.error('❌ Bot social posts exception:', err);
+                  toast.error(`Bot posts failed: ${err.message}`);
+                } finally {
+                  setIsLoading(false);
+                }
+              }} 
+              disabled={isLoading}
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <Activity className="h-4 w-4" />
+              Generate Bot Posts
+            </Button>
           </div>
         </CardContent>
       </Card>
