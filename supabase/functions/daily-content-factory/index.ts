@@ -439,14 +439,33 @@ serve(async (req) => {
       );
     }
 
-    console.log('🏭 Daily Content Factory: Starting production-scale generation cycle');
-    console.log(`📊 Target: ${dailyContentPlan.reduce((sum, plan) => sum + plan.count, 0)} total pieces`);
+    // Build an effective plan based on request
+    const limitTotal = Number(body?.limit_total ?? params.get('limit_total') ?? 0);
+    const limitPerType = Number(body?.limit_per_type ?? params.get('limit_per_type') ?? 0);
+    const isQuick = action === 'quick' || action === 'sample' || params.get('quick') === 'true';
+
+    const targetPlan = dailyContentPlan.map(p => ({
+      ...p,
+      count: isQuick ? 1 : (limitPerType > 0 ? Math.min(p.count, limitPerType) : p.count),
+    }));
+
+    if (limitTotal > 0) {
+      let remaining = limitTotal;
+      for (const p of targetPlan) {
+        const n = Math.min(p.count, Math.max(0, remaining));
+        p.count = n;
+        remaining -= n;
+      }
+    }
+
+    console.log('🏭 Daily Content Factory: Starting generation');
+    console.log(`📊 Target: ${targetPlan.reduce((sum, plan) => sum + plan.count, 0)} total pieces`);
     
     const generationResults = [];
     let totalGenerated = 0;
     let errors = 0;
     const startTime = Date.now();
-    for (const plan of dailyContentPlan) {
+    for (const plan of targetPlan) {
       console.log(`📝 Generating ${plan.count} ${plan.type} pieces...`);
       
       const topics = await generateTopics(plan.type, plan.count);
@@ -547,8 +566,8 @@ serve(async (req) => {
         {
           request_type: 'daily_content_factory_production',
           input_data: {
-            content_plans: dailyContentPlan,
-            total_target: dailyContentPlan.reduce((sum, plan) => sum + plan.count, 0),
+            content_plans: targetPlan,
+            total_target: targetPlan.reduce((sum, plan) => sum + plan.count, 0),
             generation_date: new Date().toISOString().split('T')[0]
           },
           output_data: {
@@ -557,7 +576,7 @@ serve(async (req) => {
             success_rate: ((totalGenerated / (totalGenerated + errors)) * 100).toFixed(2),
             generation_time_ms: totalTime,
             avg_time_per_piece_ms: avgTimePerPiece,
-            breakdown: dailyContentPlan.map(plan => ({
+            breakdown: targetPlan.map(plan => ({
               type: plan.type,
               target: plan.count,
               generated: generationResults.filter(r => r.type === plan.type).length
@@ -579,13 +598,13 @@ serve(async (req) => {
         message: 'Production-scale daily content factory completed successfully',
         summary: {
           total_generated: totalGenerated,
-          total_target: dailyContentPlan.reduce((sum, plan) => sum + plan.count, 0),
+          total_target: targetPlan.reduce((sum, plan) => sum + plan.count, 0),
           errors: errors,
           success_rate: ((totalGenerated / (totalGenerated + errors)) * 100).toFixed(2) + '%',
           generation_time_seconds: Math.round(totalTime / 1000),
           avg_time_per_piece_ms: avgTimePerPiece,
           generation_date: new Date().toISOString().split('T')[0],
-          content_breakdown: dailyContentPlan.map(plan => ({
+          content_breakdown: targetPlan.map(plan => ({
             type: plan.type,
             target: plan.count,
             generated: generationResults.filter(r => r.type === plan.type).length,

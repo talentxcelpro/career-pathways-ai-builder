@@ -54,8 +54,9 @@ export const ContentAutomationDashboard: React.FC = () => {
     setIsGenerating(true);
     try {
       // Try supabase.functions.invoke first, then fallback to direct HTTP
-      const { data, error } = await supabase.functions.invoke('daily-content-factory', { body: {} });
-      const result = error ? await callFunctionDirect('daily-content-factory', {}) : data;
+      const payload = { action: 'quick', limit_total: 4 };
+      const { data, error } = await supabase.functions.invoke('daily-content-factory', { body: payload });
+      const result = error ? await callFunctionDirect('daily-content-factory', payload) : data;
 
       if (result?.success) {
         toast.success(`Daily content factory completed! Generated ${result.summary.total_generated} pieces across ${result.summary.content_breakdown?.length ?? 4} content types.`);
