@@ -10,6 +10,7 @@ import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
+import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
@@ -163,6 +164,9 @@ const Network = () => {
           <TabsContent value="ai-connect" className="mt-0">
             <div className="space-y-6 text-gray-900">
               <SmartConnectAI />
+              <div className="mt-8">
+                <EdgeFunctionTester />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
