@@ -124,36 +124,10 @@ export const MobileQRScanner: React.FC = () => {
     }
   };
 
-  const startQRScanning = async () => {
-    try {
-      setIsScanning(true);
-      
-      if (!videoRef.current) {
-        toast.error('Camera initialization failed');
-        return;
-      }
-
-      qrScannerRef.current = new QrScanner(
-        videoRef.current,
-        (result) => {
-          setScannedResult(result.data);
-          stopQRScanning();
-          handleScannedResult(result.data);
-        },
-        {
-          returnDetailedScanResult: true,
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
-        }
-      );
-
-      await qrScannerRef.current.start();
-      toast.success('QR Scanner started! Point camera at a QR code');
-    } catch (error) {
-      console.error('QR Scanner error:', error);
-      toast.error('Failed to start camera. Please check permissions.');
-      setIsScanning(false);
-    }
+  const startQRScanning = () => {
+    // Trigger UI to render the video element first
+    setScannedResult('');
+    setIsScanning(true);
   };
 
   const stopQRScanning = () => {
@@ -196,6 +170,48 @@ export const MobileQRScanner: React.FC = () => {
       stopQRScanning();
     };
   }, []);
+
+  // Initialize scanner after the video element is mounted
+  useEffect(() => {
+    const init = async () => {
+      if (!isScanning) return;
+      if (!window.isSecureContext) {
+        toast.error('Camera requires HTTPS. Please use https://talentxcel.in');
+        setIsScanning(false);
+        return;
+      }
+      if (!videoRef.current || qrScannerRef.current) return; // wait for ref or avoid duplicate
+      try {
+        const hasCam = await QrScanner.hasCamera();
+        if (!hasCam) {
+          toast.error('No camera found on device.');
+          setIsScanning(false);
+          return;
+        }
+        qrScannerRef.current = new QrScanner(
+          videoRef.current,
+          (result) => {
+            setScannedResult(result.data);
+            stopQRScanning();
+            handleScannedResult(result.data);
+          },
+          {
+            returnDetailedScanResult: true,
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
+            preferredCamera: 'environment',
+          }
+        );
+        await qrScannerRef.current.start();
+        toast.success('QR Scanner started! Point camera at a QR code');
+      } catch (err) {
+        console.error('QR init error:', err);
+        toast.error('Failed to start camera. Please check permissions.');
+        setIsScanning(false);
+      }
+    };
+    init();
+  }, [isScanning]);
 
   return (
     <MobileLayout>
