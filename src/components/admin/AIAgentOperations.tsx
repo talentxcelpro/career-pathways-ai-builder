@@ -210,6 +210,9 @@ export const AIAgentOperations: React.FC = () => {
         console.log('Admin trigger not available for worker, using direct approach:', error);
         const { data: tasks } = await supabase.from('agent_tasks').select('*').eq('status', 'pending').limit(5);
         
+        const { data: userRes } = await supabase.auth.getUser();
+        const currentUserId = userRes?.user?.id;
+        
         let tasksProcessed = 0;
         for (const task of tasks || []) {
           // Mark as running and log start
@@ -227,7 +230,22 @@ export const AIAgentOperations: React.FC = () => {
             }
           });
           
+          // Simulate short processing time
           await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Attempt to generate a simple public post under current user as a fallback
+          try {
+            if (currentUserId) {
+              const content = `Agent update (${task.action}) at ${new Date().toLocaleString()}\n\nThis post was generated via admin fallback worker.`;
+              await supabase.from('posts').insert({
+                author_id: currentUserId,
+                content,
+                content_type: 'text'
+              });
+            }
+          } catch (postErr) {
+            console.warn('Post insert (fallback) failed:', postErr);
+          }
           
           // Mark as completed and log completion
           await supabase.from('agent_tasks').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', task.id);
