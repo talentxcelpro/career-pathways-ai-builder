@@ -35,7 +35,7 @@ export const ContentAutomationTester: React.FC = () => {
     try {
       // Step 1: Queue content generation
       console.log('🚀 Starting content automation test...');
-      const { data: queueResult, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+      const { data: queueResult, error: queueError } = await supabase.functions.invoke('content-queue-processor', {
         body: { action: 'queue', count: 5 }
       });
 
@@ -50,7 +50,7 @@ export const ContentAutomationTester: React.FC = () => {
       // Step 2: Process the queue
       await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
       
-      const { data: processResult, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator', {
+      const { data: processResult, error: processError } = await supabase.functions.invoke('content-queue-processor', {
         body: { action: 'process' }
       });
 

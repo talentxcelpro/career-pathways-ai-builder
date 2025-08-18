@@ -56,8 +56,8 @@ export const AIHealthMonitor: React.FC = () => {
       const functionNames = [
         'ai-test-health',
         'ai-comprehensive-generator',
-        'ai-comprehensive-generator-v2',
-        'content-queue-processor'
+        'content-queue-processor',
+        'health-check'
       ];
 
       const healthChecks = await Promise.all(
