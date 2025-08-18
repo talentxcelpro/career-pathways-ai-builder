@@ -46,7 +46,7 @@ export const MobileBottomNav = () => {
     { to: '/network', icon: HomeIcon, label: 'Home' },
     { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs' },
     { to: '/mobile/reels', icon: Play, label: 'Reels' },
-    { to: '/mobile/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
+    { to: '/mobile/network', icon: MessageCircle, label: 'TalentXcel', badge: unreadMessages > 0 },
     { to: '/mobile/profile', icon: User, label: 'Profile' },
   ];
 
