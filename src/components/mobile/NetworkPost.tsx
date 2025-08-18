@@ -164,8 +164,8 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           </Button>
         </div>
 
-        {/* Media */}
-        {(post.image || post.video) && (
+        {/* Media - Only show if image exists */}
+        {post.image && (
           <div className="relative aspect-[4/3] bg-gray-100">
             {post.video ? (
               <video 
@@ -181,6 +181,10 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
                 src={post.image} 
                 alt={post.title}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Hide broken images
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
               />
             )}
             {post.type === 'job' && (

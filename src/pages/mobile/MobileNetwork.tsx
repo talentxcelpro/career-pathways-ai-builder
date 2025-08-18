@@ -51,7 +51,7 @@ export const MobileNetwork = () => {
         company: post.profiles?.current_company || post.profiles?.full_name || 'Professional',
         location: 'Remote', // Could be enhanced with location data
         salary: post.post_type === 'job_posting' ? '$80k - $120k' : undefined,
-        image: post.media_urls?.[0] || 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop',
+        image: post.media_urls?.[0] || undefined, // Remove fallback image
         description: post.content || 'Professional update...',
         tags: ['Professional', 'Career', 'Growth'],
         timeAgo: formatTimeAgo(post.created_at),
@@ -102,7 +102,7 @@ export const MobileNetwork = () => {
         salary: job.salary_min && job.salary_max 
           ? `$${Math.round(job.salary_min/1000)}k - $${Math.round(job.salary_max/1000)}k`
           : 'Competitive',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
+        image: undefined, // Remove fallback image
         description: job.description,
         tags: job.skills_required?.slice(0, 3) || ['Career', 'Opportunity'],
         timeAgo: formatTimeAgo(job.created_at),
