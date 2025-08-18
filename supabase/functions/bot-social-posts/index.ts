@@ -111,6 +111,7 @@ serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+    const authUserFromReq = getAuthUserId(req);
 
     // Parse body safely
     const text = await req.text().catch(() => "");
@@ -136,7 +137,7 @@ serve(async (req) => {
     const botList = bots ?? [];
     if (!botList.length) {
       return new Response(
-        JSON.stringify({ success: false, message: "No active bots with user_id found" }),
+        JSON.stringify({ success: false, message: "No active bots found" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -147,6 +148,7 @@ serve(async (req) => {
     let remainder = totalPosts % botList.length;
 
     const created: Array<{ id: string | null; bot_id: string; category: string }> = [];
+    const errors: Array<{ bot_id: string; stage: string; message: string }> = [];
     let catIndex = 0;
 
     for (const bot of botList) {
@@ -178,6 +180,7 @@ serve(async (req) => {
 
         if (wallErr) {
           console.error("Insert bot_wall failed for bot", bot.id, wallErr?.message || wallErr);
+          errors.push({ bot_id: bot.id, stage: 'bot_wall', message: wallErr?.message || String(wallErr) });
           created.push({ id: null, bot_id: bot.id, category });
           continue;
         }
@@ -210,11 +213,13 @@ serve(async (req) => {
             
             if (postError) {
               console.error(`Insert post failed for bot ${bot.id}: ${postError.message}`);
+              errors.push({ bot_id: bot.id, stage: 'posts', message: postError.message });
             } else {
               console.log(`Successfully created post ${postData.id} for bot ${bot.name}`);
             }
           } else {
             console.error(`Skipping posts insert: missing author_id for bot ${bot.id}`);
+            errors.push({ bot_id: bot.id, stage: 'posts', message: 'missing author_id (no bot.user_id and no auth user)' });
           }
         } catch (postSyncErr: any) {
           console.error(`Non-blocking: sync to posts failed for bot ${bot.id}: ${postSyncErr?.message || postSyncErr}`);
@@ -230,9 +235,14 @@ serve(async (req) => {
         created: created.filter(p => p.id).length,
         attempted: created.length,
         posts: created,
+        errors,
         bots_processed: botList.length,
         categories_used: Array.from(new Set(created.map(c => c.category))),
         preset: preset || null,
+        debug: {
+          service_role_present: Boolean(SERVICE_ROLE),
+          auth_user_from_req: authUserFromReq,
+        },
         timestamp: new Date().toISOString(),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
