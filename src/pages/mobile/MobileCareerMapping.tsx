@@ -20,6 +20,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCareerMapManagement } from '@/hooks/useCareerMapManagement';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { 
   Target, 
   TrendingUp, 
@@ -32,9 +41,24 @@ import {
   Star,
   Users,
   ChevronRight,
-  Plus
+  Plus,
+  Brain,
+  Rocket,
+  BarChart,
+  Calendar,
+  CheckCircle,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Eye
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Career stage node types
 const CareerStageNode = ({ data }: { data: any }) => (
@@ -223,17 +247,85 @@ export const MobileCareerMapping: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [activeTab, setActiveTab] = useState('roadmap');
+  const [newGoal, setNewGoal] = useState({
+    target_role: '',
+    current_position: '',
+    timeline_months: 12,
+    target_company: '',
+    skills_needed: []
+  });
+  const [showCreateGoal, setShowCreateGoal] = useState(false);
+  
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { careerMapStats, careerGoals, isLoading } = useCareerMapManagement();
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
+  // Fetch user's roadmaps
+  const { data: roadmaps = [], isLoading: roadmapsLoading } = useQuery({
+    queryKey: ['user-roadmaps'],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('roadmaps')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(5);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user
+  });
+
+  // Create career goal mutation
+  const createGoalMutation = useMutation({
+    mutationFn: async (goalData: any) => {
+      if (!user) throw new Error('User not authenticated');
+      
+      const { data, error } = await supabase
+        .from('career_goals')
+        .insert({
+          ...goalData,
+          user_id: user.id,
+          is_active: true,
+          milestones: [],
+          progress_notes: ''
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Career goal created successfully!');
+      setShowCreateGoal(false);
+      setNewGoal({
+        target_role: '',
+        current_position: '',
+        timeline_months: 12,
+        target_company: '',
+        skills_needed: []
+      });
+      queryClient.invalidateQueries({ queryKey: ['career-goals'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to create career goal');
+    }
+  });
+
   const careerMetrics = [
-    { label: 'Current Level', value: 'Mid-Level Developer', icon: Briefcase },
-    { label: 'Experience', value: '3.5 years', icon: Clock },
-    { label: 'Skills Mastered', value: '12/20', icon: Star },
-    { label: 'Next Milestone', value: 'Senior Developer', icon: Target },
+    { label: 'Total Roadmaps', value: careerMapStats?.totalRoadmaps || 0, icon: MapPin },
+    { label: 'Active Goals', value: careerMapStats?.activeGoals || 0, icon: Target },
+    { label: 'Career Switches', value: careerMapStats?.careerSwitches || 0, icon: TrendingUp },
+    { label: 'Active Users', value: careerMapStats?.activeUsers || 0, icon: Users },
   ];
 
   const recommendations = [
@@ -274,6 +366,42 @@ export const MobileCareerMapping: React.FC = () => {
           </TabsList>
 
           <TabsContent value="roadmap" className="flex-1 flex flex-col space-y-4">
+            {/* AI Tools Section */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Brain className="h-5 w-5 text-primary" />
+                  AI Career Tools
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-3">
+                <Link to="/career-map/ai-roadmap-builder">
+                  <div className="p-3 border rounded-lg text-center hover:bg-muted/50 transition-colors">
+                    <Rocket className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                    <p className="text-xs font-medium">AI Roadmap</p>
+                  </div>
+                </Link>
+                <Link to="/career-map/skills-gap">
+                  <div className="p-3 border rounded-lg text-center hover:bg-muted/50 transition-colors">
+                    <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                    <p className="text-xs font-medium">Skills Gap</p>
+                  </div>
+                </Link>
+                <Link to="/career-map/switch">
+                  <div className="p-3 border rounded-lg text-center hover:bg-muted/50 transition-colors">
+                    <TrendingUp className="h-6 w-6 mx-auto mb-2 text-orange-500" />
+                    <p className="text-xs font-medium">Career Switch</p>
+                  </div>
+                </Link>
+                <Link to="/career-map/my-roadmaps">
+                  <div className="p-3 border rounded-lg text-center hover:bg-muted/50 transition-colors">
+                    <MapPin className="h-6 w-6 mx-auto mb-2 text-purple-500" />
+                    <p className="text-xs font-medium">My Roadmaps</p>
+                  </div>
+                </Link>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -282,7 +410,7 @@ export const MobileCareerMapping: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="h-80 w-full">
+                <div className="h-64 w-full">
                   <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -304,6 +432,56 @@ export const MobileCareerMapping: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* My Roadmaps Section */}
+            {roadmaps.length > 0 && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <BarChart className="h-5 w-5 text-primary" />
+                      My Roadmaps
+                    </CardTitle>
+                    <Link to="/career-map/my-roadmaps">
+                      <Button variant="outline" size="sm">
+                        View All
+                      </Button>
+                    </Link>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <ScrollArea className="h-40">
+                    {roadmaps.slice(0, 3).map((roadmap) => (
+                      <div key={roadmap.id} className="flex items-start justify-between p-3 border rounded-lg mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm">{roadmap.title}</h4>
+                          <p className="text-xs text-muted-foreground mb-1">{roadmap.current_position} → {roadmap.target_role}</p>
+                          <div className="flex items-center gap-2">
+                            <Progress value={roadmap.progress_percentage || 0} className="h-1 flex-1" />
+                            <span className="text-xs text-muted-foreground">{roadmap.progress_percentage || 0}%</span>
+                          </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link to={`/career-map/${roadmap.id}`}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </Link>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader className="pb-3">
@@ -379,60 +557,161 @@ export const MobileCareerMapping: React.FC = () => {
           <TabsContent value="goals" className="flex-1 space-y-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
-                  Current Goals
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    Career Goals
+                  </CardTitle>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowCreateGoal(!showCreateGoal)}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Goal
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {[
-                  {
-                    title: 'Complete React Advanced Course',
-                    progress: 75,
-                    deadline: '2 weeks',
-                    type: 'Learning'
-                  },
-                  {
-                    title: 'Build Portfolio Project',
-                    progress: 45,
-                    deadline: '1 month',
-                    type: 'Project'
-                  },
-                  {
-                    title: 'Attend Tech Conference',
-                    progress: 100,
-                    deadline: 'Completed',
-                    type: 'Networking'
-                  },
-                ].map((goal, index) => (
-                  <div key={index} className="p-4 border rounded-lg space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{goal.title}</h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs px-1 py-0">
-                            {goal.type}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{goal.deadline}</span>
-                        </div>
+                {showCreateGoal && (
+                  <div className="p-4 border rounded-lg space-y-3 bg-muted/20">
+                    <h4 className="font-medium text-sm">Create New Goal</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="target_role" className="text-xs">Target Role</Label>
+                        <Input
+                          id="target_role"
+                          placeholder="e.g., Senior Developer"
+                          value={newGoal.target_role}
+                          onChange={(e) => setNewGoal(prev => ({ ...prev, target_role: e.target.value }))}
+                          className="h-8 text-sm"
+                        />
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">Progress</span>
-                        <span className="text-xs font-medium">{goal.progress}%</span>
+                      <div>
+                        <Label htmlFor="current_position" className="text-xs">Current Position</Label>
+                        <Input
+                          id="current_position"
+                          placeholder="e.g., Junior Developer"
+                          value={newGoal.current_position}
+                          onChange={(e) => setNewGoal(prev => ({ ...prev, current_position: e.target.value }))}
+                          className="h-8 text-sm"
+                        />
                       </div>
-                      <Progress value={goal.progress} className="h-2" />
+                      <div>
+                        <Label htmlFor="timeline" className="text-xs">Timeline (months)</Label>
+                        <Input
+                          id="timeline"
+                          type="number"
+                          min="1"
+                          max="60"
+                          value={newGoal.timeline_months}
+                          onChange={(e) => setNewGoal(prev => ({ ...prev, timeline_months: parseInt(e.target.value) || 12 }))}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="target_company" className="text-xs">Target Company (Optional)</Label>
+                        <Input
+                          id="target_company"
+                          placeholder="e.g., Google, Microsoft"
+                          value={newGoal.target_company}
+                          onChange={(e) => setNewGoal(prev => ({ ...prev, target_company: e.target.value }))}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          onClick={() => createGoalMutation.mutate(newGoal)}
+                          disabled={!newGoal.target_role || !newGoal.current_position || createGoalMutation.isPending}
+                          className="text-xs"
+                        >
+                          {createGoalMutation.isPending ? 'Creating...' : 'Create Goal'}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setShowCreateGoal(false)}
+                          className="text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                ))}
+                )}
+
+                <ScrollArea className="h-64">
+                  {isLoading ? (
+                    <div className="text-center py-4 text-sm text-muted-foreground">
+                      Loading goals...
+                    </div>
+                  ) : careerGoals.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Target className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground mb-2">No career goals yet</p>
+                      <p className="text-xs text-muted-foreground">Create your first goal to start tracking your progress</p>
+                    </div>
+                  ) : (
+                    careerGoals.map((goal) => (
+                      <div key={goal.id} className="p-3 border rounded-lg mb-3 space-y-2">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-sm">{goal.target_role}</h4>
+                            <p className="text-xs text-muted-foreground">
+                              From {goal.current_position}
+                            </p>
+                            {goal.target_company && (
+                              <p className="text-xs text-muted-foreground">
+                                at {goal.target_company}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge 
+                                variant={goal.is_active ? "default" : "secondary"} 
+                                className="text-xs px-1 py-0"
+                              >
+                                {goal.is_active ? 'Active' : 'Inactive'}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {goal.timeline_months} months
+                              </span>
+                            </div>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit Goal
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                className="text-red-600"
+                                onClick={() => {
+                                  if (confirm('Are you sure you want to delete this goal?')) {
+                                    // Add delete functionality here
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Created {new Date(goal.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </ScrollArea>
               </CardContent>
             </Card>
-
-            <Button className="w-full" size="lg">
-              <Plus className="h-4 w-4 mr-2" />
-              Set New Goal
-            </Button>
           </TabsContent>
         </Tabs>
       </div>
