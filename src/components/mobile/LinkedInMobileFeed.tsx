@@ -10,6 +10,8 @@ import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileCreatePost } from './MobileCreatePost';
 import { ReshareModal } from './ReshareModal';
+import { ShareModal } from './ShareModal';
+import { CommentModal } from './CommentModal';
 interface LinkedInPost {
   id: string;
   user: {
@@ -77,7 +79,9 @@ const LinkedInPostCard: React.FC<{
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
   const [showFullCaption, setShowFullCaption] = useState(false);
-  const [isReshareOpen, setIsReshareOpen] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showReshareModal, setShowReshareModal] = useState(false);
 
   const resharePost = {
     id: post.id,
@@ -267,7 +271,7 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => onComment?.(post.id)}
+            onClick={() => setShowCommentModal(true)}
           >
             <MessageCircle className="w-4 h-4" />
             <span className="text-sm font-medium">Comment</span>
@@ -277,7 +281,7 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => setIsReshareOpen(true)}
+            onClick={() => setShowReshareModal(true)}
           >
             <Repeat2 className="w-4 h-4" />
             <span className="text-sm font-medium">Reshare</span>
@@ -287,7 +291,7 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => onShare?.(post.id)}
+            onClick={() => setShowShareModal(true)}
           >
             <Share className="w-4 h-4" />
             <span className="text-sm font-medium">Share</span>
@@ -308,9 +312,27 @@ const LinkedInPostCard: React.FC<{
       </div>
 
       <ReshareModal
-        isOpen={isReshareOpen}
-        onClose={() => setIsReshareOpen(false)}
+        isOpen={showReshareModal}
+        onClose={() => setShowReshareModal(false)}
         post={resharePost}
+      />
+
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        post={{
+          id: post.id,
+          title: post.content.title || (post.caption ? post.caption.substring(0, 50) : 'Post'),
+          description: post.caption || '',
+          type: (post.isJobPost ? 'job' : 'content') as 'job' | 'content'
+        }}
+      />
+
+      <CommentModal
+        isOpen={showCommentModal}
+        onClose={() => setShowCommentModal(false)}
+        postId={post.id}
+        postTitle={post.content.title || (post.caption ? post.caption.substring(0, 50) : 'Post')}
       />
 
       {/* Top Comment Preview */}

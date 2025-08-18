@@ -236,13 +236,24 @@ export const useLinkedInFeed = () => {
   };
 
   const handleShare = (postId: string) => {
-    // TODO: Implement sharing
-    console.log('Share post:', postId);
+    // Open native sharing or copy link
+    const shareUrl = `${window.location.origin}/network/posts/${postId}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'Check out this post',
+        url: shareUrl
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        console.log('Link copied to clipboard');
+      }).catch(console.error);
+    }
   };
 
   const handleComment = (postId: string) => {
-    // TODO: Implement comment modal
-    console.log('Comment on post:', postId);
+    // Navigate to post or open comment modal
+    console.log('Open comments for post:', postId);
   };
 
   const handleConnect = async (userId: string) => {
