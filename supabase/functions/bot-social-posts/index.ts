@@ -69,6 +69,17 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function getAuthUserId(req: Request): string | null {
+  const auth = req.headers.get("Authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1] || ""));
+    return payload?.sub || null;
+  } catch {
+    return null;
+  }
+}
+
 function generatePost(bot: any, category: (typeof CATEGORIES)[number]) {
   const persona = bot?.name || "TalentXcel";
   const line = pick(LIBRARY[category]);
@@ -174,23 +185,28 @@ serve(async (req) => {
 
         // 2) Best-effort sync to general posts feed (do not block on failure)
         try {
-          await supabase.from("posts").insert({
-            author_id: bot.user_id,
-            user_id: bot.user_id,
-            content,
-            headline: title,
-            is_public: true,
-            post_type: "text",
-            tags: [category],
-            status: "published",
-            visibility: "public",
-            origin: "bot_wall",
-            is_bot_post: true,
-            is_ai_generated: true,
-            metadata: { category, source: "bot-social-posts", bot_id: bot.id, preset: preset || null },
-            bot_id: bot.id,
-            created_at: now,
-          });
+          const authorIdForPost = bot.user_id || getAuthUserId(req);
+          if (authorIdForPost) {
+            await supabase.from("posts").insert({
+              author_id: authorIdForPost,
+              user_id: authorIdForPost,
+              content,
+              headline: title,
+              is_public: true,
+              post_type: "text",
+              tags: [category],
+              status: "published",
+              visibility: "public",
+              origin: "bot_wall",
+              is_bot_post: true,
+              is_ai_generated: true,
+              metadata: { category, source: "bot-social-posts", bot_id: bot.id, preset: preset || null },
+              bot_id: bot.id,
+              created_at: now,
+            });
+          } else {
+            console.error("Skipping posts insert: missing author_id for bot", bot.id);
+          }
         } catch (postSyncErr) {
           console.error("Non-blocking: sync to posts failed for bot", bot.id, postSyncErr?.message || postSyncErr);
         }
