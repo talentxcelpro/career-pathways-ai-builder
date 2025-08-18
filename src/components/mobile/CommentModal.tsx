@@ -194,7 +194,7 @@ export const CommentModal: React.FC<CommentModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg h-[80vh] flex flex-col p-0">
+      <DialogContent className="max-w-lg h-[80vh] flex flex-col p-0 z-50">
         <DialogHeader className="p-4 border-b">
           <DialogTitle className="text-lg">Comments</DialogTitle>
           <p className="text-sm text-muted-foreground truncate">{postTitle}</p>
