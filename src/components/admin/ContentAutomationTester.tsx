@@ -178,8 +178,8 @@ export const ContentAutomationTester: React.FC = () => {
 
     try {
       const { data: rsp, via } = await invokeOrDirect('bot-social-posts', {
-        preset: 'linkedin_100',
-        total_posts: 100,
+        preset: 'linkedin_sanity',
+        total_posts: 4,
         categories: [
           'System & Platform Updates',
           'Career Motivation',
@@ -188,7 +188,7 @@ export const ContentAutomationTester: React.FC = () => {
           'Resume & Career Tools',
           'Community & Inspiration'
         ],
-        limit_bots: 4
+        limit_bots: 2
       });
 
       // Also surface active bot count for clarity
