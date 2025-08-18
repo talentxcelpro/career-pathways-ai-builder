@@ -65,7 +65,7 @@ export const MobileHeader = () => {
 
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === '/network' || path === '/mobile/network') return 'TalentXcel';
+    if (path === '/network' || path === '/mobile/network') return 'Career Mapping';
     if (path === '/jobs' || path === '/mobile/jobs') return 'Jobs';
     if (path === '/passport' || path === '/mobile/passport') return 'Career Passport';
     if (path.startsWith('/network/notifications') || path === '/mobile/notifications') return 'Activity';
