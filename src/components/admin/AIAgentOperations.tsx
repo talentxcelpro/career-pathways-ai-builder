@@ -244,7 +244,7 @@ export const AIAgentOperations: React.FC = () => {
                 author_id: currentUserId,
                 content,
                 content_type: 'text'
-              });
+              } as any);
             }
           } catch (postErr) {
             console.warn('Post insert (fallback) failed:', postErr);

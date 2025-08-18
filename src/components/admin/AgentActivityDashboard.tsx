@@ -67,11 +67,11 @@ export const AgentActivityDashboard: React.FC = () => {
         .limit(100);
 
       if (selectedAgent !== 'all') {
-        query = query.eq('agent_id', selectedAgent);
+        query = query.eq('agent_id' as any, selectedAgent);
       }
 
       if (selectedLevel !== 'all') {
-        query = query.eq('level', selectedLevel);
+        query = query.eq('level' as any, selectedLevel);
       }
 
       const { data, error } = await query;
@@ -82,7 +82,7 @@ export const AgentActivityDashboard: React.FC = () => {
         return;
       }
 
-      setLogs(data || []);
+      setLogs((data as any) || []);
     } catch (error: any) {
       console.error('Error fetching agent logs:', error);
       toast.error(`Failed to fetch agent logs: ${error.message}`);
@@ -97,7 +97,7 @@ export const AgentActivityDashboard: React.FC = () => {
       const { data: agents, error: agentsError } = await supabase
         .from('ai_agents')
         .select('*')
-        .eq('status', 'active');
+        .eq('status' as any, 'active');
 
       if (agentsError) {
         console.error('Error fetching agents:', agentsError);
@@ -114,8 +114,8 @@ export const AgentActivityDashboard: React.FC = () => {
           .eq('agent_id', agent.id);
 
         const totalTasks = tasks?.length || 0;
-        const completedTasks = tasks?.filter(t => t.status === 'completed').length || 0;
-        const failedTasks = tasks?.filter(t => t.status === 'failed').length || 0;
+        const completedTasks = tasks?.filter((t: any) => t.status === 'completed').length || 0;
+        const failedTasks = tasks?.filter((t: any) => t.status === 'failed').length || 0;
         const successRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
         // Get content metrics from logs

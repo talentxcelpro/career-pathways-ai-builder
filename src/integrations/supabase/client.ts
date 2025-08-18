@@ -9,7 +9,7 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: window.localStorage,
     persistSession: true,
@@ -46,11 +46,11 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
 });
 
 // Single instance pattern to prevent multiple GoTrue clients
-let supabaseFunctionsInstance: ReturnType<typeof createClient<Database>> | null = null;
+let supabaseFunctionsInstance: ReturnType<typeof createClient> | null = null;
 
 export const getSupabaseFunctions = () => {
   if (!supabaseFunctionsInstance) {
-    supabaseFunctionsInstance = createClient<Database>(
+    supabaseFunctionsInstance = createClient(
       SUPABASE_URL, // Use same URL to prevent multiple instances
       SUPABASE_PUBLISHABLE_KEY,
       {
