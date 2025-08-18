@@ -6,8 +6,6 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -27,9 +25,24 @@ serve(async (req) => {
     
     console.log('Generating content for:', { contentType, topic, targetAudience });
     
-    // Validate required parameters
+    // If required params are missing, return a helpful message without saving
     if (!contentType || !topic) {
-      throw new Error('Missing required parameters: contentType and topic are required');
+      const fallbackContent = `I'm sorry, but there isn't enough information to generate content. Please provide at least a contentType and topic.`;
+      const result = {
+        success: true,
+        content: fallbackContent,
+        metadata: {
+          title: 'Insufficient Information Provided',
+          description: 'We are unable to generate content without a content type and topic.',
+          keywords: ['content generation', 'insufficient information', 'request clarification']
+        },
+        contentId: crypto.randomUUID(),
+        tokensUsed: 0,
+        wordCount: fallbackContent.split(' ').length
+      };
+      return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     let systemPrompt = '';
@@ -127,33 +140,45 @@ serve(async (req) => {
     
     // Save to database
     try {
-      const { error: saveError } = await supabase
-        .from('ai_content_library')
-        .insert({
-          id: contentId,
-          category: contentType,
-          template_type: contentType,
-          title,
-          content,
-          metadata: {
-            ...extractedKeywords && { keywords: extractedKeywords },
-            wordCount: content.split(' ').length,
-            generatedAt: new Date().toISOString(),
-            subject: topic,
-            ...(targetAudience && { targetAudience }),
-            ...(tone && { tone }),
-            ...(industry && { industry }),
-            ...(location && { location })
-          },
-          quality_score: data.usage?.total_tokens || 0,
-          usage_count: 0,
-          is_approved: false,
-          tags: extractedKeywords ? [contentType, ...extractedKeywords] : [contentType]
-        });
-        
-      if (saveError) {
-        console.error('Error saving content:', saveError);
-        // Don't fail the request if saving fails, just log it
+      if (supabaseUrl && supabaseServiceKey) {
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        const safeCategory = contentType || 'general';
+        const safeTemplate = contentType || 'generic';
+        const tagsArray = Array.isArray(extractedKeywords)
+          ? [safeCategory, ...extractedKeywords]
+          : [safeCategory];
+
+        const { error: saveError } = await supabase
+          .from('ai_content_library')
+          .insert({
+            id: contentId,
+            category: safeCategory,
+            template_type: safeTemplate,
+            title: title || String(topic || 'Untitled Content'),
+            content,
+            metadata: {
+              ...(Array.isArray(extractedKeywords) && { keywords: extractedKeywords }),
+              wordCount: content.split(' ').length,
+              generatedAt: new Date().toISOString(),
+              subject: topic,
+              ...(targetAudience && { targetAudience }),
+              ...(tone && { tone }),
+              ...(industry && { industry }),
+              ...(location && { location })
+            },
+            quality_score: data.usage?.total_tokens || 0,
+            usage_count: 0,
+            is_approved: false,
+            tags: tagsArray
+          });
+
+        if (saveError) {
+          console.error('Error saving content:', saveError);
+        } else {
+          console.log('Content saved to ai_content_library with id:', contentId);
+        }
+      } else {
+        console.warn('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured - skipping DB save');
       }
     } catch (dbError) {
       console.error('Database error:', dbError);
