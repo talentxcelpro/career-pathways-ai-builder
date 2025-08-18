@@ -28,18 +28,40 @@ export const ContentAutomationDashboard: React.FC = () => {
     newsletters: 0
   });
 
+  const FUNCTIONS_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+
+  const callFunctionDirect = async (name: string, body: any = {}) => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+
+    const res = await fetch(`${FUNCTIONS_URL}/${name}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(body ?? {}),
+    });
+
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+    return json;
+  };
+
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('daily-content-factory');
+      // Try supabase.functions.invoke first, then fallback to direct HTTP
+      const { data, error } = await supabase.functions.invoke('daily-content-factory', { body: {} });
+      const result = error ? await callFunctionDirect('daily-content-factory', {}) : data;
 
-      if (error) throw error;
-
-      if (data?.success) {
-        toast.success(`Daily content factory completed! Generated ${data.summary.total_generated} pieces across ${data.summary.content_types_processed} content types.`);
-        console.log('Daily content generation results:', data.results);
+      if (result?.success) {
+        toast.success(`Daily content factory completed! Generated ${result.summary.total_generated} pieces across ${result.summary.content_breakdown?.length ?? 4} content types.`);
+        console.log('Daily content generation results:', result);
       } else {
-        throw new Error(data?.error || 'Daily content generation failed');
+        throw new Error(result?.error || 'Daily content generation failed');
       }
 
       // Refresh stats after a short delay
