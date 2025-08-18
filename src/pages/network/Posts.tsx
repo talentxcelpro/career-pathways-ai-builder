@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,6 +34,7 @@ import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
+import { NetworkPostsFeed } from "@/components/network/NetworkPostsFeed";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
@@ -92,198 +92,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
   // Get real profile stats after currentUserProfile is available
   const { data: profileStats } = useProfileStats(currentUserProfile?.id);
 
-  // Fetch posts with real-time counts
-  const { data: posts, isLoading: postsLoading } = useQuery({
-    queryKey: ['posts', feedFilter],
-    queryFn: async () => {
-      // First get posts with fresh counts
-      const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          post_likes!left(id),
-          post_comments!left(id),
-          post_shares!left(id)
-        `)
-        .eq('visibility', 'public')
-        .eq('is_deleted', false)
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (postsError) throw postsError;
-
-      // Get unique author IDs
-      const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
-
-      // Get profiles for all authors
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, profile_picture_url, title, headline, current_company, pro_plan, pro_status, pro_expires_at')
-        .in('id', authorIds);
-
-      if (profilesError) throw profilesError;
-
-      // Create a map of profiles by ID for easy lookup
-      const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
-
-      // Combine posts with their profiles and accurate counts
-      let postsWithProfiles = postsData.map(post => ({
-        ...post,
-        profiles: profilesMap.get(post.author_id) || null,
-        // Use actual counts from related tables
-        likes_count: post.post_likes?.length || 0,
-        comments_count: post.post_comments?.length || 0,
-        shares_count: post.post_shares?.length || 0,
-        smart_feed_score: 0.5 // Default score for all posts
-      }));
-
-      // Apply Smart Feed filtering
-      if (feedFilter === 'smart' && currentUserProfile && smartFeedPreferences) {
-        postsWithProfiles = postsWithProfiles.filter(post => {
-          // Check if post author is blocked
-          if (smartFeedPreferences.blocked_users?.includes(post.author_id)) {
-            return false;
-          }
-          
-          // Check for blocked keywords in content
-          const blockedKeywords = smartFeedPreferences.blocked_keywords || [];
-          const hasBlockedKeywords = blockedKeywords.some(keyword => 
-            post.content.toLowerCase().includes(keyword.toLowerCase())
-          );
-          if (hasBlockedKeywords) return false;
-          
-          // Check content type filtering
-          const excludedContentTypes = smartFeedPreferences.exclude_content_types || [];
-          const includedContentTypes = smartFeedPreferences.include_content_types || [];
-          
-          if (post.content_type && excludedContentTypes.includes(post.content_type)) {
-            return false;
-          }
-          
-          // If we have specific included content types, filter by them
-          if (includedContentTypes.length > 0 && post.content_type) {
-            if (!includedContentTypes.includes(post.content_type)) {
-              return false;
-            }
-          }
-          
-          // Check tag filtering
-          const excludedTags = smartFeedPreferences.exclude_tags || [];
-          const includedTags = smartFeedPreferences.include_tags || [];
-          
-          // Check if post has any excluded tags
-          if (post.tags && excludedTags.length > 0) {
-            const hasExcludedTags = post.tags.some(tag => 
-              excludedTags.some(excludedTag => 
-                tag.toLowerCase().includes(excludedTag.toLowerCase())
-              )
-            );
-            if (hasExcludedTags) return false;
-          }
-          
-          // Check intent tags against excluded tags
-          if (post.intent_tags && excludedTags.length > 0) {
-            const hasExcludedIntentTags = post.intent_tags.some(tag => 
-              excludedTags.some(excludedTag => 
-                tag.toLowerCase().includes(excludedTag.toLowerCase())
-              )
-            );
-            if (hasExcludedIntentTags) return false;
-          }
-          
-          // If we have specific included tags, prioritize posts with those tags
-          if (includedTags.length > 0) {
-            let hasIncludedTags = false;
-            
-            // Check post tags
-            if (post.tags) {
-              hasIncludedTags = post.tags.some(tag => 
-                includedTags.some(includedTag => 
-                  tag.toLowerCase().includes(includedTag.toLowerCase())
-                )
-              );
-            }
-            
-            // Check intent tags
-            if (!hasIncludedTags && post.intent_tags) {
-              hasIncludedTags = post.intent_tags.some(tag => 
-                includedTags.some(includedTag => 
-                  tag.toLowerCase().includes(includedTag.toLowerCase())
-                )
-              );
-            }
-            
-            // Check content for included tags
-            if (!hasIncludedTags) {
-              hasIncludedTags = includedTags.some(tag => 
-                post.content.toLowerCase().includes(tag.toLowerCase())
-              );
-            }
-            
-            // If we have specific included tags and this post doesn't match, skip it
-            if (!hasIncludedTags) return false;
-          }
-          
-          // Check industry/role preferences
-          const preferredIndustries = smartFeedPreferences.preferred_industries || [];
-          const preferredRoles = smartFeedPreferences.preferred_roles || [];
-          
-          if (preferredIndustries.length > 0 || preferredRoles.length > 0) {
-            const authorProfile = post.profiles;
-            let matchesPreferences = false;
-            
-            // Check author's title/role against preferred roles
-            if (authorProfile?.title && preferredRoles.length > 0) {
-              matchesPreferences = preferredRoles.some(role => 
-                authorProfile.title.toLowerCase().includes(role.toLowerCase())
-              );
-            }
-            
-            // Check author's company against preferred industries
-            if (!matchesPreferences && authorProfile?.current_company && preferredIndustries.length > 0) {
-              matchesPreferences = preferredIndustries.some(industry => 
-                authorProfile.current_company.toLowerCase().includes(industry.toLowerCase())
-              );
-            }
-            
-            // If we have preferences but post doesn't match, reduce priority but don't exclude
-            if (!matchesPreferences && (preferredIndustries.length > 0 || preferredRoles.length > 0)) {
-              // Add a score property for later sorting
-              post.smart_feed_score = 0.3; // Lower score for non-matching posts
-            } else {
-              post.smart_feed_score = 1.0; // Higher score for matching posts
-            }
-          }
-          
-          return true;
-        });
-        
-        // Sort posts by Smart Feed score if prioritize_connections is enabled
-        if (smartFeedPreferences.prioritize_connections) {
-          postsWithProfiles.sort((a, b) => {
-            const scoreA = a.smart_feed_score || 0.5;
-            const scoreB = b.smart_feed_score || 0.5;
-            
-            // Also consider post recency
-            const timeA = new Date(a.created_at).getTime();
-            const timeB = new Date(b.created_at).getTime();
-            
-            // Combine score and recency (weighted)
-            const relevanceWeight = smartFeedPreferences.relevance_weight || 0.8;
-            const freshnessWeight = smartFeedPreferences.content_freshness_weight || 0.7;
-            
-            const finalScoreA = (scoreA * relevanceWeight) + (timeA / 1000000000000 * freshnessWeight);
-            const finalScoreB = (scoreB * relevanceWeight) + (timeB / 1000000000000 * freshnessWeight);
-            
-            return finalScoreB - finalScoreA;
-          });
-        }
-      }
-
-      return postsWithProfiles;
-    }
-  });
-
   const handlePostCreate = (post: any) => {
     queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
@@ -316,12 +124,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
     } catch (error) {
       console.error('Failed to post comment:', error);
     }
-  };
-
-  // Function to detect URLs in text
-  const extractUrls = (text: string): string[] => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.match(urlRegex) || [];
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -499,320 +301,28 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
             />
           </div>
 
-          {/* Middle Column - Posts Feed */}
+          {/* Main Feed */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Enhanced Create Post with AI Features */}
-            <EnhancedCreatePost onPostCreate={handlePostCreate} />
-
-            {/* AI Assistant */}
-            {showAIAssistant && (
-              <AIPostAssistant
-                onSuggestionApply={(suggestion) => {
-                  // Handle suggestion application - could pass to CreatePost if needed
-                  console.log('AI Suggestion:', suggestion);
-                  // You could also use a state or callback to pass this to CreatePost
-                }}
-                currentContent=""
+            {/* Profile Completion Prompt */}
+            {missingFields.length > 0 && !isProUser && (
+              <ProfileCompletionPrompt 
+                missingFields={missingFields}
               />
             )}
 
-            {/* Posts Feed */}
-            <div className="space-y-6">
-              {postsLoading ? (
-                // Loading skeleton
-                [...Array(3)].map((_, i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-gray-300 rounded w-1/4"></div>
-                          <div className="h-3 bg-gray-300 rounded w-1/6"></div>
-                          <div className="space-y-2 mt-4">
-                            <div className="h-4 bg-gray-300 rounded"></div>
-                            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                posts?.map((post) => (
-                  <Card key={post.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-6">
-                      {/* Post Header - Make user info clickable */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start space-x-3">
-                          <Link to={`/network/people/${post.author_id}`} className="block hover:scale-105 transition-transform">
-                            <div className="relative">
-                              <Avatar className="cursor-pointer">
-                                <AvatarImage src={post.profiles?.profile_picture_url} />
-                                <AvatarFallback>
-                                  {generateInitials(post.profiles)}
-                                </AvatarFallback>
-                              </Avatar>
-                              {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
-                               post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (
-                                <div className="absolute -top-1 -right-1">
-                                  <ProBadge plan={post.profiles.pro_plan as any} size="sm" />
-                                </div>
-                              )}
-                            </div>
-                          </Link>
-                          <div>
-                            <Link 
-                              to={`/network/people/${post.author_id}`} 
-                              className="hover:text-blue-600 transition-colors cursor-pointer"
-                            >
-                              <h3 className="font-semibold text-gray-900">
-                                {formatDisplayName(post.profiles)}
-                                {post.profiles?.title && (
-                                  <>
-                                    <span className="text-muted-foreground mx-2">|</span>
-                                    <span className="text-sm font-normal text-gray-600">{post.profiles.title}</span>
-                                  </>
-                                )}
-                              </h3>
-                            </Link>
-                            {post.profiles?.headline && (
-                              <p className="text-sm text-gray-600">
-                                {post.profiles.headline}
-                              </p>
-                            )}
-                            {post.profiles?.current_company && (
-                              <p className="text-xs text-gray-500">
-                                {post.profiles.current_company}
-                              </p>
-                            )}
-                            <p className="text-xs text-gray-500">{formatTimeAgo(post.created_at)}</p>
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </div>
-
-                      {/* Post Content */}
-                      <div className="mb-4">
-                        <MediaPreview 
-                          content={post.content} 
-                          mediaUrls={post.media_urls || []} 
-                        />
-                        
-                        {/* Career Intent Tags */}
-                        {post.intent_tags && post.intent_tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {post.intent_tags.map((intentId: string) => (
-                              <CareerIntentBadge key={intentId} intentId={intentId} />
-                            ))}
-                          </div>
-                        )}
-                        
-                        {/* URL Previews */}
-                        {(() => {
-                          const urls = extractUrls(post.content);
-                          return urls.length > 0 && (
-                            <div className="mt-4 space-y-3">
-                              {urls.slice(0, 2).map((url, index) => (
-                                <LinkPreview key={index} url={url} />
-                              ))}
-                            </div>
-                          );
-                        })()}
-                        
-                        {/* Location */}
-                        {post.location && (
-                          <div className="flex items-center gap-1 mt-3 text-sm text-muted-foreground">
-                            <MapPin className="h-4 w-4" />
-                            <span>{post.location}</span>
-                          </div>
-                        )}
-                        
-                        {/* Post Tags */}
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {post.tags.map((tag: string, index: number) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                #{tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Post Actions */}
-                      <PostActions
-                        postId={post.id}
-                        initialLikes={post.likes_count || 0}
-                        initialComments={post.comments_count || 0}
-                        initialShares={post.shares_count || 0}
-                        onCommentClick={() => setOpenComments(openComments === post.id ? null : post.id)}
-                      />
-                      
-                      {/* AI Comment Generator Button */}
-                      <div className="flex justify-end mt-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleCommentGeneration(post.id, post)}
-                          className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                        >
-                          <Sparkles className="h-4 w-4 mr-1" />
-                          AI Comment
-                        </Button>
-                      </div>
-
-                      {/* AI Comment Generator */}
-                      {showCommentGenerator === post.id && (
-                        <div className="mt-4">
-                          <AICommentGenerator
-                            postContent={post.content}
-                            postAuthor={{
-                              name: formatDisplayName(post.profiles),
-                              title: post.profiles?.title
-                            }}
-                            onCommentGenerated={(comment) => console.log('Generated:', comment)}
-                            onCommentPost={handleCommentPost}
-                          />
-                        </div>
-                      )}
-
-                      {/* Comments Section */}
-                      <CommentsSection
-                        postId={post.id}
-                        isOpen={openComments === post.id}
-                      />
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-
-            {/* Default Real Content when no posts */}
-            {(!posts || posts.length === 0) && !postsLoading && (
-              <div className="space-y-6">
-                {/* Sample Posts with Real Content */}
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start space-x-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-blue-500 text-white">SJ</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900">Sarah Johnson</h3>
-                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">Achievement</Badge>
-                          </div>
-                          <p className="text-sm text-gray-600">Software Engineer at TechCorp</p>
-                          <p className="text-xs text-gray-500">24/07/2025</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <p className="text-gray-900">Just completed my AWS certification! Excited to apply cloud skills in my next project. Any recommendations for AWS projects that showcase DevOps skills?</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <span>👍</span> 15
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <MessageCircle className="h-4 w-4" /> 3
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <Share2 className="h-4 w-4" /> 2
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start space-x-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-purple-500 text-white">AC</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">Alex Chen</h3>
-                          <p className="text-sm text-gray-600">Frontend Developer • 24/07/2025</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <p className="text-gray-900">Working on a new React component library. The developer experience has been amazing with TypeScript and Storybook integration. What tools do you use for component documentation?</p>
-                      
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        <Badge variant="secondary" className="text-xs">#React</Badge>
-                        <Badge variant="secondary" className="text-xs">#TypeScript</Badge>
-                        <Badge variant="secondary" className="text-xs">#Frontend</Badge>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <span>👍</span> 8
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <MessageCircle className="h-4 w-4" /> 1
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <Share2 className="h-4 w-4" /> 0
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start space-x-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-green-500 text-white">MR</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900">Maria Rodriguez</h3>
-                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">Job Update</Badge>
-                          </div>
-                          <p className="text-sm text-gray-600">Product Manager at StartupXYZ</p>
-                          <p className="text-xs text-gray-500">23/07/2025</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <p className="text-gray-900">Excited to announce that I've joined StartupXYZ as a Product Manager! Looking forward to building innovative solutions and working with an amazing team. Thank you to everyone who supported me during the job search.</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <span>🎉</span> 24
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <MessageCircle className="h-4 w-4" /> 7
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-blue-600">
-                        <Share2 className="h-4 w-4" /> 3
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+            {/* Pro Banner */}
+            {!isProUser && !dismissedBanners.includes('pro-upgrade') && (
+              <ProBanner 
+                variant="default"
+                onDismiss={() => setDismissedBanners(prev => [...prev, 'pro-upgrade'])}
+              />
             )}
+
+            {/* Create Post */}
+            <EnhancedCreatePost onPostCreate={handlePostCreate} />
+
+            {/* Network Posts Feed with Infinite Scroll */}
+            <NetworkPostsFeed />
           </div>
 
           {/* Right Sidebar - Network Activity & Advertising */}
@@ -928,16 +438,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
                 </Link>
               </div>
             </Card>
-
-            {/* Pro Sidebar Banner */}
-            {!isProUser && !dismissedBanners.includes('sidebarBanner') && (
-              <ProBanner variant="sidebar" />
-            )}
-
-            {/* Pro Feed Banner */}
-            {!isProUser && !dismissedBanners.includes('feedBanner') && (
-              <ProBanner variant="feed" />
-            )}
 
             {/* Recent Activity */}
             <Card className="p-3">
