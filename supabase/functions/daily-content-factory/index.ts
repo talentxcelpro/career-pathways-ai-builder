@@ -13,6 +13,101 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY')!;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+// Define content owners with their specializations
+const contentOwners = [
+  {
+    name: 'Ananya',
+    role: 'Community Manager',
+    departments: ['Marketing', 'Community'],
+    contentDomains: ['Community Posts', 'Engagement', 'Social Media', 'Networking'],
+    tone: 'professional',
+    frequency: 'weekly'
+  },
+  {
+    name: 'Shelly Kappor',
+    role: 'Customer Service Representative',
+    departments: ['Customer Service', 'Support'],
+    contentDomains: ['Customer Support', 'FAQ', 'Help Articles', 'User Guidance'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'Zoya',
+    role: 'Upskilling Advisor',
+    departments: ['Skills Development', 'Training'],
+    contentDomains: ['Upskilling', 'Training Programs', 'Skill Assessment', 'Learning', 'Insights'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'Arjun',
+    role: 'Application Support Specialist',
+    departments: ['Technical Support', 'Applications'],
+    contentDomains: ['Technical Help', 'Application Support', 'Troubleshooting'],
+    tone: 'friendly',
+    frequency: 'daily'
+  },
+  {
+    name: 'Raj',
+    role: 'Job Matching AI',
+    departments: ['Job Matching', 'AI'],
+    contentDomains: ['Job Matching', 'Career Recommendations', 'Job Alerts', 'Career Insights'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'Meera',
+    role: 'Mentorship Coordinator',
+    departments: ['Mentorship', 'Guidance'],
+    contentDomains: ['Mentorship Programs', 'Guidance', 'Professional Development'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'Sana',
+    role: 'Content Creator',
+    departments: ['Marketing', 'Community'],
+    contentDomains: ['Social Media', 'Engagement', 'Content Marketing'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'Ishaan',
+    role: 'Career Coach Pro',
+    departments: ['Career Development', 'Coaching'],
+    contentDomains: ['Career Advice', 'Resume Tips', 'Interview Prep', 'SEO'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'Nikki',
+    role: 'Learning Path Assistant',
+    departments: ['Learning', 'Education'],
+    contentDomains: ['Learning Paths', 'Course Recommendations', 'Skill Development'],
+    tone: 'professional',
+    frequency: 'daily'
+  },
+  {
+    name: 'AD',
+    role: 'Admin Bot',
+    departments: ['Entire Platform'],
+    contentDomains: ['Platform Updates', 'System Announcements', 'General Information', 'Email Campaigns'],
+    tone: 'informative',
+    frequency: 'as_needed'
+  }
+];
+
+// Assign content owner based on category matching
+function assignContentOwner(category: string): any {
+  const owner = contentOwners.find(owner =>
+    owner.contentDomains.some(domain => 
+      domain.toLowerCase().includes(category.toLowerCase()) ||
+      category.toLowerCase().includes(domain.toLowerCase())
+    )
+  );
+  return owner || contentOwners.find(o => o.role === 'AD'); // Default to Admin Bot
+}
+
 interface ContentPlan {
   type: string;
   category: string;
@@ -160,7 +255,7 @@ function generateUniqueAngle(topic: string, variation: number, contentType: stri
   return `${topic} - ${angle} for ${contentType.toLowerCase()}`;
 }
 
-async function generateAIContent(params: {
+async function generateAIContentWithOwner(params: {
   contentType: string;
   topic: string;
   targetAudience: string;
@@ -169,19 +264,28 @@ async function generateAIContent(params: {
   keywords: string[];
   variation: number;
   uniqueAngle: string;
+  owner: any;
 }): Promise<any> {
   
-  const { contentType, topic, targetAudience, length, category, keywords, variation, uniqueAngle } = params;
+  const { contentType, topic, targetAudience, length, category, keywords, variation, uniqueAngle, owner } = params;
   
-  const systemPrompt = `You are a professional content writer creating ${contentType.toLowerCase()} content for TalentXcel, a professional networking platform.
+  const systemPrompt = `You are ${owner.name}, a ${owner.role} at TalentXcel, creating ${contentType.toLowerCase()} content for professionals.
+
+YOUR PERSONA:
+- Name: ${owner.name}
+- Role: ${owner.role}
+- Departments: ${owner.departments.join(', ')}
+- Specializations: ${owner.contentDomains.join(', ')}
+- Writing tone: ${owner.tone}
 
 CRITICAL REQUIREMENTS:
 - Write EXACTLY ${length} words (count carefully)
 - Use plain text only - NO emojis, symbols, or casual language
-- Professional and humanized tone throughout
+- ${owner.tone} and humanized tone throughout
 - Target audience: ${targetAudience}
 - Content type: ${contentType}
 - Unique angle: ${uniqueAngle}
+- Write from your expertise in: ${owner.contentDomains.join(', ')}
 
 ${contentType === 'SEO Page' ? 'Naturally incorporate these keywords for search optimization: ' + keywords.slice(0, 5).join(', ') : ''}
 ${contentType === 'Newsletter' ? 'Structure with clear sections, headlines, and actionable insights.' : ''}
@@ -191,11 +295,11 @@ ${contentType === 'Social Post' ? 'Make it engaging and discussion-worthy for pr
 Topic: ${topic}
 Variation #${variation + 1} - Ensure this variation is unique and offers a fresh perspective.
 
-Write professional, humanized content that provides real value to working professionals.`;
+Write as ${owner.name} would, leveraging your role as ${owner.role} to provide specialized insights.`;
 
-  const userPrompt = `Create a ${contentType.toLowerCase()} about "${topic}" with the unique angle "${uniqueAngle}". 
+  const userPrompt = `As ${owner.name} (${owner.role}), create a ${contentType.toLowerCase()} about "${topic}" with the unique angle "${uniqueAngle}". 
 
-The content must be exactly ${length} words and ready to publish directly on TalentXcel platform. Focus on providing actionable insights and professional value.`;
+The content must be exactly ${length} words and ready to publish directly on TalentXcel platform. Focus on providing actionable insights from your expertise in ${owner.contentDomains.join(', ')}.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -330,7 +434,10 @@ serve(async (req) => {
           
           console.log(`   • ${plan.type} ${i + 1}/${plan.count}: ${uniqueAngle.substring(0, 50)}...`);
           
-          const generatedContent = await generateAIContent({
+          // Assign content owner
+          const owner = assignContentOwner(plan.category);
+          
+          const generatedContent = await generateAIContentWithOwner({
             contentType: plan.type,
             topic,
             targetAudience: plan.targetAudience,
@@ -338,10 +445,11 @@ serve(async (req) => {
             category: plan.category,
             keywords,
             variation: i,
-            uniqueAngle
+            uniqueAngle,
+            owner
           });
           
-          // Insert into ai_content_library
+          // Insert into ai_content_library with owner information
           const { data, error } = await supabase
             .from('ai_content_library')
             .insert([
@@ -356,10 +464,19 @@ serve(async (req) => {
                   'automated',
                   'production_scale',
                   `variation_${i + 1}`,
+                  `author_${owner.name.toLowerCase().replace(' ', '_')}`,
+                  `tone_${owner.tone}`,
                   ...keywords.slice(0, 3)
                 ],
-                metadata: generatedContent.metadata,
-                quality_score: 90, // High score for production content
+                metadata: {
+                  ...generatedContent.metadata,
+                  author: owner.name,
+                  authorRole: owner.role,
+                  authorTone: owner.tone,
+                  authorDepartments: owner.departments,
+                  authorContentDomains: owner.contentDomains
+                },
+                quality_score: 92, // High score for production content with owner
                 is_approved: true, // Auto-approve for automated content
                 usage_count: 0
               }
