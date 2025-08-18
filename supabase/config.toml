@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.health-check]
 verify_jwt = false
+
+[functions.ping]
+verify_jwt = false
