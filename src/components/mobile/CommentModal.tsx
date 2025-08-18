@@ -53,10 +53,10 @@ export const CommentModal: React.FC<CommentModalProps> = ({
           id,
           content,
           created_at,
-          user_id,
+          author_id,
           post_id,
           likes_count,
-          profiles!post_comments_user_id_fkey(
+          profiles!post_comments_author_id_fkey(
             id,
             full_name,
             profile_picture_url
@@ -99,7 +99,7 @@ export const CommentModal: React.FC<CommentModalProps> = ({
         .insert({
           content,
           post_id: postId,
-          user_id: user.id
+          author_id: user.id
         })
         .select()
         .single();
@@ -216,21 +216,21 @@ export const CommentModal: React.FC<CommentModalProps> = ({
               {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
                    <Avatar className="h-8 w-8 mt-1">
-                    <AvatarImage src={comment.profiles?.[0]?.profile_picture_url} />
-                    <AvatarFallback className="text-xs">
-                      {comment.profiles?.[0]?.full_name?.[0] || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-muted rounded-lg p-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-sm">
-                          {comment.profiles?.[0]?.full_name || 'Anonymous'}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatTimeAgo(comment.created_at)}
-                        </span>
+                     <AvatarImage src={comment.profiles?.[0]?.profile_picture_url} />
+                     <AvatarFallback className="text-xs">
+                       {comment.profiles?.[0]?.full_name?.[0] || 'U'}
+                     </AvatarFallback>
+                   </Avatar>
+                   
+                   <div className="flex-1 min-w-0">
+                     <div className="bg-muted rounded-lg p-3">
+                       <div className="flex items-center gap-2 mb-1">
+                         <span className="font-semibold text-sm">
+                           {comment.profiles?.[0]?.full_name || 'Anonymous User'}
+                         </span>
+                         <span className="text-xs text-muted-foreground">
+                           {formatTimeAgo(comment.created_at)}
+                         </span>
                       </div>
                       <p className="text-sm">{comment.content}</p>
                     </div>
