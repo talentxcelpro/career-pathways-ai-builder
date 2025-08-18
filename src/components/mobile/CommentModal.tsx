@@ -215,10 +215,10 @@ export const CommentModal: React.FC<CommentModalProps> = ({
             <div className="space-y-4">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarImage src={comment.profiles?.profile_picture_url} />
+                   <Avatar className="h-8 w-8 mt-1">
+                    <AvatarImage src={comment.profiles?.[0]?.profile_picture_url} />
                     <AvatarFallback className="text-xs">
-                      {comment.profiles?.full_name?.[0] || 'U'}
+                      {comment.profiles?.[0]?.full_name?.[0] || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   
@@ -226,7 +226,7 @@ export const CommentModal: React.FC<CommentModalProps> = ({
                     <div className="bg-muted rounded-lg p-3">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold text-sm">
-                          {comment.profiles?.full_name || 'Anonymous'}
+                          {comment.profiles?.[0]?.full_name || 'Anonymous'}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {formatTimeAgo(comment.created_at)}
@@ -237,11 +237,11 @@ export const CommentModal: React.FC<CommentModalProps> = ({
                     
                     <div className="flex items-center gap-4 mt-2 pl-3">
                       <button
-                        onClick={() => handleLikeComment(comment.id, comment.is_liked)}
+                        onClick={() => handleLikeComment(comment.id, false)}
                         className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
                       >
                         <Heart 
-                          className={`h-3 w-3 ${comment.is_liked ? 'fill-red-500 text-red-500' : ''}`} 
+                          className="h-3 w-3" 
                         />
                         {comment.likes_count > 0 && comment.likes_count}
                       </button>

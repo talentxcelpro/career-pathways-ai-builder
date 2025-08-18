@@ -10,6 +10,7 @@ import {
   Heart, 
   MessageCircle, 
   Share, 
+  Repeat2,
   Bookmark,
   MapPin,
   Clock,
@@ -17,6 +18,10 @@ import {
   ExternalLink,
   Eye
 } from 'lucide-react';
+import { CommentModal } from './CommentModal';
+import { ShareModal } from './ShareModal';
+import { ReshareModal } from './ReshareModal';
+import { linkifyText } from '@/utils/linkify';
 
 interface NetworkPostProps {
   post: {
@@ -49,6 +54,9 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likes, setLikes] = useState(post.interactions.interested);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showReshareModal, setShowReshareModal] = useState(false);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {
@@ -95,26 +103,15 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   };
 
   const handleComment = () => {
-    // Navigate to post detail with comments
-    window.location.href = `/network/posts/${post.id}`;
+    setShowCommentModal(true);
   };
 
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}/network/posts/${post.id}`;
-  
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: post.description,
-        url: shareUrl,
-      });
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast({
-        title: "Link Copied",
-        description: "Post link copied to clipboard!",
-      });
-    }
+    setShowShareModal(true);
+  };
+
+  const handleReshare = () => {
+    setShowReshareModal(true);
   };
 
   const handleBookmark = () => {
@@ -220,7 +217,7 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
             )}
             
             <p className="text-gray-700 text-sm leading-relaxed">
-              {post.description}
+              {linkifyText(post.description)}
             </p>
           </div>
 
@@ -290,6 +287,15 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
               variant="ghost" 
               size="sm" 
               className="flex-1 gap-2"
+              onClick={handleReshare}
+            >
+              <Repeat2 className="h-4 w-4" />
+              Reshare
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex-1 gap-2"
               onClick={handleShare}
             >
               <Share className="h-4 w-4" />
@@ -305,6 +311,24 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
             </Button>
           </div>
         </div>
+        
+        {/* Modals */}
+        <CommentModal 
+          isOpen={showCommentModal}
+          onClose={() => setShowCommentModal(false)}
+          postId={post.id}
+          postTitle={post.title}
+        />
+        <ShareModal 
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          post={post}
+        />
+        <ReshareModal 
+          isOpen={showReshareModal}
+          onClose={() => setShowReshareModal(false)}
+          post={post}
+        />
       </CardContent>
     </Card>
   );

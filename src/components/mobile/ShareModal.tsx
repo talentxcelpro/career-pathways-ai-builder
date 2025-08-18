@@ -11,7 +11,6 @@ import {
   Facebook,
   Twitter,
   Linkedin,
-  WhatsApp
 } from 'lucide-react';
 
 interface ShareModalProps {
