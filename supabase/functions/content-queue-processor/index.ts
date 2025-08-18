@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-console.log('🚀 content-queue-processor v2.3: OpenAI-only with stub fallback');
+console.log('🚀 content-queue-processor v2.3.1: OpenAI-only with stub fallback');
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -16,7 +16,7 @@ serve(async (req) => {
   }
   // Health check endpoint
   if (req.method === 'GET') {
-    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.3', mode: 'openai-only' }), {
+    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.3.1', mode: 'openai-only' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
