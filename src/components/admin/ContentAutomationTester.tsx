@@ -197,10 +197,14 @@ export const ContentAutomationTester: React.FC = () => {
         .select('id')
         .eq('is_active', true);
 
-      if (!rsp || rsp.success === false || (rsp.created ?? 0) === 0) {
+      const wallCreated = rsp?.created ?? 0;
+      const postsCreated = rsp?.posts_created ?? 0;
+      const totalCreated = postsCreated || wallCreated;
+
+      if (!rsp || rsp.success === false || totalCreated === 0) {
         updateResult(0, 'error', `No posts created. Active bots: ${activeBots?.length ?? 0}. ${rsp?.message ?? ''}`.trim(), rsp);
       } else {
-        updateResult(0, 'success', `Created ${rsp?.created ?? 0} posts (${via}); Active bots: ${activeBots?.length ?? 0}`, rsp);
+        updateResult(0, 'success', `Created ${totalCreated} posts (${via}); Active bots: ${activeBots?.length ?? 0}`, rsp);
       }
 
       // Verify in both bot_wall (source of truth) and posts (synced)

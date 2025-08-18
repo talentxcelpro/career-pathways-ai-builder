@@ -149,6 +149,7 @@ serve(async (req) => {
 
     const created: Array<{ id: string | null; bot_id: string; category: string }> = [];
     const errors: Array<{ bot_id: string; stage: string; message: string }> = [];
+    let postsCreated = 0;
     let catIndex = 0;
 
     for (const bot of botList) {
@@ -181,8 +182,6 @@ serve(async (req) => {
         if (wallErr) {
           console.error("Insert bot_wall failed for bot", bot.id, wallErr?.message || wallErr);
           errors.push({ bot_id: bot.id, stage: 'bot_wall', message: wallErr?.message || String(wallErr) });
-          created.push({ id: null, bot_id: bot.id, category });
-          continue;
         }
 
         // 2) Insert into posts table with explicit author ID
@@ -216,6 +215,7 @@ serve(async (req) => {
               errors.push({ bot_id: bot.id, stage: 'posts', message: postError.message });
             } else {
               console.log(`Successfully created post ${postData.id} for bot ${bot.name}`);
+              postsCreated++;
             }
           } else {
             console.error(`Skipping posts insert: missing author_id for bot ${bot.id}`);
@@ -233,6 +233,8 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         created: created.filter(p => p.id).length,
+        wall_created: created.filter(p => p.id).length,
+        posts_created: postsCreated,
         attempted: created.length,
         posts: created,
         errors,
