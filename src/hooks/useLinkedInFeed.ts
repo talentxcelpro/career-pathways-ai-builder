@@ -115,6 +115,14 @@ export const useLinkedInFeed = () => {
 
       const likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
 
+      // Get user's bookmarks
+      const { data: userBookmarks } = await supabase
+        .from('user_bookmarks')
+        .select('post_id')
+        .eq('user_id', user.id);
+
+      const bookmarkedPosts = new Set(userBookmarks?.map(bookmark => bookmark.post_id) || []);
+      
       // Get liked by users for engagement data
       const { data: likedByData } = await supabase
         .from('post_likes')
@@ -133,7 +141,9 @@ export const useLinkedInFeed = () => {
         if (!likedByMap.has(like.post_id)) {
           likedByMap.set(like.post_id, []);
         }
-        likedByMap.get(like.post_id).push(like.profiles[0]);
+        if (like.profiles) {
+          likedByMap.get(like.post_id).push(like.profiles);
+        }
       });
 
       // Create profiles map
@@ -144,6 +154,7 @@ export const useLinkedInFeed = () => {
         const profile = profilesMap.get(post.author_id);
         const isConnection = connections.has(post.author_id);
         const isLiked = likedPosts.has(post.id);
+        const isBookmarked = bookmarkedPosts.has(post.id);
         
         // Get top comment with real user data
         const topComment = post.post_comments && post.post_comments.length > 0 
@@ -198,19 +209,19 @@ export const useLinkedInFeed = () => {
             comments: post.post_comments?.length || 0,
             shares: post.post_shares?.length || 0,
             isLiked,
-            isBookmarked: false // Will implement bookmarks separately
+            isBookmarked
           },
-          isJobPost: post.content_type === 'job' || post.tags?.includes('job'),
-          isPromoted: post.is_featured || false,
+          isJobPost: post.content_type === 'job' || post.tags?.includes('job') || post.post_type === 'job',
+          isPromoted: post.is_featured || post.is_pinned || false,
           jobDetails: post.content_type === 'job' ? {
             company: profile?.current_company || 'TalentXcel',
-            position: post.headline || post.title || 'Professional Opportunity',
+            position: post.headline || post.content?.substring(0, 50) || 'Professional Opportunity',
             location: userLocation,
-            applyUrl: post.external_url || post.featured_image_url
+            applyUrl: post.preview_url || post.featured_image_url || '#'
           } : undefined,
           timestamp: formatTimeAgo(post.created_at),
           engagement: {
-            likedBy: likedByUsers.map(u => u.full_name).slice(0, 3),
+            likedBy: likedByUsers.map(u => u?.full_name || 'Anonymous').slice(0, 3),
             topComment: topComment
           }
         };
