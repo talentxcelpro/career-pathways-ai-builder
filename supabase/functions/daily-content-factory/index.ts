@@ -414,6 +414,22 @@ serve(async (req) => {
   }
 
   try {
+    // Parse JSON body safely
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch (_e) {
+      body = {};
+    }
+
+    // Health check / simple test path
+    if (body?.action === 'ping' || body?.action === 'health' || body?.name === 'Functions') {
+      return new Response(
+        JSON.stringify({ success: true, message: 'daily-content-factory online', echo: body }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     console.log('🏭 Daily Content Factory: Starting production-scale generation cycle');
     console.log(`📊 Target: ${dailyContentPlan.reduce((sum, plan) => sum + plan.count, 0)} total pieces`);
     
@@ -421,7 +437,6 @@ serve(async (req) => {
     let totalGenerated = 0;
     let errors = 0;
     const startTime = Date.now();
-
     for (const plan of dailyContentPlan) {
       console.log(`📝 Generating ${plan.count} ${plan.type} pieces...`);
       
@@ -578,11 +593,12 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('❌ Daily Content Factory failed:', error);
+    const message = error instanceof Error ? error.message : typeof error === 'string' ? error : JSON.stringify(error);
     
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
+        error: message,
         timestamp: new Date().toISOString()
       }),
       {
