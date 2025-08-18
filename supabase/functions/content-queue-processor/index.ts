@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-console.log('🚀 content-queue-processor v2.2: OpenAI-only with stub fallback');
+console.log('🚀 content-queue-processor v2.3: OpenAI-only with stub fallback');
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -16,16 +16,20 @@ serve(async (req) => {
   }
   // Health check endpoint
   if (req.method === 'GET') {
-    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.2', mode: 'openai-only' }), {
+    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.3', mode: 'openai-only' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_KEY') ?? ''
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables');
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { action, count = 1 } = await req.json().catch(() => ({ action: 'process', count: 1 }));
 
