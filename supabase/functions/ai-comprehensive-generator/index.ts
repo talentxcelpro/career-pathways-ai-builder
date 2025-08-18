@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-console.log('🚀 AI Comprehensive Generator: Multi-AI mode active - v2.0');
+console.log('🚀 AI Comprehensive Generator: Multi-AI mode active - v2.1 FORCE DEPLOY');
 
 serve(async (req) => {
   // Handle CORS preflight requests

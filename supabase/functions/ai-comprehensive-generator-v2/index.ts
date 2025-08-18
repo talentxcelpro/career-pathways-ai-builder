@@ -7,8 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-// OpenAI-only implementation (v2.6 - FORCE DEPLOY)
-console.log('🚀 AI Comprehensive Generator v2.6: OpenAI-only mode active - DEPLOYED');
+// OpenAI-only implementation (v2.7 - FORCE DEPLOY)
+console.log('🚀 AI Comprehensive Generator v2.7: OpenAI-only mode active - DEPLOYED');
 
 serve(async (req) => {
   // Handle CORS preflight requests

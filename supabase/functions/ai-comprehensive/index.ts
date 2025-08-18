@@ -19,6 +19,20 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Health check endpoint - FORCE DEPLOY v1.1
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ 
+        ok: true, 
+        function: 'ai-comprehensive', 
+        version: '1.1',
+        status: 'deployed',
+        timestamp: new Date().toISOString()
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
