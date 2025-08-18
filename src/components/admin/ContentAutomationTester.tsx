@@ -51,12 +51,15 @@ export const ContentAutomationTester: React.FC = () => {
   }
 
   async function generateViaAICG() {
-    const { data, error } = await supabase.functions.invoke('ai-comprehensive-generator', {
+    const { data, error } = await supabase.functions.invoke('ai-content-generator', {
       body: {
-        contentType: 'article',
-        topic: 'Automation tester fallback',
+        contentType: 'blog_post',
+        topic: 'Automation tester sample',
         targetAudience: 'professionals',
         tone: 'professional',
+        keywords: ['AI', 'automation'],
+        industry: 'technology',
+        wordCount: 300
       }
     });
     if (error) throw error;
@@ -92,81 +95,62 @@ export const ContentAutomationTester: React.FC = () => {
   const startAutomationTest = async () => {
     setIsRunning(true);
     const steps: TestResult[] = [
-      { step: 'Queue Content Generation', status: 'pending', message: 'Starting content generation queue...' },
-      { step: 'Process Queue', status: 'pending', message: 'Waiting...' },
+      { step: 'Generate Content', status: 'pending', message: 'Invoking ai-content-generator...' },
       { step: 'Verify Generated Content', status: 'pending', message: 'Waiting...' }
     ];
     setTestResults(steps);
 
     try {
-      console.log('🚀 Starting comprehensive content automation test...');
-      
-      // Step 1: Queue content generation jobs
-      updateResult(0, 'success', 'Queuing content generation jobs...');
-      
-      const { data: queueData, via: queueVia } = await withTimeout(
-        invokeOrDirect('ai-comprehensive-generator', {
-          action: 'queue',
-          count: 10
-        }),
-        30000,
-        'Queue'
-      );
-      
-      updateResult(0, 'success', `Queued ${queueData?.jobs_queued ?? queueData?.queued ?? 0} jobs (${queueVia})`, queueData);
-      
-      // Step 2: Process the queue
-      updateResult(1, 'success', 'Processing content generation queue...');
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Brief delay
-      
-      const { data: processData, via: processVia } = await withTimeout(
-        invokeOrDirect('ai-comprehensive-generator', {
-          action: 'process'
-        }),
+      console.log('🚀 Starting simple content generation test...');
+
+      // Step 1: Generate content via ai-content-generator
+      updateResult(0, 'success', 'Generating content...');
+
+      const data = await withTimeout(
+        generateViaAICG(),
         60000,
-        'Process'
+        'Generate'
       );
-      
-      updateResult(1, 'success', `Processed ${processData?.processed ?? 0} jobs (${processVia})`, processData);
-      
-      // Step 3: Verify generated content
-      updateResult(2, 'success', 'Verifying generated content...');
-      
+
+      updateResult(0, 'success', 'Content generated successfully', data);
+
+      // Step 2: Verify generated content saved
+      updateResult(1, 'success', 'Verifying generated content...');
+
       await new Promise(resolve => setTimeout(resolve, 1000)); // Brief delay
-      
+
       const { data: recentContent, error: contentError } = await supabase
-        .from('bot_generated_content')
+        .from('ai_content_library')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(5);
-      
+
       if (contentError) {
-        updateResult(2, 'error', `Verification failed: ${contentError.message}`, contentError);
+        updateResult(1, 'error', `Verification failed: ${contentError.message}`, contentError);
         setIsRunning(false);
         return;
       }
-      
-      updateResult(2, 'success', `Found ${recentContent?.length || 0} recent content pieces`, recentContent);
+
+      updateResult(1, 'success', `Found ${recentContent?.length || 0} recent content entries`, recentContent);
 
       toast({
-        title: "Content Automation Test Complete",
-        description: `Successfully processed ${processData?.processed ?? 0} jobs and found ${recentContent?.length || 0} content pieces`,
+        title: 'Content Generation Test Complete',
+        description: `Generated content and verified ${recentContent?.length || 0} recent entries`,
       });
 
     } catch (error) {
-      console.error('Content automation test failed:', error);
-      
+      console.error('Content generation test failed:', error);
+
       // Update the current step with error
       const currentStep = testResults.findIndex(r => r.status === 'pending');
       if (currentStep >= 0) {
         updateResult(currentStep, 'error', error instanceof Error ? error.message : 'Unknown error occurred');
       }
-      
+
       toast({
-        title: "Test Failed",
+        title: 'Test Failed',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
-        variant: "destructive"
+        variant: 'destructive'
       });
     } finally {
       setIsRunning(false);
