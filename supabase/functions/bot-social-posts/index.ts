@@ -186,6 +186,8 @@ serve(async (req) => {
             visibility: "public",
             origin: "bot_wall",
             is_bot_post: true,
+            is_ai_generated: true,
+            metadata: { category, source: "bot-social-posts", bot_id: bot.id, preset: preset || null },
             bot_id: bot.id,
             created_at: now,
           });
