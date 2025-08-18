@@ -62,3 +62,10 @@ verify_jwt = false
 
 [functions.arsh]
 verify_jwt = false
+
+# Content queue processors (both names supported)
+[functions.content-queue-processor]
+verify_jwt = false
+
+[functions.content_queue_processor]
+verify_jwt = false
