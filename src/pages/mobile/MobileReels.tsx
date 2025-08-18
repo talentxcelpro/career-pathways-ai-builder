@@ -245,42 +245,9 @@ export const MobileReels = () => {
         className="h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
         onScroll={handleScroll}
       >
-        {reels.map((reel, index) => (
-          <div 
-            key={reel.id} 
-            className="h-screen w-full relative snap-start flex items-center justify-center"
-          >
-            {/* Video */}
-            <video
-              ref={el => videoRefs.current[index] = el}
-              className="w-full h-full object-cover"
-              src={reel.video_url}
-              poster={reel.thumbnail_url}
-              loop
-              autoPlay
-              muted={isMuted}
-              playsInline
-              preload="metadata"
-              onLoadStart={() => console.log('Video loading started:', reel.video_url)}
-              onCanPlay={() => console.log('Video can play:', reel.video_url)}
-              onError={(e) => console.error('Video error:', e, reel.video_url)}
-              onClick={togglePlayPause}
-            />
-
-            {/* Play/Pause Overlay */}
-            {!isPlaying && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-16 w-16 rounded-full bg-black/30 hover:bg-black/50 text-white"
-                  onClick={togglePlayPause}
-                >
-                  <Play className="h-8 w-8" />
-                </Button>
-              </div>
-            )}
-
+        {reels.length === 0 ? (
+          // Empty state with proper TikTok-style UI
+          <div className="h-screen w-full relative snap-start flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
             {/* Top Controls */}
             <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/50 to-transparent">
               <div className="flex justify-between items-center">
@@ -288,14 +255,6 @@ export const MobileReels = () => {
                   <span className="text-white font-semibold text-lg">Reels</span>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-                    onClick={toggleMute}
-                  >
-                    {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-                  </Button>
                   {user && (
                     <Button
                       variant="ghost"
@@ -317,109 +276,216 @@ export const MobileReels = () => {
               </div>
             </div>
 
-            {/* Bottom Content */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-              <div className="flex justify-between items-end">
-                {/* Left side - Content */}
-                <div className="flex-1 pr-4">
-                  {/* Author */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="h-10 w-10 ring-2 ring-white">
-                      <AvatarImage src={reel.author.avatar_url} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                        {reel.author.first_name[0]}{reel.author.last_name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="text-white font-semibold">
-                        {reel.author.first_name} {reel.author.last_name}
-                      </p>
-                      {reel.author.title && (
-                        <p className="text-gray-300 text-sm">
-                          {reel.author.title} {reel.author.company && `at ${reel.author.company}`}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      size="sm"
-                      className="rounded-full bg-white text-black hover:bg-gray-200 px-4"
-                      onClick={() => handleConnect(reel.author.id)}
-                    >
-                      <UserPlus className="h-3 w-3 mr-1" />
-                      Connect
-                    </Button>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-white text-sm mb-2 line-clamp-2">
-                    {reel.description}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {reel.tags.slice(0, 3).map((tag, tagIndex) => (
-                      <Badge key={tagIndex} className="bg-white/20 text-white text-xs rounded-full">
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 text-white text-sm">
-                    <span>{reel.stats.views.toLocaleString()} views</span>
-                    <span>{reel.stats.likes} likes</span>
-                    <span>{reel.stats.comments} comments</span>
-                  </div>
+            {/* Empty state content */}
+            <div className="text-center px-8">
+              <div className="mb-6">
+                <Play className="h-16 w-16 text-white/60 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">No Reels Yet</h2>
+                <p className="text-gray-300 text-lg">Be the first to share your career journey!</p>
+              </div>
+              
+              {user ? (
+                <Button
+                  onClick={() => setShowUploadModal(true)}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-full"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create Your First Reel
+                </Button>
+              ) : (
+                <div className="text-gray-400">
+                  <p>Login to create and share reels</p>
                 </div>
-
-                {/* Right side - Actions */}
-                <div className="flex flex-col gap-4 items-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                    onClick={() => handleLike(reel.id)}
-                  >
-                    <Heart className={`h-6 w-6 ${reel.is_liked ? 'fill-red-500 text-red-500' : ''}`} />
-                    <span className="absolute -bottom-6 text-xs">{reel.stats.likes}</span>
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                    onClick={() => handleComment(reel.id)}
-                  >
-                    <MessageCircle className="h-6 w-6" />
-                    <span className="absolute -bottom-6 text-xs">{reel.stats.comments}</span>
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                    onClick={() => handleShare(reel.id)}
-                  >
-                    <Share className="h-6 w-6" />
-                    <span className="absolute -bottom-6 text-xs">{reel.stats.shares}</span>
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-                    onClick={() => {
-                      // Handle bookmark functionality
-                      console.log('Bookmark reel:', reel.id);
-                    }}
-                  >
-                    <Bookmark className={`h-6 w-6 ${reel.is_bookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-                  </Button>
+              )}
+              
+              <div className="mt-8 text-center">
+                <p className="text-gray-400 text-sm">Share your:</p>
+                <div className="flex flex-wrap justify-center gap-2 mt-2">
+                  <Badge className="bg-white/10 text-white text-xs">Career Tips</Badge>
+                  <Badge className="bg-white/10 text-white text-xs">Success Stories</Badge>
+                  <Badge className="bg-white/10 text-white text-xs">Day in Life</Badge>
+                  <Badge className="bg-white/10 text-white text-xs">Skills Demo</Badge>
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        ) : (
+          reels.map((reel, index) => (
+            <div 
+              key={reel.id} 
+              className="h-screen w-full relative snap-start flex items-center justify-center"
+            >
+              {/* Video */}
+              <video
+                ref={el => videoRefs.current[index] = el}
+                className="w-full h-full object-cover"
+                src={reel.video_url}
+                poster={reel.thumbnail_url}
+                loop
+                autoPlay
+                muted={isMuted}
+                playsInline
+                preload="metadata"
+                onLoadStart={() => console.log('Video loading started:', reel.video_url)}
+                onCanPlay={() => console.log('Video can play:', reel.video_url)}
+                onError={(e) => console.error('Video error:', e, reel.video_url)}
+                onClick={togglePlayPause}
+              />
+
+              {/* Play/Pause Overlay */}
+              {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-16 w-16 rounded-full bg-black/30 hover:bg-black/50 text-white"
+                    onClick={togglePlayPause}
+                  >
+                    <Play className="h-8 w-8" />
+                  </Button>
+                </div>
+              )}
+
+              {/* Top Controls */}
+              <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/50 to-transparent">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold text-lg">Reels</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                      onClick={toggleMute}
+                    >
+                      {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                    </Button>
+                    {user && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                        onClick={() => setShowUploadModal(true)}
+                      >
+                        <Plus className="h-5 w-5" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                    >
+                      <MoreHorizontal className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Content */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                <div className="flex justify-between items-end">
+                  {/* Left side - Content */}
+                  <div className="flex-1 pr-4">
+                    {/* Author */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <Avatar className="h-10 w-10 ring-2 ring-white">
+                        <AvatarImage src={reel.author.avatar_url} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                          {reel.author.first_name[0]}{reel.author.last_name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-white font-semibold">
+                          {reel.author.first_name} {reel.author.last_name}
+                        </p>
+                        {reel.author.title && (
+                          <p className="text-gray-300 text-sm">
+                            {reel.author.title} {reel.author.company && `at ${reel.author.company}`}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        className="rounded-full bg-white text-black hover:bg-gray-200 px-4"
+                        onClick={() => handleConnect(reel.author.id)}
+                      >
+                        <UserPlus className="h-3 w-3 mr-1" />
+                        Connect
+                      </Button>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-white text-sm mb-2 line-clamp-2">
+                      {reel.description}
+                    </p>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {reel.tags.slice(0, 3).map((tag, tagIndex) => (
+                        <Badge key={tagIndex} className="bg-white/20 text-white text-xs rounded-full">
+                          #{tag}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center gap-4 text-white text-sm">
+                      <span>{reel.stats.views.toLocaleString()} views</span>
+                      <span>{reel.stats.likes} likes</span>
+                      <span>{reel.stats.comments} comments</span>
+                    </div>
+                  </div>
+
+                  {/* Right side - Actions */}
+                  <div className="flex flex-col gap-4 items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
+                      onClick={() => handleLike(reel.id)}
+                    >
+                      <Heart className={`h-6 w-6 ${reel.is_liked ? 'fill-red-500 text-red-500' : ''}`} />
+                      <span className="absolute -bottom-6 text-xs">{reel.stats.likes}</span>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
+                      onClick={() => handleComment(reel.id)}
+                    >
+                      <MessageCircle className="h-6 w-6" />
+                      <span className="absolute -bottom-6 text-xs">{reel.stats.comments}</span>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
+                      onClick={() => handleShare(reel.id)}
+                    >
+                      <Share className="h-6 w-6" />
+                      <span className="absolute -bottom-6 text-xs">{reel.stats.shares}</span>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                      onClick={() => {
+                        // Handle bookmark functionality
+                        console.log('Bookmark reel:', reel.id);
+                      }}
+                    >
+                      <Bookmark className={`h-6 w-6 ${reel.is_bookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Upload Modal */}
