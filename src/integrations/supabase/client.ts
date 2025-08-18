@@ -22,10 +22,6 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
       'cache-control': 'no-cache'
     }
   },
-  functions: {
-    // Use custom domain for Edge Functions (matches your Supabase dashboard)
-    url: 'https://auth.talentxcel.in/functions/v1'
-  },
   // Add retry configuration for better reliability
   db: {
     schema: 'public'
@@ -66,9 +62,6 @@ export const getSupabaseFunctions = () => {
             'cache-control': 'no-cache'
           }
         },
-        functions: {
-          url: 'https://auth.talentxcel.in/functions/v1'
-        }
       }
     );
   }

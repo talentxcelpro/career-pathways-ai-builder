@@ -34,7 +34,7 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
     // Method 2: Try direct GET request
     try {
       console.log('Attempting health check via direct GET...');
-      const functionUrl = `https://auth.talentxcel.in/functions/v1/simple-test`;
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-test`;
 
       const response = await fetch(functionUrl, {
         method: 'GET',
