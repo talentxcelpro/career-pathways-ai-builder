@@ -387,6 +387,9 @@ The content must be exactly ${length} words and ready to publish directly on Tal
         keywords,
         uniqueAngle,
         variation: variation + 1,
+        author: owner.name,
+        authorRole: owner.role,
+        authorTone: owner.tone,
         placement: dailyContentPlan.find(p => p.type === contentType)?.placement || '',
         style: dailyContentPlan.find(p => p.type === contentType)?.style || '',
         generatedAt: new Date().toISOString(),
@@ -399,7 +402,7 @@ The content must be exactly ${length} words and ready to publish directly on Tal
     };
 
   } catch (error) {
-    console.error(`Error generating ${contentType} content (variation ${variation + 1}):`, error);
+    console.error(`Error generating ${contentType} content with owner ${owner.name} (variation ${variation + 1}):`, error);
     throw error;
   }
 }
