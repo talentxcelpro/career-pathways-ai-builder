@@ -313,7 +313,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
             {/* Pro Banner */}
             {!isProUser && !dismissedBanners.includes('pro-upgrade') && (
               <ProBanner 
-                variant="default"
+                variant="feed"
                 onDismiss={() => setDismissedBanners(prev => [...prev, 'pro-upgrade'])}
               />
             )}
