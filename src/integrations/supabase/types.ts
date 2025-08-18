@@ -22731,6 +22731,16 @@ export type Database = {
         Args: { _required_role?: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      validate_bot_setup: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          bot_id: string
+          bot_name: string
+          has_profile: boolean
+          has_user: boolean
+          is_valid: boolean
+        }[]
+      }
       validate_job_location: {
         Args: { location: string }
         Returns: boolean

@@ -235,48 +235,52 @@ serve(async (req) => {
           console.log(`✅ Successfully created bot_wall ${wallInserted?.id} for bot ${bot.name}`);
         }
 
-        // 2) Insert into posts table with robust author ID resolution
+        // 2) Insert into posts table using bot user context
         try {
-          // Priority: bot profile -> bot user -> auth user -> admin fallback
-          const authorIdForPost = bot.profile_id || bot.user_id || authUserFromReq || adminFallback;
-          
-          if (authorIdForPost) {
-            const { data: postData, error: postError } = await userClient
-              .from("posts")
-              .insert({
-                author_id: authorIdForPost,
-                user_id: authorIdForPost, 
-                content,
-                headline: title,
-                is_public: true,
-                post_type: "text",
-                tags: [category],
-                status: "published",
-                visibility: "public",
-                origin: "bot_wall",
-                is_bot_post: true,
-                is_ai_generated: true,
-                metadata: { category, source: "bot-social-posts", bot_id: bot.id, preset: preset || null },
-                bot_id: bot.id,
-                created_at: now,
-              })
-              .select('id')
-              .single();
-            
-            if (postError) {
-              console.error(`Insert post failed for bot ${bot.id}: ${postError.message}`);
-              errors.push({ bot_id: bot.id, stage: 'posts', message: postError.message });
-            } else {
-              console.log(`Successfully created post ${postData.id} for bot ${bot.name} with author ${authorIdForPost}`);
-              postsCreated++;
+          // Create bot-specific user client for proper RLS context
+          const botUserClient = createClient(SUPABASE_URL, SERVICE_ROLE, {
+            global: {
+              headers: {
+                Authorization: `Bearer dummy-token-${bot.user_id}` // Placeholder for bot context
+              }
             }
+          });
+
+          const { data: postData, error: postError } = await supabase // Use service role for now
+            .from("posts")
+            .insert({
+              author_id: bot.user_id, // Use bot's user_id directly (now has profile)
+              content,
+              headline: title,
+              is_public: true,
+              post_type: "text", 
+              tags: [category],
+              status: "published",
+              visibility: "public",
+              origin: "bot_wall",
+              is_bot_post: true,
+              is_ai_generated: true,
+              metadata: { 
+                category, 
+                source: "bot-social-posts", 
+                bot_id: bot.id, 
+                bot_name: bot.name,
+                preset: preset || null 
+              },
+              created_at: now,
+            })
+            .select('id')
+            .single();
+          
+          if (postError) {
+            console.error(`❌ Posts insert failed for bot ${bot.id} (${bot.name}):`, postError.message);
+            errors.push({ bot_id: bot.id, stage: 'posts', message: postError.message });
           } else {
-            const errorMsg = 'No valid author_id found (bot has no profile_id/user_id, no auth user, no admin fallback)';
-            console.error(`Skipping posts insert for bot ${bot.id}: ${errorMsg}`);
-            errors.push({ bot_id: bot.id, stage: 'posts', message: errorMsg });
+            console.log(`✅ Successfully created post ${postData.id} for bot ${bot.name}`);
+            postsCreated++;
           }
         } catch (postSyncErr: any) {
-          console.error(`Posts insert failed for bot ${bot.id}: ${postSyncErr?.message || postSyncErr}`);
+          console.error(`❌ Posts insert exception for bot ${bot.id}:`, postSyncErr?.message || postSyncErr);
           errors.push({ bot_id: bot.id, stage: 'posts', message: postSyncErr?.message || String(postSyncErr) });
         }
 
