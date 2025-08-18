@@ -5,7 +5,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-console.log("Simple test function started - v1.3 Deno.serve")
+console.log("Simple test function started - v1.4 redeploy")
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
