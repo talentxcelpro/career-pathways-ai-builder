@@ -121,6 +121,8 @@ function generatePost(bot: any, category: (typeof CATEGORIES)[number]) {
 }
 
 serve(async (req) => {
+  console.log("🚀 Bot social posts function called");
+  
   // Preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
