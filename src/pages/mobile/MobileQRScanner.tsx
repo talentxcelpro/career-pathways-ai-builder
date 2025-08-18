@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { QrCode, Download, Share2, Copy, Camera, X, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import QrScanner from 'qr-scanner';
+import QRCode from 'qrcode';
 
 export const MobileQRScanner: React.FC = () => {
   const { user } = useAuth();
@@ -45,33 +46,43 @@ export const MobileQRScanner: React.FC = () => {
 
     setIsGenerating(true);
     try {
-      const response = await fetch('https://dthlgsnakhoftinssokm.functions.supabase.co/functions/v1/qr-generator', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          profileData: {
-            name: profile.full_name || 'Professional',
-            title: profile.headline || 'Career Professional',
-            company: profile.current_company || '',
-            email: user.email,
-          }
-        }),
+      const { data, error } = await supabase.functions.invoke('qr-generator', {
+        body: {
+          userId: user.id
+        }
       });
 
-      const data = await response.json();
-      const url = data.qrCodeData || data.qrCodeDataUrl;
+      if (error) throw error;
+
+      let url: string | null = null;
+      if (data?.qrCodeData) {
+        url = data.qrCodeData;
+      } else if (data?.publicUrl) {
+        // Generate client-side QR if function returned URL only
+        url = await QRCode.toDataURL(data.publicUrl, { width: 320, margin: 2 });
+      } else if (data?.success) {
+        // Final fallback to deterministic public URL
+        const publicUrl = `https://talentxcel.in/passport/${encodeURIComponent(user.id)}`;
+        url = await QRCode.toDataURL(publicUrl, { width: 320, margin: 2 });
+      }
+
       if (url) {
         setQrCodeUrl(url);
         toast.success('QR Code generated successfully!');
       } else {
-        throw new Error('Failed to generate QR code');
+        throw new Error('No QR code data returned');
       }
     } catch (error) {
       console.error('Error generating QR code:', error);
-      toast.error('Failed to generate QR code');
+      try {
+        const publicUrl = `https://talentxcel.in/passport/${encodeURIComponent(user.id)}`;
+        const fallbackDataUrl = await QRCode.toDataURL(publicUrl, { width: 320, margin: 2 });
+        setQrCodeUrl(fallbackDataUrl);
+        toast.success('QR Code generated (client fallback)');
+      } catch (clientErr) {
+        console.error('Client QR fallback failed:', clientErr);
+        toast.error('Failed to generate QR code');
+      }
     } finally {
       setIsGenerating(false);
     }
