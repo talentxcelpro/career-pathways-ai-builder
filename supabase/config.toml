@@ -32,7 +32,7 @@ verify_jwt = false
 [functions.simple-test]
 verify_jwt = false
 
-# Newly added AI functions
+# AI Content Generation Functions
 [functions.ai-comprehensive]
 verify_jwt = false
 
@@ -40,6 +40,12 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.ai-comprehensive-generator-v2]
+verify_jwt = false
+
+[functions.ai-content-generator]
+verify_jwt = false
+
+[functions.daily-content-factory]
 verify_jwt = false
 
 [functions.health]
@@ -55,7 +61,4 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.arsh]
-verify_jwt = false
-
-[functions.ai-content-generator]
 verify_jwt = false

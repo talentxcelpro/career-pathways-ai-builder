@@ -31,49 +31,15 @@ export const ContentAutomationDashboard: React.FC = () => {
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
-      const payload = {
-        contentType: 'blog_post',
-        topic: 'AI-powered content automation and productivity tips',
-        targetAudience: 'professionals',
-        tone: 'professional',
-        keywords: ['AI', 'automation', 'productivity'],
-        industry: 'technology',
-        wordCount: 500
-      };
+      const { data, error } = await supabase.functions.invoke('daily-content-factory');
 
-      // Try standard invoke first
-      let data: any | null = null;
-      try {
-        const { data: invokeData, error } = await supabase.functions.invoke('ai-content-generator', {
-          body: payload
-        });
-        if (error) throw error;
-        data = invokeData;
-      } catch (e) {
-        // Fallback: direct fetch (handles environments where invoke fails)
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData?.session?.access_token;
-        const res = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-content-generator', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) {
-          const errJson = await res.json().catch(() => ({}));
-          throw new Error(errJson?.error || `HTTP ${res.status}`);
-        }
-        data = await res.json();
-      }
+      if (error) throw error;
 
       if (data?.success) {
-        toast.success('Content generated successfully!');
-        console.log('Generated content:', data.content);
+        toast.success(`Daily content factory completed! Generated ${data.summary.total_generated} pieces across ${data.summary.content_types_processed} content types.`);
+        console.log('Daily content generation results:', data.results);
       } else {
-        throw new Error(data?.error || 'Content generation failed');
+        throw new Error(data?.error || 'Daily content generation failed');
       }
 
       // Refresh stats after a short delay
@@ -82,7 +48,7 @@ export const ContentAutomationDashboard: React.FC = () => {
       }, 1500);
     } catch (err: any) {
       console.error('Generation error:', err);
-      toast.error(`Failed to generate content: ${err.message}`);
+      toast.error(`Failed to generate daily content: ${err.message}`);
     } finally {
       setIsGenerating(false);
     }
@@ -90,31 +56,31 @@ export const ContentAutomationDashboard: React.FC = () => {
 
   const loadStats = async () => {
     try {
-      // Get today's generated content
+      // Get today's generated content from ai_content_library
       const { data: todayContent } = await supabase
-        .from('bot_generated_content')
-        .select('content_type')
+        .from('ai_content_library')
+        .select('template_type')
         .gte('created_at', new Date().toISOString().split('T')[0]);
 
-      // Get all content stats
+      // Get all content stats from ai_content_library
       const { data: allContent } = await supabase
-        .from('bot_generated_content')
-        .select('content_type');
+        .from('ai_content_library')
+        .select('template_type');
 
       if (todayContent && allContent) {
         const safeToday = (todayContent as any) || [];
         const safeAll = (allContent as any) || [];
         
         const todayStats = safeToday.reduce((acc: Record<string, number>, item: any) => {
-          if (item && typeof item === 'object' && item.content_type) {
-            acc[item.content_type] = (acc[item.content_type] || 0) + 1;
+          if (item && typeof item === 'object' && item.template_type) {
+            acc[item.template_type] = (acc[item.template_type] || 0) + 1;
           }
           return acc;
         }, {} as Record<string, number>);
 
         const allStats = safeAll.reduce((acc: Record<string, number>, item: any) => {
-          if (item && typeof item === 'object' && item.content_type) {
-            acc[item.content_type] = (acc[item.content_type] || 0) + 1;
+          if (item && typeof item === 'object' && item.template_type) {
+            acc[item.template_type] = (acc[item.template_type] || 0) + 1;
           }
           return acc;
         }, {} as Record<string, number>);
@@ -122,7 +88,7 @@ export const ContentAutomationDashboard: React.FC = () => {
         setStats({
           total_generated: allContent.length,
           today_generated: todayContent.length,
-          posts: allStats.post || 0,
+          posts: allStats.social_post || 0,
           articles: allStats.article || 0,
           seo_pages: allStats.seo_page || 0,
           newsletters: allStats.newsletter || 0
