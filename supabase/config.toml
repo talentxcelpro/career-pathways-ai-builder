@@ -239,3 +239,6 @@ verify_jwt = false
 
 [functions.bot-social-posts]
 verify_jwt = false
+
+[functions.agent-worker]
+verify_jwt = false
