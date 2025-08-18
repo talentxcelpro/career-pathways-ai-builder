@@ -5,9 +5,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? 'https://dthlgsnakhoftinssokm.supabase.co';
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY')!;
 
@@ -414,18 +415,26 @@ serve(async (req) => {
   }
 
   try {
-    // Parse JSON body safely
-    let body: any = {};
+    // Parse body (supports JSON or plain text)
+    const url = new URL(req.url);
+    const params = url.searchParams;
+    let raw = '';
     try {
-      body = await req.json();
+      raw = await req.text();
     } catch (_e) {
-      body = {};
+      raw = '';
+    }
+    let body: any = {};
+    if (raw) {
+      try { body = JSON.parse(raw); } catch { body = { raw }; }
     }
 
     // Health check / simple test path
-    if (body?.action === 'ping' || body?.action === 'health' || body?.name === 'Functions') {
+    const name = body?.name || params.get('name');
+    const action = body?.action || params.get('action');
+    if (action === 'ping' || action === 'health' || name === 'Functions') {
       return new Response(
-        JSON.stringify({ success: true, message: 'daily-content-factory online', echo: body }),
+        JSON.stringify({ success: true, message: 'daily-content-factory online', echo: body || null }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
