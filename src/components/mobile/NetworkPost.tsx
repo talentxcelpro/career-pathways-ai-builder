@@ -21,7 +21,7 @@ import {
 import { CommentModal } from './CommentModal';
 import { ShareModal } from './ShareModal';
 import { ReshareModal } from './ReshareModal';
-import { linkifyText } from '@/utils/linkify';
+import { linkifyText } from '@/utils/textUtils';
 
 interface NetworkPostProps {
   post: {
