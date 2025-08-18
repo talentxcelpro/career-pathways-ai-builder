@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,15 +7,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { QrCode, Download, Share2, Copy, Camera } from 'lucide-react';
+import { QrCode, Download, Share2, Copy, Camera, X, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import QrScanner from 'qr-scanner';
 
 export const MobileQRScanner: React.FC = () => {
   const { user } = useAuth();
   const { careerPassport } = useCareerPassport();
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scannedResult, setScannedResult] = useState<string>('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const qrScannerRef = useRef<QrScanner | null>(null);
 
   // Get profile data
   const { data: profile } = useQuery({
@@ -119,6 +123,79 @@ export const MobileQRScanner: React.FC = () => {
       toast.error('Failed to copy link');
     }
   };
+
+  const startQRScanning = async () => {
+    try {
+      setIsScanning(true);
+      
+      if (!videoRef.current) {
+        toast.error('Camera initialization failed');
+        return;
+      }
+
+      qrScannerRef.current = new QrScanner(
+        videoRef.current,
+        (result) => {
+          setScannedResult(result.data);
+          stopQRScanning();
+          handleScannedResult(result.data);
+        },
+        {
+          returnDetailedScanResult: true,
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+        }
+      );
+
+      await qrScannerRef.current.start();
+      toast.success('QR Scanner started! Point camera at a QR code');
+    } catch (error) {
+      console.error('QR Scanner error:', error);
+      toast.error('Failed to start camera. Please check permissions.');
+      setIsScanning(false);
+    }
+  };
+
+  const stopQRScanning = () => {
+    if (qrScannerRef.current) {
+      qrScannerRef.current.stop();
+      qrScannerRef.current.destroy();
+      qrScannerRef.current = null;
+    }
+    setIsScanning(false);
+  };
+
+  const handleScannedResult = (result: string) => {
+    console.log('Scanned QR code:', result);
+    
+    // Check if it's a TalentXcel profile link
+    if (result.includes('talentxcel.in/passport/') || result.includes('passport')) {
+      const userId = result.split('/').pop();
+      if (userId && userId !== user?.id) {
+        // Navigate to the scanned user's profile
+        window.location.href = `/passport/${userId}`;
+        toast.success('Opening career passport...');
+      } else if (userId === user?.id) {
+        toast.info('This is your own QR code!');
+      }
+    } else if (result.startsWith('http')) {
+      // Generic URL
+      const confirmOpen = window.confirm(`Open this link?\n${result}`);
+      if (confirmOpen) {
+        window.open(result, '_blank');
+      }
+    } else {
+      // Show the raw result
+      toast.success(`QR Code scanned: ${result}`);
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopQRScanning();
+    };
+  }, []);
 
   return (
     <MobileLayout>
@@ -235,9 +312,55 @@ export const MobileQRScanner: React.FC = () => {
               <p className="text-sm text-gray-600 mb-3">
                 Scan other professionals' QR codes to connect instantly
               </p>
-              <Button variant="outline" className="w-full">
+              
+              {/* Scanner Interface */}
+              {isScanning && (
+                <div className="mb-4">
+                  <div className="relative bg-black rounded-lg overflow-hidden">
+                    <video
+                      ref={videoRef}
+                      className="w-full h-64 object-cover"
+                      playsInline
+                      muted
+                    />
+                    <div className="absolute inset-0 border-2 border-white/30 rounded-lg">
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div className="w-48 h-48 border-2 border-primary rounded-lg animate-pulse"></div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 rounded-full"
+                      onClick={stopQRScanning}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-center text-sm text-gray-600 mt-2">
+                    Point your camera at a QR code to scan
+                  </p>
+                </div>
+              )}
+
+              {/* Scanned Result */}
+              {scannedResult && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm font-semibold text-green-800">QR Code Scanned!</span>
+                  </div>
+                  <p className="text-sm text-green-700 break-all">{scannedResult}</p>
+                </div>
+              )}
+
+              <Button 
+                variant={isScanning ? "destructive" : "default"} 
+                className="w-full"
+                onClick={isScanning ? stopQRScanning : startQRScanning}
+              >
                 <Camera className="h-4 w-4 mr-2" />
-                Open QR Scanner
+                {isScanning ? 'Stop Scanner' : 'Open QR Scanner'}
               </Button>
             </CardContent>
           </Card>
