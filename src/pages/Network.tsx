@@ -84,9 +84,21 @@ const Network = () => {
     };
   }, []);
 
-  // Redirect mobile users to dedicated mobile network page
+  // Mobile LinkedIn-style interface
   if (isMobile && user) {
-    return <Navigate to="/mobile/network" replace />;
+    return (
+      <MobileLayout>
+        <LinkedInMobileFeed
+          posts={posts}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+          onShare={handleShare}
+          onComment={handleComment}
+          onConnect={handleConnect}
+          onApply={handleApply}
+        />
+      </MobileLayout>
+    );
   }
 
   // Desktop interface
