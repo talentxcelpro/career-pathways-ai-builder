@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.ai-comprehensive-generator-v2]
 verify_jwt = false
+
+[functions.health]
+verify_jwt = false
