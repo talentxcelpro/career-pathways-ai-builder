@@ -17,6 +17,25 @@ export const ContentAutomationTester: React.FC = () => {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const { toast } = useToast();
 
+  const FUNCTIONS_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+
+  async function callFunctionDirect(name: string, body: any) {
+    const res = await fetch(`${FUNCTIONS_URL}/${name}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(json?.error || `HTTP ${res.status}`);
+    }
+    return json;
+  }
+
   const updateResult = (index: number, status: 'success' | 'error', message: string, details?: any) => {
     setTestResults(prev => prev.map((result, i) => 
       i === index ? { ...result, status, message, details } : result
@@ -39,13 +58,18 @@ export const ContentAutomationTester: React.FC = () => {
         body: { action: 'queue', count: 5 }
       });
 
-      if (queueError) {
-        updateResult(0, 'error', `Queue failed: ${queueError.message}`, queueError);
-        setIsRunning(false);
-        return;
+      if (queueError || !queueResult) {
+        try {
+          const direct = await callFunctionDirect('content-queue-processor', { action: 'queue', count: 5 });
+          updateResult(0, 'success', `Queued ${direct.jobs_queued} jobs (direct)`, direct);
+        } catch (e) {
+          updateResult(0, 'error', `Queue failed: ${queueError?.message || (e as Error).message}`, { sdkError: queueError, directError: e instanceof Error ? e.message : e });
+          setIsRunning(false);
+          return;
+        }
+      } else {
+        updateResult(0, 'success', `Queued ${queueResult.jobs_queued} jobs`, queueResult);
       }
-
-      updateResult(0, 'success', `Queued ${queueResult.jobs_queued} jobs`, queueResult);
 
       // Step 2: Process the queue
       await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
@@ -54,13 +78,18 @@ export const ContentAutomationTester: React.FC = () => {
         body: { action: 'process' }
       });
 
-      if (processError) {
-        updateResult(1, 'error', `Processing failed: ${processError.message}`, processError);
-        setIsRunning(false);
-        return;
+      if (processError || !processResult) {
+        try {
+          const directProcess = await callFunctionDirect('content-queue-processor', { action: 'process' });
+          updateResult(1, 'success', `Processed ${directProcess.processed} jobs (direct)`, directProcess);
+        } catch (e) {
+          updateResult(1, 'error', `Processing failed: ${processError?.message || (e as Error).message}`, { sdkError: processError, directError: e instanceof Error ? e.message : e });
+          setIsRunning(false);
+          return;
+        }
+      } else {
+        updateResult(1, 'success', `Processed ${processResult.processed} jobs`, processResult);
       }
-
-      updateResult(1, 'success', `Processed ${processResult.processed} jobs`, processResult);
 
       // Step 3: Verify content was created
       const { data: contentData, error: contentError } = await supabase
