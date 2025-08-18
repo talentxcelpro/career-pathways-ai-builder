@@ -20,6 +20,36 @@ export const ContentAutomationTester: React.FC = () => {
   const FUNCTIONS_URL = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 
+  // Helpers to improve reliability
+  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+    let t: number | undefined;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<T>((_, reject) => {
+          t = window.setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+        })
+      ]) as T;
+    } finally {
+      if (t) clearTimeout(t);
+    }
+  }
+
+  async function invokeOrDirect(name: string, body: any): Promise<{ data: any; via: 'invoke' | 'direct' }> {
+    try {
+      const res = await supabase.functions.invoke(name, { body });
+      if (!res.error) {
+        return { data: res.data, via: 'invoke' };
+      }
+    } catch (e) {
+      // fallthrough to direct
+    }
+    const data = await callFunctionDirect(name, body);
+    return { data, via: 'direct' };
+  }
+
   async function generateViaAICG() {
     const { data, error } = await supabase.functions.invoke('ai-comprehensive-generator', {
       body: {
@@ -74,35 +104,31 @@ export const ContentAutomationTester: React.FC = () => {
       // Step 1: Queue content generation jobs
       updateResult(0, 'success', 'Queuing content generation jobs...');
       
-      const queueResponse = await supabase.functions.invoke('ai-comprehensive-generator', {
-        body: { 
+      const { data: queueData, via: queueVia } = await withTimeout(
+        invokeOrDirect('ai-comprehensive-generator', {
           action: 'queue',
-          count: 10  // Queue 10 jobs for testing
-        }
-      });
+          count: 10
+        }),
+        30000,
+        'Queue'
+      );
       
-      if (queueResponse.error) {
-        throw new Error(`Queue failed: ${queueResponse.error.message}`);
-      }
-      
-      updateResult(0, 'success', `Queued ${queueResponse.data?.jobs_queued || 'undefined'} jobs (direct)`, queueResponse.data);
+      updateResult(0, 'success', `Queued ${queueData?.jobs_queued ?? queueData?.queued ?? 0} jobs (${queueVia})`, queueData);
       
       // Step 2: Process the queue
       updateResult(1, 'success', 'Processing content generation queue...');
       
       await new Promise(resolve => setTimeout(resolve, 1000)); // Brief delay
       
-      const processResponse = await supabase.functions.invoke('ai-comprehensive-generator', {
-        body: { 
+      const { data: processData, via: processVia } = await withTimeout(
+        invokeOrDirect('ai-comprehensive-generator', {
           action: 'process'
-        }
-      });
+        }),
+        60000,
+        'Process'
+      );
       
-      if (processResponse.error) {
-        throw new Error(`Processing failed: ${processResponse.error.message}`);
-      }
-      
-      updateResult(1, 'success', `Processed ${processResponse.data?.processed || 0} jobs (direct)`, processResponse.data);
+      updateResult(1, 'success', `Processed ${processData?.processed ?? 0} jobs (${processVia})`, processData);
       
       // Step 3: Verify generated content
       updateResult(2, 'success', 'Verifying generated content...');
@@ -125,7 +151,7 @@ export const ContentAutomationTester: React.FC = () => {
 
       toast({
         title: "Content Automation Test Complete",
-        description: `Successfully processed ${processResponse.data?.processed || 0} jobs and found ${recentContent?.length || 0} content pieces`,
+        description: `Successfully processed ${processData?.processed ?? 0} jobs and found ${recentContent?.length || 0} content pieces`,
       });
 
     } catch (error) {
