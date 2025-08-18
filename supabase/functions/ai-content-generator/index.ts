@@ -1,7 +1,12 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +24,13 @@ serve(async (req) => {
     }
 
     const { contentType, topic, targetAudience, tone, keywords, industry, location, wordCount, includeSchema } = await req.json();
+    
+    console.log('Generating content for:', { contentType, topic, targetAudience });
+    
+    // Validate required parameters
+    if (!contentType || !topic) {
+      throw new Error('Missing required parameters: contentType and topic are required');
+    }
 
     let systemPrompt = '';
     let userPrompt = '';
@@ -111,6 +123,43 @@ serve(async (req) => {
     const description = lines.slice(0, 3).join(' ').substring(0, 160);
     const extractedKeywords = keywords || [topic];
 
+    const contentId = crypto.randomUUID();
+    
+    // Save to database
+    try {
+      const { error: saveError } = await supabase
+        .from('ai_content_library')
+        .insert({
+          id: contentId,
+          category: contentType,
+          template_type: contentType,
+          title,
+          content,
+          metadata: {
+            ...extractedKeywords && { keywords: extractedKeywords },
+            wordCount: content.split(' ').length,
+            generatedAt: new Date().toISOString(),
+            subject: topic,
+            ...(targetAudience && { targetAudience }),
+            ...(tone && { tone }),
+            ...(industry && { industry }),
+            ...(location && { location })
+          },
+          quality_score: data.usage?.total_tokens || 0,
+          usage_count: 0,
+          is_approved: false,
+          tags: extractedKeywords ? [contentType, ...extractedKeywords] : [contentType]
+        });
+        
+      if (saveError) {
+        console.error('Error saving content:', saveError);
+        // Don't fail the request if saving fails, just log it
+      }
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      // Continue with response even if DB save fails
+    }
+
     const result = {
       success: true,
       content,
@@ -119,7 +168,7 @@ serve(async (req) => {
         description,
         keywords: extractedKeywords
       },
-      contentId: crypto.randomUUID(),
+      contentId,
       tokensUsed: data.usage?.total_tokens || 0,
       wordCount: content.split(' ').length
     };
