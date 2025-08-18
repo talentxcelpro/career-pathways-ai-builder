@@ -51,7 +51,7 @@ export const MobileReels = () => {
   const { toast } = useToast();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   // Fetch real video reels from Supabase posts with media
@@ -252,6 +252,7 @@ export const MobileReels = () => {
               src={reel.video_url}
               poster={reel.thumbnail_url}
               loop
+              autoPlay
               muted={isMuted}
               playsInline
               preload="metadata"
