@@ -130,7 +130,6 @@ serve(async (req) => {
       .from("ai_bots")
       .select("id, user_id, name, content_domains")
       .eq("is_active", true)
-      .not("user_id", "is", null)
       .limit(limitBots);
 
     if (botsError) throw botsError;
