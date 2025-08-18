@@ -62,131 +62,81 @@ export const ContentAutomationTester: React.FC = () => {
   const startAutomationTest = async () => {
     setIsRunning(true);
     const steps: TestResult[] = [
-      { step: 'Generate Content', status: 'pending', message: 'Starting content generation...' },
-      { step: 'Verify Content', status: 'pending', message: 'Waiting...' }
+      { step: 'Queue Content Generation', status: 'pending', message: 'Starting content generation queue...' },
+      { step: 'Process Queue', status: 'pending', message: 'Waiting...' },
+      { step: 'Verify Generated Content', status: 'pending', message: 'Waiting...' }
     ];
     setTestResults(steps);
 
     try {
-      // Step 1: Generate content directly using ai-content-generator
-      console.log('🚀 Starting content generation test...');
+      console.log('🚀 Starting comprehensive content automation test...');
       
-      updateResult(0, 'success', 'Generating test content using ai-content-generator...');
+      // Step 1: Queue content generation jobs
+      updateResult(0, 'success', 'Queuing content generation jobs...');
       
-      const { data: generateResult, error: generateError } = await supabase.functions.invoke('ai-content-generator', {
-        body: {
-          contentType: 'blog_post',
-          topic: 'AI-Powered Career Development Strategies',
-          targetAudience: 'working professionals',
-          tone: 'professional',
-          wordCount: 400,
-          keywords: ['AI', 'career development', 'professional growth', 'automation', 'skills'],
-          industry: 'Technology'
+      const queueResponse = await supabase.functions.invoke('ai-comprehensive-generator', {
+        body: { 
+          action: 'queue',
+          count: 10  // Queue 10 jobs for testing
         }
       });
-
-      if (generateError) {
-        // Fallback: Create content manually in database
-        console.log('OpenAI failed, creating test content manually...');
-        
-        const testContent = `# AI-Powered Career Development: The Future is Now
-
-In today's rapidly evolving professional landscape, artificial intelligence is revolutionizing how we approach career development. From personalized learning recommendations to automated skill assessments, AI tools are empowering professionals to take control of their career trajectories like never before.
-
-## Key Benefits of AI in Career Development
-
-**Personalized Learning Paths**: AI algorithms analyze your current skills, career goals, and market demands to create customized learning recommendations that maximize your professional growth potential.
-
-**Real-Time Market Insights**: Stay ahead of industry trends with AI-powered analytics that identify emerging skills, salary benchmarks, and job opportunities in your field.
-
-**Automated Portfolio Optimization**: AI tools can help optimize your resume, LinkedIn profile, and professional portfolio to increase visibility and attract the right opportunities.
-
-## Getting Started with AI Career Tools
-
-1. **Assess Your Current Position**: Use AI-powered assessment tools to identify skill gaps and strengths
-2. **Set Smart Goals**: Leverage AI recommendations to set realistic, market-aligned career objectives  
-3. **Continuous Learning**: Embrace AI-curated learning content that adapts to your schedule and learning style
-4. **Network Strategically**: Use AI insights to identify and connect with the right professionals in your industry
-
-The future of career development is here, and it's powered by artificial intelligence. Embrace these tools to accelerate your professional growth and stay competitive in an ever-changing job market.`;
-
-        const { data: manualContent, error: manualError } = await supabase
-          .from('ai_content_library')
-          .insert({
-            title: 'AI-Powered Career Development: The Future is Now',
-            content: testContent,
-            category: 'Testing',
-            template_type: 'blog_post',
-            metadata: {
-              topic: 'AI-Powered Career Development',
-              tone: 'professional',
-              domain: 'Career Development',
-              word_count: testContent.split(' ').length,
-              generated_at: new Date().toISOString(),
-              test_generation: true
-            },
-            tags: ['AI', 'career development', 'testing', 'automation'],
-            is_approved: true,
-            quality_score: 0.85,
-            usage_count: 0
-          })
-          .select()
-          .single();
-
-        if (manualError) {
-          throw new Error(`Content creation failed: ${manualError.message}`);
-        }
-
-        updateResult(0, 'success', 'Test content created successfully (manual fallback)', {
-          contentId: manualContent.id,
-          title: manualContent.title,
-          wordCount: testContent.split(' ').length,
-          method: 'manual_fallback'
-        });
-      } else if (!generateResult?.success) {
-        throw new Error(generateResult?.error || 'Content generation failed');
-      } else {
-        updateResult(0, 'success', `Content generated successfully via AI`, generateResult);
+      
+      if (queueResponse.error) {
+        throw new Error(`Queue failed: ${queueResponse.error.message}`);
       }
-
-      // Step 2: Verify content was created
-      const { data: contentData, error: contentError } = await supabase
+      
+      updateResult(0, 'success', `Queued ${queueResponse.data?.jobs_queued || 'undefined'} jobs (direct)`, queueResponse.data);
+      
+      // Step 2: Process the queue
+      updateResult(1, 'success', 'Processing content generation queue...');
+      
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Brief delay
+      
+      const processResponse = await supabase.functions.invoke('ai-comprehensive-generator', {
+        body: { 
+          action: 'process'
+        }
+      });
+      
+      if (processResponse.error) {
+        throw new Error(`Processing failed: ${processResponse.error.message}`);
+      }
+      
+      updateResult(1, 'success', `Processed ${processResponse.data?.processed || 0} jobs (direct)`, processResponse.data);
+      
+      // Step 3: Verify generated content
+      updateResult(2, 'success', 'Verifying generated content...');
+      
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Brief delay
+      
+      const { data: recentContent, error: contentError } = await supabase
         .from('bot_generated_content')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(5);
-
+      
       if (contentError) {
-        updateResult(1, 'error', `Verification failed: ${contentError.message}`, contentError);
+        updateResult(2, 'error', `Verification failed: ${contentError.message}`, contentError);
         setIsRunning(false);
         return;
       }
-
-      let verifyItems: any[] = (contentData as any[]) || [];
-
-      if (!verifyItems || verifyItems.length === 0) {
-        const { data: aiLibData, error: aiLibError } = await supabase
-          .from('ai_content_library')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        if (aiLibError) {
-          updateResult(1, 'error', `Verification failed: ${aiLibError.message}`, aiLibError);
-          setIsRunning(false);
-          return;
-        }
-        verifyItems = (aiLibData as any[]) || [];
-      }
-
-      updateResult(1, 'success', `Found ${verifyItems.length} recent content pieces`, verifyItems);
+      
+      updateResult(2, 'success', `Found ${recentContent?.length || 0} recent content pieces`, recentContent);
 
       toast({
-        title: "Content Generation Test Complete",
-        description: `Successfully generated content and found ${verifyItems.length} content pieces`,
+        title: "Content Automation Test Complete",
+        description: `Successfully processed ${processResponse.data?.processed || 0} jobs and found ${recentContent?.length || 0} content pieces`,
       });
 
     } catch (error) {
-      console.error('Test failed:', error);
+      console.error('Content automation test failed:', error);
+      
+      // Update the current step with error
+      const currentStep = testResults.findIndex(r => r.status === 'pending');
+      if (currentStep >= 0) {
+        updateResult(currentStep, 'error', error instanceof Error ? error.message : 'Unknown error occurred');
+      }
+      
       toast({
         title: "Test Failed",
         description: error instanceof Error ? error.message : 'Unknown error occurred',

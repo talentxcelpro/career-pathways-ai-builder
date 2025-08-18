@@ -7,18 +7,27 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 }
 
-// DeepSeek completely removed - OpenAI only mode - FORCE REDEPLOY v1.4
-console.log('🚀 AI Comprehensive Generator: OpenAI-only mode active - v1.4');
+console.log('🚀 AI Comprehensive Generator: Multi-AI mode active - v2.0');
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+  
   // Health check endpoint
   if (req.method === 'GET') {
     return new Response(
-      JSON.stringify({ ok: true, function: 'ai-comprehensive-generator', version: '1.4', mode: 'openai-only' }),
+      JSON.stringify({ 
+        ok: true, 
+        function: 'ai-comprehensive-generator', 
+        version: '2.0', 
+        mode: 'multi-ai',
+        apis: {
+          deepseek: !!Deno.env.get('DEEPSEEK_API_KEY'),
+          openai: !!Deno.env.get('OPENAI_API_KEY')
+        }
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
@@ -26,7 +35,7 @@ serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     const { action, count = 20 } = await req.json();
@@ -55,7 +64,17 @@ serve(async (req) => {
 async function queueContentGeneration(supabase: any, count: number) {
   console.log(`🚀 Queuing ${count} content generation jobs...`);
 
-  // Get active bots
+  // Get active schedule and bots
+  const { data: schedule } = await supabase
+    .from('content_automation_schedule')
+    .select('*')
+    .eq('is_active', true)
+    .single();
+
+  if (!schedule) {
+    throw new Error('No active automation schedule found');
+  }
+
   const { data: bots } = await supabase
     .from('ai_bots')
     .select('*')
@@ -65,28 +84,41 @@ async function queueContentGeneration(supabase: any, count: number) {
     throw new Error('No active bots found');
   }
 
-  const contentTypes = ['social_post', 'article', 'seo_page', 'newsletter'];
-  const prompts = {
-    social_post: 'Create an engaging social media post about professional development and career growth.',
-    article: 'Write a comprehensive article about AI automation in modern workplaces.',
-    seo_page: 'Create SEO-optimized content about remote work best practices.',
-    newsletter: 'Write a newsletter section about industry trends and career opportunities.'
-  };
+  const { data: templates } = await supabase
+    .from('bot_content_templates')
+    .select('*')
+    .eq('is_active', true);
 
+  if (!templates || templates.length === 0) {
+    throw new Error('No active templates found');
+  }
+
+  const distributionRules = schedule.distribution_rules || {};
+  const targetCount = schedule.target_count_per_day || count;
   const queueJobs = [];
-  for (let i = 0; i < count; i++) {
-    const bot = bots[i % bots.length];
-    const contentType = contentTypes[i % contentTypes.length];
-    
-    queueJobs.push({
-      bot_id: bot.id,
-      content_type: contentType,
-      prompt: prompts[contentType],
-      target_audience: 'professionals',
-      tone: bot.tone_style || 'professional',
-      keywords: ['AI', 'career', 'productivity'],
-      priority: Math.floor(Math.random() * 3)
-    });
+
+  // Generate jobs based on distribution rules
+  for (const [contentType, rules] of Object.entries(distributionRules)) {
+    if (!rules.percentage || !rules.word_range) continue;
+
+    const typeCount = Math.floor(targetCount * rules.percentage / 100);
+    const [minWords, maxWords] = rules.word_range;
+
+    for (let i = 0; i < typeCount; i++) {
+      const bot = bots[i % bots.length];
+      const template = templates[Math.floor(Math.random() * templates.length)];
+      
+      queueJobs.push({
+        bot_id: bot.id,
+        content_type: contentType,
+        prompt: template.prompt_template,
+        target_audience: 'professionals',
+        tone: bot.tone_style || 'professional',
+        keywords: bot.content_domains || ['AI', 'career'],
+        word_count_target: Math.floor(Math.random() * (maxWords - minWords + 1)) + minWords,
+        priority: Math.floor(Math.random() * 3)
+      });
+    }
   }
 
   const { data: insertedJobs, error } = await supabase
@@ -102,7 +134,8 @@ async function queueContentGeneration(supabase: any, count: number) {
     JSON.stringify({
       success: true,
       message: `Queued ${insertedJobs.length} content generation jobs`,
-      jobs_queued: insertedJobs.length
+      jobs_queued: insertedJobs.length,
+      schedule_name: schedule.schedule_name
     }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
@@ -131,16 +164,16 @@ async function processContentQueue(supabase: any) {
     );
   }
 
-  console.log(`📊 Processing batch of ${jobs.length} jobs - OpenAI-only mode`);
+  console.log(`📊 Processing batch of ${jobs.length} jobs`);
   
   const processedJobs = [];
+  const deepseekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
   const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
 
-  console.log(`⚙️ OpenAI-only mode: OpenAI key=${openaiApiKey ? 'available' : 'missing'}`);
-  console.log('🎯 Content generator: OpenAI-only (DeepSeek completely removed)');
+  console.log(`⚙️ Available APIs: DeepSeek=${!!deepseekApiKey}, OpenAI=${!!openaiApiKey}`);
   
   // Track API usage
-  let batchStats = { openai: 0, stub: 0, errors: 0 };
+  let batchStats = { deepseek: 0, openai: 0, stub: 0, errors: 0 };
 
   for (const job of jobs) {
     try {
@@ -150,16 +183,51 @@ async function processContentQueue(supabase: any) {
         .update({ status: 'processing', started_at: new Date().toISOString() })
         .eq('id', job.id);
 
-      console.log(`📝 Processing job ${job.id} - ${job.content_type} (OpenAI-only)`);
-      console.log(`🚦 Job ${job.id} plan: OpenAI=${openaiApiKey ? 'available' : 'missing'}, Fallback=stub`);
+      console.log(`📝 Processing job ${job.id} - ${job.content_type}`);
 
       let generatedContent = '';
       let apiUsed = 'stub';
 
-      // Try OpenAI (only option)
-      if (openaiApiKey) {
+      // Try DeepSeek first (cheaper and faster)
+      if (deepseekApiKey) {
         try {
-          console.log(`🤖 Using OpenAI for job ${job.id}`);
+          console.log(`🤖 Using DeepSeek for job ${job.id}`);
+          const response = await fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${deepseekApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'deepseek-chat',
+              messages: [
+                { role: 'system', content: `You are a professional content writer. Create ${job.content_type} content in a ${job.tone} tone. Target length: ${job.word_count_target || 300} words.` },
+                { role: 'user', content: job.prompt }
+              ],
+              max_tokens: getMaxTokensForType(job.content_type),
+              temperature: 0.7
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            generatedContent = data.choices[0].message.content;
+            apiUsed = 'deepseek';
+            batchStats.deepseek++;
+            console.log(`✅ DeepSeek succeeded for job ${job.id}`);
+          } else {
+            const errorText = await response.text();
+            console.warn(`⚠️ DeepSeek failed for job ${job.id}: ${response.status} - ${errorText}`);
+          }
+        } catch (error) {
+          console.warn(`⚠️ DeepSeek error for job ${job.id}:`, error.message);
+        }
+      }
+
+      // Fall back to OpenAI if DeepSeek failed
+      if (!generatedContent && openaiApiKey) {
+        try {
+          console.log(`🤖 Using OpenAI fallback for job ${job.id}`);
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -182,20 +250,18 @@ async function processContentQueue(supabase: any) {
             generatedContent = data.choices[0].message.content;
             apiUsed = 'openai';
             batchStats.openai++;
-            console.log(`✅ OpenAI succeeded for job ${job.id}`);
+            console.log(`✅ OpenAI fallback succeeded for job ${job.id}`);
           } else {
-            console.warn(`⚠️ OpenAI failed for job ${job.id}: ${response.status}`);
+            console.warn(`⚠️ OpenAI fallback failed for job ${job.id}: ${response.status}`);
           }
         } catch (error) {
-          console.warn(`⚠️ OpenAI error for job ${job.id}:`, error.message);
+          console.warn(`⚠️ OpenAI fallback error for job ${job.id}:`, error.message);
         }
-      } else {
-        console.log(`⚠️ No OpenAI key available for job ${job.id}`);
       }
 
-      // Fall back to stub content if OpenAI failed
+      // Fall back to stub content if both APIs failed
       if (!generatedContent) {
-        console.log(`📝 Using stub content for job ${job.id} (OpenAI unavailable/failed)`);
+        console.log(`📝 Using stub content for job ${job.id} (APIs unavailable/failed)`);
         generatedContent = generateStubContent(job.content_type, job.tone);
         apiUsed = 'stub';
         batchStats.stub++;
@@ -213,7 +279,7 @@ async function processContentQueue(supabase: any) {
           generated_by: apiUsed,
           generation_prompt: job.prompt,
           is_published: false,
-          quality_score: apiUsed === 'stub' ? 0.6 : 0.85
+          quality_score: apiUsed === 'stub' ? 0.6 : (apiUsed === 'deepseek' ? 0.8 : 0.85)
         })
         .select()
         .single();
@@ -262,12 +328,12 @@ async function processContentQueue(supabase: any) {
 
   // Log batch completion statistics
   console.log(`✅ Batch complete: ${processedJobs.length} success, ${batchStats.errors} errors`);
-  console.log(`📊 Content sources (OpenAI-only): OpenAI: ${batchStats.openai}, Stub: ${batchStats.stub}`);
+  console.log(`📊 Content sources: DeepSeek: ${batchStats.deepseek}, OpenAI: ${batchStats.openai}, Stub: ${batchStats.stub}`);
 
   return new Response(
     JSON.stringify({
       success: true,
-      message: `Processed ${processedJobs.length} content generation jobs (OpenAI-only mode)`,
+      message: `Processed ${processedJobs.length} content generation jobs`,
       processed: processedJobs.length,
       jobs: processedJobs,
       stats: batchStats
