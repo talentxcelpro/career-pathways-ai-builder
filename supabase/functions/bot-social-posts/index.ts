@@ -182,32 +182,42 @@ serve(async (req) => {
           continue;
         }
 
-        // 2) Best-effort sync to general posts feed (do not block on failure)
+        // 2) Insert into posts table with explicit author ID
         try {
           const authorIdForPost = bot.user_id || getAuthUserId(req);
           if (authorIdForPost) {
-            await supabase.from("posts").insert({
-              author_id: authorIdForPost,
-              user_id: authorIdForPost,
-              content,
-              headline: title,
-              is_public: true,
-              post_type: "text",
-              tags: [category],
-              status: "published",
-              visibility: "public",
-              origin: "bot_wall",
-              is_bot_post: true,
-              is_ai_generated: true,
-              metadata: { category, source: "bot-social-posts", bot_id: bot.id, preset: preset || null },
-              bot_id: bot.id,
-              created_at: now,
-            });
+            const { data: postData, error: postError } = await supabase
+              .from("posts")
+              .insert({
+                author_id: authorIdForPost,
+                user_id: authorIdForPost,
+                content,
+                headline: title,
+                is_public: true,
+                post_type: "text",
+                tags: [category],
+                status: "published",
+                visibility: "public",
+                origin: "bot_wall",
+                is_bot_post: true,
+                is_ai_generated: true,
+                metadata: { category, source: "bot-social-posts", bot_id: bot.id, preset: preset || null },
+                bot_id: bot.id,
+                created_at: now,
+              })
+              .select('id')
+              .single();
+            
+            if (postError) {
+              console.error(`Insert post failed for bot ${bot.id}: ${postError.message}`);
+            } else {
+              console.log(`Successfully created post ${postData.id} for bot ${bot.name}`);
+            }
           } else {
-            console.error("Skipping posts insert: missing author_id for bot", bot.id);
+            console.error(`Skipping posts insert: missing author_id for bot ${bot.id}`);
           }
-        } catch (postSyncErr) {
-          console.error("Non-blocking: sync to posts failed for bot", bot.id, postSyncErr?.message || postSyncErr);
+        } catch (postSyncErr: any) {
+          console.error(`Non-blocking: sync to posts failed for bot ${bot.id}: ${postSyncErr?.message || postSyncErr}`);
         }
 
         created.push({ id: wallInserted?.id ?? null, bot_id: bot.id, category });
