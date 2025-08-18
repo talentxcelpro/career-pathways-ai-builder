@@ -232,3 +232,10 @@ verify_jwt = false
 
 [functions.generate-bot-content]
 verify_jwt = true
+
+# New bot automation utilities
+[functions.bot-automation-scheduler]
+verify_jwt = false
+
+[functions.bot-social-posts]
+verify_jwt = false

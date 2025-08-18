@@ -193,12 +193,9 @@ export const ContentAutomationTester: React.FC = () => {
     setTestResults(steps);
 
     try {
-      const { data, error } = await supabase.functions.invoke('bot-social-posts', {
-        body: { limit_bots: 2, posts_per_bot: 1 }
-      });
-      if (error) throw error;
+      const { data: rsp, via } = await invokeOrDirect('bot-social-posts', { limit_bots: 2, posts_per_bot: 1 });
 
-      updateResult(0, 'success', `Created ${data?.created ?? 0} posts`, data);
+      updateResult(0, 'success', `Created ${rsp?.created ?? 0} posts (${via})`, rsp);
 
       const { data: recentPosts, error: postsError } = await (supabase as any)
         .from('posts')
@@ -213,7 +210,7 @@ export const ContentAutomationTester: React.FC = () => {
 
       toast({
         title: 'Social Posts Created',
-        description: `Created ${data?.created ?? 0} post(s) and verified in feed`,
+        description: `Created ${rsp?.created ?? 0} post(s) and verified in feed`,
       });
     } catch (error) {
       console.error('Quick social post failed:', error);
