@@ -24,17 +24,20 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom'],
-          'ui': ['@radix-ui/react-avatar'],
+          'ui': ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-popover'],
           'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom'],
-          'utils': ['date-fns', 'clsx', 'class-variance-authority']
+          'utils': ['date-fns', 'clsx', 'class-variance-authority'],
+          'performance': ['react-error-boundary', 'react-window']
         }
       }
     },
     target: 'esnext',
     minify: 'terser',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-    assetsInlineLimit: 4096
+    chunkSizeWarningLimit: 500,
+    assetsInlineLimit: 8192,
+    cssCodeSplit: true,
+    reportCompressedSize: false
   },
   optimizeDeps: {
     include: [
