@@ -14,9 +14,19 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Log basic request info to help debug 404s in dashboard tester
+  try {
+    const { pathname } = new URL(req.url);
+    console.log(`[content-queue-processor] ${req.method} ${pathname}`);
+  } catch (_) {
+    // ignore URL parse errors
+  }
+
   // Health check endpoint
   if (req.method === 'GET') {
-    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.3.1', mode: 'openai-only' }), {
+    const { pathname } = new URL(req.url);
+    return new Response(JSON.stringify({ ok: true, function: 'content-queue-processor', version: '2.3.1', mode: 'openai-only', path: pathname }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
