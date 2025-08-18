@@ -31,97 +31,35 @@ export const ContentAutomationDashboard: React.FC = () => {
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
-      // Use ai-comprehensive-generator-v2 for everything (OpenAI-only)
-      const { data: processData, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator-v2', {
-        body: { action: 'process' }
+      // Use the fixed ai-content-generator function
+      const { data, error } = await supabase.functions.invoke('ai-content-generator', {
+        body: {
+          contentType: 'blog_post',
+          topic: 'AI-powered content automation and productivity tips',
+          targetAudience: 'professionals',
+          tone: 'professional',
+          keywords: ['AI', 'automation', 'productivity'],
+          industry: 'technology',
+          wordCount: 500
+        }
       });
-      if (processError) throw processError;
 
-      const processedCount = processData?.processed ?? (processData?.jobs?.length ?? 0) ?? 0;
-      toast.success(`Generated ${processedCount} piece(s) of content using OpenAI`);
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success('Content generated successfully!');
+        console.log('Generated content:', data.content);
+      } else {
+        throw new Error(data.error || 'Content generation failed');
+      }
 
       // Refresh stats after a short delay
       setTimeout(() => {
         loadStats();
       }, 1500);
     } catch (err: any) {
-      console.error('Generation error (primary):', err);
-      // Fallback: direct fetch to Edge Function URL
-      try {
-        const functionsUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-comprehensive-generator';
-        const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-        const { data: sessionData } = await supabase.auth.getSession();
-        const authToken = sessionData?.session?.access_token ?? anonKey;
-
-        // Queue one job
-        const queueResp = await fetch(functionsUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': anonKey,
-            'Authorization': `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({ action: 'queue', count: 1 }),
-        });
-        if (!queueResp.ok) {
-          const text = await queueResp.text();
-          throw new Error(`Fallback queue failed (${queueResp.status}): ${text}`);
-        }
-
-        // Process queue
-        const processResp = await fetch(functionsUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': anonKey,
-            'Authorization': `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({ action: 'process' }),
-        });
-        if (!processResp.ok) {
-          const text = await processResp.text();
-          throw new Error(`Fallback process failed (${processResp.status}): ${text}`);
-        }
-
-        const processedJson = await processResp.json();
-        const processedCount = processedJson?.processed ?? (processedJson?.jobs?.length ?? 0) ?? 0;
-        toast.success(`Queued 1 job and processed ${processedCount} item(s)`);
-        setTimeout(() => loadStats(), 1500);
-      } catch (fallbackErr) {
-        console.error('Generation error (fallback):', fallbackErr);
-        try {
-          // Local stub fallback: insert one content item so you can keep working even if Edge Functions aren't deployed yet
-          const { data: bots } = await supabase
-            .from('ai_bots')
-            .select('id, tone_style')
-            .eq('is_active', true)
-            .limit(1);
-          const bot = bots?.[0];
-          if (!bot) throw new Error('No active bots found for stub content');
-
-          const stub = `# AI Content (Stub)\n\nThis is placeholder content generated locally because the Edge Function is not available yet.\n\n- Mode: OpenAI-only (pending deploy)\n- Time: ${new Date().toISOString()}`;
-
-          const insertPayload: any = {
-            bot_id: bot.id,
-            content_type: 'article',
-            content: stub,
-            generated_by: 'stub',
-            generation_prompt: 'local-stub-fallback',
-            is_published: false,
-          };
-
-          const { error: saveError } = await (supabase as any)
-            .from('bot_generated_content')
-            .insert(insertPayload);
-          if (saveError) throw saveError;
-
-          toast.success('Inserted stub content locally (Edge Function unavailable)');
-          setTimeout(() => loadStats(), 800);
-        } catch (stubErr) {
-          console.error('Stub insert failed:', stubErr);
-          toast.error('Edge Function unavailable and stub insert failed.');
-        }
-      }
+      console.error('Generation error:', err);
+      toast.error(`Failed to generate content: ${err.message}`);
     } finally {
       setIsGenerating(false);
     }
