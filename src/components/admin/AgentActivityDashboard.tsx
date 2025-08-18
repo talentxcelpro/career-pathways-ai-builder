@@ -60,7 +60,7 @@ export const AgentActivityDashboard: React.FC = () => {
   const fetchAgentLogs = async () => {
     setIsLoading(true);
     try {
-      let query = supabase
+      let query: any = supabase
         .from('agent_logs')
         .select('*')
         .order('created_at', { ascending: false })
