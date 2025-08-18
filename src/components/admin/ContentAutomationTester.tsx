@@ -62,70 +62,55 @@ export const ContentAutomationTester: React.FC = () => {
   const startAutomationTest = async () => {
     setIsRunning(true);
     const steps: TestResult[] = [
-      { step: 'Queue Content Generation', status: 'pending', message: 'Starting...' },
-      { step: 'Process Queue', status: 'pending', message: 'Waiting...' },
-      { step: 'Verify Generated Content', status: 'pending', message: 'Waiting...' }
+      { step: 'Generate Content', status: 'pending', message: 'Starting...' },
+      { step: 'Verify Content', status: 'pending', message: 'Waiting...' }
     ];
     setTestResults(steps);
 
-    let usedFallback = false;
-    let processedCount = 0;
-
     try {
-      // Step 1: Queue content generation
-      console.log('🚀 Starting content automation test...');
-      const { data: queueResult, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
-        body: { action: 'queue', count: 5 }
+      // Step 1: Generate content directly using ai-content-generator
+      console.log('🚀 Starting content generation test...');
+      const { data: generateResult, error: generateError } = await supabase.functions.invoke('ai-content-generator', {
+        body: {
+          contentType: 'blog_post',
+          topic: 'Career Development Tips for Software Engineers',
+          targetAudience: 'professionals',
+          tone: 'professional',
+          wordCount: 500,
+          keywords: ['career growth', 'software engineering', 'professional development']
+        }
       });
 
-      if (queueError || !queueResult) {
+      if (generateError || !generateResult?.success) {
         try {
-          const direct = await callFunctionDirect('ai-comprehensive-generator', { action: 'queue', count: 5 });
-          updateResult(0, 'success', `Queued ${direct.jobs_queued} jobs (direct)`, direct);
-        } catch (e) {
-          // Final fallback: generate directly via ai-content-generator
-          try {
-            const ai = await generateViaAICG();
-            usedFallback = true;
-            updateResult(0, 'success', 'Fallback succeeded: generated 1 piece via ai-content-generator', ai);
-          } catch (fe) {
-            updateResult(0, 'error', `Queue failed: ${queueError?.message || (e as Error).message}`, { sdkError: queueError, directError: e instanceof Error ? e.message : e, fallbackError: fe instanceof Error ? fe.message : fe });
-            setIsRunning(false);
-            return;
+          // Try ai-comprehensive-generator as fallback
+          const fallback = await supabase.functions.invoke('ai-comprehensive-generator', {
+            body: {
+              contentType: 'blog_post',
+              topic: 'Career Development Tips',
+              targetAudience: 'professionals',
+              tone: 'professional'
+            }
+          });
+          
+          if (fallback.data?.success) {
+            updateResult(0, 'success', 'Generated content (via ai-comprehensive-generator)', fallback.data);
+          } else {
+            throw new Error(fallback.error?.message || 'Fallback failed');
           }
+        } catch (fe) {
+          updateResult(0, 'error', `Content generation failed: ${generateError?.message || 'Unknown error'}`, { 
+            primaryError: generateError, 
+            fallbackError: fe instanceof Error ? fe.message : fe 
+          });
+          setIsRunning(false);
+          return;
         }
       } else {
-        updateResult(0, 'success', `Queued ${queueResult.jobs_queued} jobs`, queueResult);
+        updateResult(0, 'success', `Generated content successfully`, generateResult);
       }
 
-      // Step 2: Process the queue
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
-      
-      if (usedFallback) {
-        processedCount = 1;
-        updateResult(1, 'success', 'Processed 1 job (fallback path)');
-      } else {
-        const { data: processResult, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator', {
-          body: { action: 'process' }
-        });
-
-        if (processError || !processResult) {
-          try {
-            const directProcess = await callFunctionDirect('ai-comprehensive-generator', { action: 'process' });
-            processedCount = directProcess.processed ?? 0;
-            updateResult(1, 'success', `Processed ${processedCount} jobs (direct)`, directProcess);
-          } catch (e) {
-            updateResult(1, 'error', `Processing failed: ${processError?.message || (e as Error).message}`, { sdkError: processError, directError: e instanceof Error ? e.message : e });
-            setIsRunning(false);
-            return;
-          }
-        } else {
-          processedCount = processResult.processed ?? 0;
-          updateResult(1, 'success', `Processed ${processedCount} jobs`, processResult);
-        }
-      }
-
-      // Step 3: Verify content was created
+      // Step 2: Verify content was created
       const { data: contentData, error: contentError } = await supabase
         .from('bot_generated_content')
         .select('*')
@@ -133,7 +118,7 @@ export const ContentAutomationTester: React.FC = () => {
         .limit(5);
 
       if (contentError) {
-        updateResult(2, 'error', `Verification failed: ${contentError.message}`, contentError);
+        updateResult(1, 'error', `Verification failed: ${contentError.message}`, contentError);
         setIsRunning(false);
         return;
       }
@@ -147,18 +132,18 @@ export const ContentAutomationTester: React.FC = () => {
           .order('created_at', { ascending: false })
           .limit(5);
         if (aiLibError) {
-          updateResult(2, 'error', `Verification failed: ${aiLibError.message}`, aiLibError);
+          updateResult(1, 'error', `Verification failed: ${aiLibError.message}`, aiLibError);
           setIsRunning(false);
           return;
         }
         verifyItems = (aiLibData as any[]) || [];
       }
 
-      updateResult(2, 'success', `Found ${verifyItems.length} recent content pieces`, verifyItems);
+      updateResult(1, 'success', `Found ${verifyItems.length} recent content pieces`, verifyItems);
 
       toast({
-        title: "Content Automation Test Complete",
-        description: `Successfully generated and processed ${processedCount || 1} content piece(s)`,
+        title: "Content Generation Test Complete",
+        description: `Successfully generated content and found ${verifyItems.length} content pieces`,
       });
 
     } catch (error) {
