@@ -21890,6 +21890,10 @@ export type Database = {
         }
         Returns: string
       }
+      admin_fallback_user: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       approve_college_creation: {
         Args: { request_id: string }
         Returns: string

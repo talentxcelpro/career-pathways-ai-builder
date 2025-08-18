@@ -235,42 +235,37 @@ serve(async (req) => {
           console.log(`✅ Successfully created bot_wall ${wallInserted?.id} for bot ${bot.name}`);
         }
 
-        // 2) Insert into posts table using bot user context
-        try {
-          // Create bot-specific user client for proper RLS context
-          const botUserClient = createClient(SUPABASE_URL, SERVICE_ROLE, {
-            global: {
-              headers: {
-                Authorization: `Bearer dummy-token-${bot.user_id}` // Placeholder for bot context
-              }
-            }
-          });
+      // 2) Insert into posts table with explicit author_id (trigger will handle null cases)
+      try {
+        const safeAuthorId = bot.user_id || adminFallback;
+        console.log(`Attempting posts insert for bot ${bot.id} with author_id: ${safeAuthorId}`);
 
-          const { data: postData, error: postError } = await supabase // Use service role for now
-            .from("posts")
-            .insert({
-              author_id: bot.user_id, // Use bot's user_id directly (now has profile)
-              content,
-              headline: title,
-              is_public: true,
-              post_type: "text", 
-              tags: [category],
-              status: "published",
-              visibility: "public",
-              origin: "bot_wall",
-              is_bot_post: true,
-              is_ai_generated: true,
-              metadata: { 
-                category, 
-                source: "bot-social-posts", 
-                bot_id: bot.id, 
-                bot_name: bot.name,
-                preset: preset || null 
-              },
-              created_at: now,
-            })
-            .select('id')
-            .single();
+        const { data: postData, error: postError } = await supabase
+          .from("posts")
+          .insert({
+            author_id: safeAuthorId, // Trigger will fallback if null
+            content,
+            headline: title,
+            is_public: true,
+            post_type: "text", 
+            tags: [category],
+            status: "published",
+            visibility: "public",
+            origin: "bot_wall",
+            is_bot_post: true,
+            is_ai_generated: true,
+            metadata: { 
+              category, 
+              source: "bot-social-posts", 
+              bot_id: bot.id, 
+              bot_name: bot.name,
+              preset: preset || null,
+              fallback_used: !bot.user_id
+            },
+            created_at: now,
+          })
+          .select('id')
+          .single();
           
           if (postError) {
             console.error(`❌ Posts insert failed for bot ${bot.id} (${bot.name}):`, postError.message);

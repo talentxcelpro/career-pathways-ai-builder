@@ -200,19 +200,34 @@ export const ContentAutomationTester: React.FC = () => {
       const wallCreated = rsp?.created ?? 0;
       const postsCreated = rsp?.posts_created ?? 0;
       const totalCreated = postsCreated || wallCreated;
+      const totalErrors = rsp?.errors?.length ?? 0;
 
       if (!rsp || rsp.success === false || totalCreated === 0) {
         const errorDetails = [];
+        
+        // Show top 5 errors
         if (rsp?.errors?.length > 0) {
-          errorDetails.push(`Errors: ${rsp.errors.slice(0,3).map((e: any) => `${e.stage}: ${e.message}`).join('; ')}`);
+          const errorSummary = rsp.errors.slice(0, 5).map((e: any) => `${e.stage}: ${e.message.slice(0, 50)}`).join('; ');
+          errorDetails.push(`Errors (${totalErrors}): ${errorSummary}`);
         }
+        
+        // Debug info
         if (rsp?.debug) {
-          errorDetails.push(`Debug: admin_fallback=${rsp.debug.admin_fallback ? 'found' : 'missing'}, auth_user=${rsp.debug.auth_user_from_req ? 'found' : 'missing'}`);
+          const debugInfo = [
+            `admin_fallback=${rsp.debug.admin_fallback ? '✓' : '✗'}`,
+            `auth_user=${rsp.debug.auth_user_from_req ? '✓' : '✗'}`,
+            `wall_errors=${rsp.debug.wall_insert_errors || 0}`,
+            `post_errors=${rsp.debug.posts_insert_errors || 0}`
+          ].join(', ');
+          errorDetails.push(`Debug: ${debugInfo}`);
         }
+        
         const errorDetail = errorDetails.length > 0 ? errorDetails.join(' | ') : rsp?.error || rsp?.message || 'Unknown error';
         updateResult(0, 'error', `No posts created. Active bots: ${activeBots?.length ?? 0}. ${errorDetail}`, rsp);
       } else {
-        updateResult(0, 'success', `Created ${totalCreated} posts (${via}); Active bots: ${activeBots?.length ?? 0}`, rsp);
+        const successMsg = `Created ${totalCreated} posts (${via}). Active bots: ${activeBots?.length ?? 0}`;
+        const debugMsg = totalErrors > 0 ? ` [${totalErrors} errors]` : '';
+        updateResult(0, 'success', successMsg + debugMsg, rsp);
       }
 
       // Verify in both bot_wall (source of truth) and posts (synced)
