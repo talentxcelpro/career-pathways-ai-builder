@@ -4,7 +4,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-console.log('health function start v1');
+console.log('health function start v2');
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
