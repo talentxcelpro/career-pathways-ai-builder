@@ -74,13 +74,13 @@ export const ContentAutomationTester: React.FC = () => {
     try {
       // Step 1: Queue content generation
       console.log('🚀 Starting content automation test...');
-      const { data: queueResult, error: queueError } = await supabase.functions.invoke('content_queue_processor', {
+      const { data: queueResult, error: queueError } = await supabase.functions.invoke('ai-comprehensive-generator', {
         body: { action: 'queue', count: 5 }
       });
 
       if (queueError || !queueResult) {
         try {
-          const direct = await callFunctionDirect('content_queue_processor', { action: 'queue', count: 5 });
+          const direct = await callFunctionDirect('ai-comprehensive-generator', { action: 'queue', count: 5 });
           updateResult(0, 'success', `Queued ${direct.jobs_queued} jobs (direct)`, direct);
         } catch (e) {
           // Final fallback: generate directly via ai-content-generator
@@ -105,13 +105,13 @@ export const ContentAutomationTester: React.FC = () => {
         processedCount = 1;
         updateResult(1, 'success', 'Processed 1 job (fallback path)');
       } else {
-        const { data: processResult, error: processError } = await supabase.functions.invoke('content_queue_processor', {
+        const { data: processResult, error: processError } = await supabase.functions.invoke('ai-comprehensive-generator', {
           body: { action: 'process' }
         });
 
         if (processError || !processResult) {
           try {
-            const directProcess = await callFunctionDirect('content_queue_processor', { action: 'process' });
+            const directProcess = await callFunctionDirect('ai-comprehensive-generator', { action: 'process' });
             processedCount = directProcess.processed ?? 0;
             updateResult(1, 'success', `Processed ${processedCount} jobs (direct)`, directProcess);
           } catch (e) {
