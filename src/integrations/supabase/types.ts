@@ -12695,6 +12695,7 @@ export type Database = {
           headline: string | null
           id: string
           intent_tags: string[] | null
+          is_ai_generated: boolean | null
           is_bot_post: boolean | null
           is_deleted: boolean | null
           is_featured: boolean | null
@@ -12703,6 +12704,7 @@ export type Database = {
           likes_count: number | null
           location: string | null
           media_urls: string[] | null
+          metadata: Json | null
           origin: string | null
           post_type: string | null
           preview_url: string | null
@@ -12729,6 +12731,7 @@ export type Database = {
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
+          is_ai_generated?: boolean | null
           is_bot_post?: boolean | null
           is_deleted?: boolean | null
           is_featured?: boolean | null
@@ -12737,6 +12740,7 @@ export type Database = {
           likes_count?: number | null
           location?: string | null
           media_urls?: string[] | null
+          metadata?: Json | null
           origin?: string | null
           post_type?: string | null
           preview_url?: string | null
@@ -12763,6 +12767,7 @@ export type Database = {
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
+          is_ai_generated?: boolean | null
           is_bot_post?: boolean | null
           is_deleted?: boolean | null
           is_featured?: boolean | null
@@ -12771,6 +12776,7 @@ export type Database = {
           likes_count?: number | null
           location?: string | null
           media_urls?: string[] | null
+          metadata?: Json | null
           origin?: string | null
           post_type?: string | null
           preview_url?: string | null
