@@ -160,8 +160,6 @@ serve(async (req) => {
             content,
             type: "post",
             source: "ai",
-            created_by: bot.user_id,
-            tags: [category],
             is_draft: false,
             published_at: now,
           })
