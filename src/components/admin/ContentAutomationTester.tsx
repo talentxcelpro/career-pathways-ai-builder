@@ -58,13 +58,13 @@ export const ContentAutomationTester: React.FC = () => {
     try {
       // Step 1: Queue content generation
       console.log('🚀 Starting content automation test...');
-      const { data: queueResult, error: queueError } = await supabase.functions.invoke('content-queue-processor', {
+      const { data: queueResult, error: queueError } = await supabase.functions.invoke('content_queue_processor', {
         body: { action: 'queue', count: 5 }
       });
 
       if (queueError || !queueResult) {
         try {
-          const direct = await callFunctionDirect('content-queue-processor', { action: 'queue', count: 5 });
+          const direct = await callFunctionDirect('content_queue_processor', { action: 'queue', count: 5 });
           updateResult(0, 'success', `Queued ${direct.jobs_queued} jobs (direct)`, direct);
         } catch (e) {
           updateResult(0, 'error', `Queue failed: ${queueError?.message || (e as Error).message}`, { sdkError: queueError, directError: e instanceof Error ? e.message : e });
@@ -78,13 +78,13 @@ export const ContentAutomationTester: React.FC = () => {
       // Step 2: Process the queue
       await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
       
-      const { data: processResult, error: processError } = await supabase.functions.invoke('content-queue-processor', {
+      const { data: processResult, error: processError } = await supabase.functions.invoke('content_queue_processor', {
         body: { action: 'process' }
       });
 
       if (processError || !processResult) {
         try {
-          const directProcess = await callFunctionDirect('content-queue-processor', { action: 'process' });
+          const directProcess = await callFunctionDirect('content_queue_processor', { action: 'process' });
           updateResult(1, 'success', `Processed ${directProcess.processed} jobs (direct)`, directProcess);
         } catch (e) {
           updateResult(1, 'error', `Processing failed: ${processError?.message || (e as Error).message}`, { sdkError: processError, directError: e instanceof Error ? e.message : e });

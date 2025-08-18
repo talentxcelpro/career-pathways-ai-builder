@@ -227,5 +227,8 @@ verify_jwt = false
 [functions.content-queue-processor]
 verify_jwt = false
 
+[functions.content_queue_processor]
+verify_jwt = false
+
 [functions.generate-bot-content]
 verify_jwt = true

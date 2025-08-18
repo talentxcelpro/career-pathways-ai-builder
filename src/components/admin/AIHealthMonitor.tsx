@@ -54,7 +54,7 @@ export const AIHealthMonitor: React.FC = () => {
     setIsChecking(true);
     try {
       const functionNames = [
-        'content-queue-processor',
+        'content_queue_processor',
         'health-check'
       ];
 
