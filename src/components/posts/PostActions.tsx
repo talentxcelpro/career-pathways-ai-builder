@@ -125,7 +125,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onCommentClick}
+            onClick={onCommentClick ? onCommentClick : () => (window.location.href = `/network/posts/${postId}`)}
             className="gap-2 text-gray-500"
           >
             <MessageCircle className="h-4 w-4" />

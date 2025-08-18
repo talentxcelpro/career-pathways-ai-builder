@@ -14,41 +14,18 @@ export const useReshare = () => {
     setIsResharing(true);
     
     try {
-      // First, get the original post data
-      const { data: originalPost, error: fetchError } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('id', originalPostId)
-        .single();
-
-      if (fetchError) {
-        throw new Error('Failed to fetch original post');
-      }
-
-      // Create the reshare post
-      const reshareData = {
-        user_id: user.id,
-        content: comment || `Reshared: ${originalPost.title}`,
-        post_type: 'reshare',
-        reshared_from_id: originalPostId,
-        created_at: new Date().toISOString(),
-      };
-
+      // Create the reshare post (triggers will update reshare_count on original)
       const { error: insertError } = await supabase
         .from('posts')
-        .insert([reshareData]);
+        .insert([{
+          author_id: user.id,
+          content: comment || null,
+          post_type: 'reshare',
+          reshared_from_id: originalPostId,
+        }]);
 
       if (insertError) {
-        throw new Error('Failed to create reshare');
-      }
-
-      // Increment the reshare count on the original post
-      const { error: updateError } = await supabase
-        .rpc('increment_reshare_count', { post_id: originalPostId });
-
-      if (updateError) {
-        console.error('Failed to update reshare count:', updateError);
-        // Don't throw here as the reshare was successful
+        throw insertError;
       }
 
       return { success: true };
