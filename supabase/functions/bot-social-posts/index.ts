@@ -72,10 +72,42 @@ function pick<T>(arr: T[]): T {
 function getAuthUserId(req: Request): string | null {
   const auth = req.headers.get("Authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return null;
+  
   try {
-    const payload = JSON.parse(atob(token.split(".")[1] || ""));
+    // Handle both base64 and base64url encoding
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    
+    let base64 = parts[1];
+    // Convert base64url to base64 if needed
+    base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding if needed
+    while (base64.length % 4) {
+      base64 += '=';
+    }
+    
+    const payload = JSON.parse(atob(base64));
     return payload?.sub || null;
-  } catch {
+  } catch (error) {
+    console.error("JWT parsing error:", error);
+    return null;
+  }
+}
+
+// Get fallback admin user for safety
+async function getAdminFallbackUserId(supabase: any): Promise<string | null> {
+  try {
+    const { data: admins } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .in("role", ["super_admin", "admin"])
+      .eq("is_active", true)
+      .limit(1);
+    
+    return admins?.[0]?.user_id || null;
+  } catch (error) {
+    console.error("Failed to get admin fallback:", error);
     return null;
   }
 }
@@ -110,8 +142,21 @@ serve(async (req) => {
       );
     }
 
+    // Service role client for admin operations
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+    
+    // User-context client for RLS-aware operations
+    const authHeader = req.headers.get("Authorization");
+    const userClient = authHeader 
+      ? createClient(SUPABASE_URL, SERVICE_ROLE, {
+          global: { headers: { Authorization: authHeader } }
+        })
+      : supabase;
+    
     const authUserFromReq = getAuthUserId(req);
+    
+    // Get admin fallback as safety net
+    const adminFallback = await getAdminFallbackUserId(supabase);
 
     // Parse body safely
     const text = await req.text().catch(() => "");
@@ -173,7 +218,7 @@ serve(async (req) => {
             content,
             type: "post",
             source: "ai",
-            created_by: authUserFromReq || null,
+            created_by: authUserFromReq || adminFallback,
             is_draft: false,
             published_at: now,
           })
@@ -185,15 +230,17 @@ serve(async (req) => {
           errors.push({ bot_id: bot.id, stage: 'bot_wall', message: wallErr?.message || String(wallErr) });
         }
 
-        // 2) Insert into posts table with explicit author ID
+        // 2) Insert into posts table with robust author ID resolution
         try {
-          const authorIdForPost = bot.profile_id || bot.user_id || authUserFromReq;
+          // Priority: bot profile -> bot user -> auth user -> admin fallback
+          const authorIdForPost = bot.profile_id || bot.user_id || authUserFromReq || adminFallback;
+          
           if (authorIdForPost) {
-            const { data: postData, error: postError } = await supabase
+            const { data: postData, error: postError } = await userClient
               .from("posts")
               .insert({
                 author_id: authorIdForPost,
-                user_id: authorIdForPost,
+                user_id: authorIdForPost, 
                 content,
                 headline: title,
                 is_public: true,
@@ -215,15 +262,17 @@ serve(async (req) => {
               console.error(`Insert post failed for bot ${bot.id}: ${postError.message}`);
               errors.push({ bot_id: bot.id, stage: 'posts', message: postError.message });
             } else {
-              console.log(`Successfully created post ${postData.id} for bot ${bot.name}`);
+              console.log(`Successfully created post ${postData.id} for bot ${bot.name} with author ${authorIdForPost}`);
               postsCreated++;
             }
           } else {
-            console.error(`Skipping posts insert: missing author_id for bot ${bot.id}`);
-            errors.push({ bot_id: bot.id, stage: 'posts', message: 'missing author_id (no bot.user_id and no auth user)' });
+            const errorMsg = 'No valid author_id found (bot has no profile_id/user_id, no auth user, no admin fallback)';
+            console.error(`Skipping posts insert for bot ${bot.id}: ${errorMsg}`);
+            errors.push({ bot_id: bot.id, stage: 'posts', message: errorMsg });
           }
         } catch (postSyncErr: any) {
-          console.error(`Non-blocking: sync to posts failed for bot ${bot.id}: ${postSyncErr?.message || postSyncErr}`);
+          console.error(`Posts insert failed for bot ${bot.id}: ${postSyncErr?.message || postSyncErr}`);
+          errors.push({ bot_id: bot.id, stage: 'posts', message: postSyncErr?.message || String(postSyncErr) });
         }
 
         created.push({ id: wallInserted?.id ?? null, bot_id: bot.id, category });

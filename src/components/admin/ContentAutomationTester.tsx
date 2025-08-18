@@ -202,7 +202,10 @@ export const ContentAutomationTester: React.FC = () => {
       const totalCreated = postsCreated || wallCreated;
 
       if (!rsp || rsp.success === false || totalCreated === 0) {
-        updateResult(0, 'error', `No posts created. Active bots: ${activeBots?.length ?? 0}. ${rsp?.message ?? ''}`.trim(), rsp);
+        const errorDetail = rsp?.errors?.length > 0 
+          ? `Errors: ${rsp.errors.map((e: any) => `${e.stage}: ${e.message}`).join('; ')}`
+          : rsp?.error || rsp?.message || 'Unknown error';
+        updateResult(0, 'error', `No posts created. Active bots: ${activeBots?.length ?? 0}. ${errorDetail}`, rsp);
       } else {
         updateResult(0, 'success', `Created ${totalCreated} posts (${via}); Active bots: ${activeBots?.length ?? 0}`, rsp);
       }
@@ -281,10 +284,14 @@ export const ContentAutomationTester: React.FC = () => {
               <div className="flex-1">
                 <div className="font-medium">{result.step}</div>
                 <div className="text-sm text-muted-foreground">{result.message}</div>
-                {result.details && result.status === 'success' && (
+                {result.details && (
                   <details className="mt-2">
-                    <summary className="text-xs cursor-pointer text-blue-600">View Details</summary>
-                    <pre className="text-xs mt-1 p-2 bg-gray-50 rounded overflow-x-auto">
+                    <summary className={`text-xs cursor-pointer ${result.status === 'error' ? 'text-red-600' : 'text-blue-600'}`}>
+                      View Details
+                    </summary>
+                    <pre className={`text-xs mt-1 p-2 rounded overflow-x-auto ${
+                      result.status === 'error' ? 'bg-red-50 text-red-800' : 'bg-gray-50'
+                    }`}>
                       {JSON.stringify(result.details, null, 2)}
                     </pre>
                   </details>
