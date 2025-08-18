@@ -129,7 +129,7 @@ serve(async (req) => {
     // Fetch active bots with linked users
     const { data: bots, error: botsError } = await supabase
       .from("ai_bots")
-      .select("id, user_id, name, content_domains")
+      .select("id, user_id, profile_id, name, content_domains")
       .eq("is_active", true)
       .limit(limitBots);
 
@@ -186,7 +186,7 @@ serve(async (req) => {
 
         // 2) Insert into posts table with explicit author ID
         try {
-          const authorIdForPost = bot.user_id || getAuthUserId(req);
+          const authorIdForPost = bot.profile_id || bot.user_id || authUserFromReq;
           if (authorIdForPost) {
             const { data: postData, error: postError } = await supabase
               .from("posts")
