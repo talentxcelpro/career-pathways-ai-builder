@@ -31,3 +31,13 @@ verify_jwt = false
 
 [functions.simple-test]
 verify_jwt = false
+
+# Newly added AI functions
+[functions.ai-comprehensive]
+verify_jwt = false
+
+[functions.ai-comprehensive-generator]
+verify_jwt = false
+
+[functions.ai-comprehensive-generator-v2]
+verify_jwt = false
