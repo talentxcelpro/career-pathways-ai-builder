@@ -1,169 +1,203 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 
+// CORS headers
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
-// Simple, deterministic social post generator (no external AI, no emojis)
-function generateSocialPost(bot: any, category?: string): { content: string } {
-  const domain = bot?.content_domains?.[0] || 'career growth';
-  const persona = bot?.name || 'TalentXcel';
+// Env
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-  const libraries: Record<string, string[]> = {
-    'System & Platform Updates': [
-      'Continuous improvement keeps great tools relevant. We’ve completed performance upgrades to keep your experience smooth and reliable.',
-      'Behind every seamless interaction is a system designed to work in your favor. We fine-tuned backend processes to make your journey more effortless.',
-      'Great careers need dependable tools. We’ve optimized the platform to be faster, sharper, and aligned with real use.',
-      'While you focus on growth, we focus on infrastructure. Searches and profile views now load more efficiently.',
-    ],
-    'Career Motivation': [
-      'Every career is built step by step. The small actions you take today shape the big opportunities tomorrow.',
-      'Growth rarely happens overnight. It is the outcome of persistence, learning, and resilience.',
-      'The best way to predict the future is to build it — one skill, one connection, one opportunity at a time.',
-      'Success is not about luck, but preparation meeting opportunity. Keep preparing.',
-    ],
-    'Jobs & Networking': [
-      'The right role is about alignment with your goals and values, not just skills. Stay intentional.',
-      'Networking is about cultivating meaningful professional relationships, not collecting contacts.',
-      'Fresh opportunities are always emerging. The key is to stay prepared and visible.',
-      'Referrals open doors. Nurture your network consistently.',
-    ],
-    'Learning & Skills': [
-      'The fastest-growing careers are built on continuous learning and adaptation.',
-      'Every skill you add compounds your professional value.',
-      'Knowledge is powerful, but applied knowledge is transformative.',
-      'A learning mindset keeps you competitive in an unpredictable world.',
-    ],
-    'Resume & Career Tools': [
-      'Your resume is not just a document. It is your story in professional form.',
-      'First impressions happen fast. A strong resume ensures you make the right one.',
-      'A resume should highlight achievements, not just responsibilities.',
-      'Career tools exist to amplify your effort, not replace it. Use them wisely.',
-    ],
-    'Community & Inspiration': [
-      'No career is built alone. Every journey is supported by mentors, peers, and communities.',
-      'Collaboration creates opportunities that competition never will.',
-      'Success multiplies when shared. Lift others as you rise.',
-      'A strong professional community is the backbone of resilient careers.',
-    ],
-  };
+// Categories (as requested)
+const CATEGORIES = [
+  "System & Platform Updates",
+  "Career Motivation",
+  "Jobs & Networking",
+  "Learning & Skills",
+  "Resume & Career Tools",
+  "Community & Inspiration",
+] as const;
 
-  const selectedCategory = category && libraries[category] ? category : 'Learning & Skills';
-  const pool = libraries[selectedCategory];
-  const line = pool[Math.floor(Math.random() * pool.length)];
+// Content library: clean, LinkedIn-style, no emojis/hashtags
+const LIBRARY: Record<(typeof CATEGORIES)[number], string[]> = {
+  "System & Platform Updates": [
+    "Continuous improvement keeps great tools relevant. We’ve completed performance upgrades to keep your experience smooth and reliable.",
+    "Behind every seamless interaction is a system designed to work in your favor. We fine-tuned backend processes to make your journey more effortless.",
+    "Great careers need dependable tools. We’ve optimized the platform to be faster, sharper, and aligned with real use.",
+    "While you focus on growth, we focus on infrastructure. Searches and profile views now load more efficiently.",
+    "Progress often happens behind the scenes. Our latest system refresh strengthens stability and consistency across the platform.",
+    "Small changes compound into big impact. Today’s update improves speed and responsiveness across core features.",
+  ],
+  "Career Motivation": [
+    "Every career is built step by step. The small actions you take today shape the big opportunities tomorrow.",
+    "Growth rarely happens overnight. It is the outcome of persistence, learning, and resilience.",
+    "The best way to predict the future is to build it—one skill, one connection, one opportunity at a time.",
+    "Success is not about luck, but preparation meeting opportunity. Keep preparing.",
+    "Careers are marathons, not sprints. Pace yourself, but never stop moving forward.",
+  ],
+  "Jobs & Networking": [
+    "The right role is about alignment with your goals and values, not just skills. Stay intentional.",
+    "Networking is about cultivating meaningful professional relationships, not collecting contacts.",
+    "Fresh opportunities are always emerging. The key is to stay prepared and visible.",
+    "Referrals open doors. Nurture your network consistently.",
+  ],
+  "Learning & Skills": [
+    "The fastest-growing careers are built on continuous learning and adaptation.",
+    "Every skill you add compounds your professional value.",
+    "Knowledge is powerful, but applied knowledge is transformative.",
+    "A learning mindset keeps you competitive in an unpredictable world.",
+  ],
+  "Resume & Career Tools": [
+    "Your resume is not just a document. It is your story in professional form.",
+    "First impressions happen fast. A strong resume ensures you make the right one.",
+    "A resume should highlight achievements, not just responsibilities.",
+    "Career tools exist to amplify your effort, not replace it. Use them wisely.",
+  ],
+  "Community & Inspiration": [
+    "No career is built alone. Every journey is supported by mentors, peers, and communities.",
+    "Collaboration creates opportunities that competition never will.",
+    "Success multiplies when shared. Lift others as you rise.",
+    "A strong professional community is the backbone of resilient careers.",
+  ],
+};
 
-  const body = [
-    `${line}`,
-    `${persona} • ${selectedCategory}`,
-  ].join(' ');
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
-  // No emojis, minimal formatting, no hashtags
-  return { content: body };
+function generatePost(bot: any, category: (typeof CATEGORIES)[number]) {
+  const persona = bot?.name || "TalentXcel";
+  const line = pick(LIBRARY[category]);
+  // Clean, no emojis/hashtags, concise LinkedIn tone
+  const content = `${line} ${persona} • ${category}`;
+  return { content };
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  // Preflight
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (req.method === 'GET') {
-    return new Response(JSON.stringify({ ok: true, function: 'bot-social-posts' }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  // Health
+  if (req.method === "GET") {
+    return new Response(
+      JSON.stringify({ ok: true, function: "bot-social-posts", categories: CATEGORIES }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    const now = new Date().toISOString();
-    console.log('📝 bot-social-posts invoked at', now);
-
-    const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
-    const limitBots = Math.max(1, Math.min(10, Number(body.limit_bots ?? 3)));
-    const preset: string | undefined = body.preset;
-    const totalPosts = Math.max(0, Number(body.total_posts ?? 0));
-    const categories: string[] | undefined = Array.isArray(body.categories) ? body.categories : undefined;
-
-    // Default posts per bot, can be overridden by preset
-    let postsPerBot = Math.max(1, Math.min(10, Number(body.posts_per_bot ?? 1)));
-    if (preset === 'linkedin_100' && totalPosts > 0) {
-      // Distribute target across selected bots
-      postsPerBot = Math.max(1, Math.ceil(totalPosts / limitBots));
+    if (!SUPABASE_URL || !SERVICE_ROLE) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Fetch active bots linked to real users
+    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    // Parse body safely
+    const text = await req.text().catch(() => "");
+    let body: any = {};
+    if (text) {
+      try { body = JSON.parse(text); } catch { body = {}; }
+    }
+
+    // Inputs
+    const preset = String(body?.preset || "").toLowerCase();
+    const limitBots = Math.max(1, Math.min(10, Number(body?.limit_bots ?? 4)));
+    const requestedTotal = Number(body?.total_posts ?? (preset === "linkedin_100" ? 100 : 10));
+    const categoriesInput = Array.isArray(body?.categories) ? body.categories : CATEGORIES as unknown as string[];
+
+    // Fetch active bots with linked users
     const { data: bots, error: botsError } = await supabase
-      .from('ai_bots')
-      .select('*')
-      .eq('is_active', true)
-      .not('user_id', 'is', null)
+      .from("ai_bots")
+      .select("id, user_id, name, content_domains")
+      .eq("is_active", true)
+      .not("user_id", "is", null)
       .limit(limitBots);
 
     if (botsError) throw botsError;
-    if (!bots?.length) {
-      return new Response(JSON.stringify({
-        success: false,
-        message: 'No active bots with user_id found',
-      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 });
+    const botList = bots ?? [];
+    if (!botList.length) {
+      return new Response(
+        JSON.stringify({ success: false, message: "No active bots with user_id found" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    const created: any[] = [];
-    let idx = 0;
+    // Distribute total across bots
+    const totalPosts = Math.max(1, requestedTotal);
+    const perBotBase = Math.floor(totalPosts / botList.length);
+    let remainder = totalPosts % botList.length;
 
-    for (const bot of bots) {
-      for (let i = 0; i < postsPerBot; i++) {
-        const cat = categories && categories.length ? categories[idx % categories.length] : undefined;
-        const { content } = generateSocialPost(bot, cat);
-        idx++;
+    const created: Array<{ id: string | null; bot_id: string; category: string }> = [];
+    let catIndex = 0;
+
+    for (const bot of botList) {
+      const quota = perBotBase + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder--;
+
+      for (let i = 0; i < quota; i++) {
+        const category = (categoriesInput[catIndex % categoriesInput.length] as (typeof CATEGORIES)[number]) || "Learning & Skills";
+        catIndex++;
+
+        const { content } = generatePost(bot, (CATEGORIES.includes(category as any) ? category : "Learning & Skills") as any);
 
         const { data: inserted, error: insertErr } = await supabase
-          .from('posts')
+          .from("posts")
           .insert({
             user_id: bot.user_id,
             content,
-            visibility: 'public',
+            visibility: "public",
             is_ai_generated: true,
             metadata: {
               bot_id: bot.id,
               bot_name: bot.name,
               automation_generated: true,
-              source: 'bot-social-posts',
-              category: cat ?? null,
-              generated_at: now,
+              source: "bot-social-posts",
+              category,
+              preset: preset || null,
+              generated_at: new Date().toISOString(),
             },
           })
-          .select('id')
-          .single();
+          .select("id")
+          .maybeSingle();
 
         if (insertErr) {
-          console.error('Insert post failed for bot', bot.id, insertErr.message);
+          console.error("Insert post failed for bot", bot.id, insertErr?.message || insertErr);
+          created.push({ id: null, bot_id: bot.id, category });
           continue;
         }
 
-        created.push({ id: inserted?.id, bot_id: bot.id, category: cat });
+        created.push({ id: inserted?.id ?? null, bot_id: bot.id, category });
       }
     }
 
-    console.log(`✅ Created ${created.length} social posts`);
-    return new Response(JSON.stringify({
-      success: true,
-      created: created.length,
-      posts: created,
-      bots_processed: bots.length,
-      timestamp: now,
-    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-
-  } catch (error) {
-    console.error('❌ bot-social-posts error:', error);
-    return new Response(JSON.stringify({ success: false, error: String(error?.message ?? error) }), {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        created: created.filter(p => p.id).length,
+        attempted: created.length,
+        posts: created,
+        bots_processed: botList.length,
+        categories_used: Array.from(new Set(created.map(c => c.category))),
+        preset: preset || null,
+        timestamp: new Date().toISOString(),
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (error: any) {
+    console.error("❌ bot-social-posts error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ success: false, error: message }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
