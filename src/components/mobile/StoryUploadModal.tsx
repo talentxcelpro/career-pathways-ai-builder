@@ -117,57 +117,56 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-card">
-        <CardContent className="p-6">
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-end justify-center p-0">
+      <Card className="w-full max-w-sm rounded-t-3xl rounded-b-none bg-card max-h-[85vh] overflow-y-auto">
+        <CardContent className="p-4">
           {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-foreground">Add to Your Story</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Add to Your Story</h2>
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="rounded-full text-muted-foreground hover:text-foreground"
+              className="rounded-full text-muted-foreground hover:text-foreground h-8 w-8"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Media Upload Area */}
-          <div className="mb-6">
+          <div className="mb-4">
             {!mediaFile ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div 
-                  className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors bg-muted/20"
+                  className="border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary transition-colors bg-muted/20"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <div className="flex justify-center space-x-4 mb-4">
-                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                    <VideoIcon className="h-8 w-8 text-muted-foreground" />
+                  <div className="flex justify-center space-x-3 mb-3">
+                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    <VideoIcon className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <p className="text-foreground mb-2 font-medium">Choose photo or video</p>
-                  <p className="text-sm text-muted-foreground">Max 50MB • JPG, PNG, MP4, MOV</p>
+                  <p className="text-foreground mb-1 font-medium text-sm">Choose photo or video</p>
+                  <p className="text-xs text-muted-foreground">Max 50MB • JPG, PNG, MP4, MOV</p>
                 </div>
                 
                 {/* Quick action buttons */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 p-4 h-auto"
+                    className="flex items-center gap-2 p-3 h-auto text-sm"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <FileImage className="h-5 w-5" />
+                    <FileImage className="h-4 w-4" />
                     <span>Gallery</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 p-4 h-auto"
+                    className="flex items-center gap-2 p-3 h-auto text-sm"
                     onClick={() => {
-                      // Note: Camera functionality would require additional setup
                       fileInputRef.current?.click();
                     }}
                   >
-                    <Camera className="h-5 w-5" />
+                    <Camera className="h-4 w-4" />
                     <span>Camera</span>
                   </Button>
                 </div>
@@ -178,19 +177,19 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
                   <img
                     src={mediaPreview}
                     alt="Story preview"
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-48 object-cover rounded-xl"
                   />
                 ) : (
                   <video
                     src={mediaPreview}
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-48 object-cover rounded-xl"
                     controls
                   />
                 )}
                 <Button
                   variant="destructive"
                   size="icon"
-                  className="absolute top-2 right-2 rounded-full"
+                  className="absolute top-2 right-2 rounded-full h-8 w-8"
                   onClick={() => {
                     setMediaFile(null);
                     setMediaPreview('');
@@ -212,25 +211,25 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
           </div>
 
           {/* Caption Input */}
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-sm font-medium mb-2 text-foreground">Caption</label>
             <Textarea
               placeholder="Write a caption... #hashtags"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              rows={3}
+              rows={2}
               maxLength={300}
-              className="resize-none"
+              className="resize-none text-sm"
             />
             <p className="text-xs text-muted-foreground mt-1">{caption.length}/300</p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={onClose}
-              className="flex-1"
+              className="flex-1 text-sm"
               disabled={isSubmitting || uploading}
             >
               Cancel
@@ -238,11 +237,11 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
             <Button
               onClick={handleSubmit}
               disabled={!mediaFile || isSubmitting || uploading}
-              className="flex-1"
+              className="flex-1 text-sm"
             >
               {isSubmitting || uploading ? (
                 <>
-                  <Upload className="h-4 w-4 mr-2 animate-spin" />
+                  <Upload className="h-4 w-4 mr-1 animate-spin" />
                   Sharing...
                 </>
               ) : (
