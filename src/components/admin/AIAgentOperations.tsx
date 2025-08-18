@@ -426,22 +426,28 @@ export const AIAgentOperations: React.FC = () => {
         <CardContent>
           <div className="flex flex-wrap gap-3">
             <Button 
-              onClick={() => {
-                console.log('🧪 Testing edge function connectivity...');
-                supabase.functions.invoke('ai-test-health').then(result => {
-                  console.log('✅ Test result:', result);
-                  toast.success('Edge Functions are working!');
-                }).catch(err => {
-                  console.error('❌ Test failed:', err);
-                  toast.error('Edge Functions not accessible');
-                });
+              onClick={async () => {
+                console.log('🧪 Testing simple function...');
+                try {
+                  const { data, error } = await supabase.functions.invoke('simple-test');
+                  if (error) {
+                    console.error('❌ Simple test failed:', error);
+                    toast.error(`Simple test failed: ${error.message}`);
+                  } else {
+                    console.log('✅ Simple test passed:', data);
+                    toast.success('Edge Functions are working!');
+                  }
+                } catch (err: any) {
+                  console.error('❌ Simple test exception:', err);
+                  toast.error(`Test failed: ${err.message}`);
+                }
               }} 
               disabled={isLoading}
               variant="outline"
               className="flex items-center gap-2"
             >
               <CheckCircle className="h-4 w-4" />
-              Test Connectivity
+              Test Simple Function
             </Button>
             <Button 
               onClick={() => {
