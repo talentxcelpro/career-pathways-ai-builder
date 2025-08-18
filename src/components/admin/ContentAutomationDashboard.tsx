@@ -31,26 +31,49 @@ export const ContentAutomationDashboard: React.FC = () => {
   const triggerContentGeneration = async () => {
     setIsGenerating(true);
     try {
-      // Use the fixed ai-content-generator function
-      const { data, error } = await supabase.functions.invoke('ai-content-generator', {
-        body: {
-          contentType: 'blog_post',
-          topic: 'AI-powered content automation and productivity tips',
-          targetAudience: 'professionals',
-          tone: 'professional',
-          keywords: ['AI', 'automation', 'productivity'],
-          industry: 'technology',
-          wordCount: 500
+      const payload = {
+        contentType: 'blog_post',
+        topic: 'AI-powered content automation and productivity tips',
+        targetAudience: 'professionals',
+        tone: 'professional',
+        keywords: ['AI', 'automation', 'productivity'],
+        industry: 'technology',
+        wordCount: 500
+      };
+
+      // Try standard invoke first
+      let data: any | null = null;
+      try {
+        const { data: invokeData, error } = await supabase.functions.invoke('ai-content-generator', {
+          body: payload
+        });
+        if (error) throw error;
+        data = invokeData;
+      } catch (e) {
+        // Fallback: direct fetch (handles environments where invoke fails)
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        const res = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-content-generator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const errJson = await res.json().catch(() => ({}));
+          throw new Error(errJson?.error || `HTTP ${res.status}`);
         }
-      });
+        data = await res.json();
+      }
 
-      if (error) throw error;
-
-      if (data.success) {
+      if (data?.success) {
         toast.success('Content generated successfully!');
         console.log('Generated content:', data.content);
       } else {
-        throw new Error(data.error || 'Content generation failed');
+        throw new Error(data?.error || 'Content generation failed');
       }
 
       // Refresh stats after a short delay
