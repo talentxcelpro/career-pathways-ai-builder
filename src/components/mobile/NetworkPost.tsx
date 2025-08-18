@@ -264,50 +264,54 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between border-t pt-3">
+          <div className="flex items-center border-t pt-3">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 hover:bg-gray-50"
               onClick={handleLike}
             >
-              <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
-              {post.type === 'job' ? 'Interested' : 'Like'}
+              <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+              <span className="text-xs">{post.type === 'job' ? 'Interested' : 'Like'}</span>
             </Button>
+            
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 hover:bg-gray-50"
               onClick={handleComment}
             >
-              <MessageCircle className="h-4 w-4" />
-              Comment
+              <MessageCircle className="h-4 w-4 text-gray-600" />
+              <span className="text-xs">Comment</span>
             </Button>
+            
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 hover:bg-gray-50"
               onClick={handleReshare}
             >
-              <Repeat2 className="h-4 w-4" />
-              Reshare
+              <Repeat2 className="h-4 w-4 text-gray-600" />
+              <span className="text-xs">Reshare</span>
             </Button>
+            
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 hover:bg-gray-50"
               onClick={handleShare}
             >
-              <Share className="h-4 w-4" />
-              Share
+              <Share className="h-4 w-4 text-gray-600" />
+              <span className="text-xs">Share</span>
             </Button>
+            
             <Button 
               variant="ghost" 
               size="icon" 
-              className="ml-2"
+              className="ml-2 hover:bg-gray-50"
               onClick={handleBookmark}
             >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'}`} />
             </Button>
           </div>
         </div>
