@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
@@ -83,21 +84,9 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile LinkedIn-style interface
+  // Redirect mobile users to dedicated mobile network page
   if (isMobile && user) {
-    return (
-      <MobileLayout>
-        <LinkedInMobileFeed
-          posts={posts}
-          onLike={handleLike}
-          onBookmark={handleBookmark}
-          onShare={handleShare}
-          onComment={handleComment}
-          onConnect={handleConnect}
-          onApply={handleApply}
-        />
-      </MobileLayout>
-    );
+    return <Navigate to="/mobile/network" replace />;
   }
 
   // Desktop interface
