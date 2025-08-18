@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { ReelUploadModal } from '@/components/mobile/ReelUploadModal';
 import { 
   Heart, 
   MessageCircle, 
@@ -16,7 +17,8 @@ import {
   Volume2,
   VolumeX,
   MoreHorizontal,
-  UserPlus
+  UserPlus,
+  Plus
 } from 'lucide-react';
 
 interface VideoReel {
@@ -52,10 +54,11 @@ export const MobileReels = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   // Fetch real video reels from Supabase posts with media
-  const { data: reels = [], isLoading } = useQuery({
+  const { data: reels = [], isLoading, refetch } = useQuery({
     queryKey: ['mobile-reels', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -63,6 +66,7 @@ export const MobileReels = () => {
         .select(`
           id,
           content,
+          headline,
           created_at,
           media_urls,
           author_id,
@@ -75,8 +79,9 @@ export const MobileReels = () => {
           )
         `)
         .not('media_urls', 'is', null)
+        .in('post_type', ['video', 'video_reel'])
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (error) throw error;
 
@@ -92,7 +97,7 @@ export const MobileReels = () => {
             id: post.id,
             video_url: firstVideo,
             thumbnail_url: undefined,
-            title: (post.content || '').split('\n')[0] || 'Career Video',
+            title: post.headline || (post.content || '').split('\n')[0] || 'Career Video',
             description: post.content,
             created_at: post.created_at,
             author: {
@@ -291,6 +296,16 @@ export const MobileReels = () => {
                   >
                     {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
                   </Button>
+                  {user && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                      onClick={() => setShowUploadModal(true)}
+                    >
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -406,6 +421,16 @@ export const MobileReels = () => {
           </div>
         ))}
       </div>
+
+      {/* Upload Modal */}
+      {showUploadModal && user && (
+        <ReelUploadModal
+          onClose={() => setShowUploadModal(false)}
+          onUploadComplete={() => {
+            refetch(); // Refresh reels after upload
+          }}
+        />
+      )}
     </div>
   );
 };
