@@ -47,7 +47,7 @@ export const AIAgentOperations: React.FC = () => {
       return;
     }
     
-    setAgents(data || []);
+    setAgents((data as any) || []);
   };
 
   const fetchTasks = async () => {
@@ -62,7 +62,7 @@ export const AIAgentOperations: React.FC = () => {
       return;
     }
     
-    setTasks(data || []);
+    setTasks((data as any) || []);
   };
 
   const fetchSystemHealth = async () => {
@@ -105,18 +105,21 @@ export const AIAgentOperations: React.FC = () => {
         tasksError 
       });
       
+      const agentsArr = (agents as any[]) || [];
+      const tasksArr = (tasks as any[]) || [];
+      
       setSystemHealth({
         agents: {
-          total: agents?.length || 0,
-          active: agents?.filter(a => a.status === 'active').length || 0,
+          total: agentsArr.length || 0,
+          active: agentsArr.filter(a => a.status === 'active').length || 0,
           error: agentsError?.message || null
         },
         tasks: {
-          total: tasks?.length || 0,
-          pending: tasks?.filter(t => t.status === 'pending').length || 0,
-          running: tasks?.filter(t => t.status === 'running').length || 0,
-          completed: tasks?.filter(t => t.status === 'completed').length || 0,
-          failed: tasks?.filter(t => t.status === 'failed').length || 0,
+          total: tasksArr.length || 0,
+          pending: tasksArr.filter(t => t.status === 'pending').length || 0,
+          running: tasksArr.filter(t => t.status === 'running').length || 0,
+          completed: tasksArr.filter(t => t.status === 'completed').length || 0,
+          failed: tasksArr.filter(t => t.status === 'failed').length || 0,
           error: tasksError?.message || null
         },
         timestamp: new Date().toISOString()
@@ -163,12 +166,12 @@ export const AIAgentOperations: React.FC = () => {
       const { data: agents, error: agentsError } = await supabase
         .from('ai_agents')
         .select('*')
-        .eq('status', 'active');
+        .eq('status' as any, 'active' as any);
       
       if (agentsError) throw agentsError;
       
       let tasksCreated = 0;
-      for (const agent of agents || []) {
+      for (const agent of (agents as any[]) || []) {
         const { error: taskError } = await supabase
           .from('agent_tasks')
           .insert({
@@ -176,7 +179,7 @@ export const AIAgentOperations: React.FC = () => {
             action: 'scheduled_task',
             payload: { message: 'Task created by admin (fallback method)', ai_agent_id: agent.id, ai_agent_handle: agent.handle },
             status: 'pending'
-          });
+          } as any);
         
         if (!taskError) {
           tasksCreated++;
@@ -208,27 +211,27 @@ export const AIAgentOperations: React.FC = () => {
       if (error) {
         // Fallback to direct database operations if function not available
         console.log('Admin trigger not available for worker, using direct approach:', error);
-        const { data: tasks } = await supabase.from('agent_tasks').select('*').eq('status', 'pending').limit(5);
+        const { data: tasks } = await supabase.from('agent_tasks').select('*').eq('status' as any, 'pending' as any).limit(5);
         
         const { data: userRes } = await supabase.auth.getUser();
         const currentUserId = userRes?.user?.id;
         
         let tasksProcessed = 0;
-        for (const task of tasks || []) {
+        for (const task of (tasks as any[]) || []) {
           // Mark as running and log start
-          await supabase.from('agent_tasks').update({ status: 'running', started_at: new Date().toISOString() }).eq('id', task.id);
+          await supabase.from('agent_tasks').update({ status: 'running', started_at: new Date().toISOString() } as any).eq('id', (task as any).id);
           await supabase.from('agent_logs').insert({
-            task_id: task.id,
-            agent_id: task.agent_id,
-            message: `Started task: ${task.action} (fallback worker)`,
+            task_id: (task as any).id,
+            agent_id: (task as any).agent_id,
+            message: `Started task: ${(task as any).action} (fallback worker)`,
             level: 'info',
             metadata: {
               action_type: 'task_execution',
-              task_action: task.action,
+              task_action: (task as any).action,
               execution_status: 'started',
               source: 'fallback_worker'
             }
-          });
+          } as any);
           
           // Simulate short processing time
           await new Promise(resolve => setTimeout(resolve, 100));
@@ -248,20 +251,20 @@ export const AIAgentOperations: React.FC = () => {
           }
           
           // Mark as completed and log completion
-          await supabase.from('agent_tasks').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', task.id);
+          await supabase.from('agent_tasks').update({ status: 'completed', completed_at: new Date().toISOString() } as any).eq('id', (task as any).id);
           await supabase.from('agent_logs').insert({
-            task_id: task.id,
-            agent_id: task.agent_id,
-            message: `Completed task: ${task.action} (fallback worker)`,
+            task_id: (task as any).id,
+            agent_id: (task as any).agent_id,
+            message: `Completed task: ${(task as any).action} (fallback worker)`,
             level: 'info',
             metadata: {
               action_type: 'task_execution',
-              task_action: task.action,
+              task_action: (task as any).action,
               execution_status: 'completed',
               source: 'fallback_worker',
               task_output: { processed: true, duration_ms: 100 }
             }
-          });
+          } as any);
           
           tasksProcessed++;
         }
@@ -292,10 +295,10 @@ export const AIAgentOperations: React.FC = () => {
       if (error) {
         // Fallback to direct database operations if function not available
         console.log('Admin trigger not available for test tasks, using direct approach:', error);
-        const { data: agents } = await supabase.from('ai_agents').select('*').eq('status', 'active').limit(3);
+        const { data: agents } = await supabase.from('ai_agents').select('*').eq('status' as any, 'active' as any).limit(3);
         
         let tasksCreated = 0;
-        for (const agent of agents || []) {
+        for (const agent of (agents as any[]) || []) {
           const { error: taskError } = await supabase
             .from('agent_tasks')
             .insert({
@@ -303,7 +306,7 @@ export const AIAgentOperations: React.FC = () => {
               action: 'test_task',
               payload: { message: 'Test task (fallback)', ai_agent_id: agent.id, ai_agent_handle: agent.handle },
               status: 'pending'
-            });
+            } as any);
           
           if (!taskError) tasksCreated++;
         }
