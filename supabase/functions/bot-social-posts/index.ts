@@ -149,33 +149,53 @@ serve(async (req) => {
 
         const { content } = generatePost(bot, (CATEGORIES.includes(category as any) ? category : "Learning & Skills") as any);
 
-        const { data: inserted, error: insertErr } = await supabase
-          .from("posts")
+        // 1) Insert into bot wall (primary source for admin wall)
+        const now = new Date().toISOString();
+        const title = `${category} — ${bot.name}`;
+        const { data: wallInserted, error: wallErr } = await supabase
+          .from("bot_wall")
           .insert({
-            user_id: bot.user_id,
+            bot_id: bot.id,
+            title,
             content,
-            visibility: "public",
-            is_ai_generated: true,
-            metadata: {
-              bot_id: bot.id,
-              bot_name: bot.name,
-              automation_generated: true,
-              source: "bot-social-posts",
-              category,
-              preset: preset || null,
-              generated_at: new Date().toISOString(),
-            },
+            type: "post",
+            source: "ai",
+            created_by: bot.user_id,
+            tags: [category],
+            is_draft: false,
+            published_at: now,
           })
           .select("id")
           .maybeSingle();
 
-        if (insertErr) {
-          console.error("Insert post failed for bot", bot.id, insertErr?.message || insertErr);
+        if (wallErr) {
+          console.error("Insert bot_wall failed for bot", bot.id, wallErr?.message || wallErr);
           created.push({ id: null, bot_id: bot.id, category });
           continue;
         }
 
-        created.push({ id: inserted?.id ?? null, bot_id: bot.id, category });
+        // 2) Best-effort sync to general posts feed (do not block on failure)
+        try {
+          await supabase.from("posts").insert({
+            author_id: bot.user_id,
+            user_id: bot.user_id,
+            content,
+            headline: title,
+            is_public: true,
+            post_type: "text",
+            tags: [category],
+            status: "published",
+            visibility: "public",
+            origin: "bot_wall",
+            is_bot_post: true,
+            bot_id: bot.id,
+            created_at: now,
+          });
+        } catch (postSyncErr) {
+          console.error("Non-blocking: sync to posts failed for bot", bot.id, postSyncErr?.message || postSyncErr);
+        }
+
+        created.push({ id: wallInserted?.id ?? null, bot_id: bot.id, category });
       }
     }
 
