@@ -146,23 +146,21 @@ export const useStoryCreation = () => {
         return false;
       }
 
-      const story: StoryData = {
-        ...storyData,
-        id: Date.now().toString(),
-        userId: user.id,
-        createdAt: new Date().toISOString(),
+      const story = {
+        user_id: user.id,
+        type: storyData.type,
+        content: storyData.content,
+        media_url: storyData.mediaUrl,
+        background: storyData.background,
+        font: storyData.font,
+        font_size: storyData.fontSize,
       };
 
-      // In a real app, you would save this to your stories table
-      // For now, we'll just store it locally or in memory
-      console.log('Saving story:', story);
-
-      // You could implement real storage here:
-      // const { error } = await supabase
-      //   .from('stories')
-      //   .insert([story]);
+      const { error } = await supabase
+        .from('stories')
+        .insert([story]);
       
-      // if (error) throw error;
+      if (error) throw error;
 
       return true;
     } catch (error) {

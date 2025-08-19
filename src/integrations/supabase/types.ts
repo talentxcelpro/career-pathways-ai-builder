@@ -19339,6 +19339,54 @@ export type Database = {
           },
         ]
       }
+      stories: {
+        Row: {
+          background: string | null
+          content: string | null
+          created_at: string | null
+          expires_at: string | null
+          font: string | null
+          font_size: string | null
+          id: string
+          likes_count: number | null
+          media_url: string | null
+          type: string
+          updated_at: string | null
+          user_id: string
+          views_count: number | null
+        }
+        Insert: {
+          background?: string | null
+          content?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          font?: string | null
+          font_size?: string | null
+          id?: string
+          likes_count?: number | null
+          media_url?: string | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+          views_count?: number | null
+        }
+        Update: {
+          background?: string | null
+          content?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          font?: string | null
+          font_size?: string | null
+          id?: string
+          likes_count?: number | null
+          media_url?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
       student_college_interactions: {
         Row: {
           college_id: string
