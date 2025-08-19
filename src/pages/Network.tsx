@@ -2,25 +2,21 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { NetworkLeftSidebar } from "@/components/network/NetworkLeftSidebar";
+import { NetworkRightSidebar } from "@/components/network/NetworkRightSidebar";
+import { NetworkPostComposer } from "@/components/network/NetworkPostComposer";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
-import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
-import { NetworkStats } from "@/components/network/NetworkStats";
-import { SmartConnectAI } from "@/components/network/SmartConnectAI";
-import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
-import { EmailTestButton } from "@/components/EmailTestButton";
-import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
-import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
-import Posts from './network/Posts';
-import { updateMetaTags } from '@/utils/metaTags';
-import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
-import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
+import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { NetworkPostsFeed } from "@/components/network/NetworkPostsFeed";
 import { MobileNetworkFeed } from "@/components/network/MobileNetworkFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useAuth } from "@/contexts/AuthContext";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
+import { updateMetaTags } from '@/utils/metaTags';
+import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
@@ -78,58 +74,72 @@ const Network = () => {
 
   // Desktop interface
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
-      {/* Main Content with Tabs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Tabs Navigation */}
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-4 h-10">
-            <TabsTrigger value="feed" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+          <TabsList className="grid w-full grid-cols-6 bg-muted p-1 mb-6 h-12">
+            <TabsTrigger 
+              value="feed" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium"
+            >
               <MessageSquare className="w-4 h-4" />
-              <span>Feed</span>
+              Feed
             </TabsTrigger>
-            <TabsTrigger value="smart-feed" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+            <TabsTrigger 
+              value="smart-feed" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium"
+            >
               <Sparkles className="w-4 h-4" />
-              <span>Smart Feed</span>
+              Smart Feed
             </TabsTrigger>
-            <TabsTrigger value="connections" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+            <TabsTrigger 
+              value="connections" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium"
+            >
               <Users className="w-4 h-4" />
-              <span>Connections</span>
+              Connections
             </TabsTrigger>
-            <TabsTrigger value="discover" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+            <TabsTrigger 
+              value="discover" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium"
+            >
               <UserPlus className="w-4 h-4" />
-              <span>Discover</span>
+              Discover
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+            <TabsTrigger 
+              value="analytics" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium"
+            >
               <TrendingUp className="w-4 h-4" />
-              <span>Analytics</span>
+              Analytics
             </TabsTrigger>
-            <TabsTrigger value="ai-connect" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+            <TabsTrigger 
+              value="ai-connect" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm font-medium"
+            >
               <Sparkles className="w-4 h-4" />
-              <span>AI Connect</span>
+              AI Connect
             </TabsTrigger>
           </TabsList>
 
+          {/* Three Column Layout */}
           <div className="grid grid-cols-12 gap-6">
             {/* Left Sidebar */}
             <div className="col-span-3">
-              <div className="space-y-4">
-                <NetworkStats />
-                <ConnectionSuggestions />
-              </div>
+              <NetworkLeftSidebar />
             </div>
 
             {/* Main Content */}
             <div className="col-span-6">
-              <TabsContent value="feed" className="mt-0">
-                <div className="space-y-6">
-                  <ProfessionalFeed />
-                </div>
+              <TabsContent value="feed" className="mt-0 space-y-6">
+                <NetworkPostComposer />
+                <ProfessionalFeed />
               </TabsContent>
 
-              <TabsContent value="smart-feed" className="mt-0">
-                <div className="space-y-6">
-                  <NetworkPostsFeed />
-                </div>
+              <TabsContent value="smart-feed" className="mt-0 space-y-6">
+                <NetworkPostComposer />
+                <NetworkPostsFeed />
               </TabsContent>
 
               <TabsContent value="connections" className="mt-0">
@@ -141,24 +151,17 @@ const Network = () => {
               </TabsContent>
 
               <TabsContent value="analytics" className="mt-0">
-                <div className="space-y-6">
-                  <NetworkAnalytics />
-                </div>
+                <NetworkAnalytics />
               </TabsContent>
 
               <TabsContent value="ai-connect" className="mt-0">
-                <div className="space-y-6">
-                  <SmartConnectAI />
-                </div>
+                <SmartConnectAI />
               </TabsContent>
             </div>
 
             {/* Right Sidebar */}
             <div className="col-span-3">
-              <div className="space-y-4">
-                <ReferralNetworkAd />
-                <AdvertisingSidebar />
-              </div>
+              <NetworkRightSidebar />
             </div>
           </div>
         </Tabs>
