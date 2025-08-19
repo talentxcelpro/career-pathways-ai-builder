@@ -58,6 +58,7 @@ export function CareerPassportDashboard() {
   const [isPublicView, setIsPublicView] = useState(false);
   const [publicLoading, setPublicLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const initializeView = async () => {
@@ -148,6 +149,13 @@ export function CareerPassportDashboard() {
 
     initializeView();
   }, [userId, user?.id]);
+
+  // Set QR code URL when public profile is updated
+  useEffect(() => {
+    if (publicProfile?.qr_code_data) {
+      setQrCodeUrl(publicProfile.qr_code_data);
+    }
+  }, [publicProfile]);
 
   const generateQRCode = async () => {
     if (!user?.id) return;
@@ -409,10 +417,22 @@ export function CareerPassportDashboard() {
     return name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
   };
 
-  const getCompletionPercentage = () => displayData.passport?.completion_percentage || 40;
+  const getCompletionPercentage = () => displayData.passport?.completion_percentage || 65;
   const getCareerReadiness = () => displayData.passport?.career_readiness_score || 60;
   const getMarketCompetitiveness = () => displayData.passport?.market_competitiveness_score || 45;
   const getDisplayName = () => displayData.profile?.full_name?.split(' ')[0] || 'User';
+  
+  // Generate TalentXcel ID in the format from screenshot
+  const getTalentXcelId = () => {
+    const id = displayData.profile?.talentxcel_id;
+    if (id) return id;
+    
+    // Generate ID like ARS315116 from user ID or create fallback
+    const userId = user?.id || 'default';
+    const letters = userId.slice(0, 3).toUpperCase().replace(/[^A-Z]/g, 'A');
+    const numbers = userId.slice(-6).replace(/[^0-9]/g, '0').padStart(6, '0');
+    return `${letters}${numbers}`;
+  };
 
   // Show authentication prompt for unauthenticated users viewing public profiles
   if (!user && isPublicView) {
@@ -479,64 +499,84 @@ export function CareerPassportDashboard() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
-        {/* Digital ID Card - Improved Design */}
-        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 border border-orange-500/20 shadow-2xl max-w-sm mx-auto" style={{
-          background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 146, 60, 0.15)'
+        {/* Digital ID Card - Aadhaar/PAN Card Style */}
+        <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-2xl p-6 border border-orange-500/30 shadow-2xl max-w-sm mx-auto overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #0f172a 100%)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(251, 146, 60, 0.2)'
         }}>
-          {/* Header */}
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h1 className="text-lg font-bold text-orange-400 tracking-wide">TalentXcel Career Passport</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center">
-                  <div className="w-3 h-3 rounded-full border border-white"></div>
-                </div>
-                <span className="text-gray-400 text-sm">Career Builder</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-gray-400 text-xs">Unique ID</div>
-              <div className="text-orange-400 font-bold text-sm">{displayData.profile?.talentxcel_id || `TXL${(user?.id || userId)?.slice(-3)?.toUpperCase() || '001'}`}</div>
+          {/* Background Watermark */}
+          <div className="absolute inset-0 opacity-5 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-white rotate-45 whitespace-nowrap">
+              TalentXcel
             </div>
           </div>
 
-          {/* Profile Section */}
-          <div className="flex items-center gap-4 mb-6">
+          {/* Hologram Security Effects */}
+          <div className="absolute top-2 right-2 w-12 h-12 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-full blur-sm"></div>
+          <div className="absolute bottom-2 left-2 w-8 h-8 bg-gradient-to-tr from-orange-400/30 to-red-400/30 rounded-full blur-sm"></div>
+
+          {/* Header */}
+          <div className="relative z-10 flex items-start justify-between mb-6">
+            <div>
+              <h1 className="text-xl font-bold text-orange-400 tracking-wide">TalentXcel Career Passport</h1>
+              <div className="flex items-center gap-2 mt-1">
+                <Target className="h-4 w-4 text-red-400" />
+                <span className="text-gray-300 text-sm">Career Builder</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-gray-400 text-xs mb-1">Unique ID</div>
+              <div className="text-orange-400 font-bold text-sm">{getTalentXcelId()}</div>
+            </div>
+          </div>
+
+          {/* Profile Section with QR Code */}
+          <div className="relative z-10 flex items-center gap-4 mb-6">
+            {/* Profile Photo - Enhanced like ID card */}
             <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-gray-600 border-4 border-orange-400/30 flex items-center justify-center">
-                <Avatar className="w-full h-full">
+              <div className="w-20 h-20 rounded-lg bg-gray-600 border-2 border-orange-400/50 overflow-hidden">
+                <Avatar className="w-full h-full rounded-lg">
                   <AvatarImage 
                     src={displayData.profile?.profile_picture_url || user?.user_metadata?.avatar_url} 
-                    className="object-cover w-full h-full rounded-full"
+                    className="object-cover w-full h-full"
                   />
-                  <AvatarFallback className="bg-gray-600 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-full">
+                  <AvatarFallback className="bg-gradient-to-br from-gray-600 to-gray-700 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-lg">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
               </div>
-              {/* Add Photo Prompt */}
-              {displayData.isOwner && !displayData.profile?.profile_picture_url && !user?.user_metadata?.avatar_url && (
-                <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold animate-pulse">
-                  !
-                </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 bg-orange-400 text-black rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
-                2
+              {/* Security Badge */}
+              <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-gray-900">
+                ✓
               </div>
             </div>
+            
+            {/* User Info */}
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-white mb-1">{user?.user_metadata?.full_name || displayData.profile?.full_name || 'User'}</h2>
-              <p className="text-orange-400 font-medium text-sm mb-1">{displayData.profile?.headline || 'Business Professional'}</p>
-              <p className="text-orange-400 font-medium text-sm mb-2">{displayData.profile?.title || ''}</p>
-              <p className="text-gray-400 text-sm flex items-center gap-1">
-                <span className="text-red-400">📍</span> {displayData.profile?.location || 'Location not set'}
-              </p>
+              <h2 className="text-lg font-bold text-white mb-1">{displayData.profile?.full_name || user?.user_metadata?.full_name || 'User'}</h2>
+              <p className="text-orange-400 font-medium text-sm mb-1">{displayData.profile?.title || displayData.profile?.headline || 'Business Strategist & Growth Specialist'}</p>
+              <div className="flex items-center gap-1 text-gray-300 text-xs">
+                <span className="text-orange-400">📍</span> 
+                <span>{displayData.profile?.location || 'Noida'}</span>
+              </div>
+            </div>
+
+            {/* QR Code */}
+            <div className="bg-white rounded-lg p-2 shadow-lg">
+              <div className="w-16 h-16 bg-black rounded flex items-center justify-center">
+                {qrCodeUrl ? (
+                  <img src={qrCodeUrl} alt="QR Code" className="w-full h-full rounded" />
+                ) : (
+                  <div className="w-full h-full bg-white flex items-center justify-center">
+                    <div className="text-xs text-black font-mono">QR</div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Career Readiness Circle */}
-          <div className="flex items-center justify-center mb-6">
+          {/* Career Ready Progress Circle */}
+          <div className="relative z-10 flex items-center justify-center mb-6">
             <div className="relative w-24 h-24">
               <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
                 <circle
@@ -544,7 +584,7 @@ export function CareerPassportDashboard() {
                   cy="50"
                   r="35"
                   stroke="rgb(55, 65, 81)"
-                  strokeWidth="8"
+                  strokeWidth="6"
                   fill="none"
                 />
                 <circle
@@ -552,12 +592,12 @@ export function CareerPassportDashboard() {
                   cy="50"
                   r="35"
                   stroke="rgb(251, 146, 60)"
-                  strokeWidth="8"
+                  strokeWidth="6"
                   fill="none"
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 35}`}
                   strokeDashoffset={`${2 * Math.PI * 35 * (1 - getCareerReadiness() / 100)}`}
-                  className="transition-all duration-1000"
+                  className="transition-all duration-1000 drop-shadow-lg"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
@@ -570,37 +610,45 @@ export function CareerPassportDashboard() {
           </div>
 
           {/* Performance Metrics */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-slate-800/50 border border-slate-600 rounded-lg p-4">
+          <div className="relative z-10 grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-slate-800/60 border border-slate-600/50 rounded-lg p-4 backdrop-blur-sm">
               <div className="text-gray-400 text-sm mb-1">Market Rank</div>
-              <div className="text-white text-lg font-bold mb-1">Top {getMarketCompetitiveness() > 0 ? (100 - getMarketCompetitiveness()) : 100}%</div>
+              <div className="text-white text-xl font-bold mb-1">Top {100 - getMarketCompetitiveness()}%</div>
               <div className="text-gray-400 text-xs">vs peers</div>
             </div>
-            <div className="bg-slate-800/50 border border-slate-600 rounded-lg p-4">
+            <div className="bg-slate-800/60 border border-slate-600/50 rounded-lg p-4 backdrop-blur-sm">
               <div className="text-gray-400 text-sm mb-1">Competitiveness</div>
-              <div className="text-white text-lg font-bold mb-1">{getMarketCompetitiveness()}%</div>
+              <div className="text-white text-xl font-bold mb-1">{getMarketCompetitiveness()}%</div>
               <div className="text-gray-400 text-xs">Score</div>
             </div>
           </div>
 
-          {/* Bottom Stats */}
-          <div className="grid grid-cols-4 gap-2">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.resumes_count || 0}</div>
+          {/* Activity Stats */}
+          <div className="relative z-10 grid grid-cols-4 gap-2 mb-6">
+            <div className="text-center bg-slate-800/40 rounded-lg p-3 border border-slate-600/30">
+              <div className="text-xl font-bold text-orange-400 mb-1">{displayData.passport?.resumes_count || 0}</div>
               <div className="text-xs text-gray-400">Resumes</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.jobs_applied_count || 0}</div>
-              <div className="text-xs text-gray-400">Jobs</div>
-              <div className="text-xs text-gray-400">Applied</div>
+            <div className="text-center bg-slate-800/40 rounded-lg p-3 border border-slate-600/30">
+              <div className="text-xl font-bold text-orange-400 mb-1">{displayData.passport?.jobs_applied_count || 0}</div>
+              <div className="text-xs text-gray-400">Jobs Applied</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.certifications_count || 0}</div>
+            <div className="text-center bg-slate-800/40 rounded-lg p-3 border border-slate-600/30">
+              <div className="text-xl font-bold text-orange-400 mb-1">{displayData.passport?.certifications_count || 0}</div>
               <div className="text-xs text-gray-400">Certifications</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.connections_count || 0}</div>
+            <div className="text-center bg-slate-800/40 rounded-lg p-3 border border-slate-600/30">
+              <div className="text-xl font-bold text-orange-400 mb-1">{displayData.passport?.connections_count || 0}</div>
               <div className="text-xs text-gray-400">Connections</div>
+            </div>
+          </div>
+
+          {/* Digital ID Footer with Validity */}
+          <div className="relative z-10 border-t border-gray-600/50 pt-4 flex justify-between items-center text-xs text-gray-400">
+            <span>Issued Aug 2025</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span>Valid Thru 2028</span>
             </div>
           </div>
         </div>
