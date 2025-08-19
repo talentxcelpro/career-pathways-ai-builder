@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus, Repeat2 } from 'lucide-react';
+import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { linkifyText } from '@/utils/textUtils';
 import VideoPlayer from '@/components/posts/VideoPlayer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileCreatePost } from './MobileCreatePost';
-import { ReshareModal } from './ReshareModal';
-import { ShareModal } from './ShareModal';
-import { CommentModal } from './CommentModal';
+
 interface LinkedInPost {
   id: string;
   user: {
@@ -79,21 +76,7 @@ const LinkedInPostCard: React.FC<{
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
   const [showFullCaption, setShowFullCaption] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(false);
-  const [showReshareModal, setShowReshareModal] = useState(false);
 
-  const resharePost = {
-    id: post.id,
-    title: post.content.title || (post.caption ? post.caption.substring(0, 80) : 'Post'),
-    description: post.caption || '',
-    type: (post.isJobPost ? 'job' : 'content') as 'job' | 'content',
-    author: {
-      name: post.user.name,
-      avatar: post.user.avatar
-    },
-    company: post.jobDetails?.company || post.user.company
-  };
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
@@ -170,7 +153,7 @@ const LinkedInPostCard: React.FC<{
       {post.caption && (
         <div className="px-5 pb-4">
           <p className="text-sm text-gray-800 leading-relaxed">
-            {linkifyText(showFullCaption ? (post.caption || '') : (truncatedCaption || ''))}
+            {showFullCaption ? post.caption : truncatedCaption}
             {post.caption.length > 150 && (
               <button
                 className="text-primary text-sm ml-2 font-medium"
@@ -271,7 +254,7 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => setShowCommentModal(true)}
+            onClick={() => onComment?.(post.id)}
           >
             <MessageCircle className="w-4 h-4" />
             <span className="text-sm font-medium">Comment</span>
@@ -281,17 +264,7 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => setShowReshareModal(true)}
-          >
-            <Repeat2 className="w-4 h-4" />
-            <span className="text-sm font-medium">Reshare</span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => setShowShareModal(true)}
+            onClick={() => onShare?.(post.id)}
           >
             <Share className="w-4 h-4" />
             <span className="text-sm font-medium">Share</span>
@@ -310,30 +283,6 @@ const LinkedInPostCard: React.FC<{
           </Button>
         </div>
       </div>
-
-      <ReshareModal
-        isOpen={showReshareModal}
-        onClose={() => setShowReshareModal(false)}
-        post={resharePost}
-      />
-
-      <ShareModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-        post={{
-          id: post.id,
-          title: post.content.title || (post.caption ? post.caption.substring(0, 50) : 'Post'),
-          description: post.caption || '',
-          type: (post.isJobPost ? 'job' : 'content') as 'job' | 'content'
-        }}
-      />
-
-      <CommentModal
-        isOpen={showCommentModal}
-        onClose={() => setShowCommentModal(false)}
-        postId={post.id}
-        postTitle={post.content.title || (post.caption ? post.caption.substring(0, 50) : 'Post')}
-      />
 
       {/* Top Comment Preview */}
       {post.engagement?.topComment && (

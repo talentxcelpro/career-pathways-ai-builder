@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { StoryUploadModal } from './StoryUploadModal';
 import { 
   Briefcase, 
   Building, 
@@ -45,77 +44,38 @@ const stories = [
 ];
 
 export const StoryBubbles: React.FC = () => {
-  const [showStoryUpload, setShowStoryUpload] = useState(false);
-
-  const handleStoryClick = (storyId: string) => {
-    switch(storyId) {
-      case 'add':
-        setShowStoryUpload(true);
-        break;
-      case 'recruiter':
-        window.location.href = '/jobs';
-        break;
-      case 'company':
-        window.location.href = '/companies';
-        break;
-      case 'success':
-        window.location.href = '/mobile/reels';
-        break;
-      case 'nearby':
-        window.location.href = '/jobs';
-        break;
-    }
-  };
-
   return (
-    <>
-      <div className="px-4 py-3 bg-background border-b border-border">
-        <ScrollArea>
-          <div className="flex gap-4 pb-2">
-            {stories.map((story) => {
-              const IconComponent = story.icon;
-              
-              return (
-                <div 
-                  key={story.id} 
-                  className="flex flex-col items-center min-w-0 cursor-pointer active:scale-95 transition-transform"
-                  onClick={() => handleStoryClick(story.id)}
-                >
-                  <div className={`relative p-0.5 bg-gradient-to-tr ${story.gradient} rounded-full`}>
-                    <div className="bg-background rounded-full p-1">
-                      <Avatar className="h-14 w-14">
-                        <AvatarImage src="" />
-                        <AvatarFallback className={`bg-gradient-to-br ${story.gradient} text-white`}>
-                          <IconComponent className="h-6 w-6" />
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                    {story.isAdd && (
-                      <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground rounded-full p-1">
-                        <Plus className="h-3 w-3" />
-                      </div>
-                    )}
+    <div className="px-4 py-3 bg-white border-b border-gray-100">
+      <ScrollArea>
+        <div className="flex gap-4 pb-2">
+          {stories.map((story) => {
+            const IconComponent = story.icon;
+            
+            return (
+              <div key={story.id} className="flex flex-col items-center min-w-0">
+                <div className={`relative p-0.5 bg-gradient-to-tr ${story.gradient} rounded-full`}>
+                  <div className="bg-white rounded-full p-1">
+                    <Avatar className="h-14 w-14">
+                      <AvatarImage src="" />
+                      <AvatarFallback className={`bg-gradient-to-br ${story.gradient} text-white`}>
+                        <IconComponent className="h-6 w-6" />
+                      </AvatarFallback>
+                    </Avatar>
                   </div>
-                  <span className="text-xs text-muted-foreground mt-1 text-center max-w-[60px] truncate">
-                    {story.title}
-                  </span>
+                  {story.isAdd && (
+                    <div className="absolute -bottom-1 -right-1 bg-primary text-white rounded-full p-1">
+                      <Plus className="h-3 w-3" />
+                    </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
-      </div>
-
-      {/* Story Upload Modal */}
-      {showStoryUpload && (
-        <StoryUploadModal
-          onClose={() => setShowStoryUpload(false)}
-          onUploadComplete={() => {
-            // Refresh stories or handle story upload completion
-            console.log('Story uploaded successfully');
-          }}
-        />
-      )}
-    </>
+                <span className="text-xs text-gray-600 mt-1 text-center max-w-[60px] truncate">
+                  {story.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };

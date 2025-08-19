@@ -51,29 +51,19 @@ export const useLinkedInFeed = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch real posts from Supabase with comprehensive data
+  // Fetch real posts from Supabase
   const { data: posts = [], isLoading: loading, error } = useQuery({
     queryKey: ['linkedInMobilePosts'],
     queryFn: async () => {
       if (!user) return [];
 
-      // Fetch posts with related data including proper comment structure
+      // Fetch posts with related data
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select(`
           *,
           post_likes!left(id, user_id),
-          post_comments!left(
-            id, 
-            content, 
-            created_at,
-            author_id,
-            profiles!post_comments_author_id_fkey(
-              id,
-              full_name,
-              profile_picture_url
-            )
-          ),
+          post_comments!left(id, content, created_at),
           post_shares!left(id)
         `)
         .eq('visibility', 'public')
@@ -86,10 +76,10 @@ export const useLinkedInFeed = () => {
       // Get unique author IDs
       const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
 
-      // Get profiles for all authors with location data
+      // Get profiles for all authors
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title, headline, current_company, location')
+        .select('id, full_name, profile_picture_url, title, headline, current_company')
         .in('id', authorIds);
 
       if (profilesError) throw profilesError;
@@ -115,57 +105,19 @@ export const useLinkedInFeed = () => {
 
       const likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
 
-      // Get user's bookmarks
-      const { data: userBookmarks } = await supabase
-        .from('user_bookmarks')
-        .select('post_id')
-        .eq('user_id', user.id);
-
-      const bookmarkedPosts = new Set(userBookmarks?.map(bookmark => bookmark.post_id) || []);
-      
-      // Get liked by users for engagement data
-      const { data: likedByData } = await supabase
-        .from('post_likes')
-        .select(`
-          post_id,
-          user_id,
-          profiles!post_likes_user_id_fkey(
-            full_name,
-            profile_picture_url
-          )
-        `)
-        .in('post_id', postsData.map(p => p.id));
-
-      const likedByMap = new Map();
-      likedByData?.forEach(like => {
-        if (!likedByMap.has(like.post_id)) {
-          likedByMap.set(like.post_id, []);
-        }
-        if (like.profiles) {
-          likedByMap.get(like.post_id).push(like.profiles);
-        }
-      });
-
       // Create profiles map
       const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
 
-      // Transform posts to LinkedInPost format with real data
+      // Transform posts to LinkedInPost format
       const transformedPosts: LinkedInPost[] = postsData.map(post => {
         const profile = profilesMap.get(post.author_id);
         const isConnection = connections.has(post.author_id);
         const isLiked = likedPosts.has(post.id);
-        const isBookmarked = bookmarkedPosts.has(post.id);
         
-        // Get top comment with real user data
+        // Get top comment
         const topComment = post.post_comments && post.post_comments.length > 0 
-          ? {
-              user: post.post_comments[0].profiles[0]?.full_name || 'Anonymous User',
-              text: post.post_comments[0].content || ''
-            }
+          ? post.post_comments[0] 
           : null;
-
-        // Get real liked by users
-        const likedByUsers = likedByMap.get(post.id) || [];
 
         // Determine content type and URL
         let contentType: 'video' | 'image' | 'text' | 'article' = 'text';
@@ -173,7 +125,7 @@ export const useLinkedInFeed = () => {
 
         if (post.media_urls && post.media_urls.length > 0) {
           const firstMedia = post.media_urls[0];
-          if (firstMedia.includes('.mp4') || firstMedia.includes('.mov') || firstMedia.includes('.avi') || firstMedia.includes('video')) {
+          if (firstMedia.includes('.mp4') || firstMedia.includes('.mov') || firstMedia.includes('.avi')) {
             contentType = 'video';
           } else {
             contentType = 'image';
@@ -183,16 +135,13 @@ export const useLinkedInFeed = () => {
           contentType = 'article';
         }
 
-        // Use real location data or fallback to profile location
-        const userLocation = profile?.location || 'Remote';
-
         return {
           id: post.id,
           user: {
             id: post.author_id,
-            name: profile?.full_name || 'TalentXcel User',
+            name: profile?.full_name || 'Professional User',
             avatar: profile?.profile_picture_url,
-            title: profile?.title || profile?.headline,
+            title: profile?.title,
             company: profile?.current_company,
             isConnection,
             isFollowing: isConnection
@@ -200,8 +149,7 @@ export const useLinkedInFeed = () => {
           content: {
             type: contentType,
             url: contentUrl,
-            text: post.content,
-            title: post.headline
+            text: post.content
           },
           caption: post.content,
           stats: {
@@ -209,20 +157,23 @@ export const useLinkedInFeed = () => {
             comments: post.post_comments?.length || 0,
             shares: post.post_shares?.length || 0,
             isLiked,
-            isBookmarked
+            isBookmarked: false // TODO: Implement bookmarks
           },
-          isJobPost: post.content_type === 'job' || post.tags?.includes('job') || post.post_type === 'job',
-          isPromoted: post.is_featured || post.is_pinned || false,
+          isJobPost: post.content_type === 'job' || post.tags?.includes('job'),
+          isPromoted: false, // TODO: Implement promoted posts
           jobDetails: post.content_type === 'job' ? {
-            company: profile?.current_company || 'TalentXcel',
-            position: post.headline || post.content?.substring(0, 50) || 'Professional Opportunity',
-            location: userLocation,
-            applyUrl: post.preview_url || post.featured_image_url || '#'
+            company: profile?.current_company || 'Company',
+            position: post.headline || 'Job Position',
+            location: 'Location', // TODO: Add location field
+            applyUrl: post.featured_image_url // Using featured_image_url as placeholder for apply URL
           } : undefined,
           timestamp: formatTimeAgo(post.created_at),
           engagement: {
-            likedBy: likedByUsers.map(u => u?.full_name || 'Anonymous').slice(0, 3),
-            topComment: topComment
+            likedBy: [], // TODO: Get liked by users
+            topComment: topComment ? {
+              user: 'User', // TODO: Get commenter name
+              text: topComment.content || 'Comment'
+            } : undefined
           }
         };
       });
@@ -279,61 +230,19 @@ export const useLinkedInFeed = () => {
     }
   };
 
-  const handleBookmark = async (postId: string) => {
-    if (!user) return;
-
-    try {
-      // Check if already bookmarked
-      const { data: existingBookmark } = await supabase
-        .from('user_bookmarks')
-        .select('id')
-        .eq('post_id', postId)
-        .eq('user_id', user.id)
-        .single();
-
-      if (existingBookmark) {
-        // Remove bookmark
-        await supabase
-          .from('user_bookmarks')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
-      } else {
-        // Add bookmark
-        await supabase
-          .from('user_bookmarks')
-          .insert({
-            post_id: postId,
-            user_id: user.id
-          });
-      }
-
-      // Refresh the posts
-      queryClient.invalidateQueries({ queryKey: ['linkedInMobilePosts'] });
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-    }
+  const handleBookmark = (postId: string) => {
+    // TODO: Implement bookmarking
+    console.log('Bookmark post:', postId);
   };
 
   const handleShare = (postId: string) => {
-    // Open native sharing or copy link
-    const shareUrl = `${window.location.origin}/network/posts/${postId}`;
-    
-    if (navigator.share) {
-      navigator.share({
-        title: 'Check out this post',
-        url: shareUrl
-      }).catch(console.error);
-    } else {
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        console.log('Link copied to clipboard');
-      }).catch(console.error);
-    }
+    // TODO: Implement sharing
+    console.log('Share post:', postId);
   };
 
   const handleComment = (postId: string) => {
-    // Navigate to post or open comment modal
-    console.log('Open comments for post:', postId);
+    // TODO: Implement comment modal
+    console.log('Comment on post:', postId);
   };
 
   const handleConnect = async (userId: string) => {

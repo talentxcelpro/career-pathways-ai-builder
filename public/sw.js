@@ -1,15 +1,13 @@
-// TalentXcel Service Worker - Ultra Fast Loading
-const CACHE_NAME = 'talentxcel-v2.0.0';
-const STATIC_CACHE = 'static-v2';
+// TalentXcel Service Worker
+const CACHE_NAME = 'talentxcel-v1.0.0';
 const OFFLINE_URL = '/offline.html';
 
-// Critical files to cache for instant loading
+// Critical files to cache
 const CRITICAL_FILES = [
   '/',
-  '/index.html',
-  '/src/main.tsx',
+  '/static/js/bundle.js',
+  '/static/css/main.css',
   '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
-  '/manifest.json',
   OFFLINE_URL
 ];
 
@@ -21,13 +19,16 @@ const API_CACHE_PATTERNS = [
   /^https:\/\/fonts\.gstatic\.com/
 ];
 
-// Install event - cache critical resources instantly
+// Install event - cache critical resources
 self.addEventListener('install', (event) => {
+  console.log('SW: Installing service worker');
   event.waitUntil(
-    Promise.all([
-      caches.open(STATIC_CACHE).then((cache) => cache.addAll(CRITICAL_FILES)),
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(['/']))
-    ]).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('SW: Caching critical files');
+      return cache.addAll(CRITICAL_FILES);
+    }).then(() => {
+      return self.skipWaiting();
+    })
   );
 });
 

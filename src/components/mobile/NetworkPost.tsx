@@ -10,7 +10,6 @@ import {
   Heart, 
   MessageCircle, 
   Share, 
-  Repeat2,
   Bookmark,
   MapPin,
   Clock,
@@ -18,10 +17,6 @@ import {
   ExternalLink,
   Eye
 } from 'lucide-react';
-import { CommentModal } from './CommentModal';
-import { ShareModal } from './ShareModal';
-import { ReshareModal } from './ReshareModal';
-import { linkifyText } from '@/utils/textUtils';
 
 interface NetworkPostProps {
   post: {
@@ -54,9 +49,6 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likes, setLikes] = useState(post.interactions.interested);
-  const [showCommentModal, setShowCommentModal] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [showReshareModal, setShowReshareModal] = useState(false);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {
@@ -103,15 +95,26 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   };
 
   const handleComment = () => {
-    setShowCommentModal(true);
+    // Navigate to post detail with comments
+    window.location.href = `/network/posts/${post.id}`;
   };
 
   const handleShare = () => {
-    setShowShareModal(true);
-  };
-
-  const handleReshare = () => {
-    setShowReshareModal(true);
+    const shareUrl = `${window.location.origin}/network/posts/${post.id}`;
+  
+    if (navigator.share) {
+      navigator.share({
+        title: post.title,
+        text: post.description,
+        url: shareUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Link Copied",
+        description: "Post link copied to clipboard!",
+      });
+    }
   };
 
   const handleBookmark = () => {
@@ -161,8 +164,8 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           </Button>
         </div>
 
-        {/* Media - Only show if image exists */}
-        {post.image && (
+        {/* Media */}
+        {(post.image || post.video) && (
           <div className="relative aspect-[4/3] bg-gray-100">
             {post.video ? (
               <video 
@@ -178,10 +181,6 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
                 src={post.image} 
                 alt={post.title}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  // Hide broken images
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
               />
             )}
             {post.type === 'job' && (
@@ -217,7 +216,7 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
             )}
             
             <p className="text-gray-700 text-sm leading-relaxed">
-              {linkifyText(post.description)}
+              {post.description}
             </p>
           </div>
 
@@ -264,75 +263,44 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center border-t pt-3">
+          <div className="flex items-center justify-between border-t pt-3">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2 hover:bg-gray-50"
+              className="flex-1 gap-2"
               onClick={handleLike}
             >
-              <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-              <span className="text-xs">{post.type === 'job' ? 'Interested' : 'Like'}</span>
+              <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+              {post.type === 'job' ? 'Interested' : 'Like'}
             </Button>
-            
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2 hover:bg-gray-50"
+              className="flex-1 gap-2"
               onClick={handleComment}
             >
-              <MessageCircle className="h-4 w-4 text-gray-600" />
-              <span className="text-xs">Comment</span>
+              <MessageCircle className="h-4 w-4" />
+              Comment
             </Button>
-            
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 gap-2 hover:bg-gray-50"
-              onClick={handleReshare}
-            >
-              <Repeat2 className="h-4 w-4 text-gray-600" />
-              <span className="text-xs">Reshare</span>
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="flex-1 gap-2 hover:bg-gray-50"
+              className="flex-1 gap-2"
               onClick={handleShare}
             >
-              <Share className="h-4 w-4 text-gray-600" />
-              <span className="text-xs">Share</span>
+              <Share className="h-4 w-4" />
+              Share
             </Button>
-            
             <Button 
               variant="ghost" 
               size="icon" 
-              className="ml-2 hover:bg-gray-50"
+              className="ml-2"
               onClick={handleBookmark}
             >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'}`} />
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
             </Button>
           </div>
         </div>
-        
-        {/* Modals */}
-        <CommentModal 
-          isOpen={showCommentModal}
-          onClose={() => setShowCommentModal(false)}
-          postId={post.id}
-          postTitle={post.title}
-        />
-        <ShareModal 
-          isOpen={showShareModal}
-          onClose={() => setShowShareModal(false)}
-          post={post}
-        />
-        <ReshareModal 
-          isOpen={showReshareModal}
-          onClose={() => setShowReshareModal(false)}
-          post={post}
-        />
       </CardContent>
     </Card>
   );

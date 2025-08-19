@@ -108,7 +108,7 @@ const App = () => {
                   <div className="min-h-screen flex flex-col">
                     <OfflineIndicator />
                     <Navbar />
-                    <main className="flex-1" style={{ contain: 'layout style' }}>
+                    <main className="flex-1">
                       <Routes>
                       {navItems.map((item: NavItem) => {
                          // Check if route is explicitly marked as public or in our public routes list

@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfilePosts } from '@/hooks/useProfilePosts';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface MobileCreatePostProps {
@@ -71,31 +70,14 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      // Upload media to Supabase Storage if any
+      // Upload media if any
       let mediaUrls: string[] = [];
       if (selectedMedia.length > 0) {
-        for (const file of selectedMedia) {
-          const fileName = `${user?.id}/${Date.now()}-${file.name}`;
-          const { data, error } = await supabase.storage
-            .from('post-media')
-            .upload(fileName, file, {
-              cacheControl: '3600',
-              upsert: false
-            });
-
-          if (error) {
-            console.error('Upload error:', error);
-            toast.error('Failed to upload media');
-            continue;
-          }
-
-          // Get public URL
-          const { data: publicData } = supabase.storage
-            .from('post-media')
-            .getPublicUrl(fileName);
-          
-          mediaUrls.push(publicData.publicUrl);
-        }
+        // For now, we'll use placeholder URLs
+        // In a real app, you'd upload to Supabase storage
+        mediaUrls = selectedMedia.map((file, index) => 
+          `https://placeholder.com/media-${Date.now()}-${index}`
+        );
       }
 
       await createPost.mutateAsync({

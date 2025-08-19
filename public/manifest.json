@@ -42,7 +42,7 @@
       "name": "AI Resume Builder",
       "short_name": "Resume",
       "description": "Create AI-powered resumes",
-      "url": "/resume/new",
+      "url": "/resume-builder",
       "icons": [{"src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png", "sizes": "96x96"}]
     },
     {
@@ -53,8 +53,5 @@
       "icons": [{"src": "/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png", "sizes": "96x96"}]
     }
   ],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
   "prefer_related_applications": false
 }

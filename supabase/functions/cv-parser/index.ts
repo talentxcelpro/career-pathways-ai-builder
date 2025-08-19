@@ -610,185 +610,52 @@ function extractNameFromFileName(fileName: string): string | null {
 }
 
 function extractContactInfo(text: string): { email?: string; phone?: string; linkedin?: string; location?: string; name?: string; skills?: string[] } {
-  console.log('🔍 Extracting contact info from text length:', text.length);
-  
   // Multiple email extraction patterns to handle various formats
   let validEmail = null;
   
-  // Pattern 1: Standard email format - enhanced with more comprehensive regex
-  const emailMatches = text.match(/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/gi) || [];
-  console.log('🔍 Found email matches:', emailMatches);
-  
+  // Pattern 1: Standard email format
+  const emailMatches = text.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
   validEmail = emailMatches.find(email => 
     !email.includes('@upload.local') && 
     !email.includes('@example.com') && 
     !email.includes('@test.com') &&
-    !email.includes('@no-contact.temp') &&
-    !email.includes('@contact-extracted.temp') &&
     email.includes('.') &&
-    email.length > 5 &&
-    email.length < 50 &&
-    // Additional validation to ensure it's a real email format
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(email)
+    email.length > 5
   );
   
-  // Pattern 2: Email with labels (Email:, E-mail:, etc.) - enhanced
+  // Pattern 2: Email with labels (Email:, E-mail:, etc.)
   if (!validEmail) {
-    const labelPatterns = [
-      /(?:email|e-mail|mail|contact|reach)\s*[:|-]\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi,
-      /(?:email|e-mail|mail)\s*address\s*[:|-]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi,
-      /contact\s*email\s*[:|-]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi
-    ];
-    
-    for (const pattern of labelPatterns) {
-      const matches = text.match(pattern);
-      if (matches) {
-        for (const match of matches) {
-          const extracted = match.replace(/^.*[:|-]\s*/, '').trim();
-          if (extracted && 
-              !extracted.includes('@upload.local') && 
-              !extracted.includes('@example.com') &&
-              !extracted.includes('@test.com') &&
-              !extracted.includes('.temp') &&
-              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(extracted)) {
-            validEmail = extracted;
-            break;
-          }
-        }
-        if (validEmail) break;
+    const labeledEmailMatch = text.match(/(?:email|e-mail|mail)\s*[:|-]\s*([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/gi);
+    if (labeledEmailMatch && labeledEmailMatch[0]) {
+      const extracted = labeledEmailMatch[0].replace(/^.*[:|-]\s*/, '');
+      if (extracted && !extracted.includes('@upload.local') && !extracted.includes('@example.com')) {
+        validEmail = extracted;
       }
     }
   }
   
-  // Pattern 3: Look for email addresses in contact sections with better context
+  // Pattern 3: Look for email addresses after contact info keywords
   if (!validEmail) {
-    const contactSections = [
-      /(?:contact|reach|email|mail)[\s\S]{0,300}?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi,
-      /personal\s*information[\s\S]{0,200}?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi,
-      /contact\s*details[\s\S]{0,200}?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/gi
-    ];
-    
-    for (const pattern of contactSections) {
-      const matches = [...text.matchAll(pattern)];
-      for (const match of matches) {
-        const email = match[1];
-        if (email && 
-            !email.includes('@upload.local') && 
-            !email.includes('@example.com') &&
-            !email.includes('@test.com') &&
-            !email.includes('.temp') &&
-            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-          validEmail = email;
-          break;
-        }
-      }
-      if (validEmail) break;
-    }
-  }
-  
-  // Pattern 4: Look for emails at the beginning of the document (header area)
-  if (!validEmail) {
-    const headerText = text.substring(0, 1000); // First 1000 characters
-    const headerEmailMatches = headerText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi) || [];
-    validEmail = headerEmailMatches.find(email => 
-      !email.includes('@upload.local') && 
-      !email.includes('@example.com') && 
-      !email.includes('@test.com') &&
-      !email.includes('.temp') &&
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
-    );
-  }
-  
-  // Pattern 5: Check for obfuscated emails (dot at domain dot com)
-  if (!validEmail) {
-    const obfuscatedPattern = /([a-zA-Z0-9._%+-]+)\s*(?:at|AT)\s*([a-zA-Z0-9.-]+)\s*(?:dot|DOT)\s*([a-zA-Z]{2,})/gi;
-    const obfuscatedMatch = text.match(obfuscatedPattern);
-    if (obfuscatedMatch) {
-      const parts = obfuscatedMatch[0].split(/\s*(?:at|AT)\s*/);
-      if (parts.length === 2) {
-        const [username, domainPart] = parts;
-        const domain = domainPart.replace(/\s*(?:dot|DOT)\s*/g, '.');
-        const reconstructedEmail = `${username.trim()}@${domain.trim()}`;
-        if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(reconstructedEmail)) {
-          validEmail = reconstructedEmail;
-        }
+    const contactSectionMatch = text.match(/(?:contact|reach|email)[\s\S]{0,200}?([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/gi);
+    if (contactSectionMatch) {
+      const extracted = contactSectionMatch[0].match(/([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/i);
+      if (extracted && extracted[1] && !extracted[1].includes('@upload.local')) {
+        validEmail = extracted[1];
       }
     }
   }
   
-  console.log('🔍 Final extracted email:', validEmail);
+  const phoneMatch = text.match(/(\+\d{1,3}[-.\s]?)?\(?[0-9]{1,4}\)?[-.\s]?[0-9]{1,4}[-.\s]?[0-9]{1,9}/);
+  const linkedinMatch = text.match(/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_/]+/i);
   
-  // Enhanced phone extraction
-  const phonePatterns = [
-    /\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}/g, // US format
-    /\+?[0-9]{1,4}[-.\s]?\(?[0-9]{1,4}\)?[-.\s]?[0-9]{1,4}[-.\s]?[0-9]{1,9}/g, // International format
-    /(?:phone|tel|mobile|cell)\s*[:|-]?\s*(\+?[0-9\s\-\(\)\.]{7,})/gi // Labeled phone
-  ];
-  
-  let validPhone = null;
-  for (const pattern of phonePatterns) {
-    const matches = text.match(pattern);
-    if (matches) {
-      for (const match of matches) {
-        const cleaned = match.replace(/[^\d+]/g, '');
-        if (cleaned.length >= 7 && cleaned.length <= 15) {
-          validPhone = match.trim();
-          break;
-        }
-      }
-      if (validPhone) break;
-    }
-  }
-  
-  // Enhanced LinkedIn extraction
-  const linkedinPatterns = [
-    /https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_/]+/gi,
-    /linkedin\.com\/in\/[A-Za-z0-9-_/]+/gi,
-    /(?:linkedin|linked-in)\s*[:|-]?\s*(linkedin\.com\/in\/[A-Za-z0-9-_/]+)/gi
-  ];
-  
-  let validLinkedin = null;
-  for (const pattern of linkedinPatterns) {
-    const match = text.match(pattern);
-    if (match && match[0]) {
-      validLinkedin = match[0].startsWith('http') ? match[0] : `https://${match[0]}`;
-      break;
-    }
-  }
-  
-  // Enhanced name extraction - look for name patterns at the beginning
-  const namePatterns = [
-    /^([A-Z][a-z]+(?:\s+[A-Z][a-z'.-]+)+)/m, // Standard name pattern
-    /^([A-Z][A-Z\s]+)$/m, // All caps name
-    /(?:name|candidate)\s*[:|-]?\s*([A-Z][a-z]+(?:\s+[A-Z][a-z'.-]+)+)/gi // Labeled name
-  ];
-  
-  let extractedName = null;
-  for (const pattern of namePatterns) {
-    const match = text.match(pattern);
-    if (match && match[1]) {
-      const name = match[1].trim();
-      // Validate name (2-4 words, reasonable length)
-      const words = name.split(/\s+/);
-      if (words.length >= 2 && words.length <= 4 && name.length <= 50) {
-        extractedName = name;
-        break;
-      }
-    }
-  }
-  
-  console.log('🔍 Extracted contact info:', {
-    email: validEmail,
-    phone: validPhone,
-    linkedin: validLinkedin,
-    name: extractedName
-  });
+  // Extract name from text (look for name patterns at the beginning)
+  const nameMatch = text.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/m);
   
   return {
     email: validEmail,
-    phone: validPhone,
-    linkedin: validLinkedin,
-    name: extractedName,
+    phone: phoneMatch?.[0],
+    linkedin: linkedinMatch?.[0],
+    name: nameMatch?.[1],
     skills: []
   };
 }

@@ -1,25 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-// Utility function to detect and convert URLs and @mentions to clickable links
+// Utility function to detect and convert URLs to clickable links
 export const linkifyText = (text: string): React.ReactNode[] => {
   if (!text) return [text];
 
-  // Combined regex that matches both URLs and @mentions
-  const combinedRegex = /(https?:\/\/[^\s<>"]+[^\s<>".,;:!?'])|(@[a-zA-Z0-9_.-]+)/gi;
+  // URL regex that matches http(s):// URLs
+  const urlRegex = /(https?:\/\/[^\s<>"]+[^\s<>".,;:!?'])/gi;
+  
+  // @mention regex that matches @username patterns
+  const mentionRegex = /@([a-zA-Z0-9_.-]+)/gi;
   
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match;
-
+  
+  // Combined regex to find all URLs and mentions
+  const combinedRegex = /(https?:\/\/[^\s<>"]+[^\s<>".,;:!?'])|(@[a-zA-Z0-9_.-]+)/gi;
+  
   while ((match = combinedRegex.exec(text)) !== null) {
     // Add text before the match
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
     }
-
+    
     const matchedText = match[0];
-
+    
     if (matchedText.startsWith('http')) {
       // It's a URL
       parts.push(
@@ -42,15 +48,15 @@ export const linkifyText = (text: string): React.ReactNode[] => {
         }, matchedText)
       );
     }
-
+    
     lastIndex = match.index + matchedText.length;
   }
-
+  
   // Add remaining text
   if (lastIndex < text.length) {
     parts.push(text.slice(lastIndex));
   }
-
+  
   return parts.length > 0 ? parts : [text];
 };
 

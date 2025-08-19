@@ -23,7 +23,6 @@ interface NetworkPost {
   likes_count?: number;
   comments_count?: number;
   shares_count?: number;
-  reshare_count?: number;
   profiles?: {
     id: string;
     full_name?: string;
@@ -185,7 +184,6 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           initialLikes={post.likes_count || 0}
           initialComments={post.comments_count || 0}
           initialShares={post.shares_count || 0}
-          initialReshares={post.reshare_count || 0}
           onCommentClick={() => onCommentClick?.(post.id)}
           postData={post}
         />
