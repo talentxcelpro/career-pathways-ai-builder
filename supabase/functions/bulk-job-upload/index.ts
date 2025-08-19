@@ -173,8 +173,15 @@ serve(async (req) => {
         };
 
         // Map CSV data to our job schema
-        const salaryMin = jobData.salary_min ? parseInt(jobData.salary_min) : null;
-        const salaryMax = jobData.salary_max ? parseInt(jobData.salary_max) : null;
+        const toInt = (v: any) => {
+          const s = (v ?? '').toString().replace(/[^0-9]/g, '');
+          return s ? parseInt(s, 10) : null;
+        };
+        let salaryMin = toInt(jobData.salary_min);
+        let salaryMax = toInt(jobData.salary_max);
+        if (salaryMin === null && salaryMax !== null) salaryMin = salaryMax;
+        if (salaryMax === null && salaryMin !== null) salaryMax = salaryMin;
+        if (salaryMin === null && salaryMax === null) { salaryMin = 150000; salaryMax = 250000; }
         const nf = typeof Intl !== 'undefined' ? new Intl.NumberFormat('en-IN') : null;
         const salaryRange = (salaryMin && salaryMax)
           ? `₹${nf ? nf.format(salaryMin) : salaryMin} - ₹${nf ? nf.format(salaryMax) : salaryMax}`
