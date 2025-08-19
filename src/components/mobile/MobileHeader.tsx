@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +16,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileSidebar } from './MobileSidebar';
 import { cn } from '@/lib/utils';
+import talentxcelLogo from '@/assets/talentxcel-logo.png';
 
 export const MobileHeader = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   // Get profile data
@@ -87,22 +89,34 @@ export const MobileHeader = () => {
             <Menu className="h-5 w-5" />
           </Button>
 
-          {/* Center - Page Title */}
-          <div className="flex-1 text-center">
-            <h1 className="text-lg font-semibold text-foreground truncate">
-              {getPageTitle()}
-            </h1>
+          {/* Center - TalentXcel Logo */}
+          <div className="flex-1 flex justify-center">
+            <img 
+              src={talentxcelLogo} 
+              alt="TalentXcel" 
+              className="h-8 w-auto"
+            />
           </div>
 
           {/* Right - Actions */}
           <div className="flex items-center space-x-2">
             {/* Search */}
-            <Button variant="ghost" size="sm" className="p-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-2"
+              onClick={() => navigate('/mobile/search')}
+            >
               <Search className="h-5 w-5" />
             </Button>
 
             {/* Messages */}
-            <Button variant="ghost" size="sm" className="p-2 relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-2 relative"
+              onClick={() => navigate('/network/messages')}
+            >
               <MessageSquare className="h-5 w-5" />
             </Button>
 
