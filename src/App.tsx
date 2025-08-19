@@ -152,10 +152,11 @@ const App = () => {
                       <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                       
                       {/* Legacy resume builder redirects */}
-                      <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
-                      <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
-                      <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
-                      <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                       <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
+                       <Route path="/resume/create" element={<Navigate to="/resume/new" replace />} />
+                       <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
+                       <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
+                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                       
                        {/* Privacy policy redirect for consistency */}
                        <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />

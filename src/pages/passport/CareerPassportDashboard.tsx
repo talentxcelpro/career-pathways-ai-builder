@@ -399,11 +399,11 @@ export function CareerPassportDashboard() {
         eventModule: 'create_resume',
         eventData: { action: 'create_resume_clicked' }
       });
-      navigate('/resume/create');
+      navigate('/resume/new');
       toast.success('Redirecting to resume builder...');
     } catch (error) {
       console.error('Error tracking resume action:', error);
-      navigate('/resume/create');
+      navigate('/resume/new');
     }
   };
 
