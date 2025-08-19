@@ -497,7 +497,7 @@ export function CareerPassportDashboard() {
             </div>
             <div className="text-right">
               <div className="text-gray-400 text-xs">Unique ID</div>
-              <div className="text-orange-400 font-bold text-sm">ARS315116</div>
+              <div className="text-orange-400 font-bold text-sm">{displayData.profile?.talentxcel_id || `TXL${(user?.id || userId)?.slice(-3)?.toUpperCase() || '001'}`}</div>
             </div>
           </div>
 
@@ -511,7 +511,7 @@ export function CareerPassportDashboard() {
                     className="object-cover w-full h-full rounded-full"
                   />
                   <AvatarFallback className="bg-gray-600 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-full">
-                    AHW
+                    {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -520,11 +520,11 @@ export function CareerPassportDashboard() {
               </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-white mb-1">Arshid Hussain Wani</h2>
-              <p className="text-orange-400 font-medium text-sm mb-1">Business Strategist & Growth</p>
-              <p className="text-orange-400 font-medium text-sm mb-2">Specialist</p>
+              <h2 className="text-xl font-bold text-white mb-1">{user?.user_metadata?.full_name || displayData.profile?.full_name || 'User'}</h2>
+              <p className="text-orange-400 font-medium text-sm mb-1">{displayData.profile?.headline || 'Business Professional'}</p>
+              <p className="text-orange-400 font-medium text-sm mb-2">{displayData.profile?.title || ''}</p>
               <p className="text-gray-400 text-sm flex items-center gap-1">
-                <span className="text-red-400">📍</span> Noida
+                <span className="text-red-400">📍</span> {displayData.profile?.location || 'Location not set'}
               </p>
             </div>
           </div>
@@ -550,13 +550,13 @@ export function CareerPassportDashboard() {
                   fill="none"
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 35}`}
-                  strokeDashoffset={`${2 * Math.PI * 35 * (1 - 60 / 100)}`}
+                  strokeDashoffset={`${2 * Math.PI * 35 * (1 - getCareerReadiness() / 100)}`}
                   className="transition-all duration-1000"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">60%</div>
+                  <div className="text-2xl font-bold text-orange-400">{getCareerReadiness()}%</div>
                   <div className="text-xs text-gray-400">Career Ready</div>
                 </div>
               </div>
@@ -567,12 +567,12 @@ export function CareerPassportDashboard() {
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="bg-slate-800/50 border border-slate-600 rounded-lg p-4">
               <div className="text-gray-400 text-sm mb-1">Market Rank</div>
-              <div className="text-white text-lg font-bold mb-1">Top 55%</div>
+              <div className="text-white text-lg font-bold mb-1">Top {getMarketCompetitiveness() > 0 ? (100 - getMarketCompetitiveness()) : 100}%</div>
               <div className="text-gray-400 text-xs">vs peers</div>
             </div>
             <div className="bg-slate-800/50 border border-slate-600 rounded-lg p-4">
               <div className="text-gray-400 text-sm mb-1">Competitiveness</div>
-              <div className="text-white text-lg font-bold mb-1">45%</div>
+              <div className="text-white text-lg font-bold mb-1">{getMarketCompetitiveness()}%</div>
               <div className="text-gray-400 text-xs">Score</div>
             </div>
           </div>
@@ -580,20 +580,20 @@ export function CareerPassportDashboard() {
           {/* Bottom Stats */}
           <div className="grid grid-cols-4 gap-2">
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">0</div>
+              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.resumes_count || 0}</div>
               <div className="text-xs text-gray-400">Resumes</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">0</div>
+              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.jobs_applied_count || 0}</div>
               <div className="text-xs text-gray-400">Jobs</div>
               <div className="text-xs text-gray-400">Applied</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">0</div>
+              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.certifications_count || 0}</div>
               <div className="text-xs text-gray-400">Certifications</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-400 mb-1">0</div>
+              <div className="text-3xl font-bold text-orange-400 mb-1">{displayData.passport?.connections_count || 0}</div>
               <div className="text-xs text-gray-400">Connections</div>
             </div>
           </div>
