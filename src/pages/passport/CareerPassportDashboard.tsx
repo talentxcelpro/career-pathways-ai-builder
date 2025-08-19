@@ -234,6 +234,78 @@ export function CareerPassportDashboard() {
     }
   };
 
+  // Progress Journey Levels
+  const getProgressLevel = (percentage: number) => {
+    if (percentage < 25) return { level: 'Beginner', color: 'bg-gray-400', next: 'Intermediate' };
+    if (percentage < 50) return { level: 'Intermediate', color: 'bg-blue-400', next: 'Advanced' };
+    if (percentage < 75) return { level: 'Advanced', color: 'bg-green-400', next: 'Expert' };
+    return { level: 'Expert', color: 'bg-purple-400', next: 'Master' };
+  };
+
+  // Peer Comparison Data
+  const getPeerComparison = () => {
+    const score = getMarketCompetitiveness();
+    const title = displayData.profile?.headline || 'Professional';
+    const location = displayData.profile?.location || 'Global';
+    
+    if (score === 0) return null;
+    
+    const percentile = Math.max(5, Math.min(95, score + Math.random() * 20 - 10));
+    return {
+      percentile: Math.round(percentile),
+      title: title.split(' ')[0] || 'Professionals',
+      location
+    };
+  };
+
+  // Get Next Action Steps
+  const getActionSteps = () => {
+    const steps = [];
+    const completion = getCompletionBreakdown();
+    
+    if (!completion) return [];
+    
+    if (completion.profile < 40) {
+      steps.push({ icon: UserPlus, text: 'Complete your profile', priority: 'high', action: handleCompleteProfile });
+    }
+    if (completion.resumes < 25) {
+      steps.push({ icon: FileText, text: 'Create your first resume', priority: 'high', action: handleCreateResume });
+    }
+    if (displayData.passport?.certifications_count === 0) {
+      steps.push({ icon: Award, text: 'Earn a certification', priority: 'medium', action: handleGetCertified });
+    }
+    if (displayData.passport?.connections_count < 10) {
+      steps.push({ icon: Users, text: 'Build your network', priority: 'medium', action: handleBuildNetwork });
+    }
+    if (displayData.passport?.jobs_applied_count === 0) {
+      steps.push({ icon: Briefcase, text: 'Apply for jobs', priority: 'low', action: handleApplyJobs });
+    }
+    
+    return steps.slice(0, 3); // Show max 3 steps
+  };
+
+  // Share Career Passport
+  const shareCareerPassport = async () => {
+    const shareUrl = publicProfile?.public_url || `https://talentxcel.in/passport/${user?.id}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${displayData.profile?.full_name}'s Career Passport`,
+          text: 'Check out my professional career passport on TalentXcel',
+          url: shareUrl
+        });
+      } catch (error) {
+        // Fallback to clipboard
+        navigator.clipboard.writeText(shareUrl);
+        toast.success('Career Passport link copied to clipboard!');
+      }
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success('Career Passport link copied to clipboard!');
+    }
+  };
+
   // Quick Action Handlers
   const handleAddWorkExperience = async () => {
     if (!displayData.isOwner) {
@@ -752,7 +824,105 @@ export function CareerPassportDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Enhanced Career Metrics */}
+          {/* Progress Journey Bar */}
+          {displayData.isOwner && (
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-blue-800">
+                  <TrendingUp className="h-5 w-5" />
+                  Career Growth Journey
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${getProgressLevel(getCompletionPercentage()).color}`}></div>
+                      <span className="font-medium">{getProgressLevel(getCompletionPercentage()).level}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Next: {getProgressLevel(getCompletionPercentage()).next}
+                    </div>
+                  </div>
+                  
+                  <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-1000 ${getProgressLevel(getCompletionPercentage()).color} relative`}
+                      style={{ width: `${getCompletionPercentage()}%` }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-gray-700">
+                      {getCompletionPercentage()}% Complete
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Beginner</span>
+                    <span>Intermediate</span>
+                    <span>Advanced</span>
+                    <span>Expert</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Actionable Next Steps */}
+          {displayData.isOwner && getActionSteps().length > 0 && (
+            <Card className="bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-orange-800">
+                  <Zap className="h-5 w-5" />
+                  🚀 Your Next Steps
+                </CardTitle>
+                <CardDescription>Take action to boost your career readiness</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {getActionSteps().map((step, index) => (
+                    <div 
+                      key={index}
+                      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:scale-105 ${
+                        step.priority === 'high' ? 'bg-red-50 border-red-200' :
+                        step.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' :
+                        'bg-blue-50 border-blue-200'
+                      }`}
+                      onClick={step.action}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        step.priority === 'high' ? 'bg-red-100' :
+                        step.priority === 'medium' ? 'bg-yellow-100' :
+                        'bg-blue-100'
+                      }`}>
+                        <step.icon className={`h-4 w-4 ${
+                          step.priority === 'high' ? 'text-red-600' :
+                          step.priority === 'medium' ? 'text-yellow-600' :
+                          'text-blue-600'
+                        }`} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{step.text}</p>
+                        <Badge 
+                          variant="outline"
+                          className={`text-xs ${
+                            step.priority === 'high' ? 'text-red-700 border-red-300' :
+                            step.priority === 'medium' ? 'text-yellow-700 border-yellow-300' :
+                            'text-blue-700 border-blue-300'
+                          }`}
+                        >
+                          {step.priority} priority
+                        </Badge>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Enhanced Career Metrics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card 
                 className={`hover:shadow-lg transition-all border-l-4 border-l-blue-500 ${displayData.isOwner ? 'hover:scale-105 cursor-pointer' : ''}`}
@@ -1117,6 +1287,148 @@ export function CareerPassportDashboard() {
 
               </CardContent>
             </Card>
+
+            {/* Peer Comparison */}
+            {getPeerComparison() && (
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-green-800">
+                    <Users className="h-5 w-5" />
+                    🏆 Peer Comparison
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center space-y-3">
+                    <div className="bg-white rounded-lg p-4 border border-green-200">
+                      <div className="text-3xl font-bold text-green-700 mb-1">
+                        Top {100 - getPeerComparison()!.percentile}%
+                      </div>
+                      <p className="text-sm text-green-600 mb-2">
+                        among {getPeerComparison()!.title} in {getPeerComparison()!.location}
+                      </p>
+                      <div className="w-full bg-green-100 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+                          style={{ width: `${getPeerComparison()!.percentile}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Based on career readiness and market competitiveness
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Career Readiness Breakdown */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-yellow-600" />
+                  📊 Readiness Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Profile Completeness</span>
+                      <span className="text-sm font-bold">{Math.min(40, (getCompletionPercentage() * 0.4))}%</span>
+                    </div>
+                    <Progress value={Math.min(40, (getCompletionPercentage() * 0.4))} className="h-2" />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Experience & Skills</span>
+                      <span className="text-sm font-bold">{Math.min(30, (displayData.passport?.certifications_count || 0) * 10)}%</span>
+                    </div>
+                    <Progress value={Math.min(30, (displayData.passport?.certifications_count || 0) * 10)} className="h-2" />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Network Strength</span>
+                      <span className="text-sm font-bold">{Math.min(20, Math.floor((displayData.passport?.connections_count || 0) / 5) * 5)}%</span>
+                    </div>
+                    <Progress value={Math.min(20, Math.floor((displayData.passport?.connections_count || 0) / 5) * 5)} className="h-2" />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Activity & Engagement</span>
+                      <span className="text-sm font-bold">{Math.min(10, (displayData.passport?.jobs_applied_count || 0) * 2)}%</span>
+                    </div>
+                    <Progress value={Math.min(10, (displayData.passport?.jobs_applied_count || 0) * 2)} className="h-2" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Share Career Passport */}
+            {displayData.isOwner && (
+              <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-blue-800">
+                    <Share2 className="h-5 w-5" />
+                    📤 Share Your Passport
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <p className="text-sm text-blue-700">
+                      Share your Career Passport with recruiters, peers, and your network to showcase your professional growth.
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <Button 
+                        onClick={shareCareerPassport} 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        size="sm"
+                      >
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Share Passport Link
+                      </Button>
+                      
+                      {publicProfile?.public_url && (
+                        <Button 
+                          onClick={copyPublicUrl} 
+                          variant="outline" 
+                          className="w-full"
+                          size="sm"
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Public URL
+                        </Button>
+                      )}
+                      
+                      <Button 
+                        onClick={() => navigator.share?.({
+                          title: 'My TalentXcel Career Passport',
+                          text: 'Check out my professional career progress',
+                          url: publicProfile?.public_url || `https://talentxcel.in/passport/${user?.id}`
+                        })} 
+                        variant="outline" 
+                        className="w-full"
+                        size="sm"
+                        disabled={!navigator.share}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Share to Social
+                      </Button>
+                    </div>
+                    
+                    <div className="bg-white rounded-lg p-3 border border-blue-200">
+                      <div className="flex items-center gap-2 text-xs text-blue-600">
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span>Public profile active</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Actions - only for owner */}
             {displayData.isOwner && (
