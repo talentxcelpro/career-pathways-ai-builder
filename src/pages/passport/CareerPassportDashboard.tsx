@@ -411,27 +411,19 @@ export function CareerPassportDashboard() {
 
   const displayData = getDisplayData();
 
-  // Enhanced function to generate profile picture URL - ensures EVERY user has a picture
+  // Function to get profile picture URL - ONLY REAL USER DATA
   const getProfilePictureUrl = () => {
     const userUploadedImage = displayData.profile?.profile_picture_url;
     const googleImage = user?.user_metadata?.avatar_url;
     
-    // Priority 1: User uploaded image
+    // Priority 1: User uploaded image (real data)
     if (userUploadedImage) return userUploadedImage;
     
-    // Priority 2: Google profile image
+    // Priority 2: Google profile image (real data)
     if (googleImage) return googleImage;
     
-    // Priority 3: Generate avatar based on user data
-    const userName = displayData.profile?.full_name || user?.user_metadata?.full_name || 'User';
-    const userEmail = user?.email || 'user@example.com';
-    
-    // Use DiceBear API for consistent, professional avatars
-    const avatarStyle = 'avataaars'; // Professional cartoon style
-    const seed = userEmail; // Use email for consistency
-    const generatedAvatar = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=3B82F6,8B5CF6,06B6D4&radius=10`;
-    
-    return generatedAvatar;
+    // No real photo available - return null to show initials
+    return null;
   };
 
   // Check if user needs to be prompted for photo
@@ -585,15 +577,12 @@ export function CareerPassportDashboard() {
             <div className="relative">
               <div className="w-20 h-20 rounded-lg bg-gray-600 border-2 border-orange-400/50 overflow-hidden">
                 <Avatar className="w-full h-full rounded-lg">
-                  <AvatarImage 
-                    src={getProfilePictureUrl()} 
-                    className="object-cover w-full h-full"
-                    onError={(e) => {
-                      // If even the generated avatar fails, use a backup
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(getUserInitials())}&background=3B82F6&color=fff&size=128&rounded=true&bold=true`;
-                    }}
-                  />
+                  {getProfilePictureUrl() ? (
+                    <AvatarImage 
+                      src={getProfilePictureUrl()!} 
+                      className="object-cover w-full h-full"
+                    />
+                  ) : null}
                   <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-lg">
                     {getUserInitials()}
                   </AvatarFallback>
@@ -882,9 +871,9 @@ export function CareerPassportDashboard() {
                       <div className="text-3xl">📸</div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg text-blue-900 mb-2">Upload Your Professional Photo</h3>
+                      <h3 className="font-bold text-lg text-blue-900 mb-2">Add Your Professional Photo</h3>
                       <p className="text-blue-700 text-sm mb-3">
-                        While we've generated a temporary avatar for you, uploading your own professional photo increases profile views by 40% and builds trust with recruiters.
+                        Upload your professional photo to make your Career Passport complete. Profiles with photos get 40% more views and build trust with recruiters.
                       </p>
                       <Button 
                         onClick={() => navigate('/profile/edit?section=photo')}
@@ -892,7 +881,7 @@ export function CareerPassportDashboard() {
                         size="sm"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Upload Professional Photo
+                        Add Photo Now
                       </Button>
                     </div>
                     <div className="text-right">
