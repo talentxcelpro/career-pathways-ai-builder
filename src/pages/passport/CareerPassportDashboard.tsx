@@ -480,105 +480,115 @@ export function CareerPassportDashboard() {
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Digital ID Card - Front Side */}
-        <div className="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl p-8 border border-gray-700 shadow-2xl max-w-md mx-auto">
-          {/* Header with TalentXcel branding */}
-          <div className="flex items-center justify-between mb-6">
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 border border-cyan-500/20 shadow-2xl max-w-sm mx-auto" style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(6, 182, 212, 0.15)'
+        }}>
+          {/* Header */}
+          <div className="flex items-start justify-between mb-6">
             <div>
-              <h1 className="text-lg font-bold text-orange-400">TalentXcel Career Passport</h1>
-              <p className="text-sm text-gray-400">🎯 Career Builder</p>
+              <h1 className="text-lg font-bold text-white tracking-wide">TALENTXCEL</h1>
+              <h2 className="text-lg font-bold text-white -mt-1">CAREER PASSPORT</h2>
             </div>
             <div className="text-right">
-              <p className="text-xs text-gray-400">Unique ID</p>
-              <p className="text-sm font-mono text-orange-400">{displayData.profile?.talentxcel_id || 'TXL116'}</p>
+              <div className="bg-cyan-500/10 border border-cyan-500 rounded-lg px-3 py-2">
+                <div className="text-cyan-400 font-bold text-sm">{displayData.profile?.talentxcel_id || 'TXL116'}</div>
+                <div className="flex items-center gap-1 mt-1">
+                  <div className="w-4 h-4 rounded-full bg-cyan-500 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Profile Section */}
           <div className="flex items-center gap-4 mb-6">
             <div className="relative">
-              <Avatar className="h-20 w-20 border-4 border-orange-400/30">
-                <AvatarImage src={displayData.profile?.profile_picture_url} />
-                <AvatarFallback className="bg-gray-700 text-white font-bold text-xl">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute -bottom-2 -right-2 bg-orange-400 text-black rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold">
-                2
+              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-600">
+                <Avatar className="w-full h-full">
+                  <AvatarImage 
+                    src={user?.user_metadata?.avatar_url || displayData.profile?.profile_picture_url} 
+                    className="object-cover w-full h-full"
+                  />
+                  <AvatarFallback className="bg-gray-600 text-white font-bold text-xl w-full h-full flex items-center justify-center">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
               </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-white">{displayData.profile?.full_name || 'Arshid Wani'}</h2>
-              <p className="text-orange-400 font-medium">{displayData.profile?.headline || 'Business Strategist & Growth Specialist'}</p>
-              <p className="text-gray-400 text-sm">📍 {displayData.profile?.location || 'Noida'}</p>
-            </div>
-          </div>
-
-          {/* Career Readiness Circle */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="relative">
-              <svg className="w-24 h-24" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  stroke="rgb(55, 65, 81)"
-                  strokeWidth="8"
-                  fill="none"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  stroke="rgb(251, 146, 60)"
-                  strokeWidth="8"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 40}`}
-                  strokeDashoffset={`${2 * Math.PI * 40 * (1 - getCareerReadiness() / 100)}`}
-                  transform="rotate(-90 50 50)"
-                  className="transition-all duration-1000"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">{getCareerReadiness()}%</div>
-                  <div className="text-xs text-gray-400">Career Ready</div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-cyan-500 flex items-center justify-center bg-slate-800">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-cyan-400">{getCareerReadiness()}%</div>
+                      <div className="text-xs text-cyan-400 -mt-1">READY</div>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 rounded-full border-4 border-cyan-500" style={{
+                    background: `conic-gradient(from 0deg, #06b6d4 0deg, #06b6d4 ${getCareerReadiness() * 3.6}deg, transparent ${getCareerReadiness() * 3.6}deg, transparent 360deg)`
+                  }}></div>
                 </div>
+                <div className="text-cyan-400 text-sm font-medium">CAREER</div>
               </div>
             </div>
           </div>
 
+          {/* Name and Title */}
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-white">{user?.user_metadata?.full_name || displayData.profile?.full_name || 'Arshid Wani'}</h3>
+            <p className="text-gray-300 text-sm">{displayData.profile?.headline || 'Business Strategist & Growth Specialist'}</p>
+            <p className="text-gray-400 text-sm flex items-center gap-1 mt-1">
+              <span>📍</span> {displayData.profile?.location || 'Noida'}
+            </p>
+          </div>
+
           {/* Performance Metrics */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-              <p className="text-xs text-gray-400">Market Rank</p>
-              <p className="text-lg font-bold text-white">Top 55%</p>
-              <p className="text-xs text-gray-400">vs peers</p>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
+              <div className="text-cyan-400 text-lg font-bold">TOP 55%</div>
+              <div className="text-gray-400 text-xs">vs peers</div>
             </div>
-            <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-              <p className="text-xs text-gray-400">Competitiveness</p>
-              <p className="text-lg font-bold text-white">{getMarketCompetitiveness()}%</p>
-              <p className="text-xs text-gray-400">Score</p>
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
+              <div className="text-white text-sm">COMPETITIVENESS</div>
+              <div className="text-white text-lg font-bold">{getMarketCompetitiveness()}%</div>
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-4 gap-2">
-            <div className="text-center bg-gray-800/30 rounded-lg p-2">
-              <p className="text-lg font-bold text-orange-400">{displayData.passport?.resumes_count || 0}</p>
-              <p className="text-xs text-gray-400">Resumes</p>
+          {/* Bottom Stats Icons */}
+          <div className="grid grid-cols-4 gap-3">
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-1 border-2 border-gray-400 rounded flex items-center justify-center">
+                <div className="w-4 h-3 border border-gray-400"></div>
+              </div>
+              <div className="text-2xl font-bold text-white">{displayData.passport?.resumes_count || 0}</div>
+              <div className="text-xs text-gray-400">Resumes</div>
             </div>
-            <div className="text-center bg-gray-800/30 rounded-lg p-2">
-              <p className="text-lg font-bold text-orange-400">{displayData.passport?.jobs_applied_count || 0}</p>
-              <p className="text-xs text-gray-400">Jobs Applied</p>
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-1 border-2 border-gray-400 rounded flex items-center justify-center">
+                <div className="w-4 h-3 bg-gray-400 rounded-sm"></div>
+              </div>
+              <div className="text-2xl font-bold text-white">{displayData.passport?.jobs_applied_count || 0}</div>
+              <div className="text-xs text-gray-400">Jobs</div>
             </div>
-            <div className="text-center bg-gray-800/30 rounded-lg p-2">
-              <p className="text-lg font-bold text-orange-400">{displayData.passport?.certifications_count || 0}</p>
-              <p className="text-xs text-gray-400">Certifications</p>
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-1 border-2 border-gray-400 rounded flex items-center justify-center">
+                <div className="w-4 h-3 border border-gray-400"></div>
+              </div>
+              <div className="text-2xl font-bold text-white">{displayData.passport?.certifications_count || 0}</div>
+              <div className="text-xs text-gray-400">Certificat-</div>
             </div>
-            <div className="text-center bg-gray-800/30 rounded-lg p-2">
-              <p className="text-lg font-bold text-orange-400">{displayData.passport?.connections_count || 0}</p>
-              <p className="text-xs text-gray-400">Connections</p>
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-1 border-2 border-gray-400 rounded-full flex items-center justify-center">
+                <div className="flex gap-1">
+                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-white">{displayData.passport?.connections_count || 0}</div>
+              <div className="text-xs text-gray-400">Centifiions</div>
             </div>
           </div>
         </div>
