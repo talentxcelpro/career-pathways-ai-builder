@@ -1,88 +1,77 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
-import { LearningStatsCards } from '@/components/admin/learning/LearningStatsCards';
-import { LearningFilters } from '@/components/admin/learning/LearningFilters';
-import { CoursesList } from '@/components/admin/learning/CoursesList';
-import { LearningPathsList } from '@/components/admin/learning/LearningPathsList';
-import { useLearningManagement } from '@/hooks/useLearningManagement';
+import { LearningDashboard } from '@/components/admin/learning/LearningDashboard';
+import { CoursesManagement } from '@/components/admin/learning/CoursesManagement';
+import { LearningPathsManagement } from '@/components/admin/learning/LearningPathsManagement';
+import { MultimediaManagement } from '@/components/admin/learning/MultimediaManagement';
+import { AssessmentsManagement } from '@/components/admin/learning/AssessmentsManagement';
+import { EnrollmentManagement } from '@/components/admin/learning/EnrollmentManagement';
+import { CommunityManagement } from '@/components/admin/learning/CommunityManagement';
+import { LearningAnalytics } from '@/components/admin/learning/LearningAnalytics';
+import { ContentModeration } from '@/components/admin/learning/ContentModeration';
+import { LearningSettings } from '@/components/admin/learning/LearningSettings';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  BookOpen, 
+  Target, 
+  Play, 
+  FileCheck, 
+  Users, 
+  MessageSquare, 
+  BarChart3, 
+  Shield,
+  Settings,
+  Home
+} from 'lucide-react';
 
 const LearningManagement = () => {
-  const {
-    searchTerm,
-    setSearchTerm,
-    categoryFilter,
-    setCategoryFilter,
-    difficultyFilter,
-    setDifficultyFilter,
-    activeTab,
-    setActiveTab,
-    courses,
-    learningPaths,
-    learningStats,
-    isLoading,
-    handleToggleCourseStatus,
-    handleDeleteCourse
-  } = useLearningManagement();
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home, component: LearningDashboard },
+    { id: 'courses', label: 'Courses', icon: BookOpen, component: CoursesManagement },
+    { id: 'paths', label: 'Learning Paths', icon: Target, component: LearningPathsManagement },
+    { id: 'multimedia', label: 'Multimedia', icon: Play, component: MultimediaManagement },
+    { id: 'assessments', label: 'Assessments', icon: FileCheck, component: AssessmentsManagement },
+    { id: 'enrollments', label: 'Enrollments', icon: Users, component: EnrollmentManagement },
+    { id: 'community', label: 'Community', icon: MessageSquare, component: CommunityManagement },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, component: LearningAnalytics },
+    { id: 'moderation', label: 'Moderation', icon: Shield, component: ContentModeration },
+    { id: 'settings', label: 'Settings', icon: Settings, component: LearningSettings }
+  ];
 
   return (
     <UnifiedAdminLayout 
-      title="Learning Management" 
-      description="Manage courses and learning paths"
+      title="Learning Hub Management" 
+      description="Complete Coursera-style Learning Management System"
     >
-      <div className="space-y-8">
-        <LearningStatsCards learningStats={learningStats} />
+      <div className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 gap-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <TabsTrigger 
+                  key={tab.id} 
+                  value={tab.id}
+                  className="flex items-center gap-2 text-xs px-3 py-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
 
-        {/* Tabs */}
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-          <button
-            onClick={() => setActiveTab('courses')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'courses'
-                ? 'bg-white text-blue-600 shadow'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Courses ({courses?.length || 0})
-          </button>
-          <button
-            onClick={() => setActiveTab('paths')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'paths'
-                ? 'bg-white text-blue-600 shadow'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Learning Paths ({learningPaths?.length || 0})
-          </button>
-        </div>
-
-        <LearningFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-          difficultyFilter={difficultyFilter}
-          setDifficultyFilter={setDifficultyFilter}
-          activeTab={activeTab}
-          learningStats={learningStats}
-          courses={courses || []}
-          learningPaths={learningPaths || []}
-        />
-
-        {activeTab === 'courses' ? (
-          <CoursesList
-            courses={courses || []}
-            isLoading={isLoading}
-            onToggleStatus={handleToggleCourseStatus}
-            onDeleteCourse={handleDeleteCourse}
-          />
-        ) : (
-          <LearningPathsList
-            learningPaths={learningPaths || []}
-            isLoading={isLoading}
-          />
-        )}
+          {tabs.map((tab) => {
+            const Component = tab.component;
+            return (
+              <TabsContent key={tab.id} value={tab.id} className="mt-6">
+                <Component />
+              </TabsContent>
+            );
+          })}
+        </Tabs>
       </div>
     </UnifiedAdminLayout>
   );
