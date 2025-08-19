@@ -99,17 +99,38 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   };
 
   const handleComment = () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to comment on posts.",
+        variant: "destructive",
+      });
+      return;
+    }
     setShowComments(true);
+    toast({
+      title: "Loading comments",
+      description: "Opening comments section...",
+    });
   };
 
   const handleShare = async () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to share posts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const shareUrl = `${window.location.origin}/network/posts/${post.id}`;
     const shareData = {
       title: post.title,
       text: post.description,
       url: shareUrl,
     };
-  
+
     try {
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
@@ -143,6 +164,15 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   };
 
   const handleBookmark = () => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to bookmark posts.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsBookmarked(!isBookmarked);
     toast({
       title: isBookmarked ? "Removed from bookmarks" : "Bookmarked",
