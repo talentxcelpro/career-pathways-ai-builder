@@ -94,7 +94,6 @@ export const MobileReels = () => {
           )
         `)
         .not('media_urls', 'is', null)
-        .eq('post_type', 'video')
         .order('created_at', { ascending: false })
         .range(pageParam * limit, (pageParam + 1) * limit - 1);
 
