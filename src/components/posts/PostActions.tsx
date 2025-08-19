@@ -34,7 +34,8 @@ export const PostActions: React.FC<PostActionsProps> = ({
   // Like mutation
   const likeMutation = useMutation({
     mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error('Must be logged in');
 
       if (isLiked) {
@@ -67,7 +68,12 @@ export const PostActions: React.FC<PostActionsProps> = ({
     toast.info('Save functionality coming soon!');
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.info('Please sign in to like posts');
+      return;
+    }
     likeMutation.mutate();
   };
 
