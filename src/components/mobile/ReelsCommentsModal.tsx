@@ -93,9 +93,9 @@ export const ReelsCommentsModal: React.FC<ReelsCommentsModalProps> = ({
           id,
           content,
           created_at,
-          user_id,
+          author_id,
           likes_count,
-          profiles!post_comments_user_id_fkey(
+          profiles!post_comments_author_id_fkey(
             full_name,
             profile_picture_url
           )
@@ -109,7 +109,7 @@ export const ReelsCommentsModal: React.FC<ReelsCommentsModalProps> = ({
         id: comment.id,
         content: comment.content,
         created_at: comment.created_at,
-        user_id: comment.user_id,
+        user_id: comment.author_id,
         likes_count: comment.likes_count || 0,
         is_liked: false, // TODO: Check if current user liked this comment
         author: {
@@ -136,7 +136,7 @@ export const ReelsCommentsModal: React.FC<ReelsCommentsModalProps> = ({
         .from('post_comments')
         .insert({
           post_id: postId,
-          user_id: user.id,
+          author_id: user.id,
           content: newComment.trim()
         });
 
