@@ -504,10 +504,29 @@ export function CareerPassportDashboard() {
           background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #0f172a 100%)',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(251, 146, 60, 0.2)'
         }}>
-          {/* Background Watermark */}
-          <div className="absolute inset-0 opacity-5 overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-white rotate-45 whitespace-nowrap">
-              TalentXcel
+          {/* Background Watermark - Enhanced Holographic Favicon */}
+          <div className="absolute inset-0 opacity-10 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45">
+              <img 
+                src="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" 
+                alt="TalentXcel Hologram" 
+                className="w-32 h-32 opacity-30 blur-[1px] mix-blend-overlay filter sepia saturate-150 hue-rotate-30"
+              />
+            </div>
+            {/* Multiple holographic layers for depth */}
+            <div className="absolute top-[30%] left-[20%] transform rotate-12">
+              <img 
+                src="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" 
+                alt="TalentXcel Hologram" 
+                className="w-16 h-16 opacity-20 blur-[2px] mix-blend-overlay filter sepia saturate-200"
+              />
+            </div>
+            <div className="absolute bottom-[20%] right-[15%] transform -rotate-12">
+              <img 
+                src="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" 
+                alt="TalentXcel Hologram" 
+                className="w-20 h-20 opacity-15 blur-[1.5px] mix-blend-overlay filter sepia saturate-100 hue-rotate-60"
+              />
             </div>
           </div>
 
