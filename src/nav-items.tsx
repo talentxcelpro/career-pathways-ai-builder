@@ -32,10 +32,11 @@ export const navItems = [
   ...toolsRoutes,
   ...resumeRoutes,
   ...networkRoutes,
+  // Place passport routes before company slug route to avoid 404 on /passport
+  ...passportRoutes,
   ...companiesRoutes,
   ...collegesRoutes,
   ...careerMapRoutes,
-  ...passportRoutes,
   ...employerRoutes,
   ...marketplaceRoutes,
   ...socialRoutes,

@@ -44,6 +44,27 @@ const stories = [
 ];
 
 export const StoryBubbles: React.FC = () => {
+  const handleStoryClick = (storyId: string) => {
+    switch(storyId) {
+      case 'add':
+        // Add story functionality
+        console.log('Add your story');
+        break;
+      case 'recruiter':
+        window.location.href = '/jobs';
+        break;
+      case 'company':
+        window.location.href = '/companies';
+        break;
+      case 'success':
+        window.location.href = '/mobile/reels';
+        break;
+      case 'nearby':
+        window.location.href = '/jobs';
+        break;
+    }
+  };
+
   return (
     <div className="px-4 py-3 bg-white border-b border-gray-100">
       <ScrollArea>
@@ -52,7 +73,11 @@ export const StoryBubbles: React.FC = () => {
             const IconComponent = story.icon;
             
             return (
-              <div key={story.id} className="flex flex-col items-center min-w-0">
+              <div 
+                key={story.id} 
+                className="flex flex-col items-center min-w-0 cursor-pointer active:scale-95 transition-transform"
+                onClick={() => handleStoryClick(story.id)}
+              >
                 <div className={`relative p-0.5 bg-gradient-to-tr ${story.gradient} rounded-full`}>
                   <div className="bg-white rounded-full p-1">
                     <Avatar className="h-14 w-14">

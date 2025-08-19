@@ -207,6 +207,7 @@ export const MobileNetwork = () => {
               onPostCreated={() => {
                 setShowCreatePost(false);
                 // Refetch posts here if needed
+                window.location.reload();
               }}
             />
           </div>

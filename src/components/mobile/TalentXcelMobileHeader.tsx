@@ -45,6 +45,7 @@ export const TalentXcelMobileHeader: React.FC<TalentXcelMobileHeaderProps> = ({
               variant="ghost" 
               size="icon"
               className="rounded-full hover:bg-gray-100"
+              onClick={() => navigate('/mobile/search')}
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -54,7 +55,7 @@ export const TalentXcelMobileHeader: React.FC<TalentXcelMobileHeaderProps> = ({
             variant="ghost" 
             size="icon"
             className="rounded-full hover:bg-gray-100"
-            onClick={() => navigate('/messages')}
+            onClick={() => navigate('/network/messages')}
           >
             <MessageCircle className="h-5 w-5" />
           </Button>
