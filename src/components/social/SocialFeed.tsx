@@ -1,43 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { SocialMediaUpload } from './SocialMediaUpload';
-import { CommentsSection } from './CommentsSection';
-import { EnhancedShareButton } from './EnhancedShareButton';
-import { useSocialInteractions } from '@/hooks/useSocialInteractions';
-import VideoPlayer from '@/components/posts/VideoPlayer';
-import { 
-  Heart, 
-  MessageCircle, 
-  Bookmark, 
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  MapPin,
-  Clock
-} from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RefreshCw, TrendingUp } from 'lucide-react';
+import { SocialPostCard } from './SocialPostCard';
 
 interface Post {
   id: string;
   content: string;
+  headline?: string;
   media_urls: string[];
-  post_type: string;
-  tags: string[];
-  location?: string;
   created_at: string;
-  author_id: string;
+  location?: string;
+  post_type: 'text' | 'image' | 'video' | 'article';
+  visibility: 'public' | 'connections' | 'private';
   likes_count: number;
   comments_count: number;
   shares_count: number;
-  visibility: string;
+  views_count: number;
   profiles: {
     id: string;
     full_name: string;
@@ -45,38 +29,31 @@ interface Post {
     headline?: string;
     current_company?: string;
   };
+  author_id: string;
 }
 
 interface SocialFeedProps {
-  feedType?: 'explore' | 'following' | 'my-posts';
+  feedType?: 'global' | 'following' | 'trending';
   userId?: string;
+  limit?: number;
 }
 
 export const SocialFeed: React.FC<SocialFeedProps> = ({ 
-  feedType = 'explore',
-  userId 
+  feedType = 'global', 
+  userId,
+  limit = 10 
 }) => {
   const { user } = useAuth();
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fetch posts
-  const { data: posts = [], isLoading } = useQuery({
-    queryKey: ['social-feed', feedType, userId],
+  // Fetch posts based on feed type
+  const { data: posts, isLoading, error, refetch } = useQuery({
+    queryKey: ['social-feed', feedType, userId, refreshKey],
     queryFn: async () => {
       let query = supabase
         .from('posts')
         .select(`
-          id,
-          content,
-          media_urls,
-          post_type,
-          tags,
-          location,
-          created_at,
-          author_id,
-          likes_count,
-          comments_count,
-          shares_count,
-          visibility,
+          *,
           profiles!posts_author_id_fkey(
             id,
             full_name,
@@ -85,191 +62,72 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             current_company
           )
         `)
-        .eq('is_deleted', false)
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       // Apply filters based on feed type
-      if (feedType === 'my-posts' && userId) {
+      if (feedType === 'following' && user) {
+        // Get posts from connections only
+        const { data: connections } = await supabase
+          .from('connections')
+          .select('recipient_id, requester_id')
+          .or(`recipient_id.eq.${user.id},requester_id.eq.${user.id}`)
+          .eq('status', 'accepted');
+
+        if (connections && connections.length > 0) {
+          const connectionIds = connections.map(conn => 
+            conn.recipient_id === user.id ? conn.requester_id : conn.recipient_id
+          );
+          query = query.in('author_id', [...connectionIds, user.id]);
+        } else {
+          // If no connections, show only user's posts
+          query = query.eq('author_id', user.id);
+        }
+      } else if (feedType === 'trending') {
+        // Show posts with high engagement from last 7 days
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        query = query
+          .gte('created_at', weekAgo.toISOString())
+          .order('likes_count', { ascending: false });
+      } else if (userId) {
+        // Show posts from specific user
         query = query.eq('author_id', userId);
-      } else if (feedType === 'following' && user) {
-        // TODO: Implement following logic with connections
-        query = query.eq('visibility', 'public');
       } else {
+        // Global feed - show public posts
         query = query.eq('visibility', 'public');
       }
 
-      const { data, error } = await query.limit(20);
+      const { data, error } = await query.limit(limit);
       if (error) throw error;
       return data as unknown as Post[];
     },
     enabled: !!user
   });
 
-  const PostCard: React.FC<{ post: Post }> = ({ post }) => {
-    const { interactions, toggleLike, toggleBookmark, isLiking, isBookmarking } = useSocialInteractions(post.id);
-
-    const hasImages = post.media_urls.some(url => /\.(jpg|jpeg|png|gif|webp)$/i.test(url));
-    const hasVideos = post.media_urls.some(url => /\.(mp4|mov|webm|avi)$/i.test(url));
-
-    return (
-      <Card className="w-full">
-        <CardContent className="p-4 space-y-4">
-          {/* Post Header */}
-          <div className="flex items-start gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={post.profiles.profile_picture_url} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                {post.profiles.full_name.split(' ').map(n => n[0]).join('')}
-              </AvatarFallback>
-            </Avatar>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h4 className="font-semibold text-sm">{post.profiles.full_name}</h4>
-                {post.profiles.headline && (
-                  <Badge variant="secondary" className="text-xs">
-                    {post.profiles.headline}
-                  </Badge>
-                )}
-                {post.profiles.current_company && (
-                  <span className="text-xs text-muted-foreground">
-                    at {post.profiles.current_company}
-                  </span>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                <Clock className="h-3 w-3" />
-                <span>{formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</span>
-                {post.location && (
-                  <>
-                    <MapPin className="h-3 w-3 ml-2" />
-                    <span>{post.location}</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Post Content */}
-          {post.content && (
-            <div className="prose prose-sm max-w-none">
-              <p className="text-sm whitespace-pre-wrap">{post.content}</p>
-            </div>
-          )}
-
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {post.tags.slice(0, 5).map((tag, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  #{tag}
-                </Badge>
-              ))}
-              {post.tags.length > 5 && (
-                <Badge variant="outline" className="text-xs">
-                  +{post.tags.length - 5} more
-                </Badge>
-              )}
-            </div>
-          )}
-
-          {/* Media - Clickable to navigate to post */}
-          {post.media_urls && post.media_urls.length > 0 && (
-            <div 
-              className="rounded-lg overflow-hidden cursor-pointer hover:opacity-95 transition-opacity"
-              onClick={() => window.location.href = `/network/posts/${post.id}`}
-              title="View full post"
-            >
-              {hasVideos ? (
-                <div className="relative">
-                  <VideoPlayer
-                    url={post.media_urls.find(url => /\.(mp4|mov|webm|avi)$/i.test(url)) || ''}
-                    className="w-full max-h-[400px]"
-                  />
-                </div>
-              ) : hasImages ? (
-                <div className={`grid gap-2 ${post.media_urls.length === 1 ? 'grid-cols-1' : post.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 grid-rows-2'}`}>
-                  {post.media_urls.slice(0, 4).map((url, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={url}
-                        alt={`Post media ${index + 1}`}
-                        className="w-full h-full object-cover aspect-square"
-                      />
-                      {index === 3 && post.media_urls.length > 4 && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-semibold">
-                          +{post.media_urls.length - 4} more
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          )}
-
-          {/* Post Actions */}
-          <div className="flex items-center justify-between pt-2 border-t">
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleLike()}
-                disabled={isLiking}
-                className="gap-1"
-              >
-                <Heart className={`h-4 w-4 ${interactions.isLiked ? 'fill-red-500 text-red-500' : ''}`} />
-                {interactions.likesCount > 0 && interactions.likesCount}
-              </Button>
-
-              <CommentsSection
-                postId={post.id}
-                commentsCount={interactions.commentsCount}
-              />
-
-              <EnhancedShareButton
-                content={{
-                  id: post.id,
-                  type: 'post',
-                  title: post.content?.split('\n')[0] || 'Check out this post',
-                  description: post.content,
-                  imageUrl: post.media_urls.find(url => /\.(jpg|jpeg|png|gif|webp)$/i.test(url))
-                }}
-                sharesCount={interactions.sharesCount}
-              />
-            </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => toggleBookmark()}
-              disabled={isBookmarking}
-            >
-              <Bookmark className={`h-4 w-4 ${interactions.isBookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+    refetch();
   };
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        {Array.from({ length: 3 }).map((_, i) => (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
           <Card key={i} className="w-full">
-            <CardContent className="p-4">
-              <div className="animate-pulse space-y-4">
-                <div className="flex gap-3">
-                  <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
-                  <div className="space-y-2 flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                  </div>
+            <CardContent className="p-4 space-y-4">
+              <div className="flex items-start gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
                 </div>
-                <div className="h-20 bg-gray-200 rounded"></div>
-                <div className="h-40 bg-gray-200 rounded"></div>
+              </div>
+              <Skeleton className="h-16 w-full" />
+              <div className="flex gap-4">
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-16" />
               </div>
             </CardContent>
           </Card>
@@ -278,43 +136,70 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
     );
   }
 
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>
+          Failed to load posts. Please try again later.
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            className="ml-2"
+          >
+            <RefreshCw className="h-4 w-4 mr-1" />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (!posts || posts.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-8 text-center">
+          <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Posts Yet</h3>
+          <p className="text-muted-foreground">
+            {feedType === 'following' 
+              ? "Connect with people to see their posts here!"
+              : "Be the first to share something with your network!"
+            }
+          </p>
+          {feedType !== 'global' && (
+            <Button 
+              variant="outline" 
+              onClick={handleRefresh}
+              className="mt-4"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Create Post */}
-      {feedType !== 'my-posts' && (
-        <Card>
-          <CardContent className="p-4">
-            <SocialMediaUpload />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Posts Feed */}
-      {posts.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="space-y-4">
-              <div className="h-12 w-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-                <MessageCircle className="h-6 w-6 text-gray-400" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">No posts yet</h3>
-                <p className="text-muted-foreground">
-                  {feedType === 'my-posts' ? 
-                    "You haven't created any posts yet. Share your career journey!" :
-                    "Be the first to share something with the community!"
-                  }
-                </p>
-              </div>
-              {feedType !== 'my-posts' && <SocialMediaUpload />}
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {posts.map(post => (
-            <PostCard key={post.id} post={post} />
-          ))}
+      {posts.map(post => (
+        <SocialPostCard 
+          key={post.id} 
+          post={post}
+          showActions={true}
+        />
+      ))}
+      
+      {posts.length >= limit && (
+        <div className="text-center py-4">
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.reload()}
+          >
+            Load More Posts
+          </Button>
         </div>
       )}
     </div>
