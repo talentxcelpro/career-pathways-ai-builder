@@ -65,7 +65,7 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         }
 
         if (data.user) {
-          toast.success('Welcome back! 🎉');
+          // Login successful - no toast message
           onSuccess?.();
           navigate('/network');
         }

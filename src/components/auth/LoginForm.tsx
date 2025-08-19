@@ -69,7 +69,7 @@ const LoginForm = () => {
       }
 
       if (data.user) {
-        toast.success('Welcome back! 🎉');
+        // Login successful - no toast message
         
         // Redirect to return URL or network
         if (returnUrl) {

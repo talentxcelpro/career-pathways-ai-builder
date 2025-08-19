@@ -37,7 +37,7 @@ export const MobileAuth = () => {
           password,
         });
         if (error) throw error;
-        toast.success('Welcome back!');
+        // Login successful - no toast message
       } else {
         const { error } = await supabase.auth.signUp({
           email,

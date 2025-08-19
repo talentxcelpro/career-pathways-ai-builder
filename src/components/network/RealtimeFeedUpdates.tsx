@@ -68,48 +68,33 @@ export const RealtimeFeedUpdates: React.FC<RealtimeFeedUpdatesProps> = ({
   };
 
   if (!isConnected) {
-    return (
-      <div className={cn("flex items-center gap-2 text-sm text-muted-foreground", className)}>
-        <div className="h-2 w-2 rounded-full bg-red-500" />
-        Reconnecting...
-      </div>
-    );
+    return null; // Hide disconnection status completely
   }
 
   return (
     <div className={cn("relative", className)}>
-      {/* Connection Status */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-sm text-muted-foreground">Live feed active</span>
-        </div>
-        
-        {unreadCount > 0 && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="flex items-center gap-2"
+      {/* Only show updates when there are unread items */}
+      {unreadCount > 0 && (
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="flex items-center justify-end mb-4"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              onRefreshFeed();
+              const visibleItemIds = feedItems.slice(0, 5).map(item => item.id);
+              markAsSeen(visibleItemIds);
+            }}
+            className="gap-1"
           >
-            <Badge variant="secondary" className="animate-pulse">
-              {unreadCount} new update{unreadCount !== 1 ? 's' : ''}
-            </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                onRefreshFeed();
-                const visibleItemIds = feedItems.slice(0, 5).map(item => item.id);
-                markAsSeen(visibleItemIds);
-              }}
-              className="gap-1"
-            >
-              <RefreshCw className="h-3 w-3" />
-              Refresh
-            </Button>
-          </motion.div>
-        )}
-      </div>
+            <RefreshCw className="h-3 w-3" />
+            {unreadCount} new update{unreadCount !== 1 ? 's' : ''}
+          </Button>
+        </motion.div>
+      )}
 
       {/* Live Updates Notification */}
       <AnimatePresence>
@@ -187,8 +172,8 @@ export const RealtimeFeedUpdates: React.FC<RealtimeFeedUpdatesProps> = ({
         </motion.div>
       )}
 
-      {/* Toggle Controls */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      {/* Hidden controls - functionality only */}
+      <div className="hidden">
         <Button
           variant="ghost"
           size="sm"
