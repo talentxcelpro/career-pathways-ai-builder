@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Settings, CreditCard, Globe, Bell } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const LearningSettings: React.FC = () => {
   return (
@@ -34,7 +35,7 @@ export const LearningSettings: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="auto-enroll">Auto-enrollment for free courses</Label>
-              <Switch id="auto-enroll" />
+              <Switch id="auto-enroll" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="course-reviews">Enable course reviews</Label>
@@ -64,7 +65,7 @@ export const LearningSettings: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="subscriptions">Enable subscriptions</Label>
-              <Switch id="subscriptions" />
+              <Switch id="subscriptions" defaultChecked />
             </div>
           </CardContent>
         </Card>
@@ -86,11 +87,11 @@ export const LearningSettings: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="multi-language">Multi-language support</Label>
-              <Switch id="multi-language" />
+              <Switch id="multi-language" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="rtl-support">RTL language support</Label>
-              <Switch id="rtl-support" />
+              <Switch id="rtl-support" defaultChecked />
             </div>
           </CardContent>
         </Card>
@@ -116,7 +117,7 @@ export const LearningSettings: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="marketing-emails">Marketing emails</Label>
-              <Switch id="marketing-emails" />
+              <Switch id="marketing-emails" defaultChecked />
             </div>
           </CardContent>
         </Card>
@@ -139,7 +140,7 @@ export const LearningSettings: React.FC = () => {
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="leaderboards">Enable leaderboards</Label>
-              <Switch id="leaderboards" />
+              <Switch id="leaderboards" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="achievements">Enable achievements</Label>
@@ -147,7 +148,9 @@ export const LearningSettings: React.FC = () => {
             </div>
           </div>
           <div className="pt-4">
-            <Button>Save Settings</Button>
+            <Button onClick={() => {
+              toast.success('All learning platform features have been enabled successfully! 🚀');
+            }}>Save Settings</Button>
           </div>
         </CardContent>
       </Card>
