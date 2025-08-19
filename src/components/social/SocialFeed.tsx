@@ -11,6 +11,7 @@ import { SocialMediaUpload } from './SocialMediaUpload';
 import { CommentsSection } from './CommentsSection';
 import { EnhancedShareButton } from './EnhancedShareButton';
 import { useSocialInteractions } from '@/hooks/useSocialInteractions';
+import VideoPlayer from '@/components/posts/VideoPlayer';
 import { 
   Heart, 
   MessageCircle, 
@@ -106,30 +107,9 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
 
   const PostCard: React.FC<{ post: Post }> = ({ post }) => {
     const { interactions, toggleLike, toggleBookmark, isLiking, isBookmarking } = useSocialInteractions(post.id);
-    const [videoPlaying, setVideoPlaying] = React.useState(false);
-    const [videoMuted, setVideoMuted] = React.useState(true);
-    const videoRef = React.useRef<HTMLVideoElement>(null);
 
     const hasImages = post.media_urls.some(url => /\.(jpg|jpeg|png|gif|webp)$/i.test(url));
     const hasVideos = post.media_urls.some(url => /\.(mp4|mov|webm|avi)$/i.test(url));
-
-    const toggleVideoPlay = () => {
-      if (videoRef.current) {
-        if (videoPlaying) {
-          videoRef.current.pause();
-        } else {
-          videoRef.current.play();
-        }
-        setVideoPlaying(!videoPlaying);
-      }
-    };
-
-    const toggleVideoMute = () => {
-      if (videoRef.current) {
-        videoRef.current.muted = !videoMuted;
-        setVideoMuted(!videoMuted);
-      }
-    };
 
     return (
       <Card className="w-full">
@@ -203,42 +183,10 @@ export const SocialFeed: React.FC<SocialFeedProps> = ({
             >
               {hasVideos ? (
                 <div className="relative">
-                  <video
-                    ref={videoRef}
-                    className="w-full max-h-[400px] object-cover pointer-events-none"
-                    src={post.media_urls.find(url => /\.(mp4|mov|webm|avi)$/i.test(url))}
-                    loop
-                    muted={videoMuted}
-                    playsInline
-                    onPlay={() => setVideoPlaying(true)}
-                    onPause={() => setVideoPlaying(false)}
+                  <VideoPlayer
+                    url={post.media_urls.find(url => /\.(mp4|mov|webm|avi)$/i.test(url)) || ''}
+                    className="w-full max-h-[400px]"
                   />
-                  
-                  {/* Video Controls */}
-                  <div className="absolute bottom-2 right-2 flex gap-2">
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white pointer-events-auto"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleVideoPlay();
-                      }}
-                    >
-                      {videoPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      className="h-8 w-8 bg-black/50 hover:bg-black/70 text-white pointer-events-auto"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleVideoMute();
-                      }}
-                    >
-                      {videoMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
-                    </Button>
-                  </div>
                 </div>
               ) : hasImages ? (
                 <div className={`grid gap-2 ${post.media_urls.length === 1 ? 'grid-cols-1' : post.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 grid-rows-2'}`}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import VideoPlayer from './VideoPlayer';
 
 interface MediaPreviewProps {
   content: string;
@@ -39,14 +40,10 @@ const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, ind
   return (
     <div className="relative">
       {isVideo ? (
-        <video
-          controls
-          preload="metadata"
+        <VideoPlayer
+          url={fixedUrl}
           className={className}
-        >
-          <source src={fixedUrl} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        />
       ) : (
         <img
           src={fixedUrl}
