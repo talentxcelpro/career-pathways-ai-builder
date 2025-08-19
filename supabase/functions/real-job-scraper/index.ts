@@ -35,7 +35,7 @@ const JOB_TEMPLATES = {
       description: "Join our engineering team to build scalable web applications using modern technologies. Work on challenging problems with a collaborative team.",
       salary_range: "₹15-25 LPA",
       experience_level: "senior-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Data Scientist",
@@ -44,7 +44,7 @@ const JOB_TEMPLATES = {
       description: "Analyze complex datasets to drive business decisions using advanced analytics and machine learning techniques.",
       salary_range: "₹12-20 LPA",
       experience_level: "mid-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "DevOps Engineer",
@@ -53,7 +53,7 @@ const JOB_TEMPLATES = {
       description: "Manage cloud infrastructure and implement CI/CD pipelines for scalable applications.",
       salary_range: "₹18-28 LPA",
       experience_level: "senior-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Frontend Developer",
@@ -62,7 +62,7 @@ const JOB_TEMPLATES = {
       description: "Build beautiful and responsive user interfaces using modern frontend technologies.",
       salary_range: "₹8-15 LPA",
       experience_level: "mid-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Backend Developer",
@@ -71,7 +71,7 @@ const JOB_TEMPLATES = {
       description: "Design and implement scalable backend systems and APIs for web applications.",
       salary_range: "₹10-18 LPA",
       experience_level: "mid-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "UI/UX Designer",
@@ -80,7 +80,7 @@ const JOB_TEMPLATES = {
       description: "Create intuitive and engaging user experiences for digital products.",
       salary_range: "₹6-12 LPA",
       experience_level: "mid-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Software Engineer Intern",
@@ -89,7 +89,7 @@ const JOB_TEMPLATES = {
       description: "Join our engineering team as an intern to learn and contribute to real-world projects.",
       salary_range: "₹25-40K/month",
       experience_level: "fresher",
-      employment_type: "internship"
+      employment_type: "Internship"
     }
   ],
   government: [
@@ -100,7 +100,7 @@ const JOB_TEMPLATES = {
       description: "Handle banking operations, customer relations, and financial services in a leading public sector bank.",
       salary_range: "₹8-12 LPA",
       experience_level: "mid-level",
-      employment_type: "full-time",
+      employment_type: "Full-time",
       source: "Banking Recruitment"
     },
     {
@@ -110,7 +110,7 @@ const JOB_TEMPLATES = {
       description: "Maintain law and order, conduct investigations, and ensure public safety in the state police force.",
       salary_range: "₹6-10 LPA",
       experience_level: "fresher",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Junior Engineer - PWD",
@@ -119,7 +119,7 @@ const JOB_TEMPLATES = {
       description: "Plan and execute infrastructure projects for state public works department.",
       salary_range: "₹5-8 LPA",
       experience_level: "fresher",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Clerk - Government Office",
@@ -128,7 +128,7 @@ const JOB_TEMPLATES = {
       description: "Handle administrative tasks and documentation in government office.",
       salary_range: "₹4-7 LPA",
       experience_level: "fresher",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     },
     {
       title: "Teacher - Government School",
@@ -137,7 +137,7 @@ const JOB_TEMPLATES = {
       description: "Educate and guide students in government school with comprehensive curriculum.",
       salary_range: "₹5-9 LPA",
       experience_level: "mid-level",
-      employment_type: "full-time"
+      employment_type: "Full-time"
     }
   ],
   international: [
@@ -148,7 +148,7 @@ const JOB_TEMPLATES = {
       description: "Develop enterprise applications for leading fintech company in Dubai with excellent benefits.",
       salary_range: "$60-80K",
       experience_level: "mid-level",
-      employment_type: "full-time",
+      employment_type: "Full-time",
       location: "Dubai, UAE"
     },
     {
@@ -158,7 +158,7 @@ const JOB_TEMPLATES = {
       description: "Lead cross-functional teams in delivering complex projects for multinational corporation.",
       salary_range: "$70-90K",
       experience_level: "senior-level",
-      employment_type: "full-time",
+      employment_type: "Full-time",
       location: "Singapore"
     },
     {
@@ -168,7 +168,7 @@ const JOB_TEMPLATES = {
       description: "Analyze business data and provide insights for strategic decision making.",
       salary_range: "£45-60K",
       experience_level: "mid-level",
-      employment_type: "full-time",
+      employment_type: "Full-time",
       location: "London, UK"
     },
     {
@@ -178,7 +178,7 @@ const JOB_TEMPLATES = {
       description: "Drive marketing campaigns and brand awareness in North American market.",
       salary_range: "CAD 55-75K",
       experience_level: "mid-level",
-      employment_type: "full-time",
+      employment_type: "Full-time",
       location: "Toronto, Canada"
     }
   ]
@@ -228,7 +228,7 @@ function generateRealisticJob(template: any, company: any, jobType: string, inde
     location,
     description: template.description,
     salary_range: template.salary_range,
-    employment_type: template.employment_type || "full-time",
+    employment_type: template.employment_type || "Full-time",
     experience_level: template.experience_level,
     source: jobType === 'government' ? "Government Portal" : "Company Careers",
     posted_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
