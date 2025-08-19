@@ -593,41 +593,23 @@ export function CareerPassportDashboard() {
           </div>
         </div>
 
-        {/* Enhanced Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12 border-2 border-primary/10">
-                <AvatarImage src={displayData.profile?.profile_picture_url} />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white">
-                  {isPublicView ? `${displayData.profile?.full_name}'s Career Passport` : 'Career Passport'}
-                </h1>
-                {displayData.profile?.headline && (
-                  <p className="text-muted-foreground">{displayData.profile.headline}</p>
-                )}
-              </div>
-            </div>
+        {/* Simplified Header with QR Generation */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              {isPublicView ? `${displayData.profile?.full_name}'s Career Passport` : 'Career Passport'}
+            </h1>
+            <p className="text-gray-400 text-sm">Transforming Businesses and Lives</p>
           </div>
+          
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="px-3 py-1">
-              <Award className="h-3 w-3 mr-1" />
-              TXL{displayData.profile?.talentxcel_id?.slice(-3) || String(displayData.passport?.id).slice(-3) || (userId || user?.id)?.slice(-3) || '001'}
-            </Badge>
-            
-            {/* Professional Badge */}
-            <Badge variant="secondary" className="px-3 py-1">
-              {getCompletionPercentage() >= 90 ? '🏆 Career Expert' : 
-               getCompletionPercentage() >= 70 ? '⭐ Skill Master' : 
-               getCompletionPercentage() >= 50 ? '🎯 Career Builder' : '🌱 Getting Started'}
-            </Badge>
-            
             {displayData.isOwner && (
-              <Button onClick={generateQRCode} disabled={isGeneratingQR} size="sm">
+              <Button 
+                onClick={generateQRCode} 
+                disabled={isGeneratingQR} 
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 <QrCode className="h-4 w-4 mr-2" />
                 {isGeneratingQR ? 'Generating...' : 'Generate QR'}
               </Button>
