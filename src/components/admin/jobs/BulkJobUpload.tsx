@@ -91,7 +91,7 @@ export const BulkJobUpload = () => {
       const supabaseUrl = 'https://dthlgsnakhoftinssokm.supabase.co';
       const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
       
-      const directResponse = await fetch(`${supabaseUrl}/functions/v1/bulk-job-upload`, {
+      const directResponse = await fetch(`${supabaseUrl}/functions/v1/bulk-job-upload-v2`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.session.access_token}`,
@@ -159,7 +159,7 @@ export const BulkJobUpload = () => {
           }
           
           console.log('Calling bulk-job-upload function...');
-          console.log('Function name: bulk-job-upload');
+          console.log('Function name: bulk-job-upload-v2');
           console.log('Request body:', {
             csvData: csvData.substring(0, 100) + '...',
             batchName: batchName.trim()
@@ -172,11 +172,11 @@ export const BulkJobUpload = () => {
           const supabaseUrl = 'https://dthlgsnakhoftinssokm.supabase.co';
           const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
           
-          console.log('1. Using direct fetch to Edge Function...');
+          console.log('1. Using direct fetch to Edge Function (v2)...');
           
           // Try direct fetch approach which often works better
           try {
-            const directResponse = await fetch(`${supabaseUrl}/functions/v1/bulk-job-upload`, {
+            const directResponse = await fetch(`${supabaseUrl}/functions/v1/bulk-job-upload-v2`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${session.session.access_token}`,
@@ -230,7 +230,7 @@ export const BulkJobUpload = () => {
             console.log('2. Direct fetch failed, trying supabase.functions.invoke...');
             
             try {
-              const { data, error } = await supabase.functions.invoke('bulk-job-upload', {
+              const { data, error } = await supabase.functions.invoke('bulk-job-upload-v2', {
                 body: {
                   csvData,
                   batchName: batchName.trim()
