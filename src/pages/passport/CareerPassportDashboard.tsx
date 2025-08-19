@@ -439,9 +439,9 @@ export function CareerPassportDashboard() {
     return name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
   };
 
-  const getCompletionPercentage = () => displayData.passport?.completion_percentage || 65;
-  const getCareerReadiness = () => displayData.passport?.career_readiness_score || 60;
-  const getMarketCompetitiveness = () => displayData.passport?.market_competitiveness_score || 45;
+  const getCompletionPercentage = () => displayData.passport?.completion_percentage || 0;
+  const getCareerReadiness = () => displayData.passport?.career_readiness_score || 0;
+  const getMarketCompetitiveness = () => displayData.passport?.market_competitiveness_score || 0;
   const getDisplayName = () => displayData.profile?.full_name?.split(' ')[0] || 'User';
   
   // Generate TalentXcel ID in the format from screenshot
@@ -597,10 +597,10 @@ export function CareerPassportDashboard() {
             {/* User Info */}
             <div className="flex-1">
               <h2 className="text-lg font-bold text-white mb-1">{displayData.profile?.full_name || user?.user_metadata?.full_name || 'User'}</h2>
-              <p className="text-orange-400 font-medium text-sm mb-1">{displayData.profile?.title || displayData.profile?.headline || 'Business Strategist & Growth Specialist'}</p>
+              <p className="text-orange-400 font-medium text-sm mb-1">{displayData.profile?.title || displayData.profile?.headline || ''}</p>
               <div className="flex items-center gap-1 text-gray-300 text-xs">
                 <span className="text-orange-400">📍</span> 
-                <span>{displayData.profile?.location || 'Noida'}</span>
+                <span>{displayData.profile?.location || ''}</span>
               </div>
             </div>
 
@@ -652,11 +652,12 @@ export function CareerPassportDashboard() {
             </div>
           </div>
 
-          {/* Performance Metrics */}
           <div className="relative z-10 grid grid-cols-2 gap-4 mb-6">
             <div className="bg-slate-800/60 border border-slate-600/50 rounded-lg p-4 backdrop-blur-sm">
               <div className="text-gray-400 text-sm mb-1">Market Rank</div>
-              <div className="text-white text-xl font-bold mb-1">Top {100 - getMarketCompetitiveness()}%</div>
+              <div className="text-white text-xl font-bold mb-1">
+                {getMarketCompetitiveness() > 0 ? `Top ${100 - getMarketCompetitiveness()}%` : 'Not ranked'}
+              </div>
               <div className="text-gray-400 text-xs">vs peers</div>
             </div>
             <div className="bg-slate-800/60 border border-slate-600/50 rounded-lg p-4 backdrop-blur-sm">
