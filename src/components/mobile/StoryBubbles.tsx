@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { TextStoryCreator } from './TextStoryCreator';
+import { useStoryCreation } from '@/hooks/useStoryCreation';
 import { 
   Briefcase, 
   Building, 
@@ -14,7 +16,8 @@ import {
   Plus,
   Camera,
   Type,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Loader2
 } from 'lucide-react';
 
 // Sample story data - in real app this would come from API
@@ -59,6 +62,13 @@ const sampleStories = [
 export const StoryBubbles: React.FC = () => {
   const { user } = useAuth();
   const [showCreateStory, setShowCreateStory] = useState(false);
+  const [showTextStoryCreator, setShowTextStoryCreator] = useState(false);
+  const { 
+    isLoading, 
+    createPhotoStory, 
+    createGalleryStory, 
+    createTextStory 
+  } = useStoryCreation();
 
   // Get user profile for avatar
   const { data: profile } = useQuery({
@@ -84,11 +94,34 @@ export const StoryBubbles: React.FC = () => {
     }
   };
 
-  const handleCreateStory = (type: 'photo' | 'text') => {
-    // In a real app, this would open camera or text editor
-    console.log('Creating story with type:', type);
+  const handleCreateStory = async (type: 'photo' | 'text' | 'gallery') => {
     setShowCreateStory(false);
-    // Here you would implement story creation logic
+    
+    try {
+      switch (type) {
+        case 'photo':
+          await createPhotoStory();
+          break;
+        case 'gallery':
+          await createGalleryStory();
+          break;
+        case 'text':
+          setShowTextStoryCreator(true);
+          break;
+      }
+    } catch (error) {
+      console.error('Error creating story:', error);
+    }
+  };
+
+  const handleTextStoryCreated = (storyData: any) => {
+    createTextStory({
+      content: storyData.content,
+      background: storyData.background,
+      font: storyData.font,
+      fontSize: storyData.fontSize,
+    });
+    setShowTextStoryCreator(false);
   };
 
   const getInitials = () => {
@@ -166,14 +199,20 @@ export const StoryBubbles: React.FC = () => {
           <div className="px-6 pb-6 space-y-4">
             <Button
               onClick={() => handleCreateStory('photo')}
+              disabled={isLoading}
               className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-medium flex items-center gap-3"
             >
-              <Camera className="h-5 w-5" />
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Camera className="h-5 w-5" />
+              )}
               Take Photo/Video
             </Button>
             
             <Button
               onClick={() => handleCreateStory('text')}
+              disabled={isLoading}
               variant="outline"
               className="w-full h-14 rounded-2xl border-2 font-medium flex items-center gap-3 hover:bg-gray-50"
             >
@@ -182,16 +221,29 @@ export const StoryBubbles: React.FC = () => {
             </Button>
             
             <Button
-              onClick={() => handleCreateStory('photo')}
+              onClick={() => handleCreateStory('gallery')}
+              disabled={isLoading}
               variant="outline"
               className="w-full h-14 rounded-2xl border-2 font-medium flex items-center gap-3 hover:bg-gray-50"
             >
-              <ImageIcon className="h-5 w-5" />
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <ImageIcon className="h-5 w-5" />
+              )}
               Choose from Gallery
             </Button>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Text Story Creator */}
+      {showTextStoryCreator && (
+        <TextStoryCreator
+          onClose={() => setShowTextStoryCreator(false)}
+          onStoryCreated={handleTextStoryCreated}
+        />
+      )}
     </>
   );
 };
