@@ -39,12 +39,11 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', false);
       }
 
-      // Note: email_verified field filtering will be implemented when database schema includes this field
+      // Use actual verification_status field
       if (verificationFilter === 'verified') {
-        // For now, use profile_completed as a proxy for verification
-        query = query.eq('profile_completed', true);
+        query = query.eq('verification_status', 'verified');
       } else if (verificationFilter === 'unverified') {
-        query = query.eq('profile_completed', false);
+        query = query.neq('verification_status', 'verified');
       }
 
       if (completionFilter !== 'all') {
@@ -79,19 +78,16 @@ export const useUserManagement = () => {
         .eq('is_active', true)
         .in('role', ['super_admin', 'admin', 'moderator']);
 
-      // Get emails from auth.users for each profile
-      const profilesWithEmails = await Promise.all(
-        (profilesData || []).map(async (profile) => {
-          const { data: userData } = await supabase.auth.admin.getUserById(profile.id);
-          const adminRoles = (allUserRoles || []).filter(role => role.user_id === profile.id);
-          
-          return {
-            ...profile,
-            email: userData.user?.email || 'No email',
-            admin_roles: adminRoles
-          };
-        })
-      );
+      // Add admin roles to profiles - emails are already in profiles table
+      const profilesWithEmails = (profilesData || []).map((profile) => {
+        const adminRoles = (allUserRoles || []).filter(role => role.user_id === profile.id);
+        
+        return {
+          ...profile,
+          email: profile.email || 'No email',
+          admin_roles: adminRoles
+        };
+      });
 
       // Filter by admin role if needed
       let filteredProfiles = profilesWithEmails;
@@ -124,7 +120,7 @@ export const useUserManagement = () => {
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
-      // Note: Search filtering will be handled in post-processing since emails come from auth.users
+      // Search filtering is handled in post-processing for emails and names
 
       if (roleFilter === 'admin') {
         // For admin filter, we need to count profiles that have admin roles
@@ -150,12 +146,11 @@ export const useUserManagement = () => {
         query = query.eq('profile_completed', false);
       }
 
-      // Note: email_verified field filtering will be implemented when database schema includes this field
+      // Use actual verification_status field
       if (verificationFilter === 'verified') {
-        // For now, use profile_completed as a proxy for verification
-        query = query.eq('profile_completed', true);
+        query = query.eq('verification_status', 'verified');
       } else if (verificationFilter === 'unverified') {
-        query = query.eq('profile_completed', false);
+        query = query.neq('verification_status', 'verified');
       }
 
       if (completionFilter !== 'all') {
@@ -200,9 +195,9 @@ export const useUserManagement = () => {
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', true),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', false),
-        // For now, using profile_completed as proxy for email verification
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', true),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('profile_completed', false),
+        // Using actual verification_status field
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('verification_status', 'verified'),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('verification_status', 'verified'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'employer'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'job_seeker'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('user_role', 'candidate')
