@@ -1,12 +1,8 @@
 import React from 'react';
-import { AIAgentOperations } from '@/components/admin/AIAgentOperations';
+import { TalentXcelAgentDashboard } from '@/components/admin/TalentXcelAgentDashboard';
 
 const AgentOperations: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <AIAgentOperations />
-    </div>
-  );
+  return <TalentXcelAgentDashboard />;
 };
 
 export default AgentOperations;
