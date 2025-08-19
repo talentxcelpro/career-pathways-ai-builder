@@ -14185,6 +14185,7 @@ export type Database = {
           allow_profile_sharing: boolean | null
           banner_picture_url: string | null
           banner_url: string | null
+          bio: string | null
           bot_config_id: string | null
           bot_tag: string | null
           bot_tone: string | null
@@ -14197,6 +14198,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string | null
           current_company: string | null
+          current_job_title: string | null
           custom_logo_url: string | null
           custom_profile_url: string | null
           custom_theme: Json | null
@@ -14260,6 +14262,7 @@ export type Database = {
           video_resume_url: string | null
           website: string | null
           work_experiences: Json | null
+          years_of_experience: number | null
         }
         Insert: {
           about?: string | null
@@ -14267,6 +14270,7 @@ export type Database = {
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
+          bio?: string | null
           bot_config_id?: string | null
           bot_tag?: string | null
           bot_tone?: string | null
@@ -14279,6 +14283,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
+          current_job_title?: string | null
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
@@ -14342,6 +14347,7 @@ export type Database = {
           video_resume_url?: string | null
           website?: string | null
           work_experiences?: Json | null
+          years_of_experience?: number | null
         }
         Update: {
           about?: string | null
@@ -14349,6 +14355,7 @@ export type Database = {
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
+          bio?: string | null
           bot_config_id?: string | null
           bot_tag?: string | null
           bot_tone?: string | null
@@ -14361,6 +14368,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           current_company?: string | null
+          current_job_title?: string | null
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
@@ -14424,6 +14432,7 @@ export type Database = {
           video_resume_url?: string | null
           website?: string | null
           work_experiences?: Json | null
+          years_of_experience?: number | null
         }
         Relationships: [
           {
