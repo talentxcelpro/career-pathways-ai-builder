@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
+import { AuthDialog } from '@/components/auth/AuthDialog';
 import { useToast } from '@/hooks/use-toast';
 import { 
   QrCode, 
@@ -46,6 +47,7 @@ export const MobileCareerPassport: React.FC = () => {
   const [publicPassportData, setPublicPassportData] = useState<any>(null);
   const [isPublicView, setIsPublicView] = useState(false);
   const [publicLoading, setPublicLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
 
   useEffect(() => {
     const initializeView = async () => {
@@ -53,8 +55,29 @@ export const MobileCareerPassport: React.FC = () => {
       if (userId && userId !== user?.id) {
         setIsPublicView(true);
         await loadPublicPassportData(userId);
+        if (user?.id) {
+          await checkConnectionStatus(userId);
+        }
       } else if (user?.id) {
         setIsPublicView(false);
+      }
+    };
+
+    const checkConnectionStatus = async (targetUserId: string) => {
+      if (!user?.id) return;
+      
+      try {
+        const { data } = await supabase
+          .from('connections')
+          .select('status')
+          .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
+          .single();
+        
+        if (data) {
+          setConnectionStatus(data.status);
+        }
+      } catch (error) {
+        console.error('Error checking connection status:', error);
       }
     };
 
@@ -211,6 +234,40 @@ export const MobileCareerPassport: React.FC = () => {
     navigate('/mobile/qr-scanner');
   };
 
+  // Show authentication prompt for unauthenticated users viewing public profiles
+  if (!user && isPublicView) {
+    return (
+      <MobileLayout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6 text-center">
+              <div className="mb-4">
+                <Award className="h-12 w-12 text-primary mx-auto mb-3" />
+                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  Join TalentXcel to Connect
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Sign up to view full career passports and connect with professionals
+                </p>
+              </div>
+              <AuthDialog buttonText="Sign Up to Connect" variant="default">
+                <Button className="w-full">
+                  Sign Up to Connect
+                </Button>
+              </AuthDialog>
+              <p className="text-sm text-gray-500 mt-3">
+                Already have an account? 
+                <AuthDialog buttonText="Sign In" variant="link">
+                  <button className="text-primary hover:underline ml-1">Sign In</button>
+                </AuthDialog>
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </MobileLayout>
+    );
+  }
+
   if (isLoading || publicLoading) {
     return (
       <MobileLayout>
@@ -313,24 +370,47 @@ export const MobileCareerPassport: React.FC = () => {
         </div>
 
         {/* Action Buttons for Public View */}
-        {isPublicView && (
+        {isPublicView && user && (
           <div className="p-4 bg-white border-b">
             <div className="flex gap-3">
-              <Button
-                onClick={handleConnect}
-                className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-xl h-12"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Connect
-              </Button>
-              <Button
-                onClick={handleMessage}
-                variant="outline"
-                className="flex-1 rounded-xl h-12"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Message
-              </Button>
+              {connectionStatus === 'none' && (
+                <Button
+                  onClick={handleConnect}
+                  className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-xl h-12"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Connect
+                </Button>
+              )}
+              {connectionStatus === 'pending' && (
+                <Button
+                  disabled
+                  variant="outline"
+                  className="flex-1 rounded-xl h-12"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Request Sent
+                </Button>
+              )}
+              {connectionStatus === 'connected' && (
+                <Button
+                  onClick={handleMessage}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-12"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Message
+                </Button>
+              )}
+              {connectionStatus !== 'connected' && (
+                <Button
+                  onClick={handleMessage}
+                  variant="outline"
+                  className="flex-1 rounded-xl h-12"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Message
+                </Button>
+              )}
             </div>
           </div>
         )}

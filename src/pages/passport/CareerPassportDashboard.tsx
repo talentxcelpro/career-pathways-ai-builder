@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AuthDialog } from '@/components/auth/AuthDialog';
 import { 
   QrCode, 
   Share2, 
@@ -30,7 +31,9 @@ import {
   Plus,
   Trophy,
   Target,
-  MoreHorizontal
+  MoreHorizontal,
+  UserPlus,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import QRCode from 'qrcode';
@@ -54,6 +57,7 @@ export function CareerPassportDashboard() {
   const [publicPassportData, setPublicPassportData] = useState<any>(null);
   const [isPublicView, setIsPublicView] = useState(false);
   const [publicLoading, setPublicLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
 
   useEffect(() => {
     const initializeView = async () => {
@@ -61,10 +65,31 @@ export function CareerPassportDashboard() {
       if (userId && userId !== user?.id) {
         setIsPublicView(true);
         await loadPublicPassportData(userId);
+        if (user?.id) {
+          await checkConnectionStatus(userId);
+        }
       } else if (user?.id) {
         // Load own profile data
         setIsPublicView(false);
         await loadPublicProfile();
+      }
+    };
+
+    const checkConnectionStatus = async (targetUserId: string) => {
+      if (!user?.id) return;
+      
+      try {
+        const { data } = await supabase
+          .from('connections')
+          .select('status')
+          .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
+          .single();
+        
+        if (data) {
+          setConnectionStatus(data.status);
+        }
+      } catch (error) {
+        console.error('Error checking connection status:', error);
       }
     };
 
@@ -389,6 +414,40 @@ export function CareerPassportDashboard() {
   const getMarketCompetitiveness = () => displayData.passport?.market_competitiveness_score || 45;
   const getDisplayName = () => displayData.profile?.full_name?.split(' ')[0] || 'User';
 
+  // Show authentication prompt for unauthenticated users viewing public profiles
+  if (!user && isPublicView) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <div className="mb-6">
+              <Award className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-foreground mb-3">
+                Join TalentXcel to Connect
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Sign up to view full career passports and connect with professionals in your network
+              </p>
+            </div>
+            <div className="space-y-3">
+              <AuthDialog buttonText="Sign Up to Connect" variant="default">
+                <Button className="w-full" size="lg">
+                  Sign Up to Connect
+                </Button>
+              </AuthDialog>
+              <p className="text-sm text-muted-foreground">
+                Already have an account? 
+                <AuthDialog buttonText="Sign In" variant="link">
+                  <button className="text-primary hover:underline ml-1">Sign In</button>
+                </AuthDialog>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (isLoading || publicLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -458,6 +517,34 @@ export function CareerPassportDashboard() {
                 <QrCode className="h-4 w-4 mr-2" />
                 {isGeneratingQR ? 'Generating...' : 'Generate QR'}
               </Button>
+            )}
+            
+            {/* Connection Actions for Public View */}
+            {isPublicView && user && (
+              <div className="flex gap-2">
+                {connectionStatus === 'none' && (
+                  <Button onClick={handleSendConnectionRequest} size="sm">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Connect
+                  </Button>
+                )}
+                {connectionStatus === 'pending' && (
+                  <Button disabled variant="outline" size="sm">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Request Sent
+                  </Button>
+                )}
+                {connectionStatus === 'connected' && (
+                  <Button onClick={() => navigate(`/network/messages?userId=${userId}`)} size="sm" variant="default">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message
+                  </Button>
+                )}
+                <Button onClick={handleShareProfile} variant="outline" size="sm">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+              </div>
             )}
           </div>
         </div>
