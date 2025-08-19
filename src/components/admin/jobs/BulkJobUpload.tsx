@@ -36,7 +36,7 @@ interface UploadResult {
 
 export const BulkJobUpload = () => {
   const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [batchName, setBatchName] = useState('');
+  const [batchName, setBatchName] = useState('User Jobs Batch ' + new Date().toISOString().split('T')[0]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [csvPreview, setCsvPreview] = useState<string[][]>([]);
@@ -71,6 +71,61 @@ export const BulkJobUpload = () => {
     },
     maxFiles: 1
   });
+
+  const uploadUserJobs = async () => {
+    setIsUploading(true);
+    setUploadResult(null);
+
+    try {
+      const userJobsResponse = await fetch('/user_jobs_data.csv');
+      const csvData = await userJobsResponse.text();
+      
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session.session?.access_token) {
+        toast.error('Authentication required. Please sign in again.');
+        setIsUploading(false);
+        return;
+      }
+
+      const supabaseUrl = 'https://dthlgsnakhoftinssokm.supabase.co';
+      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+      
+      const directResponse = await fetch(`${supabaseUrl}/functions/v1/bulk-job-upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.session.access_token}`,
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey
+        },
+        body: JSON.stringify({
+          csvData,
+          batchName: 'User Provided Jobs Batch'
+        })
+      });
+      
+      if (directResponse.ok) {
+        const result = await directResponse.json();
+        console.log('Upload successful:', result);
+        
+        setUploadResult(result);
+        if (result.success) {
+          toast.success(`Upload successful! ${result.successfulJobs} jobs uploaded.`);
+        } else {
+          toast.error('Upload failed: ' + result.error);
+        }
+      } else {
+        const errorText = await directResponse.text();
+        console.error('Upload failed:', errorText);
+        toast.error(`Upload failed: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Upload failed: ' + (error as Error).message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleUpload = async () => {
     // Inline validation with specific messages
@@ -346,24 +401,45 @@ export const BulkJobUpload = () => {
                 </div>
               )}
 
-              {/* Upload Button */}
-              <Button 
-                onClick={handleUpload}
-                disabled={isUploading}
-                className="w-full"
-              >
-                {isUploading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Processing Upload...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Jobs
-                  </>
-                )}
-              </Button>
+              {/* Upload Buttons */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleUpload}
+                  disabled={isUploading}
+                  className="w-full"
+                >
+                  {isUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Processing Upload...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Selected CSV
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  onClick={uploadUserJobs}
+                  disabled={isUploading}
+                  variant="outline"
+                  className="w-full"
+                >
+                  {isUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                      Uploading User Jobs...
+                    </>
+                  ) : (
+                    <>
+                      <Users className="h-4 w-4 mr-2" />
+                      Upload User's 50 Jobs
+                    </>
+                  )}
+                </Button>
+              </div>
 
               {/* Upload Results */}
               {uploadResult && (
