@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { PostComments } from './PostComments';
 import { 
   Heart, 
   MessageCircle, 
@@ -49,6 +50,7 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likes, setLikes] = useState(post.interactions.interested);
+  const [showComments, setShowComments] = useState(false);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {
@@ -95,25 +97,46 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   };
 
   const handleComment = () => {
-    // Navigate to post detail with comments
-    window.location.href = `/network/posts/${post.id}`;
+    setShowComments(true);
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareUrl = `${window.location.origin}/network/posts/${post.id}`;
+    const shareData = {
+      title: post.title,
+      text: post.description,
+      url: shareUrl,
+    };
   
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: post.description,
-        url: shareUrl,
-      });
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast({
-        title: "Link Copied",
-        description: "Post link copied to clipboard!",
-      });
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast({
+          title: "Shared successfully",
+          description: "Post shared successfully!",
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Post link copied to clipboard!",
+        });
+      }
+    } catch (error) {
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Post link copied to clipboard!",
+        });
+      } catch (clipboardError) {
+        toast({
+          title: "Share failed",
+          description: "Unable to share or copy link.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -302,6 +325,14 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
           </div>
         </div>
       </CardContent>
+
+      {/* Comments Modal */}
+      {showComments && (
+        <PostComments 
+          postId={post.id} 
+          onClose={() => setShowComments(false)} 
+        />
+      )}
     </Card>
   );
 };
