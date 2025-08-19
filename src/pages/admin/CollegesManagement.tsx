@@ -1,174 +1,85 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Eye, Edit, Trash2, CheckCircle, XCircle } from "lucide-react";
+import React from 'react';
+import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
+import { CollegesDashboard } from '@/components/admin/colleges/CollegesDashboard';
+import { CollegesDirectory } from '@/components/admin/colleges/CollegesDirectory';
+import { VerificationManagement } from '@/components/admin/colleges/VerificationManagement';
+import { CollegeAnalytics } from '@/components/admin/colleges/CollegeAnalytics';
+import { StudentInquiries } from '@/components/admin/colleges/StudentInquiries';
+import { CollegeEvents } from '@/components/admin/colleges/CollegeEvents';
+import { MonetizationSettings } from '@/components/admin/colleges/MonetizationSettings';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  School, 
+  Shield, 
+  BarChart3, 
+  MessageSquare, 
+  Calendar,
+  Settings,
+  Home
+} from 'lucide-react';
 
 const CollegesManagement = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = React.useState('dashboard');
 
-  const { data: colleges, isLoading } = useQuery({
-    queryKey: ['colleges-admin'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('colleges')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    }
-  });
-
-  const { data: collegeStats } = useQuery({
-    queryKey: ['college-stats'],
-    queryFn: async () => {
-      const [
-        { count: totalColleges },
-        { count: verifiedColleges },
-        { count: pendingColleges }
-      ] = await Promise.all([
-        supabase.from('colleges').select('*', { count: 'exact', head: true }),
-        supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('is_verified', true),
-        supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('verification_status', 'pending')
-      ]);
-
-      return {
-        totalColleges: totalColleges || 0,
-        verifiedColleges: verifiedColleges || 0,
-        pendingColleges: pendingColleges || 0
-      };
-    }
-  });
-
-  const stats = [
-    { title: "Total Colleges", value: collegeStats?.totalColleges.toString() || "0", change: "+12%" },
-    { title: "Verified Colleges", value: collegeStats?.verifiedColleges.toString() || "0", change: "+8%" },
-    { title: "Pending Verification", value: collegeStats?.pendingColleges.toString() || "0", change: "+15%" },
-    { title: "New This Month", value: "24", change: "+20%" }
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home, component: CollegesDashboard },
+    { id: 'directory', label: 'Directory', icon: School, component: CollegesDirectory },
+    { id: 'verification', label: 'Verification', icon: Shield, component: VerificationManagement },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, component: CollegeAnalytics },
+    { id: 'inquiries', label: 'Inquiries', icon: MessageSquare, component: StudentInquiries },
+    { id: 'events', label: 'Events', icon: Calendar, component: CollegeEvents },
+    { id: 'monetization', label: 'Monetization', icon: Settings, component: MonetizationSettings }
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Colleges Management</h1>
-          <p className="text-muted-foreground">Manage colleges, verification, and content</p>
-        </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add College
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">{stat.change}</span> from last month
+    <UnifiedAdminLayout 
+      title="Colleges Management Hub" 
+      description="India's Most Trusted Interactive College Directory & Analytics Platform"
+    >
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-blue-500/10 border border-primary/20 rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-primary mb-2">🎓 Premium Colleges Hub</h2>
+              <p className="text-muted-foreground">
+                Complete college directory with verification, analytics, student engagement, and monetization features
               </p>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-muted-foreground">Powered by</div>
+              <div className="text-lg font-bold text-primary">TalentXcel Pro</div>
+            </div>
+          </div>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 gap-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <TabsTrigger 
+                  key={tab.id} 
+                  value={tab.id}
+                  className="flex items-center gap-2 text-xs px-3 py-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+
+          {tabs.map((tab) => {
+            const Component = tab.component;
+            return (
+              <TabsContent key={tab.id} value={tab.id} className="mt-6">
+                <Component />
+              </TabsContent>
+            );
+          })}
+        </Tabs>
       </div>
-
-      {/* Search and Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>College Directory</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search colleges..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline">Filter</Button>
-            <Button variant="outline">Export</Button>
-          </div>
-
-          {/* Colleges Table */}
-          <div className="rounded-md border">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="px-4 py-3 text-left text-sm font-medium">College</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Type</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Location</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Students</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {colleges?.map((college) => (
-                    <tr key={college.id} className="border-b">
-                      <td className="px-4 py-3">
-                        <div>
-                          <div className="font-medium">{college.name}</div>
-                          <div className="text-sm text-muted-foreground">Added {new Date(college.created_at).toLocaleDateString()}</div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant="outline">{college.college_type || 'N/A'}</Badge>
-                      </td>
-                      <td className="px-4 py-3 text-sm">{college.city}, {college.state}</td>
-                      <td className="px-4 py-3 text-sm">{college.total_students?.toLocaleString() || 'N/A'}</td>
-                      <td className="px-4 py-3">
-                        <Badge 
-                          variant={college.is_verified ? 'default' : 'secondary'}
-                          className={college.is_verified ? 'bg-green-100 text-green-800' : ''}
-                        >
-                          {college.is_verified ? (
-                            <>
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Verified
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-3 w-3 mr-1" />
-                              Pending
-                            </>
-                          )}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="ghost">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="text-red-600">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </UnifiedAdminLayout>
   );
 };
 
