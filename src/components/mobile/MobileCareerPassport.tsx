@@ -1,250 +1,516 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useProfile } from '@/hooks/useProfile';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MobileLayout } from '@/components/mobile/MobileLayout';
+import { useToast } from '@/hooks/use-toast';
 import { 
-  Award, 
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  FileText, 
+  QrCode, 
+  Share2, 
+  ExternalLink, 
+  Copy,
+  Award,
+  TrendingUp,
+  Users,
+  Briefcase,
   Trophy,
+  Target,
+  MessageCircle,
+  UserPlus,
+  MapPin,
+  Building,
+  GraduationCap,
+  Star,
   ArrowRight,
-  ExternalLink,
-  Zap,
-  Target
+  PhoneCall,
+  Mail,
+  Linkedin,
+  Download
 } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useNavigate } from 'react-router-dom';
 
 export const MobileCareerPassport: React.FC = () => {
+  const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone } = useCareerPassport();
+  const { careerPassport, achievements, isLoading } = useCareerPassport();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [publicProfile, setPublicProfile] = useState<any>(null);
+  const [publicPassportData, setPublicPassportData] = useState<any>(null);
+  const [isPublicView, setIsPublicView] = useState(false);
+  const [publicLoading, setPublicLoading] = useState(false);
 
-  const completion = getCompletionBreakdown();
-  const nextMilestone = getNextMilestone();
+  useEffect(() => {
+    const initializeView = async () => {
+      // Check if viewing someone else's passport (public view)
+      if (userId && userId !== user?.id) {
+        setIsPublicView(true);
+        await loadPublicPassportData(userId);
+      } else if (user?.id) {
+        setIsPublicView(false);
+      }
+    };
+
+    const loadPublicPassportData = async (targetUserId: string) => {
+      setPublicLoading(true);
+      try {
+        // Fetch public profile data
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('id, full_name, headline, location, profile_picture_url, talentxcel_id, bio, current_company, current_position, years_of_experience, skills')
+          .eq('id', targetUserId)
+          .single();
+
+        // Fetch public career passport data
+        const { data: passportData } = await supabase
+          .from('career_passport')
+          .select('completion_percentage, career_readiness_score, market_competitiveness_score, resumes_count, jobs_applied_count, certifications_count, connections_count')
+          .eq('user_id', targetUserId)
+          .single();
+
+        // Fetch public achievements
+        const { data: achievementsData } = await supabase
+          .from('career_achievements')
+          .select('achievement_type, achievement_title, achievement_description, points_awarded, earned_at')
+          .eq('user_id', targetUserId)
+          .eq('is_public', true)
+          .limit(5);
+
+        setPublicPassportData({
+          profile: profileData,
+          passport: passportData,
+          achievements: achievementsData || []
+        });
+      } catch (error) {
+        console.error('Error loading public passport:', error);
+      } finally {
+        setPublicLoading(false);
+      }
+    };
+
+    initializeView();
+  }, [userId, user?.id]);
+
+  // Get user data for display (public or private)
+  const getDisplayData = () => {
+    if (isPublicView && publicPassportData) {
+      return {
+        profile: publicPassportData.profile,
+        passport: publicPassportData.passport,
+        achievements: publicPassportData.achievements,
+        isOwner: false
+      };
+    }
+    return {
+      profile: { 
+        full_name: user?.user_metadata?.full_name || profile?.full_name,
+        headline: profile?.headline,
+        location: profile?.location,
+        profile_picture_url: user?.user_metadata?.avatar_url || profile?.profile_picture_url,
+        talentxcel_id: profile?.talentxcel_id,
+        // These fields will come from the publicPassportData for now
+        bio: undefined,
+        current_company: undefined,
+        current_position: undefined,
+        years_of_experience: undefined,
+        skills: undefined
+      },
+      passport: careerPassport,
+      achievements: achievements,
+      isOwner: true
+    };
+  };
+
+  const displayData = getDisplayData();
 
   const getUserInitials = () => {
-    const name = user?.user_metadata?.full_name || profile?.full_name;
+    const name = displayData.profile?.full_name;
     if (!name) return 'U';
     return name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
   };
 
-  const getCompletionPercentage = () => careerPassport?.completion_percentage || 40;
-  const getCareerReadiness = () => careerPassport?.career_readiness_score || 60;
-  const getMarketCompetitiveness = () => careerPassport?.market_competitiveness_score || 45;
+  const getCompletionPercentage = () => displayData.passport?.completion_percentage || 40;
+  const getCareerReadiness = () => displayData.passport?.career_readiness_score || 60;
+  const getDisplayName = () => displayData.profile?.full_name || 'Professional';
 
-  if (isLoading) {
+  const handleShare = async () => {
+    const shareUrl = `https://talentxcel.in/passport/${userId || user?.id}`;
+    const shareData = {
+      title: `${getDisplayName()}'s Career Passport - TalentXcel`,
+      text: `Check out ${getDisplayName()}'s professional career passport on TalentXcel`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Career passport link copied to clipboard!",
+        });
+      }
+    } catch (error) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Career passport link copied to clipboard!",
+        });
+      } catch (clipboardError) {
+        toast({
+          title: "Share failed",
+          description: "Unable to share or copy link.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleConnect = async () => {
+    if (!userId || userId === user?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .insert([{
+          requester_id: user?.id,
+          recipient_id: userId,
+          status: 'pending'
+        }]);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Connection request sent!",
+        description: "Your connection request has been sent successfully.",
+      });
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast({
+        title: "Failed to connect",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMessage = () => {
+    navigate(`/network/messages?userId=${userId}`);
+  };
+
+  const handleGenerateQR = () => {
+    navigate('/mobile/qr-scanner');
+  };
+
+  if (isLoading || publicLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <Skeleton className="h-48 w-full rounded-3xl" />
-          <div className="grid grid-cols-2 gap-4">
-            <Skeleton className="h-32 w-full rounded-2xl" />
-            <Skeleton className="h-32 w-full rounded-2xl" />
+      <MobileLayout>
+        <div className="min-h-screen bg-gray-50 p-4">
+          <div className="animate-pulse space-y-4">
+            <div className="h-48 bg-gray-200 rounded-2xl"></div>
+            <div className="h-32 bg-gray-200 rounded-xl"></div>
+            <div className="h-24 bg-gray-200 rounded-xl"></div>
           </div>
-          <Skeleton className="h-40 w-full rounded-3xl" />
         </div>
-      </div>
+      </MobileLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100 shadow-sm">
-        <div className="safe-area-top" />
-        <div className="flex items-center justify-between px-5 py-4">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-10 h-10 ring-2 ring-white shadow-md">
-              <AvatarImage src={user?.user_metadata?.avatar_url || profile?.profile_picture_url} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-semibold">
-                {getUserInitials()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">Career Passport</h1>
-              <p className="text-xs text-gray-500">Your professional journey</p>
+    <MobileLayout>
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Profile Card */}
+        <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent" />
+          <div className="relative p-6 pb-8">
+            {/* Header Actions */}
+            <div className="flex justify-end mb-4">
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleShare}
+                  className="text-white hover:bg-white/20 rounded-full"
+                >
+                  <Share2 className="h-5 w-5" />
+                </Button>
+                {displayData.isOwner && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleGenerateQR}
+                    className="text-white hover:bg-white/20 rounded-full"
+                  >
+                    <QrCode className="h-5 w-5" />
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-          <Badge variant="outline" className="px-3 py-1 rounded-full">
-            <Award className="h-3 w-3 mr-1" />
-            TXL{profile?.talentxcel_id?.slice(-3) || user?.id?.slice(-3) || '001'}
-          </Badge>
-        </div>
-      </div>
 
-      <div className="max-w-2xl mx-auto p-4 space-y-6">
-        {/* Hero Card */}
-        <Card className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 text-white border-0 overflow-hidden relative rounded-3xl shadow-xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-          <CardContent className="p-6 relative">
+            {/* Profile Info */}
             <div className="flex items-start gap-4 mb-6">
-              <Avatar className="h-16 w-16 border-4 border-white/30 shadow-lg">
-                <AvatarImage src={user?.user_metadata?.avatar_url || profile?.profile_picture_url} />
+              <Avatar className="h-20 w-20 border-4 border-white/30">
+                <AvatarImage src={displayData.profile?.profile_picture_url} />
                 <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h2 className="text-xl font-bold mb-2">
-                  Hi {user?.user_metadata?.full_name?.split(' ')[0] || 'Professional'}, you're {getCompletionPercentage()}% Career Ready!
-                </h2>
-                <p className="text-white/90 text-sm">
-                  {profile?.headline || 'Complete your profile to unlock more career opportunities'}
-                </p>
+                <h1 className="text-2xl font-bold mb-1">
+                  {getDisplayName()}
+                </h1>
+                {displayData.profile?.current_position && (
+                  <p className="text-white/90 text-lg mb-1">
+                    {displayData.profile.current_position}
+                  </p>
+                )}
+                {displayData.profile?.current_company && (
+                  <p className="text-white/80 flex items-center gap-1 mb-2">
+                    <Building className="h-4 w-4" />
+                    {displayData.profile.current_company}
+                  </p>
+                )}
+                {displayData.profile?.location && (
+                  <p className="text-white/80 flex items-center gap-1">
+                    <MapPin className="h-4 w-4" />
+                    {displayData.profile.location}
+                  </p>
+                )}
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold">{getCareerReadiness()}%</div>
-                <div className="text-white/80 text-xs">Career Readiness</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">{getMarketCompetitiveness()}%</div>
-                <div className="text-white/80 text-xs">Market Score</div>
-              </div>
+
+            {/* TalentXcel ID & Badge */}
+            <div className="flex items-center justify-between mb-4">
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                <Award className="h-3 w-3 mr-1" />
+                TXL{displayData.profile?.talentxcel_id?.slice(-3) || '001'}
+              </Badge>
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                {getCompletionPercentage() >= 90 ? '🏆 Career Expert' : 
+                 getCompletionPercentage() >= 70 ? '⭐ Skill Master' : 
+                 getCompletionPercentage() >= 50 ? '🎯 Career Builder' : '🌱 Getting Started'}
+              </Badge>
             </div>
-            
-            <Progress value={getCompletionPercentage()} className="h-3 bg-white/20 rounded-full" />
-            <p className="text-white/80 text-xs mt-2">Overall Completion: {getCompletionPercentage()}%</p>
-          </CardContent>
-        </Card>
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-lg rounded-2xl">
-            <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <FileText className="w-6 h-6 text-blue-600" />
+            {/* Career Readiness */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-white/90 font-medium">Career Readiness</span>
+                <span className="text-white font-bold">{getCompletionPercentage()}%</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">
-                {careerPassport?.resumes_count || 0}
-              </div>
-              <p className="text-xs text-gray-600">Resumes</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-lg rounded-2xl">
-            <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <Briefcase className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">
-                {careerPassport?.jobs_applied_count || 0}
-              </div>
-              <p className="text-xs text-gray-600">Jobs Applied</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-lg rounded-2xl">
-            <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <Award className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">
-                {careerPassport?.certifications_count || 0}
-              </div>
-              <p className="text-xs text-gray-600">Certifications</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-lg rounded-2xl">
-            <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <Users className="w-6 h-6 text-orange-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">
-                {careerPassport?.connections_count || 0}
-              </div>
-              <p className="text-xs text-gray-600">Connections</p>
-            </CardContent>
-          </Card>
+              <Progress value={getCompletionPercentage()} className="h-2 bg-white/20" />
+            </div>
+          </div>
         </div>
 
-        {/* Next Milestone */}
-        {nextMilestone && (
-          <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl shadow-lg">
-            <CardContent className="p-5">
-              <div className="flex items-start space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <Target className="w-5 h-5 text-white" />
+        {/* Action Buttons for Public View */}
+        {isPublicView && (
+          <div className="p-4 bg-white border-b">
+            <div className="flex gap-3">
+              <Button
+                onClick={handleConnect}
+                className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-xl h-12"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Connect
+              </Button>
+              <Button
+                onClick={handleMessage}
+                variant="outline"
+                className="flex-1 rounded-xl h-12"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Message
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Stats Grid */}
+        <div className="p-4">
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <Card className="bg-white border-0 shadow-sm">
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-blue-100 p-2 rounded-full">
+                    <Briefcase className="h-5 w-5 text-blue-600" />
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-sm mb-1">Next Milestone</h3>
-                  <p className="text-gray-700 text-sm mb-3">{nextMilestone.message}</p>
-                  <Button 
-                    size="sm" 
-                    className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 rounded-xl font-medium shadow-md"
+                <div className="text-2xl font-bold text-gray-900">
+                  {displayData.passport?.resumes_count || 0}
+                </div>
+                <div className="text-sm text-gray-600">Resumes</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-0 shadow-sm">
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-green-100 p-2 rounded-full">
+                    <Users className="h-5 w-5 text-green-600" />
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {displayData.passport?.connections_count || 0}
+                </div>
+                <div className="text-sm text-gray-600">Connections</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-0 shadow-sm">
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-purple-100 p-2 rounded-full">
+                    <GraduationCap className="h-5 w-5 text-purple-600" />
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {displayData.passport?.certifications_count || 0}
+                </div>
+                <div className="text-sm text-gray-600">Certifications</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-0 shadow-sm">
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="bg-orange-100 p-2 rounded-full">
+                    <Target className="h-5 w-5 text-orange-600" />
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {displayData.passport?.jobs_applied_count || 0}
+                </div>
+                <div className="text-sm text-gray-600">Job Applications</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Bio Section */}
+          {displayData.profile?.bio && (
+            <Card className="bg-white border-0 shadow-sm mb-6">
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">About</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {displayData.profile.bio}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Skills Section */}
+          {displayData.profile?.skills && displayData.profile.skills.length > 0 && (
+            <Card className="bg-white border-0 shadow-sm mb-6">
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-3">Skills</h3>
+                <div className="flex flex-wrap gap-2">
+                  {displayData.profile.skills.slice(0, 8).map((skill: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="rounded-full">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Achievements Section */}
+          {displayData.achievements && displayData.achievements.length > 0 && (
+            <Card className="bg-white border-0 shadow-sm mb-6">
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-3">Recent Achievements</h3>
+                <div className="space-y-3">
+                  {displayData.achievements.slice(0, 3).map((achievement: any, index: number) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="bg-yellow-100 p-2 rounded-full shrink-0">
+                        <Trophy className="h-4 w-4 text-yellow-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          {achievement.achievement_title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {achievement.achievement_description}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          +{achievement.points_awarded} points
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Career Score */}
+          <Card className="bg-white border-0 shadow-sm mb-6">
+            <CardContent className="p-4">
+              <h3 className="font-semibold text-gray-900 mb-4">Career Scores</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">Career Readiness</span>
+                    <span className="text-sm font-bold text-primary">{getCareerReadiness()}%</span>
+                  </div>
+                  <Progress value={getCareerReadiness()} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">Market Competitiveness</span>
+                    <span className="text-sm font-bold text-primary">{displayData.passport?.market_competitiveness_score || 45}%</span>
+                  </div>
+                  <Progress value={displayData.passport?.market_competitiveness_score || 45} className="h-2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions for Owner */}
+          {displayData.isOwner && (
+            <Card className="bg-white border-0 shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-3">Quick Actions</h3>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between rounded-xl h-12"
                     onClick={() => navigate('/profile/edit')}
                   >
-                    <Zap className="w-3 h-3 mr-2" />
-                    Take Action
+                    <span>Complete Profile</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between rounded-xl h-12"
+                    onClick={() => navigate('/resume/create')}
+                  >
+                    <span>Create Resume</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between rounded-xl h-12"
+                    onClick={() => navigate('/jobs')}
+                  >
+                    <span>Find Jobs</span>
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Recent Achievements */}
-        {achievements && achievements.length > 0 && (
-          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-lg rounded-2xl">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-bold flex items-center">
-                <Trophy className="w-5 h-5 mr-2 text-yellow-500" />
-                Recent Achievements
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3">
-                {achievements.slice(0, 3).map((achievement, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50/80 rounded-xl">
-                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Trophy className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-sm truncate">
-                        {achievement.achievement_title}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        +{achievement.points_awarded} points
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-4">
-          <Button
-            className="h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 rounded-2xl font-medium shadow-lg"
-            onClick={() => navigate('/profile/edit')}
-          >
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Improve Score
-          </Button>
-          <Button
-            variant="outline"
-            className="h-14 border-2 border-gray-200 bg-white/80 hover:bg-gray-50 rounded-2xl font-medium"
-            onClick={() => navigate(`/passport/${user?.id}`)}
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            View Details
-          </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
-    </div>
+    </MobileLayout>
   );
 };
