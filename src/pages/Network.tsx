@@ -164,9 +164,6 @@ const Network = () => {
           <TabsContent value="ai-connect" className="mt-0">
             <div className="space-y-6 text-gray-900">
               <SmartConnectAI />
-              <div className="mt-8">
-                <EdgeFunctionTester />
-              </div>
             </div>
           </TabsContent>
         </Tabs>
