@@ -21,9 +21,10 @@ import { CleanJobCard } from '@/components/jobs/CleanJobCard';
 interface JobsListProps {
   jobs: any[];
   isLoading: boolean;
+  error?: any;
 }
 
-export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
+export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading, error }) => {
   const getJobStatusColor = (job: any) => {
     if (!job.is_active) return 'bg-red-100 text-red-800';
     if (job.expires_at && new Date(job.expires_at) < new Date()) return 'bg-yellow-100 text-yellow-800';
@@ -45,6 +46,20 @@ export const JobsList: React.FC<JobsListProps> = ({ jobs, isLoading }) => {
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <p className="text-red-600 mb-2">Error loading jobs</p>
+              <p className="text-sm text-gray-500">{error.message}</p>
+            </div>
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <p className="text-gray-600 mb-2">No jobs found</p>
+              <p className="text-sm text-gray-500">Try adjusting your filters or add some jobs</p>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">

@@ -18,9 +18,14 @@ const JobsManagement = () => {
     categoryFilter,
     setCategoryFilter,
     isLoading,
+    error,
     jobStats,
     filteredJobs
   } = useJobsManagement();
+
+  if (error) {
+    console.error('Jobs management error:', error);
+  }
 
   return (
     <UnifiedAdminLayout 
@@ -49,6 +54,7 @@ const JobsManagement = () => {
         <JobsList
           jobs={filteredJobs}
           isLoading={isLoading}
+          error={error}
         />
       </div>
     </UnifiedAdminLayout>

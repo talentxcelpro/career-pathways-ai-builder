@@ -8,7 +8,7 @@ export const useJobsManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  const { data: jobs, isLoading } = useQuery({
+  const { data: jobs, isLoading, error } = useQuery({
     queryKey: ['admin-jobs', searchTerm, statusFilter, categoryFilter],
     queryFn: async () => {
       let query = supabase
@@ -26,15 +26,20 @@ export const useJobsManagement = () => {
 
       if (statusFilter !== 'all') {
         if (statusFilter === 'active') {
-          query = query.eq('status', 'active');
+          // Use job_status = 'open' AND is_active = true for active jobs
+          query = query.eq('job_status', 'open').eq('is_active', true).gte('expires_at', new Date().toISOString());
         } else if (statusFilter === 'inactive') {
-          query = query.eq('status', 'expired');
+          // Use expired status OR past expiry date for inactive jobs
+          query = query.or(`status.eq.expired,expires_at.lt.${new Date().toISOString()}`);
         }
       }
 
       const { data, error } = await query;
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Jobs query error:', error);
+        throw error;
+      }
+      return data || [];
     }
   });
 
@@ -50,9 +55,11 @@ export const useJobsManagement = () => {
         { count: privateJobs }
       ] = await Promise.all([
         supabase.from('jobs').select('*', { count: 'exact', head: true }),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('jobs').select('*', { count: 'exact', head: true })
+          .eq('job_status', 'open').eq('is_active', true).gte('expires_at', new Date().toISOString()),
         supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_featured', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'expired'),
+        supabase.from('jobs').select('*', { count: 'exact', head: true })
+          .or(`status.eq.expired,expires_at.lt.${new Date().toISOString()}`),
         supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_government_job', true),
         supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_government_job', false)
       ]);
@@ -79,6 +86,7 @@ export const useJobsManagement = () => {
     setCategoryFilter,
     jobs,
     isLoading,
+    error,
     jobStats,
     filteredJobs
   };
