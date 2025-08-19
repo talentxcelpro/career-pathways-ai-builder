@@ -45,12 +45,32 @@ serve(async (req) => {
   console.log('🚀 Bulk Job Upload function called');
 
   try {
-    const { csvData, batchName } = await req.json();
+    const requestBody = await req.json();
+    console.log('📝 Request body:', requestBody);
+
+    // Handle test requests
+    if (requestBody.name === "Functions") {
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Bulk Job Upload function is working!',
+        timestamp: new Date().toISOString(),
+        expectedParams: {
+          csvData: 'CSV content as string',
+          batchName: 'Name for this batch upload'
+        }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    const { csvData, batchName } = requestBody;
 
     if (!csvData || !batchName) {
       return new Response(JSON.stringify({
         success: false,
-        error: 'Missing required parameters: csvData and batchName'
+        error: 'Missing required parameters: csvData and batchName',
+        received: Object.keys(requestBody),
+        expected: ['csvData', 'batchName']
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
