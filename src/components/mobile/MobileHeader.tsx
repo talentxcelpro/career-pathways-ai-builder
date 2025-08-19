@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { 
   Menu, 
@@ -134,12 +134,11 @@ export const MobileHeader = () => {
 
             {/* Profile */}
             <Link to="/profile">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={profile?.profile_picture_url} />
-                <AvatarFallback className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs">
-                  {getInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                src={profile?.profile_picture_url}
+                userName={profile?.full_name}
+                size="sm"
+              />
             </Link>
           </div>
         </div>

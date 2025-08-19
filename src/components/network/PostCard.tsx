@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal } from "lucide-react";
 import { Link } from 'react-router-dom';
@@ -83,12 +83,13 @@ export const PostCard: React.FC<PostCardProps> = ({
           <div className="flex items-start space-x-3">
             <Link to={`/network/people/${post.author_id}`} className="block">
               <div className="relative">
-                <Avatar className="hover:scale-105 transition-transform">
-                  <AvatarImage src={post.profiles?.profile_picture_url} />
-                  <AvatarFallback>
-                    {generateInitials(post.profiles)}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="hover:scale-105 transition-transform">
+                  <UserAvatar
+                    src={post.profiles?.profile_picture_url}
+                    userName={post.profiles?.full_name}
+                    size="lg"
+                  />
+                </div>
                 {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
                  post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (
                   <div className="absolute -top-1 -right-1">
