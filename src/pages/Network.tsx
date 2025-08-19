@@ -82,66 +82,85 @@ const Network = () => {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
-            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <MessageSquare className="w-3 h-3" />
-              <span className="hidden sm:inline">Feed</span>
+          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-4 h-10">
+            <TabsTrigger value="feed" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+              <MessageSquare className="w-4 h-4" />
+              <span>Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <Sparkles className="w-3 h-3" />
-              <span className="hidden sm:inline">Smart Feed</span>
+            <TabsTrigger value="smart-feed" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+              <Sparkles className="w-4 h-4" />
+              <span>Smart Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <Users className="w-3 h-3" />
-              <span className="hidden sm:inline">Connections</span>
+            <TabsTrigger value="connections" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+              <Users className="w-4 h-4" />
+              <span>Connections</span>
             </TabsTrigger>
-            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <UserPlus className="w-3 h-3" />
-              <span className="hidden sm:inline">Discover</span>
+            <TabsTrigger value="discover" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+              <UserPlus className="w-4 h-4" />
+              <span>Discover</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <TrendingUp className="w-3 h-3" />
-              <span className="hidden sm:inline">Analytics</span>
+            <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+              <TrendingUp className="w-4 h-4" />
+              <span>Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <Sparkles className="w-3 h-3" />
-              <span className="hidden sm:inline">AI Connect</span>
+            <TabsTrigger value="ai-connect" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-sm py-2 px-3">
+              <Sparkles className="w-4 h-4" />
+              <span>AI Connect</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="feed" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <NetworkPostsFeed />
+          <div className="grid grid-cols-12 gap-6">
+            {/* Left Sidebar */}
+            <div className="col-span-3">
+              <div className="space-y-4">
+                <NetworkStats />
+                <ConnectionSuggestions />
+              </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="smart-feed" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <NetworkPostsFeed />
+            {/* Main Content */}
+            <div className="col-span-6">
+              <TabsContent value="feed" className="mt-0">
+                <div className="space-y-6">
+                  <ProfessionalFeed />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="smart-feed" className="mt-0">
+                <div className="space-y-6">
+                  <NetworkPostsFeed />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="connections" className="mt-0">
+                <EnhancedConnections />
+              </TabsContent>
+
+              <TabsContent value="discover" className="mt-0">
+                <CareerContentHub />
+              </TabsContent>
+
+              <TabsContent value="analytics" className="mt-0">
+                <div className="space-y-6">
+                  <NetworkAnalytics />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="ai-connect" className="mt-0">
+                <div className="space-y-6">
+                  <SmartConnectAI />
+                </div>
+              </TabsContent>
             </div>
-          </TabsContent>
 
-          <TabsContent value="connections" className="mt-0">
-            <EnhancedConnections />
-          </TabsContent>
-
-          <TabsContent value="discover" className="mt-0">
-            <div className="text-gray-900">
-              <CareerContentHub />
+            {/* Right Sidebar */}
+            <div className="col-span-3">
+              <div className="space-y-4">
+                <ReferralNetworkAd />
+                <AdvertisingSidebar />
+              </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="analytics" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <NetworkAnalytics />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="ai-connect" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <SmartConnectAI />
-            </div>
-          </TabsContent>
+          </div>
         </Tabs>
       </div>
       
