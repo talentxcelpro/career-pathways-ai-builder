@@ -73,7 +73,8 @@ export const MobileReels = () => {
     queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
     queryFn: async ({ pageParam = 0 }) => {
       const limit = 10;
-      const { data, error } = await supabase
+      // First get posts with media
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select(`
           id,
@@ -90,10 +91,26 @@ export const MobileReels = () => {
         .order('created_at', { ascending: false })
         .range(pageParam * limit, (pageParam + 1) * limit - 1);
 
-      if (error) throw error;
+      if (postsError) throw postsError;
+
+      // Get unique author IDs
+      const authorIds = [...new Set((postsData || []).map(post => post.author_id))];
+      
+      // Fetch author profiles separately
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, headline, current_company')
+        .in('id', authorIds);
+
+      // No need to check error here since we already handled postsError above
+
+      // Create a map of profiles for quick lookup
+      const profilesMap = new Map(
+        (profilesData || []).map(profile => [profile.id, profile])
+      );
 
       // If no posts found, return some sample data for demo
-      if (!data || data.length === 0) {
+      if (!postsData || postsData.length === 0) {
         return [{
           id: 'sample-1',
           video_url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
@@ -121,7 +138,7 @@ export const MobileReels = () => {
         }];
       }
 
-      return (data as any[])
+      return postsData
         .filter((post: any) => {
           const media = (post.media_urls || []) as string[];
           return media.some((m) => /\.(mp4|mov|webm)$/i.test(m));
@@ -129,6 +146,8 @@ export const MobileReels = () => {
         .map((post: any) => {
           const media = (post.media_urls || []) as string[];
           const firstVideo = media.find((m) => /\.(mp4|mov|webm)$/i.test(m)) || '';
+          const profile = profilesMap.get(post.author_id);
+          
           return {
             id: post.id,
             video_url: firstVideo,
@@ -138,11 +157,11 @@ export const MobileReels = () => {
             created_at: post.created_at,
             author: {
               id: post.author_id || '',
-              first_name: 'Professional',
-              last_name: 'User',
-              avatar_url: undefined,
-              title: 'TalentXcel Member',
-              company: 'TalentXcel',
+              first_name: profile?.full_name?.split(' ')[0] || 'Professional',
+              last_name: profile?.full_name?.split(' ').slice(1).join(' ') || 'User',
+              avatar_url: profile?.profile_picture_url,
+              title: profile?.headline || 'TalentXcel Member',
+              company: profile?.current_company || 'TalentXcel',
             },
             stats: {
               likes: post.likes_count || Math.floor(Math.random() * 500) + 50,
