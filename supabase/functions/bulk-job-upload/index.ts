@@ -128,41 +128,87 @@ serve(async (req) => {
           jobData[header] = values[index] || '';
         });
 
-        // Parse skills from comma-separated string
-        const parseSkills = (skillsStr: string) => {
-          if (!skillsStr) return [];
-          return skillsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        // Helpers
+        const sanitize = (val: string | undefined) => {
+          if (!val) return '';
+          const v = val.trim();
+          return (v === '#NAME?' || v === '#N/A' || v === 'NA' || v === 'N/A') ? '' : v;
+        };
+
+        const parseList = (str: string | undefined) => {
+          if (!str) return [] as string[];
+          return str
+            .split(/[,;|]/)
+            .map(s => s.trim())
+            .filter(Boolean);
+        };
+
+        const normalizeBool = (val: any) => {
+          if (val === undefined || val === null) return false;
+          const s = String(val).toLowerCase().trim();
+          return ['true','yes','y','1'].includes(s);
+        };
+
+        const normalizeUrl = (val: string | undefined) => {
+          if (!val) return null;
+          const v = val.trim();
+          if (/^https?:\/\//i.test(v)) return v;
+          // Treat any non-URL indicator like "Direct via ..." as internal (null URL)
+          return null;
+        };
+
+        const parseDateFlexible = (str: string | undefined) => {
+          if (!str) return null;
+          const s = str.trim();
+          const m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);
+          if (m) {
+            let d = parseInt(m[1], 10);
+            let mo = parseInt(m[2], 10);
+            let y = parseInt(m[3].length === 2 ? `20${m[3]}` : m[3], 10);
+            const dt = new Date(y, mo - 1, d);
+            if (!isNaN(dt.getTime())) return dt.toISOString();
+          }
+          const dt = new Date(s);
+          return isNaN(dt.getTime()) ? null : dt.toISOString();
         };
 
         // Map CSV data to our job schema
-        const mappedJob = {
+        const salaryMin = jobData.salary_min ? parseInt(jobData.salary_min) : null;
+        const salaryMax = jobData.salary_max ? parseInt(jobData.salary_max) : null;
+        const nf = typeof Intl !== 'undefined' ? new Intl.NumberFormat('en-IN') : null;
+        const salaryRange = (salaryMin && salaryMax)
+          ? `₹${nf ? nf.format(salaryMin) : salaryMin} - ₹${nf ? nf.format(salaryMax) : salaryMax}`
+          : (salaryMin ? `₹${nf ? nf.format(salaryMin) : salaryMin}+` : 'Not disclosed');
+
+        const mappedJob: any = {
           title: jobData.title || 'Untitled Position',
           company_name: jobData.company_name || 'Company',
           location: jobData.location || 'India',
-          description: jobData.description || 'Job description not provided.',
+          description: sanitize(jobData.description) || 'Job description not provided.',
           employment_type: mapEmploymentType(jobData.employment_type),
-          experience_level: jobData.experience_level || 'mid-level',
-          salary_min: jobData.salary_min ? parseInt(jobData.salary_min) : null,
-          salary_max: jobData.salary_max ? parseInt(jobData.salary_max) : null,
-          salary_range: jobData.salary_min && jobData.salary_max 
-            ? `₹${parseInt(jobData.salary_min).toLocaleString()} - ₹${parseInt(jobData.salary_max).toLocaleString()}`
-            : jobData.salary_min
-              ? `₹${parseInt(jobData.salary_min).toLocaleString()}+`
-              : 'Not disclosed',
-          skills_required: parseSkills(jobData.skills_required || jobData.skills_keywords || ''),
-          is_remote: jobData.is_remote === 'true' || jobData.location_type === 'Remote',
-          external_url: jobData.external_url || null,
-          is_external: !!(jobData.external_url),
-          posted_at: jobData.job_posted_at || new Date().toISOString(),
-          expires_at: jobData.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          experience_level: jobData.experience_level || 'Fresher',
+          salary_min: salaryMin,
+          salary_max: salaryMax,
+          salary_currency: jobData.salary_currency || 'INR',
+          salary_range: salaryRange,
+          skills_required: parseList(jobData.skills_required || jobData.skills_keywords),
+          job_tags: parseList(jobData.job_tags),
+          benefits: parseList(jobData.benefits),
+          is_remote: normalizeBool(jobData.is_remote) || (jobData.location_type?.toLowerCase() === 'remote'),
+          external_url: normalizeUrl(jobData.external_url),
+          application_email: jobData.application_email || null,
+          application_method: jobData.application_method || null,
+          job_type_detail: jobData.job_type_detail || null,
           job_status: 'open',
           is_active: true,
-          is_featured: jobData.priority === 'true',
+          is_featured: (jobData.priority || '').toString().toLowerCase() === 'high',
+          posted_at: parseDateFlexible(jobData.job_posted_at) || new Date().toISOString(),
+          expires_at: parseDateFlexible(jobData.expires_at) || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           source: batchName,
           views_count: 0,
           applications_count: 0,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
 
         jobsToInsert.push(mappedJob);
