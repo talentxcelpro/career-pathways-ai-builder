@@ -73,8 +73,14 @@ export const BulkJobUpload = () => {
   });
 
   const handleUpload = async () => {
-    if (!csvFile || !batchName.trim()) {
-      toast.error('Please select a CSV file and enter a batch name');
+    // Inline validation with specific messages
+    if (!csvFile) {
+      toast.error('Please select a CSV file first');
+      return;
+    }
+    
+    if (!batchName.trim()) {
+      toast.error('Please enter a batch name');
       return;
     }
 
@@ -343,7 +349,7 @@ export const BulkJobUpload = () => {
               {/* Upload Button */}
               <Button 
                 onClick={handleUpload}
-                disabled={!csvFile || !batchName.trim() || isUploading}
+                disabled={isUploading}
                 className="w-full"
               >
                 {isUploading ? (
