@@ -9,6 +9,7 @@ import {
   QrCode
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import talentxcelLogo from '@/assets/talentxcel-logo.png';
 
 interface TalentXcelMobileHeaderProps {
   showSearch?: boolean;
@@ -33,9 +34,11 @@ export const TalentXcelMobileHeader: React.FC<TalentXcelMobileHeaderProps> = ({
 
         {/* Center - TalentXcel Logo */}
         <div className="flex-1 flex justify-center">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-            TalentXcel
-          </h1>
+          <img 
+            src={talentxcelLogo} 
+            alt="TalentXcel" 
+            className="h-8 w-auto"
+          />
         </div>
 
         {/* Right - Actions */}
