@@ -477,8 +477,112 @@ export function CareerPassportDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        {/* Digital ID Card - Front Side */}
+        <div className="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl p-8 border border-gray-700 shadow-2xl max-w-md mx-auto">
+          {/* Header with TalentXcel branding */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-lg font-bold text-orange-400">TalentXcel Career Passport</h1>
+              <p className="text-sm text-gray-400">🎯 Career Builder</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-400">Unique ID</p>
+              <p className="text-sm font-mono text-orange-400">{displayData.profile?.talentxcel_id || 'TXL116'}</p>
+            </div>
+          </div>
+
+          {/* Profile Section */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="relative">
+              <Avatar className="h-20 w-20 border-4 border-orange-400/30">
+                <AvatarImage src={displayData.profile?.profile_picture_url} />
+                <AvatarFallback className="bg-gray-700 text-white font-bold text-xl">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute -bottom-2 -right-2 bg-orange-400 text-black rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold">
+                2
+              </div>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-white">{displayData.profile?.full_name || 'Arshid Wani'}</h2>
+              <p className="text-orange-400 font-medium">{displayData.profile?.headline || 'Business Strategist & Growth Specialist'}</p>
+              <p className="text-gray-400 text-sm">📍 {displayData.profile?.location || 'Noida'}</p>
+            </div>
+          </div>
+
+          {/* Career Readiness Circle */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <svg className="w-24 h-24" viewBox="0 0 100 100">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  stroke="rgb(55, 65, 81)"
+                  strokeWidth="8"
+                  fill="none"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  stroke="rgb(251, 146, 60)"
+                  strokeWidth="8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 40}`}
+                  strokeDashoffset={`${2 * Math.PI * 40 * (1 - getCareerReadiness() / 100)}`}
+                  transform="rotate(-90 50 50)"
+                  className="transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-400">{getCareerReadiness()}%</div>
+                  <div className="text-xs text-gray-400">Career Ready</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Metrics */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+              <p className="text-xs text-gray-400">Market Rank</p>
+              <p className="text-lg font-bold text-white">Top 55%</p>
+              <p className="text-xs text-gray-400">vs peers</p>
+            </div>
+            <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+              <p className="text-xs text-gray-400">Competitiveness</p>
+              <p className="text-lg font-bold text-white">{getMarketCompetitiveness()}%</p>
+              <p className="text-xs text-gray-400">Score</p>
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-4 gap-2">
+            <div className="text-center bg-gray-800/30 rounded-lg p-2">
+              <p className="text-lg font-bold text-orange-400">{displayData.passport?.resumes_count || 0}</p>
+              <p className="text-xs text-gray-400">Resumes</p>
+            </div>
+            <div className="text-center bg-gray-800/30 rounded-lg p-2">
+              <p className="text-lg font-bold text-orange-400">{displayData.passport?.jobs_applied_count || 0}</p>
+              <p className="text-xs text-gray-400">Jobs Applied</p>
+            </div>
+            <div className="text-center bg-gray-800/30 rounded-lg p-2">
+              <p className="text-lg font-bold text-orange-400">{displayData.passport?.certifications_count || 0}</p>
+              <p className="text-xs text-gray-400">Certifications</p>
+            </div>
+            <div className="text-center bg-gray-800/30 rounded-lg p-2">
+              <p className="text-lg font-bold text-orange-400">{displayData.passport?.connections_count || 0}</p>
+              <p className="text-xs text-gray-400">Connections</p>
+            </div>
+          </div>
+        </div>
+
         {/* Enhanced Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -490,7 +594,7 @@ export function CareerPassportDashboard() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-3xl font-bold tracking-tight text-white">
                   {isPublicView ? `${displayData.profile?.full_name}'s Career Passport` : 'Career Passport'}
                 </h1>
                 {displayData.profile?.headline && (
