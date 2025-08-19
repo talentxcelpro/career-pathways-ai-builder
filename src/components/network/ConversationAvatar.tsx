@@ -28,7 +28,7 @@ export const ConversationAvatar: React.FC<ConversationAvatarProps> = ({
   return (
     <div className="relative">
       <Avatar className="w-12 h-12">
-        <AvatarImage src={avatar} />
+        <AvatarImage src={avatar || undefined} alt={`${name}'s profile picture`} />
         <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
           {isGroup ? <Users className="h-6 w-6" /> : generateInitials(name)}
         </AvatarFallback>
