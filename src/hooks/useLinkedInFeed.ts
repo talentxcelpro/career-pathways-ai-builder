@@ -236,13 +236,26 @@ export const useLinkedInFeed = () => {
   };
 
   const handleShare = (postId: string) => {
-    // TODO: Implement sharing
-    console.log('Share post:', postId);
+    const url = `${window.location.origin}/network/posts/${postId}`;
+    const title = 'Check out this post on TalentXcel';
+    const text = 'Sharing a post I found interesting on TalentXcel';
+
+    if (navigator.share) {
+      navigator
+        .share({ title, text, url })
+        .catch(() => {
+          // Fallback to opening a new window if user cancels or share fails
+          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+        });
+    } else {
+      // Fallback share options (LinkedIn as default)
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+    }
   };
 
   const handleComment = (postId: string) => {
-    // TODO: Implement comment modal
-    console.log('Comment on post:', postId);
+    // Navigate to the post detail page where full comments UI is implemented
+    window.location.href = `/network/posts/${postId}#comments`;
   };
 
   const handleConnect = async (userId: string) => {
