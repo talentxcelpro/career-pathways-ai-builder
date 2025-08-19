@@ -411,6 +411,36 @@ export function CareerPassportDashboard() {
 
   const displayData = getDisplayData();
 
+  // Enhanced function to generate profile picture URL - ensures EVERY user has a picture
+  const getProfilePictureUrl = () => {
+    const userUploadedImage = displayData.profile?.profile_picture_url;
+    const googleImage = user?.user_metadata?.avatar_url;
+    
+    // Priority 1: User uploaded image
+    if (userUploadedImage) return userUploadedImage;
+    
+    // Priority 2: Google profile image
+    if (googleImage) return googleImage;
+    
+    // Priority 3: Generate avatar based on user data
+    const userName = displayData.profile?.full_name || user?.user_metadata?.full_name || 'User';
+    const userEmail = user?.email || 'user@example.com';
+    
+    // Use DiceBear API for consistent, professional avatars
+    const avatarStyle = 'avataaars'; // Professional cartoon style
+    const seed = userEmail; // Use email for consistency
+    const generatedAvatar = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=3B82F6,8B5CF6,06B6D4&radius=10`;
+    
+    return generatedAvatar;
+  };
+
+  // Check if user needs to be prompted for photo
+  const needsPhotoPrompt = () => {
+    return displayData.isOwner && 
+           !displayData.profile?.profile_picture_url && 
+           !user?.user_metadata?.avatar_url;
+  };
+
   const getUserInitials = () => {
     const name = displayData.profile?.full_name;
     if (!name) return 'U';
@@ -556,10 +586,15 @@ export function CareerPassportDashboard() {
               <div className="w-20 h-20 rounded-lg bg-gray-600 border-2 border-orange-400/50 overflow-hidden">
                 <Avatar className="w-full h-full rounded-lg">
                   <AvatarImage 
-                    src={displayData.profile?.profile_picture_url || user?.user_metadata?.avatar_url} 
+                    src={getProfilePictureUrl()} 
                     className="object-cover w-full h-full"
+                    onError={(e) => {
+                      // If even the generated avatar fails, use a backup
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(getUserInitials())}&background=3B82F6&color=fff&size=128&rounded=true&bold=true`;
+                    }}
                   />
-                  <AvatarFallback className="bg-gradient-to-br from-gray-600 to-gray-700 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-lg">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-lg">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
@@ -838,8 +873,8 @@ export function CareerPassportDashboard() {
               </Card>
             </div>
 
-            {/* Profile Photo Prompt - only for owner without photos */}
-            {displayData.isOwner && !displayData.profile?.profile_picture_url && !user?.user_metadata?.avatar_url && (
+            {/* Profile Photo Prompt - only for owner without UPLOADED photos */}
+            {needsPhotoPrompt() && (
               <Card className="border-2 border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
@@ -847,9 +882,9 @@ export function CareerPassportDashboard() {
                       <div className="text-3xl">📸</div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg text-blue-900 mb-2">Add Your Professional Photo</h3>
+                      <h3 className="font-bold text-lg text-blue-900 mb-2">Upload Your Professional Photo</h3>
                       <p className="text-blue-700 text-sm mb-3">
-                        Profiles with photos get 40% more profile views and connection requests. Stand out to recruiters and network contacts.
+                        While we've generated a temporary avatar for you, uploading your own professional photo increases profile views by 40% and builds trust with recruiters.
                       </p>
                       <Button 
                         onClick={() => navigate('/profile/edit?section=photo')}
@@ -857,7 +892,7 @@ export function CareerPassportDashboard() {
                         size="sm"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Add Photo Now
+                        Upload Professional Photo
                       </Button>
                     </div>
                     <div className="text-right">
