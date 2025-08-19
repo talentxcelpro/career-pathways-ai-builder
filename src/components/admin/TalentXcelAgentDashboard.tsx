@@ -91,6 +91,7 @@ interface ModuleStats {
 }
 
 export const TalentXcelAgentDashboard: React.FC = () => {
+  console.log('🚀 TalentXcelAgentDashboard component initializing - version 2025-08-19-03:12 - USING RECORD NOT MAP');
   const [activeModule, setActiveModule] = useState('Overview');
   const [expandedAgents, setExpandedAgents] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
@@ -182,10 +183,13 @@ export const TalentXcelAgentDashboard: React.FC = () => {
   };
 
   const calculateModuleStats = (): ModuleStats[] => {
+    console.log('🔍 calculateModuleStats called');
     const statsMap: Record<string, ModuleStats> = {};
+    console.log('🔍 statsMap initialized:', typeof statsMap, statsMap);
     
     // Initialize stats for each module
     modules.forEach(module => {
+      console.log('🔍 Processing module:', module.name);
       statsMap[module.name] = {
         name: module.name,
         activeAgents: 0,
