@@ -5238,6 +5238,35 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_activities: {
         Row: {
           activity_type: string
@@ -12653,6 +12682,38 @@ export type Database = {
           },
         ]
       }
+      post_reshares: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          reshared_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          reshared_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          reshared_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reshares_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_shares: {
         Row: {
           created_at: string
@@ -12709,6 +12770,8 @@ export type Database = {
           post_type: string | null
           preview_url: string | null
           reading_time: number | null
+          reshare_count: number | null
+          reshared_from_id: string | null
           shares_count: number | null
           status: string | null
           tagline: string | null
@@ -12745,6 +12808,8 @@ export type Database = {
           post_type?: string | null
           preview_url?: string | null
           reading_time?: number | null
+          reshare_count?: number | null
+          reshared_from_id?: string | null
           shares_count?: number | null
           status?: string | null
           tagline?: string | null
@@ -12781,6 +12846,8 @@ export type Database = {
           post_type?: string | null
           preview_url?: string | null
           reading_time?: number | null
+          reshare_count?: number | null
+          reshared_from_id?: string | null
           shares_count?: number | null
           status?: string | null
           tagline?: string | null
@@ -12797,6 +12864,13 @@ export type Database = {
             columns: ["bot_id"]
             isOneToOne: false
             referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_reshared_from_id_fkey"
+            columns: ["reshared_from_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
           {
@@ -20453,6 +20527,35 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      user_bookmarks: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bookmarks_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_career_goals: {
         Row: {
