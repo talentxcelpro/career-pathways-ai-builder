@@ -4224,6 +4224,45 @@ export type Database = {
           },
         ]
       }
+      career_passport_qr: {
+        Row: {
+          created_at: string | null
+          generated_at: string | null
+          id: string
+          is_active: boolean | null
+          last_scanned_at: string | null
+          passport_url: string
+          qr_code_data: string
+          qr_code_url: string | null
+          scan_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          generated_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_scanned_at?: string | null
+          passport_url: string
+          qr_code_data: string
+          qr_code_url?: string | null
+          scan_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          generated_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_scanned_at?: string | null
+          passport_url?: string
+          qr_code_data?: string
+          qr_code_url?: string | null
+          scan_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       career_switches: {
         Row: {
           created_at: string
@@ -14202,6 +14241,7 @@ export type Database = {
           custom_logo_url: string | null
           custom_profile_url: string | null
           custom_theme: Json | null
+          custom_url_slug: string | null
           departments: string[] | null
           email: string | null
           employer_status: string | null
@@ -14287,6 +14327,7 @@ export type Database = {
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
+          custom_url_slug?: string | null
           departments?: string[] | null
           email?: string | null
           employer_status?: string | null
@@ -14372,6 +14413,7 @@ export type Database = {
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
+          custom_url_slug?: string | null
           departments?: string[] | null
           email?: string | null
           employer_status?: string | null
@@ -20546,6 +20588,42 @@ export type Database = {
           },
         ]
       }
+      user_badges: {
+        Row: {
+          badge_name: string
+          badge_type: string
+          created_at: string | null
+          description: string | null
+          earned_at: string | null
+          icon_url: string | null
+          id: string
+          points_awarded: number | null
+          user_id: string
+        }
+        Insert: {
+          badge_name: string
+          badge_type: string
+          created_at?: string | null
+          description?: string | null
+          earned_at?: string | null
+          icon_url?: string | null
+          id?: string
+          points_awarded?: number | null
+          user_id: string
+        }
+        Update: {
+          badge_name?: string
+          badge_type?: string
+          created_at?: string | null
+          description?: string | null
+          earned_at?: string | null
+          icon_url?: string | null
+          id?: string
+          points_awarded?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_behavior_analytics: {
         Row: {
           element_selector: string | null
@@ -21274,6 +21352,45 @@ export type Database = {
           notes?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_scores: {
+        Row: {
+          activity_score: number | null
+          career_readiness_score: number | null
+          created_at: string | null
+          id: string
+          last_updated: string | null
+          networking_score: number | null
+          profile_completion_score: number | null
+          skills_score: number | null
+          total_points: number | null
+          user_id: string
+        }
+        Insert: {
+          activity_score?: number | null
+          career_readiness_score?: number | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          networking_score?: number | null
+          profile_completion_score?: number | null
+          skills_score?: number | null
+          total_points?: number | null
+          user_id: string
+        }
+        Update: {
+          activity_score?: number | null
+          career_readiness_score?: number | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          networking_score?: number | null
+          profile_completion_score?: number | null
+          skills_score?: number | null
+          total_points?: number | null
           user_id?: string
         }
         Relationships: []
@@ -22106,6 +22223,10 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: number
       }
+      calculate_career_readiness_score: {
+        Args: { user_id_param: string }
+        Returns: number
+      }
       calculate_company_engagement_score: {
         Args: { company_uuid: string }
         Returns: number
@@ -22389,6 +22510,10 @@ export type Database = {
       }
       generate_username: {
         Args: { full_name_input: string; user_id_input: string }
+        Returns: string
+      }
+      generate_username_from_name: {
+        Args: { full_name: string }
         Returns: string
       }
       generate_vanity_url_suggestions: {

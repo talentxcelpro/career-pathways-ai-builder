@@ -137,10 +137,11 @@ const App = () => {
                           />
                         );
                        })}
-                       <Route path="/platform" element={<Platform />} />
-                       <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
-                       <Route path="/passport/:userId" element={<CareerPassportDashboard />} />
-                       <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
+                        <Route path="/platform" element={<Platform />} />
+                        <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
+                        <Route path="/passport/:userId" element={<CareerPassportDashboard />} />
+                        <Route path="/@:username" element={<CareerPassportDashboard />} />
+                        <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                       <Route path="/resume/new" element={<ResumeNew />} />
                       <Route path="/resume/edit/:id" element={<ResumeEdit />} />

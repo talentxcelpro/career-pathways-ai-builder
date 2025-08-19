@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useProfile } from '@/hooks/useProfile';
+import { useUserScores } from '@/hooks/useUserScores';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AuthDialog } from '@/components/auth/AuthDialog';
+import { CareerReadinessCard } from '@/components/gamification/CareerReadinessCard';
+import { UserBadges } from '@/components/gamification/UserBadges';
+import { QRCodeGenerator } from '@/components/passport/QRCodeGenerator';
 import { 
   QrCode, 
   Share2, 
@@ -47,10 +51,11 @@ interface CareerPassportData {
 }
 
 export function CareerPassportDashboard() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, username } = useParams<{ userId?: string; username?: string }>();
   const { user } = useAuth();
   const { profile } = useProfile();
   const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone, trackJourneyEvent, updateCareerPassport } = useCareerPassport();
+  const { data: userScores } = useUserScores(userId || user?.id);
   const navigate = useNavigate();
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [publicProfile, setPublicProfile] = useState<any>(null);
@@ -1224,8 +1229,19 @@ export function CareerPassportDashboard() {
             )}
           </div>
 
-          {/* Sidebar */}
+            {/* Sidebar */}
           <div className="space-y-6">
+            {/* Career Readiness Card */}
+            <CareerReadinessCard userId={userId || user?.id} />
+            
+            {/* User Badges */}
+            <UserBadges userId={userId || user?.id} />
+            
+            {/* QR Code Generator - only for owner */}
+            {displayData.isOwner && (
+              <QRCodeGenerator profileData={displayData.profile} />
+            )}
+            
             {/* Enhanced Sidebar Profile Card */}
             <Card className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 text-white border-0 shadow-xl">
               <CardHeader className="pb-4">

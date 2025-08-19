@@ -6,21 +6,21 @@
  * Generate a profile URL from username
  */
 export const getProfileUrl = (username: string): string => {
-  return `/profile/${username}`;
+  return `/@${username}`;
 };
 
 /**
  * Generate a full profile URL for sharing
  */
 export const getFullProfileUrl = (username: string): string => {
-  return `https://talentxcel.in/profile/${username}`;
+  return `https://talentxcel.in/@${username}`;
 };
 
 /**
  * Extract username from profile URL
  */
 export const getUsernameFromUrl = (url: string): string | null => {
-  const match = url.match(/\/profile\/([^\/\?#]+)/);
+  const match = url.match(/\/@([^\/\?#]+)/);
   return match ? match[1] : null;
 };
 
@@ -28,7 +28,7 @@ export const getUsernameFromUrl = (url: string): string | null => {
  * Check if a URL is a profile URL
  */
 export const isProfileUrl = (url: string): boolean => {
-  return /\/profile\/[^\/\?#]+/.test(url);
+  return /\/@[^\/\?#]+/.test(url);
 };
 
 /**

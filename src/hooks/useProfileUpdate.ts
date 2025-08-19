@@ -23,6 +23,8 @@ interface ProfileUpdateData {
   custom_profile_url?: string;
   resume_url?: string;
   work_experiences?: Array<any>;
+  username?: string;
+  custom_url_slug?: string;
 }
 
 export function useProfileUpdate() {
