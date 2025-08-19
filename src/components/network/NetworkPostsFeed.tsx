@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { NetworkPostCard } from './NetworkPostCard';
+import { RealtimeFeedUpdates } from './RealtimeFeedUpdates';
 import { useNetworkPosts } from '@/hooks/useNetworkPosts';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const NetworkPostsFeed: React.FC = () => {
   const [openComments, setOpenComments] = useState<string | null>(null);
@@ -76,15 +78,32 @@ export const NetworkPostsFeed: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Posts */}
-      {posts.map((post) => (
-        <NetworkPostCard
-          key={post.id}
-          post={post}
-          openComments={openComments}
-          onCommentClick={handleCommentClick}
-        />
-      ))}
+      {/* Real-time Feed Updates */}
+      <RealtimeFeedUpdates onRefreshFeed={refetch} />
+      
+      {/* Posts with smooth animations */}
+      <AnimatePresence mode="popLayout">
+        {posts.map((post, index) => (
+          <motion.div
+            key={post.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ 
+              duration: 0.3, 
+              delay: index * 0.05,
+              ease: "easeOut"
+            }}
+            layout
+          >
+            <NetworkPostCard
+              post={post}
+              openComments={openComments}
+              onCommentClick={handleCommentClick}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
       {/* Loading more indicator */}
       {(isFetchingNextPage || isFetching) && (
