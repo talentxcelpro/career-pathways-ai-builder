@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
+import { ReelsCommentsModal } from '@/components/mobile/ReelsCommentsModal';
 import { linkifyText } from '@/utils/textUtils';
 import { 
   Heart, 
@@ -20,7 +21,8 @@ import {
   MoreHorizontal,
   UserPlus,
   Plus,
-  RefreshCw
+  RefreshCw,
+  Send
 } from 'lucide-react';
 
 interface VideoReel {
@@ -57,6 +59,8 @@ export const MobileReels = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
+  const [selectedReelForComments, setSelectedReelForComments] = useState<VideoReel | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -272,9 +276,9 @@ export const MobileReels = () => {
     }
   };
 
-  const handleComment = (reelId: string) => {
-    // TODO: Open comments modal
-    console.log('Comment on reel:', reelId);
+  const handleComment = (reel: VideoReel) => {
+    setSelectedReelForComments(reel);
+    setShowCommentsModal(true);
   };
 
   const handleShare = (reelId: string) => {
@@ -466,7 +470,7 @@ export const MobileReels = () => {
                       variant="ghost"
                       size="icon"
                       className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                      onClick={() => handleComment(reel.id)}
+                      onClick={() => handleComment(reel)}
                     >
                       <MessageCircle className="h-6 w-6" />
                       <span className="absolute -bottom-6 text-xs">{reel.stats.comments}</span>
@@ -514,6 +518,19 @@ export const MobileReels = () => {
         onClose={() => setShowUploadModal(false)}
         onUploadSuccess={handleUploadSuccess}
       />
+
+      {/* Comments Modal */}
+      {selectedReelForComments && (
+        <ReelsCommentsModal
+          isOpen={showCommentsModal}
+          onClose={() => {
+            setShowCommentsModal(false);
+            setSelectedReelForComments(null);
+          }}
+          postId={selectedReelForComments.id}
+          postAuthor={`${selectedReelForComments.author.first_name} ${selectedReelForComments.author.last_name}`}
+        />
+      )}
     </>
   );
 };
