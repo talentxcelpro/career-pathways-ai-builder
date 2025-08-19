@@ -488,13 +488,13 @@ export function CareerPassportDashboard() {
     const userUploadedImage = displayData.profile?.profile_picture_url;
     const googleImage = user?.user_metadata?.avatar_url;
     
-    // Priority 1: User uploaded image (real data)
+    // Priority 1: User uploaded image from profile
     if (userUploadedImage) return userUploadedImage;
     
-    // Priority 2: Google profile image (real data)
+    // Priority 2: Google profile image (fallback only)
     if (googleImage) return googleImage;
     
-    // No real photo available - return null to show initials
+    // No photo available - don't show avatar at all
     return null;
   };
 
@@ -1242,12 +1242,11 @@ export function CareerPassportDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-start gap-4 mb-6">
-                  <Avatar className="h-14 w-14 border-3 border-white/30 shadow-lg">
-                    <AvatarImage src={displayData.profile?.profile_picture_url} />
-                    <AvatarFallback className="bg-white/20 text-white font-bold text-lg">
-                      {getUserInitials()}
-                    </AvatarFallback>
-                  </Avatar>
+                  {getProfilePictureUrl() && (
+                    <Avatar className="h-14 w-14 border-3 border-white/30 shadow-lg">
+                      <AvatarImage src={getProfilePictureUrl()} />
+                    </Avatar>
+                  )}
                   <div className="flex-1">
                     <h3 className="font-bold text-xl mb-1">
                       {isPublicView 
