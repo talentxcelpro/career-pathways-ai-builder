@@ -108,6 +108,27 @@ serve(async (req) => {
       expires_at: index('expires_at')
     };
 
+    // Normalize employment type to allowed values with sensible default
+    const mapEmploymentType = (type?: string) => {
+      const t = (type || '').toLowerCase().trim();
+      const map: Record<string, string> = {
+        'full-time': 'Full-time',
+        'full_time': 'Full-time',
+        'full time': 'Full-time',
+        'permanent': 'Full-time',
+        'part-time': 'Part-time',
+        'part_time': 'Part-time',
+        'part time': 'Part-time',
+        'contract': 'Contract',
+        'freelance': 'Freelance',
+        'internship': 'Internship',
+        'temporary': 'Temporary',
+        'remote': 'Remote',
+        'hybrid': 'Hybrid',
+      };
+      return map[t] || 'Full-time';
+    };
+
     const sanitize = (val?: string) => {
       if (!val) return '';
       const v = val.trim();
@@ -171,19 +192,21 @@ serve(async (req) => {
           ? `₹${nf ? nf.format(salaryMin) : salaryMin} - ₹${nf ? nf.format(salaryMax) : salaryMax}`
           : (salaryMin ? `₹${nf ? nf.format(salaryMin) : salaryMin}+` : 'Not disclosed');
 
-        const employment = sanitize(get(idx.employment_type));
+        const employmentRaw = sanitize(get(idx.employment_type));
+        const isRemoteFlag = normalizeBool(get(idx.is_remote)) || (sanitize(get(idx.location_type)).toLowerCase() === 'remote');
         const mapped: any = {
           title: sanitize(get(idx.title)) || 'Untitled Position',
           company_name: sanitize(get(idx.company_name)) || 'Company',
-          location: sanitize(get(idx.location)) || 'India',
+          location: sanitize(get(idx.location)) || (isRemoteFlag ? 'Remote' : 'India'),
           description: sanitize(get(idx.description)) || 'Job description not provided.',
-          employment_type: employment || 'Full-time',
+          employment_type: mapEmploymentType(employmentRaw),
           experience_level: sanitize(get(idx.experience_level)) || 'Fresher',
           salary_min: salaryMin,
           salary_max: salaryMax,
+          salary_currency: sanitize(get(idx.salary_currency)) || 'INR',
           salary_range: salaryRange,
           skills_required: parseList(sanitize(get(idx.skills_required)) || sanitize(get(idx.skills_keywords))),
-          is_remote: normalizeBool(get(idx.is_remote)) || (sanitize(get(idx.location_type)).toLowerCase() === 'remote'),
+          is_remote: isRemoteFlag,
           external_url: normalizeUrl(get(idx.external_url)),
           posted_at: parseDateFlexible(get(idx.job_posted_at)) || nowIso,
           expires_at: parseDateFlexible(get(idx.expires_at)) || defaultExpiry,
@@ -196,7 +219,6 @@ serve(async (req) => {
           created_at: nowIso,
           updated_at: nowIso
         };
-
         jobs.push(mapped);
       } catch (e) {
         rowErrors.push({ row: r, error: (e as Error).message });
