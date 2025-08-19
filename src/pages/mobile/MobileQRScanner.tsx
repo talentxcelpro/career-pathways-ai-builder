@@ -45,10 +45,12 @@ export const MobileQRScanner: React.FC = () => {
 
     setIsGenerating(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch('https://dthlgsnakhoftinssokm.functions.supabase.co/functions/v1/qr-generator', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify({
           userId: user.id,
@@ -128,8 +130,33 @@ export const MobileQRScanner: React.FC = () => {
     try {
       setIsScanning(true);
       
+      // Check for camera permissions first
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast.error('Camera not supported on this device');
+        setIsScanning(false);
+        return;
+      }
+
+      // Request camera permission
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (permError) {
+        console.error('Camera permission denied:', permError);
+        toast.error('Camera permission denied. Please allow camera access and try again.');
+        setIsScanning(false);
+        return;
+      }
+      
       if (!videoRef.current) {
         toast.error('Camera initialization failed');
+        setIsScanning(false);
+        return;
+      }
+
+      // Check if QR Scanner is supported
+      if (!QrScanner.hasCamera()) {
+        toast.error('No camera found on this device');
+        setIsScanning(false);
         return;
       }
 
@@ -144,6 +171,7 @@ export const MobileQRScanner: React.FC = () => {
           returnDetailedScanResult: true,
           highlightScanRegion: true,
           highlightCodeOutline: true,
+          preferredCamera: 'environment', // Use back camera on mobile
         }
       );
 
