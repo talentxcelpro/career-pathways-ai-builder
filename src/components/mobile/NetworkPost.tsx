@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PostComments } from './PostComments';
 import { 
@@ -47,6 +48,7 @@ interface NetworkPostProps {
 export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likes, setLikes] = useState(post.interactions.interested);
@@ -148,17 +150,49 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
     });
   };
 
-  const handleApplyNow = () => {
+  const handleApplyNow = async () => {
     if (post.type === 'job') {
-      window.location.href = `/jobs/${post.id}`;
+      try {
+        // Track application intent
+        const { error } = await supabase
+          .from('job_applications')
+          .insert([{
+            job_id: post.id,
+            user_id: user?.id,
+            status: 'interested'
+          }]);
+
+        if (error && !error.message.includes('duplicate')) {
+          console.error('Error tracking application:', error);
+        }
+
+        // Navigate to job details for application
+        navigate(`/jobs/${post.id}`);
+        
+        toast({
+          title: "Redirecting to apply",
+          description: "Opening job application page...",
+        });
+      } catch (error) {
+        console.error('Error during application:', error);
+        navigate(`/jobs/${post.id}`);
+      }
     }
   };
 
   const handleViewDetails = () => {
     if (post.type === 'job') {
-      window.location.href = `/jobs/${post.id}`;
+      navigate(`/jobs/${post.id}`);
+      toast({
+        title: "Loading job details",
+        description: "Opening detailed job information...",
+      });
     } else {
-      window.location.href = `/posts/${post.id}`;
+      navigate(`/network/posts/${post.id}`);
+      toast({
+        title: "Loading post details",
+        description: "Opening full post view...",
+      });
     }
   };
 
