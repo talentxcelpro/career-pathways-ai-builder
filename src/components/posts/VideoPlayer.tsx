@@ -7,9 +7,10 @@ interface VideoPlayerProps {
   url: string;
   className?: string;
   isMessage?: boolean;
+  fit?: 'cover' | 'contain';
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessage = false }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessage = false, fit = 'cover' }) => {
   console.log('VideoPlayer: Initializing with URL:', url);
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -42,18 +43,34 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
               .getPublicUrl(filePath);
             
             console.log('VideoPlayer: Generated public URL:', data.publicUrl);
-            setVideoSrc(data.publicUrl);
+            const publicUrl = (data.publicUrl || '').replace(
+              'https://dthlgsnakhoftinssokm.supabase.co',
+              'https://auth.talentxcel.in'
+            );
+            setVideoSrc(publicUrl);
           } else {
             console.log('VideoPlayer: Using original URL as-is');
-            setVideoSrc(url);
+            const processedUrl = url.replace(
+              'https://dthlgsnakhoftinssokm.supabase.co',
+              'https://auth.talentxcel.in'
+            );
+            setVideoSrc(processedUrl);
           }
         } catch (error) {
           console.error('VideoPlayer: Error processing Supabase URL:', error);
-          setVideoSrc(url); // Fallback to original URL
+          const processedUrl = url.replace(
+            'https://dthlgsnakhoftinssokm.supabase.co',
+            'https://auth.talentxcel.in'
+          );
+          setVideoSrc(processedUrl); // Fallback to original URL
         }
       } else {
         console.log('VideoPlayer: Using URL directly');
-        setVideoSrc(url);
+        const processedUrl = url.replace(
+          'https://dthlgsnakhoftinssokm.supabase.co',
+          'https://auth.talentxcel.in'
+        );
+        setVideoSrc(processedUrl);
       }
     };
 
@@ -147,7 +164,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
         <video
           ref={videoRef}
           src={videoSrc}
-          className="w-full h-full object-cover"
+          className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
           muted={isMuted}
           playsInline
           preload="metadata"

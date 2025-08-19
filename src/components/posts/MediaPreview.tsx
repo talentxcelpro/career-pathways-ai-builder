@@ -128,6 +128,10 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
             return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
           };
           
+          const itemClass = isVideo
+            ? `w-full aspect-video rounded-lg bg-black`
+            : `w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`;
+          
           return (
             <div key={index} className="relative">
               {isYouTube ? (
@@ -140,12 +144,16 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                   title={`YouTube Video ${index + 1}`}
                 />
               ) : (
-                <MediaItem
-                  mediaUrl={url}
-                  isVideo={isVideo}
-                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg${isVideo ? ' cursor-pointer' : ''}`}
-                  index={index}
-                />
+                isVideo ? (
+                  <VideoPlayer url={url} className={itemClass} fit="contain" />
+                ) : (
+                  <MediaItem
+                    mediaUrl={url}
+                    isVideo={false}
+                    className={itemClass}
+                    index={index}
+                  />
+                )
               )}
               {index === 3 && mediaItems.length > 4 && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
