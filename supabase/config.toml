@@ -69,3 +69,7 @@ verify_jwt = false
 
 [functions.content_queue_processor]
 verify_jwt = false
+
+# Job import functions
+[functions.adzuna-job-importer]
+verify_jwt = false
