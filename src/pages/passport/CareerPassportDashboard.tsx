@@ -507,7 +507,7 @@ export function CareerPassportDashboard() {
               <div className="w-20 h-20 rounded-full bg-gray-600 border-4 border-orange-400/30 flex items-center justify-center">
                 <Avatar className="w-full h-full">
                   <AvatarImage 
-                    src={user?.user_metadata?.avatar_url || displayData.profile?.profile_picture_url} 
+                    src={displayData.profile?.profile_picture_url || user?.user_metadata?.avatar_url} 
                     className="object-cover w-full h-full rounded-full"
                   />
                   <AvatarFallback className="bg-gray-600 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-full">
@@ -515,6 +515,12 @@ export function CareerPassportDashboard() {
                   </AvatarFallback>
                 </Avatar>
               </div>
+              {/* Add Photo Prompt */}
+              {displayData.isOwner && !displayData.profile?.profile_picture_url && !user?.user_metadata?.avatar_url && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold animate-pulse">
+                  !
+                </div>
+              )}
               <div className="absolute -bottom-1 -right-1 bg-orange-400 text-black rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
                 2
               </div>
@@ -764,6 +770,38 @@ export function CareerPassportDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Profile Photo Prompt - only for owner without photos */}
+            {displayData.isOwner && !displayData.profile?.profile_picture_url && !user?.user_metadata?.avatar_url && (
+              <Card className="border-2 border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                      <div className="text-3xl">📸</div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg text-blue-900 mb-2">Add Your Professional Photo</h3>
+                      <p className="text-blue-700 text-sm mb-3">
+                        Profiles with photos get 40% more profile views and connection requests. Stand out to recruiters and network contacts.
+                      </p>
+                      <Button 
+                        onClick={() => navigate('/profile/edit?section=photo')}
+                        className="bg-blue-600 hover:bg-blue-700"
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Photo Now
+                      </Button>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
+                        +40% Views
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Enhanced AI Career Coach - only for owner */}
             {displayData.isOwner && (
