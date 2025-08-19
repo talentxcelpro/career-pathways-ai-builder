@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
+import { linkifyText } from '@/utils/textUtils';
 import { 
   Heart, 
   MessageCircle, 
@@ -16,7 +18,9 @@ import {
   Volume2,
   VolumeX,
   MoreHorizontal,
-  UserPlus
+  UserPlus,
+  Plus,
+  RefreshCw
 } from 'lucide-react';
 
 interface VideoReel {
@@ -52,12 +56,23 @@ export const MobileReels = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Fetch real video reels from Supabase posts with media
-  const { data: reels = [], isLoading } = useQuery({
-    queryKey: ['mobile-reels', user?.id],
-    queryFn: async () => {
+  // Enhanced infinite scrolling reels fetch
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
+    queryFn: async ({ pageParam = 0 }) => {
+      const limit = 10;
       const { data, error } = await supabase
         .from('posts')
         .select(`
@@ -66,6 +81,10 @@ export const MobileReels = () => {
           created_at,
           media_urls,
           author_id,
+          likes_count,
+          comments_count,
+          shares_count,
+          tags,
           profiles!posts_author_id_fkey(
             id,
             full_name,
@@ -75,8 +94,9 @@ export const MobileReels = () => {
           )
         `)
         .not('media_urls', 'is', null)
+        .eq('post_type', 'video')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .range(pageParam * limit, (pageParam + 1) * limit - 1);
 
       if (error) throw error;
 
@@ -92,31 +112,38 @@ export const MobileReels = () => {
             id: post.id,
             video_url: firstVideo,
             thumbnail_url: undefined,
-            title: (post.content || '').split('\n')[0] || 'Career Video',
+            title: (post.content || '').split('\n')[0] || 'Professional Reel',
             description: post.content,
             created_at: post.created_at,
             author: {
               id: post.profiles?.id || post.author_id || '',
-              first_name: post.profiles?.full_name?.split(' ')[0] || 'Anonymous',
+              first_name: post.profiles?.full_name?.split(' ')[0] || 'Professional',
               last_name: post.profiles?.full_name?.split(' ').slice(1).join(' ') || 'User',
               avatar_url: post.profiles?.profile_picture_url,
               title: post.profiles?.headline,
               company: post.profiles?.current_company,
             },
             stats: {
-              likes: Math.floor(Math.random() * 500) + 50,
-              comments: Math.floor(Math.random() * 100) + 10,
-              shares: Math.floor(Math.random() * 50) + 5,
+              likes: post.likes_count || Math.floor(Math.random() * 500) + 50,
+              comments: post.comments_count || Math.floor(Math.random() * 100) + 10,
+              shares: post.shares_count || Math.floor(Math.random() * 50) + 5,
               views: Math.floor(Math.random() * 10000) + 500,
             },
-            tags: extractHashtags(post.content || ''),
+            tags: post.tags || extractHashtags(post.content || ''),
             is_liked: false,
             is_bookmarked: false,
           } as VideoReel;
         });
     },
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.length === 10 ? pages.length : undefined;
+    },
+    initialPageParam: 0,
     enabled: !!user
   });
+
+  // Flatten all pages into single array
+  const reels = data?.pages.flat() || [];
 
   const extractHashtags = (content: string): string[] => {
     const hashtags = content.match(/#[a-zA-Z0-9_]+/g) || [];
@@ -135,8 +162,8 @@ export const MobileReels = () => {
     }
   }, [currentVideoIndex, isPlaying]);
 
-  // Handle scroll to change video
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  // Enhanced scroll handling with infinite loading
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
     const scrollTop = container.scrollTop;
     const itemHeight = container.clientHeight;
@@ -145,7 +172,16 @@ export const MobileReels = () => {
     if (newIndex !== currentVideoIndex && newIndex < reels.length) {
       setCurrentVideoIndex(newIndex);
     }
-  };
+
+    // Load more when near the end
+    if (
+      hasNextPage &&
+      !isFetchingNextPage &&
+      scrollTop + container.clientHeight >= container.scrollHeight - 1000
+    ) {
+      fetchNextPage();
+    }
+  }, [currentVideoIndex, reels.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -226,186 +262,218 @@ export const MobileReels = () => {
     console.log('Connect with:', authorId);
   };
 
+  const handleUploadSuccess = () => {
+    setRefreshTrigger(prev => prev + 1);
+    toast({
+      title: "Success!",
+      description: "Your reel has been uploaded and will appear in the feed",
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white text-sm">Loading reels...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-black overflow-hidden">
-      <div 
-        className="h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
-        onScroll={handleScroll}
-      >
-        {reels.map((reel, index) => (
-          <div 
-            key={reel.id} 
-            className="h-screen w-full relative snap-start flex items-center justify-center"
-          >
-            {/* Video */}
-            <video
-              ref={el => videoRefs.current[index] = el}
-              className="w-full h-full object-cover"
-              src={reel.video_url}
-              poster={reel.thumbnail_url}
-              loop
-              autoPlay
-              muted={isMuted}
-              playsInline
-              preload="metadata"
-              onLoadStart={() => console.log('Video loading started:', reel.video_url)}
-              onCanPlay={() => console.log('Video can play:', reel.video_url)}
-              onError={(e) => console.error('Video error:', e, reel.video_url)}
-              onClick={togglePlayPause}
-            />
+    <>
+      <div className="h-screen bg-black overflow-hidden relative">
+        <div 
+          ref={containerRef}
+          className="h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
+          onScroll={handleScroll}
+        >
+          {reels.map((reel, index) => (
+            <div 
+              key={reel.id} 
+              className="h-screen w-full relative snap-start flex items-center justify-center"
+            >
+              {/* Video */}
+              <video
+                ref={el => videoRefs.current[index] = el}
+                className="w-full h-full object-cover"
+                src={reel.video_url}
+                poster={reel.thumbnail_url}
+                loop
+                autoPlay
+                muted={isMuted}
+                playsInline
+                preload="metadata"
+                onLoadStart={() => console.log('Video loading started:', reel.video_url)}
+                onCanPlay={() => console.log('Video can play:', reel.video_url)}
+                onError={(e) => console.error('Video error:', e, reel.video_url)}
+                onClick={togglePlayPause}
+              />
 
-            {/* Play/Pause Overlay */}
-            {!isPlaying && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-16 w-16 rounded-full bg-black/30 hover:bg-black/50 text-white"
-                  onClick={togglePlayPause}
-                >
-                  <Play className="h-8 w-8" />
-                </Button>
-              </div>
-            )}
-
-            {/* Top Controls */}
-            <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/50 to-transparent">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-semibold text-lg">Reels</span>
-                </div>
-                <div className="flex gap-2">
+              {/* Play/Pause Overlay */}
+              {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-                    onClick={toggleMute}
+                    className="h-16 w-16 rounded-full bg-black/30 hover:bg-black/50 text-white"
+                    onClick={togglePlayPause}
                   >
-                    {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-                  >
-                    <MoreHorizontal className="h-5 w-5" />
+                    <Play className="h-8 w-8" />
                   </Button>
                 </div>
-              </div>
-            </div>
+              )}
 
-            {/* Bottom Content */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-              <div className="flex justify-between items-end">
-                {/* Left side - Content */}
-                <div className="flex-1 pr-4">
-                  {/* Author */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="h-10 w-10 ring-2 ring-white">
-                      <AvatarImage src={reel.author.avatar_url} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                        {reel.author.first_name[0]}{reel.author.last_name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="text-white font-semibold">
-                        {reel.author.first_name} {reel.author.last_name}
-                      </p>
-                      {reel.author.title && (
-                        <p className="text-gray-300 text-sm">
-                          {reel.author.title} {reel.author.company && `at ${reel.author.company}`}
-                        </p>
-                      )}
-                    </div>
+              {/* Top Controls with Upload Button */}
+              <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/50 to-transparent">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold text-lg">Reels</span>
+                    <Badge className="bg-purple-600 text-white text-xs">
+                      {currentVideoIndex + 1}/{reels.length}
+                    </Badge>
+                  </div>
+                  <div className="flex gap-2">
                     <Button
-                      size="sm"
-                      className="rounded-full bg-white text-black hover:bg-gray-200 px-4"
-                      onClick={() => handleConnect(reel.author.id)}
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                      onClick={() => setShowUploadModal(true)}
                     >
-                      <UserPlus className="h-3 w-3 mr-1" />
-                      Connect
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                      onClick={toggleMute}
+                    >
+                      {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
                     </Button>
                   </div>
-
-                  {/* Description */}
-                  <p className="text-white text-sm mb-2 line-clamp-2">
-                    {reel.description}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {reel.tags.slice(0, 3).map((tag, tagIndex) => (
-                      <Badge key={tagIndex} className="bg-white/20 text-white text-xs rounded-full">
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 text-white text-sm">
-                    <span>{reel.stats.views.toLocaleString()} views</span>
-                    <span>{reel.stats.likes} likes</span>
-                    <span>{reel.stats.comments} comments</span>
-                  </div>
                 </div>
+              </div>
 
-                {/* Right side - Actions */}
-                <div className="flex flex-col gap-4 items-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                    onClick={() => handleLike(reel.id)}
-                  >
-                    <Heart className={`h-6 w-6 ${reel.is_liked ? 'fill-red-500 text-red-500' : ''}`} />
-                    <span className="absolute -bottom-6 text-xs">{reel.stats.likes}</span>
-                  </Button>
+              {/* Bottom Content */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                <div className="flex justify-between items-end">
+                  {/* Left side - Content */}
+                  <div className="flex-1 pr-4">
+                    {/* Author */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <Avatar className="h-10 w-10 ring-2 ring-white">
+                        <AvatarImage src={reel.author.avatar_url} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                          {reel.author.first_name[0]}{reel.author.last_name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-white font-semibold">
+                          {reel.author.first_name} {reel.author.last_name}
+                        </p>
+                        {reel.author.title && (
+                          <p className="text-gray-300 text-sm">
+                            {reel.author.title} {reel.author.company && `at ${reel.author.company}`}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        className="rounded-full bg-white text-black hover:bg-gray-200 px-4"
+                        onClick={() => handleConnect(reel.author.id)}
+                      >
+                        <UserPlus className="h-3 w-3 mr-1" />
+                        Connect
+                      </Button>
+                    </div>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                    onClick={() => handleComment(reel.id)}
-                  >
-                    <MessageCircle className="h-6 w-6" />
-                    <span className="absolute -bottom-6 text-xs">{reel.stats.comments}</span>
-                  </Button>
+                    {/* Description with enhanced linking */}
+                    <div className="text-white text-sm mb-2 line-clamp-3 whitespace-pre-wrap">
+                      {linkifyText(reel.description || '')}
+                    </div>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                    onClick={() => handleShare(reel.id)}
-                  >
-                    <Share className="h-6 w-6" />
-                    <span className="absolute -bottom-6 text-xs">{reel.stats.shares}</span>
-                  </Button>
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {reel.tags.slice(0, 3).map((tag, tagIndex) => (
+                        <Badge key={tagIndex} className="bg-white/20 text-white text-xs rounded-full">
+                          #{tag}
+                        </Badge>
+                      ))}
+                    </div>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-                    onClick={() => {
-                      // Handle bookmark functionality
-                      console.log('Bookmark reel:', reel.id);
-                    }}
-                  >
-                    <Bookmark className={`h-6 w-6 ${reel.is_bookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-                  </Button>
+                    {/* Stats */}
+                    <div className="flex items-center gap-4 text-white text-sm">
+                      <span>{reel.stats.views.toLocaleString()} views</span>
+                      <span>{reel.stats.likes} likes</span>
+                      <span>{reel.stats.comments} comments</span>
+                    </div>
+                  </div>
+
+                  {/* Right side - Actions */}
+                  <div className="flex flex-col gap-4 items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
+                      onClick={() => handleLike(reel.id)}
+                    >
+                      <Heart className={`h-6 w-6 ${reel.is_liked ? 'fill-red-500 text-red-500' : ''}`} />
+                      <span className="absolute -bottom-6 text-xs">{reel.stats.likes}</span>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
+                      onClick={() => handleComment(reel.id)}
+                    >
+                      <MessageCircle className="h-6 w-6" />
+                      <span className="absolute -bottom-6 text-xs">{reel.stats.comments}</span>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
+                      onClick={() => handleShare(reel.id)}
+                    >
+                      <Share className="h-6 w-6" />
+                      <span className="absolute -bottom-6 text-xs">{reel.stats.shares}</span>
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
+                      onClick={() => console.log('Bookmark reel:', reel.id)}
+                    >
+                      <Bookmark className={`h-6 w-6 ${reel.is_bookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+
+          {/* Loading indicator for infinite scroll */}
+          {isFetchingNextPage && (
+            <div className="h-screen w-full flex items-center justify-center bg-black">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+                <p className="text-white text-sm">Loading more reels...</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+      
+      {/* Upload Modal */}
+      <ReelsUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUploadSuccess={handleUploadSuccess}
+      />
+    </>
   );
 };
