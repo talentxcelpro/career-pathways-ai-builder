@@ -284,87 +284,137 @@ export const MobileCareerPassport: React.FC = () => {
 
   return (
     <MobileLayout>
-      <div className="min-h-screen bg-gray-50">
-        {/* Hero Profile Card */}
-        <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent" />
-          <div className="relative p-6 pb-8">
-            {/* Header Actions */}
-            <div className="flex justify-end mb-4">
-              <div className="flex gap-2">
+      <div className="min-h-screen bg-gray-900">
+        {/* TalentXcel Career Passport Card - Exact Screenshot Match */}
+        <div className="p-4">
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl shadow-2xl p-6 text-white relative overflow-hidden border border-gray-700">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl" />
+            <div className="absolute top-6 right-6 w-24 h-20 border-2 border-cyan-400 rounded-2xl opacity-30" />
+            
+            {/* Header */}
+            <div className="relative z-10">
+              <h1 className="text-2xl font-bold text-white mb-6 tracking-wide">
+                TALENTXCEL<br />CAREER PASSPORT
+              </h1>
+              
+              {/* Profile and ID Section */}
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Avatar className="h-24 w-24 border-4 border-gray-600 rounded-2xl">
+                      <AvatarImage 
+                        src={displayData.profile?.profile_picture_url || "/lovable-uploads/9a5eeb96-071c-4cf6-b3fb-bcfcc50be229.png"} 
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-gray-700 text-white text-2xl font-bold rounded-2xl">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  
+                  {/* Career Ready Circle */}
+                  <div className="flex flex-col items-center">
+                    <div className="relative w-20 h-20 flex items-center justify-center">
+                      <div className="absolute inset-0 rounded-full border-4 border-cyan-400" />
+                      <div className="text-center">
+                        <div className="text-cyan-400 text-xs font-medium">CAREER</div>
+                        <div className="text-white text-2xl font-bold">65%</div>
+                        <div className="text-cyan-400 text-xs font-medium">READY</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* TXL116 Badge */}
+                <div className="flex flex-col items-end">
+                  <div className="bg-gray-800 border-2 border-cyan-400 rounded-lg px-3 py-2 mb-2">
+                    <div className="text-cyan-400 text-sm font-bold">TXL116</div>
+                  </div>
+                  <div className="bg-cyan-400/20 border border-cyan-400 rounded-lg p-2">
+                    <Target className="h-6 w-6 text-cyan-400" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Name and Details */}
+              <div className="mb-6">
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  {getDisplayName() || "Arshid Wani"}
+                </h2>
+                <p className="text-gray-300 text-lg mb-2">
+                  {displayData.profile?.headline || "Business Strategist & Growth Specialist"}
+                </p>
+                <div className="flex items-center gap-1 text-gray-300">
+                  <MapPin className="h-4 w-4" />
+                  <span>{displayData.profile?.location || "Noida"}</span>
+                </div>
+              </div>
+              
+              {/* Performance Metrics */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                  <div className="text-cyan-400 text-lg font-bold">TOP 55%</div>
+                  <div className="text-gray-300 text-sm">vs peers</div>
+                </div>
+                <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                  <div className="text-cyan-400 text-xs font-medium">COMPETITIVENESS</div>
+                  <div className="text-white text-3xl font-bold">45%</div>
+                </div>
+              </div>
+              
+              {/* Bottom Stats */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="bg-gray-800/30 p-3 rounded-lg mb-2 border border-gray-700">
+                    <Briefcase className="h-8 w-8 text-gray-400 mx-auto" />
+                  </div>
+                  <div className="text-white text-2xl font-bold">0</div>
+                  <div className="text-gray-400 text-xs">Resumes</div>
+                </div>
+                <div className="text-center">
+                  <div className="bg-gray-800/30 p-3 rounded-lg mb-2 border border-gray-700">
+                    <Target className="h-8 w-8 text-gray-400 mx-auto" />
+                  </div>
+                  <div className="text-white text-2xl font-bold">0</div>
+                  <div className="text-gray-400 text-xs">Jobs</div>
+                </div>
+                <div className="text-center">
+                  <div className="bg-gray-800/30 p-3 rounded-lg mb-2 border border-gray-700">
+                    <GraduationCap className="h-8 w-8 text-gray-400 mx-auto" />
+                  </div>
+                  <div className="text-white text-2xl font-bold">0</div>
+                  <div className="text-gray-400 text-xs">Certificat-<br />ions</div>
+                </div>
+                <div className="text-center">
+                  <div className="bg-gray-800/30 p-3 rounded-lg mb-2 border border-gray-700">
+                    <Users className="h-8 w-8 text-gray-400 mx-auto" />
+                  </div>
+                  <div className="text-white text-2xl font-bold">0</div>
+                  <div className="text-gray-400 text-xs">Connections</div>
+                </div>
+              </div>
+              
+              {/* Action buttons */}
+              <div className="flex gap-3 mt-6">
                 <Button
-                  variant="ghost"
-                  size="icon"
                   onClick={handleShare}
-                  className="text-white hover:bg-white/20 rounded-full"
+                  className="flex-1 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-semibold rounded-xl"
                 >
-                  <Share2 className="h-5 w-5" />
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
                 </Button>
                 {displayData.isOwner && (
                   <Button
-                    variant="ghost"
-                    size="icon"
                     onClick={handleGenerateQR}
-                    className="text-white hover:bg-white/20 rounded-full"
+                    variant="outline"
+                    className="flex-1 border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 rounded-xl"
                   >
-                    <QrCode className="h-5 w-5" />
+                    <QrCode className="h-4 w-4 mr-2" />
+                    QR Code
                   </Button>
                 )}
               </div>
-            </div>
-
-            {/* Profile Info */}
-            <div className="flex items-start gap-4 mb-6">
-              <Avatar className="h-20 w-20 border-4 border-white/30">
-                <AvatarImage src={displayData.profile?.profile_picture_url} />
-                <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold mb-1">
-                  {getDisplayName()}
-                </h1>
-                {displayData.profile?.current_position && (
-                  <p className="text-white/90 text-lg mb-1">
-                    {displayData.profile.current_position}
-                  </p>
-                )}
-                {displayData.profile?.current_company && (
-                  <p className="text-white/80 flex items-center gap-1 mb-2">
-                    <Building className="h-4 w-4" />
-                    {displayData.profile.current_company}
-                  </p>
-                )}
-                {displayData.profile?.location && (
-                  <p className="text-white/80 flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {displayData.profile.location}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* TalentXcel ID & Badge */}
-            <div className="flex items-center justify-between mb-4">
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                <Award className="h-3 w-3 mr-1" />
-                TXL{displayData.profile?.talentxcel_id?.slice(-3) || '001'}
-              </Badge>
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                {getCompletionPercentage() >= 90 ? '🏆 Career Expert' : 
-                 getCompletionPercentage() >= 70 ? '⭐ Skill Master' : 
-                 getCompletionPercentage() >= 50 ? '🎯 Career Builder' : '🌱 Getting Started'}
-              </Badge>
-            </div>
-
-            {/* Career Readiness */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-white/90 font-medium">Career Readiness</span>
-                <span className="text-white font-bold">{getCompletionPercentage()}%</span>
-              </div>
-              <Progress value={getCompletionPercentage()} className="h-2 bg-white/20" />
             </div>
           </div>
         </div>
