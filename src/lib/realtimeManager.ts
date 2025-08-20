@@ -68,48 +68,51 @@ class RealtimeManager {
       this.callbacks.add(callback);
     }
 
+    // Create a single shared channel for all Postgres changes (more reliable)
+    const sharedChannelName = 'public:postgres-changes';
+    console.log(`🔗 Creating shared channel: ${sharedChannelName}`);
+    
+    const sharedChannel = supabase.channel(sharedChannelName);
+    
+    // Attach listeners for each table on the shared channel
     TABLES_TO_WATCH.forEach((table) => {
-      const channelName = `realtime:${table}`;
-      console.log(`🔗 Creating channel: ${channelName}`);
-      
-      const channel = supabase
-        .channel(channelName)
-        .on(
-          'postgres_changes',
-          { 
-            event: '*', 
-            schema: 'public', 
-            table 
-          },
-          (payload) => {
-            const realtimePayload: RealtimePayload = {
-              eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
-              new: payload.new || {},
-              old: payload.old || {},
-              table,
-              schema: payload.schema
-            };
-
-            this._handleIncomingEvent(table, realtimePayload, false);
-          }
-        )
-        .subscribe((status) => {
-          console.log(`📡 ${table} realtime status:`, status);
-          // Track channel status using human-readable constants
-          this.channelStatuses.set(table, status);
-          if (status === 'CHANNEL_ERROR') {
-            console.error(`❌ ${table} realtime channel error - check if table is in supabase_realtime publication`);
-          }
-          if (status === 'TIMED_OUT') {
-            console.error(`⏰ ${table} realtime subscription timed out`);
-          }
-          if (status === 'CLOSED') {
-            console.warn(`🔒 ${table} realtime channel closed`);
-          }
-        });
-
-      this.channels.set(channelName, channel);
+      console.log(`📥 Subscribing to table: ${table}`);
+      sharedChannel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table
+        },
+        (payload) => {
+          const realtimePayload: RealtimePayload = {
+            eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+            new: payload.new || {},
+            old: payload.old || {},
+            table,
+            schema: payload.schema
+          };
+          this._handleIncomingEvent(table, realtimePayload, false);
+        }
+      );
     });
+
+    // Subscribe once and mirror status to all tables
+    sharedChannel.subscribe((status, err) => {
+      console.log(`📡 Shared realtime status:`, status, err);
+      TABLES_TO_WATCH.forEach((table) => this.channelStatuses.set(table, status));
+      if (status === 'CHANNEL_ERROR') {
+        console.error('❌ Shared realtime channel error. Details:', err);
+      }
+      if (status === 'TIMED_OUT') {
+        console.error('⏰ Shared realtime subscription timed out');
+      }
+      if (status === 'CLOSED') {
+        console.warn('🔒 Shared realtime channel closed');
+      }
+    });
+
+    this.channels.set(sharedChannelName, sharedChannel);
 
     this.isInitialized = true;
     console.log('✅ Production realtime system initialized with batching and cross-tab sync');
