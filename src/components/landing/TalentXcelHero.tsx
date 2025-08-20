@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
-import { Send, Users, Building2, TrendingUp, CheckCircle, BookOpen, Shield } from 'lucide-react';
+import { Send, TrendingUp, CheckCircle, BookOpen, Shield } from 'lucide-react';
 
 export const TalentXcelHero = () => {
   return (
@@ -66,50 +66,27 @@ export const TalentXcelHero = () => {
             </div>
           </div>
 
-          {/* Right Side - Illustration */}
+          {/* Right Side - Career Passport Preview */}
           <div className="relative">
             <div className="bg-blue-500/20 rounded-3xl p-8 backdrop-blur-sm border border-white/10">
-              {/* Professional networking illustration */}
-              <div className="relative h-80 flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-6 items-center">
-                  {/* Person 1 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center">
-                      <Users className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="w-20 h-24 bg-teal-500 rounded-t-full"></div>
-                  </div>
-                  
-                  {/* Person 2 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
-                      <Building2 className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="w-20 h-24 bg-orange-500 rounded-t-full"></div>
-                  </div>
-                  
-                  {/* Person 3 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
-                      <TrendingUp className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="w-20 h-24 bg-blue-600 rounded-t-full"></div>
-                  </div>
-                  
-                  {/* Person 4 */}
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="w-20 h-24 bg-purple-600 rounded-t-full"></div>
-                  </div>
+              {/* Career Passport Display */}
+              <div className="relative h-96 flex items-center justify-center">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+                  <img
+                    src="/lovable-uploads/f04fa0a1-720d-4c94-889f-58ca8bfc0ddb.png"
+                    alt="TalentXcel Career Passport Preview"
+                    className="w-full h-auto rounded-xl shadow-lg"
+                    loading="lazy"
+                  />
                 </div>
-                
-                {/* Connection lines */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-0.5 bg-white/30 rotate-45"></div>
-                  <div className="w-32 h-0.5 bg-white/30 -rotate-45 absolute"></div>
-                </div>
+              </div>
+              
+              {/* Career Passport Features */}
+              <div className="mt-6 text-center">
+                <h3 className="text-xl font-bold text-white mb-2">Your Digital Career Passport</h3>
+                <p className="text-blue-100 text-sm">
+                  Track your professional journey with AI-powered insights, career readiness scores, and digital certifications.
+                </p>
               </div>
             </div>
           </div>
@@ -172,7 +149,7 @@ export const TalentXcelHero = () => {
           </div>
 
           {/* Career Analytics */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-blue-600" />
