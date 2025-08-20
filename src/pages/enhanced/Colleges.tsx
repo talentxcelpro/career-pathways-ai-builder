@@ -276,12 +276,18 @@ const EnhancedColleges = () => {
             {colleges.map((college) => (
               <Card key={college.id} className="group hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 overflow-hidden bg-white border-0 shadow-lg">
                 {/* College Banner with actual images */}
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative aspect-[16/9] overflow-hidden">
                   <img
                     src={getCollegeImage(college)}
                     alt={`${college.name} campus`}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=400&fit=crop';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   
@@ -293,6 +299,12 @@ const EnhancedColleges = () => {
                         alt={`${college.name} logo`}
                         className="w-16 h-16 rounded-2xl border-4 border-white shadow-xl object-contain bg-white p-1"
                         loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = '/placeholder.svg';
+                        }}
                       />
                     ) : (
                       <div className="w-16 h-16 bg-white rounded-2xl border-4 border-white shadow-xl flex items-center justify-center">
