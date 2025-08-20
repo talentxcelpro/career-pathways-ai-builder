@@ -1,20 +1,18 @@
 
 import React from 'react';
-import { AppleHeroSection } from './AppleHeroSection';
-import { WhyTalentXcel } from './WhyTalentXcel';
-import { CTABanner } from './CTABanner';
+import { TalentXcelNavigation } from './TalentXcelNavigation';
+import { TalentXcelHero } from './TalentXcelHero';
+import { JobCategoriesSection } from './JobCategoriesSection';
 import { SEOInternalLinks } from '@/components/seo/SEOInternalLinks';
-import { MobileAppPreview } from './MobileAppPreview';
 import { AppleFooter } from './AppleFooter';
 
 export const LandingPage = () => {
   return (
     <div className="min-h-screen">
-      <AppleHeroSection />
-      <WhyTalentXcel />
+      <TalentXcelNavigation />
+      <TalentXcelHero />
+      <JobCategoriesSection />
       <SEOInternalLinks />
-      <CTABanner />
-      <MobileAppPreview />
       <AppleFooter />
     </div>
   );
