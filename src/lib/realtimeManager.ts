@@ -62,6 +62,13 @@ class RealtimeManager {
 
     console.log('🚀 Initializing TalentXcel Production Realtime System...');
     console.log('🔍 Tables to watch:', TABLES_TO_WATCH);
+    console.log('🔑 Attempting realtime connection...');
+
+    // Check authentication status
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      console.log('🔐 Auth session status:', session ? 'authenticated' : 'not authenticated');
+      if (error) console.error('🔐 Auth error:', error);
+    });
 
     // Add callback if provided
     if (callback) {
@@ -99,16 +106,27 @@ class RealtimeManager {
 
     // Subscribe once and mirror status to all tables
     sharedChannel.subscribe((status, err) => {
-      console.log(`📡 Shared realtime status:`, status, err);
+      console.log(`📡 Shared realtime status:`, status);
+      if (err) console.error('📡 Shared realtime error details:', err);
+      
       TABLES_TO_WATCH.forEach((table) => this.channelStatuses.set(table, status));
+      
       if (status === 'CHANNEL_ERROR') {
-        console.error('❌ Shared realtime channel error. Details:', err);
+        console.error('❌ Shared realtime channel error. Common causes:');
+        console.error('   - Tables not in supabase_realtime publication');
+        console.error('   - Authentication required but user not logged in');
+        console.error('   - Network connectivity issues');
+        console.error('   - Project realtime disabled');
+        if (err) console.error('   - Error details:', err);
       }
       if (status === 'TIMED_OUT') {
         console.error('⏰ Shared realtime subscription timed out');
       }
       if (status === 'CLOSED') {
         console.warn('🔒 Shared realtime channel closed');
+      }
+      if (status === 'SUBSCRIBED') {
+        console.log('✅ Shared realtime channel successfully subscribed');
       }
     });
 
