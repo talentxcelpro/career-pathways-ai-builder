@@ -5,8 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Camera, Edit, MapPin, Building2, Eye, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFileUpload } from '@/hooks/useFileUpload';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useProfileUpdate } from '@/hooks/useProfileUpdate';
 
 interface LinkedInStyleBannerProps {
   profile: any;
@@ -30,24 +30,21 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     allowedTypes: ['image/*']
   });
 
+  const { updateProfile } = useProfileUpdate();
+
   const handleImageUpload = async (type: 'banner' | 'avatar', file: File) => {
     setUploading(type);
     try {
       const uploadedUrl = await uploadFile(file);
-      
-      const updateField = type === 'banner' ? 'banner_url' : 'profile_picture_url';
-      const { error } = await supabase
-        .from('profiles')
-        .update({ [updateField]: uploadedUrl })
-        .eq('id', profile?.id);
 
-      if (error) {
-        console.error('Update error:', error);
-        throw error;
-      }
-      
+      const updateData = type === 'banner'
+        ? { banner_url: uploadedUrl }
+        : { profile_picture_url: uploadedUrl };
+
+      await updateProfile.mutateAsync(updateData as any);
+
       toast.success(`${type} updated successfully!`);
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.reload(), 800);
     } catch (error) {
       console.error('Upload error:', error);
       toast.error(`Failed to update ${type}`);
@@ -76,7 +73,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     <div className="w-full max-w-xs mx-auto">
       <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
         {/* Banner Image - Fixed aspect ratio */}
-        <div className="relative h-16 bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
+        <div className="relative w-full bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden" style={{ aspectRatio: '3 / 1', minHeight: '80px' }}>
           {profile?.banner_url ? (
             <img 
               src={profile.banner_url} 
