@@ -71,11 +71,11 @@ export const TalentXcelHero = () => {
             <div className="bg-blue-500/20 rounded-3xl p-8 backdrop-blur-sm border border-white/10">
               {/* Career Passport Display */}
               <div className="relative h-96 flex items-center justify-center">
-                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 shadow-2xl max-w-xs w-full">
                   <img
                     src="/lovable-uploads/f04fa0a1-720d-4c94-889f-58ca8bfc0ddb.png"
                     alt="TalentXcel Career Passport Preview"
-                    className="w-full h-auto rounded-xl shadow-lg"
+                    className="w-full h-auto max-h-72 object-contain rounded-xl shadow-lg"
                     loading="lazy"
                   />
                 </div>
