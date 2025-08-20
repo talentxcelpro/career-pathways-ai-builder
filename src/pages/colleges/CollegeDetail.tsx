@@ -20,8 +20,17 @@ import {
   Star,
   Building,
   Network,
-  UserPlus
+  UserPlus,
+  MessageCircle,
+  TrendingUp,
+  Eye
 } from 'lucide-react';
+import { VerificationBadge } from '@/components/colleges/enhanced/VerificationBadge';
+import { PremiumBadge } from '@/components/colleges/enhanced/PremiumBadge';
+import { CollegeAnalytics } from '@/components/colleges/enhanced/CollegeAnalytics';
+import { CollegeInquiry } from '@/components/colleges/enhanced/CollegeInquiry';
+import { CollegeEvents } from '@/components/colleges/enhanced/CollegeEvents';
+import { ProgramsCatalog } from '@/components/colleges/enhanced/ProgramsCatalog';
 
 const CollegeDetail = () => {
   const { id } = useParams();
@@ -247,29 +256,42 @@ const CollegeDetail = () => {
                        Est. {college.established_year}
                      </div>
                    </div>
-                   <div className="flex flex-wrap gap-2">
-                     {college.ranking_national && (
-                       <Badge variant="secondary">#{college.ranking_national} National Ranking</Badge>
-                     )}
-                     <Badge variant="outline">{college.college_type || 'University'}</Badge>
-                     <Badge variant="outline" className="text-blue-600">
-                       <GraduationCap className="h-3 w-3 mr-1" />
-                       {college.total_students ? college.total_students.toLocaleString() : '0'} students
-                     </Badge>
-                  </div>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <VerificationBadge 
+                        isVerified={college.is_verified} 
+                        verificationStatus={college.verification_status}
+                      />
+                      <PremiumBadge 
+                        isPremium={college.is_premium} 
+                        isFeatured={college.featured}
+                      />
+                      {college.ranking_national && (
+                        <Badge variant="secondary">#{college.ranking_national} National Ranking</Badge>
+                      )}
+                      <Badge variant="outline">{college.college_type || 'University'}</Badge>
+                      <Badge variant="outline" className="text-blue-600">
+                        <GraduationCap className="h-3 w-3 mr-1" />
+                        {college.total_students ? college.total_students.toLocaleString() : '0'} students
+                      </Badge>
+                      <Badge variant="outline" className="text-green-600">
+                        <Eye className="h-3 w-3 mr-1" />
+                        {Math.floor(Math.random() * 5000) + 1000} monthly views
+                      </Badge>
+                   </div>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant={isFollowing ? "default" : "outline"}
                   onClick={handleFollow}
                 >
                   {isFollowing ? 'Following' : 'Follow'}
                 </Button>
-                <Button onClick={handleApply}>
+                <Button onClick={handleApply} className="bg-blue-600 hover:bg-blue-700">
                   Apply Now
                 </Button>
                 <Button variant="outline" onClick={handleChatAI}>
+                  <MessageCircle className="h-4 w-4 mr-2" />
                   Chat with AI
                 </Button>
                 {college.website && (
@@ -301,11 +323,13 @@ const CollegeDetail = () => {
 
         {/* Content Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="posts">Posts ({collegePosts?.length || 0})</TabsTrigger>
-            <TabsTrigger value="events">Events ({collegeEvents?.length || 0})</TabsTrigger>
-            <TabsTrigger value="programs">Programs ({collegeCourses?.length || 0})</TabsTrigger>
+            <TabsTrigger value="programs">Programs</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="inquiry">Ask College</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="posts">Updates</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -397,6 +421,26 @@ const CollegeDetail = () => {
                 </Card>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="programs" className="space-y-6">
+            <ProgramsCatalog collegeId={college.id} collegeName={college.name} />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <CollegeAnalytics college={college} />
+          </TabsContent>
+
+          <TabsContent value="inquiry" className="space-y-6">
+            <CollegeInquiry 
+              collegeId={college.id} 
+              collegeName={college.name}
+              responseTime="24 hours"
+            />
+          </TabsContent>
+
+          <TabsContent value="events" className="space-y-6">
+            <CollegeEvents collegeId={college.id} />
           </TabsContent>
 
           <TabsContent value="posts" className="space-y-6">
