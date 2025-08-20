@@ -138,7 +138,7 @@ export const PostCreation = () => {
                     <img
                       src={url}
                       alt={`Upload ${index + 1}`}
-                      className="w-full h-20 object-cover rounded-md"
+                      className="w-full max-h-40 object-contain bg-muted rounded-md"
                     />
                     <button
                       onClick={() => removeMedia(url)}

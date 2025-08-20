@@ -38,13 +38,14 @@ export function useRealtimeTable<T = any>(
     const { eventType, new: newRecord, old: oldRecord } = payload;
     
     switch (eventType) {
-      case 'INSERT':
-        // Add new record to the beginning (for recent-first ordering)
-        if (ascending) {
-          return [...prevData, newRecord];
-        } else {
-          return [newRecord, ...prevData];
+      case 'INSERT': {
+        // Upsert with de-duplication by id to avoid double entries (initial fetch + realtime)
+        const exists = prevData.some((item: any) => item.id === newRecord.id);
+        if (exists) {
+          return prevData.map((item: any) => (item.id === newRecord.id ? newRecord : item));
         }
+        return ascending ? [...prevData, newRecord] : [newRecord, ...prevData];
+      }
         
       case 'UPDATE':
         // Update existing record

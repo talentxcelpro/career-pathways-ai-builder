@@ -38,6 +38,7 @@ class RealtimeManager {
   private queues = new Map<string, RealtimePayload[]>();
   private flushTimers = new Map<string, number>();
   private broadcastChannel: BroadcastChannel | null = null;
+  private channelStatuses = new Map<string, string>();
 
   constructor() {
     // Initialize BroadcastChannel for cross-tab communication
@@ -94,6 +95,8 @@ class RealtimeManager {
         )
         .subscribe((status) => {
           console.log(`📡 ${table} realtime status:`, status);
+          // Track channel status using human-readable constants
+          this.channelStatuses.set(table, status);
           if (status === 'CHANNEL_ERROR') {
             console.error(`❌ ${table} realtime channel error - check if table is in supabase_realtime publication`);
           }
@@ -222,8 +225,9 @@ class RealtimeManager {
   getStatus() {
     const status: Record<string, string> = {};
     
-    this.channels.forEach((channel, channelName) => {
-      status[channelName] = channel.state;
+    // Return last known subscription status per table (e.g., SUBSCRIBED, CHANNEL_ERROR)
+    this.channelStatuses.forEach((tableStatus, tableName) => {
+      status[tableName] = tableStatus;
     });
     
     return status;

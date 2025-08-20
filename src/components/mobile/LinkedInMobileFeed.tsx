@@ -185,7 +185,7 @@ const LinkedInPostCard: React.FC<{
             <img
               src={post.content.url}
               alt="Post content"
-              className="w-full max-h-96 object-cover rounded-2xl"
+              className="w-full max-h-96 object-contain bg-muted rounded-2xl"
             />
           ) : null}
         </div>
