@@ -6,34 +6,31 @@ import { LandingPage } from "@/components/landing/LandingPage";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Check authentication status
+  // Check authentication status in background
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
-      setIsLoading(false);
+      setAuthChecked(true);
     };
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
-      setIsLoading(false);
+      setAuthChecked(true);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  // Redirect logged-in users to network page
-  if (isLoggedIn) {
+  // Redirect logged-in users after auth check completes
+  if (authChecked && isLoggedIn) {
     return <Navigate to="/network" replace />;
   }
 
+  // Show landing page immediately, even while auth is checking
   return <LandingPage />;
 };
 
