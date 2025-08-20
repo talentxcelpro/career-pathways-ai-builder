@@ -40,6 +40,7 @@ import { VerificationBadge } from '@/components/colleges/enhanced/VerificationBa
 import { PremiumBadge } from '@/components/colleges/enhanced/PremiumBadge';
 import { EnhancedFilters } from '@/components/colleges/enhanced/EnhancedFilters';
 import { updateMetaTags } from '@/utils/metaTags';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const EnhancedColleges = () => {
   const navigate = useNavigate();
@@ -261,19 +262,22 @@ const EnhancedColleges = () => {
               <Card key={college.id} className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
                 
                 {/* College Banner */}
-                <div className="relative h-48 bg-muted overflow-hidden">
-                  <img
-                    src={college.cover_image_url || 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=400&fit=crop'}
-                    alt={`${college.name} campus`}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement;
-                      target.src = 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=400&fit=crop';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  
+                <div className="relative bg-muted overflow-hidden">
+                  <AspectRatio ratio={16/9} className="relative">
+                    <img
+                      src={college.cover_image_url || 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop'}
+                      alt={`${college.name} campus banner image`}
+                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.src = 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  </AspectRatio>
+
                   {/* College Logo */}
                   <div className="absolute bottom-4 left-4">
                     <Avatar className="h-12 w-12 border-2 border-white">
