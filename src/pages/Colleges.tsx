@@ -24,6 +24,7 @@ import {
   GitCompare
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImageWithFallback } from '@/components/common/ImageWithFallback';
 
 const Colleges = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -226,29 +227,25 @@ const Colleges = () => {
           {filteredColleges.map((college) => (
             <Card key={college.id} className="overflow-hidden hover:shadow-apple-heavy transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm rounded-2xl group">
               {/* College Image */}
-              <div className="relative aspect-[16/9] overflow-hidden">
-                <img 
-                  src={college.image_url} 
-                  alt={`${college.name} campus image`}
-                  width={1280}
-                  height={720}
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover transform-gpu will-change-transform transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-                {college.verified && (
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-green-500 text-white border-0 px-3 py-1 rounded-full flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3" />
-                      Verified
-                    </Badge>
-                  </div>
-                )}
-                <div className="absolute top-4 right-4">
-                  <Button size="icon" variant="ghost" className="h-8 w-8 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
+              <ImageWithFallback 
+                src={college.image_url}
+                alt={`${college.name} campus banner image`}
+                width={1280}
+                height={720}
+                aspect="16/9"
+              />
+              {college.verified && (
+                <div className="absolute top-4 left-4 z-10">
+                  <Badge className="bg-green-500 text-white border-0 px-3 py-1 rounded-full flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    Verified
+                  </Badge>
                 </div>
+              )}
+              <div className="absolute top-4 right-4 z-10">
+                <Button size="icon" variant="ghost" className="h-8 w-8 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white">
+                  <Share2 className="h-4 w-4" />
+                </Button>
               </div>
 
               <CardHeader className="p-6">
