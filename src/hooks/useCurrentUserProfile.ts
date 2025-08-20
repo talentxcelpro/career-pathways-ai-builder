@@ -27,7 +27,7 @@ export function useCurrentUserProfile(): UseCurrentUserProfile {
         // Try to fetch profile details; tolerate missing columns
         const { data: profile } = await supabase
           .from('profiles')
-          .select('preferred_name, display_name, full_name, username, first_name, last_name, current_streak, streak')
+          .select('full_name, username, headline')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -38,11 +38,6 @@ export function useCurrentUserProfile(): UseCurrentUserProfile {
           .replace(/\b\w/g, (c) => c.toUpperCase()) || 'Learner';
 
         const name =
-          (profile?.preferred_name as string | undefined) ||
-          (profile?.display_name as string | undefined) ||
-          ((profile?.first_name || profile?.last_name)
-            ? `${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim()
-            : undefined) ||
           (profile?.full_name as string | undefined) ||
           (profile?.username as string | undefined) ||
           ((user?.user_metadata?.full_name as string | undefined) ??
