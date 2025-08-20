@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
-import { Menu, X, Rocket } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import talentXcelLogo from '@/assets/talentxcel-logo.png';
 
 export const TalentXcelNavigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -20,11 +21,12 @@ export const TalentXcelNavigation = () => {
       <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-              <Rocket className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-white">TalentXcel</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src={talentXcelLogo} 
+              alt="TalentXcel" 
+              className="h-8 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -42,12 +44,19 @@ export const TalentXcelNavigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <AuthDialog>
+            <AuthDialog buttonText="Sign In">
               <Button 
                 variant="ghost" 
                 className="text-white hover:bg-white/10 border border-white/20"
               >
                 Sign In
+              </Button>
+            </AuthDialog>
+            <AuthDialog buttonText="Sign Up">
+              <Button 
+                className="bg-white text-blue-600 hover:bg-white/90 font-semibold"
+              >
+                Sign Up
               </Button>
             </AuthDialog>
           </div>
@@ -81,12 +90,20 @@ export const TalentXcelNavigation = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-white/20">
-                <AuthDialog>
+              <div className="pt-4 border-t border-white/20 space-y-3">
+                <AuthDialog buttonText="Sign In">
                   <Button 
-                    className="w-full bg-white text-blue-600 hover:bg-white/90"
+                    variant="ghost"
+                    className="w-full text-white border border-white/20 hover:bg-white/10"
                   >
                     Sign In
+                  </Button>
+                </AuthDialog>
+                <AuthDialog buttonText="Sign Up">
+                  <Button 
+                    className="w-full bg-white text-blue-600 hover:bg-white/90 font-semibold"
+                  >
+                    Sign Up
                   </Button>
                 </AuthDialog>
               </div>
