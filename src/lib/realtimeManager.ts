@@ -60,6 +60,7 @@ class RealtimeManager {
     }
 
     console.log('🚀 Initializing TalentXcel Production Realtime System...');
+    console.log('🔍 Tables to watch:', TABLES_TO_WATCH);
 
     // Add callback if provided
     if (callback) {
@@ -68,6 +69,7 @@ class RealtimeManager {
 
     TABLES_TO_WATCH.forEach((table) => {
       const channelName = `realtime:${table}`;
+      console.log(`🔗 Creating channel: ${channelName}`);
       
       const channel = supabase
         .channel(channelName)
@@ -92,6 +94,15 @@ class RealtimeManager {
         )
         .subscribe((status) => {
           console.log(`📡 ${table} realtime status:`, status);
+          if (status === 'CHANNEL_ERROR') {
+            console.error(`❌ ${table} realtime channel error - check if table is in supabase_realtime publication`);
+          }
+          if (status === 'TIMED_OUT') {
+            console.error(`⏰ ${table} realtime subscription timed out`);
+          }
+          if (status === 'CLOSED') {
+            console.warn(`🔒 ${table} realtime channel closed`);
+          }
         });
 
       this.channels.set(channelName, channel);

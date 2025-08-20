@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { initTalentXcelRealtime, cleanupRealtime, realtimeManager, WatchedTable, RealtimePayload } from '@/lib/realtimeManager';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RealtimeContextType {
   isConnected: boolean;
@@ -26,6 +27,10 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
 
   useEffect(() => {
     console.log('🎯 TalentXcel Realtime Provider initializing...');
+    // Check if user is authenticated for realtime
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔍 Auth session for realtime:', session ? 'authenticated' : 'not authenticated');
+    });
 
     // Initialize realtime with global callback
     initTalentXcelRealtime((table, payload) => {
