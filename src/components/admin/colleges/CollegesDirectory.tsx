@@ -161,10 +161,10 @@ export const CollegesDirectory: React.FC = () => {
         {colleges?.map((college: any) => (
           <Card key={college.id} className="overflow-hidden hover:shadow-lg transition-shadow">
             <div className="aspect-video bg-gradient-to-r from-primary/10 to-primary/5 flex items-center justify-center relative">
-              {college.banner_image_url ? (
+              {college.cover_image_url ? (
                 <img 
-                  src={college.banner_image_url} 
-                  alt={college.college_name}
+                  src={college.cover_image_url} 
+                  alt={college.name}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -181,7 +181,7 @@ export const CollegesDirectory: React.FC = () => {
             
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
-                <CardTitle className="text-lg line-clamp-2">{college.college_name}</CardTitle>
+                <CardTitle className="text-lg line-clamp-2">{college.name}</CardTitle>
                 <Badge className={getVerificationBadge(college.verification_status)}>
                   <Shield className="h-3 w-3 mr-1" />
                   {college.verification_status}
@@ -200,7 +200,7 @@ export const CollegesDirectory: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  <span>{college.student_count || 0}</span>
+                  <span>{college.total_students || 0}</span>
                 </div>
               </div>
               
@@ -238,9 +238,9 @@ export const CollegesDirectory: React.FC = () => {
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
                 </Button>
-                {college.website_url && (
+                {college.website && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={college.website_url} target="_blank" rel="noopener noreferrer">
+                    <a href={college.website} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4" />
                     </a>
                   </Button>

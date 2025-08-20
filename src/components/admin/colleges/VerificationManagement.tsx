@@ -94,7 +94,7 @@ export const VerificationManagement: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    {college.college_name}
+                    {college.name}
                     <Badge className={getStatusBadge(college.verification_status)}>
                       {getStatusIcon(college.verification_status)}
                       {college.verification_status}
@@ -118,19 +118,19 @@ export const VerificationManagement: React.FC = () => {
                   <div className="space-y-1 text-sm">
                     <div><strong>Type:</strong> {college.college_type}</div>
                     <div><strong>Established:</strong> {college.established_year || 'N/A'}</div>
-                    <div><strong>Students:</strong> {college.student_count || 'N/A'}</div>
-                    <div><strong>Faculty:</strong> {college.faculty_count || 'N/A'}</div>
+                    <div><strong>Students:</strong> {college.total_students || 'N/A'}</div>
+                    <div><strong>Faculty:</strong> {college.total_faculty || 'N/A'}</div>
                   </div>
                 </div>
                 
                 <div>
                   <h4 className="font-medium mb-2">Contact Details</h4>
                   <div className="space-y-1 text-sm">
-                    <div><strong>Email:</strong> {college.contact_email || 'N/A'}</div>
-                    <div><strong>Phone:</strong> {college.contact_phone || 'N/A'}</div>
+                    <div><strong>Email:</strong> {college.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> {college.phone || 'N/A'}</div>
                     <div><strong>Website:</strong> 
-                      {college.website_url ? (
-                        <a href={college.website_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">
+                      {college.website ? (
+                        <a href={college.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">
                           Visit
                         </a>
                       ) : 'N/A'}

@@ -4573,6 +4573,53 @@ export type Database = {
           },
         ]
       }
+      college_alumni: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          current_company: string | null
+          current_position: string | null
+          graduation_year: number | null
+          id: string
+          program_name: string | null
+          updated_at: string | null
+          user_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          current_company?: string | null
+          current_position?: string | null
+          graduation_year?: number | null
+          id?: string
+          program_name?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          current_company?: string | null
+          current_position?: string | null
+          graduation_year?: number | null
+          id?: string
+          program_name?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_alumni_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       college_analytics: {
         Row: {
           application_completions: number | null
@@ -4896,6 +4943,56 @@ export type Database = {
           },
         ]
       }
+      college_inquiries: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          id: string
+          inquiry_type: string | null
+          message: string | null
+          responded_at: string | null
+          status: string | null
+          student_email: string
+          student_name: string
+          student_phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          id?: string
+          inquiry_type?: string | null
+          message?: string | null
+          responded_at?: string | null
+          status?: string | null
+          student_email: string
+          student_name: string
+          student_phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          id?: string
+          inquiry_type?: string | null
+          message?: string | null
+          responded_at?: string | null
+          status?: string | null
+          student_email?: string
+          student_name?: string
+          student_phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_inquiries_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       college_media: {
         Row: {
           category: string | null
@@ -5004,6 +5101,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "college_posts_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      college_programs: {
+        Row: {
+          college_id: string | null
+          created_at: string | null
+          description: string | null
+          duration: string | null
+          eligibility: string | null
+          fees: number | null
+          id: string
+          program_name: string
+          program_type: string | null
+          seats_available: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration?: string | null
+          eligibility?: string | null
+          fees?: number | null
+          id?: string
+          program_name: string
+          program_type?: string | null
+          seats_available?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration?: string | null
+          eligibility?: string | null
+          fees?: number | null
+          id?: string
+          program_name?: string
+          program_type?: string | null
+          seats_available?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "college_programs_college_id_fkey"
             columns: ["college_id"]
             isOneToOne: false
             referencedRelation: "colleges"
@@ -5160,6 +5307,7 @@ export type Database = {
           hostels_available: boolean | null
           id: string
           is_active: boolean | null
+          is_premium: boolean | null
           is_verified: boolean | null
           keywords: string[] | null
           labs_count: number | null
@@ -5171,6 +5319,7 @@ export type Database = {
           phone: string | null
           placement_percentage: number | null
           postal_code: string | null
+          premium_expires_at: string | null
           ranking_national: number | null
           ranking_nirf: number | null
           recognition: string[] | null
@@ -5181,6 +5330,8 @@ export type Database = {
           total_students: number | null
           updated_at: string
           verification_status: string | null
+          verified_at: string | null
+          verified_by: string | null
           website: string | null
         }
         Insert: {
@@ -5206,6 +5357,7 @@ export type Database = {
           hostels_available?: boolean | null
           id?: string
           is_active?: boolean | null
+          is_premium?: boolean | null
           is_verified?: boolean | null
           keywords?: string[] | null
           labs_count?: number | null
@@ -5217,6 +5369,7 @@ export type Database = {
           phone?: string | null
           placement_percentage?: number | null
           postal_code?: string | null
+          premium_expires_at?: string | null
           ranking_national?: number | null
           ranking_nirf?: number | null
           recognition?: string[] | null
@@ -5227,6 +5380,8 @@ export type Database = {
           total_students?: number | null
           updated_at?: string
           verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           website?: string | null
         }
         Update: {
@@ -5252,6 +5407,7 @@ export type Database = {
           hostels_available?: boolean | null
           id?: string
           is_active?: boolean | null
+          is_premium?: boolean | null
           is_verified?: boolean | null
           keywords?: string[] | null
           labs_count?: number | null
@@ -5263,6 +5419,7 @@ export type Database = {
           phone?: string | null
           placement_percentage?: number | null
           postal_code?: string | null
+          premium_expires_at?: string | null
           ranking_national?: number | null
           ranking_nirf?: number | null
           recognition?: string[] | null
@@ -5273,6 +5430,8 @@ export type Database = {
           total_students?: number | null
           updated_at?: string
           verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
           website?: string | null
         }
         Relationships: []

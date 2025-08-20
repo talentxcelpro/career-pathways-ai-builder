@@ -27,7 +27,7 @@ export const useCollegesManagement = () => {
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
-        query = query.or(`college_name.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%,state.ilike.%${searchTerm}%`);
+        query = query.or(`name.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%,state.ilike.%${searchTerm}%`);
       }
 
       if (typeFilter !== 'all') {
@@ -58,15 +58,15 @@ export const useCollegesManagement = () => {
   const { data: collegeStats } = useQuery({
     queryKey: ['college-stats'],
     queryFn: async () => {
-      const [
-        { count: totalColleges },
-        { count: verifiedColleges },
-        { count: pendingVerification },
-        { count: premiumColleges },
-        { count: totalPrograms },
-        { count: totalInquiries },
-        { count: totalEvents },
-        { data: states }
+        const [
+        totalCollegesResult,
+        verifiedCollegesResult,
+        pendingVerificationResult,
+        premiumCollegesResult,
+        totalProgramsResult,
+        totalInquiriesResult,
+        totalEventsResult,
+        statesResult
       ] = await Promise.all([
         supabase.from('colleges').select('*', { count: 'exact', head: true }),
         supabase.from('colleges').select('*', { count: 'exact', head: true }).eq('verification_status', 'verified'),
@@ -77,6 +77,15 @@ export const useCollegesManagement = () => {
         supabase.from('college_events').select('*', { count: 'exact', head: true }),
         supabase.from('colleges').select('state').not('state', 'is', null)
       ]);
+
+      const totalColleges = totalCollegesResult.count || 0;
+      const verifiedColleges = verifiedCollegesResult.count || 0;
+      const pendingVerification = pendingVerificationResult.count || 0;
+      const premiumColleges = premiumCollegesResult.count || 0;
+      const totalPrograms = totalProgramsResult.count || 0;
+      const totalInquiries = totalInquiriesResult.count || 0;
+      const totalEvents = totalEventsResult.count || 0;
+      const states = statesResult.data || [];
 
       const uniqueStates = [...new Set(states?.map(c => c.state).filter(Boolean))];
       
@@ -99,6 +108,7 @@ export const useCollegesManagement = () => {
     mutationFn: async ({ collegeId, status, reason }: { collegeId: string; status: string; reason?: string }) => {
       const updates: any = {
         verification_status: status,
+        is_verified: status === 'verified',
         verified_by: status === 'verified' ? (await supabase.auth.getUser()).data.user?.id : null,
         verified_at: status === 'verified' ? new Date().toISOString() : null
       };
