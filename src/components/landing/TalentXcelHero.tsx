@@ -120,53 +120,53 @@ export const TalentXcelHero = () => {
       <div className="relative max-w-7xl mx-auto px-6 pb-20">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Gamechanger in Professional */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <Send className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Gamechanger in Professional</h3>
-                <p className="text-gray-600 text-sm">Graw adeatest Cohedas-bare! Network of future-talent.</p>
+                <p className="text-gray-600 text-sm">Grow greatest Cohesive-base! Network of future-talent.</p>
               </div>
             </div>
           </div>
 
           {/* Personalised Career Paths */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-purple-600" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Personalised Career Paths</h3>
-                <p className="text-gray-600 text-sm">Usework online across job, internship, tailored to your</p>
+                <p className="text-gray-600 text-sm">Use work online across job, internship, tailored to your career goals.</p>
               </div>
             </div>
           </div>
 
           {/* AI-Powered Learnings Hub */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">AI-Powered Learnings Hub</h3>
-                <p className="text-gray-600 text-sm">Unline thriven learn, fee and unlock advance.</p>
+                <p className="text-gray-600 text-sm">Online driven learn, free and unlock advance opportunities.</p>
               </div>
             </div>
           </div>
 
           {/* Verified Job & Internship Listings */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-orange-600" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Verified Job & Internship Listings</h3>
-                <p className="text-gray-600 text-sm">Brease roles across industries, tailored to d....</p>
+                <p className="text-gray-600 text-sm">Browse roles across industries, tailored to your experience.</p>
               </div>
             </div>
           </div>
@@ -185,14 +185,14 @@ export const TalentXcelHero = () => {
           </div>
 
           {/* Trusted Platform */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
                 <Shield className="w-6 h-6 text-teal-600" />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Trusted Platform</h3>
-                <p className="text-gray-600 text-sm">Weightless upetail allow 25 to connect in growth.</p>
+                <p className="text-gray-600 text-sm">Seamless upscale allows you to connect and grow professionally.</p>
               </div>
             </div>
           </div>
