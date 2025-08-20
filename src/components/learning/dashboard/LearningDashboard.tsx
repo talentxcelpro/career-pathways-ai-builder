@@ -11,6 +11,7 @@ import { LearningPathVisualizer } from '../path-visualizer/LearningPathVisualize
 import { PersonalizedDashboard } from '../personalized/PersonalizedDashboard';
 import { MicrolearningHub } from '../microlearning/MicrolearningHub';
 import { useLearningData } from '@/hooks/useLearningData';
+import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,6 +42,7 @@ export const LearningDashboard = () => {
     setSelectedDifficulty,
     isLoading
   } = useLearningData();
+  const { displayName, streakDays } = useCurrentUserProfile();
 
   const handleEnroll = (courseId: string) => {
     setEnrolledCourses(prev => [...prev, courseId]);
@@ -71,8 +73,8 @@ export const LearningDashboard = () => {
   };
 
   const mockUserData = {
-    name: 'Alex',
-    currentStreak: 7,
+    name: displayName,
+    currentStreak: streakDays,
     weeklyGoal: { target: 10, current: 7 },
     dailyGoal: { target: 2, current: 1.5 },
     skillGaps: [

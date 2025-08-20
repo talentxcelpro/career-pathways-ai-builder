@@ -267,7 +267,10 @@ const EnhancedColleges = () => {
                     <img
                       src={college.cover_image_url || 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop'}
                       alt={`${college.name} campus banner image`}
-                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transform-gpu will-change-transform transition-transform duration-300"
+                      className="absolute inset-0 w-full h-full object-cover object-center"
+                      width="1200"
+                      height="675"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       loading="lazy"
                       decoding="async"
                       onError={(e) => {
