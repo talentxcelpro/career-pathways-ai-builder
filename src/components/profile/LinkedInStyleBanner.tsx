@@ -75,19 +75,21 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   return (
     <div className="w-full max-w-xs mx-auto">
       <Card className="overflow-hidden border border-gray-200 shadow-sm bg-white rounded-lg">
-        {/* Banner Image - Reduced height */}
-        <div className="relative h-12 bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
+        {/* Banner Image - Fixed aspect ratio */}
+        <div className="relative h-16 bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden">
           {profile?.banner_url ? (
             <img 
               src={profile.banner_url} 
               alt="Profile banner"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
+              style={{ minHeight: '64px' }}
             />
           ) : (
             <img 
               src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&h=200"
               alt="Default banner"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
+              style={{ minHeight: '64px' }}
             />
           )}
           {isOwnProfile && (

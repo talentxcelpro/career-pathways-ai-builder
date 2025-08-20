@@ -490,14 +490,20 @@ export function CareerPassportDashboard() {
 
   // Function to get profile picture URL - ONLY REAL USER DATA
   const getProfilePictureUrl = () => {
-    const userUploadedImage = displayData.profile?.profile_picture_url;
+    // For public view, use the public profile data
+    if (isPublicView && publicPassportData?.profile?.profile_picture_url) {
+      return publicPassportData.profile.profile_picture_url;
+    }
+    
+    // For own profile, check both profile and user metadata
+    const userUploadedImage = profile?.profile_picture_url;
     const googleImage = user?.user_metadata?.avatar_url;
     
     // Priority 1: User uploaded image from profile
-    if (userUploadedImage) return userUploadedImage;
+    if (userUploadedImage && userUploadedImage.trim() !== '') return userUploadedImage;
     
     // Priority 2: Google profile image (fallback only)
-    if (googleImage) return googleImage;
+    if (googleImage && googleImage.trim() !== '') return googleImage;
     
     // No photo available - don't show avatar at all
     return null;
@@ -654,12 +660,11 @@ export function CareerPassportDashboard() {
             <div className="relative">
               <div className="w-20 h-20 rounded-lg bg-gray-600 border-2 border-orange-400/50 overflow-hidden">
                 <Avatar className="w-full h-full rounded-lg">
-                  {getProfilePictureUrl() ? (
-                    <AvatarImage 
-                      src={getProfilePictureUrl()!} 
-                      className="object-cover w-full h-full"
-                    />
-                  ) : null}
+                  <AvatarImage 
+                    src={getProfilePictureUrl() || undefined} 
+                    className="object-cover w-full h-full"
+                    alt="Profile picture"
+                  />
                   <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-xl w-full h-full flex items-center justify-center rounded-lg">
                     {getUserInitials()}
                   </AvatarFallback>
