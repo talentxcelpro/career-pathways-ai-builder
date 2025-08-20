@@ -70,6 +70,10 @@ const publicRoutes = [
   '/auth/callback',
   '/jobs',
   '/jobs/:id',
+  '/jobs/role/:role',
+  '/jobs/location/:location',
+  '/jobs/skill/:skill',
+  '/jobs/:role/:location',
   '/companies',
   '/companies/:id',
   '/:slug', // Company slug route
