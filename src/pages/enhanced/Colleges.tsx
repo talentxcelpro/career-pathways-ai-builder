@@ -280,7 +280,8 @@ const EnhancedColleges = () => {
                   <img
                     src={getCollegeImage(college)}
                     alt={`${college.name} campus`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   
@@ -290,7 +291,8 @@ const EnhancedColleges = () => {
                       <img
                         src={college.logo_url}
                         alt={`${college.name} logo`}
-                        className="w-16 h-16 rounded-2xl border-4 border-white shadow-xl object-cover bg-white"
+                        className="w-16 h-16 rounded-2xl border-4 border-white shadow-xl object-contain bg-white p-1"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-16 h-16 bg-white rounded-2xl border-4 border-white shadow-xl flex items-center justify-center">
