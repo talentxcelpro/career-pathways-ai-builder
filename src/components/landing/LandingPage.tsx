@@ -3,7 +3,7 @@ import React from 'react';
 import { AppleHeroSection } from './AppleHeroSection';
 import { WhyTalentXcel } from './WhyTalentXcel';
 import { CTABanner } from './CTABanner';
-import { SEOInternalLinks } from '@/components/seo/SEOInternalLinks';
+import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
 import { MobileAppPreview } from './MobileAppPreview';
 import { AppleFooter } from './AppleFooter';
 
@@ -12,7 +12,7 @@ export const LandingPage = () => {
     <div className="min-h-screen">
       <AppleHeroSection />
       <WhyTalentXcel />
-      <SEOInternalLinks />
+      <SEOJobCategories />
       <CTABanner />
       <MobileAppPreview />
       <AppleFooter />
