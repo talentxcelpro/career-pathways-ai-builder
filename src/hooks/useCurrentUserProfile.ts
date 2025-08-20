@@ -27,7 +27,7 @@ export function useCurrentUserProfile(): UseCurrentUserProfile {
         // Try to fetch profile details; tolerate missing columns
         const { data: profile } = await supabase
           .from('profiles')
-          .select('full_name, username, headline')
+          .select('full_name, username, headline, current_streak, streak')
           .eq('id', user.id)
           .maybeSingle();
 
