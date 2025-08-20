@@ -6,9 +6,17 @@ import { BookOpen, Target, Award, Flame } from 'lucide-react';
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 export const LearningHeader: React.FC = () => {
   const { displayName, streakDays } = useCurrentUserProfile();
+  const friendlyName = React.useMemo(() => {
+    if (!displayName) return 'Learner';
+    if (displayName.includes('@')) {
+      const base = displayName.split('@')[0].replace(/[._-]+/g, ' ').trim();
+      return base ? base.replace(/\b\w/g, c => c.toUpperCase()) : 'Learner';
+    }
+    return displayName;
+  }, [displayName]);
   return (
     <header className="mb-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {displayName}!</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {friendlyName}!</h1>
       <p className="text-gray-600 flex items-center gap-2">
         <Flame className="h-4 w-4 text-orange-500" />
         You're on a {streakDays}-day learning streak

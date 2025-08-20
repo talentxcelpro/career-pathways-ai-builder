@@ -41,6 +41,7 @@ import { PremiumBadge } from '@/components/colleges/enhanced/PremiumBadge';
 import { EnhancedFilters } from '@/components/colleges/enhanced/EnhancedFilters';
 import { updateMetaTags } from '@/utils/metaTags';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { ImageWithFallback } from '@/components/common/ImageWithFallback';
 
 const EnhancedColleges = () => {
   const navigate = useNavigate();
@@ -264,19 +265,15 @@ const EnhancedColleges = () => {
                 {/* College Banner */}
                 <div className="relative bg-muted overflow-hidden">
                   <AspectRatio ratio={16/9} className="relative">
-                    <img
+                    <ImageWithFallback
                       src={college.cover_image_url || 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop'}
                       alt={`${college.name} campus banner image`}
                       className="absolute inset-0 w-full h-full object-cover object-center"
-                      width="1200"
-                      height="675"
+                      width={1200}
+                      height={675}
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.src = 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop';
-                      }}
+                      fallbackSrc="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop"
+                      referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </AspectRatio>

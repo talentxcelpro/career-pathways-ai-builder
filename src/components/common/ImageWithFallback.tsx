@@ -25,7 +25,7 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       decoding="async"
       referrerPolicy="no-referrer"
       className={cn(
-        'absolute inset-0 w-full h-full object-cover transform-gpu will-change-transform transition-transform duration-500 ease-out',
+        'absolute inset-0 w-full h-full object-cover',
         className
       )}
       {...rest}

@@ -43,6 +43,14 @@ export const LearningDashboard = () => {
     isLoading
   } = useLearningData();
   const { displayName, streakDays } = useCurrentUserProfile();
+  const friendlyName = React.useMemo(() => {
+    if (!displayName) return 'Learner';
+    if (displayName.includes('@')) {
+      const base = displayName.split('@')[0].replace(/[._-]+/g, ' ').trim();
+      return base ? base.replace(/\b\w/g, c => c.toUpperCase()) : 'Learner';
+    }
+    return displayName;
+  }, [displayName]);
 
   const handleEnroll = (courseId: string) => {
     setEnrolledCourses(prev => [...prev, courseId]);
@@ -73,7 +81,7 @@ export const LearningDashboard = () => {
   };
 
   const mockUserData = {
-    name: displayName,
+    name: friendlyName,
     currentStreak: streakDays,
     weeklyGoal: { target: 10, current: 7 },
     dailyGoal: { target: 2, current: 1.5 },
