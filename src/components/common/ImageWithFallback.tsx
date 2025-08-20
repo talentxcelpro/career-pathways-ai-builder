@@ -25,7 +25,6 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       onError={() => setError(true)}
       loading="lazy"
       decoding="async"
-      referrerPolicy="no-referrer"
       className={cn(
         'absolute inset-0 w-full h-full object-cover',
         className

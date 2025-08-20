@@ -266,14 +266,14 @@ const EnhancedColleges = () => {
                 <div className="relative bg-muted overflow-hidden">
                   <AspectRatio ratio={16/9} className="relative">
                     <ImageWithFallback
-                      src={college.cover_image_url || 'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop'}
+                      src={college.cover_image_url || '/images/college-placeholder.svg'}
                       alt={`${college.name} campus banner image`}
                       className="absolute inset-0 w-full h-full object-cover object-center"
                       width={1200}
                       height={675}
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      fallbackSrc="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop"
-                      referrerPolicy="no-referrer"
+                      fallbackSrc="/images/college-placeholder.svg"
+                      loading="eager"
                       unwrapped
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -283,9 +283,10 @@ const EnhancedColleges = () => {
                   <div className="absolute bottom-4 left-4">
                     <Avatar className="h-12 w-12 border-2 border-white">
                       <AvatarImage 
-                        src={college.logo_url} 
+                        src={college.logo_url || '/images/college-placeholder.svg'} 
                         alt={`${college.name} logo`}
                         className="object-contain"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/college-placeholder.svg'; }}
                       />
                       <AvatarFallback className="bg-white text-primary">
                         <GraduationCap className="h-6 w-6" />
