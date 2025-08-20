@@ -27,11 +27,28 @@ export function useCurrentUserProfile(): UseCurrentUserProfile {
         // Try to fetch profile details; tolerate missing columns
         const { data: profile } = await supabase
           .from('profiles')
-          .select('full_name, username, display_name, current_streak, streak')
+          .select('preferred_name, display_name, full_name, username, first_name, last_name, current_streak, streak')
           .eq('id', user.id)
           .maybeSingle();
 
-        const name = (profile?.display_name || profile?.full_name || profile?.username || user.email || 'Learner') as string;
+        const emailBase = user.email?.split('@')[0] || '';
+        const emailName = emailBase
+          .replace(/[._-]+/g, ' ')
+          .trim()
+          .replace(/\b\w/g, (c) => c.toUpperCase()) || 'Learner';
+
+        const name =
+          (profile?.preferred_name as string | undefined) ||
+          (profile?.display_name as string | undefined) ||
+          ((profile?.first_name || profile?.last_name)
+            ? `${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim()
+            : undefined) ||
+          (profile?.full_name as string | undefined) ||
+          (profile?.username as string | undefined) ||
+          ((user?.user_metadata?.full_name as string | undefined) ??
+            (user?.user_metadata?.name as string | undefined)) ||
+          emailName;
+
         const streak = (profile?.current_streak ?? profile?.streak ?? Number(localStorage.getItem('tx_streak_days')) ?? 7) as number;
 
         if (isMounted) {
