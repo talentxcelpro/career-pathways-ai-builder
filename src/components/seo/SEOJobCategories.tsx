@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export const SEOJobCategories = () => {
@@ -43,6 +43,12 @@ export const SEOJobCategories = () => {
     { name: 'Angular', slug: 'angular' }
   ];
 
+  const [query, setQuery] = useState('');
+  const norm = (s: string) => s.toLowerCase();
+  const filteredRoles = useMemo(() => jobRoles.filter(r => norm(r.name).includes(norm(query))), [query]);
+  const filteredLocations = useMemo(() => jobLocations.filter(l => norm(l.name).includes(norm(query))), [query]);
+  const filteredSkills = useMemo(() => jobSkills.filter(s => norm(s.name).includes(norm(query))), [query]);
+
   return (
     <section className="py-16 bg-slate-50/50">
       <div className="container mx-auto px-6">
@@ -54,7 +60,19 @@ export const SEOJobCategories = () => {
             Discover thousands of opportunities across different roles, locations, and skill sets
           </p>
         </div>
-        
+
+        <div className="max-w-xl mx-auto mb-8">
+          <label htmlFor="seo-categories-search" className="sr-only">Search roles, locations, or skills</label>
+          <input
+            id="seo-categories-search"
+            type="search"
+            placeholder="Search roles, locations, or skills..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full rounded-full border border-slate-200 bg-white/80 px-5 py-3 text-slate-700 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Jobs by Role */}
           <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
@@ -63,7 +81,7 @@ export const SEOJobCategories = () => {
               Jobs by Role
             </h3>
             <div className="space-y-3">
-              {jobRoles.map((role) => (
+              {filteredRoles.map((role) => (
                 <Link
                   key={role.slug}
                   to={`/jobs/role/${role.slug}`}
@@ -88,7 +106,7 @@ export const SEOJobCategories = () => {
               Jobs by Location
             </h3>
             <div className="space-y-3">
-              {jobLocations.map((location) => (
+              {filteredLocations.map((location) => (
                 <Link
                   key={location.slug}
                   to={`/jobs/location/${location.slug}`}
@@ -113,7 +131,7 @@ export const SEOJobCategories = () => {
               Jobs by Skills
             </h3>
             <div className="space-y-3">
-              {jobSkills.map((skill) => (
+              {filteredSkills.map((skill) => (
                 <Link
                   key={skill.slug}
                   to={`/jobs/skill/${skill.slug}`}

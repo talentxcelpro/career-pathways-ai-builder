@@ -64,25 +64,30 @@ export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ profileData })
 
       setQrCodeUrl(qrCodeDataUrl);
 
-      // Save to database
-      const { data, error } = await supabase
-        .from('career_passport_qr')
-        .upsert({
-          user_id: user.id,
-          qr_code_data: qrCodeData,
-          qr_code_url: qrCodeDataUrl,
-          passport_url: url,
-          is_active: true
-        })
-        .select()
-        .single();
+      // Try to save to database (non-blocking)
+      try {
+        const { data, error } = await supabase
+          .from('career_passport_qr')
+          .upsert({
+            user_id: user.id,
+            qr_code_data: qrCodeData,
+            qr_code_url: qrCodeDataUrl,
+            passport_url: url,
+            is_active: true
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
-      setQrData(data);
+        if (error) throw error;
+        setQrData(data);
+      } catch (dbErr) {
+        console.warn('QR ready locally, cloud save failed:', dbErr);
+        toast.info('QR ready. Cloud sync failed; you can still download or share.');
+      }
 
     } catch (error) {
-      console.error('Error generating QR code:', error);
-      toast.error('Failed to generate QR code');
+      console.error('Error generating QR image:', error);
+      toast.error('Failed to generate QR image');
     } finally {
       setIsGenerating(false);
     }
