@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight } from 'lucide-react';
-import handshakeHero from '@/assets/handshake-hero.png';
+import careerPassportPreview from '@/assets/career-passport-preview.png';
 
 export const AppleHeroSection = () => {
   return (
@@ -67,16 +67,18 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Handshake Visual */}
+          {/* Right Side - Career Passport Preview */}
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-200/40 via-purple-200/30 to-blue-200/40 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-slate-200/50">
-              <img
-                src={handshakeHero}
-                alt="Clean vector handshake illustration for global career growth"
-                loading="lazy"
-                className="block w-full h-auto object-cover"
-              />
+              <a href="/passport" className="block transition-transform hover:scale-105">
+                <img
+                  src={careerPassportPreview}
+                  alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
+                  loading="lazy"
+                  className="block w-full h-auto object-cover"
+                />
+              </a>
             </div>
           </div>
         </div>
