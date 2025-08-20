@@ -44,12 +44,11 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
 
       channel
         .on('postgres_changes', config, subscription.callback)
-        .on('system', {}, (payload) => {
-          if (payload.status === 'ok') {
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
             setIsConnected(true);
           }
-        })
-        .subscribe();
+        });
 
       channelsRef.current.push(channel);
     });
@@ -81,7 +80,12 @@ export function useNetworkRealtime(
       callback: onPostUpdate
     },
     {
-      table: 'post_reactions',
+      table: 'post_likes',
+      event: '*',
+      callback: onPostUpdate
+    },
+    {
+      table: 'post_comments',
       event: '*',
       callback: onPostUpdate
     },
@@ -91,7 +95,7 @@ export function useNetworkRealtime(
       callback: onConnectionUpdate
     },
     {
-      table: 'conversations',
+      table: 'messages',
       event: '*',
       callback: onConnectionUpdate
     }
@@ -162,13 +166,7 @@ export function useEmployerRealtime(
     {
       table: 'job_applications',
       event: '*',
-      filter: `job_id=in.(SELECT id FROM jobs WHERE created_by=${userId})`,
       callback: onApplicationUpdate
-    },
-    {
-      table: 'job_views',
-      event: 'INSERT',
-      callback: onJobStatsUpdate
     },
     {
       table: 'jobs',

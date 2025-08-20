@@ -13,8 +13,6 @@ const TABLES_TO_WATCH = [
   'ai_career_recommendations',
   'ai_job_matches',
   'messages',
-  'events',
-  'college_bookmarks',
   'post_comments',
   'post_likes'
 ] as const;
@@ -122,6 +120,10 @@ class RealtimeManager {
           console.error('   - Network/connectivity issues');
           console.error('   - Project realtime disabled');
           if (err) console.error('   - Error details:', err);
+          // Remove faulty channel to prevent repeated errors
+          const channelName = `realtime:public:${table}`;
+          supabase.removeChannel(channel);
+          this.channels.delete(channelName);
         }
         if (status === 'TIMED_OUT') {
           console.error(`⏰ Realtime subscription timed out for table: ${table}`);

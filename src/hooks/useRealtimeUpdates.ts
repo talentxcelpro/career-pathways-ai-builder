@@ -91,7 +91,7 @@ export function useMessagesRealtime(callback: (payload: RealtimePayload) => void
  * Hook specifically for college updates
  */
 export function useCollegesRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates(['colleges', 'college_bookmarks'], (_table, payload) => callback(payload));
+  useRealtimeUpdates(['colleges'], (_table, payload) => callback(payload));
 }
 
 /**
