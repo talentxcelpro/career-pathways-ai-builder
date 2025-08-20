@@ -274,6 +274,7 @@ const EnhancedColleges = () => {
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       fallbackSrc="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&fit=crop"
                       referrerPolicy="no-referrer"
+                      unwrapped
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </AspectRatio>
