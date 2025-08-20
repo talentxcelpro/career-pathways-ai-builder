@@ -1,5 +1,6 @@
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
 import Index from "../pages/Index";
+import RealtimeDemoPage from "../pages/RealtimeDemo";
 import TalentXcelResumeBuilder from "../pages/resume/TalentXcelResumeBuilder";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
@@ -114,6 +115,12 @@ export const coreRoutes = [
     title: "Mobile Demo",
     to: "/mobile-demo",
     page: <MobileDemoPage />,
+  },
+  {
+    title: "Real-time Demo",
+    to: "/realtime-demo", 
+    page: <RealtimeDemoPage />,
+    requiresAuth: false,
   },
   {
     title: "Mobile Notifications",

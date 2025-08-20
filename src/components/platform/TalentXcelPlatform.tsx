@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { usePlatformRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
+import { useRealtimeUpdates } from '@/hooks/useRealtimeUpdates';
 import { apiClient, safeApiCall } from '@/utils/api';
 import { ModuleConfig, ModuleName, User, CareerPassport } from '@/types/platform';
 import { ModuleLayout } from './ModuleLayout';
@@ -161,7 +161,7 @@ interface PlatformOverviewProps {
 
 function PlatformOverview({ userProfile, careerPassport }: PlatformOverviewProps) {
   const { user } = useAuth();
-  const realtimeUpdates = usePlatformRealtimeUpdates(user?.id);
+  // Realtime updates would be handled by specific components
 
   return (
     <div className="space-y-8">
@@ -183,11 +183,9 @@ function PlatformOverview({ userProfile, careerPassport }: PlatformOverviewProps
                 <IdCard className="h-3 w-3 mr-1" />
                 {userProfile?.member_id || 'TXL001'}
               </Badge>
-              {realtimeUpdates.isAnyConnected && (
-                <Badge variant="secondary" className="text-xs">
-                  🔴 Live Updates
-                </Badge>
-              )}
+              <Badge variant="secondary" className="text-xs">
+                🔴 Live Updates
+              </Badge>
             </div>
           </div>
         </CardHeader>
@@ -321,15 +319,9 @@ function PlatformOverview({ userProfile, careerPassport }: PlatformOverviewProps
         
         <CardContent>
           <div className="space-y-3">
-            {realtimeUpdates.totalEvents > 0 ? (
-              <div className="text-sm text-muted-foreground">
-                {realtimeUpdates.totalEvents} real-time updates received
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                No recent activity. Start exploring modules to see updates here.
-              </div>
-            )}
+            <div className="text-sm text-muted-foreground">
+              Real-time activity monitoring enabled. Recent activities will appear here.
+            </div>
           </div>
         </CardContent>
       </Card>

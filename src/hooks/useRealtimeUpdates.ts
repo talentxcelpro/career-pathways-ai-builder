@@ -1,206 +1,116 @@
-import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { RealtimeChannel } from '@supabase/supabase-js';
-import { RealtimeEvent } from '@/types/platform';
+import { useEffect, useCallback, useRef } from 'react';
+import { WatchedTable, RealtimePayload } from '@/lib/realtimeManager';
 
-interface UseRealtimeUpdatesOptions {
-  table: string;
-  event?: 'INSERT' | 'UPDATE' | 'DELETE' | '*';
-  filter?: string;
-  enabled?: boolean;
-  onUpdate?: (event: RealtimeEvent) => void;
-}
+/**
+ * Hook to listen for real-time updates on specific tables
+ */
+export function useRealtimeUpdates(
+  tables: WatchedTable | WatchedTable[],
+  callback: (table: WatchedTable, payload: RealtimePayload) => void,
+  dependencies: any[] = []
+) {
+  const callbackRef = useRef(callback);
+  
+  // Update callback ref when dependencies change
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, dependencies);
 
-export function useRealtimeUpdates(options: UseRealtimeUpdatesOptions) {
-  const { user } = useAuth();
-  const [isConnected, setIsConnected] = useState(false);
-  const [lastEvent, setLastEvent] = useState<RealtimeEvent | null>(null);
-  const [eventCount, setEventCount] = useState(0);
-  const [connectionHealth, setConnectionHealth] = useState<'healthy' | 'degraded' | 'disconnected'>('disconnected');
-
-  const handleRealtimeEvent = useCallback((payload: any) => {
-    const event: RealtimeEvent = {
-      eventType: payload.eventType,
-      payload: payload.new || payload.old || payload,
-      timestamp: new Date().toISOString(),
-      source: options.table
-    };
-
-    setLastEvent(event);
-    setEventCount(prev => prev + 1);
-    
-    if (options.onUpdate) {
-      options.onUpdate(event);
-    }
-
-    // Log event for debugging
-    console.log(`[Realtime] ${options.table}:`, event);
-  }, [options.onUpdate, options.table]);
+  const memoizedCallback = useCallback((event: CustomEvent) => {
+    const { detail } = event;
+    const table = detail.table as WatchedTable;
+    callbackRef.current(table, detail);
+  }, []);
 
   useEffect(() => {
-    if (!options.enabled || !user?.id) {
-      return;
-    }
+    const tablesToListen = Array.isArray(tables) ? tables : [tables];
+    
+    console.log(`🎯 Setting up realtime listeners for:`, tablesToListen);
 
-    let channel: RealtimeChannel;
-    let healthCheckInterval: NodeJS.Timeout;
+    const eventListeners: Array<{ eventName: string; handler: (event: CustomEvent) => void }> = [];
 
-    const connectToRealtime = () => {
-      try {
-        channel = supabase
-          .channel(`${options.table}_changes_${user.id}`)
-          .on(
-            'postgres_changes' as any,
-            {
-              event: options.event || '*',
-              schema: 'public',
-              table: options.table,
-              filter: options.filter
-            },
-            handleRealtimeEvent
-          )
-          .subscribe((status) => {
-            console.log(`[Realtime] ${options.table} subscription status:`, status);
-            
-            switch (status) {
-              case 'SUBSCRIBED':
-                setIsConnected(true);
-                setConnectionHealth('healthy');
-                break;
-              case 'CHANNEL_ERROR':
-              case 'TIMED_OUT':
-                setIsConnected(false);
-                setConnectionHealth('disconnected');
-                // Attempt reconnection after delay
-                setTimeout(connectToRealtime, 5000);
-                break;
-              case 'CLOSED':
-                setIsConnected(false);
-                setConnectionHealth('disconnected');
-                break;
-            }
-          });
-
-        // Health check ping every 30 seconds
-        healthCheckInterval = setInterval(() => {
-          if (channel.state === 'joined') {
-            setConnectionHealth('healthy');
-          } else {
-            setConnectionHealth('degraded');
-          }
-        }, 30000);
-
-      } catch (error) {
-        console.error(`[Realtime] Connection error for ${options.table}:`, error);
-        setConnectionHealth('disconnected');
-        setIsConnected(false);
-      }
-    };
-
-    connectToRealtime();
-
-    return () => {
-      if (healthCheckInterval) {
-        clearInterval(healthCheckInterval);
-      }
+    tablesToListen.forEach((table) => {
+      const eventName = `${table}Update`;
       
-      if (channel) {
-        supabase.removeChannel(channel);
-        setIsConnected(false);
-        setConnectionHealth('disconnected');
-      }
+      const handler = (event: Event) => {
+        memoizedCallback(event as CustomEvent);
+      };
+      
+      window.addEventListener(eventName, handler);
+      eventListeners.push({ eventName, handler });
+      
+      console.log(`👂 Listening for ${eventName} events`);
+    });
+
+    // Cleanup function
+    return () => {
+      eventListeners.forEach(({ eventName, handler }) => {
+        window.removeEventListener(eventName, handler);
+        console.log(`🔇 Stopped listening for ${eventName} events`);
+      });
     };
-  }, [user?.id, options.enabled, options.table, options.event, options.filter, handleRealtimeEvent]);
-
-  return {
-    isConnected,
-    lastEvent,
-    eventCount,
-    connectionHealth,
-    reconnect: useCallback(() => {
-      // Force reconnection by toggling the effect dependency
-      setEventCount(0);
-    }, [])
-  };
+  }, [tables, memoizedCallback]);
 }
 
-// Specialized hooks for different modules
-export function useCareerPassportUpdates(userId?: string) {
-  return useRealtimeUpdates({
-    table: 'career_passport',
-    event: 'UPDATE',
-    filter: userId ? `user_id=eq.${userId}` : undefined,
-    enabled: !!userId
-  });
+/**
+ * Hook specifically for jobs updates
+ */
+export function useJobsRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('jobs', (_table, payload) => callback(payload));
 }
 
-export function useProfileUpdates(userId?: string) {
-  return useRealtimeUpdates({
-    table: 'profiles',
-    event: 'UPDATE',
-    filter: userId ? `id=eq.${userId}` : undefined,
-    enabled: !!userId
-  });
+/**
+ * Hook specifically for posts/network updates
+ */
+export function useNetworkRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates(['posts', 'post_comments', 'post_likes'], (_table, payload) => callback(payload));
 }
 
-export function useNetworkUpdates(userId?: string) {
-  return useRealtimeUpdates({
-    table: 'connections',
-    event: '*',
-    filter: userId ? `requester_id=eq.${userId}` : undefined,
-    enabled: !!userId
-  });
+/**
+ * Hook specifically for profile updates
+ */
+export function useProfileRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('profiles', (_table, payload) => callback(payload));
 }
 
-export function useJobApplicationUpdates(userId?: string) {
-  return useRealtimeUpdates({
-    table: 'job_applications',
-    event: '*',
-    filter: userId ? `user_id=eq.${userId}` : undefined,
-    enabled: !!userId
-  });
+/**
+ * Hook specifically for connections updates
+ */
+export function useConnectionsRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('connections', (_table, payload) => callback(payload));
 }
 
-export function useResumeUpdates(userId?: string) {
-  return useRealtimeUpdates({
-    table: 'ai_resumes',
-    event: '*',
-    filter: userId ? `user_id=eq.${userId}` : undefined,
-    enabled: !!userId
-  });
+/**
+ * Hook specifically for messages updates
+ */
+export function useMessagesRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('messages', (_table, payload) => callback(payload));
 }
 
-// Multi-table realtime hook for comprehensive updates
-export function usePlatformRealtimeUpdates(userId?: string) {
-  const careerPassport = useCareerPassportUpdates(userId);
-  const profile = useProfileUpdates(userId);
-  const network = useNetworkUpdates(userId);
-  const jobs = useJobApplicationUpdates(userId);
-  const resumes = useResumeUpdates(userId);
+/**
+ * Hook specifically for college updates
+ */
+export function useCollegesRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates(['colleges', 'college_bookmarks'], (_table, payload) => callback(payload));
+}
 
-  const overallHealth: 'healthy' | 'degraded' | 'disconnected' = [
-    careerPassport.connectionHealth,
-    profile.connectionHealth,
-    network.connectionHealth,
-    jobs.connectionHealth,
-    resumes.connectionHealth
-  ].every(health => health === 'healthy') ? 'healthy' : 
-    [careerPassport.connectionHealth,
-     profile.connectionHealth,
-     network.connectionHealth,
-     jobs.connectionHealth,
-     resumes.connectionHealth
-    ].some(health => health === 'healthy') ? 'degraded' : 'disconnected';
+/**
+ * Hook for career recommendations updates
+ */
+export function useCareerRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates(['ai_career_recommendations', 'ai_job_matches'], (_table, payload) => callback(payload));
+}
 
-  return {
-    careerPassport,
-    profile,
-    network,
-    jobs,
-    resumes,
-    overallHealth,
-    totalEvents: careerPassport.eventCount + profile.eventCount + network.eventCount + jobs.eventCount + resumes.eventCount,
-    isAnyConnected: careerPassport.isConnected || profile.isConnected || network.isConnected || jobs.isConnected || resumes.isConnected
-  };
+/**
+ * Hook for applications updates
+ */
+export function useApplicationsRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('job_applications', (_table, payload) => callback(payload));
+}
+
+/**
+ * Hook for user activities updates
+ */
+export function useActivitiesRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('user_activities', (_table, payload) => callback(payload));
 }

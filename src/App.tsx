@@ -15,6 +15,7 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
+import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
@@ -92,6 +93,7 @@ const App = () => {
             <AuthProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
+                <RealtimeProvider showToasts={false}>
                 <CopilotProvider>
                   <ContentSecurityPolicy />
                 <Toaster
@@ -189,6 +191,7 @@ const App = () => {
                 </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
+                </RealtimeProvider>
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
             </AuthProvider>
