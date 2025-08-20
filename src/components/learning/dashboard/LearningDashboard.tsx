@@ -197,11 +197,7 @@ export const LearningDashboard = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="discover" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Discover
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Dashboard
@@ -224,58 +220,6 @@ export const LearningDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="discover" className="space-y-8">
-            <div className="flex gap-8">
-              {/* Sidebar Filters */}
-              <div className="hidden lg:block w-80 flex-shrink-0">
-                <LearningFilters
-                  categories={categories}
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  selectedDifficulty={selectedDifficulty}
-                  setSelectedDifficulty={setSelectedDifficulty}
-                />
-              </div>
-
-              {/* Main Content */}
-              <div className="flex-1 space-y-12">
-                {/* AI Recommendations */}
-                <section data-ai-recommendations>
-                  <AIRecommendations 
-                    courses={filteredCourses.slice(0, 6)}
-                    onEnroll={handleEnroll}
-                    onWishlist={handleWishlist}
-                    enrolledCourses={enrolledCourses}
-                    wishlist={wishlist}
-                  />
-                </section>
-
-                {/* Skill-Based Learning */}
-                <section>
-                  <SkillBasedLearning 
-                    courses={filteredCourses}
-                    onEnroll={handleEnroll}
-                    onWishlist={handleWishlist}
-                    enrolledCourses={enrolledCourses}
-                    wishlist={wishlist}
-                  />
-                </section>
-
-                {/* Trending Courses */}
-                <section>
-                  <TrendingCourses 
-                    courses={filteredCourses.sort((a, b) => (b.enrolled_count || 0) - (a.enrolled_count || 0)).slice(0, 8)}
-                    onEnroll={handleEnroll}
-                    onWishlist={handleWishlist}
-                    enrolledCourses={enrolledCourses}
-                    wishlist={wishlist}
-                  />
-                </section>
-              </div>
-            </div>
-          </TabsContent>
 
           <TabsContent value="dashboard">
             <PersonalizedDashboard userData={mockUserData} />
