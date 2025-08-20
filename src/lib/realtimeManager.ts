@@ -50,9 +50,9 @@ class RealtimeManager {
   }
 
   /**
-   * Initialize the realtime system with batching and cross-tab sync
+   * Initialize the realtime system with authentication checks and auto-reconnect
    */
-  init(callback?: RealtimeCallback) {
+  async init(callback?: RealtimeCallback) {
     if (this.isInitialized) {
       console.warn('Realtime manager already initialized');
       return;
@@ -60,21 +60,48 @@ class RealtimeManager {
 
     console.log('🚀 Initializing TalentXcel Production Realtime System...');
     console.log('🔍 Tables to watch:', TABLES_TO_WATCH);
-    console.log('🔑 Attempting realtime connection...');
 
-    // Check authentication status
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('🔐 Auth session status:', session ? 'authenticated' : 'not authenticated');
-      if (error) console.error('🔐 Auth error:', error);
-    });
+    // Check authentication status first
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error || !session) {
+      console.warn('🔐 No authenticated session - using public tables only');
+    } else {
+      console.log('🔐 Authenticated user detected');
+    }
 
     // Add callback if provided
     if (callback) {
       this.callbacks.add(callback);
     }
 
-    // Create a dedicated channel per table so one failure doesn't break all
-    TABLES_TO_WATCH.forEach((table) => {
+    this._setupRealtimeConnections(!!session);
+  }
+  
+  /**
+   * Setup realtime connections with authentication awareness
+   */
+  private _setupRealtimeConnections(isAuthenticated: boolean) {
+    // Filter tables based on authentication status
+    const tablesToWatch = TABLES_TO_WATCH.filter(table => {
+      // Public tables that don't require authentication
+      const publicTables = ['jobs', 'posts', 'companies', 'colleges', 'post_comments', 'post_likes'];
+      
+      if (publicTables.includes(table)) {
+        return true;
+      }
+      
+      // User-specific tables require authentication
+      if (!isAuthenticated) {
+        console.log(`⚠️ Skipping ${table} - requires authentication`);
+        return false;
+      }
+      
+      return true;
+    });
+
+    console.log('🎯 Watching tables:', tablesToWatch);
+
+    tablesToWatch.forEach((table) => {
       const channelName = `realtime:public:${table}`;
       console.log(`🔗 Creating channel: ${channelName}`);
 
@@ -125,11 +152,18 @@ class RealtimeManager {
           supabase.removeChannel(channel);
           this.channels.delete(channelName);
         }
+        if (status === 'CLOSED') {
+          console.warn(`🔒 Realtime channel closed for table: ${table} - attempting reconnect in 5s`);
+          // Auto-reconnect after 5 seconds
+          setTimeout(() => {
+            if (!this.channels.has(channelName)) {
+              console.log(`🔄 Reconnecting channel for ${table}...`);
+              this._setupSingleConnection(table);
+            }
+          }, 5000);
+        }
         if (status === 'TIMED_OUT') {
           console.error(`⏰ Realtime subscription timed out for table: ${table}`);
-        }
-        if (status === 'CLOSED') {
-          console.warn(`🔒 Realtime channel closed for table: ${table}`);
         }
       });
 
@@ -137,6 +171,40 @@ class RealtimeManager {
     });
 
     console.log('✅ Production realtime system initialized with per-table channels, batching and cross-tab sync');
+  }
+
+  /**
+   * Setup a single connection (used for reconnecting)
+   */
+  private _setupSingleConnection(table: WatchedTable) {
+    const channelName = `realtime:public:${table}`;
+    const channel = supabase.channel(channelName);
+
+    channel.on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table,
+      },
+      (payload) => {
+        const realtimePayload: RealtimePayload = {
+          eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+          new: payload.new || {},
+          old: payload.old || {},
+          table,
+          schema: payload.schema,
+        };
+        this._handleIncomingEvent(table, realtimePayload, false);
+      }
+    );
+
+    channel.subscribe((status) => {
+      console.log(`📡 Reconnect status [${table}]:`, status);
+      this.channelStatuses.set(table, status);
+    });
+
+    this.channels.set(channelName, channel);
   }
 
   /**

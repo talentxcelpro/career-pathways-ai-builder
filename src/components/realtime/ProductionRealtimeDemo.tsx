@@ -11,6 +11,12 @@ import {
   useRealtimeColleges,
   useRealtimeApplications
 } from '@/hooks/useRealtimeTable';
+import { 
+  useAutoRefreshJobs,
+  useAutoRefreshPosts,
+  useAutoRefreshCompanies,
+  useAutoRefreshApplications
+} from '@/hooks/useAutoRefresh';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Briefcase, 
@@ -26,26 +32,55 @@ export const ProductionRealtimeDemo: React.FC = () => {
   const [testJobTitle, setTestJobTitle] = useState('');
   const [testPostContent, setTestPostContent] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [usePolling, setUsePolling] = useState(false);
   const { toast } = useToast();
 
   // Real-time data hooks - these auto-update without refreshes!
-  const { data: jobs, loading: jobsLoading, refresh: refreshJobs } = useRealtimeJobs({
+  const realtimeJobs = useRealtimeJobs({
     limit: 5,
     enableToasts: true
   });
   
-  const { data: posts, loading: postsLoading, refresh: refreshPosts } = useRealtimePosts({
+  const realtimePosts = useRealtimePosts({
     limit: 5,
     enableToasts: true
   });
   
-  const { data: colleges, loading: collegesLoading } = useRealtimeColleges({
+  const realtimeColleges = useRealtimeColleges({
     limit: 5
   });
   
-  const { data: applications, loading: applicationsLoading } = useRealtimeApplications(undefined, {
+  const realtimeApplications = useRealtimeApplications(undefined, {
     limit: 5
   });
+
+  // Auto-refresh polling fallback (every 2 seconds)
+  const pollingJobs = useAutoRefreshJobs({ 
+    enabled: usePolling,
+    interval: 2000 
+  });
+  
+  const pollingPosts = useAutoRefreshPosts({ 
+    enabled: usePolling,
+    interval: 2000 
+  });
+  
+  const pollingCompanies = useAutoRefreshCompanies({ 
+    enabled: usePolling,
+    interval: 2000 
+  });
+  
+  const pollingApplications = useAutoRefreshApplications({ 
+    enabled: usePolling,
+    interval: 2000 
+  });
+
+  // Choose data source based on mode
+  const jobs = usePolling ? pollingJobs : realtimeJobs;
+  const posts = usePolling ? pollingPosts : realtimePosts;
+  const companies = usePolling ? { data: pollingCompanies.data || [], loading: pollingCompanies.loading, refresh: pollingCompanies.refresh } : { data: [], loading: false, refresh: () => {} };
+  const colleges = usePolling ? { data: [], loading: false, refresh: () => {} } : realtimeColleges;
+  const applications = usePolling ? pollingApplications : realtimeApplications;
 
   const createTestJob = async () => {
     if (!testJobTitle.trim()) {
@@ -149,6 +184,23 @@ export const ProductionRealtimeDemo: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Mode Toggle */}
+          <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+            <div>
+              <h3 className="font-medium">Data Update Mode</h3>
+              <p className="text-sm text-muted-foreground">
+                {usePolling ? 'Auto-refresh polling (every 2s)' : 'Supabase Realtime (instant)'}
+              </p>
+            </div>
+            <Button
+              variant={usePolling ? "secondary" : "default"}
+              onClick={() => setUsePolling(!usePolling)}
+              size="sm"
+            >
+              {usePolling ? 'Switch to Realtime' : 'Switch to Polling'}
+            </Button>
+          </div>
+
           {/* Test Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -201,23 +253,25 @@ export const ProductionRealtimeDemo: React.FC = () => {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Briefcase className="h-4 w-4" />
-              Jobs ({jobs.length})
-              <Badge variant="default" className="ml-auto">Live</Badge>
+              Jobs ({jobs.data?.length || 0})
+              <Badge variant={usePolling ? "secondary" : "default"} className="ml-auto">
+                {usePolling ? 'Polling' : 'Live'}
+              </Badge>
             </CardTitle>
-            <Button variant="outline" size="sm" onClick={refreshJobs} disabled={jobsLoading}>
-              <RefreshCw className={`h-3 w-3 ${jobsLoading ? 'animate-spin' : ''}`} />
+            <Button variant="outline" size="sm" onClick={jobs.refresh} disabled={jobs.loading}>
+              <RefreshCw className={`h-3 w-3 ${jobs.loading ? 'animate-spin' : ''}`} />
             </Button>
           </CardHeader>
           <CardContent className="space-y-2">
-            {jobsLoading ? (
+            {jobs.loading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
               </div>
-            ) : jobs.length === 0 ? (
+            ) : !jobs.data || jobs.data.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">No jobs yet</p>
             ) : (
-              jobs.map((job: any) => (
+              jobs.data.map((job: any) => (
                 <div key={job.id} className="p-2 border rounded">
                   <div className="font-medium text-sm">{job.title}</div>
                   <div className="text-xs text-muted-foreground">
@@ -234,27 +288,29 @@ export const ProductionRealtimeDemo: React.FC = () => {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
-              Posts ({posts.length})
-              <Badge variant="default" className="ml-auto">Live</Badge>
+              Posts ({posts.data?.length || 0})
+              <Badge variant={usePolling ? "secondary" : "default"} className="ml-auto">
+                {usePolling ? 'Polling' : 'Live'}
+              </Badge>
             </CardTitle>
-            <Button variant="outline" size="sm" onClick={refreshPosts} disabled={postsLoading}>
-              <RefreshCw className={`h-3 w-3 ${postsLoading ? 'animate-spin' : ''}`} />
+            <Button variant="outline" size="sm" onClick={posts.refresh} disabled={posts.loading}>
+              <RefreshCw className={`h-3 w-3 ${posts.loading ? 'animate-spin' : ''}`} />
             </Button>
           </CardHeader>
           <CardContent className="space-y-2">
-            {postsLoading ? (
+            {posts.loading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
               </div>
-            ) : posts.length === 0 ? (
+            ) : !posts.data || posts.data.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">No posts yet</p>
             ) : (
-              posts.map((post: any) => (
+              posts.data.map((post: any) => (
                 <div key={post.id} className="p-2 border rounded">
-                  <div className="text-sm">{post.content}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {post.profiles?.full_name || 'Anonymous'} • {new Date(post.created_at).toLocaleTimeString()}
+                  <div className="text-sm">{post.content?.substring(0, 100)}...</div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(post.created_at).toLocaleTimeString()}
                   </div>
                 </div>
               ))
@@ -267,20 +323,20 @@ export const ProductionRealtimeDemo: React.FC = () => {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <GraduationCap className="h-4 w-4" />
-              Colleges ({colleges.length})
+              Colleges ({colleges.data?.length || 0})
               <Badge variant="secondary" className="ml-auto">Live</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {collegesLoading ? (
+            {colleges.loading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
               </div>
-            ) : colleges.length === 0 ? (
+            ) : !colleges.data || colleges.data.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">No colleges yet</p>
             ) : (
-              colleges.map((college: any) => (
+              colleges.data.map((college: any) => (
                 <div key={college.id} className="p-2 border rounded">
                   <div className="font-medium text-sm">{college.name}</div>
                   <div className="text-xs text-muted-foreground">
@@ -297,20 +353,20 @@ export const ProductionRealtimeDemo: React.FC = () => {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Applications ({applications.length})
+              Applications ({applications.data?.length || 0})
               <Badge variant="secondary" className="ml-auto">Live</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {applicationsLoading ? (
+            {applications.loading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
               </div>
-            ) : applications.length === 0 ? (
+            ) : !applications.data || applications.data.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">No applications yet</p>
             ) : (
-              applications.map((app: any) => (
+              applications.data.map((app: any) => (
                 <div key={app.id} className="p-2 border rounded">
                   <div className="font-medium text-sm">{app.jobs?.title}</div>
                   <div className="text-xs text-muted-foreground">
