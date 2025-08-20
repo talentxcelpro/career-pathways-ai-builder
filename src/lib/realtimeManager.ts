@@ -34,17 +34,37 @@ export type RealtimeCallback = (table: WatchedTable, payload: RealtimePayload) =
 class RealtimeManager {
   private channels: Map<string, any> = new Map();
   private isInitialized = false;
+  private callbacks = new Set<RealtimeCallback>();
+  private queues = new Map<string, RealtimePayload[]>();
+  private flushTimers = new Map<string, number>();
+  private broadcastChannel: BroadcastChannel | null = null;
+
+  constructor() {
+    // Initialize BroadcastChannel for cross-tab communication
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      this.broadcastChannel = new BroadcastChannel('talentxcel-realtime');
+      this.broadcastChannel.onmessage = (event) => {
+        const { table, payload } = event.data;
+        this._handleIncomingEvent(table, payload, true);
+      };
+    }
+  }
 
   /**
-   * Initialize the realtime system with a global callback
+   * Initialize the realtime system with batching and cross-tab sync
    */
-  init(callback: RealtimeCallback) {
+  init(callback?: RealtimeCallback) {
     if (this.isInitialized) {
       console.warn('Realtime manager already initialized');
       return;
     }
 
-    console.log('🚀 Initializing TalentXcel Realtime System...');
+    console.log('🚀 Initializing TalentXcel Production Realtime System...');
+
+    // Add callback if provided
+    if (callback) {
+      this.callbacks.add(callback);
+    }
 
     TABLES_TO_WATCH.forEach((table) => {
       const channelName = `realtime:${table}`;
@@ -59,8 +79,6 @@ class RealtimeManager {
             table 
           },
           (payload) => {
-            console.log(`🔄 ${table.toUpperCase()} updated:`, payload);
-            
             const realtimePayload: RealtimePayload = {
               eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
               new: payload.new || {},
@@ -69,14 +87,7 @@ class RealtimeManager {
               schema: payload.schema
             };
 
-            callback(table, realtimePayload);
-            
-            // Dispatch custom event for direct component listening
-            window.dispatchEvent(
-              new CustomEvent(`${table}Update`, { 
-                detail: realtimePayload 
-              })
-            );
+            this._handleIncomingEvent(table, realtimePayload, false);
           }
         )
         .subscribe((status) => {
@@ -87,7 +98,82 @@ class RealtimeManager {
     });
 
     this.isInitialized = true;
-    console.log('✅ Realtime system initialized for all TalentXcel modules');
+    console.log('✅ Production realtime system initialized with batching and cross-tab sync');
+  }
+
+  /**
+   * Handle incoming realtime events with batching and broadcasting
+   */
+  private _handleIncomingEvent(table: WatchedTable, payload: RealtimePayload, fromBroadcast: boolean) {
+    console.log(`🔄 ${table.toUpperCase()} updated:`, payload);
+    
+    // Add to batch queue
+    const queue = this.queues.get(table) || [];
+    queue.push(payload);
+    this.queues.set(table, queue);
+
+    // Set up flush timer if not already set (batching window: 150ms)
+    if (!this.flushTimers.has(table)) {
+      const timerId = window.setTimeout(() => this._flushQueue(table), 150);
+      this.flushTimers.set(table, timerId);
+    }
+
+    // Broadcast to other tabs (only if not already from broadcast)
+    if (!fromBroadcast && this.broadcastChannel) {
+      this.broadcastChannel.postMessage({ table, payload });
+    }
+  }
+
+  /**
+   * Flush queued events and notify callbacks
+   */
+  private _flushQueue(table: WatchedTable) {
+    const queue = this.queues.get(table) || [];
+    if (queue.length === 0) return;
+
+    // Clear the queue and timer
+    const batch = queue.splice(0, queue.length);
+    this.queues.set(table, queue);
+    const timerId = this.flushTimers.get(table);
+    if (timerId) {
+      clearTimeout(timerId);
+      this.flushTimers.delete(table);
+    }
+
+    console.log(`🚀 Flushing ${batch.length} events for ${table}`);
+
+    // Process each event in the batch
+    batch.forEach(payload => {
+      // Notify all callbacks
+      this.callbacks.forEach(callback => {
+        try {
+          callback(table, payload);
+        } catch (error) {
+          console.error('Realtime callback error:', error);
+        }
+      });
+
+      // Dispatch custom events for backward compatibility
+      window.dispatchEvent(
+        new CustomEvent(`${table}Update`, { 
+          detail: payload 
+        })
+      );
+    });
+  }
+
+  /**
+   * Add a callback to receive realtime events
+   */
+  subscribe(callback: RealtimeCallback) {
+    this.callbacks.add(callback);
+  }
+
+  /**
+   * Remove a callback
+   */
+  unsubscribe(callback: RealtimeCallback) {
+    this.callbacks.delete(callback);
   }
 
   /**
@@ -96,13 +182,27 @@ class RealtimeManager {
   cleanup() {
     console.log('🧹 Cleaning up realtime subscriptions...');
     
+    // Clear all channels
     this.channels.forEach((channel, channelName) => {
       supabase.removeChannel(channel);
       console.log(`❌ Removed channel: ${channelName}`);
     });
-    
     this.channels.clear();
+
+    // Clear callbacks and timers
+    this.callbacks.clear();
+    this.flushTimers.forEach(timerId => clearTimeout(timerId));
+    this.flushTimers.clear();
+    this.queues.clear();
+
+    // Close broadcast channel
+    if (this.broadcastChannel) {
+      this.broadcastChannel.close();
+      this.broadcastChannel = null;
+    }
+    
     this.isInitialized = false;
+    console.log('✅ Realtime cleanup completed');
   }
 
   /**

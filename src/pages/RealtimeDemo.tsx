@@ -1,60 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RealtimeDemo } from '@/components/realtime/RealtimeDemo';
+import { ProductionRealtimeDemo } from '@/components/realtime/ProductionRealtimeDemo';
+import { Badge } from '@/components/ui/badge';
 
-const RealtimeDemoPage: React.FC = () => {
+export default function RealtimeDemoPage() {
   return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            TalentXcel Real-time System
-          </h1>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">TalentXcel Real-time System</h1>
           <p className="text-lg text-muted-foreground">
-            Experience live updates across all TalentXcel modules
+            Production-ready real-time updates with automatic state reconciliation
           </p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <RealtimeDemo />
+        
+        <Tabs defaultValue="production" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="production" className="flex items-center gap-2">
+              Production Demo
+              <Badge variant="default" className="text-xs">NEW</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="events">Events Monitor</TabsTrigger>
+          </TabsList>
           
-          <div className="space-y-6">
-            <div className="bg-card p-6 rounded-lg border">
-              <h3 className="text-xl font-semibold mb-4">How it works</h3>
-              <div className="space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0" />
-                  <p>Universal realtime system monitors all TalentXcel tables</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0" />
-                  <p>Changes are instantly broadcast to all connected users</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0" />
-                  <p>Components auto-refresh without page reload</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0" />
-                  <p>Works across Jobs, Network, Messages, Profile, etc.</p>
-                </div>
-              </div>
+          <TabsContent value="production" className="mt-6">
+            <ProductionRealtimeDemo />
+          </TabsContent>
+          
+          <TabsContent value="events" className="mt-6">
+            <div className="flex justify-center">
+              <RealtimeDemo />
             </div>
-
-            <div className="bg-card p-6 rounded-lg border">
-              <h3 className="text-xl font-semibold mb-4">Try these actions</h3>
-              <div className="space-y-2 text-sm">
-                <p>• Open multiple tabs and create a post</p>
-                <p>• Update your profile in another tab</p>
-                <p>• Apply to a job or bookmark a college</p>
-                <p>• Send a connection request</p>
-                <p>• Watch the real-time events appear!</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
-};
-
-export default RealtimeDemoPage;
+}
