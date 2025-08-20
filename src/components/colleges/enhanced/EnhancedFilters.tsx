@@ -37,10 +37,10 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
 
   const clearAllFilters = () => {
     onFiltersChange({
-      collegeType: '',
-      city: '',
-      state: '',
-      ranking: '',
+      collegeType: 'all',
+      city: 'all',
+      state: 'all',
+      ranking: 'all',
       verifiedOnly: false,
       premiumOnly: false,
       placementRange: [0, 100],
@@ -50,10 +50,10 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (filters.collegeType) count++;
-    if (filters.city) count++;
-    if (filters.state) count++;
-    if (filters.ranking) count++;
+    if (filters.collegeType && filters.collegeType !== 'all') count++;
+    if (filters.city && filters.city !== 'all') count++;
+    if (filters.state && filters.state !== 'all') count++;
+    if (filters.ranking && filters.ranking !== 'all') count++;
     if (filters.verifiedOnly) count++;
     if (filters.premiumOnly) count++;
     if (filters.placementRange[0] > 0 || filters.placementRange[1] < 100) count++;
@@ -97,7 +97,7 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
               <SelectValue placeholder="College Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Types</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
               {filterOptions.college_types.map((type) => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
@@ -109,7 +109,7 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
               <SelectValue placeholder="State" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All States</SelectItem>
+              <SelectItem value="all">All States</SelectItem>
               {filterOptions.states.map((state) => (
                 <SelectItem key={state} value={state}>{state}</SelectItem>
               ))}
@@ -121,7 +121,7 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
               <SelectValue placeholder="City" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Cities</SelectItem>
+              <SelectItem value="all">All Cities</SelectItem>
               {filterOptions.cities.map((city) => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
@@ -180,7 +180,7 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
               <SelectValue placeholder="Any Ranking" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any Ranking</SelectItem>
+              <SelectItem value="all">Any Ranking</SelectItem>
               <SelectItem value="1-10">Top 10</SelectItem>
               <SelectItem value="1-25">Top 25</SelectItem>
               <SelectItem value="1-50">Top 50</SelectItem>
@@ -246,17 +246,17 @@ export const EnhancedFilters: React.FC<EnhancedFiltersProps> = ({
                   Premium Only
                 </Badge>
               )}
-              {filters.collegeType && (
+              {filters.collegeType && filters.collegeType !== 'all' && (
                 <Badge variant="outline" className="text-xs">
                   {filters.collegeType}
                 </Badge>
               )}
-              {filters.state && (
+              {filters.state && filters.state !== 'all' && (
                 <Badge variant="outline" className="text-xs">
                   {filters.state}
                 </Badge>
               )}
-              {filters.city && (
+              {filters.city && filters.city !== 'all' && (
                 <Badge variant="outline" className="text-xs">
                   {filters.city}
                 </Badge>

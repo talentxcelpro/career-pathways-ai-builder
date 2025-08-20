@@ -51,10 +51,10 @@ const EnhancedColleges = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    collegeType: '',
-    city: '',
-    state: '',
-    ranking: '',
+    collegeType: 'all',
+    city: 'all',
+    state: 'all',
+    ranking: 'all',
     verifiedOnly: false,
     premiumOnly: false,
     placementRange: [0, 100] as [number, number],
