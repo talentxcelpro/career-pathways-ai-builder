@@ -196,7 +196,7 @@ export const LearningDashboard = () => {
       <LearningHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Tabs defaultValue="discover" className="space-y-6">
+        <Tabs defaultValue="dashboard" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="discover" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />

@@ -12,6 +12,12 @@ import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 
 const Learning = () => {
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Learning Dashboard | TalentXcel',
+      description: 'Personalized courses, learning paths, progress, and community.'
+    });
+  }, []);
   return <LearningDashboard />;
 };
 

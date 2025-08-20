@@ -226,11 +226,15 @@ const Colleges = () => {
           {filteredColleges.map((college) => (
             <Card key={college.id} className="overflow-hidden hover:shadow-apple-heavy transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm rounded-2xl group">
               {/* College Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative aspect-[16/9] overflow-hidden">
                 <img 
                   src={college.image_url} 
-                  alt={college.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  alt={`${college.name} campus image`}
+                  width={1280}
+                  height={720}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover transform-gpu will-change-transform transition-transform duration-500 ease-out group-hover:scale-105"
                 />
                 {college.verified && (
                   <div className="absolute top-4 left-4">

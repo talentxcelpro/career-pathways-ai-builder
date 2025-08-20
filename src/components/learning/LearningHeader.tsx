@@ -2,13 +2,17 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
-import { BookOpen, Target, Award } from 'lucide-react';
-
+import { BookOpen, Target, Award, Flame } from 'lucide-react';
+import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 export const LearningHeader: React.FC = () => {
+  const { displayName, streakDays } = useCurrentUserProfile();
   return (
-    <div className="mb-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Hub</h1>
-      <p className="text-gray-600">Advance your career with expert-led courses and learning paths</p>
+    <header className="mb-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {displayName}!</h1>
+      <p className="text-gray-600 flex items-center gap-2">
+        <Flame className="h-4 w-4 text-orange-500" />
+        You're on a {streakDays}-day learning streak
+      </p>
       
       {/* Quick Navigation */}
       <div className="flex flex-wrap gap-4 mt-6">
@@ -31,6 +35,6 @@ export const LearningHeader: React.FC = () => {
           </Button>
         </Link>
       </div>
-    </div>
+    </header>
   );
 };
