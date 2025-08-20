@@ -75,21 +75,20 @@ class RealtimeManager {
       this.callbacks.add(callback);
     }
 
-    // Create a single shared channel for all Postgres changes (more reliable)
-    const sharedChannelName = 'public:postgres-changes';
-    console.log(`🔗 Creating shared channel: ${sharedChannelName}`);
-    
-    const sharedChannel = supabase.channel(sharedChannelName);
-    
-    // Attach listeners for each table on the shared channel
+    // Create a dedicated channel per table so one failure doesn't break all
     TABLES_TO_WATCH.forEach((table) => {
-      console.log(`📥 Subscribing to table: ${table}`);
-      sharedChannel.on(
+      const channelName = `realtime:public:${table}`;
+      console.log(`🔗 Creating channel: ${channelName}`);
+
+      const channel = supabase.channel(channelName);
+
+      // Attach listener for this specific table
+      channel.on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table
+          table,
         },
         (payload) => {
           const realtimePayload: RealtimePayload = {
@@ -97,43 +96,45 @@ class RealtimeManager {
             new: payload.new || {},
             old: payload.old || {},
             table,
-            schema: payload.schema
+            schema: payload.schema,
           };
           this._handleIncomingEvent(table, realtimePayload, false);
         }
       );
+
+      // Subscribe and track status for this table only
+      channel.subscribe((status, err) => {
+        console.log(`📡 Realtime status [${table}]:`, status);
+        if (err) console.error(`📡 Realtime error details [${table}]:`, err);
+
+        this.channelStatuses.set(table, status);
+
+        if (status === 'SUBSCRIBED') {
+          console.log(`✅ Channel subscribed for table: ${table}`);
+          // Mark initialized when first channel subscribes successfully
+          if (!this.isInitialized) this.isInitialized = true;
+        }
+        if (status === 'CHANNEL_ERROR') {
+          console.error(`❌ Channel error for table: ${table}. Possible causes:`);
+          console.error('   - Table not in supabase_realtime publication');
+          console.error('   - Table does not exist');
+          console.error('   - Authentication required but user not logged in');
+          console.error('   - Network/connectivity issues');
+          console.error('   - Project realtime disabled');
+          if (err) console.error('   - Error details:', err);
+        }
+        if (status === 'TIMED_OUT') {
+          console.error(`⏰ Realtime subscription timed out for table: ${table}`);
+        }
+        if (status === 'CLOSED') {
+          console.warn(`🔒 Realtime channel closed for table: ${table}`);
+        }
+      });
+
+      this.channels.set(channelName, channel);
     });
 
-    // Subscribe once and mirror status to all tables
-    sharedChannel.subscribe((status, err) => {
-      console.log(`📡 Shared realtime status:`, status);
-      if (err) console.error('📡 Shared realtime error details:', err);
-      
-      TABLES_TO_WATCH.forEach((table) => this.channelStatuses.set(table, status));
-      
-      if (status === 'CHANNEL_ERROR') {
-        console.error('❌ Shared realtime channel error. Common causes:');
-        console.error('   - Tables not in supabase_realtime publication');
-        console.error('   - Authentication required but user not logged in');
-        console.error('   - Network connectivity issues');
-        console.error('   - Project realtime disabled');
-        if (err) console.error('   - Error details:', err);
-      }
-      if (status === 'TIMED_OUT') {
-        console.error('⏰ Shared realtime subscription timed out');
-      }
-      if (status === 'CLOSED') {
-        console.warn('🔒 Shared realtime channel closed');
-      }
-      if (status === 'SUBSCRIBED') {
-        console.log('✅ Shared realtime channel successfully subscribed');
-      }
-    });
-
-    this.channels.set(sharedChannelName, sharedChannel);
-
-    this.isInitialized = true;
-    console.log('✅ Production realtime system initialized with batching and cross-tab sync');
+    console.log('✅ Production realtime system initialized with per-table channels, batching and cross-tab sync');
   }
 
   /**
