@@ -7,6 +7,7 @@ interface RealtimeContextType {
   isConnected: boolean;
   lastUpdate: { table: WatchedTable; payload: RealtimePayload } | null;
   connectionStatus: Record<string, string>;
+  usePollingFallback: boolean;
 }
 
 const RealtimeContext = createContext<RealtimeContextType | null>(null);
@@ -23,6 +24,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<{ table: WatchedTable; payload: RealtimePayload } | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<Record<string, string>>({});
+  const [usePollingFallback, setUsePollingFallback] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
       setLastUpdate({ table, payload });
       // Consider connected once we start receiving events
       setIsConnected(true);
+      setUsePollingFallback(false); // Realtime is working, disable polling
       // Update connection status
       const status = realtimeManager.getStatus();
       setConnectionStatus(status);
@@ -71,12 +74,32 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
     };
     window.addEventListener('online', onlineHandler);
 
-    // Check connection status periodically
+    // Check connection status periodically and enable polling fallback if needed
     const statusInterval = setInterval(() => {
       const status = realtimeManager.getStatus();
       setConnectionStatus(status);
       const connectedChannels = Object.values(status).filter(s => s === 'SUBSCRIBED').length;
+      const wasConnected = isConnected;
       setIsConnected(connectedChannels > 0);
+      
+      // Enable polling fallback after 10 seconds if realtime isn't working
+      if (connectedChannels === 0 && !usePollingFallback) {
+        setTimeout(() => {
+          const currentStatus = realtimeManager.getStatus();
+          const currentConnected = Object.values(currentStatus).filter(s => s === 'SUBSCRIBED').length;
+          if (currentConnected === 0) {
+            console.log('🔄 Realtime not working, enabling polling fallback...');
+            setUsePollingFallback(true);
+            if (showToasts) {
+              toast({
+                title: "Connection Status",
+                description: "Using polling for updates while realtime reconnects...",
+                duration: 3000,
+              });
+            }
+          }
+        }, 10000);
+      }
     }, 3000);
 
     // Cleanup function
@@ -94,6 +117,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
     isConnected,
     lastUpdate,
     connectionStatus,
+    usePollingFallback,
   };
 
   return (

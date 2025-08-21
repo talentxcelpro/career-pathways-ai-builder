@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Wifi, WifiOff, Loader2 } from 'lucide-react';
 
 export function RealtimeStatus() {
-  const { isConnected, connectionStatus } = useRealtimeContext();
+  const { isConnected, connectionStatus, usePollingFallback } = useRealtimeContext();
 
   const getStatusIcon = () => {
     if (!isConnected) {
@@ -23,6 +23,7 @@ export function RealtimeStatus() {
   };
 
   const getStatusText = () => {
+    if (usePollingFallback) return 'Polling';
     if (!isConnected) return 'Offline';
     
     const connectedChannels = Object.values(connectionStatus).filter(
@@ -36,6 +37,7 @@ export function RealtimeStatus() {
   };
 
   const getVariant = () => {
+    if (usePollingFallback) return 'outline'; // Different style for polling mode
     if (!isConnected) return 'destructive';
     
     const connectedChannels = Object.values(connectionStatus).filter(
