@@ -213,13 +213,22 @@ const ProfileIntegration = () => {
           });
         }
 
-        // Insert suggestions
+        // Insert suggestions with safe upsert approach
         for (const suggestion of suggestions) {
-          await supabase
+          const { error: updateError } = await supabase
             .from('user_suggestions')
-            .upsert(suggestion, {
-              onConflict: 'user_id,title'
-            });
+            .update(suggestion)
+            .eq('user_id', suggestion.user_id)
+            .eq('title', suggestion.title);
+          
+          if (updateError && updateError.code === 'PGRST116') {
+            // If no rows to update, insert new record
+            await supabase
+              .from('user_suggestions')
+              .insert(suggestion);
+          } else if (updateError) {
+            console.error('Error updating suggestion:', updateError);
+          }
         }
       }
 
