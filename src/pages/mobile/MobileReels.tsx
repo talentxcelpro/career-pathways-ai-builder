@@ -145,13 +145,13 @@ export const MobileReels = () => {
         const videoReels = (postsData || [])
           .filter((post: any) => {
             const media = (post.media_urls || []) as string[];
-            const hasVideo = media.some((m) => /\.(mp4|mov|webm|avi)$/i.test(m));
+            const hasVideo = media.some((m) => /\.(mp4|mov|webm|avi)(\?|#|$)/i.test(m));
             console.log('🎬 Post', post.id, 'has video:', hasVideo, 'media:', media);
             return hasVideo;
           })
           .map((post: any) => {
             const media = (post.media_urls || []) as string[];
-            const firstVideo = media.find((m) => /\.(mp4|mov|webm|avi)$/i.test(m)) || '';
+            const firstVideo = media.find((m) => /\.(mp4|mov|webm|avi)(\?|#|$)/i.test(m)) || '';
             const profile = profilesMap.get(post.author_id);
             
             console.log('🎬 Processing post:', post.id, 'video:', firstVideo);

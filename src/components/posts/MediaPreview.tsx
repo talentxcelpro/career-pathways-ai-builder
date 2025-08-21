@@ -20,11 +20,8 @@ const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, ind
   useEffect(() => {
     if (!mediaUrl) return;
 
-    // Always swap project URL with custom domain
-    const correctedUrl = mediaUrl.replace(
-      "https://dthlgsnakhoftinssokm.supabase.co",
-      "https://auth.talentxcel.in"
-    );
+    // Use the media URL as-is (no domain rewriting)
+    const correctedUrl = mediaUrl;
 
     setFixedUrl(correctedUrl);
   }, [mediaUrl]);
@@ -113,8 +110,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                            '1fr 1fr'
       }}>
         {mediaItems.slice(0, 4).map((url: string, index: number) => {
-          const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || 
-                          (url.includes('supabase.co/storage') && url.includes('.mp4'));
+          const isVideo = /\.(mp4|webm|ogg)(\?|#|$)/i.test(url) ||
+                          (url.includes('supabase.co/storage') && /\.(mp4|webm|ogg)(\?|#|$)/i.test(url));
           const isYouTube = url.includes('youtube.com/watch') || url.includes('youtu.be/');
           
           // Extract YouTube video ID for embedding

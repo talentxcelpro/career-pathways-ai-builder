@@ -37,14 +37,26 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
             const filePath = urlParts[1];
             console.log('VideoPlayer: Extracted file path:', filePath);
             
-            // Get public URL for the file
+            // Get public URL for the file, and fallback to signed URL if needed
             const { data } = supabase.storage
               .from('post-media')
               .getPublicUrl(filePath);
-            
             console.log('VideoPlayer: Generated public URL:', data.publicUrl);
-            const publicUrl = data.publicUrl || url;
-            setVideoSrc(publicUrl);
+
+            let finalUrl = data.publicUrl || url;
+            try {
+              // Try a signed URL as it works for private buckets too
+              const signed = await supabase.storage
+                .from('post-media')
+                .createSignedUrl(filePath, 60 * 60);
+              if (signed.data?.signedUrl) {
+                finalUrl = signed.data.signedUrl;
+                console.log('VideoPlayer: Using signed URL');
+              }
+            } catch (e) {
+              console.warn('VideoPlayer: Signed URL generation failed, using public/original URL');
+            }
+            setVideoSrc(finalUrl);
           } else {
             console.log('VideoPlayer: Using original URL as-is');
             setVideoSrc(url);
