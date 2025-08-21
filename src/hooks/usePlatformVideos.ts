@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { isVideoUrl } from '@/utils/videoValidation';
 
 export interface PlatformVideo {
   id: string;
@@ -153,21 +154,15 @@ export const usePlatformVideos = (enabled: boolean = true) => {
           const postVideos = postsWithVideos.data
             .filter(post => {
               const media = (post.media_urls || []) as string[];
-              return media.some(m => 
-                /\.(mp4|mov|webm|avi|m4v)(\?|#|$)/i.test(m) || 
-                m.includes('post-media') ||
-                m.includes('youtube.com') ||
-                m.includes('youtu.be')
-              );
+              // Only include posts with valid video URLs
+              return media.some(url => isVideoUrl(url));
             })
             .map(post => {
               const media = (post.media_urls || []) as string[];
-              const videoUrl = media.find(m => 
-                /\.(mp4|mov|webm|avi|m4v)(\?|#|$)/i.test(m) || 
-                m.includes('post-media') ||
-                m.includes('youtube.com') ||
-                m.includes('youtu.be')
-              ) || '';
+              const videoUrl = media.find(url => isVideoUrl(url)) || '';
+              
+              // Skip posts with no valid video URL
+              if (!videoUrl) return null;
               
               const profile = profilesMap.get(post.author_id);
               
@@ -196,14 +191,17 @@ export const usePlatformVideos = (enabled: boolean = true) => {
                 provider: videoUrl.includes('youtube') ? 'youtube' : 'storage',
                 source_table: 'posts' as const
               } as PlatformVideo;
-            });
+            })
+            .filter(Boolean); // Remove null entries
 
           videos.push(...postVideos);
         }
 
-        // Process college videos
+        // Process college videos - only include ones with valid video URLs
         if (collegeVideos.data) {
-          const collegeVideoItems = collegeVideos.data.map(video => ({
+          const collegeVideoItems = collegeVideos.data
+            .filter(video => video.video_url && (isVideoUrl(video.video_url) || video.yt_video_id))
+            .map(video => ({
             id: `college-${video.id}`,
             video_url: video.video_url || '',
             thumbnail_url: video.thumbnail_url,
@@ -234,9 +232,11 @@ export const usePlatformVideos = (enabled: boolean = true) => {
           videos.push(...collegeVideoItems);
         }
 
-        // Process course videos
+        // Process course videos - only include ones with valid video URLs
         if (courseVideos.data) {
-          const courseVideoItems = courseVideos.data.map(video => ({
+          const courseVideoItems = courseVideos.data
+            .filter(video => video.video_url && (isVideoUrl(video.video_url) || video.yt_video_id))
+            .map(video => ({
             id: `course-${video.id}`,
             video_url: video.video_url || '',
             thumbnail_url: video.thumbnail_url,
@@ -267,9 +267,11 @@ export const usePlatformVideos = (enabled: boolean = true) => {
           videos.push(...courseVideoItems);
         }
 
-        // Process employer videos
+        // Process employer videos - only include ones with valid video URLs
         if (employerVideos.data) {
-          const employerVideoItems = employerVideos.data.map(video => ({
+          const employerVideoItems = employerVideos.data
+            .filter(video => video.video_url && (isVideoUrl(video.video_url) || video.yt_video_id))
+            .map(video => ({
             id: `employer-${video.id}`,
             video_url: video.video_url || '',
             thumbnail_url: video.thumbnail_url,
@@ -300,10 +302,10 @@ export const usePlatformVideos = (enabled: boolean = true) => {
           videos.push(...employerVideoItems);
         }
 
-        // Process podcasts
+        // Process podcasts - only include ones with valid video URLs
         if (podcasts.data) {
           const podcastItems = podcasts.data
-            .filter(podcast => podcast.video_url) // Only include podcasts with video
+            .filter(podcast => podcast.video_url && isVideoUrl(podcast.video_url))
             .map(podcast => ({
               id: `podcast-${podcast.id}`,
               video_url: podcast.video_url || '',

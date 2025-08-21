@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { VideoErrorFallback } from '@/components/video/VideoErrorFallback';
+import { validateVideoUrl } from '@/utils/videoValidation';
 
 interface VideoPlayerProps {
   url: string;
@@ -20,13 +22,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
   const [hasError, setHasError] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string>('');
+  const [isValidating, setIsValidating] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     const processVideoUrl = async () => {
+      setIsValidating(true);
       setIsLoading(true);
       setHasError(false);
+      setErrorMessage('');
       
       console.log('VideoPlayer: Processing URL:', url);
+      
+      // First validate the URL
+      const isValid = await validateVideoUrl(url);
+      if (!isValid) {
+        console.warn('VideoPlayer: Invalid or inaccessible video URL:', url);
+        setHasError(true);
+        setErrorMessage('Video URL is not accessible');
+        setIsValidating(false);
+        setIsLoading(false);
+        return;
+      }
       
       // Check if it's a Supabase storage URL (any domain) for post-media bucket
       const isSupabaseObjectUrl = url.includes('/object/') && url.includes('/post-media/');
@@ -81,6 +98,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
         console.log('VideoPlayer: Using URL directly');
         setVideoSrc(url);
       }
+      
+      setIsValidating(false);
     };
 
     processVideoUrl();
@@ -152,13 +171,38 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
     setIsMuted(video.muted);
   };
 
+  const handleRetry = () => {
+    setHasError(false);
+    setErrorMessage('');
+    // Re-process the URL
+    const processUrl = async () => {
+      setIsValidating(true);
+      const isValid = await validateVideoUrl(url);
+      if (isValid) {
+        setVideoSrc(url);
+      } else {
+        setHasError(true);
+        setErrorMessage('Video URL is not accessible');
+      }
+      setIsValidating(false);
+    };
+    processUrl();
+  };
+
   if (hasError) {
     return (
-      <div className={`${className} bg-destructive/10 border border-destructive/20 rounded-lg flex items-center justify-center p-8`}>
-        <div className="text-destructive text-sm text-center">
-          <div className="mb-2">Unable to load video</div>
-          <div className="text-xs opacity-70">The video file may not be accessible</div>
-        </div>
+      <VideoErrorFallback 
+        error={errorMessage || 'Unable to load video'} 
+        onRetry={handleRetry}
+        className={className}
+      />
+    );
+  }
+
+  if (isValidating) {
+    return (
+      <div className={`${className} bg-gray-100 dark:bg-gray-800 flex items-center justify-center p-8`}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
       </div>
     );
   }
