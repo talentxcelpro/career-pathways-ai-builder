@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
 import { ReelsCommentsModal } from '@/components/mobile/ReelsCommentsModal';
 import { linkifyText } from '@/utils/textUtils';
+import VideoPlayer from '@/components/posts/VideoPlayer';
 import { 
   Heart, 
   MessageCircle, 
@@ -50,6 +51,8 @@ interface VideoReel {
   tags: string[];
   is_liked: boolean;
   is_bookmarked: boolean;
+  provider?: 'youtube' | 'storage';
+  provider_video_id?: string;
 }
 
 export const MobileReels = () => {
@@ -178,9 +181,46 @@ export const MobileReels = () => {
 
         console.log('🎬 Final video reels:', videoReels.length);
 
-        // If we found videos, return them
-        if (videoReels.length > 0) {
-          return videoReels;
+        // Combine with published videos from Edge Function on first page
+        let combinedReels: VideoReel[] = [...videoReels];
+        if (pageParam === 0) {
+          const { data: ytData, error: ytErr } = await supabase.functions.invoke('yt-feed');
+          if (ytErr) {
+            console.warn('🎬 yt-feed error:', ytErr);
+          } else {
+            const ytReels: VideoReel[] = (ytData as any[] | null || []).map((v: any) => ({
+              id: `video-${v.id}`,
+              video_url: '',
+              thumbnail_url: v.thumbnail_url || undefined,
+              title: v.title || 'Video',
+              description: v.caption || '',
+              created_at: v.created_at,
+              author: {
+                id: 'talentxcel',
+                first_name: 'TalentXcel',
+                last_name: 'Video',
+                avatar_url: undefined,
+                title: 'Curated Video',
+                company: 'TalentXcel',
+              },
+              stats: {
+                likes: Math.floor(Math.random() * 500) + 50,
+                comments: Math.floor(Math.random() * 100) + 10,
+                shares: Math.floor(Math.random() * 50) + 5,
+                views: Math.floor(Math.random() * 10000) + 500,
+              },
+              tags: [],
+              is_liked: false,
+              is_bookmarked: false,
+              provider: 'youtube',
+              provider_video_id: v.provider_video_id || '',
+            }));
+            combinedReels = [...ytReels, ...combinedReels];
+          }
+        }
+
+        if (combinedReels.length > 0) {
+          return combinedReels;
         }
 
         // Fallback: Return sample data only if no real videos found and it's the first page
@@ -188,7 +228,7 @@ export const MobileReels = () => {
           console.log('🎬 No real videos found, providing sample content');
           return [{
             id: 'sample-1',
-            video_url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+            video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
             thumbnail_url: undefined,
             title: 'Welcome to TalentXcel Reels',
             description: 'Share your professional journey and connect with talent worldwide! 🚀 #TalentXcel #Professional #Career',
@@ -210,12 +250,12 @@ export const MobileReels = () => {
             tags: ['TalentXcel', 'Professional', 'Career'],
             is_liked: false,
             is_bookmarked: false,
+            provider: 'storage',
           }];
         }
 
         // For subsequent pages with no data, return empty array
         return [];
-
       } catch (error) {
         console.error('🎬 Query failed:', error);
         throw error;
@@ -282,6 +322,8 @@ export const MobileReels = () => {
   };
 
   const handleLike = async (reelId: string) => {
+    // Skip likes for external videos from videos table
+    if (reelId.startsWith('video-')) return;
     if (!user) {
       toast({
         title: "Login Required",
@@ -415,21 +457,37 @@ export const MobileReels = () => {
               className="h-screen w-full relative snap-start flex items-center justify-center"
             >
               {/* Video */}
-              <video
-                ref={el => videoRefs.current[index] = el}
-                className="w-full h-full object-cover"
-                src={reel.video_url}
-                poster={reel.thumbnail_url}
-                loop
-                autoPlay
-                muted={isMuted}
-                playsInline
-                preload="metadata"
-                onLoadStart={() => console.log('Video loading started:', reel.video_url)}
-                onCanPlay={() => console.log('Video can play:', reel.video_url)}
-                onError={(e) => console.error('Video error:', e, reel.video_url)}
-                onClick={togglePlayPause}
-              />
+              {reel.provider === 'youtube' && reel.provider_video_id ? (
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube-nocookie.com/embed/${reel.provider_video_id}?autoplay=1&mute=${isMuted ? 1 : 0}&playsinline=1&controls=1&modestbranding=1&rel=0&loop=1&playlist=${reel.provider_video_id}`}
+                  title={reel.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : reel.video_url && reel.video_url.includes('supabase.co/storage') ? (
+                <VideoPlayer
+                  url={reel.video_url}
+                  className="w-full h-full"
+                  fit="cover"
+                />
+              ) : (
+                <video
+                  ref={el => videoRefs.current[index] = el}
+                  className="w-full h-full object-cover"
+                  src={reel.video_url}
+                  poster={reel.thumbnail_url}
+                  loop
+                  autoPlay
+                  muted={isMuted}
+                  playsInline
+                  preload="metadata"
+                  onLoadStart={() => console.log('Video loading started:', reel.video_url)}
+                  onCanPlay={() => console.log('Video can play:', reel.video_url)}
+                  onError={(e) => console.error('Video error:', e, reel.video_url)}
+                  onClick={togglePlayPause}
+                />
+              )}
 
               {/* Play/Pause Overlay */}
               {!isPlaying && (
