@@ -135,35 +135,71 @@ const Network = () => {
 
           <TabsContent value="feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <Posts feedType="all" />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <Posts feedType="all" />
+              </React.Suspense>
             </div>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <Posts feedType="smart" />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <Posts feedType="smart" />
+              </React.Suspense>
             </div>
           </TabsContent>
 
           <TabsContent value="connections" className="mt-0">
-            <EnhancedConnections />
+            <React.Suspense fallback={
+              <div className="flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <EnhancedConnections />
+            </React.Suspense>
           </TabsContent>
 
           <TabsContent value="discover" className="mt-0">
             <div className="text-gray-900">
-              <CareerContentHub />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <CareerContentHub />
+              </React.Suspense>
             </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <NetworkAnalytics />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <NetworkAnalytics />
+              </React.Suspense>
             </div>
           </TabsContent>
 
           <TabsContent value="ai-connect" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <SmartConnectAI />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <SmartConnectAI />
+              </React.Suspense>
             </div>
           </TabsContent>
         </Tabs>

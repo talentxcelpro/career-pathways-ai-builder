@@ -73,7 +73,7 @@ export const MobileReels = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Enhanced infinite scrolling reels fetch
+  // Optimized query with better performance
   const {
     data,
     fetchNextPage,
@@ -83,15 +83,15 @@ export const MobileReels = () => {
     error,
     refetch
   } = useInfiniteQuery<VideoReel[], Error, VideoReel[], any, number>({
-    queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
+    queryKey: ['mobile-reels-optimized', user?.id, refreshTrigger],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log('🎬 Fetching reels page:', pageParam, 'User:', user?.id);
-      const limit = 10;
+      console.log('🎬 Fetching reels page:', pageParam);
+      const limit = 5; // Reduce initial load
       const page = typeof pageParam === 'number' ? pageParam : Number(pageParam) || 0;
       const offset = page * limit;
       
       try {
-        // First get posts with video media from posts table
+        // Get posts with video media - optimized query
         const { data: postsData, error: postsError } = await supabase
           .from('posts')
           .select(`
@@ -103,9 +103,7 @@ export const MobileReels = () => {
             likes_count,
             comments_count,
             shares_count,
-            tags,
-            visibility,
-            is_deleted
+            tags
           `)
           .eq('visibility', 'public')
           .eq('is_deleted', false)
@@ -141,17 +139,25 @@ export const MobileReels = () => {
           profilesData.map(profile => [profile.id, profile])
         );
 
-        // Filter and transform posts with videos
+        // Filter and transform posts with videos - improved detection
         const videoReels = (postsData || [])
           .filter((post: any) => {
             const media = (post.media_urls || []) as string[];
-            const hasVideo = media.some((m) => /\.(mp4|mov|webm|avi)(\?|#|$)/i.test(m));
+            // Better video detection including storage URLs and direct mp4 links
+            const hasVideo = media.some((m) => 
+              /\.(mp4|mov|webm|avi|m4v)(\?|#|$)/i.test(m) || 
+              m.includes('post-media') && m.includes('.mp4')
+            );
             console.log('🎬 Post', post.id, 'has video:', hasVideo, 'media:', media);
             return hasVideo;
           })
           .map((post: any) => {
             const media = (post.media_urls || []) as string[];
-            const firstVideo = media.find((m) => /\.(mp4|mov|webm|avi)(\?|#|$)/i.test(m)) || '';
+            // Better video URL detection
+            const firstVideo = media.find((m) => 
+              /\.(mp4|mov|webm|avi|m4v)(\?|#|$)/i.test(m) || 
+              (m.includes('post-media') && m.includes('.mp4'))
+            ) || '';
             const profile = profilesMap.get(post.author_id);
             
             console.log('🎬 Processing post:', post.id, 'video:', firstVideo);
@@ -266,10 +272,12 @@ export const MobileReels = () => {
       }
     },
     getNextPageParam: (lastPage, pages) => {
-      return lastPage.length === 10 ? pages.length : undefined;
+      return lastPage.length === 5 ? pages.length : undefined;
     },
     initialPageParam: 0,
-    enabled: true // Enable regardless of user state to show sample data
+    enabled: true,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    refetchOnWindowFocus: false // Prevent refetch on window focus
   });
 
   // Flatten all pages into single array
@@ -454,27 +462,11 @@ export const MobileReels = () => {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                 />
-              ) : reel.video_url && reel.video_url.includes('supabase.co/storage') ? (
+              ) : (
                 <VideoPlayer
                   url={reel.video_url}
                   className="w-full h-full"
                   fit="cover"
-                />
-              ) : (
-                <video
-                  ref={el => videoRefs.current[index] = el}
-                  className="w-full h-full object-cover"
-                  src={reel.video_url}
-                  poster={reel.thumbnail_url}
-                  loop
-                  autoPlay
-                  muted={isMuted}
-                  playsInline
-                  preload="metadata"
-                  onLoadStart={() => console.log('Video loading started:', reel.video_url)}
-                  onCanPlay={() => console.log('Video can play:', reel.video_url)}
-                  onError={(e) => console.error('Video error:', e, reel.video_url)}
-                  onClick={togglePlayPause}
                 />
               )}
 
