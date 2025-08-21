@@ -24,7 +24,7 @@ export const DataDebuggingPanel: React.FC = () => {
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false })
-        .neq('id', null); // dummy filter to force fresh query
+        .limit(100); // Force fresh query with limit
       
       const result = {
         test: 'Uncached Fetch',

@@ -26,8 +26,7 @@ export const PostsDebugFeed: React.FC = () => {
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false })
-        .neq('id', null) // Force fresh query
-        .limit(10);
+        .limit(10); // Force fresh query
       
       if (error) {
         console.error('❌ Posts fetch error:', error);
