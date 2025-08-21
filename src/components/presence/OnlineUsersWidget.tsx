@@ -24,8 +24,8 @@ export const OnlineUsersWidget: React.FC<OnlineUsersWidgetProps> = ({
   // Placeholder implementation - would use enhanced presence system
   const onlineUsers: any[] = [];
   const onlineCount = 0;
-  const getUsersInModule = () => [];
-  const updateCurrentModule = () => {};
+  const getUsersInModule = (module: string) => [];
+  const updateCurrentModule = (module: string) => {};
   const { goToProfile } = useProfileLinking();
 
   // Update current module when it changes
