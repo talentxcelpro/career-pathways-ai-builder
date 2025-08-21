@@ -1,5 +1,5 @@
 import React from 'react';
-import { RealtimeProvider } from '@/contexts/RealtimeContext';
+import { RealtimeProvider } from '@/components/realtime/RealtimeProvider';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,11 +30,7 @@ export function RealtimeWrapper({ children }: RealtimeWrapperProps) {
   const isEmployer = profile?.is_employer || false;
 
   return (
-    <RealtimeProvider 
-      userId={user?.id}
-      isAdmin={isAdmin}
-      isEmployer={isEmployer}
-    >
+    <RealtimeProvider showToasts={true}>
       {children}
     </RealtimeProvider>
   );
