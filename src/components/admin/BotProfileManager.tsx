@@ -372,25 +372,52 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                           // Also create/update a profiles entry for this bot to make it appear as a real user
                           const username = bot.name.toLowerCase().replace(/\s+/g, '').slice(0, 15) + Math.random().toString(36).substr(2, 4);
                           
-                          const { error: profileError } = await supabase
+                          const { data: existing, error: updateErr } = await supabase
                             .from('profiles')
-                            .upsert({
-                              id: bot.id,
+                            .update({
                               full_name: bot.name,
                               username: username,
                               email: bot.email,
                               profile_picture_url: bot.profile_picture_url,
-                              banner_picture_url: bot.banner_picture_url,
+                              banner_url: bot.banner_picture_url,
                               headline: bot.role,
                               about: `AI Bot specializing in ${bot.content_domains?.join(', ')}`,
                               location: 'TalentXcel Network',
                               is_ai_bot: true,
                               social_links: socialLinks,
-                              is_profile_public: true
-                            } as any);
+                              profile_visibility: 'public',
+                              updated_at: new Date().toISOString()
+                            } as any)
+                            .eq('id', bot.id)
+                            .select()
+                            .maybeSingle();
                           
-                          if (profileError) {
-                            console.error('Profile update error:', profileError);
+                          if (updateErr) {
+                            console.error('Profile update error:', updateErr);
+                          }
+                          
+                          if (!existing) {
+                            const { error: insertErr } = await supabase
+                              .from('profiles')
+                              .insert({
+                                id: bot.id,
+                                full_name: bot.name,
+                                username: username,
+                                email: bot.email,
+                                profile_picture_url: bot.profile_picture_url,
+                                banner_url: bot.banner_picture_url,
+                                headline: bot.role,
+                                about: `AI Bot specializing in ${bot.content_domains?.join(', ')}`,
+                                location: 'TalentXcel Network',
+                                is_ai_bot: true,
+                                social_links: socialLinks,
+                                profile_visibility: 'public',
+                                updated_at: new Date().toISOString()
+                              } as any);
+                          
+                            if (insertErr) {
+                              console.error('Profile insert error:', insertErr);
+                            }
                           }
                           
                           toast.success('Bot profile updated successfully! Changes will appear across the site.');

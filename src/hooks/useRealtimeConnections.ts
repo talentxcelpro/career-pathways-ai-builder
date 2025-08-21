@@ -167,7 +167,13 @@ export function useRealtimeConnections() {
 
   return {
     users: filteredUsers,
+    connections: filteredUsers.map(u => ({ id: u.id, otherUser: u })), // backward compatibility
     loading,
+    isLoading: loading, // backward compatibility
+    stats: {
+      total: users.length,
+      online: users.filter(u => u.is_online).length
+    },
     showOnlineOnly,
     setShowOnlineOnly,
     sendConnectionRequest,

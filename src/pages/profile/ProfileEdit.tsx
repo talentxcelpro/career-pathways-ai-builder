@@ -139,15 +139,44 @@ const ProfileEdit = () => {
       
       console.log('Update data:', updateData);
 
-      const { data: result, error } = await supabase
+      // Try to update existing profile first
+      const { data: updated, error: updateError } = await supabase
         .from('profiles')
-        .upsert(updateData)
-        .select();
+        .update(updateData)
+        .eq('id', currentUser.id)
+        .select()
+        .maybeSingle();
 
-      console.log('Supabase response:', { result, error });
+      if (updateError) throw updateError;
 
-      if (error) throw error;
-      return result;
+      if (updated) {
+        return updated;
+      }
+
+      // If no existing profile, create one with required fields
+      let finalUsername = profile?.username as string | undefined;
+      if (!finalUsername) {
+        const sourceName = data.full_name || (currentUser?.user_metadata as any)?.full_name || currentUser?.email?.split('@')[0] || 'user';
+        const { data: genUsername } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
+        finalUsername = (genUsername as unknown as string) || `user${currentUser.id.slice(0, 8)}`;
+      }
+
+      const insertData = {
+        id: currentUser.id,
+        username: finalUsername,
+        ...data,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data: inserted, error: insertError } = await supabase
+        .from('profiles')
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+      return inserted;
+
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', currentUser?.id] });
