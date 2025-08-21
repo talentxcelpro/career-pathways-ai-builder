@@ -130,7 +130,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
           
           const itemClass = isVideo
             ? `w-full aspect-video rounded-lg bg-black`
-            : `w-full ${isMessage ? 'h-32' : 'h-64'} object-cover rounded-lg`;
+            : `w-full ${isMessage ? 'h-32' : 'h-64'} object-cover object-center rounded-lg`;
+
           
           return (
             <div key={index} className="relative">

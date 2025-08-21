@@ -30,18 +30,18 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     allowedTypes: ['image/*']
   });
 
-  const { updateProfile } = useProfileUpdate();
+  const { updateProfile, updateProfilePicture } = useProfileUpdate();
 
   const handleImageUpload = async (type: 'banner' | 'avatar', file: File) => {
     setUploading(type);
     try {
       const uploadedUrl = await uploadFile(file);
 
-      const updateData = type === 'banner'
-        ? { banner_url: uploadedUrl }
-        : { profile_picture_url: uploadedUrl };
-
-      await updateProfile.mutateAsync(updateData as any);
+      if (type === 'avatar') {
+        await updateProfilePicture.mutateAsync(uploadedUrl);
+      } else {
+        await updateProfile.mutateAsync({ banner_url: uploadedUrl } as any);
+      }
 
       toast.success(`${type} updated successfully!`);
       setTimeout(() => window.location.reload(), 800);

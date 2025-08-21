@@ -35,20 +35,60 @@ export function useProfileUpdate() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const updateData = {
-        id: user.id,
+      // Check if profile exists to avoid upserting a row without required fields like username
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (fetchError) throw fetchError;
+
+      const baseData = {
         ...data,
         updated_at: new Date().toISOString()
-      };
+      } as const;
 
-      const { data: result, error } = await supabase
-        .from('profiles')
-        .upsert(updateData)
-        .select()
-        .single();
+      if (existingProfile) {
+        // Existing profile: safe to update without touching required fields
+        const { data: result, error } = await supabase
+          .from('profiles')
+          .update(baseData)
+          .eq('id', user.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return result;
+        if (error) throw error;
+        return result;
+      } else {
+        // New profile: ensure username is set to satisfy NOT NULL + uniqueness
+        let finalUsername = data.username;
+        if (!finalUsername) {
+          const sourceName = data.full_name || (user.user_metadata as any)?.full_name || user.email?.split('@')[0] || 'user';
+          const { data: genUsername, error: genError } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
+          if (genError) {
+            console.warn('Username generation failed, falling back:', genError);
+            finalUsername = `user${user.id.slice(0, 8)}`;
+          } else {
+            finalUsername = genUsername as unknown as string;
+          }
+        }
+
+        const insertData = {
+          id: user.id,
+          username: finalUsername,
+          ...baseData,
+        };
+
+        const { data: result, error } = await supabase
+          .from('profiles')
+          .insert(insertData)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return result;
+      }
     },
     onSuccess: (data) => {
       // Invalidate all profile-related queries
