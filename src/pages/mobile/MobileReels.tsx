@@ -10,6 +10,8 @@ import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
 import { ReelsCommentsModal } from '@/components/mobile/ReelsCommentsModal';
 import { linkifyText } from '@/utils/textUtils';
 import VideoPlayer from '@/components/posts/VideoPlayer';
+import { useRealtimeEngagement } from '@/hooks/useRealtimeEngagement';
+import { EngagementActions } from '@/components/engagement/EngagementActions';
 import { 
   Heart, 
   MessageCircle, 
@@ -58,6 +60,7 @@ interface VideoReel {
 export const MobileReels = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const engagement = useRealtimeEngagement('reels');
   
   console.log('🎬 MobileReels - User:', user ? 'Authenticated' : 'Not authenticated');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -327,7 +330,7 @@ export const MobileReels = () => {
     }
   };
 
-  const handleLike = async (reelId: string) => {
+  const handleLike = async (reelId: string, reelOwnerId?: string) => {
     // Skip likes for external videos from videos table
     if (reelId.startsWith('video-')) return;
     if (!user) {
@@ -340,27 +343,7 @@ export const MobileReels = () => {
     }
 
     try {
-      const { data: existingLike } = await supabase
-        .from('post_likes')
-        .select('id')
-        .eq('post_id', reelId)
-        .eq('user_id', user.id)
-        .single();
-
-      if (existingLike) {
-        await supabase
-          .from('post_likes')
-          .delete()
-          .eq('post_id', reelId)
-          .eq('user_id', user.id);
-      } else {
-        await supabase
-          .from('post_likes')
-          .insert({
-            post_id: reelId,
-            user_id: user.id
-          });
-      }
+      await engagement.likeContent('reel', reelId, reelOwnerId);
     } catch (error) {
       console.error('Like error:', error);
     }
@@ -596,44 +579,23 @@ export const MobileReels = () => {
 
                   {/* Right side - Actions */}
                   <div className="flex flex-col gap-4 items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                      onClick={() => handleLike(reel.id)}
-                    >
-                      <Heart className={`h-6 w-6 ${reel.is_liked ? 'fill-red-500 text-red-500' : ''}`} />
-                      <span className="absolute -bottom-6 text-xs">{reel.stats.likes}</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                      onClick={() => handleComment(reel)}
-                    >
-                      <MessageCircle className="h-6 w-6" />
-                      <span className="absolute -bottom-6 text-xs">{reel.stats.comments}</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-black/30 hover:bg-black/50 text-white relative"
-                      onClick={() => handleShare(reel.id)}
-                    >
-                      <Share className="h-6 w-6" />
-                      <span className="absolute -bottom-6 text-xs">{reel.stats.shares}</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-black/30 hover:bg-black/50 text-white"
-                      onClick={() => console.log('Bookmark reel:', reel.id)}
-                    >
-                      <Bookmark className={`h-6 w-6 ${reel.is_bookmarked ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-                    </Button>
+                    <EngagementActions
+                      contentType="reel"
+                      contentId={reel.id}
+                      contentOwnerId={reel.author.id}
+                      module="reels"
+                      initialStats={{
+                        likes: reel.stats.likes,
+                        comments: reel.stats.comments,
+                        shares: reel.stats.shares,
+                        views: reel.stats.views,
+                        isLiked: reel.is_liked,
+                        isBookmarked: reel.is_bookmarked
+                      }}
+                      variant="compact"
+                      className="flex-col gap-3"
+                      onComment={() => handleComment(reel)}
+                    />
                   </div>
                 </div>
               </div>

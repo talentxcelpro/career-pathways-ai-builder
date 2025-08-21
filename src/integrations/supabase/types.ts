@@ -22970,6 +22970,24 @@ export type Database = {
           users_needing_reminders: number
         }[]
       }
+      get_ranked_content: {
+        Args: {
+          p_content_type?: string
+          p_limit?: number
+          p_module: string
+          p_offset?: number
+        }
+        Returns: {
+          comments_count: number
+          content_id: string
+          content_type: string
+          final_score: number
+          last_engagement_at: string
+          likes_count: number
+          shares_count: number
+          views_count: number
+        }[]
+      }
       get_recent_posts: {
         Args: { limit_count?: number }
         Returns: {
@@ -23192,6 +23210,19 @@ export type Database = {
         Args: { p_referee_id: string; p_referral_code: string }
         Returns: undefined
       }
+      publish_engagement_event: {
+        Args: {
+          p_actor_id: string
+          p_event_type: string
+          p_metadata?: Json
+          p_module: string
+          p_score_impact?: number
+          p_target_id: string
+          p_target_owner_id: string
+          p_target_type: string
+        }
+        Returns: string
+      }
       queue_automated_email: {
         Args: {
           p_delay_minutes?: number
@@ -23327,6 +23358,20 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_content_score: {
+        Args: {
+          p_content_id: string
+          p_content_type: string
+          p_event_type: string
+          p_module: string
+          p_score_impact?: number
+        }
+        Returns: undefined
+      }
+      update_time_decay_scores: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_trending_scores: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -23346,7 +23391,15 @@ export type Database = {
         Returns: undefined
       }
       update_user_presence: {
-        Args: { is_online_status: boolean; user_uuid: string }
+        Args:
+          | { is_online_status: boolean; user_uuid: string }
+          | {
+              p_current_module?: string
+              p_current_page?: string
+              p_device_type?: string
+              p_is_online?: boolean
+              p_user_id: string
+            }
         Returns: undefined
       }
       upsert_daily_analytics: {
