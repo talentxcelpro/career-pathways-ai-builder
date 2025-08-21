@@ -46,22 +46,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
             console.log('VideoPlayer: Generated public URL:', data.publicUrl);
 
             let finalUrl = data.publicUrl || url;
+            
+            // For public buckets, ALWAYS use signed URLs to bypass CDN cache issues
+            // This ensures fresh content for new uploads
             try {
-              // Try a signed URL as it works for private buckets too
               const signed = await supabase.storage
                 .from('post-media')
-                .createSignedUrl(filePath, 60 * 60);
+                .createSignedUrl(filePath, 60 * 60); // 1 hour expiry
               if (signed.data?.signedUrl) {
                 finalUrl = signed.data.signedUrl;
-                console.log('VideoPlayer: Using signed URL');
+                console.log('VideoPlayer: Using fresh signed URL to bypass CDN cache');
               } else {
-                // Add cache-busting for public URLs to avoid CDN staleness
-                finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + `cb=${Date.now()}`;
+                // Fallback: aggressive cache-busting with both timestamp and random
+                const cacheBust = `cb=${Date.now()}&r=${Math.random().toString(36).substring(7)}`;
+                finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + cacheBust;
+                console.log('VideoPlayer: Using cache-busted public URL');
               }
             } catch (e) {
-              console.warn('VideoPlayer: Signed URL generation failed, using public/original URL');
-              // Add cache-busting for public URLs to avoid CDN staleness
-              finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + `cb=${Date.now()}`;
+              console.warn('VideoPlayer: Signed URL generation failed, using aggressive cache-busting');
+              // Aggressive cache-busting for public URLs
+              const cacheBust = `cb=${Date.now()}&r=${Math.random().toString(36).substring(7)}`;
+              finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + cacheBust;
             }
             setVideoSrc(finalUrl);
           } else {
