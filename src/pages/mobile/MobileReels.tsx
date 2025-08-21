@@ -74,6 +74,7 @@ export const MobileReels = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
+    error,
     refetch
   } = useInfiniteQuery({
     queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
@@ -317,12 +318,46 @@ export const MobileReels = () => {
     });
   };
 
+  // Show error state with fallback
+  if (error) {
+    console.error('🎬 Reels query error:', error);
+    return (
+      <div className="h-screen bg-black flex items-center justify-center p-4">
+        <div className="text-center">
+          <p className="text-white text-lg mb-4">Unable to load reels</p>
+          <Button onClick={() => refetch()} className="bg-purple-600 text-white">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-white text-sm">Loading reels...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no reels loaded, show fallback content
+  if (!reels || reels.length === 0) {
+    console.log('🎬 No reels found, showing fallback');
+    return (
+      <div className="h-screen bg-black flex items-center justify-center p-4">
+        <div className="text-center text-white">
+          <h2 className="text-xl mb-4">Welcome to TalentXcel Reels</h2>
+          <p className="mb-4">No reels available yet. Be the first to create one!</p>
+          <Button 
+            onClick={() => setShowUploadModal(true)}
+            className="bg-purple-600 text-white"
+          >
+            Create First Reel
+          </Button>
         </div>
       </div>
     );
