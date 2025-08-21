@@ -114,3 +114,33 @@ export const SmartApplicationsRefresh: React.FC<{
     {children}
   </SmartDataRefresh>
 );
+
+// Smart connections refresh
+export const SmartConnectionsRefresh: React.FC<{
+  children: (data: any[] | null, loading: boolean, error: Error | null) => React.ReactNode;
+}> = ({ children }) => (
+  <SmartDataRefresh
+    fetchFunction={async () => {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return [];
+
+      const { data, error } = await supabase
+        .from('connections')
+        .select(`
+          *,
+          sender:profiles!connections_sender_id_fkey(id, full_name, avatar_url),
+          receiver:profiles!connections_receiver_id_fkey(id, full_name, avatar_url)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data || [];
+    }}
+    fallbackOptions={{ interval: 5000 }}
+    realtimeTable="connections"
+  >
+    {children}
+  </SmartDataRefresh>
+);
