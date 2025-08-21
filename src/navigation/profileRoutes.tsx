@@ -13,6 +13,7 @@ import ProfileBranding from "../pages/profile/ProfileBranding";
 import PublicUserProfile from "../pages/network/PublicUserProfile";
 import UsernameProfile from "../pages/profile/UsernameProfile";
 import TalentXcelProfile from "../pages/TalentXcelProfile";
+import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 
 export const profileRoutes = [
   {
@@ -27,6 +28,12 @@ export const profileRoutes = [
     icon: <User className="h-4 w-4" />,
     page: <Profile />,
     requiresAuth: true,
+  },
+  {
+    title: "Legacy Profile ID Redirect",
+    to: "/profile/:id",
+    page: <ProfileUrlRedirect />,
+    requiresAuth: false, // Handle old UUID-based URLs
   },
   {
     title: "Public Profile by Username",
