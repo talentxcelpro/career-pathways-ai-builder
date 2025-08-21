@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 interface ProfileUpdateData {
   id?: string;
   profile_picture_url?: string;
+  banner_url?: string;
   full_name?: string;
   title?: string;
   headline?: string;
@@ -35,60 +36,30 @@ export function useProfileUpdate() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Check if profile exists to avoid upserting a row without required fields like username
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (fetchError) throw fetchError;
-
-      const baseData = {
+      // Always use UPDATE for existing profiles - much safer than upsert
+      const updateData = {
         ...data,
         updated_at: new Date().toISOString()
-      } as const;
+      };
 
-      if (existingProfile) {
-        // Existing profile: safe to update without touching required fields
-        const { data: result, error } = await supabase
-          .from('profiles')
-          .update(baseData)
-          .eq('id', user.id)
-          .select()
-          .single();
+      const { data: result, error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', user.id)
+        .select()
+        .maybeSingle();
 
-        if (error) throw error;
-        return result;
-      } else {
-        // New profile: ensure username is set to satisfy NOT NULL + uniqueness
-        let finalUsername = data.username;
-        if (!finalUsername) {
-          const sourceName = data.full_name || (user.user_metadata as any)?.full_name || user.email?.split('@')[0] || 'user';
-          const { data: genUsername, error: genError } = await supabase.rpc('generate_username_from_name', { full_name: sourceName });
-          if (genError) {
-            console.warn('Username generation failed, falling back:', genError);
-            finalUsername = `user${user.id.slice(0, 8)}`;
-          } else {
-            finalUsername = genUsername as unknown as string;
-          }
-        }
-
-        const insertData = {
-          id: user.id,
-          username: finalUsername,
-          ...baseData,
-        };
-
-        const { data: result, error } = await supabase
-          .from('profiles')
-          .insert(insertData)
-          .select()
-          .single();
-
-        if (error) throw error;
-        return result;
+      if (error) {
+        console.error('Profile update error:', error);
+        throw error;
       }
+
+      // If no result, profile doesn't exist - this shouldn't happen for banner updates
+      if (!result) {
+        throw new Error('Profile not found - please refresh and try again');
+      }
+
+      return result;
     },
     onSuccess: (data) => {
       // Invalidate all profile-related queries
