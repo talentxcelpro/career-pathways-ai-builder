@@ -28,13 +28,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
       
       console.log('VideoPlayer: Processing URL:', url);
       
-      // Check if it's a Supabase storage URL that needs processing
-      if (url.includes('supabase.co/storage') && url.includes('post-media')) {
+      // Check if it's a Supabase storage URL (any domain) for post-media bucket
+      const isSupabaseObjectUrl = url.includes('/object/') && url.includes('/post-media/');
+      if (isSupabaseObjectUrl) {
         try {
-          // Extract the file path from the URL
-          const urlParts = url.split('/object/public/post-media/');
-          if (urlParts.length > 1) {
-            const filePath = urlParts[1];
+          // Extract the file path from the URL (everything after /post-media/)
+          const marker = '/post-media/';
+          const idx = url.indexOf(marker);
+          if (idx !== -1) {
+            const filePath = url.substring(idx + marker.length);
             console.log('VideoPlayer: Extracted file path:', filePath);
             
             // Get public URL for the file, and fallback to signed URL if needed
@@ -52,9 +54,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
               if (signed.data?.signedUrl) {
                 finalUrl = signed.data.signedUrl;
                 console.log('VideoPlayer: Using signed URL');
+              } else {
+                // Add cache-busting for public URLs to avoid CDN staleness
+                finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + `cb=${Date.now()}`;
               }
             } catch (e) {
               console.warn('VideoPlayer: Signed URL generation failed, using public/original URL');
+              // Add cache-busting for public URLs to avoid CDN staleness
+              finalUrl = finalUrl + (finalUrl.includes('?') ? '&' : '?') + `cb=${Date.now()}`;
             }
             setVideoSrc(finalUrl);
           } else {
