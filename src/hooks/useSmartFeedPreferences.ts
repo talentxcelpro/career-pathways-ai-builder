@@ -93,28 +93,43 @@ export const useSmartFeedPreferences = () => {
       // Remove id and timestamps from the data to insert/update
       const { id, created_at, updated_at, ...dataToSave } = updatedPreferences;
       
-      const { data, error } = await supabase
+      // Safe update/insert without relying on ON CONFLICT constraints
+      const { data: existingPref, error: fetchErr } = await supabase
         .from('smart_feed_preferences')
-        .upsert({
-          ...dataToSave,
-          user_id: user.id,
-        }, {
-          onConflict: 'user_id'
-        })
-        .select()
-        .single();
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error saving preferences:', error);
-        toast({
-          title: "Error",
-          description: "Failed to save preferences. Please try again.",
-          variant: "destructive",
-        });
-        return false;
+      if (fetchErr) throw fetchErr;
+
+      let saved;
+      if (existingPref?.id) {
+        const { data: updated, error: updateErr } = await supabase
+          .from('smart_feed_preferences')
+          .update({
+            ...dataToSave,
+            user_id: user.id,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingPref.id)
+          .select()
+          .single();
+        if (updateErr) throw updateErr;
+        saved = updated;
+      } else {
+        const { data: inserted, error: insertErr } = await supabase
+          .from('smart_feed_preferences')
+          .insert({
+            ...dataToSave,
+            user_id: user.id,
+          })
+          .select()
+          .single();
+        if (insertErr) throw insertErr;
+        saved = inserted;
       }
 
-      setPreferences(data);
+      setPreferences(saved);
       toast({
         title: "Success",
         description: "Smart Feed preferences saved successfully!",

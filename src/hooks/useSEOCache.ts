@@ -57,27 +57,54 @@ export const useSEOCache = (cacheKey: string, options: SEOCacheOptions) => {
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + (options.ttl || 60));
 
-      const { data: savedCache, error: saveError } = await supabase
+      // Safe upsert without ON CONFLICT: select -> update or insert
+      const { data: existing, error: existsErr } = await supabase
         .from('seo_cache')
-        .upsert({
-          cache_key: cacheKey,
-          content: newContent.content,
-          meta_data: newContent.meta_data,
-          structured_data: newContent.structured_data,
-          page_type: options.pageType,
-          page_id: options.pageId,
-          expires_at: expiresAt.toISOString(),
-          is_fresh: true,
-          hit_count: 1
-        }, {
-          onConflict: 'cache_key'
-        })
-        .select()
-        .single();
+        .select('id, hit_count')
+        .eq('cache_key', cacheKey)
+        .maybeSingle();
 
-      if (saveError) {
-        console.error('Error saving to cache:', saveError);
+      if (existsErr) {
+        console.error('SEO cache existence check error:', existsErr);
       }
+
+      let savedCache: any = null;
+      if (existing?.id) {
+        const { data: updated, error: updateErr } = await supabase
+          .from('seo_cache')
+          .update({
+            content: newContent.content,
+            meta_data: newContent.meta_data,
+            structured_data: newContent.structured_data,
+            page_type: options.pageType,
+            page_id: options.pageId,
+            expires_at: expiresAt.toISOString(),
+            is_fresh: true,
+            hit_count: (existing.hit_count || 0) + 1
+          })
+          .eq('id', existing.id)
+          .select()
+          .single();
+        if (!updateErr) savedCache = updated;
+      } else {
+        const { data: inserted, error: insertErr } = await supabase
+          .from('seo_cache')
+          .insert({
+            cache_key: cacheKey,
+            content: newContent.content,
+            meta_data: newContent.meta_data,
+            structured_data: newContent.structured_data,
+            page_type: options.pageType,
+            page_id: options.pageId,
+            expires_at: expiresAt.toISOString(),
+            is_fresh: true,
+            hit_count: 1
+          })
+          .select()
+          .single();
+        if (!insertErr) savedCache = inserted;
+      }
+
 
       setCacheData(savedCache || newContent);
       setIsLoading(false);
