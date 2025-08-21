@@ -43,34 +43,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
               .getPublicUrl(filePath);
             
             console.log('VideoPlayer: Generated public URL:', data.publicUrl);
-            const publicUrl = (data.publicUrl || '').replace(
-              'https://dthlgsnakhoftinssokm.supabase.co',
-              'https://auth.talentxcel.in'
-            );
+            const publicUrl = data.publicUrl || url;
             setVideoSrc(publicUrl);
           } else {
             console.log('VideoPlayer: Using original URL as-is');
-            const processedUrl = url.replace(
-              'https://dthlgsnakhoftinssokm.supabase.co',
-              'https://auth.talentxcel.in'
-            );
-            setVideoSrc(processedUrl);
+            setVideoSrc(url);
           }
         } catch (error) {
           console.error('VideoPlayer: Error processing Supabase URL:', error);
-          const processedUrl = url.replace(
-            'https://dthlgsnakhoftinssokm.supabase.co',
-            'https://auth.talentxcel.in'
-          );
-          setVideoSrc(processedUrl); // Fallback to original URL
+          setVideoSrc(url); // Fallback to original URL
         }
       } else {
         console.log('VideoPlayer: Using URL directly');
-        const processedUrl = url.replace(
-          'https://dthlgsnakhoftinssokm.supabase.co',
-          'https://auth.talentxcel.in'
-        );
-        setVideoSrc(processedUrl);
+        setVideoSrc(url);
       }
     };
 
@@ -168,9 +153,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           muted={isMuted}
           playsInline
           preload="metadata"
+          autoPlay
           controls
           crossOrigin="anonymous"
           onClick={togglePlay}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
           onCanPlay={() => console.log('VideoPlayer: Can play:', videoSrc)}
           onLoadedMetadata={() => console.log('VideoPlayer: Metadata loaded:', videoSrc)}
         />
