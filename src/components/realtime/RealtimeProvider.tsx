@@ -33,14 +33,14 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
     });
 
     // Initialize realtime with global callback
-    initTalentXcelRealtime((table, payload) => {
+    const onUpdateCallback = (table: WatchedTable, payload: RealtimePayload) => {
       console.log(`🔄 Global realtime update - ${table}:`, payload);
-      
       setLastUpdate({ table, payload });
+      // Consider connected once we start receiving events
       setIsConnected(true);
-      
       // Update connection status
-      setConnectionStatus(realtimeManager.getStatus());
+      const status = realtimeManager.getStatus();
+      setConnectionStatus(status);
 
       // Show toast notifications for updates (optional)
       if (showToasts) {
@@ -53,18 +53,38 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
           });
         }
       }
+    };
+
+    initTalentXcelRealtime(onUpdateCallback);
+
+    // Re-init on auth changes and when connection comes back online
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      console.log('🔐 Auth state changed - reinitializing realtime');
+      cleanupRealtime();
+      initTalentXcelRealtime(onUpdateCallback);
     });
+
+    const onlineHandler = () => {
+      console.log('🌐 Network online - reinitializing realtime');
+      cleanupRealtime();
+      initTalentXcelRealtime(onUpdateCallback);
+    };
+    window.addEventListener('online', onlineHandler);
 
     // Check connection status periodically
     const statusInterval = setInterval(() => {
-      setConnectionStatus(realtimeManager.getStatus());
-      setIsConnected(realtimeManager.initialized);
-    }, 5000);
+      const status = realtimeManager.getStatus();
+      setConnectionStatus(status);
+      const connectedChannels = Object.values(status).filter(s => s === 'SUBSCRIBED').length;
+      setIsConnected(connectedChannels > 0);
+    }, 3000);
 
     // Cleanup function
     return () => {
       console.log('🧹 Cleaning up TalentXcel Realtime Provider...');
       clearInterval(statusInterval);
+      window.removeEventListener('online', onlineHandler);
+      authListener?.subscription?.unsubscribe();
       cleanupRealtime();
       setIsConnected(false);
     };

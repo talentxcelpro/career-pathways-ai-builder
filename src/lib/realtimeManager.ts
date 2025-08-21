@@ -138,8 +138,7 @@ class RealtimeManager {
           console.log(`✅ Channel subscribed for table: ${table}`);
           // Mark initialized when first channel subscribes successfully
           if (!this.isInitialized) this.isInitialized = true;
-        }
-        if (status === 'CHANNEL_ERROR') {
+        } else if (status === 'CHANNEL_ERROR') {
           console.error(`❌ Channel error for table: ${table}. Possible causes:`);
           console.error('   - Table not in supabase_realtime publication');
           console.error('   - Table does not exist');
@@ -147,23 +146,26 @@ class RealtimeManager {
           console.error('   - Network/connectivity issues');
           console.error('   - Project realtime disabled');
           if (err) console.error('   - Error details:', err);
-          // Remove faulty channel to prevent repeated errors
+          // Remove faulty channel to prevent repeated errors and force a clean reconnect
           const channelName = `realtime:public:${table}`;
           supabase.removeChannel(channel);
           this.channels.delete(channelName);
-        }
-        if (status === 'CLOSED') {
-          console.warn(`🔒 Realtime channel closed for table: ${table} - attempting reconnect in 5s`);
-          // Auto-reconnect after 5 seconds
+          // Try to reconnect after a short delay
           setTimeout(() => {
-            if (!this.channels.has(channelName)) {
-              console.log(`🔄 Reconnecting channel for ${table}...`);
-              this._setupSingleConnection(table);
-            }
-          }, 5000);
-        }
-        if (status === 'TIMED_OUT') {
-          console.error(`⏰ Realtime subscription timed out for table: ${table}`);
+            console.log(`🔄 Reconnecting channel after error for ${table}...`);
+            this._setupSingleConnection(table);
+          }, 3000);
+        } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
+          console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table} - attempting reconnect`);
+          const channelName = `realtime:public:${table}`;
+          // Ensure we drop the stale channel before reconnecting
+          try { supabase.removeChannel(channel); } catch (_) {}
+          this.channels.delete(channelName);
+          // Auto-reconnect after a short delay
+          setTimeout(() => {
+            console.log(`🔄 Reconnecting channel for ${table}...`);
+            this._setupSingleConnection(table);
+          }, 3000);
         }
       });
 
@@ -199,9 +201,19 @@ class RealtimeManager {
       }
     );
 
-    channel.subscribe((status) => {
+    channel.subscribe((status, err) => {
       console.log(`📡 Reconnect status [${table}]:`, status);
+      if (err) console.error(`📡 Reconnect error details [${table}]:`, err);
       this.channelStatuses.set(table, status);
+      if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
+        const channelName = `realtime:public:${table}`;
+        try { supabase.removeChannel(channel); } catch (_) {}
+        this.channels.delete(channelName);
+        setTimeout(() => {
+          console.log(`🔁 Retrying reconnect for ${table}...`);
+          this._setupSingleConnection(table);
+        }, 3000);
+      }
     });
 
     this.channels.set(channelName, channel);
