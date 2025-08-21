@@ -79,12 +79,13 @@ export const MobileReels = () => {
     isLoading,
     error,
     refetch
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<VideoReel[], Error, VideoReel[], any, number>({
     queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
     queryFn: async ({ pageParam = 0 }) => {
       console.log('🎬 Fetching reels page:', pageParam, 'User:', user?.id);
       const limit = 10;
-      const offset = pageParam * limit;
+      const page = typeof pageParam === 'number' ? pageParam : Number(pageParam) || 0;
+      const offset = page * limit;
       
       try {
         // First get posts with video media from posts table
@@ -269,7 +270,12 @@ export const MobileReels = () => {
   });
 
   // Flatten all pages into single array
-  const reels = data?.pages.flat() || [];
+  const d: any = data as any;
+  const reels: VideoReel[] = Array.isArray(d)
+    ? (d as VideoReel[])
+    : Array.isArray(d?.pages)
+      ? (d.pages as VideoReel[][]).flat()
+      : [];
 
   const extractHashtags = (content: string): string[] => {
     const hashtags = content.match(/#[a-zA-Z0-9_]+/g) || [];
