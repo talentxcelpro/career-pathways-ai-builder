@@ -2,6 +2,7 @@ import React from 'react';
 import { Search, Bell, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { EnhancedNotificationCenter } from '@/components/engagement/EnhancedNotificationCenter';
 
 interface ReelsHeaderProps {
   activeTab: 'following' | 'explore';
@@ -68,19 +69,7 @@ export const ReelsHeader: React.FC<ReelsHeaderProps> = ({
             <Search className="w-5 h-5" />
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full w-10 h-10 bg-black/20 text-white hover:bg-black/30 relative"
-            onClick={onNotifications}
-          >
-            <Bell className="w-5 h-5" />
-            {notificationCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 text-xs bg-red-500 text-white border-0">
-                {notificationCount > 99 ? '99+' : notificationCount}
-              </Badge>
-            )}
-          </Button>
+          <EnhancedNotificationCenter variant="mobile" />
 
           <Button
             variant="ghost"

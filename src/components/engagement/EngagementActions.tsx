@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useRealtimeEngagement } from '@/hooks/useRealtimeEngagement';
+import { useCrossModuleNotifications } from '@/hooks/useCrossModuleNotifications';
 import { Heart, MessageCircle, Share, Bookmark, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +36,7 @@ export const EngagementActions: React.FC<EngagementActionsProps> = ({
   onComment,
   onShare
 }) => {
+  const { notifyEngagement } = useCrossModuleNotifications();
   const engagement = useRealtimeEngagement(module);
   const [stats, setStats] = useState(initialStats);
   const [isLiking, setIsLiking] = useState(false);
@@ -70,6 +72,10 @@ export const EngagementActions: React.FC<EngagementActionsProps> = ({
   };
 
   const handleComment = () => {
+    // Send cross-module notification for comments
+    if (contentOwnerId) {
+      notifyEngagement(contentOwnerId, 'comment', contentType, contentId, module);
+    }
     onComment?.();
   };
 

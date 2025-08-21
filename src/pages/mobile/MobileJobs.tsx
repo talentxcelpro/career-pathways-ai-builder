@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { JobsFeed } from '@/components/jobs/JobsFeed';
-import { NotificationCenter } from '@/components/engagement/NotificationCenter';
+import { EnhancedNotificationCenter } from '@/components/engagement/EnhancedNotificationCenter';
 
 export const MobileJobs: React.FC = () => {
   const [filters, setFilters] = useState({
@@ -87,7 +87,7 @@ export const MobileJobs: React.FC = () => {
               <Briefcase className="h-6 w-6 text-primary" />
               <h1 className="text-xl font-bold">Jobs</h1>
             </div>
-            <NotificationCenter />
+            <EnhancedNotificationCenter variant="mobile" />
           </div>
 
           {/* Search Bar */}
