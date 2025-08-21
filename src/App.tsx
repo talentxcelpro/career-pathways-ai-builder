@@ -23,6 +23,7 @@ import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
 import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
 import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
+import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -79,7 +80,8 @@ const publicRoutes = [
   '/companies',
   '/companies/:id',
   '/:slug', // Company slug route
-  '/profile/:id',
+  '/profile/:username',
+  '/network/people/:id',
   '/employer', // Employer landing page (shows different content based on auth)
   '/employer/request-access',
   '/employer/team/accept/:token' // Invitation acceptance
@@ -116,7 +118,7 @@ const App = () => {
                     <OfflineIndicator />
                     <Navbar />
                     <main className="flex-1">
-                      <Routes>
+                       <Routes>
                       {navItems.map((item: NavItem) => {
                          // Check if route is explicitly marked as public or in our public routes list
                          const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
@@ -144,6 +146,10 @@ const App = () => {
                           />
                         );
                        })}
+                       
+                       {/* Legacy UUID-based profile redirects */}
+                       <Route path="/profile/:id" element={<ProfileUrlRedirect />} />
+                       <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
                          <Route path="/debug" element={<DebugPage />} />
                          <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />

@@ -30,22 +30,10 @@ export const profileRoutes = [
     requiresAuth: true,
   },
   {
-    title: "Legacy Profile ID Redirect",
-    to: "/profile/:id",
-    page: <ProfileUrlRedirect />,
-    requiresAuth: false, // Handle old UUID-based URLs
-  },
-  {
     title: "Public Profile by Username",
     to: "/profile/:username",
     page: <UsernameProfile />,
     requiresAuth: false, // SEO-friendly username route
-  },
-  {
-    title: "Public Profile by ID",
-    to: "/profile/id/:id", 
-    page: <PublicUserProfile />,
-    requiresAuth: false, // Backward compatibility
   },
   {
     title: "Profile Edit",
