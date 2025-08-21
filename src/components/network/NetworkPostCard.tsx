@@ -11,6 +11,7 @@ import { useShareContent } from "@/hooks/useShareContent";
 import ProBadge from "@/components/network/ProBadge";
 import MediaPreview from "@/components/posts/MediaPreview";
 import { linkifyText } from "@/utils/textUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NetworkPost {
   id: string;
@@ -47,6 +48,15 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   onCommentClick
 }) => {
   const { createPostShareData } = useShareContent();
+  const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -136,10 +146,10 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
             <EnhancedPostMenu
               postId={post.id}
               authorId={post.author_id || ''}
-              currentUserId={post.author_id}
+              currentUserId={currentUserId}
               postContent={post.content}
               postHeadline={post.headline}
-              isOwnPost={false}
+              isOwnPost={currentUserId === post.author_id}
             />
           </div>
         </div>
