@@ -81,107 +81,145 @@ export const MobileReels = () => {
     queryFn: async ({ pageParam = 0 }) => {
       console.log('🎬 Fetching reels page:', pageParam, 'User:', user?.id);
       const limit = 10;
-      // First get posts with media
-      const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          content,
-          created_at,
-          media_urls,
-          author_id,
-          likes_count,
-          comments_count,
-          shares_count,
-          tags
-        `)
-        .not('media_urls', 'is', null)
-        .order('created_at', { ascending: false })
-        .range(pageParam * limit, (pageParam + 1) * limit - 1);
-
-      if (postsError) throw postsError;
-
-      // Get unique author IDs
-      const authorIds = [...new Set((postsData || []).map(post => post.author_id))];
+      const offset = pageParam * limit;
       
-      // Fetch author profiles separately
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('id, full_name, profile_picture_url, headline, current_company')
-        .in('id', authorIds);
+      try {
+        // First get posts with video media from posts table
+        const { data: postsData, error: postsError } = await supabase
+          .from('posts')
+          .select(`
+            id,
+            content,
+            created_at,
+            media_urls,
+            author_id,
+            likes_count,
+            comments_count,
+            shares_count,
+            tags,
+            visibility,
+            is_deleted
+          `)
+          .eq('visibility', 'public')
+          .eq('is_deleted', false)
+          .not('media_urls', 'is', null)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
 
-      // No need to check error here since we already handled postsError above
+        if (postsError) {
+          console.error('🎬 Posts query error:', postsError);
+          throw postsError;
+        }
 
-      // Create a map of profiles for quick lookup
-      const profilesMap = new Map(
-        (profilesData || []).map(profile => [profile.id, profile])
-      );
+        console.log('🎬 Raw posts data:', postsData?.length || 0, 'posts found');
 
-      // If no posts found, return some sample data for demo
-      if (!postsData || postsData.length === 0) {
-        return [{
-          id: 'sample-1',
-          video_url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-          thumbnail_url: undefined,
-          title: 'Welcome to TalentXcel Reels',
-          description: 'Share your professional journey and connect with talent worldwide! 🚀 #TalentXcel #Professional #Career',
-          created_at: new Date().toISOString(),
-          author: {
-            id: 'system',
-            first_name: 'TalentXcel',
-            last_name: 'Team',
-            avatar_url: undefined,
-            title: 'Professional Platform',
-            company: 'TalentXcel',
-          },
-          stats: {
-            likes: 1250,
-            comments: 89,
-            shares: 45,
-            views: 15000,
-          },
-          tags: ['TalentXcel', 'Professional', 'Career'],
-          is_liked: false,
-          is_bookmarked: false,
-        }];
-      }
+        // Get unique author IDs
+        const authorIds = [...new Set((postsData || []).map(post => post.author_id))];
+        console.log('🎬 Author IDs to fetch:', authorIds.length);
+        
+        // Fetch author profiles separately
+        let profilesData = [];
+        if (authorIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name, profile_picture_url, headline, current_company')
+            .in('id', authorIds);
+          profilesData = profiles || [];
+        }
 
-      return postsData
-        .filter((post: any) => {
-          const media = (post.media_urls || []) as string[];
-          return media.some((m) => /\.(mp4|mov|webm)$/i.test(m));
-        })
-        .map((post: any) => {
-          const media = (post.media_urls || []) as string[];
-          const firstVideo = media.find((m) => /\.(mp4|mov|webm)$/i.test(m)) || '';
-          const profile = profilesMap.get(post.author_id);
-          
-          return {
-            id: post.id,
-            video_url: firstVideo,
+        console.log('🎬 Profiles fetched:', profilesData.length);
+
+        // Create a map of profiles for quick lookup
+        const profilesMap = new Map(
+          profilesData.map(profile => [profile.id, profile])
+        );
+
+        // Filter and transform posts with videos
+        const videoReels = (postsData || [])
+          .filter((post: any) => {
+            const media = (post.media_urls || []) as string[];
+            const hasVideo = media.some((m) => /\.(mp4|mov|webm|avi)$/i.test(m));
+            console.log('🎬 Post', post.id, 'has video:', hasVideo, 'media:', media);
+            return hasVideo;
+          })
+          .map((post: any) => {
+            const media = (post.media_urls || []) as string[];
+            const firstVideo = media.find((m) => /\.(mp4|mov|webm|avi)$/i.test(m)) || '';
+            const profile = profilesMap.get(post.author_id);
+            
+            console.log('🎬 Processing post:', post.id, 'video:', firstVideo);
+            
+            return {
+              id: post.id,
+              video_url: firstVideo,
+              thumbnail_url: undefined,
+              title: (post.content || '').split('\n')[0] || 'Professional Reel',
+              description: post.content,
+              created_at: post.created_at,
+              author: {
+                id: post.author_id || '',
+                first_name: profile?.full_name?.split(' ')[0] || 'Professional',
+                last_name: profile?.full_name?.split(' ').slice(1).join(' ') || 'User',
+                avatar_url: profile?.profile_picture_url,
+                title: profile?.headline || 'TalentXcel Member',
+                company: profile?.current_company || 'TalentXcel',
+              },
+              stats: {
+                likes: post.likes_count || Math.floor(Math.random() * 500) + 50,
+                comments: post.comments_count || Math.floor(Math.random() * 100) + 10,
+                shares: post.shares_count || Math.floor(Math.random() * 50) + 5,
+                views: Math.floor(Math.random() * 10000) + 500,
+              },
+              tags: post.tags || extractHashtags(post.content || ''),
+              is_liked: false,
+              is_bookmarked: false,
+            } as VideoReel;
+          });
+
+        console.log('🎬 Final video reels:', videoReels.length);
+
+        // If we found videos, return them
+        if (videoReels.length > 0) {
+          return videoReels;
+        }
+
+        // Fallback: Return sample data only if no real videos found and it's the first page
+        if (pageParam === 0) {
+          console.log('🎬 No real videos found, providing sample content');
+          return [{
+            id: 'sample-1',
+            video_url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
             thumbnail_url: undefined,
-            title: (post.content || '').split('\n')[0] || 'Professional Reel',
-            description: post.content,
-            created_at: post.created_at,
+            title: 'Welcome to TalentXcel Reels',
+            description: 'Share your professional journey and connect with talent worldwide! 🚀 #TalentXcel #Professional #Career',
+            created_at: new Date().toISOString(),
             author: {
-              id: post.author_id || '',
-              first_name: profile?.full_name?.split(' ')[0] || 'Professional',
-              last_name: profile?.full_name?.split(' ').slice(1).join(' ') || 'User',
-              avatar_url: profile?.profile_picture_url,
-              title: profile?.headline || 'TalentXcel Member',
-              company: profile?.current_company || 'TalentXcel',
+              id: 'system',
+              first_name: 'TalentXcel',
+              last_name: 'Team',
+              avatar_url: undefined,
+              title: 'Professional Platform',
+              company: 'TalentXcel',
             },
             stats: {
-              likes: post.likes_count || Math.floor(Math.random() * 500) + 50,
-              comments: post.comments_count || Math.floor(Math.random() * 100) + 10,
-              shares: post.shares_count || Math.floor(Math.random() * 50) + 5,
-              views: Math.floor(Math.random() * 10000) + 500,
+              likes: 1250,
+              comments: 89,
+              shares: 45,
+              views: 15000,
             },
-            tags: post.tags || extractHashtags(post.content || ''),
+            tags: ['TalentXcel', 'Professional', 'Career'],
             is_liked: false,
             is_bookmarked: false,
-          } as VideoReel;
-        });
+          }];
+        }
+
+        // For subsequent pages with no data, return empty array
+        return [];
+
+      } catch (error) {
+        console.error('🎬 Query failed:', error);
+        throw error;
+      }
     },
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length === 10 ? pages.length : undefined;
