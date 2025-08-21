@@ -207,14 +207,32 @@ export const useLinkedInFeed = () => {
         .single();
 
       if (existingLike) {
-        // Unlike
+        // Unlike - publish engagement event
+        await supabase.rpc('publish_engagement_event', {
+          p_event_type: 'unlike',
+          p_content_type: 'post',
+          p_content_id: postId,
+          p_user_id: user.id,
+          p_content_owner_id: null, // We'll get this from the posts table in the function
+          p_module: 'network'
+        });
+        
         await supabase
           .from('post_likes')
           .delete()
           .eq('post_id', postId)
           .eq('user_id', user.id);
       } else {
-        // Like
+        // Like - publish engagement event
+        await supabase.rpc('publish_engagement_event', {
+          p_event_type: 'like',
+          p_content_type: 'post',
+          p_content_id: postId,
+          p_user_id: user.id,
+          p_content_owner_id: null, // We'll get this from the posts table in the function
+          p_module: 'network'
+        });
+        
         await supabase
           .from('post_likes')
           .insert({

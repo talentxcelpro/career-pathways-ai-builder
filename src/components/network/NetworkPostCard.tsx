@@ -3,11 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
-import { PostActions } from "@/components/posts/PostActions";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
 import { EnhancedPostMenu } from "@/components/posts/EnhancedPostMenu";
 import { QuickShareActions } from "@/components/shared/QuickShareActions";
 import { useShareContent } from "@/hooks/useShareContent";
+import { EngagementActions } from "@/components/engagement/EngagementActions";
 import ProBadge from "@/components/network/ProBadge";
 import MediaPreview from "@/components/posts/MediaPreview";
 import { linkifyText } from "@/utils/textUtils";
@@ -189,14 +189,20 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           )}
         </Link>
 
-        {/* Post Actions */}
-        <PostActions
-          postId={post.id}
-          initialLikes={post.likes_count || 0}
-          initialComments={post.comments_count || 0}
-          initialShares={post.shares_count || 0}
-          onCommentClick={() => onCommentClick?.(post.id)}
-          postData={post}
+        {/* Real-time Engagement Actions */}
+        <EngagementActions
+          contentType="post"
+          contentId={post.id}
+          contentOwnerId={post.author_id}
+          module="network"
+          initialStats={{
+            likes: post.likes_count || 0,
+            comments: post.comments_count || 0,
+            shares: post.shares_count || 0,
+            views: 0, // TODO: Add views tracking
+          }}
+          variant="default"
+          onComment={() => onCommentClick?.(post.id)}
         />
 
         {/* Enhanced Comments Section */}

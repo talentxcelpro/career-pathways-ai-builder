@@ -321,8 +321,8 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
             {/* Create Post */}
             <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
-            {/* Network Posts Feed with Infinite Scroll */}
-            <NetworkPostsFeed />
+{/* Network Posts Feed with Real-time Engagement */}
+            <NetworkPostsFeed feedType={feedFilter} />
           </div>
 
           {/* Right Sidebar - Network Activity & Advertising */}
