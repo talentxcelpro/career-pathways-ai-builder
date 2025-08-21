@@ -201,12 +201,20 @@ const ProfileEdit = () => {
     if (!file || !currentUser?.id) return;
 
     try {
-      const url = await uploadFile(file, currentUser.id, 'resume');
-      if (url) {
-        setFormData(prev => ({ ...prev, resume_url: url }));
-      }
+      const url = await uploadFile(file, currentUser.id);
+      setFormData(prev => ({ ...prev, resume_url: url }));
+      
+      toast({
+        title: "Resume uploaded successfully!",
+        description: "Your resume has been uploaded and linked to your profile.",
+      });
     } catch (error) {
-      console.error('Resume upload failed:', error);
+      console.error('Error uploading resume:', error);
+      toast({
+        title: "Upload failed",
+        description: "There was an error uploading your resume. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
