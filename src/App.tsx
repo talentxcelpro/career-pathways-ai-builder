@@ -15,7 +15,7 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
-import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
+// import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
@@ -42,6 +42,7 @@ import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
 import Platform from "./pages/Platform";
+import DebugPage from "./pages/DebugPage";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
 // import { CVDatabase } from "@/components/employer/CVDatabase";
 // import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
@@ -93,7 +94,7 @@ const App = () => {
             <AuthProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
-                <RealtimeProvider showToasts={false}>
+                {/* <RealtimeProvider showToasts={false}> */}
                 <CopilotProvider>
                   <ContentSecurityPolicy />
                 <Toaster
@@ -143,8 +144,9 @@ const App = () => {
                           />
                         );
                        })}
-                        <Route path="/platform" element={<Platform />} />
-                        <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
+                         <Route path="/platform" element={<Platform />} />
+                         <Route path="/debug" element={<DebugPage />} />
+                         <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                         <Route path="/passport/:userId" element={<CareerPassportDashboard />} />
                         <Route path="/@:username" element={<CareerPassportDashboard />} />
                         <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
@@ -191,7 +193,7 @@ const App = () => {
                 </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
-                </RealtimeProvider>
+                {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
             </AuthProvider>
