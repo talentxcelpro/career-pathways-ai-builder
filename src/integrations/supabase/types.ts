@@ -22808,6 +22808,16 @@ export type Database = {
           users_needing_reminders: number
         }[]
       }
+      get_recent_posts: {
+        Args: { limit_count?: number }
+        Returns: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          updated_at: string
+        }[]
+      }
       get_scraped_job_applications: {
         Args: Record<PropertyKey, never>
         Returns: {
