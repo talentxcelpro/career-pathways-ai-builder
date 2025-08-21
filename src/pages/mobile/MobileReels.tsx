@@ -55,6 +55,8 @@ interface VideoReel {
 export const MobileReels = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  console.log('🎬 MobileReels - User:', user ? 'Authenticated' : 'Not authenticated');
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -76,6 +78,7 @@ export const MobileReels = () => {
   } = useInfiniteQuery({
     queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
     queryFn: async ({ pageParam = 0 }) => {
+      console.log('🎬 Fetching reels page:', pageParam, 'User:', user?.id);
       const limit = 10;
       // First get posts with media
       const { data: postsData, error: postsError } = await supabase
@@ -183,7 +186,7 @@ export const MobileReels = () => {
       return lastPage.length === 10 ? pages.length : undefined;
     },
     initialPageParam: 0,
-    enabled: !!user
+    enabled: true // Enable regardless of user state to show sample data
   });
 
   // Flatten all pages into single array
