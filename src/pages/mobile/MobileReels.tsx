@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useOptimizedInfiniteScroll, fetchReelsData } from '@/hooks/useOptimizedInfiniteScroll';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -73,212 +73,26 @@ export const MobileReels = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Enhanced infinite scrolling reels fetch
+  // Use optimized infinite scroll with real data
   const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    items: reels,
     isLoading,
     error,
-    refetch
-  } = useInfiniteQuery<VideoReel[], Error, VideoReel[], any, number>({
-    queryKey: ['mobile-reels-infinite', user?.id, refreshTrigger],
-    queryFn: async ({ pageParam = 0 }) => {
-      console.log('🎬 Fetching reels page:', pageParam, 'User:', user?.id);
-      const limit = 10;
-      const page = typeof pageParam === 'number' ? pageParam : Number(pageParam) || 0;
-      const offset = page * limit;
-      
-      try {
-        // First get posts with video media from posts table
-        const { data: postsData, error: postsError } = await supabase
-          .from('posts')
-          .select(`
-            id,
-            content,
-            created_at,
-            media_urls,
-            author_id,
-            likes_count,
-            comments_count,
-            shares_count,
-            tags,
-            visibility,
-            is_deleted
-          `)
-          .eq('visibility', 'public')
-          .eq('is_deleted', false)
-          .not('media_urls', 'is', null)
-          .order('created_at', { ascending: false })
-          .range(offset, offset + limit - 1);
-
-        if (postsError) {
-          console.error('🎬 Posts query error:', postsError);
-          throw postsError;
-        }
-
-        console.log('🎬 Raw posts data:', postsData?.length || 0, 'posts found');
-
-        // Get unique author IDs
-        const authorIds = [...new Set((postsData || []).map(post => post.author_id))];
-        console.log('🎬 Author IDs to fetch:', authorIds.length);
-        
-        // Fetch author profiles separately
-        let profilesData = [];
-        if (authorIds.length > 0) {
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, full_name, profile_picture_url, headline, current_company')
-            .in('id', authorIds);
-          profilesData = profiles || [];
-        }
-
-        console.log('🎬 Profiles fetched:', profilesData.length);
-
-        // Create a map of profiles for quick lookup
-        const profilesMap = new Map(
-          profilesData.map(profile => [profile.id, profile])
-        );
-
-        // Filter and transform posts with videos
-        const videoReels = (postsData || [])
-          .filter((post: any) => {
-            const media = (post.media_urls || []) as string[];
-            const hasVideo = media.some((m) => /\.(mp4|mov|webm|avi)(\?|#|$)/i.test(m));
-            console.log('🎬 Post', post.id, 'has video:', hasVideo, 'media:', media);
-            return hasVideo;
-          })
-          .map((post: any) => {
-            const media = (post.media_urls || []) as string[];
-            const firstVideo = media.find((m) => /\.(mp4|mov|webm|avi)(\?|#|$)/i.test(m)) || '';
-            const profile = profilesMap.get(post.author_id);
-            
-            console.log('🎬 Processing post:', post.id, 'video:', firstVideo);
-            
-            return {
-              id: post.id,
-              video_url: firstVideo,
-              thumbnail_url: undefined,
-              title: (post.content || '').split('\n')[0] || 'Professional Reel',
-              description: post.content,
-              created_at: post.created_at,
-              author: {
-                id: post.author_id || '',
-                first_name: profile?.full_name?.split(' ')[0] || 'Professional',
-                last_name: profile?.full_name?.split(' ').slice(1).join(' ') || 'User',
-                avatar_url: profile?.profile_picture_url,
-                title: profile?.headline || 'TalentXcel Member',
-                company: profile?.current_company || 'TalentXcel',
-              },
-              stats: {
-                likes: post.likes_count || Math.floor(Math.random() * 500) + 50,
-                comments: post.comments_count || Math.floor(Math.random() * 100) + 10,
-                shares: post.shares_count || Math.floor(Math.random() * 50) + 5,
-                views: Math.floor(Math.random() * 10000) + 500,
-              },
-              tags: post.tags || extractHashtags(post.content || ''),
-              is_liked: false,
-              is_bookmarked: false,
-            } as VideoReel;
-          });
-
-        console.log('🎬 Final video reels:', videoReels.length);
-
-        // Combine with published videos from Edge Function on first page
-        let combinedReels: VideoReel[] = [...videoReels];
-        if (pageParam === 0) {
-          const { data: ytData, error: ytErr } = await supabase.functions.invoke('yt-feed');
-          if (ytErr) {
-            console.warn('🎬 yt-feed error:', ytErr);
-          } else {
-            const ytReels: VideoReel[] = (ytData as any[] | null || []).map((v: any) => ({
-              id: `video-${v.id}`,
-              video_url: '',
-              thumbnail_url: v.thumbnail_url || undefined,
-              title: v.title || 'Video',
-              description: v.caption || '',
-              created_at: v.created_at,
-              author: {
-                id: 'talentxcel',
-                first_name: 'TalentXcel',
-                last_name: 'Video',
-                avatar_url: undefined,
-                title: 'Curated Video',
-                company: 'TalentXcel',
-              },
-              stats: {
-                likes: Math.floor(Math.random() * 500) + 50,
-                comments: Math.floor(Math.random() * 100) + 10,
-                shares: Math.floor(Math.random() * 50) + 5,
-                views: Math.floor(Math.random() * 10000) + 500,
-              },
-              tags: [],
-              is_liked: false,
-              is_bookmarked: false,
-              provider: 'youtube',
-              provider_video_id: v.provider_video_id || '',
-            }));
-            combinedReels = [...ytReels, ...combinedReels];
-          }
-        }
-
-        if (combinedReels.length > 0) {
-          return combinedReels;
-        }
-
-        // Fallback: Return sample data only if no real videos found and it's the first page
-        if (pageParam === 0) {
-          console.log('🎬 No real videos found, providing sample content');
-          return [{
-            id: 'sample-1',
-            video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-            thumbnail_url: undefined,
-            title: 'Welcome to TalentXcel Reels',
-            description: 'Share your professional journey and connect with talent worldwide! 🚀 #TalentXcel #Professional #Career',
-            created_at: new Date().toISOString(),
-            author: {
-              id: 'system',
-              first_name: 'TalentXcel',
-              last_name: 'Team',
-              avatar_url: undefined,
-              title: 'Professional Platform',
-              company: 'TalentXcel',
-            },
-            stats: {
-              likes: 1250,
-              comments: 89,
-              shares: 45,
-              views: 15000,
-            },
-            tags: ['TalentXcel', 'Professional', 'Career'],
-            is_liked: false,
-            is_bookmarked: false,
-            provider: 'storage',
-          }];
-        }
-
-        // For subsequent pages with no data, return empty array
-        return [];
-      } catch (error) {
-        console.error('🎬 Query failed:', error);
-        throw error;
-      }
-    },
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage.length === 10 ? pages.length : undefined;
-    },
-    initialPageParam: 0,
-    enabled: true // Enable regardless of user state to show sample data
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    lastItemRef,
+  } = useOptimizedInfiniteScroll({
+    queryKey: ['mobile-reels-optimized', user?.id, refreshTrigger],
+    fetchFunction: fetchReelsData,
+    enabled: true,
+    pageSize: 10,
+    threshold: 500,
+    staleTime: 60000, // 1 minute
+    cacheTime: 300000, // 5 minutes
   });
 
-  // Flatten all pages into single array
-  const d: any = data as any;
-  const reels: VideoReel[] = Array.isArray(d)
-    ? (d as VideoReel[])
-    : Array.isArray(d?.pages)
-      ? (d.pages as VideoReel[][]).flat()
-      : [];
+  // reels array is now directly available from useOptimizedInfiniteScroll
 
   const extractHashtags = (content: string): string[] => {
     const hashtags = content.match(/#[a-zA-Z0-9_]+/g) || [];
@@ -308,15 +122,8 @@ export const MobileReels = () => {
       setCurrentVideoIndex(newIndex);
     }
 
-    // Load more when near the end
-    if (
-      hasNextPage &&
-      !isFetchingNextPage &&
-      scrollTop + container.clientHeight >= container.scrollHeight - 1000
-    ) {
-      fetchNextPage();
-    }
-  }, [currentVideoIndex, reels.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
+    // Infinite scroll is now handled by intersection observer
+  }, [currentVideoIndex, reels.length]);
 
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -443,6 +250,7 @@ export const MobileReels = () => {
           {reels.map((reel, index) => (
             <div 
               key={reel.id} 
+              ref={index === reels.length - 1 ? lastItemRef : null}
               className="h-screen w-full relative snap-start flex items-center justify-center"
             >
               {/* Video */}

@@ -12,7 +12,7 @@ import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
-import Posts from './network/Posts';
+import { OptimizedNetworkFeed } from '@/components/network/OptimizedNetworkFeed';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
@@ -135,13 +135,13 @@ const Network = () => {
 
           <TabsContent value="feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <Posts feedType="all" />
+              <OptimizedNetworkFeed feedType="all" />
             </div>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <Posts feedType="smart" />
+              <OptimizedNetworkFeed feedType="smart" />
             </div>
           </TabsContent>
 
