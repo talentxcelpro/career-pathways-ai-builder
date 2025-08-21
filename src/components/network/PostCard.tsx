@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { PostActions } from "@/components/posts/PostActions";
-import { CommentsSection } from "@/components/posts/CommentsSection";
-import { PostMenu } from "@/components/posts/PostMenu";
+import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
+import { EnhancedPostMenu } from "@/components/posts/EnhancedPostMenu";
 import { QuickShareActions } from "@/components/shared/QuickShareActions";
 import { useShareContent } from "@/hooks/useShareContent";
 import ProBadge from "@/components/network/ProBadge";
@@ -115,7 +115,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <QuickShareActions content={shareContent} />
-            <PostMenu
+            <EnhancedPostMenu
               postId={post.id}
               authorId={post.author_id || ''}
               currentUserId={post.author_id}
@@ -154,8 +154,8 @@ export const PostCard: React.FC<PostCardProps> = ({
           postData={post}
         />
 
-        {/* Comments Section */}
-        <CommentsSection
+        {/* Enhanced Comments Section */}
+        <EnhancedCommentsSection
           postId={post.id}
           isOpen={openComments === post.id}
         />
