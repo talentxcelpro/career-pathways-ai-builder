@@ -7,6 +7,8 @@ import { MapPin, Clock, Users, Heart, Eye, TrendingUp, Zap, Star } from "lucide-
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
+import { useJobsEngagement } from "@/hooks/useJobsEngagement";
+import { EngagementActions } from "@/components/engagement/EngagementActions";
 
 interface ModernJobCardProps {
   job: {
@@ -43,14 +45,24 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
   variant = 'regular'
 }) => {
   const navigate = useNavigate();
+  const { 
+    trackJobView, 
+    saveJob, 
+    applyToJob, 
+    shareJob, 
+    isJobSaved, 
+    isJobApplied 
+  } = useJobsEngagement();
 
   const handleCardClick = () => {
     console.log('🔗 Navigating to job detail:', job.id);
+    trackJobView(job.id);
     navigate(`/jobs/${job.id}`);
   };
 
-  const handleSaveClick = (e: React.MouseEvent) => {
+  const handleSaveClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    const result = await saveJob(job.id);
     onSave?.(job.id);
   };
 
@@ -97,7 +109,7 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
               onClick={handleSaveClick}
               className="text-gray-400 hover:text-red-500"
             >
-              <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
+              <Heart className={`h-4 w-4 ${isJobSaved(job.id) || isSaved ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
           </div>
 
@@ -155,12 +167,14 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="text-xs">
-                    🔗 View Details
-                  </Button>
-                  <Button size="sm" className="text-xs bg-primary hover:bg-primary/90">
-                    ⚡ Easy Apply
-                  </Button>
+                  <EngagementActions
+                    contentId={job.id}
+                    contentType="job"
+                    module="jobs"
+                    variant="compact"
+                    className="flex gap-1"
+                    onShare={() => shareJob(job.id)}
+                  />
                 </div>
               </div>
             </div>
@@ -199,7 +213,7 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
               onClick={handleSaveClick}
               className="text-gray-400 hover:text-red-500 p-1"
             >
-              <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
+              <Heart className={`h-4 w-4 ${isJobSaved(job.id) || isSaved ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
           </div>
         </div>
@@ -253,15 +267,14 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-xs text-gray-600 hover:text-primary">
-                  ❤️ Save
-                </Button>
-                <span className="text-gray-300">|</span>
-                <Button variant="ghost" size="sm" className="text-xs text-primary hover:bg-primary/10">
-                  🔗 Apply Now
-                </Button>
-              </div>
+              <EngagementActions
+                contentId={job.id}
+                contentType="job"
+                module="jobs"
+                variant="default"
+                className="flex gap-2"
+                onShare={() => shareJob(job.id)}
+              />
             </div>
           </div>
         </div>
