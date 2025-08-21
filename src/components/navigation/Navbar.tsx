@@ -40,7 +40,7 @@ import { AuthDialog } from '@/components/auth/AuthDialog';
 import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
-import { RealtimeIndicator } from '@/components/realtime/RealtimeIndicator';
+
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -208,8 +208,6 @@ export const Navbar = () => {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4">
-                {/* Realtime Status Indicator */}
-                <RealtimeIndicator />
 
                 {/* Notifications */}
                 <Link to="/network/notifications">
