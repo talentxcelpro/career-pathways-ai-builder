@@ -6940,6 +6940,66 @@ export type Database = {
         }
         Relationships: []
       }
+      content_scores: {
+        Row: {
+          applies_count: number | null
+          base_score: number | null
+          comments_count: number | null
+          content_id: string
+          content_type: string
+          created_at: string
+          engagement_score: number | null
+          enrollments_count: number | null
+          final_score: number | null
+          id: string
+          last_engagement_at: string | null
+          likes_count: number | null
+          module: string
+          shares_count: number | null
+          time_decay_score: number | null
+          updated_at: string
+          views_count: number | null
+        }
+        Insert: {
+          applies_count?: number | null
+          base_score?: number | null
+          comments_count?: number | null
+          content_id: string
+          content_type: string
+          created_at?: string
+          engagement_score?: number | null
+          enrollments_count?: number | null
+          final_score?: number | null
+          id?: string
+          last_engagement_at?: string | null
+          likes_count?: number | null
+          module: string
+          shares_count?: number | null
+          time_decay_score?: number | null
+          updated_at?: string
+          views_count?: number | null
+        }
+        Update: {
+          applies_count?: number | null
+          base_score?: number | null
+          comments_count?: number | null
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          engagement_score?: number | null
+          enrollments_count?: number | null
+          final_score?: number | null
+          id?: string
+          last_engagement_at?: string | null
+          likes_count?: number | null
+          module?: string
+          shares_count?: number | null
+          time_decay_score?: number | null
+          updated_at?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
       contract_activities: {
         Row: {
           activity_type: string
@@ -8578,6 +8638,51 @@ export type Database = {
           video_url?: string | null
           visibility?: string
           yt_video_id?: string | null
+        }
+        Relationships: []
+      }
+      engagement_events: {
+        Row: {
+          actor_id: string
+          created_at: string
+          event_type: string
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          module: string
+          processed_at: string | null
+          score_impact: number | null
+          target_id: string
+          target_owner_id: string | null
+          target_type: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          module: string
+          processed_at?: string | null
+          score_impact?: number | null
+          target_id: string
+          target_owner_id?: string | null
+          target_type: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          module?: string
+          processed_at?: string | null
+          score_impact?: number | null
+          target_id?: string
+          target_owner_id?: string | null
+          target_type?: string
         }
         Relationships: []
       }
@@ -14886,6 +14991,33 @@ export type Database = {
           status?: string
           title?: string
           trigger_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      realtime_subscriptions: {
+        Row: {
+          channel_name: string
+          id: string
+          last_active: string | null
+          module: string
+          subscribed_at: string
+          user_id: string
+        }
+        Insert: {
+          channel_name: string
+          id?: string
+          last_active?: string | null
+          module: string
+          subscribed_at?: string
+          user_id: string
+        }
+        Update: {
+          channel_name?: string
+          id?: string
+          last_active?: string | null
+          module?: string
+          subscribed_at?: string
           user_id?: string
         }
         Relationships: []
@@ -21367,6 +21499,36 @@ export type Database = {
           prefill_data?: Json
           updated_at?: string
           usage_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_presence: {
+        Row: {
+          current_module: string | null
+          current_page: string | null
+          device_type: string | null
+          is_online: boolean | null
+          last_seen: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_module?: string | null
+          current_page?: string | null
+          device_type?: string | null
+          is_online?: boolean | null
+          last_seen?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_module?: string | null
+          current_page?: string | null
+          device_type?: string | null
+          is_online?: boolean | null
+          last_seen?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
