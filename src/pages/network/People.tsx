@@ -12,8 +12,12 @@ import { MapPin, Briefcase, Users, MessageSquare, Star, Clock } from "lucide-rea
 import { useNavigate } from 'react-router-dom';
 import { usePeopleSearch } from '@/hooks/usePeopleSearch';
 import { useProfileViews } from '@/hooks/useProfileViews';
+import { useUserPresence } from '@/hooks/useUserPresence';
+import { RealtimeConnectionsModule } from '@/components/network/RealtimeConnectionsModule';
 
 const People = () => {
+  // Initialize user presence tracking
+  useUserPresence();
   const { trackProfileView } = useProfileViews();
   const navigate = useNavigate();
   
@@ -103,19 +107,24 @@ const People = () => {
           </p>
         </div>
 
-          <SocialSearchBar
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            locationFilter={locationFilter}
-            onLocationChange={setLocationFilter}
-            industryFilter={industryFilter}
-            onIndustryChange={setIndustryFilter}
-            locations={locations}
-            industries={industries}
-            isLoading={isLoading}
-            totalCount={totalCount}
-            hasResults={results.length > 0}
-          />
+        {/* Real-time Connections Module */}
+        <div className="mb-8">
+          <RealtimeConnectionsModule />
+        </div>
+
+        <SocialSearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          locationFilter={locationFilter}
+          onLocationChange={setLocationFilter}
+          industryFilter={industryFilter}
+          onIndustryChange={setIndustryFilter}
+          locations={locations}
+          industries={industries}
+          isLoading={isLoading}
+          totalCount={totalCount}
+          hasResults={results.length > 0}
+        />
 
           {/* Results Grid */}
           {results.length === 0 && !isLoading ? (

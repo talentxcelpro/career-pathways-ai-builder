@@ -14413,10 +14413,12 @@ export type Database = {
           industry: string | null
           is_ai_bot: boolean | null
           is_employer: boolean | null
+          is_online: boolean | null
           is_profile_public: boolean | null
           is_viewing_private: boolean | null
           last_login_at: string | null
           last_profile_view: string | null
+          last_seen: string | null
           linkedin_url: string | null
           location: string | null
           login_count: number | null
@@ -14499,10 +14501,12 @@ export type Database = {
           industry?: string | null
           is_ai_bot?: boolean | null
           is_employer?: boolean | null
+          is_online?: boolean | null
           is_profile_public?: boolean | null
           is_viewing_private?: boolean | null
           last_login_at?: string | null
           last_profile_view?: string | null
+          last_seen?: string | null
           linkedin_url?: string | null
           location?: string | null
           login_count?: number | null
@@ -14585,10 +14589,12 @@ export type Database = {
           industry?: string | null
           is_ai_bot?: boolean | null
           is_employer?: boolean | null
+          is_online?: boolean | null
           is_profile_public?: boolean | null
           is_viewing_private?: boolean | null
           last_login_at?: string | null
           last_profile_view?: string | null
+          last_seen?: string | null
           linkedin_url?: string | null
           location?: string | null
           login_count?: number | null
@@ -22756,6 +22762,10 @@ export type Database = {
         }
         Returns: Json
       }
+      get_last_seen_text: {
+        Args: { last_seen_timestamp: string }
+        Returns: string
+      }
       get_or_create_user_referral: {
         Args: { user_uuid: string }
         Returns: string
@@ -23161,6 +23171,10 @@ export type Database = {
       }
       update_user_login: {
         Args: { user_uuid: string }
+        Returns: undefined
+      }
+      update_user_presence: {
+        Args: { is_online_status: boolean; user_uuid: string }
         Returns: undefined
       }
       upsert_daily_analytics: {

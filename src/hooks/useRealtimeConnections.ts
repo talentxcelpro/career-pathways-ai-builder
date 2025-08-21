@@ -1,260 +1,177 @@
-
-import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
-export const useRealtimeConnections = () => {
-  const queryClient = useQueryClient();
+interface RealtimeUser {
+  id: string;
+  full_name: string | null;
+  profile_picture_url: string | null;
+  headline: string | null;
+  title: string | null;
+  current_company: string | null;
+  location: string | null;
+  skills: string[] | null;
+  is_online: boolean;
+  last_seen: string;
+  email: string | null;
+}
 
-  const { data: connections, isLoading } = useQuery({
-    queryKey: ['connections'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+export function useRealtimeConnections() {
+  const { user } = useAuth();
+  const [users, setUsers] = useState<RealtimeUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
-      console.log('Fetching connections for user:', user.id);
+  // Fetch initial users
+  const fetchUsers = async () => {
+    if (!user?.id) return;
 
-      // Get accepted connections
-      const { data: connectionsData, error } = await supabase
+    try {
+      setLoading(true);
+      
+      // Get users excluding current user and existing connections
+      const { data: existingConnections } = await supabase
         .from('connections')
-        .select('*')
+        .select('recipient_id, requester_id')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-        .eq('status', 'accepted')
-        .order('connected_at', { ascending: false })
-        .limit(10);
+        .eq('status', 'accepted');
 
-      if (error) {
-        console.error('Error fetching connections:', error);
-        return [];
-      }
-
-      console.log('Raw connections data:', connectionsData);
-
-      if (!connectionsData || connectionsData.length === 0) {
-        console.log('No connections found');
-        return [];
-      }
-
-      // Get the other user IDs from connections
-      const otherUserIds = connectionsData.map(conn => 
+      const connectedUserIds = existingConnections?.map(conn => 
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
-      ).filter(Boolean);
+      ) || [];
 
-      console.log('Other user IDs:', otherUserIds);
-
-      if (otherUserIds.length === 0) return [];
-
-      // Get profiles for these users
-      const { data: profiles, error: profilesError } = await supabase
+      let query = supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url')
-        .in('id', otherUserIds);
+        .select(`
+          id,
+          full_name,
+          profile_picture_url,
+          headline,
+          title,
+          current_company,
+          location,
+          skills,
+          is_online,
+          last_seen,
+          email
+        `)
+        .neq('id', user.id);
 
-      if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
+      // Exclude already connected users
+      if (connectedUserIds.length > 0) {
+        query = query.not('id', 'in', `(${connectedUserIds.join(',')})`);
       }
 
-      console.log('Profiles data:', profiles);
-
-      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
-
-      // Transform data to include the other user's profile
-      const result = connectionsData.map(conn => {
-        const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
-        const otherUser = profilesMap.get(otherUserId);
-        
-        return {
-          ...conn,
-          otherUser: otherUser || {
-            id: otherUserId,
-            full_name: 'Unknown User',
-            title: 'Professional',
-            profile_picture_url: null
-          }
-        };
-      });
-
-      console.log('Final connections result:', result);
-      return result;
-    }
-  });
-
-  const { data: stats } = useQuery({
-    queryKey: ['connectionStats'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { connections: 0, messages: 0, events: 0, profileViews: 0 };
-
-      console.log('Fetching connection stats for user:', user.id);
-
-      try {
-        // Get connections count
-        const { count: connectionsCount, error: connectionsError } = await supabase
-          .from('connections')
-          .select('*', { count: 'exact', head: true })
-          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted');
-
-        if (connectionsError) {
-          console.error('Error fetching connections count:', connectionsError);
-        }
-
-        // Get unread messages count
-        const { count: messagesCount, error: messagesError } = await supabase
-          .from('messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('recipient_id', user.id)
-          .eq('is_read', false);
-
-        if (messagesError) {
-          console.error('Error fetching messages count:', messagesError);
-        }
-
-        // Get upcoming events count (events that haven't started yet)
-        const now = new Date().toISOString();
-        const { count: eventsCount, error: eventsError } = await supabase
-          .from('events')
-          .select('*', { count: 'exact', head: true })
-          .gte('start_time', now);
-
-        if (eventsError) {
-          console.error('Error fetching events count:', eventsError);
-        }
-
-        // Get profile views count for current user's profile
-        const { count: profileViewsCount, error: profileViewsError } = await supabase
-          .from('profile_views')
-          .select('*', { count: 'exact', head: true })
-          .eq('profile_id', user.id);
-
-        if (profileViewsError) {
-          console.error('Error fetching profile views count:', profileViewsError);
-        }
-
-        const stats = {
-          connections: connectionsCount || 0,
-          messages: messagesCount || 0,
-          events: eventsCount || 0,
-          profileViews: profileViewsCount || 0
-        };
-
-        console.log('Connection stats calculated:', stats);
-        return stats;
-      } catch (error) {
-        console.error('Error in stats calculation:', error);
-        return { connections: 0, messages: 0, events: 0, profileViews: 0 };
+      // Filter by online status if requested
+      if (showOnlineOnly) {
+        query = query.eq('is_online', true);
       }
-    }
-  });
 
-  // Set up real-time subscriptions
+      const { data, error } = await query
+        .order('is_online', { ascending: false })
+        .order('last_seen', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Set up realtime subscription
   useEffect(() => {
-    console.log('Setting up real-time subscriptions...');
-    
-    const connectionsChannel = supabase
-      .channel('connections-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'connections'
-        },
-        (payload) => {
-          console.log('Connection change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['connections'] });
-          queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
-          queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });
-          queryClient.invalidateQueries({ queryKey: ['myConnections'] });
-          queryClient.invalidateQueries({ queryKey: ['pendingConnectionRequests'] });
-        }
-      )
-      .subscribe();
+    if (!user?.id) return;
 
-    const messagesChannel = supabase
-      .channel('messages-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages'
-        },
-        (payload) => {
-          console.log('Message change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
-        }
-      )
-      .subscribe();
+    fetchUsers();
 
-    const profileViewsChannel = supabase
-      .channel('profile-views-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'profile_views'
-        },
-        (payload) => {
-          console.log('Profile view detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['connectionStats'] });
-        }
-      )
-      .subscribe();
-
-    // Subscribe to post likes, comments, and shares for real-time updates
-    const postInteractionsChannel = supabase
-      .channel('post-interactions')
+    // Subscribe to realtime changes on profiles
+    const channel = supabase
+      .channel('profiles_realtime')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'post_likes'
+          table: 'profiles'
         },
         (payload) => {
-          console.log('Post like change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['postCounts'] });
-          queryClient.invalidateQueries({ queryKey: ['posts'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'post_comments'
-        },
-        (payload) => {
-          console.log('Post comment change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['postCounts'] });
-          queryClient.invalidateQueries({ queryKey: ['posts'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'post_shares'
-        },
-        (payload) => {
-          console.log('Post share change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['postCounts'] });
-          queryClient.invalidateQueries({ queryKey: ['posts'] });
+          console.log('Profile change:', payload);
+          
+          if (payload.eventType === 'UPDATE') {
+            const updatedProfile = payload.new as RealtimeUser;
+            
+            // Update the user in our list if they exist
+            setUsers(prevUsers => 
+              prevUsers.map(u => 
+                u.id === updatedProfile.id 
+                  ? { ...u, ...updatedProfile }
+                  : u
+              )
+            );
+          }
         }
       )
       .subscribe();
 
     return () => {
-      console.log('Cleaning up real-time subscriptions...');
-      supabase.removeChannel(connectionsChannel);
-      supabase.removeChannel(messagesChannel);
-      supabase.removeChannel(profileViewsChannel);
-      supabase.removeChannel(postInteractionsChannel);
+      supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [user?.id, showOnlineOnly]);
 
-  return { connections, stats, isLoading };
-};
+  const getLastSeenText = (lastSeen: string): string => {
+    const lastSeenDate = new Date(lastSeen);
+    const now = new Date();
+    const diffMs = now.getTime() - lastSeenDate.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return 'Over a week ago';
+  };
+
+  const sendConnectionRequest = async (recipientId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .insert({
+          requester_id: user.id,
+          recipient_id: recipientId,
+          status: 'pending'
+        });
+
+      if (error) throw error;
+
+      // Remove user from suggestions after sending request
+      setUsers(prev => prev.filter(u => u.id !== recipientId));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      return { success: false, error };
+    }
+  };
+
+  const filteredUsers = showOnlineOnly 
+    ? users.filter(u => u.is_online) 
+    : users;
+
+  return {
+    users: filteredUsers,
+    loading,
+    showOnlineOnly,
+    setShowOnlineOnly,
+    sendConnectionRequest,
+    getLastSeenText,
+    refetch: fetchUsers
+  };
+}
