@@ -269,45 +269,62 @@ console.log('🔍 Raw text preview:', extractedText?.substring(0, 500));
     );
     
     if (!providedEmail || isFakeEmail) {
-      console.log('⚠️ No valid email found in CV (found:', providedEmail, '), trying manual extraction from text');
-      
-      // Try direct regex extraction from the raw text with more patterns
-      const emailMatches = extractedText?.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
-      let realEmail = emailMatches.find(email => 
-        !email.includes('@upload.local') && 
-        !email.includes('@example.com') && 
-        !email.includes('@test.com') &&
-        !email.includes('[email') &&
-        email.includes('.') &&
-        email.length > 5 &&
-        email !== 'user@example.com'
-      );
-      
-      // Try looking for masked/redacted emails
-      if (!realEmail) {
-        const maskedEmailPatterns = [
-          /\[email[\s\w]*\]/gi,
-          /email\s*address/gi,
-          /contact\s*email/gi
-        ];
-        
-        for (const pattern of maskedEmailPatterns) {
-          if (pattern.test(extractedText || '')) {
-            console.log('⚠️ Found masked/redacted email pattern, processing anyway');
-            // Generate a temporary email for processing
-            realEmail = `${generateSlug(safeName)}.${Date.now()}@contact-extracted.temp`;
-            break;
+      console.log('⚠️ No valid email found in CV (found:', providedEmail, '), trying enhanced extraction');
+
+      const normalizeEmailObfuscation = (txt: string) => {
+        if (!txt) return '';
+        return txt
+          .replace(/[–—]/g, '-')
+          .replace(/\[(?:at|AT)\]|\((?:at|AT)\)|\s+(?:at|AT)\s+/g, '@')
+          .replace(/\[(?:dot|DOT)\]|\((?:dot|DOT)\)|\s+(?:dot|DOT)\s+/g, '.')
+          .replace(/\s*\(at\)\s*/gi, '@')
+          .replace(/\s*\(dot\)\s*/gi, '.')
+          .replace(/\s*@\s*/g, '@')
+          .replace(/\s*\.\s*/g, '.')
+          .replace(/\u200B|\u200C|\u200D|\u2060/g, '') // zero-width chars
+          .replace(/\s{2,}/g, ' ');
+      };
+
+      const stripTrailingPunct = (email: string) => email.replace(/[),;:\.]+$/g, '');
+      const isLikelyReal = (email: string) => email && /.+@.+\..+/.test(email) &&
+        !/(@upload\.local|@example\.com|@test\.com|\[email|user@example\.com)/i.test(email);
+
+      const textNorm = normalizeEmailObfuscation(extractedText || '');
+
+      // 1) Strict regex
+      let found = (textNorm.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [])
+        .map(stripTrailingPunct)
+        .find(isLikelyReal);
+
+      // 2) Labeled patterns (Email:, Email ID -, E-mail —)
+      if (!found) {
+        const labelMatch = textNorm.match(/(?:email\s*(?:id)?|e-mail|mail)\s*[:\-–—]\s*([^\s]+)\b/gi);
+        if (labelMatch) {
+          for (const m of labelMatch) {
+            const candidate = stripTrailingPunct((m.split(/[:\-–—]/).pop() || '').trim());
+            if (isLikelyReal(candidate)) { found = candidate; break; }
           }
         }
       }
-      
-      if (realEmail) {
-        console.log('✅ Found/generated email for processing:', realEmail);
+
+      // 3) Try file name
+      if (!found) {
+        const fromFileName = extractEmailFromFileName?.(fileName);
+        if (fromFileName && isLikelyReal(fromFileName)) found = fromFileName;
+      }
+
+      // 4) Very loose reconstruction like "name at gmail dot com"
+      if (!found) {
+        const loose = textNorm.match(/[A-Z0-9._%+-]+\s*[@]\s*[A-Z0-9.-]+\s*[.]\s*[A-Z]{2,}/gi);
+        if (loose?.length) found = stripTrailingPunct(loose[0].replace(/\s+/g, ''));
+      }
+
+      if (found) {
+        console.log('✅ Found real email via enhanced extraction:', found);
         parsedCV.personal_info = parsedCV.personal_info || {};
-        parsedCV.personal_info.email = realEmail;
+        parsedCV.personal_info.email = found;
       } else {
-        console.log('⚠️ No email found, but processing CV anyway with contact info warning');
-        // Generate a temporary unique email to allow processing
+        console.log('⚠️ No email found after enhanced extraction; generating temporary email');
         const tempEmail = `${generateSlug(safeName)}.${Date.now()}@no-contact.temp`;
         parsedCV.personal_info = parsedCV.personal_info || {};
         parsedCV.personal_info.email = tempEmail;
