@@ -123,8 +123,33 @@ serve(async (req) => {
         throw new Error(`Failed to download file: ${fileResponse.status} ${fileResponse.statusText}`);
       }
 
+      const arrayBuffer = await fileResponse.arrayBuffer();
+      
       if (fileType.includes('pdf')) {
-        extractedText = `PDF from ${fileName} (client did not provide text)`;
+        // For PDFs, try basic text extraction using simple PDF parsing
+        try {
+          const uint8Array = new Uint8Array(arrayBuffer);
+          let pdfText = '';
+          
+          // Simple PDF text extraction - look for text objects
+          const textContent = new TextDecoder().decode(uint8Array);
+          const textMatches = textContent.match(/\((.*?)\)/g);
+          if (textMatches) {
+            pdfText = textMatches.map(match => match.slice(1, -1)).join(' ');
+          }
+          
+          // Also try to find emails in the raw PDF data
+          const emailMatches = textContent.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
+          if (emailMatches) {
+            pdfText += ' ' + emailMatches.join(' ');
+          }
+          
+          extractedText = pdfText || `PDF from ${fileName} (limited extraction)`;
+          console.log('📄 PDF text extracted:', extractedText.substring(0, 200));
+        } catch (pdfError) {
+          console.warn('PDF extraction failed:', pdfError);
+          extractedText = `PDF from ${fileName} (extraction failed)`;
+        }
       } else if (fileType.includes('word') || fileType.includes('doc')) {
         extractedText = `DOC/DOCX from ${fileName} (client did not provide text)`;
       } else {

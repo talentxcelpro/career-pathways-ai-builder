@@ -50,11 +50,54 @@ export const CVFilesManager = () => {
   const fixEmail = async (cvFile: any) => {
     const profile = (cvFile as any).profiles;
     const parsedEmail = getParsedEmail(cvFile);
-    if (!profile?.id) return;
-    if (!isValidEmail(parsedEmail)) {
-      toast.error('No valid email found in parsing results.');
+    
+    if (!profile?.id) {
+      toast.error('No profile found.');
       return;
     }
+    
+    // For PDFs, try to re-parse if no valid email found
+    if (!isValidEmail(parsedEmail) && cvFile.file_type?.includes('pdf')) {
+      toast.info('Re-parsing PDF for email extraction...');
+      try {
+        const { data, error } = await supabase.functions.invoke('cv-parser', {
+          body: {
+            fileUrl: cvFile.file_url,
+            fileName: cvFile.original_filename,
+            fileType: cvFile.file_type,
+            batchId: 'reparse-' + Date.now(),
+            forceReparse: true
+          }
+        });
+        
+        if (error) throw error;
+        
+        const newEmail = data?.parsedCV?.personal_info?.email;
+        if (isValidEmail(newEmail)) {
+          await supabase
+            .from('profiles')
+            .update({ email: newEmail })
+            .eq('id', profile.id);
+          
+          await supabase
+            .from('cv_files')
+            .update({ parsing_results: data.parsedCV })
+            .eq('id', cvFile.id);
+            
+          toast.success('Email extracted and updated successfully');
+          queryClient.invalidateQueries({ queryKey: ['cv-files'] });
+          return;
+        }
+      } catch (e: any) {
+        console.error('Re-parsing failed:', e);
+      }
+    }
+    
+    if (!isValidEmail(parsedEmail)) {
+      toast.error('No valid email found. Please check the original CV file.');
+      return;
+    }
+    
     try {
       const { error } = await supabase
         .from('profiles')
@@ -183,15 +226,25 @@ export const CVFilesManager = () => {
                         const profileEmail = profile?.email || '';
                         const parsedEmail = getParsedEmail(cvFile);
                         const displayEmail = isValidEmail(parsedEmail) ? parsedEmail : (profileEmail || 'No email');
+                        const showFixButton = isTempEmail(profileEmail) && (isValidEmail(parsedEmail) || cvFile.file_type?.includes('pdf'));
+                        
                         return (
                           <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
                             <User className="h-4 w-4 text-muted-foreground" />
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-sm">{profile?.full_name || 'Unknown User'}</p>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
-                                {isTempEmail(profileEmail) && isValidEmail(parsedEmail) && (
-                                  <Button variant="outline" size="sm" onClick={() => fixEmail(cvFile)}>
+                                {isTempEmail(profileEmail) && (
+                                  <Badge variant="destructive" className="text-xs">Temp Email</Badge>
+                                )}
+                                {showFixButton && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => fixEmail(cvFile)}
+                                    className="ml-auto"
+                                  >
                                     Fix email
                                   </Button>
                                 )}
