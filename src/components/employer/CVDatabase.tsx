@@ -1,58 +1,24 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import { 
-  Search, 
-  Filter, 
-  Download, 
   Mail, 
-  ExternalLink,
-  MapPin,
-  Briefcase,
-  Calendar,
-  User,
-  Phone,
-  LinkedinIcon
+  FileText,
+  Users,
+  Database,
+  TrendingUp
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
-
-interface CVRecord {
-  application_id: string;
-  job_id: string;
-  job_title: string;
-  company_name: string;
-  location: string;
-  full_name: string;
-  email: string;
-  phone: string;
-  resume_url: string;
-  applied_at: string;
-  status: string;
-  application_source: string;
-}
+import { AppliedResumes } from './cv-database/AppliedResumes';
+import { PlatformCVs } from './cv-database/PlatformCVs';
 
 export const CVDatabase: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCVs, setSelectedCVs] = useState<string[]>([]);
   const [showOutreachModal, setShowOutreachModal] = useState(false);
-
-  const { data: cvData, isLoading } = useQuery({
-    queryKey: ['employer_cv_database_secure'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employer_cv_database_secure')
-        .select('*')
-        .order('applied_at', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    }
-  });
+  const [activeTab, setActiveTab] = useState('applied');
 
   const { data: outreachUsage } = useQuery({
     queryKey: ['outreach_usage'],
@@ -69,39 +35,46 @@ export const CVDatabase: React.FC = () => {
     }
   });
 
-  const filteredCVs = cvData?.filter(cv =>
-    cv.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cv.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cv.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  // Get stats for both data sources
+  const { data: stats } = useQuery({
+    queryKey: ['cv_database_stats'],
+    queryFn: async () => {
+      // Get applied candidates count
+      const { count: appliedCount } = await supabase
+        .from('job_applications')
+        .select('*', { count: 'exact', head: true });
 
-  const handleSelectCV = (applicationId: string) => {
+      // Get platform CVs count
+      const { count: platformCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .neq('user_role', 'employer')
+        .eq('is_profile_public', true)
+        .or('resume_url.neq.,about.neq.,skills.not.is.null');
+
+      return {
+        appliedCandidates: appliedCount || 0,
+        platformCandidates: platformCount || 0,
+        totalCandidates: (appliedCount || 0) + (platformCount || 0)
+      };
+    }
+  });
+
+  const handleSelectCV = (id: string) => {
     setSelectedCVs(prev => 
-      prev.includes(applicationId) 
-        ? prev.filter(id => id !== applicationId)
-        : [...prev, applicationId]
+      prev.includes(id) 
+        ? prev.filter(cvId => cvId !== id)
+        : [...prev, id]
     );
   };
 
-  const handleSelectAll = () => {
-    if (selectedCVs.length === filteredCVs.length) {
-      setSelectedCVs([]);
-    } else {
-      setSelectedCVs(filteredCVs.map(cv => cv.application_id));
-    }
+  const handleSelectAll = (ids: string[]) => {
+    setSelectedCVs(ids);
   };
 
   const remainingEmails = outreachUsage?.is_premium 
     ? 'Unlimited' 
     : Math.max(0, 50 - (outreachUsage?.emails_sent || 0));
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -127,129 +100,100 @@ export const CVDatabase: React.FC = () => {
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search by name, title, company, or skills..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              Filters
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Results Summary */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-600">
-            {filteredCVs.length} candidates found
-          </p>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={selectedCVs.length === filteredCVs.length && filteredCVs.length > 0}
-              onCheckedChange={handleSelectAll}
-            />
-            <span className="text-sm">Select All</span>
-          </div>
-        </div>
-      </div>
-
-      {/* CV Cards */}
-      <div className="grid gap-4">
-        {filteredCVs.map((cv) => (
-          <Card key={cv.application_id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <Checkbox
-                  checked={selectedCVs.includes(cv.application_id)}
-                  onCheckedChange={() => handleSelectCV(cv.application_id)}
-                />
-                
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                  {cv.full_name?.charAt(0) || 'C'}
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{cv.full_name}</h3>
-                      <p className="text-gray-600 flex items-center gap-1">
-                        <Briefcase className="h-4 w-4" />
-                        Applied to: {cv.job_title} {cv.company_name && `at ${cv.company_name}`}
-                      </p>
-                      {cv.location && (
-                        <p className="text-gray-500 flex items-center gap-1 text-sm">
-                          <MapPin className="h-4 w-4" />
-                          {cv.location}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      {cv.resume_url && (
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={cv.resume_url} target="_blank" rel="noopener noreferrer">
-                            <Download className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        Applied: {format(new Date(cv.applied_at), 'MMM dd, yyyy')}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Mail className="h-4 w-4" />
-                        {cv.email}
-                      </span>
-                      {cv.phone && (
-                        <span className="flex items-center gap-1">
-                          <Phone className="h-4 w-4" />
-                          {cv.phone}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Job:</span>
-                      <span className="text-sm">{cv.job_title}</span>
-                      <Badge variant="outline">{cv.status}</Badge>
-                      <Badge variant={cv.application_source === 'scraped' ? 'secondary' : 'default'} className="flex items-center gap-1">
-                        {cv.application_source === 'scraped' && <ExternalLink className="h-3 w-3" />}
-                        {cv.application_source === 'scraped' ? 'External' : 'Platform'}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredCVs.length === 0 && (
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="p-12 text-center">
-            <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No candidates found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria</p>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <FileText className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{stats?.appliedCandidates || 0}</p>
+                <p className="text-sm text-gray-600">Applied Candidates</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
-      )}
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Database className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{stats?.platformCandidates || 0}</p>
+                <p className="text-sm text-gray-600">Platform CVs</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Users className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">{stats?.totalCandidates || 0}</p>
+                <p className="text-sm text-gray-600">Total Candidates</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tabs for Different CV Sources */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="applied" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Applied Resumes ({stats?.appliedCandidates || 0})
+          </TabsTrigger>
+          <TabsTrigger value="platform" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            Platform CVs ({stats?.platformCandidates || 0})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="applied" className="space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue-600" />
+              <h3 className="font-semibold text-blue-900">Applied Resumes</h3>
+            </div>
+            <p className="text-blue-700 text-sm mt-1">
+              View candidates who have directly applied to your job postings. These candidates have shown specific interest in your open positions.
+            </p>
+          </div>
+          
+          <AppliedResumes
+            selectedCVs={selectedCVs}
+            onSelectCV={handleSelectCV}
+            onSelectAll={handleSelectAll}
+          />
+        </TabsContent>
+
+        <TabsContent value="platform" className="space-y-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <Database className="h-5 w-5 text-green-600" />
+              <h3 className="font-semibold text-green-900">Platform CV Database</h3>
+            </div>
+            <p className="text-green-700 text-sm mt-1">
+              Browse all candidate profiles available on the platform. These are public profiles of job seekers who haven't necessarily applied to your jobs yet.
+            </p>
+          </div>
+          
+          <PlatformCVs
+            selectedCVs={selectedCVs}
+            onSelectCV={handleSelectCV}
+            onSelectAll={handleSelectAll}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
