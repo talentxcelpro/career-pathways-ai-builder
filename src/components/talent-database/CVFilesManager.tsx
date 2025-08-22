@@ -7,6 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { FileText, Download, User, Calendar, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import * as pdfjsLib from 'pdfjs-dist';
+// @ts-ignore - vite asset import for worker
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min?url';
+
+(pdfjsLib as any).GlobalWorkerOptions.workerSrc = pdfjsWorker;
 export const CVFilesManager = () => {
   const { data: cvFiles, isLoading, error } = useQuery({
     queryKey: ['cv-files'],
@@ -47,6 +52,59 @@ export const CVFilesManager = () => {
     return typeof email === 'string' ? email : null;
   };
 
+  const normalizeEmailText = (txt: string) => (txt || '')
+    .replace(/[\u200B-\u200D\uFEFF\u2060]/g, '')
+    .replace(/[–—]/g, '-')
+    .replace(/\[(?:at)\]|\((?:at)\)|\s+(?:at)\s+/gi, '@')
+    .replace(/\[(?:dot)\]|\((?:dot)\)|\s+(?:dot)\s+/gi, '.')
+    .replace(/\s*\(at\)\s*/gi, '@')
+    .replace(/\s*\(dot\)\s*/gi, '.')
+    .replace(/\s*@\s*/g, '@')
+    .replace(/\s*\.\s*/g, '.')
+    .replace(/\s{2,}/g, ' ');
+
+  const extractEmailFromText = (text: string): string | null => {
+    const t = normalizeEmailText(text);
+    const isReal = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && !isTempEmail(e);
+
+    const strict = t.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g) || [];
+    const foundStrict = strict.find(isReal);
+    if (foundStrict) return foundStrict;
+
+    const labeled = t.match(/(?:email\s*(?:id)?|e-mail|mail|contact\s*email)\s*[:\-–—]?\s*([^\s]+)\b/gi) || [];
+    for (const m of labeled) {
+      const candidate = (m.split(/[:\-–—]/).pop() || '').trim();
+      if (isReal(candidate)) return candidate;
+    }
+
+    const spaced = t.match(/[A-Za-z0-9._%+\-\s]+@\s*[A-Za-z0-9.\-\s]+\s*\.\s*[A-Za-z]{2,}/gi) || [];
+    for (const s of spaced) {
+      const collapsed = s.replace(/\s+/g, '');
+      if (isReal(collapsed)) return collapsed;
+    }
+
+    return null;
+  };
+
+  const extractEmailFromPdf = async (fileUrl: string): Promise<string | null> => {
+    try {
+      const res = await fetch(fileUrl);
+      const arrayBuffer = await res.arrayBuffer();
+      const loadingTask = (pdfjsLib as any).getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+      let fullText = '';
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const tc = await page.getTextContent();
+        const pageText = (tc.items || []).map((i: any) => i.str).join(' ');
+        fullText += ' ' + pageText;
+      }
+      return extractEmailFromText(fullText);
+    } catch (e) {
+      console.warn('Local PDF text extraction failed:', e);
+      return null;
+    }
+  };
   const fixEmail = async (cvFile: any) => {
     const profile = (cvFile as any).profiles;
     const parsedEmail = getParsedEmail(cvFile);
@@ -97,6 +155,36 @@ export const CVFilesManager = () => {
     }
     
     if (!isValidEmail(parsedEmail)) {
+      if (cvFile.file_type?.includes('pdf')) {
+        toast.info('Trying local PDF extraction...');
+        try {
+          const localEmail = await extractEmailFromPdf(cvFile.file_url);
+          if (isValidEmail(localEmail)) {
+            await supabase
+              .from('profiles')
+              .update({ email: localEmail })
+              .eq('id', profile.id);
+
+            const mergedResults = {
+              ...(cvFile.parsing_results || {}),
+              personal_info: {
+                ...((cvFile.parsing_results || {}).personal_info || {}),
+                email: localEmail,
+              }
+            };
+            await supabase
+              .from('cv_files')
+              .update({ parsing_results: mergedResults })
+              .eq('id', cvFile.id);
+
+            toast.success('Email extracted and updated successfully');
+            queryClient.invalidateQueries({ queryKey: ['cv-files'] });
+            return;
+          }
+        } catch (e) {
+          console.warn('Local PDF extraction error:', e);
+        }
+      }
       toast.error('No valid email found. Please check the original CV file.');
       return;
     }
