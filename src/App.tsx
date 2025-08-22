@@ -45,7 +45,7 @@ import JobsBySkill from "@/pages/JobsBySkill";
 import Platform from "./pages/Platform";
 import DebugPage from "./pages/DebugPage";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
-// import { CVDatabase } from "@/components/employer/CVDatabase";
+import { CVDatabase } from "@/components/employer/CVDatabase";
 // import { OutreachCampaign } from "@/components/employer/OutreachCampaign";
 
 // Create query client optimized for SEO content caching
@@ -163,8 +163,8 @@ const App = () => {
                        <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
-                      {/* <Route path="/employer/cv-database" element={<CVDatabase />} />
-                      <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
+                       <Route path="/employer/cv-database" element={<CVDatabase />} />
+                       {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                       
                       {/* Legacy resume builder redirects */}
                        <Route path="/resume" element={<Navigate to="/resume/new" replace />} />

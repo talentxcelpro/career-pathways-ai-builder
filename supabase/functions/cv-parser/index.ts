@@ -613,34 +613,83 @@ function extractContactInfo(text: string): { email?: string; phone?: string; lin
   // Multiple email extraction patterns to handle various formats
   let validEmail = null;
   
-  // Pattern 1: Standard email format
-  const emailMatches = text.match(/[\w._%+-]+@[\w.-]+\.[A-Z]{2,}/gi) || [];
-  validEmail = emailMatches.find(email => 
-    !email.includes('@upload.local') && 
-    !email.includes('@example.com') && 
-    !email.includes('@test.com') &&
-    email.includes('.') &&
-    email.length > 5
-  );
+  // Clean the text first - remove extra spaces and normalize
+  const cleanText = text.replace(/\s+/g, ' ').trim();
   
-  // Pattern 2: Email with labels (Email:, E-mail:, etc.)
+  // Pattern 1: Standard email format - more comprehensive regex
+  const emailMatches = cleanText.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g) || [];
+  validEmail = emailMatches.find(email => {
+    const lowerEmail = email.toLowerCase();
+    return !lowerEmail.includes('@upload.local') && 
+           !lowerEmail.includes('@example.com') && 
+           !lowerEmail.includes('@test.com') &&
+           !lowerEmail.includes('@domain.com') &&
+           !lowerEmail.includes('@yourcompany.com') &&
+           !lowerEmail.includes('placeholder') &&
+           email.includes('.') &&
+           email.length > 5 &&
+           // Ensure it's a real email format
+           /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+  });
+  
+  // Pattern 2: Email with labels (Email:, E-mail:, etc.) - case insensitive
   if (!validEmail) {
-    const labeledEmailMatch = text.match(/(?:email|e-mail|mail)\s*[:|-]\s*([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/gi);
-    if (labeledEmailMatch && labeledEmailMatch[0]) {
-      const extracted = labeledEmailMatch[0].replace(/^.*[:|-]\s*/, '');
-      if (extracted && !extracted.includes('@upload.local') && !extracted.includes('@example.com')) {
-        validEmail = extracted;
+    const labelPatterns = [
+      /(?:email|e-mail|mail|email\s*address|contact\s*email)\s*[:|-]?\s*([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/gi,
+      /\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\s*$/gmi,  // Email at end of line
+      /^[\s]*([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/gmi,  // Email at start of line
+    ];
+    
+    for (const pattern of labelPatterns) {
+      const matches = cleanText.match(pattern);
+      if (matches) {
+        for (const match of matches) {
+          const emailMatch = match.match(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/i);
+          if (emailMatch && emailMatch[1]) {
+            const extracted = emailMatch[1].toLowerCase();
+            if (!extracted.includes('@upload.local') && 
+                !extracted.includes('@example.com') && 
+                !extracted.includes('@test.com') &&
+                !extracted.includes('@domain.com') &&
+                !extracted.includes('placeholder') &&
+                /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(emailMatch[1])) {
+              validEmail = emailMatch[1];
+              break;
+            }
+          }
+        }
+        if (validEmail) break;
       }
     }
   }
   
-  // Pattern 3: Look for email addresses after contact info keywords
+  // Pattern 3: Look in common contact sections
   if (!validEmail) {
-    const contactSectionMatch = text.match(/(?:contact|reach|email)[\s\S]{0,200}?([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/gi);
-    if (contactSectionMatch) {
-      const extracted = contactSectionMatch[0].match(/([\w._%+-]+@[\w.-]+\.[A-Z]{2,})/i);
-      if (extracted && extracted[1] && !extracted[1].includes('@upload.local')) {
-        validEmail = extracted[1];
+    const contactSections = [
+      /contact[\s\S]{0,300}/gi,
+      /personal\s*information[\s\S]{0,300}/gi,
+      /about[\s\S]{0,200}/gi,
+      /profile[\s\S]{0,200}/gi
+    ];
+    
+    for (const sectionPattern of contactSections) {
+      const section = cleanText.match(sectionPattern);
+      if (section && section[0]) {
+        const emailInSection = section[0].match(/\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b/gi);
+        if (emailInSection) {
+          const found = emailInSection.find(email => {
+            const lowerEmail = email.toLowerCase();
+            return !lowerEmail.includes('@upload.local') && 
+                   !lowerEmail.includes('@example.com') && 
+                   !lowerEmail.includes('@test.com') &&
+                   !lowerEmail.includes('placeholder') &&
+                   /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+          });
+          if (found) {
+            validEmail = found;
+            break;
+          }
+        }
       }
     }
   }
