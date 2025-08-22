@@ -11,10 +11,10 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
 
     console.log('Checking Edge Function health...');
     
-    // Method 1: Try Supabase client with health check payload
+    // Method 1: Try Supabase client with health check endpoint
     try {
       console.log('Attempting health check via Supabase client...');
-      const { data, error } = await supabase.functions.invoke('simple-test', {
+      const { data, error } = await supabase.functions.invoke('health-check', {
         body: { healthCheck: true },
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -34,7 +34,7 @@ export const checkEdgeFunctionHealth = async (): Promise<boolean> => {
     // Method 2: Try direct GET request
     try {
       console.log('Attempting health check via direct GET...');
-      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-test`;
+      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/health-check`;
 
       const response = await fetch(functionUrl, {
         method: 'GET',
