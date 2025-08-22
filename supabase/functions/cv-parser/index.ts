@@ -127,26 +127,29 @@ serve(async (req) => {
       const arrayBuffer = await fileResponse.arrayBuffer();
       
       if (fileType.includes('pdf')) {
-        // For PDFs, try basic text extraction using simple PDF parsing
+        // For PDFs, try multi-encoding text extraction and direct email scan
         try {
           const uint8Array = new Uint8Array(arrayBuffer);
-          let pdfText = '';
-          
-          // Simple PDF text extraction - look for text objects
-          const textContent = new TextDecoder().decode(uint8Array);
-          const textMatches = textContent.match(/\((.*?)\)/g);
-          if (textMatches) {
-            pdfText = textMatches.map(match => match.slice(1, -1)).join(' ');
-          }
-          
-          // Also try to find emails in the raw PDF data
-          const emailMatches = textContent.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
-          if (emailMatches) {
-            pdfText += ' ' + emailMatches.join(' ');
-          }
-          
-          extractedText = pdfText || `PDF from ${fileName} (limited extraction)`;
-          console.log('📄 PDF text extracted:', extractedText.substring(0, 200));
+          let combined = '';
+
+          // 1) UTF-8 decode and collect text objects
+          const utf8 = new TextDecoder().decode(uint8Array);
+          const textObjMatches = utf8.match(/\((.*?)\)/g);
+          if (textObjMatches) combined += ' ' + textObjMatches.map(m => m.slice(1, -1)).join(' ');
+
+          // 2) Append raw utf8 content (for hidden mailto or inline emails)
+          combined += ' ' + utf8;
+
+          // 3) Try UTF-16 decodes (common in PDFs)
+          try { combined += ' ' + new TextDecoder('utf-16le').decode(uint8Array); } catch {}
+          try { combined += ' ' + new TextDecoder('utf-16be').decode(uint8Array); } catch {}
+
+          // 4) Pull any direct email-like substrings from the combined text
+          const emailSnippets = combined.match(/[A-Za-z0-9._%+-\s]+@\s*[A-Za-z0-9.-\s]+\s*\.\s*[A-Za-z]{2,}/gi) || [];
+          if (emailSnippets.length) combined += ' ' + emailSnippets.join(' ');
+
+          extractedText = combined.trim() || `PDF from ${fileName} (limited extraction)`;
+          console.log('📄 PDF text extracted (combined):', extractedText.substring(0, 200));
         } catch (pdfError) {
           console.warn('PDF extraction failed:', pdfError);
           extractedText = `PDF from ${fileName} (extraction failed)`;
@@ -662,98 +665,64 @@ function extractNameFromFileName(fileName: string): string | null {
 }
 
 function extractContactInfo(text: string): { email?: string; phone?: string; linkedin?: string; location?: string; name?: string; skills?: string[] } {
-  // Multiple email extraction patterns to handle various formats
-  let validEmail = null;
-  
-  // Clean the text first - remove extra spaces and normalize
-  const cleanText = text.replace(/\s+/g, ' ').trim();
-  
-  // Pattern 1: Standard email format - more comprehensive regex
-  const emailMatches = cleanText.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g) || [];
-  validEmail = emailMatches.find(email => {
-    const lowerEmail = email.toLowerCase();
-    return !lowerEmail.includes('@upload.local') && 
-           !lowerEmail.includes('@example.com') && 
-           !lowerEmail.includes('@test.com') &&
-           !lowerEmail.includes('@domain.com') &&
-           !lowerEmail.includes('@yourcompany.com') &&
-           !lowerEmail.includes('placeholder') &&
-           email.includes('.') &&
-           email.length > 5 &&
-           // Ensure it's a real email format
-           /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
-  });
-  
-  // Pattern 2: Email with labels (Email:, E-mail:, etc.) - case insensitive
+  // Normalize common obfuscations and zero-width characters
+  const normalize = (t: string) => (t || '')
+    .replace(/[\u200B-\u200D\uFEFF\u2060]/g, '') // zero-width
+    .replace(/[–—]/g, '-')
+    // at/dot variants
+    .replace(/\[(?:at)\]|\((?:at)\)|\s+(?:at)\s+/gi, '@')
+    .replace(/\[(?:dot)\]|\((?:dot)\)|\s+(?:dot)\s+/gi, '.')
+    .replace(/\s*\(at\)\s*/gi, '@')
+    .replace(/\s*\(dot\)\s*/gi, '.')
+    .replace(/\s*@\s*/g, '@')
+    .replace(/\s*\.\s*/g, '.')
+    .replace(/\s{2,}/g, ' ');
+
+  const textN = normalize(text);
+  let validEmail: string | null = null;
+
+  const isReal = (e: string) => !!e && /.+@.+\..+/.test(e) && !/(upload\.local|example\.com|test\.com|domain\.com|yourcompany\.com|placeholder)/i.test(e);
+
+  // 1) Strict email
+  const strict = textN.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g) || [];
+  validEmail = strict.find(isReal) || null;
+
+  // 2) Labeled forms
   if (!validEmail) {
-    const labelPatterns = [
-      /(?:email|e-mail|mail|email\s*address|contact\s*email)\s*[:|-]?\s*([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/gi,
-      /\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\s*$/gmi,  // Email at end of line
-      /^[\s]*([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/gmi,  // Email at start of line
-    ];
-    
-    for (const pattern of labelPatterns) {
-      const matches = cleanText.match(pattern);
-      if (matches) {
-        for (const match of matches) {
-          const emailMatch = match.match(/([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/i);
-          if (emailMatch && emailMatch[1]) {
-            const extracted = emailMatch[1].toLowerCase();
-            if (!extracted.includes('@upload.local') && 
-                !extracted.includes('@example.com') && 
-                !extracted.includes('@test.com') &&
-                !extracted.includes('@domain.com') &&
-                !extracted.includes('placeholder') &&
-                /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(emailMatch[1])) {
-              validEmail = emailMatch[1];
-              break;
-            }
-          }
-        }
-        if (validEmail) break;
-      }
+    const labelMatches = textN.match(/(?:email\s*(?:id)?|e-mail|mail|contact\s*email)\s*[:\-–—]?\s*([^\s]+)\b/gi) || [];
+    for (const m of labelMatches) {
+      const candidate = (m.split(/[:\-–—]/).pop() || '').trim();
+      if (isReal(candidate)) { validEmail = candidate; break; }
     }
   }
-  
-  // Pattern 3: Look in common contact sections
+
+  // 3) Spaced email like "a b c @ g m a i l . c o m"
   if (!validEmail) {
-    const contactSections = [
-      /contact[\s\S]{0,300}/gi,
-      /personal\s*information[\s\S]{0,300}/gi,
-      /about[\s\S]{0,200}/gi,
-      /profile[\s\S]{0,200}/gi
-    ];
-    
-    for (const sectionPattern of contactSections) {
-      const section = cleanText.match(sectionPattern);
-      if (section && section[0]) {
-        const emailInSection = section[0].match(/\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b/gi);
-        if (emailInSection) {
-          const found = emailInSection.find(email => {
-            const lowerEmail = email.toLowerCase();
-            return !lowerEmail.includes('@upload.local') && 
-                   !lowerEmail.includes('@example.com') && 
-                   !lowerEmail.includes('@test.com') &&
-                   !lowerEmail.includes('placeholder') &&
-                   /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
-          });
-          if (found) {
-            validEmail = found;
-            break;
-          }
-        }
-      }
+    const spaced = textN.match(/[A-Za-z0-9._%+\-\s]+@\s*[A-Za-z0-9.\-\s]+\s*\.\s*[A-Za-z]{2,}/gi) || [];
+    for (const s of spaced) {
+      const collapsed = s.replace(/\s+/g, '');
+      if (isReal(collapsed)) { validEmail = collapsed; break; }
     }
   }
-  
+
+  // 4) Reconstruct patterns like "name at gmail dot com"
+  if (!validEmail) {
+    const atDot = text
+      .replace(/[\u200B-\u200D\uFEFF\u2060]/g, '')
+      .replace(/\s+(?:at)\s+/gi, '@')
+      .replace(/\s+(?:dot)\s+/gi, '.')
+      .replace(/\s*@\s*/g, '@')
+      .replace(/\s*\.\s*/g, '.');
+    const found = atDot.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/);
+    if (found && isReal(found[0])) validEmail = found[0];
+  }
+
   const phoneMatch = text.match(/(\+\d{1,3}[-.\s]?)?\(?[0-9]{1,4}\)?[-.\s]?[0-9]{1,4}[-.\s]?[0-9]{1,9}/);
   const linkedinMatch = text.match(/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_/]+/i);
-  
-  // Extract name from text (look for name patterns at the beginning)
   const nameMatch = text.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/m);
-  
+
   return {
-    email: validEmail,
+    email: validEmail || undefined,
     phone: phoneMatch?.[0],
     linkedin: linkedinMatch?.[0],
     name: nameMatch?.[1],
