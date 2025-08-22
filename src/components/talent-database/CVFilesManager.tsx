@@ -1,12 +1,12 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Download, User, Calendar, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
-
+import { toast } from 'sonner';
 export const CVFilesManager = () => {
   const { data: cvFiles, isLoading, error } = useQuery({
     queryKey: ['cv-files'],
@@ -35,6 +35,38 @@ export const CVFilesManager = () => {
       return data;
     }
   });
+
+  const queryClient = useQueryClient();
+
+  const isTempEmail = (email?: string) => !!email && (/\.temp$/i.test(email) || /no-contact\.temp|contact-extracted\.temp/i.test(email));
+  const isValidEmail = (email?: string) => !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && !isTempEmail(email);
+
+  const getParsedEmail = (cvFile: any): string | null => {
+    const pr = cvFile?.parsing_results || {};
+    const email = pr?.personal_info?.email || pr?.email || pr?.contact?.email || null;
+    return typeof email === 'string' ? email : null;
+  };
+
+  const fixEmail = async (cvFile: any) => {
+    const profile = (cvFile as any).profiles;
+    const parsedEmail = getParsedEmail(cvFile);
+    if (!profile?.id) return;
+    if (!isValidEmail(parsedEmail)) {
+      toast.error('No valid email found in parsing results.');
+      return;
+    }
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ email: parsedEmail })
+        .eq('id', profile.id);
+      if (error) throw error;
+      toast.success('Email updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['cv-files'] });
+    } catch (e: any) {
+      toast.error(`Failed to update email: ${e.message || e}`);
+    }
+  };
 
   const openFile = (fileUrl: string) => {
     window.open(fileUrl, '_blank');
@@ -146,16 +178,31 @@ export const CVFilesManager = () => {
                     </div>
 
                     {cvFile.profiles && (
-                      <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm">{(cvFile.profiles as any)?.full_name || 'Unknown User'}</p>
-                          <p className="text-xs text-muted-foreground truncate">{(cvFile.profiles as any)?.email || 'No email'}</p>
-                          {(cvFile.profiles as any)?.location && (
-                            <p className="text-xs text-muted-foreground">{(cvFile.profiles as any)?.location}</p>
-                          )}
-                        </div>
-                      </div>
+                      (() => {
+                        const profile = (cvFile.profiles as any);
+                        const profileEmail = profile?.email || '';
+                        const parsedEmail = getParsedEmail(cvFile);
+                        const displayEmail = isValidEmail(parsedEmail) ? parsedEmail : (profileEmail || 'No email');
+                        return (
+                          <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm">{profile?.full_name || 'Unknown User'}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
+                                {isTempEmail(profileEmail) && isValidEmail(parsedEmail) && (
+                                  <Button variant="outline" size="sm" onClick={() => fixEmail(cvFile)}>
+                                    Fix email
+                                  </Button>
+                                )}
+                              </div>
+                              {profile?.location && (
+                                <p className="text-xs text-muted-foreground">{profile.location}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()
                     )}
 
                     {cvFile.parsing_results && typeof cvFile.parsing_results === 'object' && cvFile.parsing_results !== null && (
