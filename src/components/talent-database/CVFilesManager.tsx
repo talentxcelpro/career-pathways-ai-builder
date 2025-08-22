@@ -72,17 +72,20 @@ export const CVFilesManager = () => {
         
         if (error) throw error;
         
-        const newEmail = data?.parsedCV?.personal_info?.email;
+        const parsed = (data as any) || {};
+        const newEmail = parsed?.parsedCV?.personal_info?.email || parsed?.extractedData?.personal_info?.email;
         if (isValidEmail(newEmail)) {
           await supabase
             .from('profiles')
             .update({ email: newEmail })
             .eq('id', profile.id);
           
-          await supabase
-            .from('cv_files')
-            .update({ parsing_results: data.parsedCV })
-            .eq('id', cvFile.id);
+          if (parsed?.parsedCV || parsed?.extractedData) {
+            await supabase
+              .from('cv_files')
+              .update({ parsing_results: parsed?.parsedCV || parsed?.extractedData })
+              .eq('id', cvFile.id);
+          }
             
           toast.success('Email extracted and updated successfully');
           queryClient.invalidateQueries({ queryKey: ['cv-files'] });

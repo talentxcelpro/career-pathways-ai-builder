@@ -59,7 +59,7 @@ serve(async (req) => {
     console.log('📨 Parsed request body:', requestBody);
     console.log('📨 Request body keys:', Object.keys(requestBody || {}));
     
-    const { fileUrl, fileName, fileType, extractedText: providedText } = requestBody || {};
+    const { fileUrl, fileName, fileType, extractedText: providedText, forceReparse } = requestBody || {};
     batchId = requestBody?.batchId; // Assign to outer scope variable
     
     console.log('📨 Extracted values:', {
@@ -67,7 +67,8 @@ serve(async (req) => {
       fileName: fileName || 'UNDEFINED', 
       fileType: fileType || 'UNDEFINED',
       providedTextLength: providedText?.length || 0,
-      batchId: batchId || 'UNDEFINED'
+      batchId: batchId || 'UNDEFINED',
+      forceReparse: !!forceReparse
     });
     
     // Validate required fields
@@ -546,38 +547,47 @@ console.log('🔍 Raw text preview:', extractedText?.substring(0, 500));
       }
     }
 
-    // Store CV file record
-    const { data: cvFile, error: cvError } = await supabase
-      .from('cv_files')
-      .insert({
-        user_id: userId,
-        original_filename: fileName,
-        file_url: fileUrl,
-        file_type: fileType,
-        parsing_status: 'completed',
-        parsed_at: new Date().toISOString(),
-        parsing_results: parsedCV,
-        is_primary: true
-      })
-      .select()
-      .single();
+    // Store CV file record (skip when forceReparse)
+    let cvFile: any = null;
+    if (!forceReparse) {
+      const { data: cvInserted, error: cvError } = await supabase
+        .from('cv_files')
+        .insert({
+          user_id: userId,
+          original_filename: fileName,
+          file_url: fileUrl,
+          file_type: fileType,
+          parsing_status: 'completed',
+          parsed_at: new Date().toISOString(),
+          parsing_results: parsedCV,
+          is_primary: true
+        })
+        .select()
+        .single();
 
-    if (cvError) {
-      console.error('Failed to store CV file record:', cvError);
-      throw cvError;
+      if (cvError) {
+        console.error('Failed to store CV file record:', cvError);
+        throw cvError;
+      }
+      cvFile = cvInserted;
+
+      // Update batch progress (best-effort)
+      try {
+        await supabase.rpc('increment_batch_progress', {
+          batch_id: batchId,
+          success: true
+        });
+      } catch (e) {
+        console.warn('increment_batch_progress RPC failed (ignored):', e);
+      }
     }
-
-    // Update batch progress
-    await supabase.rpc('increment_batch_progress', {
-      batch_id: batchId,
-      success: true
-    });
 
     return new Response(JSON.stringify({
       success: true,
       userId,
-      cvFileId: cvFile.id,
+      cvFileId: cvFile?.id || null,
       extractedData: parsedCV,
+      parsedCV, // backward compatible key
       message: `Successfully processed CV for ${parsedCV.personal_info?.full_name || 'candidate'}`
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
