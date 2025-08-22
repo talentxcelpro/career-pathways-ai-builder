@@ -65,7 +65,22 @@ export const CVFilesManager = () => {
 
   const extractEmailFromText = (text: string): string | null => {
     const t = normalizeEmailText(text);
-    const isReal = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && !isTempEmail(e);
+    const isReal = (e: string) => {
+      // Basic email pattern
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return false;
+      // Not a temp email
+      if (isTempEmail(e)) return false;
+      // Must have reasonable length constraints
+      if (e.length > 100 || e.length < 5) return false;
+      // Domain should be reasonable (not too long)
+      const domain = e.split('@')[1];
+      if (!domain || domain.length > 50) return false;
+      // Reject if it looks like descriptive text with @ symbol
+      if (/^[a-z]+@[a-z]{20,}/.test(e.toLowerCase())) return false;
+      // Must have valid TLD pattern
+      if (!/\.[a-z]{2,}$/i.test(domain)) return false;
+      return true;
+    };
 
     const strict = t.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g) || [];
     const foundStrict = strict.find(isReal);
