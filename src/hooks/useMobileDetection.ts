@@ -74,3 +74,9 @@ export const useMobilePerformance = () => {
 
   return metrics;
 };
+
+// Legacy compatibility wrapper
+export const useMobileDetection = () => {
+  const device = useDeviceDetection();
+  return { isMobile: device.isMobile };
+};
