@@ -23,6 +23,7 @@ import { referralRoutes } from "./navigation/referralRoutes";
 import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { analyticsRoutes } from "./navigation/analyticsRoutes";
+import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -30,6 +31,7 @@ export const aiAgentRoutes = [
     title: "AI Career Agent",
     to: "/ai-agent",
     icon: "brain",
+    page: <AIAgentDashboard />,
     description: "Your personalized AI career companion"
   }
 ];
