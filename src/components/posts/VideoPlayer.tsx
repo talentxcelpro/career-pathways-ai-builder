@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { VideoErrorFallback } from '@/components/video/VideoErrorFallback';
 import { validateVideoUrl } from '@/utils/videoValidation';
+import { ImageOptimizer } from '@/utils/imageOptimization';
 
 interface VideoPlayerProps {
   url: string;
@@ -228,14 +229,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
           muted={isMuted}
           playsInline
-          preload="none"
-          controls
+          preload="metadata"
+          controls={false}
           crossOrigin="anonymous"
+          webkit-playsinline="true"
           onClick={togglePlay}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onCanPlay={() => console.log('VideoPlayer: Can play:', videoSrc)}
           onLoadedMetadata={() => console.log('VideoPlayer: Metadata loaded:', videoSrc)}
+          style={{ 
+            maxWidth: '100%',
+            height: 'auto'
+          }}
         />
       )}
 

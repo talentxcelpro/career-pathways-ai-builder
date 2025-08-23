@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import VideoPlayer from './VideoPlayer';
+import { FastImage } from '@/components/common/FastImage';
+import { ImageOptimizer } from '@/utils/imageOptimization';
 
 interface MediaPreviewProps {
   content: string;
@@ -15,18 +17,7 @@ interface MediaItemProps {
 }
 
 const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, index }) => {
-  const [fixedUrl, setFixedUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!mediaUrl) return;
-
-    // Use the media URL as-is (no domain rewriting)
-    const correctedUrl = mediaUrl;
-
-    setFixedUrl(correctedUrl);
-  }, [mediaUrl]);
-
-  if (!fixedUrl) {
+  if (!mediaUrl) {
     return (
       <div className={`${className} bg-muted/20 border border-muted/40 rounded-lg flex items-center justify-center`}>
         <p className="text-muted-foreground text-sm">Loading media...</p>
@@ -38,18 +29,17 @@ const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, ind
     <div className="relative">
       {isVideo ? (
         <VideoPlayer
-          url={fixedUrl}
+          url={mediaUrl}
           className={className}
         />
       ) : (
-        <img
-          src={fixedUrl}
+        <FastImage
+          src={mediaUrl}
           alt={`Media ${index + 1}`}
           className={className}
-          onError={(e) => {
-            console.error('MediaPreview: Image failed to load:', fixedUrl);
-            e.currentTarget.style.display = 'none';
-          }}
+          loading="lazy"
+          thumbnail={true}
+          quality={90}
         />
       )}
     </div>
@@ -64,18 +54,18 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
   // Combine media URLs with URLs found in content
   const allMediaUrls = [...mediaUrls, ...urlsInContent];
   
-  // Filter for image and video URLs (including YouTube URLs and Supabase storage)
+  // Filter for valid media URLs using optimized detection
   const mediaItems = allMediaUrls.filter(url => {
+    if (!url || url.includes('placeholder.com') || url.includes('example.com')) {
+      return false;
+    }
+    
     const lowercaseUrl = url.toLowerCase();
-    const isSupabaseStorage = lowercaseUrl.includes('supabase.co/storage');
-    const isDirectMedia = lowercaseUrl.match(/\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)(\?|$)/);
-    const isPostMedia = lowercaseUrl.includes('/post-media/');
-    const isMediaFolder = lowercaseUrl.includes('/media/');
     const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
+    const isValidImage = ImageOptimizer.isValidImageUrl(url);
+    const isValidVideo = ImageOptimizer.isValidVideoUrl(url);
     
-    const isValidMedia = isSupabaseStorage || isDirectMedia || isPostMedia || isMediaFolder || isYouTube;
-    
-    return isValidMedia;
+    return isYouTube || isValidImage || isValidVideo;
   });
 
   // Remove URLs from content that will be displayed as media
@@ -110,8 +100,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                            '1fr 1fr'
       }}>
         {mediaItems.slice(0, 4).map((url: string, index: number) => {
-          const isVideo = /\.(mp4|webm|ogg)(\?|#|$)/i.test(url) ||
-                          (url.includes('supabase.co/storage') && /\.(mp4|webm|ogg)(\?|#|$)/i.test(url));
+          const isVideo = ImageOptimizer.isValidVideoUrl(url);
           const isYouTube = url.includes('youtube.com/watch') || url.includes('youtu.be/');
           
           // Extract YouTube video ID for embedding

@@ -219,9 +219,9 @@ export class FeedOptimizer {
   }
 }
 
-// Singleton instance
+// Singleton instance with Supabase CDN config
 export const feedOptimizer = new FeedOptimizer({
-  imageBaseUrl: 'https://images.webalias.co',
-  videoBaseUrl: 'https://videos.webalias.co',
+  imageBaseUrl: 'https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public',
+  videoBaseUrl: 'https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public',
   cacheTTL: 5 * 60 * 1000
 });
