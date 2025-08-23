@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import VideoPlayer from '@/components/posts/VideoPlayer';
+import { MobileMediaOptimizer } from '@/components/mobile/MobileMediaOptimizer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -173,21 +173,11 @@ const LinkedInPostCard: React.FC<{
           onClick={() => window.location.href = `/network/posts/${post.id}`}
           title="View full post"
         >
-          {post.content.type === 'video' ? (
-            <div className="aspect-video bg-black rounded-2xl overflow-hidden">
-              <VideoPlayer
-                url={post.content.url}
-                className="w-full h-full object-cover rounded-2xl pointer-events-none"
-                isMessage={false}
-              />
-            </div>
-          ) : post.content.type === 'image' ? (
-            <img
-              src={post.content.url}
-              alt="Post content"
-              className="w-full max-h-96 object-contain bg-muted rounded-2xl"
-            />
-          ) : null}
+          <MobileMediaOptimizer
+            mediaUrls={[post.content.url]}
+            className="w-full"
+            priority={false}
+          />
         </div>
       )}
 

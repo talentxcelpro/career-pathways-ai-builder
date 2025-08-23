@@ -21,6 +21,7 @@ import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { MobileLayout } from "@/components/mobile/MobileLayout";
+import { NetworkPostsAutoRefresh } from "@/components/network/NetworkPostsAutoRefresh";
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
@@ -87,6 +88,9 @@ const Network = () => {
   if (isMobile && user) {
     return (
       <MobileLayout>
+        {/* Auto-refresh for mobile */}
+        <NetworkPostsAutoRefresh />
+        
         <LinkedInMobileFeed
           posts={posts}
           onLike={handleLike}
@@ -103,6 +107,9 @@ const Network = () => {
   // Desktop interface
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+      {/* Auto-refresh for real-time updates */}
+      <NetworkPostsAutoRefresh />
+      
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">

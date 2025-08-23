@@ -229,6 +229,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           muted={isMuted}
           playsInline
           preload="none"
+          webkit-playsinline="true" // iOS specific
           controls
           crossOrigin="anonymous"
           onClick={togglePlay}
