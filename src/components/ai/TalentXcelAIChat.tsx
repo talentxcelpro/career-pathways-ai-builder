@@ -104,25 +104,32 @@ export default function TalentXcelAIChat() {
         return;
       }
 
-      // Ensure userId is set
-      const fullPayload = {
-        ...payload,
-        userId: userProfile?.id || session.user.id
+      // Structure the payload exactly as the Edge Function expects
+      const requestBody = {
+        module: payload.module,
+        task: payload.task,
+        userId: userProfile?.id || session.user.id,
+        input: payload.input || {},
+        prompt: payload.prompt
       };
 
+      console.log('Sending to AI Agent:', requestBody);
+
       const response = await supabase.functions.invoke('ai-agent', {
-        body: fullPayload,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+        body: requestBody
       });
 
       if (response.error) {
-        throw new Error(response.error.message);
+        console.error('AI Function Error:', response.error);
+        throw new Error(response.error.message || 'AI service error');
       }
 
-      const { response: aiResponse, metadata } = response.data;
-      addMessage(aiResponse || 'AI response received successfully.', 'ai', metadata);
+      const aiResponse = response.data?.response || response.data?.data;
+      if (aiResponse) {
+        addMessage(aiResponse, 'ai', response.data);
+      } else {
+        addMessage('AI response received but no content found.', 'ai');
+      }
       
     } catch (error) {
       console.error('AI Service Error:', error);
