@@ -22,6 +22,7 @@ import { assessmentRoutes } from "./navigation/assessmentRoutes";
 import { referralRoutes } from "./navigation/referralRoutes";
 import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
+import { analyticsRoutes } from "./navigation/analyticsRoutes";
 
 export const navItems = [
   ...coreRoutes,
@@ -44,6 +45,7 @@ export const navItems = [
   ...assessmentRoutes,
   ...referralRoutes,
   ...mobileRoutes,
+  ...analyticsRoutes,
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,
