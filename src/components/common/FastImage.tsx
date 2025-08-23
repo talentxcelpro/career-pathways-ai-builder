@@ -25,7 +25,7 @@ export const FastImage: React.FC<FastImageProps> = ({
     if (!src) return;
     
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Removed crossOrigin to avoid iOS CORS decode issues
     img.decoding = 'async';
     
     img.onload = () => {
@@ -35,10 +35,12 @@ export const FastImage: React.FC<FastImageProps> = ({
     };
     
     img.onerror = () => {
-      console.warn('Image failed to load:', src);
-      setCurrentSrc(fallback);
+      console.warn('Image failed to preload:', src);
+      // Try cache-busting once for stubborn iOS/CDN caches
+      const busted = src.includes('cb=') ? src : `${src}${src.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+      setCurrentSrc(busted);
       setError(true);
-      setLoaded(true);
+      setLoaded(false);
     };
     
     img.src = src;
@@ -54,7 +56,9 @@ export const FastImage: React.FC<FastImageProps> = ({
         alt={alt}
         loading={loading}
         decoding="async"
+        referrerPolicy="no-referrer"
         fetchPriority={loading === 'eager' ? 'high' : 'auto'}
+        draggable={false}
         className={cn(
           "w-full h-full object-cover transition-all duration-500 ease-out",
           loaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
@@ -68,6 +72,12 @@ export const FastImage: React.FC<FastImageProps> = ({
         }}
         onError={() => {
           console.warn('Image failed to load:', src);
+          // One retry with cache-busting to avoid stale iOS/CDN caches
+          if (currentSrc === src && !src.includes('cb=')) {
+            const busted = `${src}${src.includes('?') ? '&' : '?'}cb=${Date.now()}`;
+            setCurrentSrc(busted);
+            return;
+          }
           if (currentSrc !== fallback) {
             setCurrentSrc(fallback);
             setError(true);

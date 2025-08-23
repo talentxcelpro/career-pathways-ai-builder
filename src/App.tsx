@@ -24,6 +24,7 @@ import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
 import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
+import { ServiceWorkerReset } from "@/components/system/ServiceWorkerReset";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -99,7 +100,8 @@ const App = () => {
                 {/* <RealtimeProvider showToasts={false}> */}
                 <CopilotProvider>
                   <ContentSecurityPolicy />
-                <Toaster
+                  <ServiceWorkerReset />
+                  <Toaster
                   duration={10000}
                   position="top-center"
                   toastOptions={{

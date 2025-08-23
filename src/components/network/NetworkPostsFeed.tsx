@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from 'lucide-react';
 import { fetchPostsWithProfiles, getUserLikedPosts, getPostEngagementStats } from '@/utils/postsWithProfiles';
+import { NetworkPostsAutoRefresh } from './NetworkPostsAutoRefresh';
 
 interface NetworkPost {
   id: string;
@@ -175,6 +176,7 @@ export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({
 
   return (
     <div className="space-y-6">
+      <NetworkPostsAutoRefresh />
       {/* Real-time connection status indicator */}
       {engagement.isConnected && (
         <div className="text-xs text-green-600 bg-green-50 px-3 py-1 rounded-full inline-flex items-center gap-2">
