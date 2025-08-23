@@ -28,7 +28,7 @@ import { analyticsRoutes } from "./navigation/analyticsRoutes";
 export const aiAgentRoutes = [
   {
     title: "AI Career Agent",
-    url: "/ai-agent",
+    to: "/ai-agent",
     icon: "brain",
     description: "Your personalized AI career companion"
   }
