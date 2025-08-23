@@ -7,6 +7,7 @@ import { Send, RefreshCw, BookOpen, Briefcase, Users, FileText, MessageSquare, S
 import { useAI } from '@/contexts/AIContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { talentXcelAIPayloads, getPayloadByCommand, AIPayload } from '@/lib/aiPayloads';
 
 // Import AI Modules
 import { ATSScanModule } from './modules/ATSScanModule';
@@ -63,7 +64,7 @@ export default function TalentXcelAIChat() {
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const callAIService = async (message: string, command?: string, module?: string, task?: string) => {
+  const callAIService = async (payload: AIPayload) => {
     setIsLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -73,22 +74,14 @@ export default function TalentXcelAIChat() {
         return;
       }
 
-      // Determine module and task based on command or use defaults
-      const requestModule = module || (command ? command.replace('/', '') : 'general');
-      const requestTask = task || (command ? command.replace('/', '') : 'chat');
+      // Ensure userId is set
+      const fullPayload = {
+        ...payload,
+        userId: userProfile?.id || session.user.id
+      };
 
-      const response = await supabase.functions.invoke('ai-chat', {
-        body: {
-          message,
-          command,
-          module: requestModule,
-          task: requestTask,
-          sessionId,
-          context: {
-            userProfile,
-            currentModule: requestModule
-          }
-        },
+      const response = await supabase.functions.invoke('ai-agent', {
+        body: fullPayload,
         headers: {
           Authorization: `Bearer ${session.access_token}`
         }
@@ -98,13 +91,8 @@ export default function TalentXcelAIChat() {
         throw new Error(response.error.message);
       }
 
-      const { message: aiResponse, sessionId: newSessionId, metadata } = response.data;
-      
-      if (newSessionId && !sessionId) {
-        setSessionId(newSessionId);
-      }
-
-      addMessage(aiResponse, 'ai', metadata);
+      const { response: aiResponse, metadata } = response.data;
+      addMessage(aiResponse || 'AI response received successfully.', 'ai', metadata);
       
     } catch (error) {
       console.error('AI Service Error:', error);
@@ -118,33 +106,35 @@ export default function TalentXcelAIChat() {
   const handleCommand = (command: string) => {
     setActiveModule(null); // Clear previous module
     
-    switch (command.toLowerCase()) {
-      case '/ats-scan':
-        setActiveModule(<ATSScanModule onResult={addMessage} userProfile={userProfile} />);
-        callAIService(`Starting ATS scan module. Please upload your resume or paste content to analyze.`, command);
-        break;
-      case '/jd-tailor':
-        setActiveModule(<JDTailorModule onResult={addMessage} userProfile={userProfile} />);
-        callAIService(`Opening JD tailor module. Provide your resume content and job description.`, command);
-        break;
-      case '/mock-interview':
-        setActiveModule(<MockInterviewModule onResult={addMessage} userProfile={userProfile} />);
-        callAIService(`Preparing mock interview session. Let's practice for your next opportunity!`, command);
-        break;
-      case '/generate-post':
-        setActiveModule(<GeneratePostModule onResult={addMessage} userProfile={userProfile} />);
-        callAIService(`Content generator ready! Create LinkedIn posts, emails, or project summaries.`, command);
-        break;
-      case '/skill-check':
-        setActiveModule(<SkillCheckModule onResult={addMessage} userProfile={userProfile} />);
-        callAIService(`Analyzing your skills and market trends for personalized recommendations.`, command);
-        break;
-      case '/daily-brief':
-        setActiveModule(<DailyBriefModule onResult={addMessage} userProfile={userProfile} />);
-        callAIService(`Generating your personalized daily career brief...`, command);
-        break;
-      default:
-        addMessage(`I can help you with these commands:\n\n/ats-scan - Analyze resume for ATS optimization\n/jd-tailor - Tailor resume to job descriptions\n/mock-interview - Practice interview skills\n/generate-post - Create professional content\n/skill-check - Get skill recommendations\n/daily-brief - View your career summary\n\nOr just ask me anything about your career!`);
+    const userId = userProfile?.id || '';
+    const payload = getPayloadByCommand(command, userId, userProfile);
+    
+    if (payload) {
+      // Set appropriate modules based on command
+      switch (command.toLowerCase()) {
+        case '/ats-scan':
+          setActiveModule(<ATSScanModule onResult={addMessage} userProfile={userProfile} />);
+          break;
+        case '/jd-tailor':
+          setActiveModule(<JDTailorModule onResult={addMessage} userProfile={userProfile} />);
+          break;
+        case '/mock-interview':
+          setActiveModule(<MockInterviewModule onResult={addMessage} userProfile={userProfile} />);
+          break;
+        case '/generate-post':
+          setActiveModule(<GeneratePostModule onResult={addMessage} userProfile={userProfile} />);
+          break;
+        case '/skill-check':
+          setActiveModule(<SkillCheckModule onResult={addMessage} userProfile={userProfile} />);
+          break;
+        case '/daily-brief':
+          setActiveModule(<DailyBriefModule onResult={addMessage} userProfile={userProfile} />);
+          break;
+      }
+      
+      callAIService(payload);
+    } else {
+      addMessage(`I can help you with these commands:\n\n/ats-scan - Analyze resume for ATS optimization\n/jd-tailor - Tailor resume to job descriptions\n/mock-interview - Practice interview skills\n/generate-post - Create professional content\n/skill-check - Get skill recommendations\n/daily-brief - View your career summary\n/jobs - Find matching jobs\n/courses - Recommend learning paths\n/salary-analysis - Analyze salary expectations\n\nOr just ask me anything about your career!`);
     }
   };
 
@@ -160,7 +150,9 @@ export default function TalentXcelAIChat() {
       handleCommand(text);
     } else {
       // Send to AI service for general chat
-      callAIService(text);
+      const userId = userProfile?.id || '';
+      const payload = talentXcelAIPayloads.general.chat(userId, text);
+      callAIService(payload);
     }
   };
 
