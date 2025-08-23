@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { NetworkPostCard } from './NetworkPostCard';
 import { useRealtimeEngagement } from '@/hooks/useRealtimeEngagement';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from 'lucide-react';
-import { fetchPostsWithProfiles, getUserLikedPosts, getPostEngagementStats } from '@/utils/postsWithProfiles';
-import { NetworkPostsAutoRefresh } from './NetworkPostsAutoRefresh';
 
 interface NetworkPost {
   id: string;
@@ -20,7 +19,6 @@ interface NetworkPost {
   likes_count?: number;
   comments_count?: number;
   shares_count?: number;
-  is_liked?: boolean;
   profiles?: {
     id: string;
     full_name?: string;
@@ -53,40 +51,53 @@ export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({
     queryFn: async () => {
       if (!user) return [];
 
-      try {
-        // Use the utility function to fetch posts with profiles correctly
-        const postsWithProfiles = await fetchPostsWithProfiles({
-          limit: 50,
-          visibility: 'public',
-          feedType: feedType === 'smart' ? 'following' : 'all',
-          userId: user.id
+      let query = supabase
+        .from('posts')
+        .select(`
+          *,
+          profiles!posts_user_id_fkey (
+            id,
+            full_name,
+            profile_picture_url,
+            title,
+            current_company,
+            pro_plan,
+            pro_status,
+            pro_expires_at
+          )
+        `)
+        .eq('visibility', 'public')
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: false });
+
+      // Apply smart feed filtering if needed
+      if (feedType === 'smart') {
+        // Get user's connections for personalization
+        const { data: connections } = await supabase
+          .from('connections')
+          .select('requester_id, recipient_id')
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+          .eq('status', 'accepted');
+
+        const connectionIds = new Set<string>();
+        connections?.forEach(conn => {
+          if (conn.requester_id === user.id) connectionIds.add(conn.recipient_id);
+          if (conn.recipient_id === user.id) connectionIds.add(conn.requester_id);
         });
 
-        // Get user's liked posts
-        const likedPosts = await getUserLikedPosts(user.id);
-
-        // Get engagement stats
-        const postIds = postsWithProfiles.map(post => post.id);
-        const engagementStats = await getPostEngagementStats(postIds);
-
-        // Add engagement data to posts
-        const postsWithEngagement = postsWithProfiles.map(post => ({
-          ...post,
-          likes_count: engagementStats.get(post.id)?.likes || 0,
-          comments_count: engagementStats.get(post.id)?.comments || 0,
-          shares_count: engagementStats.get(post.id)?.shares || 0,
-          is_liked: likedPosts.has(post.id)
-        }));
-
-        return postsWithEngagement as NetworkPost[];
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-        return [];
+        // Prioritize posts from connections and recent posts
+        if (connectionIds.size > 0) {
+          query = query.or(`author_id.in.(${Array.from(connectionIds).join(',')}),created_at.gte.${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()}`);
+        }
       }
+
+      const { data, error } = await query.limit(20);
+
+      if (error) throw error;
+      return data as NetworkPost[];
     },
     enabled: !!user,
-    refetchInterval: 30000, // Auto-refresh every 30 seconds
-    staleTime: 10000 // Consider data stale after 10 seconds
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Listen for real-time engagement updates
@@ -176,7 +187,6 @@ export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({
 
   return (
     <div className="space-y-6">
-      <NetworkPostsAutoRefresh />
       {/* Real-time connection status indicator */}
       {engagement.isConnected && (
         <div className="text-xs text-green-600 bg-green-50 px-3 py-1 rounded-full inline-flex items-center gap-2">

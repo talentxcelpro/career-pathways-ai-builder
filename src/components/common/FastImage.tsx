@@ -18,70 +18,26 @@ export const FastImage: React.FC<FastImageProps> = ({
 }) => {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(src);
-
-  // iOS optimization - preload images
-  React.useEffect(() => {
-    if (!src) return;
-    
-    const img = new Image();
-    // Removed crossOrigin to avoid iOS CORS decode issues
-    img.decoding = 'async';
-    
-    img.onload = () => {
-      setCurrentSrc(src);
-      setLoaded(true);
-      setError(false);
-    };
-    
-    img.onerror = () => {
-      console.warn('Image failed to preload:', src);
-      // Try cache-busting once for stubborn iOS/CDN caches
-      const busted = src.includes('cb=') ? src : `${src}${src.includes('?') ? '&' : '?'}cb=${Date.now()}`;
-      setCurrentSrc(busted);
-      setError(true);
-      setLoaded(false);
-    };
-    
-    img.src = src;
-  }, [src, fallback]);
 
   return (
-    <div className={cn("relative overflow-hidden bg-muted/10", className)}>
-      {!loaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted/50 to-muted animate-pulse rounded" />
+    <div className={cn("relative overflow-hidden", className)}>
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-muted/10 animate-pulse" />
       )}
       <img
-        src={currentSrc}
+        src={error ? fallback : src}
         alt={alt}
         loading={loading}
         decoding="async"
-        referrerPolicy="no-referrer"
-        fetchPriority={loading === 'eager' ? 'high' : 'auto'}
-        draggable={false}
         className={cn(
-          "w-full h-full object-cover transition-all duration-500 ease-out",
-          loaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
+          "w-full h-full object-cover transition-opacity duration-300",
+          loaded ? "opacity-100" : "opacity-0"
         )}
-        style={{
-          imageRendering: '-webkit-optimize-contrast' // iOS optimization
-        }}
-        onLoad={() => {
-          setLoaded(true);
-          setError(false);
-        }}
+        onLoad={() => setLoaded(true)}
         onError={() => {
           console.warn('Image failed to load:', src);
-          // One retry with cache-busting to avoid stale iOS/CDN caches
-          if (currentSrc === src && !src.includes('cb=')) {
-            const busted = `${src}${src.includes('?') ? '&' : '?'}cb=${Date.now()}`;
-            setCurrentSrc(busted);
-            return;
-          }
-          if (currentSrc !== fallback) {
-            setCurrentSrc(fallback);
-            setError(true);
-          }
+          setError(true);
+          setLoaded(true);
         }}
       />
     </div>

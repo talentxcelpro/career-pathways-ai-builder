@@ -228,10 +228,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
           muted={isMuted}
           playsInline
-          preload="metadata"
-          // @ts-ignore - non-standard iOS attribute
-          webkit-playsinline="true"
+          preload="none"
           controls
+          crossOrigin="anonymous"
           onClick={togglePlay}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
