@@ -24,6 +24,16 @@ import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { analyticsRoutes } from "./navigation/analyticsRoutes";
 
+// AI Agent routes
+export const aiAgentRoutes = [
+  {
+    title: "AI Career Agent",
+    url: "/ai-agent",
+    icon: "brain",
+    description: "Your personalized AI career companion"
+  }
+];
+
 export const navItems = [
   ...coreRoutes,
   ...authRoutes,
@@ -46,6 +56,7 @@ export const navItems = [
   ...referralRoutes,
   ...mobileRoutes,
   ...analyticsRoutes,
+  ...aiAgentRoutes,
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,
