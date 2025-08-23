@@ -37,10 +37,10 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
         {/* Mobile Header */}
         {!isNested && <MobileHeader />}
         
-        {/* Mobile Content */}
-        <div className="mobile-content pt-0">
-          {children}
-        </div>
+      {/* Mobile Content */}
+      <div className="mobile-content pt-0">
+        {children}
+      </div>
         
         {showBottomNav && !isNested && <MobileBottomNav />}
         

@@ -34,12 +34,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
       
       console.log('VideoPlayer: Processing URL:', url);
       
-      // First validate the URL
-      const isValid = await validateVideoUrl(url);
-      if (!isValid) {
-        console.warn('VideoPlayer: Invalid or inaccessible video URL:', url);
+      if (!url || url.trim() === '') {
         setHasError(true);
-        setErrorMessage('Video URL is not accessible');
+        setErrorMessage('No video URL provided');
+        setIsValidating(false);
+        setIsLoading(false);
+        return;
+      }
+
+      // Skip validation for performance - trust the URL and handle errors in video element
+      try {
+        new URL(url); // Basic URL validation
+      } catch {
+        setHasError(true);
+        setErrorMessage('Invalid video URL format');
         setIsValidating(false);
         setIsLoading(false);
         return;
@@ -220,8 +228,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
           muted={isMuted}
           playsInline
-          preload="metadata"
-          autoPlay
+          preload="none"
           controls
           crossOrigin="anonymous"
           onClick={togglePlay}
