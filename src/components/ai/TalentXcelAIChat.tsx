@@ -63,7 +63,7 @@ export default function TalentXcelAIChat() {
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const callAIService = async (message: string, command?: string) => {
+  const callAIService = async (message: string, command?: string, module?: string, task?: string) => {
     setIsLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -73,14 +73,20 @@ export default function TalentXcelAIChat() {
         return;
       }
 
+      // Determine module and task based on command or use defaults
+      const requestModule = module || (command ? command.replace('/', '') : 'general');
+      const requestTask = task || (command ? command.replace('/', '') : 'chat');
+
       const response = await supabase.functions.invoke('ai-chat', {
         body: {
           message,
           command,
+          module: requestModule,
+          task: requestTask,
           sessionId,
           context: {
             userProfile,
-            currentModule: command?.replace('/', '')
+            currentModule: requestModule
           }
         },
         headers: {
