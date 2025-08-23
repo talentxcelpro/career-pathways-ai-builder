@@ -12,6 +12,8 @@ interface FastImageProps {
   quality?: number;
   width?: number;
   height?: number;
+  blurDataUrl?: string;
+  showBlurPlaceholder?: boolean;
 }
 
 export const FastImage: React.FC<FastImageProps> = ({ 
@@ -23,11 +25,14 @@ export const FastImage: React.FC<FastImageProps> = ({
   thumbnail = false,
   quality = 85,
   width,
-  height
+  height,
+  blurDataUrl,
+  showBlurPlaceholder = true
 }) => {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [optimizedSrc, setOptimizedSrc] = useState('');
+  const [blurPlaceholder, setBlurPlaceholder] = useState('');
 
   useEffect(() => {
     if (!src) {
@@ -47,7 +52,29 @@ export const FastImage: React.FC<FastImageProps> = ({
         });
     
     setOptimizedSrc(optimized);
-  }, [src, thumbnail, quality, width, height]);
+
+    // Generate blur placeholder if not provided
+    if (showBlurPlaceholder && !blurDataUrl) {
+      generateBlurPlaceholder(src);
+    } else if (blurDataUrl) {
+      setBlurPlaceholder(blurDataUrl);
+    }
+  }, [src, thumbnail, quality, width, height, blurDataUrl, showBlurPlaceholder]);
+
+  const generateBlurPlaceholder = async (imageUrl: string) => {
+    try {
+      // Create a tiny version for blur effect
+      const tinyUrl = ImageOptimizer.getOptimizedUrl(imageUrl, {
+        width: 32,
+        height: 32,
+        quality: 10,
+        format: 'jpeg'
+      });
+      setBlurPlaceholder(tinyUrl);
+    } catch (error) {
+      console.warn('Failed to generate blur placeholder:', error);
+    }
+  };
 
   const handleLoad = () => {
     setLoaded(true);
@@ -69,12 +96,25 @@ export const FastImage: React.FC<FastImageProps> = ({
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      {/* Loading placeholder */}
+      {/* Blur placeholder (Instagram/LinkedIn style) */}
+      {!loaded && blurPlaceholder && showBlurPlaceholder && (
+        <img
+          src={blurPlaceholder}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover filter blur-sm scale-110 transition-opacity duration-300"
+          style={{ 
+            filter: 'blur(10px) brightness(0.9)',
+            transform: 'scale(1.1)'
+          }}
+        />
+      )}
+
+      {/* Loading shimmer */}
       {!loaded && !error && (
-        <div className="absolute inset-0 bg-gradient-to-br from-muted/10 via-muted/5 to-muted/10 animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-r from-muted/5 via-muted/10 to-muted/5 animate-pulse" />
       )}
       
-      {/* Optimized image with mobile-first attributes */}
+      {/* Main optimized image with responsive srcSet */}
       <img
         src={error ? fallback : optimizedSrc}
         alt={alt}
@@ -84,15 +124,27 @@ export const FastImage: React.FC<FastImageProps> = ({
         crossOrigin="anonymous"
         referrerPolicy="no-referrer"
         className={cn(
-          "w-full h-full object-cover transition-all duration-300",
+          "w-full h-full object-cover transition-all duration-500 ease-out",
           loaded ? "opacity-100 scale-100" : "opacity-0 scale-105",
           error && "opacity-50"
         )}
         onLoad={handleLoad}
         onError={handleError}
-        // Generate responsive srcSet for different screen sizes
-        srcSet={!thumbnail && !error ? ImageOptimizer.generateSrcSet(src) : undefined}
-        sizes={!thumbnail ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" : undefined}
+        // Mobile-first responsive srcSet
+        srcSet={!thumbnail && !error ? `
+          ${ImageOptimizer.getOptimizedUrl(src, { width: 320, quality: 80, format: 'webp' })} 320w,
+          ${ImageOptimizer.getOptimizedUrl(src, { width: 640, quality: 85, format: 'webp' })} 640w,
+          ${ImageOptimizer.getOptimizedUrl(src, { width: 768, quality: 85, format: 'webp' })} 768w,
+          ${ImageOptimizer.getOptimizedUrl(src, { width: 1024, quality: 90, format: 'webp' })} 1024w,
+          ${ImageOptimizer.getOptimizedUrl(src, { width: 1280, quality: 90, format: 'webp' })} 1280w
+        ` : undefined}
+        sizes={!thumbnail ? `
+          (max-width: 320px) 100vw,
+          (max-width: 640px) 100vw,
+          (max-width: 768px) 50vw,
+          (max-width: 1024px) 33vw,
+          25vw
+        ` : '300px'}
       />
     </div>
   );

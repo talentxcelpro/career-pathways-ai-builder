@@ -1,378 +1,248 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { ImageOptimizer } from '@/utils/imageOptimization';
+import { FastImage } from '@/components/common/FastImage';
+import { Upload, X, Image as ImageIcon, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Image, 
-  Video, 
-  FileText, 
-  X, 
-  Upload,
-  Camera,
-  Eye,
-  Download,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
-import { useFileUpload } from '@/hooks/useFileUpload';
-import { toast } from 'sonner';
-
-interface MediaFile {
-  id: string;
-  url: string;
-  type: 'image' | 'video' | 'document';
-  name: string;
-  size: number;
-  metadata?: {
-    width?: number;
-    height?: number;
-    duration?: number;
-    format?: string;
-  };
-}
+import { cn } from '@/lib/utils';
 
 interface EnhancedMediaUploadProps {
-  onMediaAdd: (media: MediaFile) => void;
-  onMediaRemove: (mediaId: string) => void;
-  mediaFiles: MediaFile[];
+  onMediaUploaded: (urls: string[]) => void;
+  existingMedia: string[];
   maxFiles?: number;
-  allowedTypes?: ('image' | 'video' | 'document')[];
+  showPreview?: boolean;
+}
+
+interface MediaItem {
+  id: string;
+  url: string;
+  thumbnailUrl?: string;
+  type: 'image' | 'video';
+  blurDataUrl?: string;
+  isUploading?: boolean;
 }
 
 export const EnhancedMediaUpload: React.FC<EnhancedMediaUploadProps> = ({
-  onMediaAdd,
-  onMediaRemove,
-  mediaFiles,
-  maxFiles = 10,
-  allowedTypes = ['image', 'video', 'document']
+  onMediaUploaded,
+  existingMedia,
+  maxFiles = 4,
+  showPreview = true
 }) => {
-  const [dragActive, setDragActive] = useState(false);
-  const [analyzing, setAnalyzing] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>(
+    existingMedia.map(url => ({
+      id: Date.now().toString() + Math.random(),
+      url,
+      type: ImageOptimizer.isValidVideoUrl(url) ? 'video' : 'image'
+    }))
+  );
+  const [isUploading, setIsUploading] = useState(false);
 
-  const { uploadFile, uploading } = useFileUpload({
-    bucket: 'post-media',
-    maxSize: 100 * 1024 * 1024, // 100MB
-    allowedTypes: [
-      ...(allowedTypes.includes('image') ? ['image/*'] : []),
-      ...(allowedTypes.includes('video') ? ['video/*'] : []),
-      ...(allowedTypes.includes('document') ? [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'text/plain'
-      ] : [])
-    ]
-  });
-
-  // File analysis function
-  const analyzeFile = async (file: File): Promise<MediaFile['metadata']> => {
-    return new Promise((resolve) => {
-      if (file.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.onload = () => {
-          resolve({
-            width: img.width,
-            height: img.height,
-            format: file.type.split('/')[1]
-          });
-        };
-        img.onerror = () => resolve({ format: file.type.split('/')[1] });
-        img.src = URL.createObjectURL(file);
-      } else if (file.type.startsWith('video/')) {
-        const video = document.createElement('video');
-        video.onloadedmetadata = () => {
-          resolve({
-            width: video.videoWidth,
-            height: video.videoHeight,
-            duration: video.duration,
-            format: file.type.split('/')[1]
-          });
-        };
-        video.onerror = () => resolve({ format: file.type.split('/')[1] });
-        video.src = URL.createObjectURL(file);
-      } else {
-        resolve({ format: file.type });
-      }
-    });
-  };
-
-  const handleFiles = async (files: FileList) => {
-    if (mediaFiles.length + files.length > maxFiles) {
-      toast.error(`Maximum ${maxFiles} files allowed`);
+  const handleFileUpload = useCallback(async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    if (mediaItems.length + files.length > maxFiles) {
+      alert(`Maximum ${maxFiles} files allowed`);
       return;
     }
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileId = `${Date.now()}-${i}`;
-      
-      try {
-        setAnalyzing(fileId);
-        
-        // Determine file type
-        let type: 'image' | 'video' | 'document';
-        if (file.type.startsWith('image/')) type = 'image';
-        else if (file.type.startsWith('video/')) type = 'video';
-        else type = 'document';
+    setIsUploading(true);
+    const newItems: MediaItem[] = [];
 
-        if (!allowedTypes.includes(type)) {
-          toast.error(`${type} files are not allowed`);
-          continue;
-        }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
 
-        // Analyze file metadata
-        const metadata = await analyzeFile(file);
-        
-        // Upload file
-        const uploadedUrl = await uploadFile(file);
-        
-        // Create media file object
-        const mediaFile: MediaFile = {
-          id: fileId,
-          url: uploadedUrl,
-          type,
-          name: file.name,
-          size: file.size,
-          metadata
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const itemId = Date.now().toString() + i;
+        const isVideo = file.type.startsWith('video/');
+
+        // Add uploading placeholder
+        const uploadingItem: MediaItem = {
+          id: itemId,
+          url: URL.createObjectURL(file),
+          type: isVideo ? 'video' : 'image',
+          isUploading: true
         };
-
-        onMediaAdd(mediaFile);
-        toast.success(`${file.name} uploaded successfully`);
         
-      } catch (error) {
-        toast.error(`Failed to upload ${file.name}`);
-        console.error('Upload error:', error);
-      } finally {
-        setAnalyzing(null);
+        setMediaItems(prev => [...prev, uploadingItem]);
+
+        try {
+          if (isVideo) {
+            // Simple video upload
+            const { data, error } = await supabase.storage
+              .from('post-media')
+              .upload(`${user.id}/videos/${Date.now()}_${file.name}`, file, {
+                cacheControl: '3600',
+                upsert: false
+              });
+
+            if (error) throw error;
+
+            const videoUrl = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/post-media/${data.path}`;
+            
+            const finalItem: MediaItem = {
+              id: itemId,
+              url: videoUrl,
+              type: 'video'
+            };
+            
+            newItems.push(finalItem);
+          } else {
+            // Enhanced image upload with thumbnails and blur
+            const result = await ImageOptimizer.uploadFile(file, user.id, 'images');
+            
+            const finalItem: MediaItem = {
+              id: itemId,
+              url: result.fullUrl,
+              thumbnailUrl: result.thumbnailUrl,
+              type: 'image',
+              blurDataUrl: result.blurHash
+            };
+            
+            newItems.push(finalItem);
+          }
+
+          // Update the uploading item with final data
+          setMediaItems(prev => 
+            prev.map(item => 
+              item.id === itemId 
+                ? { ...newItems[newItems.length - 1], isUploading: false }
+                : item
+            )
+          );
+        } catch (error) {
+          console.error('Upload failed for file:', file.name, error);
+          // Remove failed upload
+          setMediaItems(prev => prev.filter(item => item.id !== itemId));
+        }
       }
+
+      // Update parent component with all URLs
+      const allUrls = [...mediaItems, ...newItems].map(item => item.url);
+      onMediaUploaded(allUrls);
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+    } finally {
+      setIsUploading(false);
     }
-  };
+  }, [mediaItems, maxFiles, onMediaUploaded]);
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files);
-    }
-  };
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleFiles(e.target.files);
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'image': return <Image className="h-4 w-4" />;
-      case 'video': return <Video className="h-4 w-4" />;
-      case 'document': return <FileText className="h-4 w-4" />;
-      default: return <FileText className="h-4 w-4" />;
-    }
-  };
+  const removeMedia = useCallback((itemId: string) => {
+    setMediaItems(prev => {
+      const updated = prev.filter(item => item.id !== itemId);
+      onMediaUploaded(updated.map(item => item.url));
+      return updated;
+    });
+  }, [onMediaUploaded]);
 
   return (
-    <div className="space-y-4">
-      {/* Upload Area */}
-      <Card className={`border-2 border-dashed transition-all duration-300 ${
-        dragActive 
-          ? 'border-primary bg-primary/5 scale-105' 
-          : 'border-border hover:border-primary/50 hover:bg-muted/30'
-      }`}>
-        <CardContent className="p-6">
-          <div
-            className="flex flex-col items-center justify-center space-y-4 text-center cursor-pointer"
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
+    <div className="w-full space-y-4">
+      {/* Upload buttons */}
+      <div className="flex gap-2">
+        <label className="cursor-pointer">
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => handleFileUpload(e.target.files)}
+            className="hidden"
+            disabled={isUploading || mediaItems.length >= maxFiles}
+          />
+          <Button 
+            type="button" 
+            variant="outline" 
+            size="sm"
+            disabled={isUploading || mediaItems.length >= maxFiles}
+            className="gap-2"
           >
-            <div className={`p-4 rounded-full transition-colors ${
-              dragActive ? 'bg-primary text-primary-foreground' : 'bg-muted'
-            }`}>
-              <Upload className={`h-8 w-8 ${dragActive ? 'animate-bounce' : ''}`} />
-            </div>
-            
-            <div>
-              <p className="text-lg font-medium">
-                {dragActive ? 'Drop files here!' : 'Drop files here or click to upload'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Supports images, videos, and documents up to 100MB
-              </p>
-            </div>
+            <ImageIcon className="h-4 w-4" />
+            Add Photos
+          </Button>
+        </label>
 
-            <div className="flex gap-2 flex-wrap justify-center">
-              {allowedTypes.map(type => (
-                <Badge key={type} variant="secondary" className="flex items-center gap-1">
-                  {getTypeIcon(type)}
-                  {type}
-                </Badge>
-              ))}
-            </div>
+        <label className="cursor-pointer">
+          <input
+            type="file"
+            multiple
+            accept="video/*"
+            onChange={(e) => handleFileUpload(e.target.files)}
+            className="hidden"
+            disabled={isUploading || mediaItems.length >= maxFiles}
+          />
+          <Button 
+            type="button" 
+            variant="outline" 
+            size="sm"
+            disabled={isUploading || mediaItems.length >= maxFiles}
+            className="gap-2"
+          >
+            <Video className="h-4 w-4" />
+            Add Videos
+          </Button>
+        </label>
+      </div>
 
-            {!dragActive && (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-                disabled={uploading || mediaFiles.length >= maxFiles}
-                className="flex items-center gap-2 mt-2"
-                variant="outline"
-              >
-                <Camera className="h-4 w-4" />
-                Choose Files
-              </Button>
-            )}
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept={[
-                ...(allowedTypes.includes('image') ? ['image/*'] : []),
-                ...(allowedTypes.includes('video') ? ['video/*'] : []),
-                ...(allowedTypes.includes('document') ? [
-                  '.pdf', '.doc', '.docx', '.txt'
-                ] : [])
-              ].join(',')}
-              onChange={handleFileInput}
-              className="hidden"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Media Files List */}
-      {mediaFiles.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="font-medium text-gray-900">
-            Uploaded Files ({mediaFiles.length}/{maxFiles})
-          </h4>
-          
-          <div className="grid gap-3">
-            {mediaFiles.map((media) => (
-              <Card key={media.id} className="p-4">
-                <div className="flex items-start gap-4">
-                  {/* Preview */}
-                  <div className="flex-shrink-0">
-                    {media.type === 'image' && (
-                      <img
-                        src={media.url}
-                        alt={media.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
-                    )}
-                    {media.type === 'video' && (
-                      <video
-                        src={media.url}
-                        className="w-16 h-16 object-cover rounded-lg"
-                        muted
-                      />
-                    )}
-                    {media.type === 'document' && (
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <FileText className="h-8 w-8 text-gray-600" />
-                      </div>
-                    )}
+      {/* Media preview grid */}
+      {showPreview && mediaItems.length > 0 && (
+        <div className={cn(
+          "grid gap-3",
+          mediaItems.length === 1 ? "grid-cols-1" :
+          mediaItems.length === 2 ? "grid-cols-2" : 
+          "grid-cols-2 md:grid-cols-3"
+        )}>
+          {mediaItems.map((item) => (
+            <div key={item.id} className="relative group">
+              <div className="relative aspect-square rounded-lg overflow-hidden">
+                {item.type === 'video' ? (
+                  <video
+                    src={item.url}
+                    className="w-full h-full object-cover"
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : (
+                  <FastImage
+                    src={item.thumbnailUrl || item.url}
+                    alt="Preview"
+                    className="w-full h-full"
+                    loading="lazy"
+                    thumbnail={!!item.thumbnailUrl}
+                    blurDataUrl={item.blurDataUrl}
+                    showBlurPlaceholder={true}
+                  />
+                )}
+                
+                {/* Upload progress overlay */}
+                {item.isUploading && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                   </div>
+                )}
+                
+                {/* Remove button */}
+                {!item.isUploading && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => removeMedia(item.id)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-                  {/* File Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900 truncate">
-                          {media.name}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                          <span>{formatFileSize(media.size)}</span>
-                          {media.metadata?.width && media.metadata?.height && (
-                            <span>{media.metadata.width}×{media.metadata.height}</span>
-                          )}
-                          {media.metadata?.duration && (
-                            <span>{formatDuration(media.metadata.duration)}</span>
-                          )}
-                        </div>
-                        
-                        {/* Analysis Status */}
-                        {analyzing === media.id ? (
-                          <div className="flex items-center gap-2 mt-2">
-                            <AlertCircle className="h-4 w-4 text-yellow-500" />
-                            <span className="text-sm text-yellow-600">Analyzing...</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 mt-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm text-green-600">Ready</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(media.url, '_blank')}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const a = document.createElement('a');
-                            a.href = media.url;
-                            a.download = media.name;
-                            a.click();
-                          }}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onMediaRemove(media.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+      {/* Upload status */}
+      {isUploading && (
+        <div className="text-sm text-muted-foreground">
+          Uploading media files...
         </div>
       )}
     </div>

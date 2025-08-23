@@ -1,83 +1,76 @@
 import { useState, useEffect } from 'react';
 
-export interface MobileDetectionResult {
-  isMobile: boolean;
-  isTablet: boolean;
-  isDesktop: boolean;
-  screenWidth: number;
-  screenHeight: number;
-  orientation: 'portrait' | 'landscape';
-  touchDevice: boolean;
-  userAgent: string;
-  deviceType: 'mobile' | 'tablet' | 'desktop';
-}
-
-export const useMobileDetection = (): MobileDetectionResult => {
-  const [detection, setDetection] = useState<MobileDetectionResult>(() => {
-    if (typeof window === 'undefined') {
-      return {
-        isMobile: false,
-        isTablet: false,
-        isDesktop: true,
-        screenWidth: 1024,
-        screenHeight: 768,
-        orientation: 'landscape',
-        touchDevice: false,
-        userAgent: '',
-        deviceType: 'desktop'
-      };
-    }
-
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isMobile = width < 768;
-    const isTablet = width >= 768 && width < 1024;
-    const isDesktop = width >= 1024;
-    const touchDevice = 'ontouchstart' in window;
-    
-    return {
-      isMobile,
-      isTablet,
-      isDesktop,
-      screenWidth: width,
-      screenHeight: height,
-      orientation: width > height ? 'landscape' : 'portrait',
-      touchDevice,
-      userAgent: navigator.userAgent,
-      deviceType: isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'
-    };
+export const useDeviceDetection = () => {
+  const [device, setDevice] = useState({
+    isMobile: false,
+    isTablet: false,
+    isDesktop: true,
+    isIOS: false,
+    isAndroid: false,
+    isSafari: false,
+    isChrome: false,
+    screenWidth: 1920,
+    screenHeight: 1080,
+    devicePixelRatio: 1,
+    orientation: 'landscape' as 'portrait' | 'landscape',
+    touchSupport: false
   });
 
   useEffect(() => {
-    const updateDetection = () => {
+    const updateDevice = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const isMobile = width < 768;
-      const isTablet = width >= 768 && width < 1024;
-      const isDesktop = width >= 1024;
-      const touchDevice = 'ontouchstart' in window;
+      const userAgent = navigator.userAgent;
       
-      setDetection({
-        isMobile,
-        isTablet,
-        isDesktop,
+      setDevice({
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024,
+        isIOS: /iPad|iPhone|iPod/.test(userAgent),
+        isAndroid: /Android/.test(userAgent),
+        isSafari: /Safari/.test(userAgent) && !/Chrome/.test(userAgent),
+        isChrome: /Chrome/.test(userAgent),
         screenWidth: width,
         screenHeight: height,
+        devicePixelRatio: window.devicePixelRatio || 1,
         orientation: width > height ? 'landscape' : 'portrait',
-        touchDevice,
-        userAgent: navigator.userAgent,
-        deviceType: isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'
+        touchSupport: 'ontouchstart' in window
       });
     };
 
-    window.addEventListener('resize', updateDetection);
-    window.addEventListener('orientationchange', updateDetection);
-
-    return () => {
-      window.removeEventListener('resize', updateDetection);
-      window.removeEventListener('orientationchange', updateDetection);
-    };
+    updateDevice();
+    window.addEventListener('resize', updateDevice);
+    return () => window.removeEventListener('resize', updateDevice);
   }, []);
 
-  return detection;
+  return device;
+};
+
+export const useMobilePerformance = () => {
+  const [metrics, setMetrics] = useState({
+    loadTime: 0,
+    renderTime: 0,
+    imageLoadCount: 0,
+    totalImageSize: 0
+  });
+
+  useEffect(() => {
+    const observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        if (entry.entryType === 'navigation') {
+          const navEntry = entry as PerformanceNavigationTiming;
+          setMetrics(prev => ({
+            ...prev,
+            loadTime: navEntry.loadEventEnd - navEntry.fetchStart,
+            renderTime: navEntry.domContentLoadedEventEnd - navEntry.fetchStart
+          }));
+        }
+      });
+    });
+
+    observer.observe({ entryTypes: ['navigation'] });
+    return () => observer.disconnect();
+  }, []);
+
+  return metrics;
 };
