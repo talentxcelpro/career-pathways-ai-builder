@@ -1,4 +1,4 @@
-import React, { ImgHTMLAttributes, useState, useEffect } from 'react';
+import React, { ImgHTMLAttributes, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ImageWithFallbackProps extends ImgHTMLAttributes<HTMLImageElement> {
@@ -18,38 +18,22 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [imageSrc, setImageSrc] = useState<string>(src || fallbackSrc);
 
-  useEffect(() => {
-    if (!src) {
-      setImageSrc(fallbackSrc);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
+  const handleImageLoad = () => {
+    setLoading(false);
     setError(false);
+  };
 
-    // Preload image to check if it's valid
-    const img = new Image();
-    img.onload = () => {
-      setImageSrc(src);
-      setLoading(false);
-      setError(false);
-    };
-    img.onerror = () => {
-      console.warn('Image failed to load:', src);
-      setImageSrc(fallbackSrc);
-      setLoading(false);
-      setError(true);
-    };
-    img.src = src;
-  }, [src, fallbackSrc]);
+  const handleImageError = () => {
+    console.warn('Image failed to load:', src);
+    setLoading(false);
+    setError(true);
+  };
 
   if (loading) {
     const loadingDiv = (
-      <div className="absolute inset-0 w-full h-full bg-muted/20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="absolute inset-0 w-full h-full bg-muted/10 flex items-center justify-center">
+        <div className="animate-pulse bg-muted/20 w-full h-full rounded"></div>
       </div>
     );
     if (aspect) {
@@ -64,12 +48,14 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 
   const img = (
     <img
-      src={imageSrc}
+      src={!error ? (src as string) : fallbackSrc}
       alt={alt}
+      onLoad={handleImageLoad}
+      onError={handleImageError}
       loading="lazy"
       decoding="async"
       className={cn(
-        'absolute inset-0 w-full h-full object-cover transition-opacity duration-300',
+        'absolute inset-0 w-full h-full object-cover',
         className
       )}
       {...rest}

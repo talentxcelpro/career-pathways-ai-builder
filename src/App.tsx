@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
-import { PerformanceBooster } from "@/components/performance/PerformanceBooster";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
@@ -99,8 +98,7 @@ const App = () => {
                 {/* <AIProvider> */}
                 {/* <RealtimeProvider showToasts={false}> */}
                 <CopilotProvider>
-                  <PerformanceBooster>
-                    <ContentSecurityPolicy />
+                  <ContentSecurityPolicy />
                 <Toaster
                   duration={10000}
                   position="top-center"
@@ -200,7 +198,6 @@ const App = () => {
                   </div>
                 </MobileAppWrapper>
                   <Analytics />
-                  </PerformanceBooster>
                 </CopilotProvider>
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
