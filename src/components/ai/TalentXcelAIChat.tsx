@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Send, RefreshCw, BookOpen, Briefcase, Users, FileText, MessageSquare, Sparkles, User, Loader2 } from 'lucide-react';
-import { useAI } from '@/contexts/AIContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { talentXcelAIPayloads, getPayloadByCommand, AIPayload } from '@/lib/aiPayloads';
@@ -17,6 +16,14 @@ import { GeneratePostModule } from './modules/GeneratePostModule';
 import { SkillCheckModule } from './modules/SkillCheckModule';
 import { DailyBriefModule } from './modules/DailyBriefModule';
 
+interface UserProfile {
+  id: string;
+  full_name?: string;
+  title?: string;
+  location?: string;
+  experience?: number;
+}
+
 interface Message {
   id: number;
   type: 'user' | 'ai';
@@ -26,7 +33,7 @@ interface Message {
 }
 
 export default function TalentXcelAIChat() {
-  const { userProfile } = useAI();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [activeModule, setActiveModule] = useState<React.ReactNode>(null);
@@ -41,6 +48,29 @@ export default function TalentXcelAIChat() {
 
   useEffect(() => { 
     scrollToBottom(); 
+    
+    // Load user profile
+    const loadUserProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id, full_name, title, location')
+            .eq('id', user.id)
+            .single();
+          
+          if (profile) {
+            setUserProfile(profile as UserProfile);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load user profile:', error);
+      }
+    };
+
+    loadUserProfile();
+    
     // Welcome message on component mount
     if (messages.length === 0) {
       const welcomeMsg: Message = {
