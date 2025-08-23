@@ -47,6 +47,11 @@ serve(async (req) => {
   const startTime = Date.now();
   let requestId = crypto.randomUUID();
   
+  // Track parsed fields for safer error logging
+  let parsedModule: string | null = null;
+  let parsedTask: string | null = null;
+  let parsedUserId: string | null = null;
+  
   console.log(`🚀 [${requestId}] AI Agent function started`);
   console.log(`🔍 [${requestId}] Request method: ${req.method}`);
   console.log(`🔍 [${requestId}] Request URL: ${req.url}`);
@@ -102,6 +107,11 @@ serve(async (req) => {
 
     const { module, task, input, userId, prompt } = requestBody;
     
+    // Store for error logging scope
+    parsedModule = module ?? null;
+    parsedTask = task ?? null;
+    parsedUserId = userId ?? null;
+    
     console.log(`📋 [${requestId}] Request details:`, {
       module,
       task,
@@ -131,7 +141,15 @@ serve(async (req) => {
 
     // Validate required fields
     if (!module || !task) {
-      throw new Error('Missing required fields: module and task are required');
+      const validationError = {
+        success: false,
+        error: 'Missing required fields: module and task are required',
+        requestId: requestId
+      };
+      return new Response(JSON.stringify(validationError), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
 
@@ -257,11 +275,11 @@ serve(async (req) => {
 
     // Log usage for analytics
     try {
-      if (userId) {
+      if (parsedUserId) {
         await supabase.from('ai_usage_logs').insert({
-          user_id: userId,
-          module_name: module,
-          feature_type: task,
+          user_id: parsedUserId,
+          module_name: parsedModule || module,
+          feature_type: parsedTask || task,
           request_type: 'ai_agent',
           tokens_used: data.usage?.total_tokens || 0,
           success: true,
@@ -298,19 +316,19 @@ serve(async (req) => {
     const processingTime = Date.now() - startTime;
     console.error(`💥 [${requestId}] AI Agent error:`, error);
     
-    // Log failed requests for analytics
+    // Log failed requests for analytics (guard against undefined fields)
     try {
-      if (req.url && userId) {
+      if (parsedUserId) {
         await supabase.from('ai_usage_logs').insert({
-          user_id: userId,
-          module_name: module || 'unknown',
-          feature_type: task || 'unknown',
+          user_id: parsedUserId,
+          module_name: parsedModule || 'unknown',
+          feature_type: parsedTask || 'unknown',
           request_type: 'ai_agent',
           tokens_used: 0,
           success: false,
           response_time: processingTime,
           operation_id: requestId,
-          error_message: error.message
+          error_message: (error as Error)?.message || String(error)
         });
       }
     } catch (logError) {
