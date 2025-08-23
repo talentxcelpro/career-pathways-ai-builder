@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import VideoPlayer from './VideoPlayer';
+import { FastImage } from '@/components/common/FastImage';
 
 interface MediaPreviewProps {
   content: string;
@@ -42,14 +43,11 @@ const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, ind
           className={className}
         />
       ) : (
-        <img
+        <FastImage
           src={fixedUrl}
           alt={`Media ${index + 1}`}
           className={className}
-          onError={(e) => {
-            console.error('MediaPreview: Image failed to load:', fixedUrl);
-            e.currentTarget.style.display = 'none';
-          }}
+          loading={index === 0 ? 'eager' : 'lazy'}
         />
       )}
     </div>
@@ -64,18 +62,23 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
   // Combine media URLs with URLs found in content
   const allMediaUrls = [...mediaUrls, ...urlsInContent];
   
-  // Filter for image and video URLs (including YouTube URLs and Supabase storage)
+  // Filter for image and video URLs (Supabase + direct media + YouTube), block placeholders
   const mediaItems = allMediaUrls.filter(url => {
     const lowercaseUrl = url.toLowerCase();
-    const isSupabaseStorage = lowercaseUrl.includes('supabase.co/storage');
-    const isDirectMedia = lowercaseUrl.match(/\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)(\?|$)/);
-    const isPostMedia = lowercaseUrl.includes('/post-media/');
-    const isMediaFolder = lowercaseUrl.includes('/media/');
+
+    // Block known broken placeholder sources
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname.includes('placeholder.com')) return false;
+    } catch {
+      // not an absolute URL; continue checks
+    }
+
+    const isSupabaseStorage = lowercaseUrl.includes('supabase.co/storage') || lowercaseUrl.includes('/post-media/');
+    const isDirectMedia = /\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|ogg)(\?|#|$)/i.test(lowercaseUrl);
     const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
     
-    const isValidMedia = isSupabaseStorage || isDirectMedia || isPostMedia || isMediaFolder || isYouTube;
-    
-    return isValidMedia;
+    return isSupabaseStorage || isDirectMedia || isYouTube;
   });
 
   // Remove URLs from content that will be displayed as media

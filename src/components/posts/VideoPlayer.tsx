@@ -226,6 +226,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, className = '', isMessag
           ref={videoRef}
           src={videoSrc}
           className={`w-full h-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
+          muted={isMuted}
           playsInline
           preload="metadata"
           // @ts-ignore - non-standard iOS attribute
