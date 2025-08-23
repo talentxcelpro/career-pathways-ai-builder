@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
@@ -25,6 +26,7 @@ import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
 import { ServiceWorkerReset } from "@/components/system/ServiceWorkerReset";
+import { ErrorBoundary } from "@/components/system/ErrorBoundary";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -116,7 +118,7 @@ const App = () => {
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
-                  <div className="min-h-screen flex flex-col">
+                  <ErrorBoundary><div className="min-h-screen flex flex-col">
                     <OfflineIndicator />
                     <Navbar />
                     <main className="flex-1">
@@ -197,9 +199,10 @@ const App = () => {
                       </Routes>
                     </main>
                     <Footer />
-                  </div>
+                  </div></ErrorBoundary>
                 </MobileAppWrapper>
                   <Analytics />
+                  <SpeedInsights />
                 </CopilotProvider>
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
