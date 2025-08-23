@@ -15,7 +15,7 @@ interface GeneratePostModuleProps {
 export const GeneratePostModule: React.FC<GeneratePostModuleProps> = ({ onResult, userProfile }) => {
   const [contentType, setContentType] = useState<'linkedin_post' | 'outreach_email' | 'project_summary'>('linkedin_post');
   const [topic, setTopic] = useState('');
-  const [tone, setTone] = useState<'professional' | 'casual' | 'enthusiastic' | 'formal'>('professional');
+  const [tone, setTone] = useState<'professional' | 'casual' | 'persuasive' | 'informative' | 'friendly'>('professional');
   const [context, setContext] = useState('');
   const [generatedContent, setGeneratedContent] = useState('');
   const [variations, setVariations] = useState<string[]>([]);
@@ -52,7 +52,7 @@ export const GeneratePostModule: React.FC<GeneratePostModuleProps> = ({ onResult
       const request = {
         contentType: 'custom' as const,
         topic,
-        tone: tone as 'professional' | 'casual' | 'persuasive' | 'informative' | 'friendly',
+        tone: tone,
         keywords: [topic],
         targetAudience: 'professionals',
         additionalContext: context,
@@ -70,7 +70,7 @@ export const GeneratePostModule: React.FC<GeneratePostModuleProps> = ({ onResult
         // Generate 2 additional variations
         const variations = await Promise.all([
           generateContent({ ...request, tone: tone === 'professional' ? 'casual' : 'professional' }),
-          generateContent({ ...request, tone: 'enthusiastic' })
+          generateContent({ ...request, tone: 'friendly' })
         ]);
         
         setVariations(variations.filter(v => v.success).map(v => v.content || ''));
@@ -137,12 +137,12 @@ export const GeneratePostModule: React.FC<GeneratePostModuleProps> = ({ onResult
         <div className="space-y-2">
           <label className="text-sm font-medium">Tone</label>
           <div className="flex gap-2 flex-wrap">
-            {['professional', 'casual', 'enthusiastic', 'formal'].map((toneOption) => (
+            {(['professional', 'casual', 'persuasive', 'informative', 'friendly'] as const).map((toneOption) => (
               <Button
                 key={toneOption}
                 variant={tone === toneOption ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setTone(toneOption as typeof tone)}
+                onClick={() => setTone(toneOption)}
               >
                 {toneOption.charAt(0).toUpperCase() + toneOption.slice(1)}
               </Button>
