@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { SitemapManager } from '@/components/seo/SitemapManager';
+import { SitemapManager } from '@/components/admin/SitemapManager';
 import { SEOCronManager } from '@/components/seo/SEOCronManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Globe, Bot, TrendingUp } from 'lucide-react';
