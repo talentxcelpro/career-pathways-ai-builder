@@ -408,11 +408,14 @@ export type Database = {
           attempts: number | null
           completed_at: string | null
           created_at: string | null
+          error: string | null
           error_message: string | null
           id: string
           max_attempts: number | null
+          output: Json | null
           payload: Json | null
           run_at: string | null
+          scheduled_at: string | null
           source: string
           started_at: string | null
           status: string | null
@@ -424,11 +427,14 @@ export type Database = {
           attempts?: number | null
           completed_at?: string | null
           created_at?: string | null
+          error?: string | null
           error_message?: string | null
           id?: string
           max_attempts?: number | null
+          output?: Json | null
           payload?: Json | null
           run_at?: string | null
+          scheduled_at?: string | null
           source: string
           started_at?: string | null
           status?: string | null
@@ -440,11 +446,14 @@ export type Database = {
           attempts?: number | null
           completed_at?: string | null
           created_at?: string | null
+          error?: string | null
           error_message?: string | null
           id?: string
           max_attempts?: number | null
+          output?: Json | null
           payload?: Json | null
           run_at?: string | null
+          scheduled_at?: string | null
           source?: string
           started_at?: string | null
           status?: string | null
@@ -22940,11 +22949,14 @@ export type Database = {
           attempts: number | null
           completed_at: string | null
           created_at: string | null
+          error: string | null
           error_message: string | null
           id: string
           max_attempts: number | null
+          output: Json | null
           payload: Json | null
           run_at: string | null
+          scheduled_at: string | null
           source: string
           started_at: string | null
           status: string | null
