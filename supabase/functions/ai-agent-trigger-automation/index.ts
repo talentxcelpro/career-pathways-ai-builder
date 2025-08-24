@@ -567,7 +567,10 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const action = url.searchParams.get('action') || 'detect_and_route';
+    let body: any = {};
+    try { body = await req.json(); } catch { body = {}; }
+
+    const action = url.searchParams.get('action') || body.action || 'detect_and_route';
 
     switch (action) {
       case 'detect_and_route': {
@@ -578,12 +581,14 @@ serve(async (req) => {
       }
 
       case 'manual_trigger': {
-        const { agentHandle, trigger, metadata } = await req.json();
-        
+        const { agentHandle, trigger, metadata } = body || {};
         if (!agentHandle || !trigger) {
-          throw new Error('agentHandle and trigger are required');
+          return new Response(JSON.stringify({ error: 'agentHandle and trigger are required' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
-        
+
         const event = {
           type: 'manual_trigger',
           trigger,
@@ -591,10 +596,10 @@ serve(async (req) => {
           priority: 'high',
           metadata: { ...metadata, manual: true }
         };
-        
+
         const requestId = crypto.randomUUID();
         const result = await processEvent(event, requestId);
-        
+
         return new Response(JSON.stringify(result, null, 2), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -605,7 +610,7 @@ serve(async (req) => {
           status: 'healthy',
           timestamp: new Date().toISOString(),
           agentTriggers: Object.keys(agentTriggers),
-          version: '1.0.0'
+          version: '1.0.1'
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -622,7 +627,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Trigger automation error:', error);
     return new Response(JSON.stringify({
-      error: error.message,
+      error: (error as any)?.message || String(error),
       timestamp: new Date().toISOString()
     }), {
       status: 500,
