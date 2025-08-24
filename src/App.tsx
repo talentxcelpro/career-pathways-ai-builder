@@ -187,6 +187,32 @@ const App = () => {
                       <Route path="/companies/location/:location" element={<SEOCompaniesLocation />} />
                       <Route path="/posts/:id" element={<SEOPosts />} />
                       
+                      {/* Enhanced Hierarchical SEO Routes for 2M Pages */}
+                      <Route path="/jobs/:type/:location" element={<JobsByLocation />} />
+                      <Route path="/jobs/:type/:location/:role" element={<JobsByRole />} />
+                      <Route path="/jobs/remote/:role" element={<JobsByRole />} />
+                      <Route path="/jobs/skill/:skill/:location" element={<JobsBySkill />} />
+                      <Route path="/network/:category" element={<SEOPosts />} />
+                      <Route path="/network/:category/:topic" element={<SEOPosts />} />
+                      <Route path="/tools/:category" element={<JobsByRole />} />
+                      <Route path="/tools/:category/:toolName" element={<JobsByRole />} />
+                      <Route path="/tools/resume-builder/:template" element={<JobsByRole />} />
+                      <Route path="/services/:type" element={<JobsByRole />} />
+                      <Route path="/services/:type/:serviceName" element={<JobsByRole />} />
+                      <Route path="/services/resume-writing/:template" element={<JobsByRole />} />
+                      <Route path="/learning/:category" element={<JobsByRole />} />
+                      <Route path="/learning/:category/:courseName" element={<JobsByRole />} />
+                      <Route path="/learning/paths/:skill" element={<JobsByRole />} />
+                      <Route path="/colleges/:location" element={<SEOCompaniesLocation />} />
+                      <Route path="/colleges/:location/:collegeName" element={<SEOCompaniesLocation />} />
+                      <Route path="/colleges/:location/:field" element={<SEOCompaniesLocation />} />
+                      <Route path="/career-map/:industry" element={<JobsByRole />} />
+                      <Route path="/career-map/:industry/:path" element={<JobsByRole />} />
+                      <Route path="/career-map/progression/:role" element={<JobsByRole />} />
+                      <Route path="/companies/:location/:industry" element={<SEOCompaniesLocation />} />
+                      <Route path="/companies/size/:size/:location" element={<SEOCompaniesLocation />} />
+                      <Route path="/employer/resources/:topic" element={<JobsByRole />} />
+                      
                       {/* Sitemap route */}
                       <Route path="/sitemap.xml" element={<SitemapRedirect />} />
                       <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
