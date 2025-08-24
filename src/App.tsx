@@ -24,6 +24,7 @@ import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
 import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
+import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -213,7 +214,10 @@ const App = () => {
                       <Route path="/companies/size/:size/:location" element={<SEOCompaniesLocation />} />
                       <Route path="/employer/resources/:topic" element={<JobsByRole />} />
                       
-                      {/* Sitemap route */}
+                      {/* Enhanced SEO Demo Route */}
+                      <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />
+                      
+                      {/* Sitemap routes */}
                       <Route path="/sitemap.xml" element={<SitemapRedirect />} />
                       <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                       
