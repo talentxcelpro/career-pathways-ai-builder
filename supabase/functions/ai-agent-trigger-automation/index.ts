@@ -471,8 +471,8 @@ async function executeAgentTask(taskId: string, requestId: string) {
       .from('agent_tasks')
       .update({ 
         status: 'failed',
-        error: error.message,
-        attempts: task?.attempts + 1 || 1
+        error: (error as any)?.message || String(error),
+        attempts: 1
       })
       .eq('id', taskId);
     

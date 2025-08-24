@@ -76,3 +76,13 @@ verify_jwt = false
 
 [functions.bulk-job-upload]
 verify_jwt = false
+
+# Automation and AI agent functions
+[functions.ai-agent-trigger-automation]
+verify_jwt = false
+
+[functions.ai-agent]
+verify_jwt = false
+
+[functions.ai-chat]
+verify_jwt = false
