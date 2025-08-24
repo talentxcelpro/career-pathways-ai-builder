@@ -27,11 +27,13 @@ import {
   Play,
   Pause,
   Bot,
-  Target
+  Target,
+  ArrowRight
 } from 'lucide-react';
 import { useAgentActivityTracking } from '@/hooks/useAgentActivityTracking';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { TriggerAutomationFlow } from '@/components/admin/TriggerAutomationFlow';
 
 interface Agent {
   id: string;
@@ -110,6 +112,7 @@ export const TalentXcelAgentDashboard: React.FC = () => {
 
   const modules = [
     { id: 'Overview', icon: Activity, name: 'Overview', color: 'text-gray-600' },
+    { id: 'TriggerAutomation', icon: Zap, name: 'Trigger Automation', color: 'text-yellow-600' },
     { id: 'Network', icon: Users, name: 'Network', color: 'text-blue-600' },
     { id: 'Jobs', icon: Briefcase, name: 'Jobs', color: 'text-green-600' },
     { id: 'Employer', icon: Building, name: 'Employer & Companies', color: 'text-purple-600' },
@@ -470,7 +473,7 @@ export const TalentXcelAgentDashboard: React.FC = () => {
 
           {/* Module Tabs */}
           <Tabs value={activeModule} onValueChange={setActiveModule}>
-            <TabsList className="grid grid-cols-9 w-full">
+            <TabsList className="grid grid-cols-10 w-full">
               {modules.map((module) => (
                 <TabsTrigger key={module.id} value={module.name} className="flex items-center gap-2">
                   <module.icon className={`h-4 w-4 ${module.color}`} />
@@ -482,9 +485,13 @@ export const TalentXcelAgentDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex">
-        {/* Left Sidebar: AI Agents */}
-        <div className="w-80 border-r bg-card h-screen overflow-hidden">
+      {/* Render Trigger Automation when selected */}
+      {activeModule === 'Trigger Automation' ? (
+        <TriggerAutomationFlow />
+      ) : (
+        <div className="flex">
+          {/* Left Sidebar: AI Agents */}
+          <div className="w-80 border-r bg-card h-screen overflow-hidden">
           <div className="p-4 border-b">
             <h2 className="font-semibold text-lg mb-3 flex items-center gap-2">
               <Bot className="h-5 w-5" />
@@ -859,7 +866,8 @@ export const TalentXcelAgentDashboard: React.FC = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
