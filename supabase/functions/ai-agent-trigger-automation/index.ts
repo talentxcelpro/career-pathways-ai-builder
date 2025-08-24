@@ -6,17 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || 'https://dthlgsnakhoftinssokm.supabase.co';
+const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_KEY');
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Missing required environment variables');
+if (!SUPABASE_SERVICE_KEY) {
+  console.error('Missing required environment variables: SUPABASE_SERVICE_KEY');
 }
 
-const supabaseAdmin = createClient(
-  supabaseUrl!,
-  supabaseServiceKey!
-);
+// Lazily created admin client (avoids runtime crash when secret is missing)
+let supabaseAdmin: any = null;
+if (SUPABASE_SERVICE_KEY) {
+  supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+}
 
 // Agent handles and their trigger conditions
 const agentTriggers = {
@@ -571,6 +572,16 @@ serve(async (req) => {
     try { body = await req.json(); } catch { body = {}; }
 
     const action = url.searchParams.get('action') || body.action || 'detect_and_route';
+
+    if (!supabaseAdmin) {
+      return new Response(JSON.stringify({
+        error: 'Missing SUPABASE_SERVICE_KEY secret. Set it in Edge Function Secrets.',
+        required_secrets: ['SUPABASE_URL', 'SUPABASE_SERVICE_KEY'],
+        supabase_url_example: 'https://dthlgsnakhoftinssokm.supabase.co'
+      }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    const actionFinal = url.searchParams.get('action') || body.action || 'detect_and_route';
 
     switch (action) {
       case 'detect_and_route': {
