@@ -407,6 +407,7 @@ export const TriggerAutomationFlow: React.FC = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          {/* Flow Diagram */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -452,6 +453,108 @@ export const TriggerAutomationFlow: React.FC = () => {
                     AI performs assigned task
                   </p>
                 </div>
+              </div>
+              
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="text-center p-4 border rounded-lg bg-yellow-50">
+                  <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Activity className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-sm">Logging & KPI Update</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Track results and update metrics
+                  </p>
+                </div>
+                
+                <div className="text-center p-4 border rounded-lg bg-red-50">
+                  <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <AlertTriangle className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-sm">Escalation</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Admin Bot or Human if AI can't resolve
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Implementation Plan */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building className="h-5 w-5 text-purple-500" />
+                Implementation Plan
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                    <div>
+                      <h3 className="font-semibold">Define Event Triggers</h3>
+                      <p className="text-sm text-muted-foreground">New job, new user, failed application, low engagement</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                    <div>
+                      <h3 className="font-semibold">Build Automation Rules</h3>
+                      <p className="text-sm text-muted-foreground">If event → activate agent logic</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                    <div>
+                      <h3 className="font-semibold">Add Logging Dashboard</h3>
+                      <p className="text-sm text-muted-foreground">Recent Tasks, KPI updates</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">4</div>
+                    <div>
+                      <h3 className="font-semibold">Add Escalation Matrix</h3>
+                      <p className="text-sm text-muted-foreground">Admin Bot / Human fallback</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Agent Flow Visualization */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-yellow-500" />
+                Agent Trigger Flow
+              </CardTitle>
+              <CardDescription>
+                Visual representation of how events trigger specific agents
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/12e7ebb0-7d97-4bd6-b348-abaa94414879.png" 
+                  alt="Agent Trigger Flow Diagram" 
+                  className="max-w-full h-auto rounded-lg border shadow-sm"
+                />
+              </div>
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-sm mb-2">Flow Explanation:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• <strong>Green Box (Left):</strong> Event/Trigger detection from user actions, job posts, support requests, etc.</li>
+                  <li>• <strong>Blue Boxes (Center):</strong> Each AI agent with their specific roles and responsibilities</li>
+                  <li>• <strong>Red Box (Right):</strong> Escalation to Admin Bot or Human when AI cannot resolve</li>
+                  <li>• <strong>Arrows:</strong> Show the routing logic from events to agents and potential escalation paths</li>
+                </ul>
               </div>
             </CardContent>
           </Card>
