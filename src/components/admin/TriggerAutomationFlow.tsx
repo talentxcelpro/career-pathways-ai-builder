@@ -233,8 +233,8 @@ export const TriggerAutomationFlow: React.FC = () => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase.functions.invoke('ai-agent-trigger-automation', {
-        body: { action: 'detect_and_route' }
+      const { data, error } = await supabase.functions.invoke('ai-agent-trigger-automation?action=detect_and_route', {
+        body: {}
       });
       
       if (error) throw error;
@@ -253,9 +253,8 @@ export const TriggerAutomationFlow: React.FC = () => {
   // Manual trigger for specific agent
   const triggerSpecificAgent = async (agentHandle: string, trigger: string) => {
     try {
-      const { data, error } = await supabase.functions.invoke('ai-agent-trigger-automation', {
+      const { data, error } = await supabase.functions.invoke('ai-agent-trigger-automation?action=manual_trigger', {
         body: { 
-          action: 'manual_trigger',
           agentHandle,
           trigger,
           metadata: { manual: true, triggeredBy: 'admin' }
