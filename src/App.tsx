@@ -119,18 +119,19 @@ const App = () => {
                     <OfflineIndicator />
                     <Navbar />
                     <main className="flex-1">
-                       <Routes>
-                      {navItems.map((item: NavItem) => {
-                         // Check if route is explicitly marked as public or in our public routes list
-                         const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
-                           // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
-                           if (route.includes(':')) {
-                             const routePattern = route.replace(/:[^/]+/g, '[^/]+');
-                             return new RegExp(`^${routePattern}$`).test(item.to);
-                           }
-                           return route === item.to;
-                         });
-                        
+                      <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+                        <Routes>
+                       {navItems.map((item: NavItem) => {
+                          // Check if route is explicitly marked as public or in our public routes list
+                          const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
+                            // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
+                            if (route.includes(':')) {
+                              const routePattern = route.replace(/:[^/]+/g, '[^/]+');
+                              return new RegExp(`^${routePattern}$`).test(item.to);
+                            }
+                            return route === item.to;
+                          });
+                         
                         return (
                           <Route 
                             key={item.to} 
@@ -180,7 +181,7 @@ const App = () => {
                        {/* Onboarding redirect */}
                        <Route path="/onboarding" element={<Navigate to="/auth/register" replace />} />
                       
-{/* SEO Routes - Dynamic categories */}
+       {/* SEO Routes - Dynamic categories */}
                       <Route path="/jobs/role/:role" element={<JobsByRole />} />
                       <Route path="/jobs/location/:location" element={<JobsByLocation />} />
                       <Route path="/jobs/skill/:skill" element={<JobsBySkill />} />
@@ -221,8 +222,9 @@ const App = () => {
                       <Route path="/sitemap.xml" element={<SitemapRedirect />} />
                       <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                       
-{/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
-                      </Routes>
+       {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
+                        </Routes>
+                      </React.Suspense>
                     </main>
                     <Footer />
                   </div>
