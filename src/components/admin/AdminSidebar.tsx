@@ -222,6 +222,12 @@ const adminMenuItems = [
     url: '/admin/pricing/create',
     icon: CreditCard,
     description: 'Create new subscription plans'
+  },
+  {
+    title: 'Backlink System',
+    url: '/admin/backlinks',
+    icon: Network,
+    description: 'Automated backlink management & monitoring'
   }
 ];
 

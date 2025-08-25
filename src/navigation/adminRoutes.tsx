@@ -344,5 +344,12 @@ export const adminRoutes = [
     icon: <Network className="h-4 w-4" />,
     page: <IntegrationHub />,
     requiresAuth: true,
+  },
+  {
+    title: "Backlink System",
+    to: "/admin/backlinks",
+    icon: <Network className="h-4 w-4" />,
+    page: lazy(() => import('../pages/admin/BacklinkDashboard')),
+    requiresAuth: true,
   }
 ];
