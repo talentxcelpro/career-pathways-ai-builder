@@ -38,6 +38,7 @@ import FeatureFlagsManager from "../pages/admin/FeatureFlagsManager";
 import AdvancedAnalyticsDashboard from "../pages/admin/AdvancedAnalyticsDashboard";
 import PerformanceMonitoring from "../pages/admin/PerformanceMonitoring";
 import IntegrationHub from "../pages/admin/IntegrationHub";
+import BacklinkDashboard from "../pages/admin/BacklinkDashboard";
 import { SEODashboard } from "../components/admin/SEODashboard";
 import { SEODashboardNew } from "../components/admin/SEODashboardNew";
 import { JobDataManager } from "../components/admin/JobDataManager";
@@ -349,7 +350,7 @@ export const adminRoutes = [
     title: "Backlink System",
     to: "/admin/backlinks",
     icon: <Network className="h-4 w-4" />,
-    page: lazy(() => import('../pages/admin/BacklinkDashboard')),
+    page: <BacklinkDashboard />,
     requiresAuth: true,
   }
 ];

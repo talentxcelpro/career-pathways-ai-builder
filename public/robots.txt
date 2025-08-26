@@ -24,8 +24,6 @@ Disallow: /static/
 
 # Allow search engines to access sitemaps
 Sitemap: https://talentxcel.in/sitemap.xml
-Sitemap: https://dthlgsnakhoftinssokm.supabase.co/functions/v1/api-sitemap
-
 # Allow specific content types
 Allow: /posts/
 Allow: /jobs/*/
