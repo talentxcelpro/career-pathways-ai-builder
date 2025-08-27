@@ -86,3 +86,16 @@ verify_jwt = false
 
 [functions.ai-chat]
 verify_jwt = false
+
+# Backlink System Functions
+[functions.backlink-prospecting]
+verify_jwt = false
+
+[functions.backlink-content-generator]
+verify_jwt = false
+
+[functions.backlink-outreach]
+verify_jwt = false
+
+[functions.backlink-monitor]
+verify_jwt = false

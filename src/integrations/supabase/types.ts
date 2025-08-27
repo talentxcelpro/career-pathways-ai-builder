@@ -2945,6 +2945,199 @@ export type Database = {
         }
         Relationships: []
       }
+      backlink_content: {
+        Row: {
+          anchor_text: string
+          content_type: string
+          created_at: string
+          generated_content: string
+          id: string
+          quality_score: number | null
+          status: string | null
+          target_id: string | null
+          target_url: string
+          topic: string
+          updated_at: string
+          word_count: number | null
+        }
+        Insert: {
+          anchor_text: string
+          content_type: string
+          created_at?: string
+          generated_content: string
+          id?: string
+          quality_score?: number | null
+          status?: string | null
+          target_id?: string | null
+          target_url: string
+          topic: string
+          updated_at?: string
+          word_count?: number | null
+        }
+        Update: {
+          anchor_text?: string
+          content_type?: string
+          created_at?: string
+          generated_content?: string
+          id?: string
+          quality_score?: number | null
+          status?: string | null
+          target_id?: string | null
+          target_url?: string
+          topic?: string
+          updated_at?: string
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlink_content_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backlink_monitoring: {
+        Row: {
+          backlink_id: string | null
+          check_type: string
+          checked_at: string
+          details: Json | null
+          id: string
+          status: string
+        }
+        Insert: {
+          backlink_id?: string | null
+          check_type: string
+          checked_at?: string
+          details?: Json | null
+          id?: string
+          status: string
+        }
+        Update: {
+          backlink_id?: string | null
+          check_type?: string
+          checked_at?: string
+          details?: Json | null
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlink_monitoring_backlink_id_fkey"
+            columns: ["backlink_id"]
+            isOneToOne: false
+            referencedRelation: "live_backlinks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backlink_outreach: {
+        Row: {
+          campaign_type: string
+          content_id: string | null
+          created_at: string
+          email_content: string | null
+          id: string
+          response_content: string | null
+          response_received: boolean | null
+          sent_at: string | null
+          status: string | null
+          subject_line: string | null
+          target_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_type: string
+          content_id?: string | null
+          created_at?: string
+          email_content?: string | null
+          id?: string
+          response_content?: string | null
+          response_received?: boolean | null
+          sent_at?: string | null
+          status?: string | null
+          subject_line?: string | null
+          target_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_type?: string
+          content_id?: string | null
+          created_at?: string
+          email_content?: string | null
+          id?: string
+          response_content?: string | null
+          response_received?: boolean | null
+          sent_at?: string | null
+          status?: string | null
+          subject_line?: string | null
+          target_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlink_outreach_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "backlink_outreach_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backlink_targets: {
+        Row: {
+          contact_email: string | null
+          contact_form_url: string | null
+          content_type: string | null
+          created_at: string
+          domain: string
+          domain_authority: number | null
+          id: string
+          last_contacted_at: string | null
+          metadata: Json | null
+          priority_score: number | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_form_url?: string | null
+          content_type?: string | null
+          created_at?: string
+          domain: string
+          domain_authority?: number | null
+          id?: string
+          last_contacted_at?: string | null
+          metadata?: Json | null
+          priority_score?: number | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_form_url?: string | null
+          content_type?: string | null
+          created_at?: string
+          domain?: string
+          domain_authority?: number | null
+          id?: string
+          last_contacted_at?: string | null
+          metadata?: Json | null
+          priority_score?: number | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       batch_scraping_queue: {
         Row: {
           batch_name: string
@@ -9661,6 +9854,36 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_linking_suggestions: {
+        Row: {
+          anchor_text: string
+          created_at: string
+          id: string
+          implemented: boolean | null
+          relevance_score: number | null
+          source_page: string
+          target_page: string
+        }
+        Insert: {
+          anchor_text: string
+          created_at?: string
+          id?: string
+          implemented?: boolean | null
+          relevance_score?: number | null
+          source_page: string
+          target_page: string
+        }
+        Update: {
+          anchor_text?: string
+          created_at?: string
+          id?: string
+          implemented?: boolean | null
+          relevance_score?: number | null
+          source_page?: string
+          target_page?: string
+        }
+        Relationships: []
+      }
       internal_links_optimization: {
         Row: {
           anchor_text: string
@@ -11470,6 +11693,79 @@ export type Database = {
             columns: ["learning_path_id"]
             isOneToOne: false
             referencedRelation: "learning_paths"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_backlinks: {
+        Row: {
+          anchor_text: string
+          content_id: string | null
+          created_at: string
+          id: string
+          is_live: boolean | null
+          last_verified_at: string | null
+          outreach_id: string | null
+          published_at: string | null
+          published_url: string
+          ranking_impact: number | null
+          target_id: string | null
+          target_url: string
+          traffic_generated: number | null
+          updated_at: string
+        }
+        Insert: {
+          anchor_text: string
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          is_live?: boolean | null
+          last_verified_at?: string | null
+          outreach_id?: string | null
+          published_at?: string | null
+          published_url: string
+          ranking_impact?: number | null
+          target_id?: string | null
+          target_url: string
+          traffic_generated?: number | null
+          updated_at?: string
+        }
+        Update: {
+          anchor_text?: string
+          content_id?: string | null
+          created_at?: string
+          id?: string
+          is_live?: boolean | null
+          last_verified_at?: string | null
+          outreach_id?: string | null
+          published_at?: string | null
+          published_url?: string
+          ranking_impact?: number | null
+          target_id?: string | null
+          target_url?: string
+          traffic_generated?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_backlinks_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_content"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "live_backlinks_outreach_id_fkey"
+            columns: ["outreach_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_outreach"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "live_backlinks_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_targets"
             referencedColumns: ["id"]
           },
         ]
