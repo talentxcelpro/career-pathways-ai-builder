@@ -1,22 +1,26 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NetworkNavbar } from "@/components/network/NetworkNavbar";
-import { NetworkSidebar } from "@/components/network/NetworkSidebar";
-import { EnhancedFeed } from "@/components/network/EnhancedFeed";
-import { RightSidebar } from "@/components/network/RightSidebar";
+import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
+import { CareerContentHub } from "@/components/social/CareerContentHub";
+import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
+import { NetworkStats } from "@/components/network/NetworkStats";
+import { SmartConnectAI } from "@/components/network/SmartConnectAI";
+import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
-import { SmartConnectAI } from "@/components/network/SmartConnectAI";
-import { NewPostFloater } from "@/components/network/NewPostFloater";
+import { EmailTestButton } from "@/components/EmailTestButton";
+import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
+import Posts from './network/Posts';
+import { updateMetaTags } from '@/utils/metaTags';
+import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { MobileLayout } from "@/components/mobile/MobileLayout";
-import { TrendingUp, Users, UserPlus, Sparkles } from "lucide-react";
-import { updateMetaTags } from '@/utils/metaTags';
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
@@ -96,75 +100,112 @@ const Network = () => {
     );
   }
 
-  // Desktop interface - LinkedIn-like layout
+  // Desktop interface
   return (
-    <div className="min-h-screen bg-muted/20 font-system">
-      {/* Navigation Bar */}
-      <NetworkNavbar />
-      
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-3">
-            <NetworkSidebar />
-          </div>
-          
-          {/* Main Feed */}
-          <div className="lg:col-span-6">
-            <Tabs defaultValue="feed" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-6 bg-card/80 backdrop-blur-sm border border-border/60 rounded-lg p-1">
-                <TabsTrigger value="feed" className="flex items-center gap-2 text-sm font-medium">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="hidden sm:inline">Home</span>
-                </TabsTrigger>
-                <TabsTrigger value="following" className="flex items-center gap-2 text-sm font-medium">
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Following</span>
-                </TabsTrigger>
-                <TabsTrigger value="trending" className="flex items-center gap-2 text-sm font-medium">
-                  <Sparkles className="w-4 h-4" />
-                  <span className="hidden sm:inline">Trending</span>
-                </TabsTrigger>
-                <TabsTrigger value="connections" className="flex items-center gap-2 text-sm font-medium">
-                  <UserPlus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Network</span>
-                </TabsTrigger>
-              </TabsList>
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+      {/* Main Content with Tabs */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <Tabs defaultValue="feed" className="w-full">
+          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <MessageSquare className="w-3 h-3" />
+              <span className="hidden sm:inline">Feed</span>
+            </TabsTrigger>
+            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Sparkles className="w-3 h-3" />
+              <span className="hidden sm:inline">Smart Feed</span>
+            </TabsTrigger>
+            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Users className="w-3 h-3" />
+              <span className="hidden sm:inline">Connections</span>
+            </TabsTrigger>
+            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <UserPlus className="w-3 h-3" />
+              <span className="hidden sm:inline">Discover</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <TrendingUp className="w-3 h-3" />
+              <span className="hidden sm:inline">Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Sparkles className="w-3 h-3" />
+              <span className="hidden sm:inline">AI Connect</span>
+            </TabsTrigger>
+          </TabsList>
 
-              <TabsContent value="feed" className="mt-0">
-                <EnhancedFeed feedType="all" />
-              </TabsContent>
+          <TabsContent value="feed" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <Posts feedType="all" />
+              </React.Suspense>
+            </div>
+          </TabsContent>
 
-              <TabsContent value="following" className="mt-0">
-                <EnhancedFeed feedType="following" />
-              </TabsContent>
+          <TabsContent value="smart-feed" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <Posts feedType="smart" />
+              </React.Suspense>
+            </div>
+          </TabsContent>
 
-              <TabsContent value="trending" className="mt-0">
-                <EnhancedFeed feedType="trending" />
-              </TabsContent>
+          <TabsContent value="connections" className="mt-0">
+            <React.Suspense fallback={
+              <div className="flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <EnhancedConnections />
+            </React.Suspense>
+          </TabsContent>
 
-              <TabsContent value="connections" className="mt-0">
-                <React.Suspense fallback={
-                  <div className="flex items-center justify-center p-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  </div>
-                }>
-                  <EnhancedConnections />
-                </React.Suspense>
-              </TabsContent>
-            </Tabs>
-          </div>
-          
-          {/* Right Sidebar */}
-          <div className="lg:col-span-3">
-            <RightSidebar />
-          </div>
-        </div>
+          <TabsContent value="discover" className="mt-0">
+            <div className="text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <CareerContentHub />
+              </React.Suspense>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <NetworkAnalytics />
+              </React.Suspense>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="ai-connect" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <SmartConnectAI />
+              </React.Suspense>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
       
-      {/* Floating Elements */}
-      <NewPostFloater />
+      {/* Floating Messaging Sidebar */}
       <NetworkMessagingSidebar />
     </div>
   );
