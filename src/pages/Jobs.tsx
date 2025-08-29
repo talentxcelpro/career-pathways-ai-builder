@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Search, Brain, Filter, TrendingUp, Building, MapPin } from 'lucide-react';
+import { Search, Brain, Filter, TrendingUp, Building, MapPin, Zap } from 'lucide-react';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { JobsBanner } from '@/components/jobs/JobsBanner';
 import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
@@ -36,6 +36,7 @@ import { GamificationSystem } from '@/components/jobs/GamificationSystem';
 import { AICareerAssistant } from '@/components/jobs/AICareerAssistant';
 import { CareerAnalyticsDashboard } from '@/components/jobs/CareerAnalyticsDashboard';
 import { JobCard } from '@/components/jobs/JobCard';
+import { SmartJobMatchingBar } from '@/components/jobs/SmartJobMatchingBar';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -393,8 +394,9 @@ const Jobs = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-[#28C76F]/10 text-[#28C76F] px-3 py-1 rounded-full text-sm font-medium">
-              {totalCount} Jobs • AI-Matched
+            <div className="bg-gradient-to-r from-[#28C76F]/10 to-[#1E2A78]/10 text-[#1E2A78] px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+              <Zap className="h-3 w-3 text-[#28C76F]" />
+              {totalCount.toLocaleString()} Jobs • AI-Matched
             </div>
           </div>
           
@@ -405,20 +407,42 @@ const Jobs = () => {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Skills / Designations"
+                    placeholder="Skills / Designations / Companies"
                     value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    onChange={(e) => {
+                      setFilters(prev => ({ ...prev, search: e.target.value }));
+                      // Auto-search on typing for better UX
+                      if (e.target.value.length > 2) {
+                        setTimeout(() => refetch(), 500);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        refetch();
+                      }
+                    }}
                     className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
                   />
                 </div>
               </div>
               
               <div className="min-w-[140px]">
-                <Select value={experienceLevel} onValueChange={setExperienceLevel}>
+                <Select 
+                  value={experienceLevel} 
+                  onValueChange={(value) => {
+                    setExperienceLevel(value);
+                    setFilters(prev => ({ 
+                      ...prev, 
+                      experience_level: value ? [value] : [] 
+                    }));
+                    setTimeout(() => refetch(), 100);
+                  }}
+                >
                   <SelectTrigger className="h-9 text-sm border-gray-200">
                     <SelectValue placeholder="Experience ⌄" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border shadow-lg z-50">
+                    <SelectItem value="">All Experience</SelectItem>
                     <SelectItem value="entry">Fresher (0-1y)</SelectItem>
                     <SelectItem value="junior">Junior (1-3y)</SelectItem>
                     <SelectItem value="mid">Mid-level (3-6y)</SelectItem>
@@ -433,7 +457,18 @@ const Jobs = () => {
                   <Input
                     placeholder="Location"
                     value={filters.location}
-                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                    onChange={(e) => {
+                      setFilters(prev => ({ ...prev, location: e.target.value }));
+                      // Auto-search on typing for better UX
+                      if (e.target.value.length > 2) {
+                        setTimeout(() => refetch(), 500);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        refetch();
+                      }
+                    }}
                     className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
                   />
                 </div>
@@ -443,8 +478,11 @@ const Jobs = () => {
                 <input
                   type="checkbox"
                   checked={filters.is_remote}
-                  onChange={(e) => setFilters(prev => ({ ...prev, is_remote: e.target.checked }))}
-                  className="w-4 h-4 text-primary"
+                  onChange={(e) => {
+                    setFilters(prev => ({ ...prev, is_remote: e.target.checked }));
+                    setTimeout(() => refetch(), 100);
+                  }}
+                  className="w-4 h-4 text-primary accent-primary"
                 />
                 <span className="text-sm text-gray-700">Remote</span>
               </label>
@@ -465,8 +503,23 @@ const Jobs = () => {
             <Button 
               size="sm" 
               variant="outline"
-              className="text-sm font-medium border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white"
-              onClick={() => handleUniversalSearch("Ask AI to suggest best jobs for me")}
+              className="text-sm font-medium border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white transition-all duration-200"
+              onClick={() => {
+                if (!currentUser) {
+                  toast.error('Please login to use AI matching');
+                  return;
+                }
+                // Enhanced AI matching
+                setFilters(prev => ({
+                  ...prev,
+                  search: 'AI recommended jobs for me',
+                  skills: [],
+                  department: [],
+                  role_category: []
+                }));
+                refetch();
+                toast.success('🧠 AI is finding your perfect matches!');
+              }}
             >
               <Brain className="h-4 w-4 mr-1" />
               🧠 Let AI Match Me to Jobs
@@ -485,12 +538,20 @@ const Jobs = () => {
             <PersonalCareerDashboard 
               user={currentUser}
               savedJobsCount={savedJobs.length}
-              appliedJobsCount={0} // This would come from real data
-              profileViews={12} // This would come from real data
+              appliedJobsCount={0} // Real data now handled in component
+              profileViews={0} // Real data now handled in component
             />
           </div>
         )}
-
+        
+        {/* Smart AI Job Matching Bar */}
+        <div className="mb-8">
+          <SmartJobMatchingBar 
+            currentUser={currentUser}
+            onFiltersChange={handleFiltersChange}
+            onSearch={refetch}
+          />
+        </div>
         {/* AI Job Recommendations for logged-in users */}
         {currentUser && (
           <div className="mb-8">
