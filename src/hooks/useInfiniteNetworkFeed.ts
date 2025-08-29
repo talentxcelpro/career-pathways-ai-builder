@@ -70,7 +70,7 @@ export const useInfiniteNetworkFeed = ({
           pro_expires_at
         )
       `)
-      .eq('is_published', true)
+      .eq('status', 'published')
       .range(offset, offset + pageSize - 1)
       .order('created_at', { ascending: false });
 
@@ -141,7 +141,7 @@ export const useInfiniteNetworkFeed = ({
       event: 'INSERT',
       schema: 'public',
       table: 'posts',
-      filter: 'is_published=eq.true'
+      filter: 'status=eq.published'
     }, (payload) => {
       const newPost = payload.new as NetworkPost;
       
