@@ -254,11 +254,11 @@ const JobEdit = () => {
                     <SelectValue placeholder="Select employment type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="full-time">Full-time</SelectItem>
-                    <SelectItem value="part-time">Part-time</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="internship">Internship</SelectItem>
-                    <SelectItem value="freelance">Freelance</SelectItem>
+                    <SelectItem value="Full-time">Full-time</SelectItem>
+                    <SelectItem value="Part-time">Part-time</SelectItem>
+                    <SelectItem value="Contract">Contract</SelectItem>
+                    <SelectItem value="Internship">Internship</SelectItem>
+                    <SelectItem value="Freelance">Freelance</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -284,22 +284,13 @@ const JobEdit = () => {
               </div>
               
               <div>
-                <Label htmlFor="employment_type">Employment Type</Label>
-                <Select 
-                  value={formData.employment_type || ''} 
-                  onValueChange={(value) => handleInputChange('employment_type', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select employment type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="full-time">Full-time</SelectItem>
-                    <SelectItem value="part-time">Part-time</SelectItem>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="internship">Internship</SelectItem>
-                    <SelectItem value="freelance">Freelance</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="company_name">Company Name</Label>
+                <Input 
+                  id="company_name" 
+                  value={formData.company_name || ''} 
+                  onChange={(e) => handleInputChange('company_name', e.target.value)}
+                  placeholder="e.g., TechCorp Solutions"
+                />
               </div>
             </div>
 
@@ -469,24 +460,6 @@ const JobEdit = () => {
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="employment_type">Employment Category</Label>
-              <Select 
-                value={formData.employment_type || ''} 
-                onValueChange={(value) => handleInputChange('employment_type', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select employment category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="internship">Internship</SelectItem>
-                  <SelectItem value="freelance">Freelance</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </CardContent>
         </Card>
         
