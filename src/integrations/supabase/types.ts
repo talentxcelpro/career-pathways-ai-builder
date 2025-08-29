@@ -9476,6 +9476,89 @@ export type Database = {
         }
         Relationships: []
       }
+      enhanced_job_applications: {
+        Row: {
+          additional_files: Json | null
+          applied_at: string | null
+          cover_letter_url: string | null
+          created_at: string | null
+          ctc_current: number | null
+          ctc_expected: number | null
+          email: string | null
+          employer_notes: string | null
+          full_name: string | null
+          id: string
+          job_id: string | null
+          job_title: string | null
+          notice_period: string | null
+          phone: string | null
+          preferred_location: string | null
+          resume_source: string | null
+          resume_url: string | null
+          reviewed_at: string | null
+          status: string | null
+          status_updated_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          additional_files?: Json | null
+          applied_at?: string | null
+          cover_letter_url?: string | null
+          created_at?: string | null
+          ctc_current?: number | null
+          ctc_expected?: number | null
+          email?: string | null
+          employer_notes?: string | null
+          full_name?: string | null
+          id?: string
+          job_id?: string | null
+          job_title?: string | null
+          notice_period?: string | null
+          phone?: string | null
+          preferred_location?: string | null
+          resume_source?: string | null
+          resume_url?: string | null
+          reviewed_at?: string | null
+          status?: string | null
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          additional_files?: Json | null
+          applied_at?: string | null
+          cover_letter_url?: string | null
+          created_at?: string | null
+          ctc_current?: number | null
+          ctc_expected?: number | null
+          email?: string | null
+          employer_notes?: string | null
+          full_name?: string | null
+          id?: string
+          job_id?: string | null
+          job_title?: string | null
+          notice_period?: string | null
+          phone?: string | null
+          preferred_location?: string | null
+          resume_source?: string | null
+          resume_url?: string | null
+          reviewed_at?: string | null
+          status?: string | null
+          status_updated_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enhanced_job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       enhanced_job_sources: {
         Row: {
           avg_response_time_ms: number | null
