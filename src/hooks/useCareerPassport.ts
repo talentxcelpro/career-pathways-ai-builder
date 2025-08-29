@@ -60,7 +60,30 @@ export function useCareerPassport() {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        throw error;
+        // Create initial passport if doesn't exist
+        const { data: newPassport, error: createError } = await supabase
+          .from('career_passport')
+          .insert({
+            user_id: user.id,
+            completion_percentage: 0,
+            career_readiness_score: 0,
+            market_competitiveness_score: 0,
+            resumes_count: 0,
+            jobs_applied_count: 0,
+            certifications_count: 0,
+            tests_completed_count: 0,
+            skills_verified_count: 0,
+            connections_count: 0,
+            last_activity_at: new Date().toISOString(),
+            career_milestones: [],
+            learning_progress: {},
+            recommendation_engine_data: {}
+          })
+          .select()
+          .single();
+        
+        if (createError) throw createError;
+        return newPassport as CareerPassport;
       }
       
       return data as CareerPassport;
