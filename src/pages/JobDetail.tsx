@@ -56,33 +56,32 @@ const JobDetail = () => {
     queryFn: async () => {
       if (!slugOrId) throw new Error('No job slug provided');
       
+      // Avoid embedding relations to prevent ambiguous relationship errors
       const { data, error } = await supabase
         .from('jobs')
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url,
-            industry,
-            description,
-            website_url,
-            employee_count,
-            founded_year,
-            is_verified
-          ),
-          job_applications (
-            id,
-            user_id,
-            status,
-            applied_at
-          )
-        `)
+        .select('*')
         .eq('seo_slug', slugOrId)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-      return data;
+      if (error && (error as any).code !== 'PGRST116') throw error;
+
+      let record = data;
+
+      // Fallback: try loose match by slug/title
+      if (!record) {
+        const { data: found, error: e2 } = await supabase
+          .from('jobs')
+          .select('*')
+          .or(`seo_slug.ilike.%${slugOrId}%,title.ilike.%${slugOrId}%`)
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle();
+        if (e2 && (e2 as any).code !== 'PGRST116') throw e2;
+        record = found || null;
+      }
+
+      return record;
     },
     enabled: !!slugOrId,
   });
