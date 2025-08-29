@@ -13,17 +13,22 @@ export const useJobAnalytics = (jobId: string) => {
     queryKey: ['job-analytics', jobId],
     queryFn: async (): Promise<JobAnalytics | null> => {
       try {
-        // Get internal applications count
-        const { count: internalCount } = await supabase
-          .from('job_applications')
-          .select('*', { count: 'exact', head: true })
-          .eq('job_id', jobId);
+        // Use unified analytics function for consistent data
+        const { data: unifiedData, error } = await supabase.rpc('get_unified_analytics', { 
+          p_job_id: jobId 
+        });
 
-        // For now, use mock data for external redirects until types are updated
-        // This will be replaced with actual data once the DB schema is synced
-        const totalInternal = internalCount || 0;
-        const totalExternal = Math.floor(Math.random() * 50); // Mock data
-        const conversionRate = totalExternal > 0 ? (totalInternal / totalExternal) * 100 : 0;
+        if (error) {
+          console.error('Unified analytics error:', error);
+          throw error;
+        }
+
+        const jobData = unifiedData?.[0];
+        if (!jobData) return null;
+
+        const totalInternal = Number(jobData.total_applications) || 0;
+        const totalExternal = Number(jobData.total_external_redirects) || 0;
+        const conversionRate = Number(jobData.conversion_rate) || 0;
 
         return {
           total_internal_applications: totalInternal,

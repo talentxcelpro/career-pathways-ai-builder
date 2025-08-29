@@ -45,31 +45,37 @@ export const useJobsManagement = () => {
   const { data: jobStats } = useQuery({
     queryKey: ['job-stats'],
     queryFn: async () => {
-      const [
-        { count: totalJobs },
-        { count: activeJobs },
-        { count: featuredJobs },
-        { count: expiredJobs },
-        { count: governmentJobs },
-        { count: privateJobs }
-      ] = await Promise.all([
-        supabase.from('jobs').select('*', { count: 'exact', head: true }),
-        supabase.from('jobs').select('*', { count: 'exact', head: true })
-          .eq('job_status', 'open').eq('is_active', true).gte('expires_at', new Date().toISOString()),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_featured', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true })
-          .or(`status.eq.expired,expires_at.lt.${new Date().toISOString()}`),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_government_job', true),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('is_government_job', false)
-      ]);
+      // Use unified analytics function for consistent data
+      const { data: unifiedData, error } = await supabase.rpc('get_unified_analytics');
+      
+      if (error) {
+        console.error('Unified analytics error:', error);
+        throw error;
+      }
+
+      const now = new Date().toISOString();
+      
+      // Calculate stats from unified data
+      const totalJobs = unifiedData?.length || 0;
+      const activeJobs = unifiedData?.filter((job: any) => 
+        job.job_status === 'open' && 
+        job.is_active === true && 
+        job.expires_at > now
+      ).length || 0;
+      const featuredJobs = unifiedData?.filter((job: any) => job.is_featured).length || 0;
+      const expiredJobs = unifiedData?.filter((job: any) => 
+        job.expires_at <= now || job.job_status === 'expired'
+      ).length || 0;
+      const governmentJobs = unifiedData?.filter((job: any) => job.is_government_job).length || 0;
+      const privateJobs = unifiedData?.filter((job: any) => !job.is_government_job).length || 0;
 
       return {
-        totalJobs: totalJobs || 0,
-        activeJobs: activeJobs || 0,
-        featuredJobs: featuredJobs || 0,
-        expiredJobs: expiredJobs || 0,
-        governmentJobs: governmentJobs || 0,
-        privateJobs: privateJobs || 0
+        totalJobs,
+        activeJobs,
+        featuredJobs,
+        expiredJobs,
+        governmentJobs,
+        privateJobs
       };
     }
   });

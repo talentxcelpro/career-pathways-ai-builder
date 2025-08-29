@@ -13,27 +13,30 @@ export const useAnalyticsReports = () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysBack);
 
+      // Use unified analytics function for consistent job data
+      const { data: unifiedJobData } = await supabase.rpc('get_unified_analytics');
+      
       const [
         { count: totalUsers },
         { count: newUsers },
-        { count: totalJobs },
-        { count: totalApplications },
         { count: totalCompanies },
         { count: totalPosts }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', startDate.toISOString()),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }),
-        supabase.from('job_applications').select('*', { count: 'exact', head: true }),
         supabase.from('companies').select('*', { count: 'exact', head: true }),
         supabase.from('posts').select('*', { count: 'exact', head: true })
       ]);
 
+      // Calculate totals from unified data
+      const totalJobs = unifiedJobData?.length || 0;
+      const totalApplications = unifiedJobData?.reduce((sum: number, job: any) => sum + (job.total_applications || 0), 0) || 0;
+
       return {
         totalUsers: totalUsers || 0,
         newUsers: newUsers || 0,
-        totalJobs: totalJobs || 0,
-        totalApplications: totalApplications || 0,
+        totalJobs,
+        totalApplications,
         totalCompanies: totalCompanies || 0,
         totalPosts: totalPosts || 0
       };
@@ -70,17 +73,19 @@ export const useAnalyticsReports = () => {
   const { data: topPerformingJobs } = useQuery({
     queryKey: ['top-performing-jobs'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          companies(name)
-        `)
-        .order('applications_count', { ascending: false })
-        .limit(10);
+      const { data, error } = await supabase.rpc('get_unified_analytics');
       
       if (error) throw error;
-      return data;
+      
+      // Sort by applications and return top 10
+      return data
+        ?.sort((a: any, b: any) => (b.total_applications || 0) - (a.total_applications || 0))
+        .slice(0, 10)
+        .map((job: any) => ({
+          ...job,
+          applications_count: job.total_applications,
+          companies: { name: job.company_name }
+        })) || [];
     }
   });
 
