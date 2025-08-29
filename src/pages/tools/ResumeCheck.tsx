@@ -1,311 +1,324 @@
-
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ToolLayout } from '@/components/tools/ToolLayout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
+import { Upload, FileText, CheckCircle, AlertCircle, Target, Star } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
-import { FileCheck, Upload, Sparkles, TrendingUp, AlertCircle, CheckCircle, Loader2, Crown } from 'lucide-react';
-import { ResumeScoreCard } from '@/components/resume/checker/ResumeScoreCard';
-import { DetailedScoreBreakdown } from '@/components/resume/checker/DetailedScoreBreakdown';
-import { EnhancedJobTailoring } from '@/components/resume/checker/EnhancedJobTailoring';
-import { EnhancedResumePreview } from '@/components/resume/checker/EnhancedResumePreview';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { supabase } from '@/integrations/supabase/client';
 
-interface DetailedScore {
-  category: string;
-  score: number;
-  maxScore: number;
-  checks: Array<{
-    name: string;
-    passed: boolean;
-    description: string;
-    impact: 'high' | 'medium' | 'low';
-    suggestion?: string;
-  }>;
-}
-
-interface ResumeAnalysis {
-  success: boolean;
+interface ATSAnalysis {
   overallScore: number;
-  detailedScores: DetailedScore[];
-  tailoringAnalysis?: DetailedScore;
+  sections: {
+    formatting: { score: number; issues: string[]; suggestions: string[] };
+    keywords: { score: number; matched: string[]; missing: string[]; suggestions: string[] };
+    structure: { score: number; issues: string[]; suggestions: string[] };
+    content: { score: number; issues: string[]; suggestions: string[] };
+  };
   recommendations: string[];
-  atsCompatibility: number;
-  improvementPriority: Array<{
-    priority: number;
-    category: string;
-    action: string;
-  }>;
+  passedChecks: string[];
+  failedChecks: string[];
 }
 
 const ResumeCheck = () => {
-  const [resumeText, setResumeText] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
-  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [analysis, setAnalysis] = useState<ATSAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isJobAnalyzing, setIsJobAnalyzing] = useState(false);
+  const [jobDescription, setJobDescription] = useState('');
+
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setUploadedFile(file);
+      setCurrentStep(1);
+      toast.success('Resume uploaded successfully!');
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'application/msword': ['.doc']
+    },
+    maxFiles: 1
+  });
 
   const analyzeResume = async () => {
-    if (!resumeText.trim()) {
-      toast.error('Please paste your resume content');
-      return;
-    }
+    if (!uploadedFile) return;
 
     setIsAnalyzing(true);
-    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      const { data: response, error } = await supabase.functions.invoke('ai-resume-analyzer', {
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+
+      const { data, error } = await supabase.functions.invoke('ai-ats-analyzer', {
         body: {
-          resumeText,
-          targetRole: 'Software Engineer'
+          file: uploadedFile,
+          jobDescription: jobDescription || undefined
         }
       });
 
       if (error) throw error;
-
-      if (response.success) {
-        setAnalysis(response);
-        toast.success('Resume analysis completed!');
-      } else {
-        throw new Error(response.error || 'Analysis failed');
-      }
+      
+      setAnalysis(data);
+      setCurrentStep(2);
+      toast.success('Analysis completed!');
     } catch (error) {
-      console.error('Resume analysis error:', error);
+      console.error('Analysis failed:', error);
       toast.error('Failed to analyze resume. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const analyzeJobTailoring = async () => {
-    if (!jobDescription.trim() || !resumeText.trim()) {
-      toast.error('Please provide both resume content and job description');
-      return;
-    }
-
-    setIsJobAnalyzing(true);
-    
-    try {
-      const { data: response, error } = await supabase.functions.invoke('ai-resume-analyzer', {
-        body: {
-          resumeText,
-          jobDescription,
-          targetRole: 'Software Engineer'
-        }
-      });
-
-      if (error) throw error;
-
-      if (response.success && response.tailoringAnalysis) {
-        setAnalysis(prev => prev ? {
-          ...prev,
-          tailoringAnalysis: response.tailoringAnalysis
-        } : response);
-        toast.success('Job tailoring analysis completed!');
-      } else {
-        throw new Error('Job tailoring analysis failed');
-      }
-    } catch (error) {
-      console.error('Job tailoring analysis error:', error);
-      toast.error('Failed to analyze job match. Please try again.');
-    } finally {
-      setIsJobAnalyzing(false);
-    }
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
-  return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <FileCheck className="h-8 w-8 text-blue-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              TalentXcel Resume Analyzer
-            </h1>
-            <p className="text-gray-600">
-              Get detailed AI-powered analysis with ATS compatibility scoring and job-specific insights
+  const getScoreBg = (score: number) => {
+    if (score >= 80) return 'bg-green-100';
+    if (score >= 60) return 'bg-yellow-100';
+    return 'bg-red-100';
+  };
+
+  const steps = [
+    {
+      id: 'upload',
+      title: 'Upload Resume',
+      description: 'Upload your resume for ATS analysis',
+      component: (
+        <div className="space-y-6">
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+              isDragActive
+                ? 'border-primary bg-primary/5'
+                : 'border-slate-300 hover:border-slate-400'
+            }`}
+          >
+            <input {...getInputProps()} />
+            <Upload className="h-12 w-12 mx-auto mb-4 text-slate-400" />
+            <h3 className="text-lg font-semibold mb-2">
+              {isDragActive ? 'Drop your resume here' : 'Upload your resume'}
+            </h3>
+            <p className="text-slate-600 mb-4">
+              Drag and drop your resume or click to browse
+            </p>
+            <p className="text-sm text-slate-500">
+              Supports PDF, DOC, and DOCX files (max 10MB)
             </p>
           </div>
-          <Badge className="ml-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <Sparkles className="h-3 w-3 mr-1" />
-            AI Powered
-          </Badge>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* Input Section */}
-        <div className="xl:col-span-1 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
-                Upload Your Resume
-              </CardTitle>
-              <CardDescription>
-                Paste your resume content below for comprehensive AI analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Paste your complete resume content here..."
-                value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
-                className="min-h-[300px] font-mono text-sm"
-              />
-              <Button
-                onClick={analyzeResume}
-                disabled={isAnalyzing || !resumeText.trim()}
-                className="w-full"
-                size="lg"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Analyzing Resume...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Analyze with AI
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Job Tailoring Section */}
-          {analysis && (
-            <EnhancedJobTailoring
-              jobDescription={jobDescription}
-              setJobDescription={setJobDescription}
-              onAnalyze={analyzeJobTailoring}
-              isAnalyzing={isJobAnalyzing}
-              tailoringAnalysis={analysis.tailoringAnalysis}
-            />
-          )}
-        </div>
-
-        {/* Results Section */}
-        <div className="xl:col-span-2 space-y-6">
-          {analysis ? (
-            <>
-              {/* Overall Score Card */}
-              <ResumeScoreCard score={analysis.overallScore} />
-
-              {/* Detailed Score Breakdown */}
-              <DetailedScoreBreakdown scores={analysis.detailedScores} />
-
-              {/* Priority Improvements */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    Priority Improvements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {analysis.improvementPriority.slice(0, 5).map((improvement, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 rounded border bg-white">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-sm font-medium flex-shrink-0">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge variant="outline" className="text-xs">
-                              {improvement.category}
-                            </Badge>
-                            <Badge 
-                              variant={improvement.priority === 1 ? "destructive" : improvement.priority === 2 ? "default" : "secondary"}
-                              className="text-xs"
-                            >
-                              {improvement.priority === 1 ? "High" : improvement.priority === 2 ? "Medium" : "Low"} Priority
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-700">{improvement.action}</p>
-                        </div>
-                      </div>
-                    ))}
+          {uploadedFile && (
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-8 w-8 text-green-600" />
+                  <div>
+                    <p className="font-semibold text-green-800">{uploadedFile.name}</p>
+                    <p className="text-sm text-green-600">
+                      {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Resume Preview */}
-              <EnhancedResumePreview 
-                originalData={{
-                  name: resumeText.split('\n').find(line => line.trim() && !line.includes('@'))?.trim() || 'Your Name',
-                  email: resumeText.match(/[\w.-]+@[\w.-]+\.\w+/)?.[0] || 'email@example.com',
-                  phone: resumeText.match(/[\d\s\-\(\)]{10,}/)?.[0]?.trim() || 'Phone Number',
-                  title: 'Professional Title',
-                  summary: resumeText.substring(0, 300) + '...',
-                  experience: [],
-                  education: [],
-                  skills: []
-                }}
-              />
-
-              {/* Upgrade Prompt */}
-              <Card className="bg-gradient-to-r from-blue-50 to-indigo-100 border-blue-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-600 rounded-full">
-                      <Crown className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-blue-900 mb-2">
-                        Unlock Your Full Potential
-                      </h3>
-                      <p className="text-blue-800 text-sm mb-4">
-                        Get access to advanced AI features, premium templates, and personalized career coaching to land your dream job faster.
-                      </p>
-                      <Button className="bg-blue-600 hover:bg-blue-700">
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        Upgrade to Premium
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <FileCheck className="h-16 w-16 text-gray-300 mx-auto mb-6" />
-                <h3 className="text-xl font-medium text-gray-900 mb-3">
-                  Ready for Professional Analysis
-                </h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Our AI will analyze your resume across multiple dimensions including ATS compatibility, 
-                  content quality, and section completeness to give you actionable insights.
-                </p>
-                <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-sm">
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>ATS Compatibility</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Content Analysis</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Job Matching</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Improvement Tips</span>
-                  </div>
+                  <CheckCircle className="h-6 w-6 text-green-600 ml-auto" />
                 </div>
               </CardContent>
             </Card>
           )}
         </div>
-      </div>
-    </div>
+      )
+    },
+    {
+      id: 'configure',
+      title: 'Job Targeting (Optional)',
+      description: 'Add job description for targeted analysis',
+      component: (
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Job Description (Optional)
+            </label>
+            <textarea
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              placeholder="Paste the job description here to get targeted keyword analysis..."
+              className="w-full h-40 p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+            />
+            <p className="text-sm text-slate-500 mt-2">
+              Adding a job description will provide more accurate keyword matching and suggestions.
+            </p>
+          </div>
+
+          <Button
+            onClick={analyzeResume}
+            className="w-full"
+            size="lg"
+            disabled={!uploadedFile || isAnalyzing}
+          >
+            {isAnalyzing ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                Analyzing Resume...
+              </>
+            ) : (
+              <>
+                <Target className="h-4 w-4 mr-2" />
+                Start ATS Analysis
+              </>
+            )}
+          </Button>
+        </div>
+      )
+    },
+    {
+      id: 'results',
+      title: 'Analysis Results',
+      description: 'View your ATS compatibility score and recommendations',
+      component: analysis ? (
+        <div className="space-y-6">
+          {/* Overall Score */}
+          <Card className={`${getScoreBg(analysis.overallScore)} border-2`}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900">Overall ATS Score</h3>
+                  <p className="text-slate-600">Your resume's compatibility with ATS systems</p>
+                </div>
+                <div className="text-right">
+                  <div className={`text-4xl font-bold ${getScoreColor(analysis.overallScore)}`}>
+                    {analysis.overallScore}%
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < Math.floor(analysis.overallScore / 20)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-slate-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Section Scores */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Object.entries(analysis.sections).map(([key, section]) => (
+              <Card key={key}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold capitalize">{key}</h4>
+                    <Badge variant="outline" className={getScoreColor(section.score)}>
+                      {section.score}%
+                    </Badge>
+                  </div>
+                  <Progress value={section.score} className="h-2 mb-3" />
+                  
+                  {section.issues?.length > 0 && (
+                    <div className="space-y-1">
+                      <h5 className="text-sm font-medium text-red-600 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        Issues
+                      </h5>
+                      {section.issues.slice(0, 2).map((issue, i) => (
+                        <p key={i} className="text-xs text-red-600">• {issue}</p>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {section.suggestions?.length > 0 && (
+                    <div className="space-y-1 mt-2">
+                      <h5 className="text-sm font-medium text-blue-600 flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3" />
+                        Suggestions
+                      </h5>
+                      {section.suggestions.slice(0, 2).map((suggestion, i) => (
+                        <p key={i} className="text-xs text-blue-600">• {suggestion}</p>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Recommendations */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Top Recommendations</h3>
+              <div className="space-y-3">
+                {analysis.recommendations.map((rec, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Badge variant="outline" className="mt-0.5">{index + 1}</Badge>
+                    <p className="text-slate-700">{rec}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Checks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {analysis.passedChecks.length > 0 && (
+              <Card className="bg-green-50 border-green-200">
+                <CardContent className="p-4">
+                  <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Passed Checks
+                  </h4>
+                  {analysis.passedChecks.map((check, i) => (
+                    <p key={i} className="text-sm text-green-700 mb-1">✓ {check}</p>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {analysis.failedChecks.length > 0 && (
+              <Card className="bg-red-50 border-red-200">
+                <CardContent className="p-4">
+                  <h4 className="font-semibold text-red-800 mb-3 flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    Failed Checks
+                  </h4>
+                  {analysis.failedChecks.map((check, i) => (
+                    <p key={i} className="text-sm text-red-700 mb-1">✗ {check}</p>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      ) : null
+    }
+  ];
+
+  return (
+    <ToolLayout
+      title="Resume ATS Checker"
+      description="Analyze your resume's compatibility with Applicant Tracking Systems (ATS) and get actionable insights to improve your chances of getting noticed by recruiters."
+      category="resume"
+      estimatedTime="5-10 min"
+      popularity={92}
+      steps={steps}
+      currentStep={currentStep}
+      onStepChange={setCurrentStep}
+      results={analysis}
+      isProcessing={isAnalyzing}
+      onSave={() => toast.success('Analysis saved to your dashboard!')}
+      onExport={() => toast.success('Analysis exported as PDF!')}
+      onShare={() => toast.success('Analysis link copied to clipboard!')}
+    />
   );
 };
 
