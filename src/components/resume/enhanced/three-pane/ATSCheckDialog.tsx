@@ -17,29 +17,36 @@ export const ATSCheckDialog: React.FC<ATSCheckDialogProps> = ({ open, onOpenChan
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
+  const runCheck = async () => {
+    if (!open) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      console.log('Starting ATS check...');
+      const { data, error } = await supabase.functions.invoke('ai-ats-analyzer', {
+        body: {
+          resumeContent: JSON.stringify(resume),
+          targetRole: 'Software Engineer',
+          industry: 'Technology'
+        },
+      });
+      console.log('ATS check response:', { data, error });
+      if (error) throw error;
+      setResult(data?.analysis || data);
+      toast.success('ATS analysis completed!');
+    } catch (e: any) {
+      console.error('ATS check failed:', e);
+      console.error('Error details:', e.message, e.stack);
+      toast.error(`ATS check failed: ${e.message || 'Please try again later.'}`);
+      // Don't close the dialog immediately, let user see error and try again
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const runCheck = async () => {
-      if (!open) return;
-      setLoading(true);
-      setResult(null);
-      try {
-        const { data, error } = await supabase.functions.invoke('ai-resume-analyzer', {
-          body: {
-            resumeContent: resume,
-          },
-        });
-        if (error) throw error;
-        setResult(data?.data || data);
-      } catch (e: any) {
-        console.error('ATS check failed:', e);
-        toast.error('ATS check failed. Please try again later.');
-        onOpenChange(false);
-      } finally {
-        setLoading(false);
-      }
-    };
     runCheck();
-  }, [open]);
+  }, [open, resume]);
 
   const score = result?.overallScore ?? 0;
 
@@ -66,23 +73,51 @@ export const ATSCheckDialog: React.FC<ATSCheckDialogProps> = ({ open, onOpenChan
               </Badge>
             </div>
 
-            {result.keywords && (
+            {result.keywordAnalysis && (
               <div>
-                <h4 className="text-sm font-medium mb-2">Keywords</h4>
+                <h4 className="text-sm font-medium mb-2">Keyword Analysis</h4>
                 <div className="text-sm">
                   <div className="mb-1">
-                    <span className="font-medium">Matched:</span>{' '}
-                    {result.keywords.matched?.slice(0, 10).join(', ') || '—'}
+                    <span className="font-medium">Found:</span>{' '}
+                    {result.keywordAnalysis.found?.slice(0, 10).join(', ') || '—'}
                   </div>
                   <div className="mb-1">
                     <span className="font-medium">Missing:</span>{' '}
-                    {result.keywords.missing?.slice(0, 10).join(', ') || '—'}
+                    {result.keywordAnalysis.missing?.slice(0, 10).join(', ') || '—'}
                   </div>
                   <div>
-                    <span className="font-medium">Recommendations:</span>{' '}
-                    {result.keywords.recommendations?.slice(0, 10).join(', ') || '—'}
+                    <span className="font-medium">Suggestions:</span>{' '}
+                    {result.keywordAnalysis.suggestions?.slice(0, 10).join(', ') || '—'}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {result.strengths && result.strengths.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-2 text-green-600">Strengths</h4>
+                <ul className="text-sm space-y-1">
+                  {result.strengths.slice(0, 5).map((strength: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      {strength}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.suggestions && result.suggestions.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-2 text-blue-600">Improvement Suggestions</h4>
+                <ul className="text-sm space-y-1">
+                  {result.suggestions.slice(0, 5).map((suggestion: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">💡</span>
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
@@ -109,12 +144,27 @@ export const ATSCheckDialog: React.FC<ATSCheckDialogProps> = ({ open, onOpenChan
               </div>
             )}
 
-            <div className="flex justify-end">
+            <div className="flex justify-between gap-2">
+              <Button variant="outline" onClick={() => runCheck()}>
+                Try Again
+              </Button>
               <Button onClick={() => onOpenChange(false)}>Close</Button>
             </div>
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">No result.</div>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground text-center">
+              No analysis result available.
+            </div>
+            <div className="flex justify-center gap-2">
+              <Button onClick={() => window.location.reload()}>
+                Reload Page
+              </Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>

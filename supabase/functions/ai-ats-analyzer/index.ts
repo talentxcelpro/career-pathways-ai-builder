@@ -113,13 +113,12 @@ Provide actionable, specific feedback that will help improve ATS score and job m
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           { role: 'system', content: 'You are an expert ATS and resume optimization specialist. Provide detailed, actionable analysis in valid JSON format.' },
           { role: 'user', content: analysisPrompt }
         ],
-        temperature: 0.3,
-        max_tokens: 2000,
+        max_completion_tokens: 2000,
       }),
     });
 

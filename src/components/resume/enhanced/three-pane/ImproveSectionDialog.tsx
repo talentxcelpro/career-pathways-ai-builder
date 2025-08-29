@@ -60,8 +60,9 @@ export const ImproveSectionDialog: React.FC<ImproveSectionDialogProps> = ({
         setSuggestion(content);
       } catch (e: any) {
         console.error('Improve section failed:', e);
-        toast.error('Failed to generate suggestions. Please try again later.');
-        onOpenChange(false);
+        console.error('Error details:', e.message, e.stack);
+        toast.error(`Failed to generate suggestions: ${e.message || 'Please try again later.'}`);
+        // Don't close the dialog immediately, let user see error and try again
       } finally {
         setLoading(false);
       }
@@ -101,12 +102,26 @@ export const ImproveSectionDialog: React.FC<ImproveSectionDialogProps> = ({
             </div>
             <Progress value={70} />
           </div>
-        ) : (
+        ) : suggestion ? (
           <div className="space-y-4">
             <Textarea value={suggestion} onChange={(e) => setSuggestion(e.target.value)} rows={10} />
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button onClick={handleApply}>Apply Changes</Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground text-center">
+              No suggestions available. Please try again.
+            </div>
+            <div className="flex justify-center gap-2">
+              <Button onClick={() => window.location.reload()}>
+                Reload Page
+              </Button>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
             </div>
           </div>
         )}
