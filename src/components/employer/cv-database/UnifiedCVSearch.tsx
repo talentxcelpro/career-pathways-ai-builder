@@ -311,13 +311,16 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
 
   const downloadSingleCV = async (resumeUrl: string, candidateName: string) => {
     try {
-      if (resumeUrl.startsWith('https://dthlgsnakhoftinssokm.supabase.co/storage')) {
-        // It's a Supabase storage URL, create signed URL
-        const filePath = resumeUrl.split('/storage/v1/object/public/resumes/')[1];
-        if (filePath) {
+      if (resumeUrl.includes('/storage/v1/object/public/')) {
+        // Extract file path from public URL
+        const urlParts = resumeUrl.split('/storage/v1/object/public/');
+        if (urlParts[1]) {
+          const [bucket, ...pathParts] = urlParts[1].split('/');
+          const filePath = pathParts.join('/');
+          
           const { data, error } = await supabase.storage
-            .from('resumes')
-            .createSignedUrl(filePath, 60);
+            .from(bucket)
+            .createSignedUrl(filePath, 300); // 5 min expiry
           
           if (error) throw error;
           
