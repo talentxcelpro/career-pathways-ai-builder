@@ -280,10 +280,41 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         }
       };
 
-      // Submit to job_applications table
+      // Submit to enhanced_job_applications table for better data structure
+      const enhancedApplicationData = {
+        user_id: user.id,
+        job_id: job.id,
+        resume_url: resumeUrl,
+        cover_letter_url: coverLetterUrl,
+        status: 'applied',
+        applied_at: new Date().toISOString(),
+        current_role: formData.yearsOfExperience ? `${formData.yearsOfExperience} years experience` : 'Professional',
+        current_ctc: parseFloat(formData.currentCTC) || null,
+        expected_ctc: parseFloat(formData.expectedCTC) || null,
+        notice_period: formData.noticePeriod,
+        preferred_location: formData.location,
+        additional_files: [],
+        application_data: {
+          fullName: formData.fullName,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          preferredCallTime: formData.preferredCallTime,
+          location: formData.location,
+          currentCTC: formData.currentCTC,
+          expectedCTC: formData.expectedCTC,
+          noticePeriod: formData.noticePeriod,
+          readyToRelocate: formData.readyToRelocate,
+          remoteWorkPreference: formData.remoteWorkPreference,
+          yearsOfExperience: formData.yearsOfExperience,
+          linkedinProfile: formData.linkedinProfile,
+          portfolioWebsite: formData.portfolioWebsite,
+          coverLetterUrl: coverLetterUrl
+        }
+      };
+
       const { error } = await supabase
-        .from('job_applications')
-        .insert(applicationData);
+        .from('enhanced_job_applications')
+        .insert(enhancedApplicationData);
 
       if (error) {
         if (error.code === '23505') { // Unique constraint violation
