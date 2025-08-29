@@ -244,23 +244,6 @@ export const RocketFeed: React.FC<RocketFeedProps> = ({
 
   return (
     <div className={cn("space-y-6", className)}>
-      {/* Performance indicator for dev mode */}
-      {process.env.NODE_ENV === 'development' && (
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-4 text-xs text-green-700">
-              <div className="flex items-center gap-1">
-                <Zap className="h-3 w-3" />
-                <span>Rocket Mode</span>
-              </div>
-              <span>{performance.totalPosts} posts</span>
-              <span>{performance.loadTime}ms load</span>
-              <span>{performance.postsPerSecond} posts/sec</span>
-              <span>{performance.cacheHits} cached</span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Posts */}
       {posts.map((post) => (
