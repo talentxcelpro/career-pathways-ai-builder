@@ -19,7 +19,16 @@ serve(async (req) => {
   }
 
   try {
-    const { type, data, jobDescription, industry, role } = await req.json();
+    const { type, data } = await req.json();
+
+    console.log('Resume content request received:', { type, data: !!data });
+
+    if (!type || !data) {
+      return new Response(JSON.stringify({ error: 'Type and data are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     let prompt = '';
     let systemMessage = '';
@@ -27,9 +36,8 @@ serve(async (req) => {
     switch (type) {
       case 'summary':
         systemMessage = 'You are an expert resume writer. Generate compelling professional summaries that highlight key achievements and skills.';
-        prompt = `Generate a professional summary for someone in ${industry || 'technology'} industry applying for ${role || 'a leadership role'}. 
+        prompt = `Generate a professional summary for someone applying for a technology role. 
         Current info: ${JSON.stringify(data)}
-        ${jobDescription ? `Job description context: ${jobDescription}` : ''}
         
         Make it 2-3 sentences, achievement-focused, and ATS-friendly. Include relevant keywords.`;
         break;
@@ -40,9 +48,6 @@ serve(async (req) => {
         Position: ${data.position || data.title}
         Company: ${data.company}
         Current description: ${data.description || 'No description provided'}
-        Industry: ${industry || 'general'}
-        
-        ${jobDescription ? `Target job context: ${jobDescription}` : ''}
         
         Create 3-4 bullet points that:
         - Start with strong action verbs
@@ -55,10 +60,8 @@ serve(async (req) => {
 
       case 'skills':
         systemMessage = 'You are an expert at identifying and categorizing professional skills for resumes.';
-        prompt = `Suggest relevant skills for someone in ${industry || 'technology'} applying for ${role || 'a professional role'}.
-        Current skills: ${data.skills ? data.skills.join(', ') : 'None listed'}
-        
-        ${jobDescription ? `Job requirements: ${jobDescription}` : ''}
+        prompt = `Suggest relevant skills for someone in technology applying for a professional role.
+        Current skills: ${Array.isArray(data.skills) ? data.skills.join(', ') : 'No skills provided'}
         
         Provide 8-12 skills in order of relevance. Include:
         - Technical skills
@@ -73,10 +76,7 @@ serve(async (req) => {
         prompt = `Enhance this project description:
         Project: ${data.title}
         Current description: ${data.description || 'No description provided'}
-        Technologies: ${data.technologies ? data.technologies.join(', ') : 'Not specified'}
-        Industry context: ${industry || 'general'}
-        
-        ${jobDescription ? `Target role context: ${jobDescription}` : ''}
+        Technologies: ${Array.isArray(data.technologies) ? data.technologies.join(', ') : 'Not specified'}
         
         Create a concise description (2-3 sentences) that:
         - Highlights the business impact
@@ -90,7 +90,6 @@ serve(async (req) => {
         prompt = `Analyze this resume section and suggest improvements for ATS optimization:
         Section type: ${data.sectionType}
         Content: ${JSON.stringify(data.content)}
-        Target job description: ${jobDescription}
         
         Provide:
         1. Missing keywords that should be added
@@ -113,16 +112,19 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemMessage },
           { role: 'user', content: prompt }
         ],
-        max_completion_tokens: 1000,
+        temperature: 0.7,
+        max_tokens: 1000,
       }),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenAI API error:', errorText);
       throw new Error(`OpenAI API error: ${response.statusText}`);
     }
 

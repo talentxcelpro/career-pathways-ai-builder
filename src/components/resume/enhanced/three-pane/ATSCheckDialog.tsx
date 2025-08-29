@@ -22,14 +22,14 @@ export const ATSCheckDialog: React.FC<ATSCheckDialogProps> = ({ open, onOpenChan
     setLoading(true);
     setResult(null);
     try {
-      console.log('Starting ATS check...');
-      const { data, error } = await supabase.functions.invoke('ai-ats-analyzer', {
-        body: {
-          resumeContent: JSON.stringify(resume),
-          targetRole: 'Software Engineer',
-          industry: 'Technology'
-        },
-      });
+        console.log('Starting ATS check...');
+        const { data, error } = await supabase.functions.invoke('ai-resume-analyzer', {
+          body: {
+            resumeContent: JSON.stringify(resume),
+            targetRole: 'Software Engineer',
+            industry: 'Technology'
+          },
+        });
       console.log('ATS check response:', { data, error });
       if (error) throw error;
       setResult(data?.analysis || data);
