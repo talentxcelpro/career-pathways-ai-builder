@@ -1415,6 +1415,77 @@ export type Database = {
           },
         ]
       }
+      ai_match_scores: {
+        Row: {
+          ai_insight: string | null
+          confidence_level: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          match_reasons: Json | null
+          match_score: number
+          match_type: string
+          target_user_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_insight?: string | null
+          confidence_level?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          match_reasons?: Json | null
+          match_score: number
+          match_type: string
+          target_user_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_insight?: string | null
+          confidence_level?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          match_reasons?: Json | null
+          match_score?: number
+          match_type?: string
+          target_user_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_match_scores_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ai_match_scores_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_match_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ai_match_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_metrics: {
         Row: {
           id: string
@@ -1758,6 +1829,75 @@ export type Database = {
             columns: ["draft_id"]
             isOneToOne: false
             referencedRelation: "ai_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          description: string
+          expires_at: string | null
+          id: string
+          is_acted_upon: boolean | null
+          is_dismissed: boolean | null
+          is_viewed: boolean | null
+          metadata: Json | null
+          priority: number | null
+          reasoning: string | null
+          recommendation_type: string
+          target_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description: string
+          expires_at?: string | null
+          id?: string
+          is_acted_upon?: boolean | null
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          metadata?: Json | null
+          priority?: number | null
+          reasoning?: string | null
+          recommendation_type: string
+          target_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string
+          expires_at?: string | null
+          id?: string
+          is_acted_upon?: boolean | null
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          metadata?: Json | null
+          priority?: number | null
+          reasoning?: string | null
+          recommendation_type?: string
+          target_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_recommendations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ai_recommendations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -4958,6 +5098,133 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      collaboration_applications: {
+        Row: {
+          applicant_id: string
+          created_at: string | null
+          id: string
+          message: string | null
+          opportunity_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          applicant_id: string
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          opportunity_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          applicant_id?: string
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          opportunity_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_applications_applicant_id_fkey"
+            columns: ["applicant_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "collaboration_applications_applicant_id_fkey"
+            columns: ["applicant_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collaboration_applications_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "collaboration_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaboration_opportunities: {
+        Row: {
+          applications_count: number | null
+          collaboration_type: string
+          compensation_type: string | null
+          created_at: string | null
+          created_by: string
+          description: string
+          expires_at: string | null
+          id: string
+          location: string | null
+          max_collaborators: number | null
+          remote_ok: boolean | null
+          skills_needed: string[] | null
+          status: string | null
+          tags: string[] | null
+          time_commitment: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          applications_count?: number | null
+          collaboration_type: string
+          compensation_type?: string | null
+          created_at?: string | null
+          created_by: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          location?: string | null
+          max_collaborators?: number | null
+          remote_ok?: boolean | null
+          skills_needed?: string[] | null
+          status?: string | null
+          tags?: string[] | null
+          time_commitment?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          applications_count?: number | null
+          collaboration_type?: string
+          compensation_type?: string | null
+          created_at?: string | null
+          created_by?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          location?: string | null
+          max_collaborators?: number | null
+          remote_ok?: boolean | null
+          skills_needed?: string[] | null
+          status?: string | null
+          tags?: string[] | null
+          time_commitment?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "collaboration_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       collaboration_sessions: {
         Row: {
@@ -15080,6 +15347,7 @@ export type Database = {
           career_interests: string[] | null
           career_passport_completed_at: string | null
           career_stage: string | null
+          collaboration_interests: string[] | null
           content_domains: string[] | null
           content_frequency: string | null
           cover_image_url: string | null
@@ -15091,6 +15359,7 @@ export type Database = {
           custom_theme: Json | null
           custom_url_slug: string | null
           departments: string[] | null
+          education_history: Json | null
           email: string | null
           employer_status: string | null
           experience_years: number | null
@@ -15102,6 +15371,8 @@ export type Database = {
           industry: string | null
           is_ai_bot: boolean | null
           is_employer: boolean | null
+          is_mentee: boolean | null
+          is_mentor: boolean | null
           is_online: boolean | null
           is_profile_public: boolean | null
           is_viewing_private: boolean | null
@@ -15111,7 +15382,9 @@ export type Database = {
           linkedin_url: string | null
           location: string | null
           login_count: number | null
+          looking_for_collaboration: boolean | null
           looking_for_job: boolean | null
+          mentorship_areas: string[] | null
           oauth_metadata: Json | null
           oauth_provider: string | null
           onboarding_completed: boolean | null
@@ -15168,6 +15441,7 @@ export type Database = {
           career_interests?: string[] | null
           career_passport_completed_at?: string | null
           career_stage?: string | null
+          collaboration_interests?: string[] | null
           content_domains?: string[] | null
           content_frequency?: string | null
           cover_image_url?: string | null
@@ -15179,6 +15453,7 @@ export type Database = {
           custom_theme?: Json | null
           custom_url_slug?: string | null
           departments?: string[] | null
+          education_history?: Json | null
           email?: string | null
           employer_status?: string | null
           experience_years?: number | null
@@ -15190,6 +15465,8 @@ export type Database = {
           industry?: string | null
           is_ai_bot?: boolean | null
           is_employer?: boolean | null
+          is_mentee?: boolean | null
+          is_mentor?: boolean | null
           is_online?: boolean | null
           is_profile_public?: boolean | null
           is_viewing_private?: boolean | null
@@ -15199,7 +15476,9 @@ export type Database = {
           linkedin_url?: string | null
           location?: string | null
           login_count?: number | null
+          looking_for_collaboration?: boolean | null
           looking_for_job?: boolean | null
+          mentorship_areas?: string[] | null
           oauth_metadata?: Json | null
           oauth_provider?: string | null
           onboarding_completed?: boolean | null
@@ -15256,6 +15535,7 @@ export type Database = {
           career_interests?: string[] | null
           career_passport_completed_at?: string | null
           career_stage?: string | null
+          collaboration_interests?: string[] | null
           content_domains?: string[] | null
           content_frequency?: string | null
           cover_image_url?: string | null
@@ -15267,6 +15547,7 @@ export type Database = {
           custom_theme?: Json | null
           custom_url_slug?: string | null
           departments?: string[] | null
+          education_history?: Json | null
           email?: string | null
           employer_status?: string | null
           experience_years?: number | null
@@ -15278,6 +15559,8 @@ export type Database = {
           industry?: string | null
           is_ai_bot?: boolean | null
           is_employer?: boolean | null
+          is_mentee?: boolean | null
+          is_mentor?: boolean | null
           is_online?: boolean | null
           is_profile_public?: boolean | null
           is_viewing_private?: boolean | null
@@ -15287,7 +15570,9 @@ export type Database = {
           linkedin_url?: string | null
           location?: string | null
           login_count?: number | null
+          looking_for_collaboration?: boolean | null
           looking_for_job?: boolean | null
+          mentorship_areas?: string[] | null
           oauth_metadata?: Json | null
           oauth_provider?: string | null
           onboarding_completed?: boolean | null
@@ -23064,22 +23349,26 @@ export type Database = {
       }
       unified_candidates: {
         Row: {
-          applied: boolean | null
           applied_at: string | null
           company: string | null
           created_at: string | null
           description: string | null
           email: string | null
+          experience_years: number | null
+          github_url: string | null
           id: string | null
+          industry: string | null
           linkedin_url: string | null
           location: string | null
+          looking_for_job: boolean | null
           name: string | null
-          profile_photo_url: string | null
+          phone: string | null
+          portfolio_url: string | null
+          profile_picture_url: string | null
           resume_url: string | null
           skills: string[] | null
           source: string | null
           title: string | null
-          user_id: string | null
         }
         Relationships: []
       }
@@ -23375,6 +23664,14 @@ export type Database = {
       }
       extract_domain: {
         Args: { url: string }
+        Returns: string
+      }
+      generate_ai_match_insight: {
+        Args: {
+          current_user_id: string
+          match_type: string
+          target_user_id: string
+        }
         Returns: string
       }
       generate_article_slug: {
@@ -23868,6 +24165,10 @@ export type Database = {
       queue_profile_completion_reminders: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      refresh_ai_match_scores: {
+        Args: { target_user_id?: string }
+        Returns: undefined
       }
       reject_company_access_request: {
         Args: { reason?: string; request_id: string }
