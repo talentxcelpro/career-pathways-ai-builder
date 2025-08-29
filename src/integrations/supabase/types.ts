@@ -9634,6 +9634,87 @@ export type Database = {
         }
         Relationships: []
       }
+      enhanced_platform_cvs: {
+        Row: {
+          added_at: string | null
+          added_from: string | null
+          availability_status: string | null
+          current_company: string | null
+          education: Json | null
+          email: string
+          experience_years: number | null
+          full_name: string
+          id: string
+          is_searchable: boolean | null
+          job_title: string | null
+          last_activity_at: string | null
+          linkedin_url: string | null
+          location: string | null
+          phone: string | null
+          portfolio_url: string | null
+          profile_picture_url: string | null
+          profile_summary: string | null
+          resume_url: string | null
+          skills: string[] | null
+          updated_at: string | null
+          uploaded_files: Json | null
+          user_id: string | null
+          work_experience: Json | null
+        }
+        Insert: {
+          added_at?: string | null
+          added_from?: string | null
+          availability_status?: string | null
+          current_company?: string | null
+          education?: Json | null
+          email: string
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          is_searchable?: boolean | null
+          job_title?: string | null
+          last_activity_at?: string | null
+          linkedin_url?: string | null
+          location?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          profile_picture_url?: string | null
+          profile_summary?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          updated_at?: string | null
+          uploaded_files?: Json | null
+          user_id?: string | null
+          work_experience?: Json | null
+        }
+        Update: {
+          added_at?: string | null
+          added_from?: string | null
+          availability_status?: string | null
+          current_company?: string | null
+          education?: Json | null
+          email?: string
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          is_searchable?: boolean | null
+          job_title?: string | null
+          last_activity_at?: string | null
+          linkedin_url?: string | null
+          location?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          profile_picture_url?: string | null
+          profile_summary?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          updated_at?: string | null
+          uploaded_files?: Json | null
+          user_id?: string | null
+          work_experience?: Json | null
+        }
+        Relationships: []
+      }
       enterprise_api_keys: {
         Row: {
           allowed_ips: string[] | null
