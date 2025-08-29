@@ -1,336 +1,297 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ToolLayout } from '@/components/tools/ToolLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  FileText, 
-  Target,
-  AlertTriangle,
-  CheckCircle,
-  TrendingUp,
-  BookOpen,
-  Clock
-} from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Upload, Target, TrendingUp, AlertTriangle, CheckCircle, Download, Save } from 'lucide-react';
+import { useAdvancedAIFeatures } from '@/hooks/useAdvancedAIFeatures';
 import { toast } from 'sonner';
 
-const ResumeGapAnalyzer = () => {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisData, setAnalysisData] = useState({
-    currentResume: '',
-    targetJob: '',
-    targetCompany: '',
-    jobDescription: ''
-  });
-  const [gapAnalysis, setGapAnalysis] = useState<any>(null);
+interface GapAnalysis {
+  overallScore: number;
+  sections: {
+    impact: { score: number; missing: string[]; suggestions: string[] };
+    achievements: { score: number; missing: string[]; suggestions: string[] };
+    skills: { score: number; missing: string[]; suggestions: string[] };
+    keywords: { score: number; missing: string[]; suggestions: string[] };
+  };
+  recommendations: string[];
+  priorityActions: string[];
+}
 
-  const analyzeGaps = async () => {
-    if (!analysisData.currentResume.trim() || !analysisData.jobDescription.trim()) {
-      toast.error('Please provide your current resume and target job description');
+export const ResumeGapAnalyzer: React.FC = () => {
+  const [resumeText, setResumeText] = useState('');
+  const [targetRole, setTargetRole] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState<GapAnalysis | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  
+  const { performAdvancedATSAnalysis } = useAdvancedAIFeatures();
+
+  const handleAnalyze = async () => {
+    if (!resumeText.trim()) {
+      toast.error('Please paste your resume content');
       return;
     }
 
     setIsAnalyzing(true);
+    setCurrentStep(2);
     
-    // Simulate AI analysis
-    setTimeout(() => {
-      setGapAnalysis({
-        overallMatch: 72,
-        gaps: [
-          {
-            category: 'Technical Skills',
-            severity: 'high',
-            gaps: [
-              {
-                skill: 'Docker & Kubernetes',
-                importance: 'Critical',
-                timeline: '2-3 months',
-                resources: ['Docker Documentation', 'Kubernetes Course', 'Hands-on Projects']
-              },
-              {
-                skill: 'GraphQL',
-                importance: 'Important',
-                timeline: '1-2 months', 
-                resources: ['GraphQL Tutorial', 'Apollo Documentation', 'Practice API']
-              }
-            ]
+    try {
+      // Simulate gap analysis
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      const mockAnalysis: GapAnalysis = {
+        overallScore: 68,
+        sections: {
+          impact: {
+            score: 45,
+            missing: ['Quantified achievements', 'Revenue impact', 'Cost savings'],
+            suggestions: ['Add specific numbers and percentages', 'Include revenue/cost impact', 'Use action verbs']
           },
-          {
-            category: 'Experience Areas',
-            severity: 'medium',
-            gaps: [
-              {
-                skill: 'Team Leadership',
-                importance: 'Important',
-                timeline: '3-6 months',
-                resources: ['Leadership Training', 'Mentorship', 'Small Team Projects']
-              },
-              {
-                skill: 'Agile/Scrum Certification',
-                importance: 'Nice to have',
-                timeline: '1 month',
-                resources: ['Scrum.org Certification', 'Agile Training Course']
-              }
-            ]
+          achievements: {
+            score: 60,
+            missing: ['Leadership examples', 'Problem-solving results', 'Innovation projects'],
+            suggestions: ['Add STAR method examples', 'Include team leadership', 'Show problem-solving skills']
           },
-          {
-            category: 'Industry Knowledge',
-            severity: 'low',
-            gaps: [
-              {
-                skill: 'FinTech Domain',
-                importance: 'Important',
-                timeline: '2-4 months',
-                resources: ['FinTech Courses', 'Industry Reports', 'Networking Events']
-              }
-            ]
+          skills: {
+            score: 75,
+            missing: ['Cloud platforms', 'Data analysis', 'Project management'],
+            suggestions: ['Add trending technical skills', 'Include soft skills', 'Show skill progression']
+          },
+          keywords: {
+            score: 80,
+            missing: ['Agile', 'Stakeholder management', 'Digital transformation'],
+            suggestions: ['Add industry keywords', 'Include role-specific terms', 'Use modern terminology']
           }
-        ],
-        strengths: [
-          'Strong JavaScript/React experience aligns perfectly',
-          'Backend development experience is valuable',
-          'Previous startup experience shows adaptability',
-          'Problem-solving skills demonstrated through projects'
-        ],
+        },
         recommendations: [
-          {
-            priority: 'immediate',
-            action: 'Start Docker certification course this week',
-            impact: 'High - addresses critical missing skill'
-          },
-          {
-            priority: 'short-term',
-            action: 'Build a GraphQL project for portfolio',
-            impact: 'Medium - demonstrates practical knowledge'
-          },
-          {
-            priority: 'medium-term',
-            action: 'Take on leadership role in current position',
-            impact: 'High - builds leadership credibility'
-          }
+          'Add 3-5 quantified achievements per role',
+          'Include specific technologies and tools',
+          'Add leadership and collaboration examples',
+          'Use industry-standard terminology'
+        ],
+        priorityActions: [
+          'Quantify your top 3 achievements',
+          'Add missing technical skills',
+          'Include leadership examples'
         ]
-      });
-      setIsAnalyzing(false);
+      };
+      
+      setAnalysis(mockAnalysis);
       toast.success('Gap analysis completed!');
-    }, 4000);
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'high': return 'text-red-600 bg-red-50 border-red-200';
-      case 'medium': return 'text-orange-600 bg-orange-50 border-orange-200';
-      case 'low': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    } catch (error) {
+      toast.error('Analysis failed. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case 'immediate': return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      case 'short-term': return <Clock className="h-4 w-4 text-orange-500" />;
-      case 'medium-term': return <TrendingUp className="h-4 w-4 text-blue-500" />;
-      default: return <Target className="h-4 w-4 text-gray-500" />;
-    }
+  const handleSave = () => {
+    toast.success('Analysis saved to your profile');
   };
 
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <Target className="h-8 w-8 text-orange-600" />
-          Resume Gap Analyzer
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Identify skills and experience gaps between your resume and target job requirements
-        </p>
-      </div>
+  const handleExport = () => {
+    toast.success('Analysis exported as PDF');
+  };
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Input Section */}
+  const steps = [
+    {
+      id: 'paste',
+      title: 'Paste Resume',
+      description: 'Add your current resume content',
+      component: (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Resume Content
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              placeholder="Paste your resume content here..."
+              value={resumeText}
+              onChange={(e) => {
+                setResumeText(e.target.value);
+                if (e.target.value.length > 0 && currentStep === 0) setCurrentStep(1);
+              }}
+              className="min-h-48 resize-none"
+            />
+          </CardContent>
+        </Card>
+      ),
+      isCompleted: resumeText.length > 0
+    },
+    {
+      id: 'target',
+      title: 'Target Role (Optional)',
+      description: 'Specify your target position',
+      component: (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Target Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="e.g., Senior Software Engineer"
+              value={targetRole}
+              onChange={(e) => setTargetRole(e.target.value)}
+            />
+            <Button 
+              onClick={handleAnalyze}
+              disabled={isAnalyzing || !resumeText.trim()}
+              className="w-full"
+            >
+              {isAnalyzing ? 'Analyzing Gaps...' : 'Analyze Resume Gaps'}
+            </Button>
+          </CardContent>
+        </Card>
+      ),
+      isCompleted: true
+    },
+    {
+      id: 'analyze',
+      title: 'Analyze Gaps',
+      description: 'Identify missing elements',
+      component: analysis ? (
         <div className="space-y-6">
+          {/* Overall Score */}
           <Card>
             <CardHeader>
-              <CardTitle>Gap Analysis Input</CardTitle>
-              <CardDescription>
-                Provide your current resume and target job details
-              </CardDescription>
+              <CardTitle className="flex items-center justify-between">
+                <span>Gap Analysis Results</span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleSave}>
+                    <Save className="h-4 w-4 mr-1" />
+                    Save
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleExport}>
+                    <Download className="h-4 w-4 mr-1" />
+                    Export
+                  </Button>
+                </div>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="currentResume">Current Resume Content *</Label>
-                <Textarea
-                  id="currentResume"
-                  placeholder="Paste your current resume content here..."
-                  value={analysisData.currentResume}
-                  onChange={(e) => setAnalysisData(prev => ({ ...prev, currentResume: e.target.value }))}
-                  rows={6}
-                />
+            <CardContent>
+              <div className="text-center mb-6">
+                <div className="text-4xl font-bold mb-2">{analysis.overallScore}%</div>
+                <div className="text-muted-foreground">Resume Completeness Score</div>
+                <Progress value={analysis.overallScore} className="mt-4" />
               </div>
-              
-              <div>
-                <Label htmlFor="targetJob">Target Job Title</Label>
-                <Input
-                  id="targetJob"
-                  placeholder="e.g., Senior Full Stack Developer"
-                  value={analysisData.targetJob}
-                  onChange={(e) => setAnalysisData(prev => ({ ...prev, targetJob: e.target.value }))}
-                />
-              </div>
+            </CardContent>
+          </Card>
 
-              <div>
-                <Label htmlFor="targetCompany">Target Company (Optional)</Label>
-                <Input
-                  id="targetCompany"
-                  placeholder="e.g., Google, Microsoft"
-                  value={analysisData.targetCompany}
-                  onChange={(e) => setAnalysisData(prev => ({ ...prev, targetCompany: e.target.value }))}
-                />
-              </div>
+          {/* Section Analysis */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {Object.entries(analysis.sections).map(([key, section]) => (
+              <Card key={key}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="capitalize font-medium">{key}</h4>
+                    <Badge variant={section.score >= 70 ? 'default' : 'destructive'}>
+                      {section.score}%
+                    </Badge>
+                  </div>
+                  <Progress value={section.score} className="h-2" />
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {section.missing.length > 0 && (
+                    <div>
+                      <h5 className="text-sm font-medium text-red-600 flex items-center gap-1 mb-2">
+                        <AlertTriangle className="h-3 w-3" />
+                        Missing Elements
+                      </h5>
+                      <div className="space-y-1">
+                        {section.missing.slice(0, 2).map((item, i) => (
+                          <p key={i} className="text-xs text-red-600">• {item}</p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <h5 className="text-sm font-medium text-blue-600 flex items-center gap-1 mb-2">
+                      <CheckCircle className="h-3 w-3" />
+                      Suggestions
+                    </h5>
+                    <div className="space-y-1">
+                      {section.suggestions.slice(0, 2).map((suggestion, i) => (
+                        <p key={i} className="text-xs text-blue-600">• {suggestion}</p>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-              <div>
-                <Label htmlFor="jobDescription">Job Description *</Label>
-                <Textarea
-                  id="jobDescription"
-                  placeholder="Paste the complete job description here..."
-                  value={analysisData.jobDescription}
-                  onChange={(e) => setAnalysisData(prev => ({ ...prev, jobDescription: e.target.value }))}
-                  rows={6}
-                />
+          {/* Priority Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Priority Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3">
+                {analysis.priorityActions.map((action, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-accent rounded-lg">
+                    <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                      {i + 1}
+                    </div>
+                    <span className="text-sm">{action}</span>
+                  </div>
+                ))}
               </div>
+            </CardContent>
+          </Card>
 
-              <Button 
-                onClick={analyzeGaps}
-                disabled={isAnalyzing}
-                className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Target className="h-4 w-4 mr-2 animate-spin" />
-                    Analyzing Gaps...
-                  </>
-                ) : (
-                  <>
-                    <Target className="h-4 w-4 mr-2" />
-                    Analyze Gaps
-                  </>
-                )}
-              </Button>
+          {/* Recommendations */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Detailed Recommendations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {analysis.recommendations.map((rec, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                    <span className="text-sm">{rec}</span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Analysis Results */}
-        <div>
-          {gapAnalysis && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  Gap Analysis Results
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Match Score:</span>
-                    <Badge variant="secondary" className="text-lg px-3 py-1">
-                      {gapAnalysis.overallMatch}%
-                    </Badge>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="gaps" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="gaps">Gaps</TabsTrigger>
-                    <TabsTrigger value="strengths">Strengths</TabsTrigger>  
-                    <TabsTrigger value="action-plan">Action Plan</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="gaps" className="space-y-4">
-                    <Progress value={gapAnalysis.overallMatch} className="w-full mb-4" />
-                    {gapAnalysis.gaps.map((category: any, index: number) => (
-                      <div key={index} className={`border rounded-lg p-4 ${getSeverityColor(category.severity)}`}>
-                        <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-medium">{category.category}</h4>
-                          <Badge variant="outline">
-                            {category.severity} priority
-                          </Badge>
-                        </div>
-                        <div className="space-y-3">
-                          {category.gaps.map((gap: any, i: number) => (
-                            <div key={i} className="bg-white rounded p-3 border">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-medium text-gray-900">{gap.skill}</span>
-                                <Badge variant="secondary" className="text-xs">
-                                  {gap.importance}
-                                </Badge>
-                              </div>
-                              <div className="text-sm text-gray-600 mb-2">
-                                <Clock className="h-3 w-3 inline mr-1" />
-                                Timeline: {gap.timeline}
-                              </div>
-                              <div className="flex flex-wrap gap-1">
-                                {gap.resources.map((resource: string, j: number) => (
-                                  <Badge key={j} variant="outline" className="text-xs">
-                                    {resource}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </TabsContent>
-                  
-                  <TabsContent value="strengths" className="space-y-3">
-                    {gapAnalysis.strengths.map((strength: string, index: number) => (
-                      <div key={index} className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{strength}</span>
-                      </div>
-                    ))}
-                  </TabsContent>
-
-                  <TabsContent value="action-plan" className="space-y-3">
-                    {gapAnalysis.recommendations.map((rec: any, index: number) => (
-                      <div key={index} className="border rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                          {getPriorityIcon(rec.priority)}
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium capitalize">{rec.priority}</span>
-                              <Badge variant="outline" className="text-xs">
-                                {rec.priority}
-                              </Badge>
-                            </div>
-                            <p className="text-gray-700 mb-2">{rec.action}</p>
-                            <p className="text-sm text-gray-600">{rec.impact}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          )}
-
-          {!gapAnalysis && !isAnalyzing && (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <FileText className="h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Ready to Analyze</h3>
-                <p className="text-gray-600 text-center">
-                  Upload your resume and target job description to identify gaps and create an action plan
-                </p>
-              </CardContent>
-            </Card>
-          )}
+      ) : (
+        <div className="text-center py-8">
+          <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">Analysis will appear here after processing</p>
         </div>
-      </div>
-    </div>
+      ),
+      isCompleted: analysis !== null
+    }
+  ];
+
+  return (
+    <ToolLayout
+      title="Resume Gap Analyzer"
+      description="Identify missing impact statements, achievements, and critical elements in your resume"
+      category="Resume"
+      estimatedTime="5-10 min"
+      popularity={87}
+      steps={steps}
+      currentStep={currentStep}
+      onStepChange={setCurrentStep}
+      results={analysis}
+    />
   );
 };
-
-export default ResumeGapAnalyzer;
