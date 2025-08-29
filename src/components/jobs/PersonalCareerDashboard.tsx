@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRealDataService } from '@/hooks/useRealDataService';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   TrendingUp, 
   Target, 
@@ -26,11 +27,35 @@ interface PersonalCareerDashboardProps {
 }
 
 export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = ({
-  user,
+  user: propUser,
   savedJobsCount = 0,
   appliedJobsCount = 0,
   profileViews = 0,
 }) => {
+  const [currentUser, setCurrentUser] = React.useState<any>(null);
+  const [userProfile, setUserProfile] = React.useState<any>(null);
+
+  // Get current user and profile
+  React.useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+      
+      if (user) {
+        // Fetch user profile for full name
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        setUserProfile(profile);
+      }
+    };
+    getCurrentUser();
+  }, []);
+
+  const user = userProfile || propUser || currentUser;
   const { getDashboardStats } = useRealDataService();
   const { data: dashboardStats, isLoading } = getDashboardStats;
 
@@ -84,7 +109,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Welcome back, {user?.full_name || 'Job Seeker'}! 👋
+                Welcome back, {user?.full_name || user?.name || 'Job Seeker'}! 👋
               </h1>
               <p className="text-gray-600 mt-1">
                 Your AI Career Assistant found {Math.floor(Math.random() * 15) + 5} new matches today

@@ -46,7 +46,9 @@ export const JobCard: React.FC<JobCardProps> = ({
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/jobs/${job.id}`);
+    // Use seo_slug if available, fallback to id for compatibility
+    const jobPath = (job as any).seo_slug || job.id;
+    navigate(`/jobs/${jobPath}`);
   };
 
   const handleSaveClick = (e: React.MouseEvent) => {
