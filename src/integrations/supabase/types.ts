@@ -17617,7 +17617,9 @@ export type Database = {
           created_at: string | null
           extraction_confidence: number | null
           extraction_version: string | null
+          file_name: string | null
           file_size: number | null
+          file_type: string | null
           file_url: string | null
           id: string
           industry_type: string | null
@@ -17643,7 +17645,9 @@ export type Database = {
           created_at?: string | null
           extraction_confidence?: number | null
           extraction_version?: string | null
+          file_name?: string | null
           file_size?: number | null
+          file_type?: string | null
           file_url?: string | null
           id?: string
           industry_type?: string | null
@@ -17669,7 +17673,9 @@ export type Database = {
           created_at?: string | null
           extraction_confidence?: number | null
           extraction_version?: string | null
+          file_name?: string | null
           file_size?: number | null
+          file_type?: string | null
           file_url?: string | null
           id?: string
           industry_type?: string | null
@@ -21689,6 +21695,81 @@ export type Database = {
         }
         Relationships: []
       }
+      unified_candidates: {
+        Row: {
+          application_data: Json | null
+          applied_at: string | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          experience_years: number | null
+          github_url: string | null
+          id: string
+          industry: string | null
+          linkedin_url: string | null
+          location: string | null
+          looking_for_job: boolean | null
+          name: string | null
+          phone: string | null
+          portfolio_url: string | null
+          profile_picture_url: string | null
+          resume_url: string | null
+          skills: string[] | null
+          source: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          application_data?: Json | null
+          applied_at?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          experience_years?: number | null
+          github_url?: string | null
+          id: string
+          industry?: string | null
+          linkedin_url?: string | null
+          location?: string | null
+          looking_for_job?: boolean | null
+          name?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          profile_picture_url?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          application_data?: Json | null
+          applied_at?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          experience_years?: number | null
+          github_url?: string | null
+          id?: string
+          industry?: string | null
+          linkedin_url?: string | null
+          location?: string | null
+          looking_for_job?: boolean | null
+          name?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          profile_picture_url?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       url_previews: {
         Row: {
           created_at: string
@@ -23593,31 +23674,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      unified_candidates: {
-        Row: {
-          applied_at: string | null
-          company: string | null
-          created_at: string | null
-          description: string | null
-          email: string | null
-          experience_years: number | null
-          github_url: string | null
-          id: string | null
-          industry: string | null
-          linkedin_url: string | null
-          location: string | null
-          looking_for_job: boolean | null
-          name: string | null
-          phone: string | null
-          portfolio_url: string | null
-          profile_picture_url: string | null
-          resume_url: string | null
-          skills: string[] | null
-          source: string | null
-          title: string | null
-        }
-        Relationships: []
       }
     }
     Functions: {

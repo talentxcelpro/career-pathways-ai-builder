@@ -321,7 +321,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         // Don't fail the application for this
       }
 
-
+      
       // Check if this is a scraped job (has is_scraped flag or external_url)
       const isScrapedJob = (job.external_url && job.external_url.trim() !== '');
       
