@@ -1,6 +1,8 @@
 
 import { useState } from 'react';
 import { useToolsData } from '@/hooks/useToolsData';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +22,8 @@ import { useNavigate } from 'react-router-dom';
 
 const ToolsDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { displayName, loading: profileLoading } = useCurrentUserProfile();
   const {
     filteredTools,
     toolCategories,
@@ -30,6 +34,20 @@ const ToolsDashboard = () => {
     searchQuery,
     setSearchQuery
   } = useToolsData();
+
+  // Extract first name from displayName or email
+  const getFirstName = () => {
+    if (displayName && displayName !== 'Learner') {
+      return displayName.split(' ')[0];
+    }
+    if (user?.email) {
+      const emailBase = user.email.split('@')[0];
+      return emailBase.replace(/[._-]+/g, ' ').trim().replace(/\b\w/g, (c) => c.toUpperCase()).split(' ')[0];
+    }
+    return null;
+  };
+
+  const firstName = getFirstName();
 
   const categories = [
     { value: 'all', label: 'All Tools', icon: Sparkles },
@@ -87,11 +105,14 @@ const ToolsDashboard = () => {
               <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <h1 className="text-lg font-bold text-slate-900">
-              TalentXcel AI-Powered Career Tools
+              {user && firstName ? `Welcome back, ${firstName}! 👋` : 'TalentXcel AI-Powered Career Tools'}
             </h1>
           </div>
           <p className="text-xs text-slate-600 max-w-lg mx-auto">
-            Transform your career with TalentXcel intelligent tools designed to accelerate professional growth
+            {user && firstName 
+              ? 'Ready to accelerate your career with our AI-powered tools?' 
+              : 'Transform your career with TalentXcel intelligent tools designed to accelerate professional growth'
+            }
           </p>
         </div>
 
