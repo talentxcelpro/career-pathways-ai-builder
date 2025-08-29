@@ -82,6 +82,86 @@ const BacklinkDashboard: React.FC = () => {
     }
   };
 
+  const generateContent = async () => {
+    setActionLoading('content');
+    try {
+      // Get a sample target first
+      const { data: targets } = await supabase
+        .from('backlink_targets')
+        .select('*')
+        .eq('status', 'active')
+        .limit(1);
+
+      if (!targets || targets.length === 0) {
+        toast.error('No targets found. Run prospecting first.');
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('backlink-content-generator', {
+        body: {
+          target_id: targets[0].id,
+          content_type: 'guest_post',
+          variables: {
+            company_name: 'TalentXcel',
+            author_name: 'TalentXcel Team'
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success('Content generated successfully');
+      } else {
+        toast.error('Content generation failed');
+      }
+    } catch (error) {
+      console.error('Error generating content:', error);
+      toast.error('Failed to generate content');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const startOutreach = async () => {
+    setActionLoading('outreach');
+    try {
+      // Get sample targets for outreach
+      const { data: targets } = await supabase
+        .from('backlink_targets')
+        .select('id')
+        .eq('status', 'active')
+        .limit(5);
+
+      if (!targets || targets.length === 0) {
+        toast.error('No targets found. Run prospecting first.');
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('backlink-outreach', {
+        body: {
+          target_ids: targets.map(t => t.id),
+          content_type: 'guest_post',
+          send_immediately: false // Just create outreach logs for now
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success(`Prepared outreach for ${data.processed} targets`);
+        fetchStats(); // Refresh stats
+      } else {
+        toast.error('Outreach preparation failed');
+      }
+    } catch (error) {
+      console.error('Error starting outreach:', error);
+      toast.error('Failed to start outreach');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   if (loading) {
     return (
       <UnifiedAdminLayout 
@@ -197,8 +277,17 @@ const BacklinkDashboard: React.FC = () => {
                 Generate guest posts and press releases automatically.
               </p>
               <div className="space-y-2">
-                <Button className="w-full" variant="outline">
-                  <ExternalLink className="h-4 w-4 mr-2" />
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={generateContent}
+                  disabled={actionLoading === 'content'}
+                >
+                  {actionLoading === 'content' ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                  )}
                   Generate Content
                 </Button>
                 <Button className="w-full" variant="outline">
@@ -218,8 +307,17 @@ const BacklinkDashboard: React.FC = () => {
                 Send emails and submit forms automatically.
               </p>
               <div className="space-y-2">
-                <Button className="w-full" variant="outline">
-                  <Network className="h-4 w-4 mr-2" />
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={startOutreach}
+                  disabled={actionLoading === 'outreach'}
+                >
+                  {actionLoading === 'outreach' ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Network className="h-4 w-4 mr-2" />
+                  )}
                   Start Outreach
                 </Button>
                 <Button className="w-full" variant="outline">
