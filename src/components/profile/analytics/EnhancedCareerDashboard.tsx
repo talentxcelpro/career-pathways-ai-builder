@@ -38,14 +38,14 @@ import { PeerBenchmarks } from './PeerBenchmarks';
 import { InteractiveProgressTracker } from './InteractiveProgressTracker';
 
 interface DashboardData {
-  profileViews: { current: number; change: number; trend: 'up' | 'down' };
-  profileShares: { current: number; change: number; trend: 'up' | 'down' };
-  endorsements: { current: number; change: number; trend: 'up' | 'down' };
+  profileViews: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
+  profileShares: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
+  endorsements: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
   skillInterests: string[];
-  articleViews: { current: number; change: number; trend: 'up' | 'down' };
-  articleLikes: { current: number; change: number; trend: 'up' | 'down' };
-  articleBookmarks: { current: number; change: number; trend: 'up' | 'down' };
-  articleComments: { current: number; change: number; trend: 'up' | 'down' };
+  articleViews: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
+  articleLikes: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
+  articleBookmarks: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
+  articleComments: { current: number; change: number; trend: 'up' | 'down' | 'stable' };
   careerProgress: {
     currentLevel: string;
     skillsGained: number;
