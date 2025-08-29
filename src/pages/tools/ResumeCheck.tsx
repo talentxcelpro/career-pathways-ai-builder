@@ -13,7 +13,7 @@ interface ATSAnalysis {
   overallScore: number;
   sections: {
     formatting: { score: number; issues: string[]; suggestions: string[] };
-    keywords: { score: number; matched: string[]; missing: string[]; suggestions: string[] };
+    keywords: { score: number; matched: string[]; missing: string[]; suggestions: string[]; issues?: string[] };
     structure: { score: number; issues: string[]; suggestions: string[] };
     content: { score: number; issues: string[]; suggestions: string[] };
   };
@@ -225,16 +225,46 @@ const ResumeCheck = () => {
                   </div>
                   <Progress value={section.score} className="h-2 mb-3" />
                   
-                  {section.issues?.length > 0 && (
-                    <div className="space-y-1">
-                      <h5 className="text-sm font-medium text-red-600 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        Issues
-                      </h5>
-                      {section.issues.slice(0, 2).map((issue, i) => (
-                        <p key={i} className="text-xs text-red-600">• {issue}</p>
-                      ))}
+                  {/* Handle different section types */}
+                  {key === 'keywords' ? (
+                    <div className="space-y-2">
+                      {(section as any).missing?.length > 0 && (
+                        <div className="space-y-1">
+                          <h5 className="text-sm font-medium text-red-600 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Missing Keywords
+                          </h5>
+                          {(section as any).missing.slice(0, 2).map((keyword: string, i: number) => (
+                            <p key={i} className="text-xs text-red-600">• {keyword}</p>
+                          ))}
+                        </div>
+                      )}
+                      {(section as any).matched?.length > 0 && (
+                        <div className="space-y-1">
+                          <h5 className="text-sm font-medium text-green-600 flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3" />
+                            Matched Keywords
+                          </h5>
+                          {(section as any).matched.slice(0, 2).map((keyword: string, i: number) => (
+                            <p key={i} className="text-xs text-green-600">• {keyword}</p>
+                          ))}
+                        </div>
+                      )}
                     </div>
+                  ) : (
+                    <>
+                      {(section as any).issues?.length > 0 && (
+                        <div className="space-y-1">
+                          <h5 className="text-sm font-medium text-red-600 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Issues
+                          </h5>
+                          {(section as any).issues.slice(0, 2).map((issue: string, i: number) => (
+                            <p key={i} className="text-xs text-red-600">• {issue}</p>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   )}
                   
                   {section.suggestions?.length > 0 && (
