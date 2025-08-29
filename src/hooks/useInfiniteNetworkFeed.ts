@@ -59,7 +59,7 @@ export const useInfiniteNetworkFeed = ({
       .from('posts')
       .select(`
         *,
-        profiles!posts_author_id_fkey (
+        profiles (
           id,
           full_name,
           profile_picture_url,
