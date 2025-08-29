@@ -1,6 +1,7 @@
 import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap } from "lucide-react";
 import Jobs from "../pages/Jobs";
 import JobDetails from "../pages/jobs/JobDetails";
+import { JobRedirectHandler } from "../components/jobs/JobRedirectHandler";
 import JobPost from "../pages/jobs/JobPost";
 import SavedJobs from "../pages/jobs/SavedJobs";
 import MyApplications from "../pages/jobs/MyApplications";
@@ -34,6 +35,11 @@ export const jobRoutes = [
     title: "Legacy Job Redirect",
     to: "/job/:slugOrId",
     page: <JobUrlRedirect />,
+  },
+  {
+    title: "Numeric Job ID Redirect",
+    to: "/jobs/:id(\\d+)",
+    page: <JobRedirectHandler />,
   },
   {
     title: "Apply for Job",
