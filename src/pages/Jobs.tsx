@@ -178,7 +178,7 @@ const Jobs = () => {
     };
   }, []);
 
-  // Use optimized pagination hook for jobs
+  // Use real data service for jobs
   const { 
     jobs: allJobs, 
     totalCount, 

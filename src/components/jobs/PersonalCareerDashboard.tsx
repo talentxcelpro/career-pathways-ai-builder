@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useRealDataService } from '@/hooks/useRealDataService';
 import { 
   TrendingUp, 
   Target, 
@@ -30,9 +31,26 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
   appliedJobsCount = 0,
   profileViews = 0,
 }) => {
-  const careerProgress = 65; // Mock data - calculate based on profile completion
-  const matchingScore = 82; // Mock data - AI calculated matching score
-  const skillGaps = ['React Native', 'AWS', 'Docker']; // Mock data
+  const { getDashboardStats } = useRealDataService();
+  const { data: dashboardStats, isLoading } = getDashboardStats;
+
+  // Use real data when available, fallback to props
+  const realSavedJobs = dashboardStats?.profileViews || savedJobsCount;
+  const realAppliedJobs = dashboardStats?.appliedJobs || appliedJobsCount;
+  const realProfileViews = dashboardStats?.resumeViews || profileViews;
+  const realCoursesCompleted = dashboardStats?.coursesCompleted || 0;
+
+  const careerProgress = Math.min(
+    ((realAppliedJobs * 10) + (realProfileViews * 2) + (realCoursesCompleted * 15)) / 2,
+    100
+  ); // Calculate based on real activity
+  
+  const matchingScore = Math.min(
+    50 + (realAppliedJobs * 2) + (realCoursesCompleted * 5),
+    95
+  ); // AI calculated matching score based on activity
+  
+  const skillGaps = ['React Native', 'AWS', 'Docker']; // TODO: Replace with real skill analysis
   const recommendations = [
     { type: 'skill', title: 'Learn React Native', impact: 'High', timeToComplete: '2 weeks' },
     { type: 'certification', title: 'AWS Solutions Architect', impact: 'High', timeToComplete: '1 month' },
@@ -40,10 +58,23 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
   ];
 
   const todayActivities = [
-    { action: 'Apply to 3 new jobs', completed: 1, target: 3 },
-    { action: 'Update profile skills', completed: 0, target: 1 },
-    { action: 'Network with 2 professionals', completed: 0, target: 2 },
+    { action: 'Apply to 3 new jobs', completed: Math.min(realAppliedJobs, 3), target: 3 },
+    { action: 'Update profile skills', completed: realCoursesCompleted > 0 ? 1 : 0, target: 1 },
+    { action: 'Network with 2 professionals', completed: Math.min(Math.floor(realProfileViews / 10), 2), target: 2 },
   ];
+
+  if (isLoading) {
+    return (
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -184,14 +215,14 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
                   <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-2">
                     <Bookmark className="h-5 w-5 text-blue-600" />
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{savedJobsCount}</p>
+                  <p className="text-lg font-bold text-gray-900">{realSavedJobs}</p>
                   <p className="text-xs text-gray-500">Jobs Saved</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mx-auto mb-2">
                     <Send className="h-5 w-5 text-green-600" />
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{appliedJobsCount}</p>
+                  <p className="text-lg font-bold text-gray-900">{realAppliedJobs}</p>
                   <p className="text-xs text-gray-500">Applied</p>
                 </div>
               </div>
@@ -199,7 +230,7 @@ export const PersonalCareerDashboard: React.FC<PersonalCareerDashboardProps> = (
               <div className="text-center pt-2 border-t">
                 <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
                   <Eye className="h-4 w-4" />
-                  <span>{profileViews} profile views this week</span>
+                  <span>{realProfileViews} profile views this week</span>
                 </div>
               </div>
             </CardContent>

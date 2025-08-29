@@ -1,6 +1,7 @@
 import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap } from "lucide-react";
 import Jobs from "../pages/Jobs";
 import JobDetails from "../pages/jobs/JobDetails";
+import JobDetail from "../pages/JobDetail";
 import { JobRedirectHandler } from "../components/jobs/JobRedirectHandler";
 import JobPost from "../pages/jobs/JobPost";
 import SavedJobs from "../pages/jobs/SavedJobs";
@@ -29,7 +30,7 @@ export const jobRoutes = [
   {
     title: "Job Details",
     to: "/jobs/:slugOrId",
-    page: <JobDetails />,
+    page: <JobDetail />,
   },
   {
     title: "Legacy Job Redirect",
