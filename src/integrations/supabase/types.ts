@@ -23839,6 +23839,48 @@ export type Database = {
           },
         ]
       }
+      job_applications_with_candidate_details: {
+        Row: {
+          additional_files: Json | null
+          application_id: string | null
+          applied_at: string | null
+          company_name: string | null
+          cover_letter_url: string | null
+          ctc_current: number | null
+          ctc_expected: number | null
+          current_company: string | null
+          email: string | null
+          employer_notes: string | null
+          experience_years: number | null
+          full_name: string | null
+          job_id: string | null
+          job_location: string | null
+          job_title: string | null
+          job_title_from_job: string | null
+          linkedin_url: string | null
+          notice_period: string | null
+          phone: string | null
+          portfolio_url: string | null
+          preferred_location: string | null
+          profile_picture_url: string | null
+          resume_source: string | null
+          resume_url: string | null
+          reviewed_at: string | null
+          skills: string[] | null
+          status: string | null
+          status_updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enhanced_job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_team_invitation: {
