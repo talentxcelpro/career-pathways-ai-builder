@@ -113,8 +113,9 @@ export class EnhancedResumeExtractor {
       
       const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
         body: {
-          extractedText,
-          fileName
+          file: `data:text/plain;base64,${btoa(extractedText)}`,
+          fileName,
+          fileType: 'text/plain'
         }
       });
 
@@ -124,7 +125,7 @@ export class EnhancedResumeExtractor {
       }
 
       console.log('✅ AI parsing completed successfully');
-      return data;
+      return { success: data.success, data: data.data, error: data.error };
     } catch (error) {
       console.error('❌ AI parser failed:', error);
       throw error;

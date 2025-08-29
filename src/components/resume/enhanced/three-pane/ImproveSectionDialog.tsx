@@ -55,8 +55,10 @@ export const ImproveSectionDialog: React.FC<ImproveSectionDialogProps> = ({
         const { data, error } = await supabase.functions.invoke('ai-resume-content', {
           body: payload,
         });
-        if (error) throw error;
+        if (error) throw new Error(error.message || 'Failed to generate suggestions');
+        if (!data) throw new Error('No response from content generator');
         const content = data?.content || data?.suggestions || '';
+        if (!content) throw new Error('No content generated');
         setSuggestion(content);
       } catch (e: any) {
         console.error('Improve section failed:', e);
@@ -68,7 +70,7 @@ export const ImproveSectionDialog: React.FC<ImproveSectionDialogProps> = ({
       }
     };
     run();
-  }, [open]);
+  }, [open, payload]);
 
   const handleApply = () => {
     const updated: EditorResume = JSON.parse(JSON.stringify(resume));

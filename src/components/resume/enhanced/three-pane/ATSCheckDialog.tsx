@@ -31,8 +31,9 @@ export const ATSCheckDialog: React.FC<ATSCheckDialogProps> = ({ open, onOpenChan
           },
         });
       console.log('ATS check response:', { data, error });
-      if (error) throw error;
-      setResult(data?.analysis || data);
+      if (error) throw new Error(error.message || 'Failed to analyze resume');
+      if (!data) throw new Error('No response from ATS analyzer');
+      setResult(data.analysis || data);
       toast.success('ATS analysis completed!');
     } catch (e: any) {
       console.error('ATS check failed:', e);
