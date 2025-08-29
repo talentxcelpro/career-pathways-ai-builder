@@ -28,15 +28,8 @@ import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 import { SocialPagination } from '@/components/ui/social-pagination';
 import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
-import { SmartJobRecommendations } from '@/components/jobs/SmartJobRecommendations';
-import { ApplicationTracker } from '@/components/jobs/ApplicationTracker';
-import { EmployeeReviews } from '@/components/jobs/EmployeeReviews';
-import { ReferralNetwork } from '@/components/jobs/ReferralNetwork';
-import { GamificationSystem } from '@/components/jobs/GamificationSystem';
-import { AICareerAssistant } from '@/components/jobs/AICareerAssistant';
-import { CareerAnalyticsDashboard } from '@/components/jobs/CareerAnalyticsDashboard';
-import { JobCard } from '@/components/jobs/JobCard';
 import { SmartJobMatchingBar } from '@/components/jobs/SmartJobMatchingBar';
+import { JobCard } from '@/components/jobs/JobCard';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -529,69 +522,28 @@ const Jobs = () => {
         </div>
       </div>
 
-      {/* Main Content - AI-Powered Job Discovery */}
+      {/* Main Content - Clean Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        {/* Personal Career Dashboard for logged-in users */}
+        {/* Personal Career Dashboard for logged-in users - Only show if user wants it */}
         {currentUser && (
-          <div className="mb-8">
+          <div className="mb-6">
             <PersonalCareerDashboard 
               user={currentUser}
               savedJobsCount={savedJobs.length}
-              appliedJobsCount={0} // Real data now handled in component
-              profileViews={0} // Real data now handled in component
+              appliedJobsCount={0}
+              profileViews={0} 
             />
           </div>
         )}
         
-        {/* Smart AI Job Matching Bar */}
-        <div className="mb-8">
+        {/* Smart AI Job Matching Bar - Keep this */}
+        <div className="mb-6">
           <SmartJobMatchingBar 
             currentUser={currentUser}
             onFiltersChange={handleFiltersChange}
             onSearch={refetch}
           />
-        </div>
-        {/* AI Job Recommendations for logged-in users */}
-        {currentUser && (
-          <div className="mb-8">
-            <SmartJobRecommendations 
-              userId={currentUser.id}
-              onJobSave={handleSaveJob}
-              savedJobs={savedJobs}
-            />
-          </div>
-        )}
-
-        {/* Application Tracker for logged-in users */}
-        {currentUser && (
-          <div className="mb-8">
-            <ApplicationTracker 
-              userId={currentUser.id}
-            />
-          </div>
-        )}
-
-        {/* Phase 2-4 Enhanced Features */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* AI Career Assistant */}
-          <AICareerAssistant />
-          
-          {/* Gamification System */}
-          <GamificationSystem />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Employee Reviews */}
-          <EmployeeReviews companyId="sample-company" companyName="TechCorp" />
-          
-          {/* Referral Network */}
-          <ReferralNetwork companyId="sample-company" targetRole="Software Engineer" />
-          
-          {/* Career Analytics Dashboard */}
-          <div className="lg:col-span-1">
-            <CareerAnalyticsDashboard />
-          </div>
         </div>
 
         {/* Featured Jobs Section with Enhanced Cards */}
@@ -698,39 +650,16 @@ const Jobs = () => {
         )}
       </div>
 
-      {/* Top Companies Hiring - Moved up */}
+      {/* Bottom Content */}
       <TopCompaniesHiring />
-
-      {/* Mock Interview Banner - Moved to bottom */}
       <JobsBanner />
-
-      {/* Trust & FOMO Section */}
       <TrustSection />
 
-          {/* Footer Note */}
-          <div className="text-center py-8 mt-12">
-            <p className="text-sm text-gray-600">
-              Powered by TalentXcel AI – India's Intelligent Career Platform
-            </p>
-          </div>
-
-          {/* Floating Apply Widget (Mobile) */}
-      <div className="fixed bottom-4 left-4 right-4 lg:hidden z-50">
-        <div className="bg-[#1E2A78] text-white rounded-2xl p-4 shadow-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold">🔎 {allJobs.length} Jobs Matched</p>
-              <p className="text-sm text-white/80">Find your perfect role</p>
-            </div>
-            <Button 
-              size="sm" 
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/90"
-            >
-              Apply Now
-            </Button>
-          </div>
-        </div>
+      {/* Footer Note */}
+      <div className="text-center py-8">
+        <p className="text-sm text-gray-600">
+          Powered by TalentXcel AI – India's Intelligent Career Platform
+        </p>
       </div>
 
       {/* TalentXcel Branded Footer */}
