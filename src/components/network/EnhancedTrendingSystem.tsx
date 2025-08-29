@@ -67,12 +67,13 @@ const EnhancedTrendingSystemComponent: React.FC<EnhancedTrendingSystemProps> = (
       // Process companies
       const companyCounts = new Map<string, { count: number; engagement: number; velocity: number }>();
       posts?.forEach(post => {
-        if (post.profiles?.current_company) {
+        const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+        if (profile?.current_company) {
           const engagement = (post.likes_count || 0) + (post.comments_count || 0) * 2 + (post.shares_count || 0) * 3;
           const postAge = Date.now() - new Date(post.created_at).getTime();
           const recencyBoost = Math.max(0, 1 - (postAge / (24 * 60 * 60 * 1000)));
           
-          const company = post.profiles.current_company;
+          const company = profile.current_company;
           const current = companyCounts.get(company) || { count: 0, engagement: 0, velocity: 0 };
           companyCounts.set(company, {
             count: current.count + 1,
