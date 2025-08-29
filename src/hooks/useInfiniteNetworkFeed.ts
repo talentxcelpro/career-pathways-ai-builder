@@ -76,12 +76,25 @@ export const useInfiniteNetworkFeed = ({
 
     // Apply feed type filters
     if (feedType === 'smart' && user) {
-      // Smart feed: prioritize connections and interests
-      query = query.or(`author_id.in.(
-        select recipient_id from connections where requester_id = '${user.id}' and status = 'accepted'
-        union
-        select requester_id from connections where recipient_id = '${user.id}' and status = 'accepted'
-      )`);
+      // Smart feed: get user's connections first, then filter posts
+      const { data: connections } = await supabase
+        .from('connections')
+        .select('requester_id, recipient_id')
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .eq('status', 'accepted');
+
+      if (connections && connections.length > 0) {
+        const connectedUserIds = connections.map(conn => 
+          conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
+        );
+        
+        // Include user's own posts and posts from connections
+        const allRelevantIds = [user.id, ...connectedUserIds];
+        query = query.in('author_id', allRelevantIds);
+      } else {
+        // No connections, just show user's own posts
+        query = query.eq('author_id', user.id);
+      }
     } else if (feedType === 'trending') {
       // Trending feed: high engagement posts
       query = query.gte('likes_count', 5).gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
