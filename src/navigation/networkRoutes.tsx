@@ -15,6 +15,8 @@ import MessageConversation from "../pages/network/MessageConversation";
 import MessageRequests from "../pages/network/MessageRequests";
 import ArchivedMessages from "../pages/network/ArchivedMessages";
 import MessageSettings from "../pages/network/MessageSettings";
+import Connections from "../pages/network/Connections";
+import NetworkAnalytics from "../pages/network/NetworkAnalytics";
 
 import ProfileAnalytics from "../pages/profile/ProfileAnalytics";
 import Notifications from "../pages/network/Notifications";
@@ -40,9 +42,14 @@ export const networkRoutes = [
     page: <People />,
   },
   {
-    title: "My Network",
+    title: "My Connections",
     to: "/network/connections",
-    page: <MyNetwork />,
+    page: <Connections />,
+  },
+  {
+    title: "Network Analytics",
+    to: "/network/analytics",
+    page: <NetworkAnalytics />,
   },
   {
     title: "Discover",
