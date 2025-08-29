@@ -2998,6 +2998,42 @@ export type Database = {
           },
         ]
       }
+      backlink_metrics: {
+        Row: {
+          backlinks_gained: number | null
+          backlinks_lost: number | null
+          created_at: string
+          id: number
+          metric_date: string
+          new_targets: number | null
+          outreach_replied: number | null
+          outreach_sent: number | null
+          total_backlinks: number | null
+        }
+        Insert: {
+          backlinks_gained?: number | null
+          backlinks_lost?: number | null
+          created_at?: string
+          id?: number
+          metric_date?: string
+          new_targets?: number | null
+          outreach_replied?: number | null
+          outreach_sent?: number | null
+          total_backlinks?: number | null
+        }
+        Update: {
+          backlinks_gained?: number | null
+          backlinks_lost?: number | null
+          created_at?: string
+          id?: number
+          metric_date?: string
+          new_targets?: number | null
+          outreach_replied?: number | null
+          outreach_sent?: number | null
+          total_backlinks?: number | null
+        }
+        Relationships: []
+      }
       backlink_monitoring: {
         Row: {
           backlink_id: string | null
@@ -3093,50 +3129,181 @@ export type Database = {
           },
         ]
       }
+      backlink_outreach_logs: {
+        Row: {
+          body: string | null
+          created_at: string
+          delivery_status: string | null
+          error_message: string | null
+          id: string
+          response_received_at: string | null
+          sent_at: string | null
+          status: string | null
+          subject: string | null
+          target_id: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          error_message?: string | null
+          id?: string
+          response_received_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string | null
+          target_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          error_message?: string | null
+          id?: string
+          response_received_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string | null
+          target_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlink_outreach_logs_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       backlink_targets: {
         Row: {
           contact_email: string | null
           contact_form_url: string | null
           content_type: string | null
           created_at: string
+          discovered_via: string | null
           domain: string
           domain_authority: number | null
           id: string
+          language: string | null
           last_contacted_at: string | null
           metadata: Json | null
+          niche: string[] | null
           priority_score: number | null
           status: string | null
+          traffic_estimate: number | null
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           contact_email?: string | null
           contact_form_url?: string | null
           content_type?: string | null
           created_at?: string
+          discovered_via?: string | null
           domain: string
           domain_authority?: number | null
           id?: string
+          language?: string | null
           last_contacted_at?: string | null
           metadata?: Json | null
+          niche?: string[] | null
           priority_score?: number | null
           status?: string | null
+          traffic_estimate?: number | null
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           contact_email?: string | null
           contact_form_url?: string | null
           content_type?: string | null
           created_at?: string
+          discovered_via?: string | null
           domain?: string
           domain_authority?: number | null
           id?: string
+          language?: string | null
           last_contacted_at?: string | null
           metadata?: Json | null
+          niche?: string[] | null
           priority_score?: number | null
           status?: string | null
+          traffic_estimate?: number | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
+      }
+      backlinks: {
+        Row: {
+          anchor_text: string | null
+          created_at: string
+          discovered_at: string
+          id: string
+          is_dofollow: boolean | null
+          last_checked_at: string | null
+          notes: string | null
+          outreach_log_id: string | null
+          rel_attributes: string[] | null
+          source_url: string | null
+          status: string | null
+          target_id: string | null
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          anchor_text?: string | null
+          created_at?: string
+          discovered_at?: string
+          id?: string
+          is_dofollow?: boolean | null
+          last_checked_at?: string | null
+          notes?: string | null
+          outreach_log_id?: string | null
+          rel_attributes?: string[] | null
+          source_url?: string | null
+          status?: string | null
+          target_id?: string | null
+          target_url: string
+          updated_at?: string
+        }
+        Update: {
+          anchor_text?: string | null
+          created_at?: string
+          discovered_at?: string
+          id?: string
+          is_dofollow?: boolean | null
+          last_checked_at?: string | null
+          notes?: string | null
+          outreach_log_id?: string | null
+          rel_attributes?: string[] | null
+          source_url?: string | null
+          status?: string | null
+          target_id?: string | null
+          target_url?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlinks_outreach_log_id_fkey"
+            columns: ["outreach_log_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_outreach_logs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "backlinks_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_targets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       batch_scraping_queue: {
         Row: {
@@ -23165,6 +23332,10 @@ export type Database = {
           status: string
           tone: string
         }[]
+      }
+      get_backlink_dashboard_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_bot_display_info: {
         Args: { bot_uuid: string }
