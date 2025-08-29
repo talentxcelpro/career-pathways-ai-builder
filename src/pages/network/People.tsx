@@ -108,15 +108,30 @@ const People = () => {
         .order('created_at', { ascending: false })
         .limit(10);
       
-      return data?.filter(post => post.profiles).map(post => ({
-        id: post.profiles.id,
-        full_name: post.profiles.full_name,
-        profile_picture_url: post.profiles.profile_picture_url,
-        headline: post.profiles.headline,
-        activity_type: 'post',
-        time_ago: getTimeAgo(post.created_at),
-        preview: post.content?.substring(0, 50) + '...'
-      }));
+      // Normalize profiles relation (can be array or object)
+      return data
+        ?.map((post) => {
+          const prof = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+          if (!prof) return null;
+          return {
+            id: prof.id,
+            full_name: prof.full_name,
+            profile_picture_url: prof.profile_picture_url,
+            headline: prof.headline,
+            activity_type: 'post',
+            time_ago: getTimeAgo(post.created_at),
+            preview: (post.content || '').substring(0, 50) + '...',
+          };
+        })
+        .filter(Boolean) as Array<{
+          id: string;
+          full_name: string | null;
+          profile_picture_url: string | null;
+          headline: string | null;
+          activity_type: string;
+          time_ago: string;
+          preview: string;
+        }>;
     }
   });
 
