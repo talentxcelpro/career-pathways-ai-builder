@@ -11,7 +11,10 @@ import {
   ChevronDown,
   Sparkles,
   FileCheck,
-  Upload
+  Upload,
+  Mic,
+  BarChart3,
+  Users
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -30,6 +33,12 @@ interface TopToolbarProps {
   onUploadResume: () => void;
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   lastSaved: Date;
+  onToggleVoice?: () => void;
+  onToggleAnalytics?: () => void;
+  onToggleCollaboration?: () => void;
+  showVoice?: boolean;
+  showAnalytics?: boolean;
+  showCollaboration?: boolean;
 }
 
 const templates = resumeTemplates.slice(0, 8).map(t => ({
@@ -45,7 +54,13 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
   onExport,
   onUploadResume,
   saveStatus,
-  lastSaved
+  lastSaved,
+  onToggleVoice,
+  onToggleAnalytics,
+  onToggleCollaboration,
+  showVoice = false,
+  showAnalytics = false,
+  showCollaboration = false
 }) => {
   const getSaveStatusInfo = () => {
     switch (saveStatus) {
@@ -118,6 +133,41 @@ export const TopToolbar: React.FC<TopToolbarProps> = ({
             >
               <Sparkles className="h-4 w-4" />
               Improve Section
+            </Button>
+          </div>
+
+          <Separator orientation="vertical" className="h-6" />
+
+          {/* Game-Changing Features */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant={showVoice ? "default" : "outline"}
+              size="sm"
+              onClick={onToggleVoice}
+              className="gap-2"
+            >
+              <Mic className="h-4 w-4" />
+              Voice Commands
+            </Button>
+            
+            <Button
+              variant={showAnalytics ? "default" : "outline"}
+              size="sm"
+              onClick={onToggleAnalytics}
+              className="gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              AI Analytics
+            </Button>
+            
+            <Button
+              variant={showCollaboration ? "default" : "outline"}
+              size="sm"
+              onClick={onToggleCollaboration}
+              className="gap-2"
+            >
+              <Users className="h-4 w-4" />
+              Collaborate
             </Button>
           </div>
         </div>

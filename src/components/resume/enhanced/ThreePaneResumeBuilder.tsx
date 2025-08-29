@@ -17,6 +17,9 @@ import { UploadResumeDialog } from './three-pane/UploadResumeDialog';
 import { ATSCheckDialog } from './three-pane/ATSCheckDialog';
 import { ImproveSectionDialog } from './three-pane/ImproveSectionDialog';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { VoiceInput } from '../voice/VoiceInput';
+import { ResumeAnalytics } from '../analytics/ResumeAnalytics';
+import { RealtimeCollaboration } from '../collaboration/RealtimeCollaboration';
 
 interface ThreePaneResumeBuilderProps {
   data: EditorResume;
@@ -113,6 +116,9 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [atsOpen, setAtsOpen] = useState(false);
   const [improveOpen, setImproveOpen] = useState(false);
+  const [showVoiceInput, setShowVoiceInput] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showCollaboration, setShowCollaboration] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -262,6 +268,72 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
     onChange(uploadedData);
   }, [onChange]);
 
+  const handleVoiceCommand = useCallback((command: string, commandData: any) => {
+    const newData = { ...data };
+    
+    switch (command) {
+      case 'add_experience':
+        newData.experience.push({
+          id: crypto.randomUUID(),
+          title: commandData.title || '',
+          company: commandData.company || '',
+          location: '',
+          startDate: commandData.startDate || '',
+          endDate: commandData.endDate || '',
+          description: '',
+          achievements: [],
+          technologies: []
+        });
+        break;
+        
+      case 'add_education':
+        newData.education.push({
+          id: crypto.randomUUID(),
+          degree: commandData.degree || '',
+          institution: commandData.institution || '',
+          location: '',
+          startDate: '',
+          endDate: '',
+          description: commandData.field || '',
+          achievements: []
+        });
+        break;
+        
+      case 'add_skills':
+        if (commandData.skills) {
+          newData.skills.technical.push(...commandData.skills);
+        }
+        break;
+        
+      case 'add_project':
+        newData.projects.push({
+          id: crypto.randomUUID(),
+          name: commandData.name || '',
+          description: commandData.description || '',
+          technologies: commandData.technologies || [],
+          link: ''
+        });
+        break;
+        
+      case 'update_summary':
+        newData.personalInfo.summary = commandData.summary || '';
+        break;
+        
+      case 'update_name':
+        newData.personalInfo.fullName = commandData.name || '';
+        break;
+        
+      case 'export':
+        handleExport(commandData.format);
+        return;
+        
+      default:
+        return;
+    }
+    
+    onChange(newData);
+  }, [data, onChange, handleExport]);
+
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
   };
@@ -343,8 +415,43 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         onUploadResume={handleUploadResume}
         saveStatus={saveStatus}
         lastSaved={lastSaved}
+        onToggleVoice={() => setShowVoiceInput(!showVoiceInput)}
+        onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
+        onToggleCollaboration={() => setShowCollaboration(!showCollaboration)}
+        showVoice={showVoiceInput}
+        showAnalytics={showAnalytics}
+        showCollaboration={showCollaboration}
       />
       
+      {/* Voice Input Panel */}
+      {showVoiceInput && (
+        <div className="border-t border-border bg-card p-4">
+          <VoiceInput
+            onTranscript={(transcript) => console.log('Voice transcript:', transcript)}
+            onCommand={handleVoiceCommand}
+            placeholder="Say commands like 'Add experience at Google as Software Engineer' or 'Export as PDF'"
+          />
+        </div>
+      )}
+
+      {/* Analytics Panel */}
+      {showAnalytics && (
+        <div className="border-t border-border bg-card p-4 max-h-96 overflow-y-auto">
+          <ResumeAnalytics resume={data} />
+        </div>
+      )}
+
+      {/* Collaboration Panel */}
+      {showCollaboration && (
+        <div className="border-t border-border bg-card p-4 max-h-96 overflow-y-auto">
+          <RealtimeCollaboration 
+            resume={data} 
+            onResumeChange={onChange}
+            isOwner={true}
+          />
+        </div>
+      )}
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
