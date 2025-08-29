@@ -1,5 +1,8 @@
+
 import React, { memo, useMemo, useRef, useCallback } from 'react';
-import { FixedSizeList } from 'react-window';
+// Use a namespace import for robust CJS/ESM interop
+import * as ReactWindow from 'react-window';
+import type { FixedSizeList as FixedSizeListType, ListChildComponentProps } from 'react-window';
 
 interface VirtualizedListProps<T> {
   items: T[];
@@ -10,6 +13,8 @@ interface VirtualizedListProps<T> {
   overscan?: number;
 }
 
+const { FixedSizeList } = ReactWindow;
+
 function VirtualizedListComponent<T>({
   items,
   itemHeight,
@@ -18,13 +23,15 @@ function VirtualizedListComponent<T>({
   className,
   overscan = 5
 }: VirtualizedListProps<T>) {
-  const listRef = useRef<FixedSizeList>(null);
+  // Use the type-only alias to avoid runtime import issues
+  const listRef = useRef<FixedSizeListType<any> | null>(null);
 
-  const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => (
+  // Use react-window's data pattern instead of closing over items
+  const Row = useCallback(({ index, style, data }: ListChildComponentProps<T[]>) => (
     <div style={style}>
-      {renderItem(items[index], index)}
+      {renderItem(data[index], index)}
     </div>
-  ), [items, renderItem]);
+  ), [renderItem]);
 
   const memoizedRow = useMemo(() => memo(Row), [Row]);
 
