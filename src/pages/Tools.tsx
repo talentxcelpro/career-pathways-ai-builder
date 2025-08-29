@@ -81,12 +81,13 @@ const Tools = () => {
     logToolUsage
   } = useToolsData();
 
-  // Get profile data for user greeting
+  // Get profile data for user greeting - try multiple sources
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
+      // First try to get from profiles table
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -97,6 +98,42 @@ const Tools = () => {
     },
     enabled: !!user?.id
   });
+
+  // Get user's first name from multiple sources
+  const getUserFirstName = () => {
+    // Debug: log user data (remove in production)
+    console.log('User data for greeting:', {
+      user_metadata: user?.user_metadata,
+      email: user?.email,
+      profile: profile
+    });
+
+    // Try user metadata first (from Google/social login)
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name.split(' ')[0];
+    }
+    // Try user metadata name field
+    if (user?.user_metadata?.name) {
+      return user.user_metadata.name.split(' ')[0];
+    }
+    // Try user metadata first_name
+    if (user?.user_metadata?.first_name) {
+      return user.user_metadata.first_name;
+    }
+    // Try profile data
+    if (profile?.full_name) {
+      return profile.full_name.split(' ')[0];
+    }
+    if (profile?.first_name) {
+      return profile.first_name;
+    }
+    // Try extracting from email
+    if (user?.email) {
+      const emailName = user.email.split('@')[0];
+      return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+    }
+    return 'there';
+  };
 
   // SEO meta tags and structured data
   React.useEffect(() => {
@@ -366,7 +403,7 @@ const Tools = () => {
               />
               <div>
                 <h1 className="text-2xl font-bold">
-                  {user ? `Welcome back, ${profile?.full_name?.split(' ')[0] || 'there'}! 👋` : 'TalentXcel AI-Powered Career Tools'}
+                  {user ? `Welcome back, ${getUserFirstName()}! 👋` : 'TalentXcel AI-Powered Career Tools'}
                 </h1>
                 <p className="text-blue-100 text-sm max-w-2xl">
                   {user ? 'Ready to accelerate your career with our AI-powered tools?' : 'Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.'}
