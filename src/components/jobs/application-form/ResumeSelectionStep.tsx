@@ -65,7 +65,19 @@ export default function ResumeSelectionStep({
                 ))}
               </RadioGroup>
             ) : (
-              <p className="text-center text-gray-500 py-4">No resumes found. Please upload a new resume.</p>
+              <div className="text-center py-8 border-2 border-dashed border-orange-200 rounded-lg bg-orange-50">
+                <FileText className="h-12 w-12 text-orange-400 mx-auto mb-3" />
+                <h3 className="font-semibold text-orange-800 mb-2">No Resume Found</h3>
+                <p className="text-orange-700 text-sm mb-4">
+                  You need to upload a resume to apply for this position. Please select "Upload New Resume" below.
+                </p>
+                <button 
+                  onClick={() => onInputChange('resumeSource', 'upload')}
+                  className="text-orange-600 font-medium hover:text-orange-800 underline"
+                >
+                  Upload Resume Now
+                </button>
+              </div>
             )}
           </div>
         )}

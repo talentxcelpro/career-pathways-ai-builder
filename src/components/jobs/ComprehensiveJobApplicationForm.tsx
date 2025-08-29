@@ -213,6 +213,25 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
           .getPublicUrl(fileName);
         
         resumeUrl = publicUrl;
+
+        // Also save to user's resume library for future use
+        try {
+          await supabase
+            .from('resumes')
+            .insert({
+              user_id: user.id,
+              title: `Resume for ${job.title}`,
+              file_url: publicUrl,
+              file_name: formData.uploadedResume.name,
+              file_size: formData.uploadedResume.size,
+              file_type: formData.uploadedResume.type,
+              is_active: true,
+              is_primary: resumes.length === 0 // Make primary if it's the first resume
+            });
+        } catch (saveError) {
+          console.error('Failed to save resume to library:', saveError);
+          // Don't fail the application, just log the error
+        }
       } else if (formData.resumeSource === 'existing' && formData.selectedResumeId) {
         const selectedResume = resumes.find(r => r.id === formData.selectedResumeId);
         resumeUrl = selectedResume?.file_url || '';
@@ -261,6 +280,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         }
       };
 
+      // Submit to job_applications table
       const { error } = await supabase
         .from('job_applications')
         .insert(applicationData);
@@ -274,6 +294,33 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         }
         return;
       }
+
+      // Also add to unified_candidates for CV database
+      try {
+        await supabase
+          .from('unified_candidates')
+          .upsert({
+            id: user.id,
+            name: formData.fullName,
+            email: formData.email,
+            phone: formData.phoneNumber,
+            location: formData.location,
+            title: formData.yearsOfExperience ? `${formData.yearsOfExperience} years experience` : 'Professional',
+            resume_url: resumeUrl,
+            source: 'application',
+            skills: [],
+            experience_years: parseInt(formData.yearsOfExperience) || 0,
+            application_data: applicationData.application_data,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'id'
+          });
+      } catch (unifiedError) {
+        console.error('Failed to add to unified candidates:', unifiedError);
+        // Don't fail the application for this
+      }
+
 
       // Check if this is a scraped job (has is_scraped flag or external_url)
       const isScrapedJob = (job.external_url && job.external_url.trim() !== '');
