@@ -106,7 +106,7 @@ const Network = () => {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+          <TabsList className="grid w-full grid-cols-7 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
             <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline">Feed</span>
@@ -114,6 +114,10 @@ const Network = () => {
             <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Sparkles className="w-3 h-3" />
               <span className="hidden sm:inline">Smart Feed</span>
+            </TabsTrigger>
+            <TabsTrigger value="trending" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <TrendingUp className="w-3 h-3" />
+              <span className="hidden sm:inline">Trending</span>
             </TabsTrigger>
             <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Users className="w-3 h-3" />
@@ -153,6 +157,18 @@ const Network = () => {
                 </div>
               }>
                 <Posts feedType="smart" />
+              </React.Suspense>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="trending" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <Posts feedType="trending" />
               </React.Suspense>
             </div>
           </TabsContent>

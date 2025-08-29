@@ -34,10 +34,10 @@ import ProBadge from "@/components/network/ProBadge";
 import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
-import { NetworkPostsFeed } from "@/components/network/NetworkPostsFeed";
+import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
 
 
-const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
+const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }) => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const feedFilter = feedType; // Use the prop instead of state
@@ -321,8 +321,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' }) => {
             {/* Create Post */}
             <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
-{/* Network Posts Feed with Real-time Engagement */}
-            <NetworkPostsFeed feedType={feedFilter} />
+{/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
+            <div className="space-y-6">
+              <EnhancedNetworkPostsFeed feedType={feedFilter} />
+            </div>
           </div>
 
           {/* Right Sidebar - Network Activity & Advertising */}
