@@ -39,6 +39,7 @@ const JobDetail = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [hasApplied, setHasApplied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [triedRedirect, setTriedRedirect] = useState(false);
 
   // Get current user
   useEffect(() => {
@@ -85,6 +86,45 @@ const JobDetail = () => {
     },
     enabled: !!slugOrId,
   });
+
+  // Fallback: attempt to resolve similar job slug and redirect
+  useEffect(() => {
+    const tryResolveSlug = async () => {
+      if (isLoading || job || triedRedirect || !slugOrId) return;
+      setTriedRedirect(true);
+      const term = decodeURIComponent(slugOrId);
+      try {
+        // Try prefix match first
+        let { data: found } = await supabase
+          .from('jobs')
+          .select('seo_slug')
+          .ilike('seo_slug', `${term}%`)
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle();
+
+        if (!found) {
+          // Try broader match by slug or title
+          const { data: found2 } = await supabase
+            .from('jobs')
+            .select('seo_slug')
+            .or(`seo_slug.ilike.%${term}%,title.ilike.%${term}%`)
+            .eq('is_active', true)
+            .limit(1)
+            .maybeSingle();
+          found = found2 as any;
+        }
+
+        if (found?.seo_slug) {
+          navigate(`/jobs/${found.seo_slug}`, { replace: true });
+        }
+      } catch (e) {
+        console.error('Fallback job slug resolve failed:', e);
+      }
+    };
+
+    tryResolveSlug();
+  }, [isLoading, job, slugOrId, triedRedirect, navigate]);
 
   // Track job view
   useEffect(() => {
