@@ -45,6 +45,8 @@ import { SearchFilters } from '@/services/aiSearchService';
 import { useToolsData } from '@/hooks/useToolsData';
 import { updateMetaTags } from '@/utils/metaTags';
 import { toolsRoutes } from '@/navigation/toolsRoutes';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FeaturedTool {
   id: string;
@@ -78,6 +80,23 @@ const Tools = () => {
     usageStats,
     logToolUsage
   } = useToolsData();
+
+  // Get profile data for user greeting
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      return profileData;
+    },
+    enabled: !!user?.id
+  });
 
   // SEO meta tags and structured data
   React.useEffect(() => {
@@ -346,8 +365,12 @@ const Tools = () => {
                 className="h-12 w-12 rounded-lg"
               />
               <div>
-                <h1 className="text-2xl font-bold">TalentXcel AI-Powered Career Tools</h1>
-                <p className="text-blue-100 text-sm max-w-2xl">Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.</p>
+                <h1 className="text-2xl font-bold">
+                  {user ? `Welcome back, ${profile?.full_name?.split(' ')[0] || 'there'}! 👋` : 'TalentXcel AI-Powered Career Tools'}
+                </h1>
+                <p className="text-blue-100 text-sm max-w-2xl">
+                  {user ? 'Ready to accelerate your career with our AI-powered tools?' : 'Empowering professionals with AI-powered tools for career growth, job discovery, and skill development.'}
+                </p>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-4 text-sm">
