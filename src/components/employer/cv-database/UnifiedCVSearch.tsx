@@ -118,21 +118,7 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
     }
   }, [debouncedSearchTerm, filters, pagination.limit]);
 
-  // Sync candidates data on component mount
-  useEffect(() => {
-    const syncCandidates = async () => {
-      try {
-        await supabase.functions.invoke('sync-candidates');
-        searchCandidates();
-      } catch (err) {
-        console.error('Sync error:', err);
-        // Still try to search even if sync fails
-        searchCandidates();
-      }
-    };
-
-    syncCandidates();
-  }, []);
+  // Initial search on mount is handled by the effect below
 
   useEffect(() => {
     searchCandidates(1);

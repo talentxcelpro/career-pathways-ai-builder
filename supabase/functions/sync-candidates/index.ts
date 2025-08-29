@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 };
 
 serve(async (req) => {
@@ -12,22 +13,22 @@ serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://dthlgsnakhoftinssokm.supabase.co';
+    const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      supabaseUrl,
+      serviceRole || anonKey,
+      serviceRole
+        ? {}
+        : { global: { headers: { Authorization: req.headers.get('Authorization') || '' } } }
     );
 
     console.log('Starting candidate sync...');
 
-    // Clear existing candidates to avoid duplicates
-    const { error: clearError } = await supabaseClient
-      .from('candidates')
-      .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
-
-    if (clearError) {
-      console.error('Error clearing candidates:', clearError);
-    }
+    // Skip clearing existing candidates to avoid requiring elevated permissions
+    // Optionally, a periodic cleanup function can be implemented separately.
 
     // Sync applied resumes from job_applications + profiles
     const { data: appliedCandidates, error: appliedError } = await supabaseClient
@@ -52,7 +53,7 @@ serve(async (req) => {
           experience,
           education
         ),
-        jobs!inner (
+        jobs!fk_job_applications_job_id (
           title,
           company_name
         )

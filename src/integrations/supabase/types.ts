@@ -4323,6 +4323,118 @@ export type Database = {
           },
         ]
       }
+      candidates: {
+        Row: {
+          application_id: string | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          email: string
+          experience_years: number | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          job_id: string | null
+          location: string | null
+          looking_for_job: boolean | null
+          phone: string | null
+          profile_picture_url: string | null
+          resume_url: string | null
+          skills: string[] | null
+          source: string
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          email: string
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          job_id?: string | null
+          location?: string | null
+          looking_for_job?: boolean | null
+          phone?: string | null
+          profile_picture_url?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          source: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          company?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          job_id?: string | null
+          location?: string | null
+          looking_for_job?: boolean | null
+          phone?: string | null
+          profile_picture_url?: string | null
+          resume_url?: string | null
+          skills?: string[] | null
+          source?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidates_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "candidates_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "employer_cv_database_secure"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "candidates_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "job_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidates_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "candidates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       career_achievements: {
         Row: {
           achievement_description: string | null

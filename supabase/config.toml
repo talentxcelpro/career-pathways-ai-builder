@@ -102,3 +102,10 @@ verify_jwt = false
 
 [functions.send-email-smtp]
 verify_jwt = false
+
+# Unified CV Database Functions
+[functions.cv-search]
+verify_jwt = false
+
+[functions.sync-candidates]
+verify_jwt = false
