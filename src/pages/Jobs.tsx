@@ -484,7 +484,11 @@ const Jobs = () => {
             <Button 
               size="sm" 
               className="h-9 px-4 bg-[#1E2A78] hover:bg-[#1E2A78]/90 text-white text-sm whitespace-nowrap"
-              onClick={() => refetch()}
+              onClick={() => {
+                console.log('Search clicked, current filters:', filters);
+                refetch();
+                toast.success('🔍 Searching for jobs...');
+              }}
             >
               <Search className="h-4 w-4 mr-1" />
               Search
