@@ -23,7 +23,7 @@ export const ATSCheckDialog: React.FC<ATSCheckDialogProps> = ({ open, onOpenChan
     setResult(null);
     try {
         console.log('Starting ATS check...');
-        const { data, error } = await supabase.functions.invoke('ai-resume-analyzer', {
+        const { data, error } = await supabase.functions.invoke('ai-ats-analyzer', {
           body: {
             resumeContent: JSON.stringify(resume),
             targetRole: 'Software Engineer',
