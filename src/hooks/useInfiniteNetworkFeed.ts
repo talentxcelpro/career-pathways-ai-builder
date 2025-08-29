@@ -201,7 +201,7 @@ export const useInfiniteNetworkFeed = ({
   const { ref: loadMoreRef } = useInfiniteScroll({
     hasNextPage: !!hasNextPage,
     fetchNextPage: () => {
-      if (!isFetchingNextPage) {
+      if (!isFetchingNextPage && hasNextPage) {
         fetchNextPage();
       }
     }

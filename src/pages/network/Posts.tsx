@@ -35,6 +35,8 @@ import ProPostCTA from "@/components/network/ProPostCTA";
 import { useEmployerAccess } from "@/hooks/useEmployerAccess";
 import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
+import { GlobalSearch } from "@/components/ui/global-search";
+import { TrendingHashtags } from "@/components/network/TrendingHashtags";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }) => {
@@ -318,6 +320,11 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }
               />
             )}
 
+            {/* Global Search */}
+            <div className="mb-4">
+              <GlobalSearch placeholder="Search posts, people, hashtags..." />
+            </div>
+
             {/* Create Post */}
             <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
@@ -329,8 +336,11 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }
 
           {/* Right Sidebar - Network Activity & Advertising */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Trending Hashtags */}
+            <TrendingHashtags limit={8} />
+
             {/* Advertising Sidebar */}
-            <AdvertisingSidebar maxAds={3} />
+            <AdvertisingSidebar maxAds={2} />
             
             {/* Connection Requests */}
             <ConnectionRequests />
