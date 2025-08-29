@@ -36,7 +36,17 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
     year: 'numeric' 
   });
 
-  const uniqueId = `TAL${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
+  // Use a stable unique ID based on user profile or generate once
+  const uniqueId = React.useMemo(() => {
+    if (userProfile?.talentxcel_id) {
+      return userProfile.talentxcel_id;
+    }
+    // Generate stable ID based on user ID to prevent changes on re-render
+    const userId = currentUser || 'guest';
+    const seed = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const randomNum = (seed * 9999) % 999999;
+    return `TAL${String(randomNum).padStart(6, '0')}`;
+  }, [userProfile?.talentxcel_id, currentUser]);
 
   return (
     <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white border-0 overflow-hidden">

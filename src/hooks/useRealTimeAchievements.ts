@@ -1,3 +1,4 @@
+import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +21,9 @@ export function useRealTimeAchievements() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { metrics, achievementTriggers } = useRealCareerData();
+  
+  // Track which achievements have been processed to prevent duplicates
+  const processedAchievements = React.useRef(new Set<string>());
 
   const awardAchievement = useMutation({
     mutationFn: async (achievementData: {
@@ -31,7 +35,15 @@ export function useRealTimeAchievements() {
     }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // Check if achievement already exists
+      // Create a unique key for this achievement
+      const achievementKey = `${user.id}-${achievementData.title}`;
+      
+      // Check if we've already processed this achievement in this session
+      if (processedAchievements.current.has(achievementKey)) {
+        throw new Error('Achievement already processed');
+      }
+
+      // Check if achievement already exists in database
       const { data: existing } = await supabase
         .from('career_achievements')
         .select('id')
@@ -40,7 +52,8 @@ export function useRealTimeAchievements() {
         .single();
 
       if (existing) {
-        return existing; // Already earned
+        processedAchievements.current.add(achievementKey);
+        throw new Error('Achievement already exists');
       }
 
       // Award new achievement
@@ -61,22 +74,37 @@ export function useRealTimeAchievements() {
 
       if (error) throw error;
 
+      // Mark this achievement as processed
+      processedAchievements.current.add(achievementKey);
+      
       // Update user's total points
       await updateUserPoints(achievementData.points);
       
       return data;
     },
     onSuccess: (data, variables) => {
+      // Only show notification if this is a new achievement (not already processed)
+      if (data && !processedAchievements.current.has(`${user?.id}-${variables.title}-notified`)) {
+        // Mark notification as shown
+        processedAchievements.current.add(`${user?.id}-${variables.title}-notified`);
+        
+        // Show achievement notification
+        toast.success(`🏆 Achievement Unlocked: ${variables.title}!`, {
+          description: `You earned ${variables.points} points!`,
+          duration: 5000
+        });
+      }
+      
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['career-achievements'] });
       queryClient.invalidateQueries({ queryKey: ['userScores'] });
       queryClient.invalidateQueries({ queryKey: ['real-career-metrics'] });
-      
-      // Show achievement notification
-      toast.success(`🏆 Achievement Unlocked: ${variables.title}!`, {
-        description: `You earned ${variables.points} points!`,
-        duration: 5000
-      });
+    },
+    onError: (error) => {
+      // Don't show error for duplicate achievements
+      if (!error.message.includes('already')) {
+        console.error('Achievement error:', error);
+      }
     }
   });
 
