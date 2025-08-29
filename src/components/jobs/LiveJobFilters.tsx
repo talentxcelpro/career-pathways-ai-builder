@@ -48,7 +48,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
   };
 
   const toggleArrayFilter = (key: keyof JobFilters, value: string) => {
-    const currentArray = filters[key] as string[];
+    const currentArray = (filters[key] as string[]) || [];
     const newArray = currentArray.includes(value)
       ? currentArray.filter(item => item !== value)
       : [...currentArray, value];
@@ -59,19 +59,19 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
     let count = 0;
     if (filters.search) count++;
     if (filters.location) count++;
-    if (filters.employment_type.length > 0) count++;
-    if (filters.experience_level.length > 0) count++;
+    if (filters.employment_type?.length > 0) count++;
+    if (filters.experience_level?.length > 0) count++;
     if (filters.salary_min > 0 || filters.salary_max > 0) count++;
     if (filters.is_remote) count++;
-    if (filters.skills.length > 0) count++;
-    if (filters.department.length > 0) count++;
-    if (filters.company_type.length > 0) count++;
-    if (filters.work_mode.length > 0) count++;
-    if (filters.industry.length > 0) count++;
-    if (filters.role_category.length > 0) count++;
-    if (filters.education.length > 0) count++;
-    if (filters.posted_by.length > 0) count++;
-    if (filters.freshness.length > 0) count++;
+    if (filters.skills?.length > 0) count++;
+    if (filters.department?.length > 0) count++;
+    if (filters.company_type?.length > 0) count++;
+    if (filters.work_mode?.length > 0) count++;
+    if (filters.industry?.length > 0) count++;
+    if (filters.role_category?.length > 0) count++;
+    if (filters.education?.length > 0) count++;
+    if (filters.posted_by?.length > 0) count++;
+    if (filters.freshness?.length > 0) count++;
     return count;
   };
 
