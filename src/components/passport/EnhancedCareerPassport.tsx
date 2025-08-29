@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useRealTimeAchievements } from '@/hooks/useRealTimeAchievements';
+import { PassportCard } from './PassportCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -81,6 +82,16 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
 
   return (
     <div className="space-y-6">
+      {/* TalentXcel Passport Card */}
+      <div className="flex justify-center mb-8">
+        <PassportCard 
+          userProfile={userProfile}
+          metrics={metrics}
+          insights={insights}
+          userId={userId}
+        />
+      </div>
+
       {/* Header Card with Real Scores */}
       <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-purple-500/5">
         <CardHeader className="pb-4">
