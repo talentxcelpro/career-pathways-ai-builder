@@ -94,6 +94,7 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
     setError(null);
 
     try {
+      // Try edge function first (server-side filtering)
       const { data, error } = await supabase.functions.invoke('cv-search', {
         body: {
           searchTerm: debouncedSearchTerm,
@@ -111,8 +112,72 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
       setPagination(data.pagination);
       setFilterOptions(data.filterOptions);
     } catch (err) {
-      console.error('Search error:', err);
-      setError('Failed to search candidates');
+      console.error('Edge search failed, using fallback:', err);
+      // Fallback: query directly from candidates table (client-side)
+      try {
+        let q = supabase
+          .from('candidates')
+          .select('*', { count: 'exact' });
+
+        if (debouncedSearchTerm) {
+          q = q.or(`
+            name.ilike.%${debouncedSearchTerm}%,
+            title.ilike.%${debouncedSearchTerm}%,
+            company.ilike.%${debouncedSearchTerm}%,
+            description.ilike.%${debouncedSearchTerm}%,
+            location.ilike.%${debouncedSearchTerm}%
+          `);
+        }
+
+        if (filters.source && filters.source.length > 0) {
+          if (filters.source.includes('applied')) q = q.eq('applied', true);
+          if (filters.source.includes('platform')) q = q.eq('applied', false);
+        }
+        if (filters.skills && filters.skills.length > 0) q = q.overlaps('skills', filters.skills);
+        if (filters.location && filters.location.length > 0) {
+          const loc = filters.location.map((loc) => `location.ilike.%${loc}%`).join(',');
+          q = q.or(loc);
+        }
+        if (filters.companies && filters.companies.length > 0) q = q.in('company', filters.companies);
+        if (filters.titles && filters.titles.length > 0) {
+          const titleConds = filters.titles.map((t) => `title.ilike.%${t}%`).join(',');
+          q = q.or(titleConds);
+        }
+        if (filters.hasResume === true) q = q.not('resume_url', 'is', null);
+
+        // Sort and paginate
+        q = q.order('created_at', { ascending: false });
+        const from = (page - 1) * pagination.limit;
+        const to = from + pagination.limit - 1;
+        q = q.range(from, to);
+
+        const { data: rows, error: rowsErr, count } = await q;
+        if (rowsErr) throw rowsErr;
+
+        // Build filter options
+        const { data: all } = await supabase
+          .from('candidates')
+          .select('skills, location, company, title');
+
+        setCandidates(rows || []);
+        setPagination({
+          page,
+          limit: pagination.limit,
+          total: count || 0,
+          totalPages: Math.ceil((count || 0) / pagination.limit),
+          hasNext: ((count || 0) > page * pagination.limit),
+          hasPrev: page > 1,
+        });
+        setFilterOptions({
+          skills: [...new Set(all?.flatMap((c: any) => c.skills || []))].filter(Boolean) as string[],
+          locations: [...new Set((all || []).map((c: any) => c.location).filter(Boolean))] as string[],
+          companies: [...new Set((all || []).map((c: any) => c.company).filter(Boolean))] as string[],
+          titles: [...new Set((all || []).map((c: any) => c.title).filter(Boolean))] as string[],
+        });
+      } catch (fallbackErr: any) {
+        console.error('Fallback search error:', fallbackErr);
+        setError('Failed to search candidates');
+      }
     } finally {
       setLoading(false);
     }
