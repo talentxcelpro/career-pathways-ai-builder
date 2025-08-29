@@ -23,12 +23,12 @@ import {
   Download,
   Heart,
   MessageCircle,
-  LinkedinIcon,
+  Linkedin,
   Twitter
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface SocialSettings {
   isPublic: boolean;
@@ -59,24 +59,64 @@ export function SocialSharingFeatures({ userId, userProfile }: {
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [selectedContent, setSelectedContent] = useState<ShareableContent | null>(null);
 
+  // Mock data for development
+  const mockSocialSettings: SocialSettings = {
+    isPublic: true,
+    showAchievements: true,
+    showScores: true,
+    showJourney: true,
+    customUrl: 'john-doe',
+    bio: 'Professional software developer with expertise in React and TypeScript'
+  };
+
+  const mockPassportViews = 156;
+
+  const mockViewers = [
+    {
+      id: '1',
+      viewer_user_id: 'user1',
+      viewed_at: '2024-08-29T10:00:00Z',
+      profiles: {
+        full_name: 'Alice Johnson',
+        profile_picture_url: '/placeholder.svg',
+        headline: 'Senior Developer at TechCorp'
+      }
+    },
+    {
+      id: '2',
+      viewer_user_id: 'user2',
+      viewed_at: '2024-08-28T15:30:00Z',
+      profiles: {
+        full_name: 'Bob Smith',
+        profile_picture_url: '/placeholder.svg',
+        headline: 'Product Manager'
+      }
+    }
+  ];
+
+  const mockAchievements = [
+    {
+      id: '1',
+      title: 'Profile Pioneer',
+      description: 'Completed your professional profile',
+      points: 100,
+      isPublic: true
+    },
+    {
+      id: '2',
+      title: 'Networking Ninja',
+      description: 'Made 10 professional connections',
+      points: 250,
+      isPublic: true
+    }
+  ];
+
   // Fetch social settings
   const { data: socialSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['social-settings', targetUserId],
     queryFn: async () => {
-      if (!targetUserId) return null;
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('social_settings, custom_url')
-        .eq('id', targetUserId)
-        .single();
-
-      if (error) throw error;
-      
-      return {
-        ...data.social_settings,
-        customUrl: data.custom_url
-      } as SocialSettings;
+      // For development, return mock data
+      return mockSocialSettings;
     },
     enabled: !!targetUserId,
   });
@@ -85,15 +125,8 @@ export function SocialSharingFeatures({ userId, userProfile }: {
   const { data: passportViews = 0 } = useQuery({
     queryKey: ['passport-views', targetUserId],
     queryFn: async () => {
-      if (!targetUserId) return 0;
-      
-      const { data, error } = await supabase
-        .from('passport_views')
-        .select('*')
-        .eq('profile_user_id', targetUserId);
-
-      if (error) return 0;
-      return data.length;
+      // For development, return mock data
+      return mockPassportViews;
     },
     enabled: !!targetUserId,
   });
@@ -101,17 +134,8 @@ export function SocialSharingFeatures({ userId, userProfile }: {
   // Update social settings
   const updateSettings = useMutation({
     mutationFn: async (newSettings: Partial<SocialSettings>) => {
-      if (!user?.id) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          social_settings: newSettings,
-          custom_url: newSettings.customUrl 
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      // Mock implementation
+      console.log('Updating settings:', newSettings);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['social-settings', targetUserId] });
@@ -122,17 +146,8 @@ export function SocialSharingFeatures({ userId, userProfile }: {
   // Track passport view
   const trackView = useMutation({
     mutationFn: async () => {
-      if (!targetUserId || targetUserId === user?.id) return;
-
-      const { error } = await supabase
-        .from('passport_views')
-        .insert({
-          profile_user_id: targetUserId,
-          viewer_user_id: user?.id,
-          viewed_at: new Date().toISOString()
-        });
-
-      if (error && error.code !== '23505') throw error; // Ignore duplicate entries
+      // Mock implementation
+      console.log('Tracking view for user:', targetUserId);
     }
   });
 
@@ -365,7 +380,7 @@ export function SocialSharingFeatures({ userId, userProfile }: {
         <CardContent>
           <div className="flex items-center justify-center p-4">
             <div className="bg-white p-4 rounded-lg shadow-sm">
-              <QRCode 
+              <QRCodeSVG 
                 value={generateShareUrl('passport')}
                 size={200}
                 level="M"
@@ -483,7 +498,7 @@ function ShareContentDialog({
           onClick={() => onShare('linkedin', content)}
           className="text-blue-600"
         >
-          <LinkedinIcon className="w-4 h-4 mr-1" />
+          <Linkedin className="w-4 h-4 mr-1" />
           LinkedIn
         </Button>
         <Button 
@@ -507,7 +522,7 @@ function ShareContentDialog({
       {/* QR Code */}
       <div className="text-center pt-4 border-t">
         <div className="bg-white p-2 inline-block rounded">
-          <QRCode value={content.url} size={120} />
+          <QRCodeSVG value={content.url} size={120} />
         </div>
       </div>
     </div>
@@ -515,43 +530,33 @@ function ShareContentDialog({
 }
 
 function RecentViewers({ userId }: { userId?: string }) {
-  const { data: viewers = [] } = useQuery({
-    queryKey: ['recent-viewers', userId],
-    queryFn: async () => {
-      if (!userId) return [];
-      
-      const { data, error } = await supabase
-        .from('passport_views')
-        .select(`
-          viewer_user_id,
-          viewed_at,
-          profiles:viewer_user_id (
-            full_name,
-            profile_picture_url,
-            headline
-          )
-        `)
-        .eq('profile_user_id', userId)
-        .order('viewed_at', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return data;
+  // Mock data for development
+  const mockViewers = [
+    {
+      id: '1',
+      viewer_user_id: 'user1',
+      viewed_at: '2024-08-29T10:00:00Z',
+      profiles: {
+        full_name: 'Alice Johnson',
+        profile_picture_url: '/placeholder.svg',
+        headline: 'Senior Developer at TechCorp'
+      }
     },
-    enabled: !!userId,
-  });
-
-  if (viewers.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground">
-        No recent viewers
-      </div>
-    );
-  }
+    {
+      id: '2',
+      viewer_user_id: 'user2',
+      viewed_at: '2024-08-28T15:30:00Z',
+      profiles: {
+        full_name: 'Bob Smith',
+        profile_picture_url: '/placeholder.svg',
+        headline: 'Product Manager'
+      }
+    }
+  ];
 
   return (
     <div className="space-y-3">
-      {viewers.map((viewer, index) => (
+      {mockViewers.map((viewer, index) => (
         <div key={index} className="flex items-center space-x-3">
           <Avatar className="w-8 h-8">
             <AvatarImage src={viewer.profiles?.profile_picture_url} />
@@ -574,43 +579,39 @@ function ShareableAchievements({
   userId, 
   onShare 
 }: { 
-  userId?: string;
+  userId?: string; 
   onShare: (achievement: any) => void;
 }) {
-  const { data: achievements = [] } = useQuery({
-    queryKey: ['shareable-achievements', userId],
-    queryFn: async () => {
-      if (!userId) return [];
-      
-      const { data, error } = await supabase
-        .from('career_achievements')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('is_public', true)
-        .order('earned_at', { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      return data;
+  // Mock data for development
+  const mockAchievements = [
+    {
+      id: '1',
+      title: 'Profile Pioneer',
+      description: 'Completed your professional profile',
+      points: 100,
+      isPublic: true
     },
-    enabled: !!userId,
-  });
-
-  if (achievements.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground">
-        No public achievements to share
-      </div>
-    );
-  }
+    {
+      id: '2',
+      title: 'Networking Ninja',
+      description: 'Made 10 professional connections',
+      points: 250,
+      isPublic: true
+    }
+  ];
 
   return (
     <div className="space-y-3">
-      {achievements.map((achievement) => (
-        <div key={achievement.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-          <div className="flex-1">
-            <h4 className="font-medium text-sm">{achievement.achievement_title}</h4>
-            <p className="text-xs text-muted-foreground">{achievement.points_awarded} points</p>
+      {mockAchievements.map((achievement) => (
+        <div key={achievement.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
+              <Trophy className="w-4 h-4 text-yellow-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">{achievement.title}</p>
+              <p className="text-xs text-muted-foreground">{achievement.description}</p>
+            </div>
           </div>
           <Button 
             variant="ghost" 

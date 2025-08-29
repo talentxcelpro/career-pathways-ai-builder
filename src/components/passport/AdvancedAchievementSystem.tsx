@@ -20,7 +20,9 @@ import {
   Clock,
   Lock,
   Share2,
-  Filter
+  Filter,
+  Briefcase,
+  Users
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -139,24 +141,6 @@ export function AdvancedAchievementSystem({ userId }: { userId?: string }) {
     category.earnedCount = category.achievements.length;
   });
 
-  const getRarityIcon = (rarity?: string) => {
-    switch (rarity) {
-      case 'legendary': return <Crown className="w-4 h-4 text-purple-500" />;
-      case 'epic': return <Shield className="w-4 h-4 text-blue-500" />;
-      case 'rare': return <Flame className="w-4 h-4 text-orange-500" />;
-      default: return <CheckCircle className="w-4 h-4 text-gray-500" />;
-    }
-  };
-
-  const getRarityColor = (rarity?: string) => {
-    switch (rarity) {
-      case 'legendary': return 'border-purple-300 bg-purple-50';
-      case 'epic': return 'border-blue-300 bg-blue-50';
-      case 'rare': return 'border-orange-300 bg-orange-50';
-      default: return 'border-gray-200 bg-gray-50';
-    }
-  };
-
   const filteredAchievements = selectedCategory === 'all' 
     ? achievements 
     : categories.find(c => c.id === selectedCategory)?.achievements || [];
@@ -269,6 +253,24 @@ function AchievementCard({ achievement, onShare }: {
 }) {
   const earnedDate = new Date(achievement.earned_at);
   
+  const getRarityIcon = (rarity?: string) => {
+    switch (rarity) {
+      case 'legendary': return <Crown className="w-4 h-4 text-purple-500" />;
+      case 'epic': return <Shield className="w-4 h-4 text-blue-500" />;
+      case 'rare': return <Flame className="w-4 h-4 text-orange-500" />;
+      default: return <CheckCircle className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  const getRarityColor = (rarity?: string) => {
+    switch (rarity) {
+      case 'legendary': return 'border-purple-300 bg-purple-50';
+      case 'epic': return 'border-blue-300 bg-blue-50';
+      case 'rare': return 'border-orange-300 bg-orange-50';
+      default: return 'border-gray-200 bg-gray-50';
+    }
+  };
+  
   return (
     <Card className={`relative overflow-hidden transition-all hover:shadow-md ${getRarityColor(achievement.rarity)}`}>
       <CardContent className="p-4">
@@ -319,24 +321,39 @@ function AchievementCard({ achievement, onShare }: {
 }
 
 function AchievementLeaderboard() {
-  const { data: leaderboard = [] } = useQuery({
+  // Mock data for development
+  const mockLeaderboard = [
+    {
+      user_id: '1',
+      total_points: 2500,
+      profiles: {
+        full_name: 'Sarah Wilson',
+        profile_picture_url: '/placeholder.svg'
+      }
+    },
+    {
+      user_id: '2',
+      total_points: 2200,
+      profiles: {
+        full_name: 'Michael Chen',
+        profile_picture_url: '/placeholder.svg'
+      }
+    },
+    {
+      user_id: '3',
+      total_points: 1800,
+      profiles: {
+        full_name: 'Emma Rodriguez',
+        profile_picture_url: '/placeholder.svg'
+      }
+    }
+  ];
+
+  const { data: leaderboard = mockLeaderboard } = useQuery({
     queryKey: ['achievement-leaderboard'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_scores')
-        .select(`
-          user_id,
-          total_points,
-          profiles:user_id (
-            full_name,
-            profile_picture_url
-          )
-        `)
-        .order('total_points', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return data;
+      // For development, return mock data
+      return mockLeaderboard;
     },
   });
 

@@ -117,7 +117,7 @@ export function JourneyTrackingAnalytics({ userId }: { userId?: string }) {
     const totalEvents = journeyEvents.length;
     const totalImpact = journeyEvents.reduce((sum, e) => sum + e.impact_score, 0);
     const avgDailyActivity = totalEvents / currentTimeframe.days;
-    const mostActiveModule = Object.entries(moduleActivity).sort((a, b) => b[1] - a[1])[0]?.[0];
+    const mostActiveModule = Object.entries(moduleActivity).sort((a, b) => Number(b[1]) - Number(a[1]))[0]?.[0];
     
     // Recent milestones
     const milestones = journeyEvents
