@@ -30,6 +30,11 @@ import { SocialPagination } from '@/components/ui/social-pagination';
 import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
 import { SmartJobRecommendations } from '@/components/jobs/SmartJobRecommendations';
 import { ApplicationTracker } from '@/components/jobs/ApplicationTracker';
+import { EmployeeReviews } from '@/components/jobs/EmployeeReviews';
+import { ReferralNetwork } from '@/components/jobs/ReferralNetwork';
+import { GamificationSystem } from '@/components/jobs/GamificationSystem';
+import { AICareerAssistant } from '@/components/jobs/AICareerAssistant';
+import { CareerAnalyticsDashboard } from '@/components/jobs/CareerAnalyticsDashboard';
 import { JobCard } from '@/components/jobs/JobCard';
 
 const Jobs = () => {
@@ -505,6 +510,28 @@ const Jobs = () => {
             />
           </div>
         )}
+
+        {/* Phase 2-4 Enhanced Features */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* AI Career Assistant */}
+          <AICareerAssistant />
+          
+          {/* Gamification System */}
+          <GamificationSystem />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Employee Reviews */}
+          <EmployeeReviews companyId="sample-company" companyName="TechCorp" />
+          
+          {/* Referral Network */}
+          <ReferralNetwork companyId="sample-company" targetRole="Software Engineer" />
+          
+          {/* Career Analytics Dashboard */}
+          <div className="lg:col-span-1">
+            <CareerAnalyticsDashboard />
+          </div>
+        </div>
 
         {/* Featured Jobs Section with Enhanced Cards */}
         {featuredJobs.length > 0 && (
