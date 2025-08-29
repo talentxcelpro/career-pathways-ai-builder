@@ -26,64 +26,39 @@ export const PlatformCVs: React.FC<PlatformCVsProps> = ({
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: platformCVs, isLoading } = useQuery({
-    queryKey: ['platform_cvs'],
+    queryKey: ['platform_cvs_unified'],
     queryFn: async () => {
-      // Get all profiles that have meaningful content (resume URL, about section, or work experience)
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          full_name,
-          email,
-          phone,
-          location,
-          title,
-          profile_picture_url,
-          about,
-          skills,
-          experience_years,
-          current_company,
-          looking_for_job,
-          resume_url,
-          created_at,
-          linkedin_url,
-          github_url,
-          portfolio_url,
-          industry,
-          user_role
-        `)
-        .neq('user_role', 'employer')
-        .eq('is_profile_public', true)
-        .or('resume_url.neq.,about.neq.,skills.not.is.null')
-        .order('created_at', { ascending: false });
+      // Use the cv-search edge function to get platform candidates consistently
+      const { data, error } = await supabase.functions.invoke('cv-search', {
+        body: {
+          searchTerm: '',
+          filters: { source: ['platform'] },
+          page: 1,
+          limit: 1000 // Get all platform candidates
+        }
+      });
 
       if (error) throw error;
-
-      // Filter out profiles with minimal information
-      return data?.filter(profile => 
-        profile.resume_url || 
-        (profile.about && profile.about.length > 50) ||
-        (profile.skills && profile.skills.length > 0) ||
-        profile.experience_years
-      ).map(profile => ({
-        id: profile.id,
-        full_name: profile.full_name || 'Unknown',
-        email: profile.email || '',
-        phone: profile.phone,
-        location: profile.location,
-        title: profile.title,
-        resume_url: profile.resume_url,
-        profile_picture_url: profile.profile_picture_url,
-        about: profile.about,
-        skills: profile.skills || [],
-        experience_years: profile.experience_years,
-        current_company: profile.current_company,
-        looking_for_job: profile.looking_for_job,
-        created_at: profile.created_at,
-        linkedin_url: profile.linkedin_url,
-        github_url: profile.github_url,
-        portfolio_url: profile.portfolio_url,
-        industry: profile.industry
+      
+      return data?.data?.map((candidate: any) => ({
+        id: candidate.id,
+        full_name: candidate.name || 'Unknown',
+        email: candidate.email || '',
+        phone: candidate.phone,
+        location: candidate.location,
+        title: candidate.title,
+        resume_url: candidate.resume_url,
+        profile_picture_url: candidate.profile_picture_url,
+        about: candidate.description,
+        skills: candidate.skills || [],
+        experience_years: candidate.experience_years,
+        current_company: candidate.company,
+        looking_for_job: candidate.looking_for_job,
+        created_at: candidate.created_at,
+        linkedin_url: candidate.linkedin_url,
+        github_url: candidate.github_url,
+        portfolio_url: candidate.portfolio_url,
+        industry: candidate.industry
       })) || [];
     }
   });
@@ -93,7 +68,7 @@ export const PlatformCVs: React.FC<PlatformCVsProps> = ({
       cv.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cv.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cv.current_company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cv.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      cv.skills?.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase())) ||
       cv.about?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesLocation = !locationFilter || 
@@ -198,7 +173,7 @@ export const PlatformCVs: React.FC<PlatformCVsProps> = ({
       {/* Results Summary */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {filteredCVs.length} candidates found
           </p>
           <div className="flex items-center gap-2">
@@ -206,7 +181,7 @@ export const PlatformCVs: React.FC<PlatformCVsProps> = ({
               checked={selectedCVs.length === filteredCVs.length && filteredCVs.length > 0}
               onCheckedChange={handleSelectAll}
             />
-            <span className="text-sm">Select All</span>
+            <span className="text-sm">Select All ({filteredCVs.length})</span>
           </div>
         </div>
 
