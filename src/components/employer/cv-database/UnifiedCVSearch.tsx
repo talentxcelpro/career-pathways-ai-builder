@@ -93,6 +93,7 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
     setLoading(true);
     setError(null);
 
+    console.log('Starting searchCandidates with:', { debouncedSearchTerm, filters, page });
     try {
       // Try edge function first (server-side filtering)
       const { data, error } = await supabase.functions.invoke('cv-search', {
@@ -106,8 +107,12 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.log('Edge function error:', error);
+        throw error;
+      }
 
+      console.log('Edge function success:', data);
       setCandidates(data.candidates || []);
       setPagination(data.pagination);
       setFilterOptions(data.filterOptions);
@@ -151,8 +156,8 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
         const to = from + pagination.limit - 1;
         q = q.range(from, to);
 
+        console.log('Direct query result:', { count, rows: rows?.length });
         const { data: rows, error: rowsErr, count } = await q;
-        if (rowsErr) throw rowsErr;
 
         // Build filter options
         const { data: all } = await supabase
@@ -183,7 +188,28 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
     }
   }, [debouncedSearchTerm, filters, pagination.limit]);
 
-  // Initial search on mount is handled by the effect below
+  // Initial load with sync and search
+  useEffect(() => {
+    console.log('Component mounted, starting sync and search...');
+    const initializeData = async () => {
+      try {
+        console.log('Attempting to sync candidates...');
+        const syncResult = await supabase.functions.invoke('sync-candidates');
+        console.log('Sync result:', syncResult);
+        
+        // Wait a moment for sync to complete, then search
+        setTimeout(() => {
+          console.log('Starting initial search after sync...');
+          searchCandidates(1);
+        }, 1000);
+      } catch (err) {
+        console.error('Sync failed, proceeding with search:', err);
+        searchCandidates(1);
+      }
+    };
+    
+    initializeData();
+  }, []);
 
   useEffect(() => {
     searchCandidates(1);
