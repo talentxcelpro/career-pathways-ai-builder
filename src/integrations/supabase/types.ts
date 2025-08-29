@@ -7748,6 +7748,48 @@ export type Database = {
         }
         Relationships: []
       }
+      content_similarity: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          similar_post_id: string
+          similarity_score: number
+          similarity_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          similar_post_id: string
+          similarity_score: number
+          similarity_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          similar_post_id?: string
+          similarity_score?: number
+          similarity_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_similarity_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_similarity_similar_post_id_fkey"
+            columns: ["similar_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_activities: {
         Row: {
           activity_type: string
@@ -13683,6 +13725,44 @@ export type Database = {
         }
         Relationships: []
       }
+      post_analytics: {
+        Row: {
+          created_at: string
+          dwell_time_seconds: number | null
+          engagement_type: string
+          engagement_value: number | null
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dwell_time_seconds?: number | null
+          engagement_type: string
+          engagement_value?: number | null
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dwell_time_seconds?: number | null
+          engagement_type?: string
+          engagement_value?: number | null
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_analytics_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_comments: {
         Row: {
           author_id: string | null
@@ -13897,6 +13977,44 @@ export type Database = {
           },
         ]
       }
+      post_views: {
+        Row: {
+          id: string
+          ip_address: unknown | null
+          post_id: string
+          user_agent: string | null
+          user_id: string | null
+          view_duration: number | null
+          viewed_at: string | null
+        }
+        Insert: {
+          id?: string
+          ip_address?: unknown | null
+          post_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          view_duration?: number | null
+          viewed_at?: string | null
+        }
+        Update: {
+          id?: string
+          ip_address?: unknown | null
+          post_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          view_duration?: number | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           article_category: string | null
@@ -13907,6 +14025,7 @@ export type Database = {
           content_type: string | null
           created_at: string | null
           featured_image_url: string | null
+          hashtags: string[] | null
           headline: string | null
           id: string
           intent_tags: string[] | null
@@ -13916,6 +14035,7 @@ export type Database = {
           is_featured: boolean | null
           is_pinned: boolean | null
           is_public: boolean | null
+          language: string | null
           likes_count: number | null
           location: string | null
           media_urls: string[] | null
@@ -13930,6 +14050,7 @@ export type Database = {
           status: string | null
           tagline: string | null
           tags: string[] | null
+          translated_content: Json | null
           updated_at: string | null
           user_id: string | null
           views_count: number | null
@@ -13945,6 +14066,7 @@ export type Database = {
           content_type?: string | null
           created_at?: string | null
           featured_image_url?: string | null
+          hashtags?: string[] | null
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
@@ -13954,6 +14076,7 @@ export type Database = {
           is_featured?: boolean | null
           is_pinned?: boolean | null
           is_public?: boolean | null
+          language?: string | null
           likes_count?: number | null
           location?: string | null
           media_urls?: string[] | null
@@ -13968,6 +14091,7 @@ export type Database = {
           status?: string | null
           tagline?: string | null
           tags?: string[] | null
+          translated_content?: Json | null
           updated_at?: string | null
           user_id?: string | null
           views_count?: number | null
@@ -13983,6 +14107,7 @@ export type Database = {
           content_type?: string | null
           created_at?: string | null
           featured_image_url?: string | null
+          hashtags?: string[] | null
           headline?: string | null
           id?: string
           intent_tags?: string[] | null
@@ -13992,6 +14117,7 @@ export type Database = {
           is_featured?: boolean | null
           is_pinned?: boolean | null
           is_public?: boolean | null
+          language?: string | null
           likes_count?: number | null
           location?: string | null
           media_urls?: string[] | null
@@ -14006,6 +14132,7 @@ export type Database = {
           status?: string | null
           tagline?: string | null
           tags?: string[] | null
+          translated_content?: Json | null
           updated_at?: string | null
           user_id?: string | null
           views_count?: number | null
@@ -21472,6 +21599,66 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_hashtags: {
+        Row: {
+          count: number | null
+          created_at: string | null
+          date: string | null
+          hashtag: string
+          id: string
+        }
+        Insert: {
+          count?: number | null
+          created_at?: string | null
+          date?: string | null
+          hashtag: string
+          id?: string
+        }
+        Update: {
+          count?: number | null
+          created_at?: string | null
+          date?: string | null
+          hashtag?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      trending_topics: {
+        Row: {
+          calculated_at: string
+          engagement_count: number
+          id: string
+          post_count: number
+          time_period: string
+          topic: string
+          topic_type: string
+          trend_score: number
+          velocity_score: number
+        }
+        Insert: {
+          calculated_at?: string
+          engagement_count?: number
+          id?: string
+          post_count?: number
+          time_period: string
+          topic: string
+          topic_type: string
+          trend_score?: number
+          velocity_score?: number
+        }
+        Update: {
+          calculated_at?: string
+          engagement_count?: number
+          id?: string
+          post_count?: number
+          time_period?: string
+          topic?: string
+          topic_type?: string
+          trend_score?: number
+          velocity_score?: number
+        }
+        Relationships: []
+      }
       trending_topics_by_role: {
         Row: {
           created_at: string | null
@@ -22103,6 +22290,66 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           weekly_growth?: number | null
+        }
+        Relationships: []
+      }
+      user_feed_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          preference_type: string
+          preference_value: string
+          updated_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          preference_type: string
+          preference_value: string
+          updated_at?: string
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          preference_type?: string
+          preference_value?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
+      user_interactions: {
+        Row: {
+          id: string
+          interaction_strength: number | null
+          interaction_type: string
+          last_interaction: string
+          target_user_id: string | null
+          total_interactions: number | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          interaction_strength?: number | null
+          interaction_type: string
+          last_interaction?: string
+          target_user_id?: string | null
+          total_interactions?: number | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          interaction_strength?: number | null
+          interaction_type?: string
+          last_interaction?: string
+          target_user_id?: string | null
+          total_interactions?: number | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -23452,6 +23699,10 @@ export type Database = {
         Args: { company_uuid: string }
         Returns: number
       }
+      calculate_engagement_score: {
+        Args: { p_post_id: string; p_time_decay_hours?: number }
+        Returns: number
+      }
       calculate_job_popularity: {
         Args: { job_id: string }
         Returns: number
@@ -23475,6 +23726,10 @@ export type Database = {
       }
       calculate_resume_completion_enhanced: {
         Args: { resume_uuid: string }
+        Returns: number
+      }
+      calculate_trending_score: {
+        Args: { p_time_period: string; p_topic: string; p_topic_type: string }
         Returns: number
       }
       can_apply_to_job: {
@@ -24316,6 +24571,15 @@ export type Database = {
           new_status: string
           new_step: string
           status_id: string
+        }
+        Returns: undefined
+      }
+      update_user_interaction: {
+        Args: {
+          p_interaction_type: string
+          p_strength_increment?: number
+          p_target_user_id: string
+          p_user_id: string
         }
         Returns: undefined
       }
