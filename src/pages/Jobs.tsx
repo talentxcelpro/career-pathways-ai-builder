@@ -433,7 +433,7 @@ const Jobs = () => {
                     setExperienceLevel(value);
                     setFilters(prev => ({ 
                       ...prev, 
-                      experience_level: value ? [value] : [] 
+                      experience_level: value === 'all' ? [] : [value] 
                     }));
                     setTimeout(() => refetch(), 100);
                   }}
@@ -442,7 +442,7 @@ const Jobs = () => {
                     <SelectValue placeholder="Experience ⌄" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border shadow-lg z-50">
-                    <SelectItem value="">All Experience</SelectItem>
+                    <SelectItem value="all">All Experience</SelectItem>
                     <SelectItem value="entry">Fresher (0-1y)</SelectItem>
                     <SelectItem value="junior">Junior (1-3y)</SelectItem>
                     <SelectItem value="mid">Mid-level (3-6y)</SelectItem>
