@@ -2,7 +2,7 @@
   "name": "TalentXcel - AI-Powered Career Platform",
   "short_name": "TalentXcel",
   "description": "Your Career. One Platform. Endless Possibilities. Find jobs, grow skills, network with professionals.",
-  "start_url": "/",
+  "start_url": "/?utm_source=web_app_manifest",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3B82F6",
