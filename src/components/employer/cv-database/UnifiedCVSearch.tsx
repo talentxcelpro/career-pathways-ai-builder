@@ -156,8 +156,9 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
         const to = from + pagination.limit - 1;
         q = q.range(from, to);
 
-        console.log('Direct query result:', { count, rows: rows?.length });
         const { data: rows, error: rowsErr, count } = await q;
+        if (rowsErr) throw rowsErr;
+        console.log('Direct query result:', { count, rowsLength: rows?.length });
 
         // Build filter options
         const { data: all } = await supabase
