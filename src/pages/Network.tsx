@@ -11,10 +11,11 @@ import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
-import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Linkedin } from "lucide-react";
 import Posts from './network/Posts';
 import { RocketFeed } from "@/components/network/RocketFeed";
 import { RocketOptimizer } from "@/components/performance/RocketOptimizer";
+import { LinkedInStyleFeed } from "@/components/network/LinkedInStyleFeed";
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
@@ -107,8 +108,12 @@ const Network = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+        <Tabs defaultValue="linkedin-feed" className="w-full">
+          <TabsList className="grid w-full grid-cols-7 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+            <TabsTrigger value="linkedin-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Linkedin className="w-3 h-3" />
+              <span className="hidden sm:inline">Professional</span>
+            </TabsTrigger>
             <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline">Feed</span>
@@ -134,6 +139,16 @@ const Network = () => {
               <span className="hidden sm:inline">AI Connect</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="linkedin-feed" className="mt-0">
+            <React.Suspense fallback={
+              <div className="flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <LinkedInStyleFeed />
+            </React.Suspense>
+          </TabsContent>
 
           <TabsContent value="feed" className="mt-0">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

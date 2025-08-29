@@ -106,7 +106,7 @@ export function useRocketFeed({
           likes_count,
           comments_count,
           shares_count,
-          profiles!posts_author_id_fkey (
+          profiles!posts_user_id_fkey (
             id,
             full_name,
             profile_picture_url,
