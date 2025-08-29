@@ -14,11 +14,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AppliedResumes } from './cv-database/AppliedResumes';
 import { PlatformCVs } from './cv-database/PlatformCVs';
+import { UnifiedCVSearch } from './cv-database/UnifiedCVSearch';
 
 export const CVDatabase: React.FC = () => {
   const [selectedCVs, setSelectedCVs] = useState<string[]>([]);
   const [showOutreachModal, setShowOutreachModal] = useState(false);
-  const [activeTab, setActiveTab] = useState('applied');
+  const [activeTab, setActiveTab] = useState('all');
 
   const { data: outreachUsage } = useQuery({
     queryKey: ['outreach_usage'],
@@ -147,7 +148,11 @@ export const CVDatabase: React.FC = () => {
 
       {/* Tabs for Different CV Sources */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="all" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            All Candidates ({stats?.totalCandidates || 0})
+          </TabsTrigger>
           <TabsTrigger value="applied" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Applied Resumes ({stats?.appliedCandidates || 0})
@@ -157,6 +162,24 @@ export const CVDatabase: React.FC = () => {
             Platform CVs ({stats?.platformCandidates || 0})
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="all" className="space-y-4">
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-blue-600" />
+              <h3 className="font-semibold text-blue-900">Unified CV Database</h3>
+            </div>
+            <p className="text-blue-700 text-sm mt-1">
+              Search and filter through all available candidates from both applied resumes and platform CVs in one unified view.
+            </p>
+          </div>
+          
+          <UnifiedCVSearch
+            selectedCVs={selectedCVs}
+            onSelectCV={handleSelectCV}
+            onSelectAll={handleSelectAll}
+          />
+        </TabsContent>
 
         <TabsContent value="applied" className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
