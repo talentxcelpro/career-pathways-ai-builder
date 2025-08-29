@@ -18,7 +18,8 @@ import { AIPostAssistant } from "@/components/network/AIPostAssistant";
 import { ConnectionRequests } from "@/components/network/ConnectionRequests";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
 import { CompanyNetworkActivity } from "@/components/network/CompanyNetworkActivity";
-import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
+import { OptimizedConnectionSuggestions } from "@/components/performance/OptimizedConnectionSuggestions";
+import { LiveNotificationSystem } from "@/components/realtime/LiveNotificationSystem";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { useRealtimeConnections } from "@/hooks/useRealtimeConnections";
 import { useRealtimeActivity } from "@/hooks/useRealtimeActivity";
@@ -346,7 +347,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }
             <ConnectionRequests />
             
             {/* Connection Suggestions */}
-            <ConnectionSuggestions />
+            <OptimizedConnectionSuggestions showVirtualized={true} />
 
             {/* Quick Actions */}
             <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
@@ -498,6 +499,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }
       
       {/* Floating Messenger */}
       <FloatingMessenger />
+      <LiveNotificationSystem userId={currentUserProfile?.id} />
       
       {/* Modern Messenger */}
       <ModernMessenger 
