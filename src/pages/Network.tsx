@@ -13,6 +13,8 @@ import { EmailTestButton } from "@/components/EmailTestButton";
 import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
 import Posts from './network/Posts';
+import { RocketFeed } from "@/components/network/RocketFeed";
+import { RocketOptimizer } from "@/components/performance/RocketOptimizer";
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
@@ -134,26 +136,46 @@ const Network = () => {
           </TabsList>
 
           <TabsContent value="feed" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Main Feed */}
+              <div className="lg:col-span-3 space-y-6">
+                <React.Suspense fallback={
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                }>
+                  <RocketFeed feedType="all" />
+                </React.Suspense>
+              </div>
+              
+              {/* Rocket Performance Panel */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-4">
+                  <RocketOptimizer />
                 </div>
-              }>
-                <Posts feedType="all" />
-              </React.Suspense>
+              </div>
             </div>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Smart Feed */}
+              <div className="lg:col-span-3 space-y-6">
+                <React.Suspense fallback={
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                }>
+                  <RocketFeed feedType="smart" />
+                </React.Suspense>
+              </div>
+              
+              {/* Rocket Performance Panel */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-4">
+                  <RocketOptimizer />
                 </div>
-              }>
-                <Posts feedType="smart" />
-              </React.Suspense>
+              </div>
             </div>
           </TabsContent>
 
