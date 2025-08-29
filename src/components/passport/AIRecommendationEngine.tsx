@@ -60,7 +60,17 @@ interface CareerPath {
   compatibility: number;
 }
 
-export function AIRecommendationEngine({ userId }: { userId?: string }) {
+export function AIRecommendationEngine({ 
+  userId, 
+  metrics, 
+  insights, 
+  userProfile 
+}: { 
+  userId?: string;
+  metrics?: any;
+  insights?: any;
+  userProfile?: any;
+}) {
   const { user } = useAuth();
   const targetUserId = userId || user?.id;
   const queryClient = useQueryClient();
@@ -88,7 +98,7 @@ export function AIRecommendationEngine({ userId }: { userId?: string }) {
   });
 
   // Fetch user profile for AI analysis
-  const { data: userProfile } = useQuery({
+  const { data: fetchedUserProfile } = useQuery({
     queryKey: ['user-profile', targetUserId],
     queryFn: async () => {
       if (!targetUserId) return null;
@@ -108,9 +118,9 @@ export function AIRecommendationEngine({ userId }: { userId?: string }) {
   // Generate new recommendations
   const generateRecommendations = useMutation({
     mutationFn: async () => {
-      if (!targetUserId || !userProfile) throw new Error('Missing data');
+      if (!targetUserId || !fetchedUserProfile) throw new Error('Missing data');
 
-      const result = await analyzeCareerPath(userProfile, userProfile.title || 'Professional');
+      const result = await analyzeCareerPath(fetchedUserProfile, fetchedUserProfile.title || 'Professional');
       
       if (result.success && result.data) {
         const aiData = result.data;

@@ -48,7 +48,15 @@ const timeframes: AnalyticsTimeframe[] = [
 
 const CHART_COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
 
-export function JourneyTrackingAnalytics({ userId }: { userId?: string }) {
+export function JourneyTrackingAnalytics({ 
+  userId, 
+  metrics, 
+  insights 
+}: { 
+  userId?: string;
+  metrics?: any;
+  insights?: any;
+}) {
   const { user } = useAuth();
   const targetUserId = userId || user?.id;
   const [selectedTimeframe, setSelectedTimeframe] = useState('30d');

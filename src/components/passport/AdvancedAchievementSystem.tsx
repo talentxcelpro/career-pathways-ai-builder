@@ -51,7 +51,19 @@ interface AchievementCategory {
   earnedCount: number;
 }
 
-export function AdvancedAchievementSystem({ userId }: { userId?: string }) {
+export function AdvancedAchievementSystem({ 
+  userId, 
+  achievements: propsAchievements = [], 
+  pendingAchievements: propsPendingAchievements = [], 
+  userProfile,
+  isOwner = true 
+}: { 
+  userId?: string;
+  achievements?: any[];
+  pendingAchievements?: any[];
+  userProfile?: any;
+  isOwner?: boolean;
+}) {
   const { user } = useAuth();
   const targetUserId = userId || user?.id;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

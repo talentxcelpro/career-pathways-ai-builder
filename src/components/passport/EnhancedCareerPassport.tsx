@@ -91,13 +91,14 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
   const pendingAchievements = achievementTriggers?.filter(a => !a.earned) || [];
 
   return (
-    <div className="space-y-6">
-      {/* TalentXcel Passport Card */}
-      <div className="flex justify-center mb-8">
-        <PassportCard 
-          userProfile={userProfile}
-          metrics={metrics}
-          insights={insights}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* TalentXcel Passport Card */}
+        <div className="flex justify-center mb-12">
+          <PassportCard 
+            userProfile={userProfile}
+            metrics={metrics}
+            insights={insights}
           userId={userId}
         />
       </div>
@@ -261,31 +262,67 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
         </Card>
       </div>
 
-      {/* Achievement System */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Trophy className="w-5 h-5 mr-2 text-yellow-500" />
-              Achievements ({earnedAchievements.length} earned)
+        {/* Enhanced Features Tabs */}
+        <Card className="overflow-hidden">
+          <Tabs defaultValue="achievements" className="w-full">
+            <div className="border-b">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="achievements" className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4" />
+                  Achievements
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="ai-insights" className="flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  AI Insights
+                </TabsTrigger>
+                <TabsTrigger value="social" className="flex items-center gap-2">
+                  <Share2 className="w-4 h-4" />
+                  Social
+                </TabsTrigger>
+              </TabsList>
             </div>
-            {isAwarding && <Skeleton className="w-16 h-6" />}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Earned Achievements */}
-            {earnedAchievements.map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} earned />
-            ))}
-            
-            {/* Progress Achievements */}
-            {pendingAchievements.slice(0, 4).map((achievement) => (
-              <AchievementCard key={achievement.id} achievement={achievement} earned={false} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+
+            <TabsContent value="achievements" className="p-6">
+              <AdvancedAchievementSystem
+                achievements={earnedAchievements}
+                pendingAchievements={pendingAchievements}
+                userProfile={userProfile}
+                isOwner={isOwner}
+              />
+            </TabsContent>
+
+            <TabsContent value="analytics" className="p-6">
+              <JourneyTrackingAnalytics
+                userId={userId}
+                metrics={metrics}
+                insights={insights}
+              />
+            </TabsContent>
+
+            <TabsContent value="ai-insights" className="p-6">
+              <AIRecommendationEngine
+                userId={userId}
+                metrics={metrics}
+                insights={insights}
+                userProfile={userProfile}
+              />
+            </TabsContent>
+
+            <TabsContent value="social" className="p-6">
+              <SocialSharingFeatures
+                userProfile={userProfile}
+                metrics={metrics}
+                insights={insights}
+                isOwner={isOwner}
+              />
+            </TabsContent>
+          </Tabs>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -47,13 +47,22 @@ interface ShareableContent {
   url: string;
 }
 
-export function SocialSharingFeatures({ userId, userProfile }: { 
+export function SocialSharingFeatures({ 
+  userId, 
+  userProfile, 
+  metrics, 
+  insights, 
+  isOwner = true 
+}: { 
   userId?: string; 
   userProfile?: any;
+  metrics?: any;
+  insights?: any;
+  isOwner?: boolean;
 }) {
   const { user } = useAuth();
   const targetUserId = userId || user?.id;
-  const isOwner = !userId || userId === user?.id;
+  const isProfileOwner = isOwner;
   const queryClient = useQueryClient();
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
@@ -236,7 +245,7 @@ export function SocialSharingFeatures({ userId, userProfile }: {
                 <div className="text-2xl font-bold">{passportViews}</div>
                 <div className="text-xs text-muted-foreground">Profile Views</div>
               </div>
-              {isOwner && (
+              {isProfileOwner && (
                 <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -556,16 +565,16 @@ function RecentViewers({ userId }: { userId?: string }) {
 
   return (
     <div className="space-y-3">
-      {mockViewers.map((viewer, index) => (
-        <div key={index} className="flex items-center space-x-3">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={viewer.profiles?.profile_picture_url} />
-            <AvatarFallback>{viewer.profiles?.full_name?.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{viewer.profiles?.full_name}</p>
-            <p className="text-xs text-muted-foreground truncate">{viewer.profiles?.headline}</p>
-          </div>
+          {mockViewers.map((viewer, index) => (
+            <div key={index} className="flex items-center space-x-3">
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={viewer.profiles.profile_picture_url} />
+                <AvatarFallback>{viewer.profiles.full_name?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{viewer.profiles.full_name}</p>
+                <p className="text-xs text-muted-foreground truncate">{viewer.profiles.headline}</p>
+              </div>
           <div className="text-xs text-muted-foreground">
             {new Date(viewer.viewed_at).toLocaleDateString()}
           </div>
