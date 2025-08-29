@@ -231,7 +231,7 @@ const MessageConversation = () => {
           <div className="flex items-center space-x-1">
             <div className={`w-1 h-1 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
             <span className="text-xs text-gray-600">
-              {isOnline ? 'Connected' : 'Reconnecting...'}
+              {isOnline ? 'Connected' : 'Offline'}
             </span>
           </div>
         </div>

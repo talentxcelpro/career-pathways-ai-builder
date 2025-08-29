@@ -23,15 +23,10 @@ export const NewPostsBanner: React.FC<NewPostsBannerProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
-                {isConnected ? (
+                {isConnected && (
                   <>
                     <Wifi className="h-3 w-3 text-green-500" />
                     <span className="text-xs text-muted-foreground">Live updates enabled</span>
-                  </>
-                ) : (
-                  <>
-                    <WifiOff className="h-3 w-3 text-orange-500" />
-                    <span className="text-xs text-muted-foreground">Reconnecting...</span>
                   </>
                 )}
               </div>
@@ -60,15 +55,10 @@ export const NewPostsBanner: React.FC<NewPostsBannerProps> = ({
               {newPostsCount} new post{newPostsCount > 1 ? 's' : ''}
             </Badge>
             <div className="flex items-center gap-1">
-              {isConnected ? (
+              {isConnected && (
                 <>
                   <Wifi className="h-3 w-3 text-green-500" />
                   <span className="text-xs text-muted-foreground">Live</span>
-                </>
-              ) : (
-                <>
-                  <WifiOff className="h-3 w-3 text-orange-500" />
-                  <span className="text-xs text-muted-foreground">Reconnecting...</span>
                 </>
               )}
             </div>
