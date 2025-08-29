@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { usePeopleSearch } from '@/hooks/usePeopleSearch';
+import { useNaturalLanguageSearch } from '@/hooks/useNaturalLanguageSearch';
 import { useProfileViews } from '@/hooks/useProfileViews';
 import { useUserPresence } from '@/hooks/useUserPresence';
 import { RealTimePresence } from '@/components/network/RealTimePresence';
@@ -41,13 +42,28 @@ const People = () => {
   const { trackProfileView } = useProfileViews();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('discover');
-  const [searchTerm, setSearchTerm] = useState('');
   
   const {
-    results,
-    isLoading,
-    error,
+    searchTerm,
+    setSearchTerm,
+    results: naturalSearchResults,
+    isLoading: naturalSearchLoading,
+    error: naturalSearchError,
+    parsedQuery,
+    suggestions,
+    selectSuggestion
+  } = useNaturalLanguageSearch();
+
+  const {
+    results: basicResults,
+    isLoading: basicLoading,
+    error: basicError,
   } = usePeopleSearch();
+
+  // Use natural search when there's a search term, otherwise use basic results
+  const results = searchTerm ? naturalSearchResults : basicResults;
+  const isLoading = searchTerm ? naturalSearchLoading : basicLoading;
+  const error = searchTerm ? naturalSearchError : basicError;
 
   // Fetch stories/recent activity
   const { data: stories } = useQuery({
@@ -160,21 +176,72 @@ const People = () => {
             </div>
             
             <div className="mt-4 lg:mt-0 flex items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 transition-colors group-focus-within:text-blue-500" />
                 <Input
-                  placeholder="Search amazing people..."
+                  placeholder="Try: 'React developers in Mumbai' or 'Senior designers with 5+ years'"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-80 bg-white/80 backdrop-blur-sm border-gray-200 focus:border-blue-400"
+                  className="pl-10 w-96 bg-white/90 backdrop-blur-sm border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
                 />
+                {isLoading && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+                  </div>
+                )}
               </div>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
                 <Zap className="h-4 w-4 mr-2" />
                 AI Match
               </Button>
             </div>
           </div>
+
+          {/* Smart Suggestions */}
+          {suggestions.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">Smart Suggestions</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => selectSuggestion(suggestion)}
+                    className="h-8 px-3 text-xs border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Search Results Info */}
+          {searchTerm && (
+            <div className="mb-6 p-4 bg-blue-50/80 backdrop-blur-sm rounded-lg border border-blue-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Search className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-900">Search Results</span>
+              </div>
+              <div className="text-sm text-blue-700">
+                Found {results.length} professionals matching: "<span className="font-semibold">{searchTerm}</span>"
+                {parsedQuery && (
+                  <div className="mt-2 text-xs text-blue-600">
+                    <span className="font-medium">AI Interpretation:</span>
+                    {parsedQuery.location && <span className="ml-2 bg-blue-100 px-2 py-0.5 rounded">📍 {parsedQuery.location}</span>}
+                    {parsedQuery.skills && parsedQuery.skills.length > 0 && (
+                      <span className="ml-2 bg-green-100 px-2 py-0.5 rounded">🛠️ {parsedQuery.skills.join(', ')}</span>
+                    )}
+                    {parsedQuery.experience && <span className="ml-2 bg-purple-100 px-2 py-0.5 rounded">⭐ {parsedQuery.experience} experience</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Stories Row */}
           <div className="mb-6">
@@ -231,16 +298,25 @@ const People = () => {
               
               {/* Main People Grid */}
               <div className="lg:col-span-3">
+                {error && (
+                  <div className="text-center py-8">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 inline-block">
+                      <p className="text-red-600">⚠️ {typeof error === 'string' ? error : 'Search failed'}</p>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {(isLoading ? Array.from({ length: 9 }) : results.slice(0, 9)).map((person, index) => (
+                  {(isLoading ? Array.from({ length: 9 }) : results.slice(0, 12)).map((person, index) => (
                     <Card 
                       key={person?.id || index} 
-                      className={`group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-0 bg-white/90 backdrop-blur-sm overflow-hidden ${
-                        isLoading ? 'animate-pulse' : 'cursor-pointer hover:bg-white'
+                      className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:rotate-1 border-0 bg-white/90 backdrop-blur-sm overflow-hidden animate-fade-in ${
+                        isLoading ? 'animate-pulse' : 'cursor-pointer hover:bg-white hover:scale-105'
                       }`}
                       style={{ 
-                        background: isLoading ? undefined : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+                        background: isLoading ? undefined : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.9) 100%)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                        animationDelay: `${index * 100}ms`
                       }}
                     >
                       <CardContent className="p-0">
@@ -257,8 +333,9 @@ const People = () => {
                         ) : (
                           <>
                             {/* Card Header with Gradient */}
-                            <div className="h-20 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
+                            <div className="h-20 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative overflow-hidden">
                               <div className="absolute inset-0 bg-black/10"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 group-hover:translate-x-full transition-transform duration-1000"></div>
                               <div className="absolute top-2 right-2">
                                 <Button 
                                   variant="ghost" 
@@ -274,8 +351,8 @@ const People = () => {
                               {/* Profile Avatar */}
                               <div className="flex items-start justify-between mb-4">
                                 <div className="relative">
-                                  <Avatar 
-                                    className="w-16 h-16 ring-4 ring-white shadow-lg cursor-pointer"
+                                   <Avatar 
+                                    className="w-16 h-16 ring-4 ring-white shadow-lg cursor-pointer hover:ring-blue-300 transition-all duration-300 hover:scale-110"
                                     onClick={() => handleProfileView(person)}
                                   >
                                     <AvatarImage src={person.profile_photo_url} />
@@ -290,13 +367,13 @@ const People = () => {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-8 w-8 p-0 border-gray-200 hover:border-red-300 hover:bg-red-50 group"
+                                    className="h-8 w-8 p-0 border-gray-200 hover:border-red-300 hover:bg-red-50 group transition-all duration-200 hover:scale-110"
                                   >
-                                    <Heart className="h-4 w-4 text-gray-400 group-hover:text-red-500" />
+                                    <Heart className="h-4 w-4 text-gray-400 group-hover:text-red-500 transition-colors duration-200" />
                                   </Button>
                                   <Button
                                     size="sm"
-                                    className="h-8 px-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                                    className="h-8 px-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
                                     onClick={() => handleConnect(person.id, person.full_name)}
                                   >
                                     <UserPlus className="h-3 w-3 mr-1" />
@@ -308,7 +385,7 @@ const People = () => {
                               {/* Profile Info */}
                               <div className="mb-4">
                                 <h3 
-                                  className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                                  className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-all duration-200 cursor-pointer hover:scale-105 transform-gpu"
                                   onClick={() => handleProfileView(person)}
                                 >
                                   {formatDisplayName(person)}
@@ -332,7 +409,7 @@ const People = () => {
                                       <Badge 
                                         key={skillIndex} 
                                         variant="secondary" 
-                                        className="text-xs px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
+                                        className="text-xs px-2 py-1 bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 transition-colors duration-200 cursor-pointer"
                                       >
                                         {skill}
                                       </Badge>
@@ -349,15 +426,15 @@ const People = () => {
                               {/* Social Actions */}
                               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                 <div className="flex gap-4">
-                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-colors">
+                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-all duration-200 hover:scale-110">
                                     <Eye className="h-3 w-3" />
                                     {Math.floor(Math.random() * 500) + 100}
                                   </button>
-                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors">
+                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-all duration-200 hover:scale-110">
                                     <Heart className="h-3 w-3" />
                                     {Math.floor(Math.random() * 50) + 10}
                                   </button>
-                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-colors">
+                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-all duration-200 hover:scale-110">
                                     <Share2 className="h-3 w-3" />
                                     Share
                                   </button>
@@ -365,7 +442,7 @@ const People = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 hover:bg-blue-50"
+                                  className="h-8 w-8 p-0 hover:bg-blue-50 hover:scale-110 transition-all duration-200"
                                   onClick={() => navigate(`/network/messages/new?userId=${person.id}`)}
                                 >
                                   <Send className="h-4 w-4 text-blue-600" />
