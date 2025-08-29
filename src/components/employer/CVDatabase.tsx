@@ -36,27 +36,31 @@ export const CVDatabase: React.FC = () => {
     }
   });
 
-  // Get stats for both data sources
+  // Get unified stats from a single source of truth
   const { data: stats } = useQuery({
-    queryKey: ['cv_database_stats'],
+    queryKey: ['cv_database_stats_unified'],
     queryFn: async () => {
-      // Get applied candidates count
-      const { count: appliedCount } = await supabase
-        .from('job_applications')
+      // Total
+      const { count: total } = await supabase
+        .from('unified_candidates')
         .select('*', { count: 'exact', head: true });
 
-      // Get platform CVs count
-      const { count: platformCount } = await supabase
-        .from('profiles')
+      // Applied
+      const { count: applied } = await supabase
+        .from('unified_candidates')
         .select('*', { count: 'exact', head: true })
-        .neq('user_role', 'employer')
-        .eq('is_profile_public', true)
-        .or('resume_url.neq.,about.neq.,skills.not.is.null');
+        .eq('source', 'application');
+
+      // Platform
+      const { count: platform } = await supabase
+        .from('unified_candidates')
+        .select('*', { count: 'exact', head: true })
+        .eq('source', 'platform');
 
       return {
-        appliedCandidates: appliedCount || 0,
-        platformCandidates: platformCount || 0,
-        totalCandidates: (appliedCount || 0) + (platformCount || 0)
+        appliedCandidates: applied || 0,
+        platformCandidates: platform || 0,
+        totalCandidates: total || 0,
       };
     }
   });

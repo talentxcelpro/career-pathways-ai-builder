@@ -93,184 +93,77 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
     setLoading(true);
     setError(null);
 
-    console.log('Starting searchCandidates with:', { debouncedSearchTerm, filters, page });
     try {
-      // Try edge function first (server-side filtering)
-      const { data, error } = await supabase.functions.invoke('cv-search', {
-        body: {
-          searchTerm: debouncedSearchTerm,
-          filters,
-          page,
-          limit: pagination.limit,
-          sortBy: 'created_at',
-          sortOrder: 'desc'
-        }
+      const limit = pagination.limit;
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+
+      let query = supabase
+        .from('unified_candidates')
+        .select('*', { count: 'exact' });
+
+      // Search across key fields
+      if (debouncedSearchTerm) {
+        query = query.or(
+          `name.ilike.%${debouncedSearchTerm}%,title.ilike.%${debouncedSearchTerm}%,company.ilike.%${debouncedSearchTerm}%,description.ilike.%${debouncedSearchTerm}%`
+        );
+      }
+
+      // Source filter (applied/platform)
+      if (filters.source && filters.source.length === 1) {
+        const src = filters.source[0] === 'applied' ? 'application' : 'platform';
+        query = query.eq('source', src);
+      }
+
+      // Skills filter (any overlap)
+      if (filters.skills && filters.skills.length > 0) {
+        query = query.overlaps('skills', filters.skills);
+      }
+
+      // Location, Companies, Titles (match any)
+      if (filters.location && filters.location.length > 0) {
+        query = query.in('location', filters.location);
+      }
+      if (filters.companies && filters.companies.length > 0) {
+        query = query.in('company', filters.companies);
+      }
+      if (filters.titles && filters.titles.length > 0) {
+        query = query.in('title', filters.titles);
+      }
+
+      // Has resume filter
+      if (filters.hasResume === true) {
+        query = query.neq('resume_url', '').not('resume_url', 'is', null);
+      }
+
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      setCandidates((data || []) as unknown as Candidate[]);
+
+      const total = count || 0;
+      const totalPages = Math.ceil(total / limit);
+      setPagination({
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       });
 
-      if (error) {
-        console.log('Edge function error:', error);
-        throw error;
-      }
-
-      console.log('Edge function success:', data);
-      setCandidates(data.candidates || []);
-      setPagination(data.pagination);
-      setFilterOptions(data.filterOptions);
+      // Build filter options from current page (lightweight). For full facets, we can add a separate query later.
+      const allSkills = [...new Set((data || []).flatMap((c: any) => c.skills || []))].filter(Boolean) as string[];
+      const allLocations = [...new Set((data || []).map((c: any) => c.location).filter(Boolean))] as string[];
+      const allCompanies = [...new Set((data || []).map((c: any) => c.company).filter(Boolean))] as string[];
+      const allTitles = [...new Set((data || []).map((c: any) => c.title).filter(Boolean))] as string[];
+      setFilterOptions({ skills: allSkills, locations: allLocations, companies: allCompanies, titles: allTitles });
     } catch (err) {
-      console.error('Edge search failed, using fallback:', err);
-      // Fallback: Fetch from multiple sources and merge
-      try {
-        // Fetch applied candidates from job_applications
-        const { data: applications, error: appError } = await supabase
-          .from('job_applications')
-          .select(`
-            id,
-            user_id,
-            application_data,
-            resume_url,
-            applied_at,
-            created_at,
-            profiles!inner(
-              id,
-              full_name,
-              email,
-              headline,
-              location,
-              skills,
-              about,
-              profile_photo_url
-            )
-          `, { count: 'exact' });
-
-        // Fetch platform candidates from candidates table  
-        const { data: platformCandidates, error: platformError } = await supabase
-          .from('candidates')
-          .select('*', { count: 'exact' });
-
-        if (appError && platformError) {
-          throw new Error('Failed to fetch data from both sources');
-        }
-
-        console.log('Fetched data:', { applications: applications?.length, platform: platformCandidates?.length });
-
-        // Transform and merge data
-        let allCandidates: Candidate[] = [];
-
-        // Transform application data
-        if (applications) {
-          const transformedApps = applications.map(app => {
-            // Handle profile data - it could be an array or single object
-            const profile = Array.isArray(app.profiles) ? app.profiles[0] : app.profiles;
-            
-            return {
-              id: app.id,
-              user_id: app.user_id,
-              name: profile?.full_name || app.application_data?.fullName || 'Unknown',
-              email: profile?.email || app.application_data?.email || '',
-              title: profile?.headline || app.application_data?.position || 'Not specified',
-              company: app.application_data?.currentCompany || 'Not specified',
-              skills: profile?.skills || [],
-              description: profile?.about || '',
-              resume_url: app.resume_url,
-              location: profile?.location || '',
-              profile_photo_url: profile?.profile_photo_url,
-              linkedin_url: null,
-              applied: true,
-              source: 'application' as const,
-              applied_at: app.applied_at,
-              created_at: app.created_at
-            };
-          });
-          allCandidates = [...allCandidates, ...transformedApps];
-        }
-
-        // Add platform candidates
-        if (platformCandidates) {
-          const transformedPlatform = platformCandidates.map(candidate => ({
-            ...candidate,
-            applied: false,
-            source: 'platform' as const
-          }));
-          allCandidates = [...allCandidates, ...transformedPlatform];
-        }
-
-        console.log('Total merged candidates:', allCandidates.length);
-
-        // Apply client-side filtering
-        let filteredCandidates = allCandidates;
-
-        // Search filter
-        if (debouncedSearchTerm) {
-          const searchLower = debouncedSearchTerm.toLowerCase();
-          filteredCandidates = filteredCandidates.filter(candidate =>
-            [candidate.name, candidate.title, candidate.company, candidate.description, candidate.location]
-              .some(field => field?.toLowerCase().includes(searchLower)) ||
-            candidate.skills?.some(skill => skill.toLowerCase().includes(searchLower))
-          );
-        }
-
-        // Source filter
-        if (filters.source && filters.source.length > 0) {
-          if (filters.source.includes('applied') && !filters.source.includes('platform')) {
-            filteredCandidates = filteredCandidates.filter(c => c.applied);
-          } else if (filters.source.includes('platform') && !filters.source.includes('applied')) {
-            filteredCandidates = filteredCandidates.filter(c => !c.applied);
-          }
-        }
-
-        // Skills filter
-        if (filters.skills && filters.skills.length > 0) {
-          filteredCandidates = filteredCandidates.filter(candidate =>
-            filters.skills.some(skill => 
-              candidate.skills?.some(candidateSkill => 
-                candidateSkill.toLowerCase().includes(skill.toLowerCase())
-              )
-            )
-          );
-        }
-
-        // Resume filter
-        if (filters.hasResume === true) {
-          filteredCandidates = filteredCandidates.filter(c => c.resume_url);
-        }
-
-        // Sort
-        filteredCandidates.sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-
-        // Paginate
-        const total = filteredCandidates.length;
-        const totalPages = Math.ceil(total / pagination.limit);
-        const from = (page - 1) * pagination.limit;
-        const to = from + pagination.limit;
-        const paginatedCandidates = filteredCandidates.slice(from, to);
-
-        // Build filter options from all data
-        const allSkills = [...new Set(allCandidates.flatMap(c => c.skills || []))].filter(Boolean);
-        const allLocations = [...new Set(allCandidates.map(c => c.location).filter(Boolean))];
-        const allCompanies = [...new Set(allCandidates.map(c => c.company).filter(Boolean))];
-        const allTitles = [...new Set(allCandidates.map(c => c.title).filter(Boolean))];
-
-        setCandidates(paginatedCandidates);
-        setPagination({
-          page,
-          limit: pagination.limit,
-          total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        });
-        setFilterOptions({
-          skills: allSkills,
-          locations: allLocations,
-          companies: allCompanies,
-          titles: allTitles,
-        });
-      } catch (fallbackErr: any) {
-        console.error('Fallback search error:', fallbackErr);
-        setError('Failed to search candidates');
-      }
+      console.error('Unified view search failed:', err);
+      setError('Failed to search candidates');
     } finally {
       setLoading(false);
     }
@@ -630,17 +523,25 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
                       <Mail className="h-3 w-3" />
                       {candidate.email}
                     </div>
-                     {candidate.resume_url && (
-                       <Button
-                         size="sm"
-                         variant="outline"
-                         className="mt-2"
-                         onClick={() => downloadSingleCV(candidate.resume_url!, candidate.name)}
-                       >
-                         <Download className="h-4 w-4 mr-2" />
-                         Download CV
-                       </Button>
-                     )}
+                    <div className="flex items-center gap-2 mt-2">
+                      {candidate.resume_url && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => downloadSingleCV(candidate.resume_url!, candidate.name)}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download CV
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(`/profile/${(candidate.name || 'unknown').toLowerCase().replace(/\s+/g, '')}`, '_blank')}
+                      >
+                        Profile
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
