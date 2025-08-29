@@ -222,7 +222,7 @@ export const toolsRoutes = [
     title: "AI Profile Optimizer", 
     to: "/tools/ai-profile-optimizer",
     icon: <User className="h-4 w-4" />,
-    page: <AIProfileOptimizer />,
+    page: <ProfileOptimizer />,
   },
   {
     title: "Mentor Connect Tool",

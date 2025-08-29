@@ -31,7 +31,7 @@ import SalaryAnalyzer from '@/pages/tools/SalaryAnalyzer';
 import MarketInsights from '@/pages/tools/MarketInsights';
 import InterviewPrep from '@/pages/tools/InterviewPrep';
 import AICareerAssistant from '@/pages/tools/AICareerAssistant';
-import ProfileScore from '@/pages/tools/ProfileScore';
+import { ProfileScore } from '@/pages/tools/ProfileScore';
 
 interface Tool {
   id: string;
