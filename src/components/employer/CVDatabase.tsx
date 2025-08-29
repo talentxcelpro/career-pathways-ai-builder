@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AppliedResumes } from './cv-database/AppliedResumes';
 import { PlatformCVs } from './cv-database/PlatformCVs';
 import { UnifiedCVSearch } from './cv-database/UnifiedCVSearch';
+import { OutreachModal } from './cv-database/OutreachModal';
 
 export const CVDatabase: React.FC = () => {
   const [selectedCVs, setSelectedCVs] = useState<string[]>([]);
@@ -63,6 +64,23 @@ export const CVDatabase: React.FC = () => {
         totalCandidates: total || 0,
       };
     }
+  });
+
+  // Get selected candidates data for outreach
+  const { data: selectedCandidatesData } = useQuery({
+    queryKey: ['selected_candidates', selectedCVs],
+    queryFn: async () => {
+      if (selectedCVs.length === 0) return [];
+      
+      const { data, error } = await supabase
+        .from('unified_candidates')
+        .select('id, name, email, title, company')
+        .in('id', selectedCVs);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: selectedCVs.length > 0
   });
 
   const handleSelectCV = (id: string) => {
@@ -221,6 +239,23 @@ export const CVDatabase: React.FC = () => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* Outreach Modal */}
+      <OutreachModal
+        isOpen={showOutreachModal}
+        onClose={() => setShowOutreachModal(false)}
+        selectedCandidates={selectedCandidatesData?.map(c => ({
+          id: c.id,
+          name: c.name,
+          email: c.email,
+          title: c.title,
+          company: c.company
+        })) || []}
+        onSuccess={() => {
+          setSelectedCVs([]);
+          setShowOutreachModal(false);
+        }}
+      />
     </div>
   );
 };

@@ -1,58 +1,55 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-};
+}
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://dthlgsnakhoftinssokm.supabase.co';
-    const supabaseAnon = Deno.env.get('SUPABASE_ANON_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-
-    const supabaseClient = createClient(supabaseUrl, supabaseAnon, {
-      global: { headers: { Authorization: req.headers.get('Authorization') || '' } }
-    });
-
     const { 
-      searchTerm = '',
-      filters = {},
-      page = 1,
+      searchTerm = '', 
+      filters = {}, 
+      page = 1, 
       limit = 20,
       sortBy = 'created_at',
       sortOrder = 'desc'
     } = await req.json();
 
-    console.log('Search request:', { searchTerm, filters, page, limit });
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    );
 
-    let query = supabaseClient
-      .from('candidates')
+    console.log('CV Search request:', { searchTerm, filters, page, limit });
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = supabase
+      .from('unified_candidates')
       .select('*', { count: 'exact' });
 
-    // Apply full-text search if search term provided
-    if (searchTerm) {
-      // Use PostgreSQL full-text search
-      query = query.or(`
-        name.ilike.%${searchTerm}%,
-        title.ilike.%${searchTerm}%,
-        company.ilike.%${searchTerm}%,
-        description.ilike.%${searchTerm}%,
-        location.ilike.%${searchTerm}%
-      `);
+    // Search across multiple fields
+    if (searchTerm.trim()) {
+      const searchPattern = `%${searchTerm.trim()}%`;
+      query = query.or(
+        `name.ilike.${searchPattern},title.ilike.${searchPattern},company.ilike.${searchPattern},description.ilike.${searchPattern},email.ilike.${searchPattern}`
+      );
     }
 
     // Apply filters
     if (filters.source && filters.source.length > 0) {
-      if (filters.source.includes('applied')) {
-        query = query.eq('applied', true);
-      } else if (filters.source.includes('platform')) {
-        query = query.eq('applied', false);
+      if (filters.source.includes('applied') && !filters.source.includes('platform')) {
+        query = query.eq('source', 'application');
+      } else if (filters.source.includes('platform') && !filters.source.includes('applied')) {
+        query = query.eq('source', 'platform');
       }
     }
 
@@ -61,10 +58,7 @@ serve(async (req) => {
     }
 
     if (filters.location && filters.location.length > 0) {
-      const locationConditions = filters.location.map((loc: string) => 
-        `location.ilike.%${loc}%`
-      ).join(',');
-      query = query.or(locationConditions);
+      query = query.in('location', filters.location);
     }
 
     if (filters.companies && filters.companies.length > 0) {
@@ -72,75 +66,59 @@ serve(async (req) => {
     }
 
     if (filters.titles && filters.titles.length > 0) {
-      const titleConditions = filters.titles.map((title: string) => 
-        `title.ilike.%${title}%`
-      ).join(',');
-      query = query.or(titleConditions);
+      query = query.in('title', filters.titles);
     }
 
     if (filters.hasResume === true) {
-      query = query.not('resume_url', 'is', null);
+      query = query.not('resume_url', 'is', null).neq('resume_url', '');
     }
 
-    // Apply sorting
-    const validSortColumns = ['created_at', 'name', 'title', 'company', 'applied_at'];
-    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'created_at';
-    const order = sortOrder === 'asc' ? 'asc' : 'desc';
-    
-    query = query.order(sortColumn, { ascending: order === 'asc', nullsFirst: false });
+    // Apply sorting and pagination
+    query = query
+      .order(sortBy, { ascending: sortOrder === 'asc' })
+      .range(from, to);
 
-    // Apply pagination
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-    query = query.range(from, to);
-
-    const { data: candidates, error, count } = await query;
+    const { data, error, count } = await query;
 
     if (error) {
       console.error('Search error:', error);
       throw error;
     }
 
-    // Get unique values for filters
-    const { data: allCandidates } = await supabaseClient
-      .from('candidates')
-      .select('skills, location, company, title');
-
-    const filterOptions = {
-      skills: [...new Set(allCandidates?.flatMap(c => c.skills || []))].filter(Boolean),
-      locations: [...new Set(allCandidates?.map(c => c.location).filter(Boolean))],
-      companies: [...new Set(allCandidates?.map(c => c.company).filter(Boolean))],
-      titles: [...new Set(allCandidates?.map(c => c.title).filter(Boolean))]
-    };
-
-    const totalPages = Math.ceil((count || 0) / limit);
-
-    console.log(`Found ${candidates?.length || 0} candidates (${count} total)`);
+    console.log(`Found ${count} candidates, returning ${data?.length} for page ${page}`);
 
     return new Response(
       JSON.stringify({
-        candidates: candidates || [],
+        success: true,
+        data: data || [],
         pagination: {
           page,
           limit,
           total: count || 0,
-          totalPages,
-          hasNext: page < totalPages,
+          totalPages: Math.ceil((count || 0) / limit),
+          hasNext: (page * limit) < (count || 0),
           hasPrev: page > 1
         },
-        filterOptions
+        searchTerm,
+        filters
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
     );
 
   } catch (error) {
-    console.error('Error in cv-search function:', error);
+    console.error('CV search error:', error);
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: 'Failed to search candidates',
+        details: error.message 
+      }),
       { 
-        status: 500,
+        status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
-});
+})

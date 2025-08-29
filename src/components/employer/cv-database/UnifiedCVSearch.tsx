@@ -249,7 +249,7 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
       return;
     }
 
-    // Bulk download - create zip
+    // Bulk download - use edge function
     try {
       const candidateFiles = selectedCandidates.map(c => ({
         name: c.name,
@@ -262,16 +262,21 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
 
       if (response.error) throw response.error;
 
-      // Create download link for zip
-      const blob = new Blob([response.data], { type: 'application/zip' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `selected_cvs_${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Download each file individually (browser limitation)
+      const { files } = response.data;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        setTimeout(() => {
+          const link = document.createElement('a');
+          link.href = file.url;
+          link.download = file.filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }, i * 1000); // 1 second delay between downloads
+      }
+
+      alert(`Starting download of ${files.length} CV files. Files will download one by one.`);
     } catch (error) {
       console.error('Bulk download error:', error);
       alert('Failed to download CVs. Please try again.');
