@@ -33,7 +33,7 @@ import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const JobDetail = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slugOrId } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -51,9 +51,9 @@ const JobDetail = () => {
 
   // Fetch job details
   const { data: job, isLoading, error } = useQuery({
-    queryKey: ['job-detail', slug],
+    queryKey: ['job-detail', slugOrId],
     queryFn: async () => {
-      if (!slug) throw new Error('No job slug provided');
+      if (!slugOrId) throw new Error('No job slug provided');
       
       const { data, error } = await supabase
         .from('jobs')
@@ -76,14 +76,14 @@ const JobDetail = () => {
             applied_at
           )
         `)
-        .eq('seo_slug', slug)
+        .eq('seo_slug', slugOrId)
         .eq('is_active', true)
         .single();
 
       if (error) throw error;
       return data;
     },
-    enabled: !!slug,
+    enabled: !!slugOrId,
   });
 
   // Track job view
@@ -235,7 +235,7 @@ const JobDetail = () => {
     onSuccess: () => {
       setHasApplied(true);
       toast.success('Application submitted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['job-detail', slug] });
+      queryClient.invalidateQueries({ queryKey: ['job-detail', slugOrId] });
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to apply');

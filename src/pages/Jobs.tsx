@@ -30,6 +30,7 @@ import { SocialPagination } from '@/components/ui/social-pagination';
 import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
 import { SmartJobMatchingBar } from '@/components/jobs/SmartJobMatchingBar';
 import { JobCard } from '@/components/jobs/JobCard';
+import { QuickActions } from '@/components/jobs/QuickActions';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -549,6 +550,9 @@ const Jobs = () => {
             onSearch={refetch}
           />
         </div>
+
+        {/* Quick Actions */}
+        <QuickActions currentUser={currentUser} />
 
         {/* Featured Jobs Section with Enhanced Cards */}
         {featuredJobs.length > 0 && (
