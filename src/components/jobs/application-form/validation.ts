@@ -1,11 +1,15 @@
 
 import { FormData } from './types';
 
-export const validateStep = (step: number, formData: FormData): boolean => {
+export const validateStep = (step: number, formData: FormData, resumes: any[] = []): boolean => {
   switch (step) {
     case 1:
       // Always require a resume - either existing or uploaded
-      return formData.resumeSource === 'existing' ? !!formData.selectedResumeId : !!formData.uploadedResume;
+      if (formData.resumeSource === 'existing') {
+        return !!formData.selectedResumeId && resumes.length > 0;
+      } else {
+        return !!formData.uploadedResume;
+      }
     case 2:
       return true;
     case 3:

@@ -88,16 +88,43 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         .eq('id', user.id)
         .single();
 
-      // Fetch resumes
-      const { data: resumesData } = await supabase
-        .from('resumes')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('is_primary', { ascending: false });
+      // Fetch resumes from both tables
+      const [resumesData, aiResumesData] = await Promise.all([
+        supabase
+          .from('resumes')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .order('is_primary', { ascending: false }),
+        supabase
+          .from('ai_resumes')
+          .select('id, title, created_at, updated_at')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false })
+      ]);
 
-      if (resumesData) {
-        setResumes(resumesData);
+      const allResumes = [];
+      if (resumesData?.data) {
+        allResumes.push(...resumesData.data);
+      }
+      if (aiResumesData?.data) {
+        allResumes.push(...aiResumesData.data.map(resume => ({
+          ...resume,
+          file_url: `/resume/${resume.id}`, // Generated resume URL
+          is_primary: false,
+          is_active: true
+        })));
+      }
+
+      setResumes(allResumes);
+
+      // Auto-select first resume if available and none selected
+      if (allResumes.length > 0 && !formData.selectedResumeId) {
+        setFormData(prev => ({ 
+          ...prev, 
+          selectedResumeId: allResumes[0].id,
+          resumeSource: 'existing'
+        }));
       }
 
       // Pre-fill form with profile data
@@ -168,6 +195,17 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
   };
 
   const handleSubmit = async () => {
+    // Validate resume requirement first
+    const hasResume = formData.resumeSource === 'existing' 
+      ? !!formData.selectedResumeId && resumes.length > 0
+      : !!formData.uploadedResume;
+
+    if (!hasResume) {
+      toast.error('Resume is required to apply. Please upload or select a resume.');
+      setCurrentStep(1); // Go back to resume step
+      return;
+    }
+
     if (!formData.informationConfirmed || !formData.contactAuthorized) {
       toast.error('Please confirm the declarations before submitting');
       return;
@@ -463,7 +501,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
     }
   };
 
-  const canProceedToNext = () => validateStep(currentStep, formData);
+  const canProceedToNext = () => validateStep(currentStep, formData, resumes);
 
   const handleScrapedJobSuccessClose = (isOpen: boolean) => {
     setShowScrapedJobSuccess(isOpen);
