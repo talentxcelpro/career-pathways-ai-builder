@@ -7,12 +7,11 @@ import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSect
 import { EnhancedPostMenu } from "@/components/posts/EnhancedPostMenu";
 import { QuickShareActions } from "@/components/shared/QuickShareActions";
 import { useShareContent } from "@/hooks/useShareContent";
-import { ReactionsSystem } from "@/components/social/ReactionsSystem";
+import { EngagementActions } from "@/components/engagement/EngagementActions";
 import ProBadge from "@/components/network/ProBadge";
 import MediaPreview from "@/components/posts/MediaPreview";
 import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from 'framer-motion';
 
 interface NetworkPost {
   id: string;
@@ -103,15 +102,8 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -2 }}
-      className="group"
-    >
-      <Card className="border-0 bg-gradient-card shadow-float hover:shadow-hover transition-all duration-300 overflow-hidden">
-        <CardContent className="p-6">
+    <Card className="hover:shadow-md transition-shadow border-border/60 bg-card/95 backdrop-blur-sm">
+      <CardContent className="p-6">
         {/* Post Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
@@ -172,56 +164,46 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         )}
 
         {/* Post Content - Make clickable to navigate to detail page */}
-        <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-gradient-hero -mx-2 px-2 py-2 rounded-lg transition-all duration-200">
+        <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-muted/30 -mx-2 px-2 py-2 rounded transition-colors">
           <div className="text-foreground leading-relaxed mb-3">
             {renderContentWithLinks(post.content)}
           </div>
 
           {/* Media Preview */}
           {post.media_urls && post.media_urls.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <MediaPreview 
-                content={post.content} 
-                mediaUrls={post.media_urls} 
-              />
-            </motion.div>
+            <MediaPreview 
+              content={post.content} 
+              mediaUrls={post.media_urls} 
+            />
           )}
           
-          {/* Post Tags with improved styling */}
+          {/* Post Tags */}
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {post.tags.map((tag: string, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                  <Badge 
-                    variant="secondary" 
-                    className="text-xs bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
-                  >
-                    #{tag}
-                  </Badge>
-                </motion.div>
+                <Badge key={index} variant="secondary" className="text-xs">
+                  #{tag}
+                </Badge>
               ))}
             </div>
           )}
         </Link>
 
-        {/* Modern Reactions System */}
-        <div className="border-t border-border/30 pt-4">
-          <ReactionsSystem
-            postId={post.id}
-            onReactionChange={(reactions) => {
-              // Update post reactions if needed
-            }}
-          />
-        </div>
+        {/* Real-time Engagement Actions */}
+        <EngagementActions
+          contentType="post"
+          contentId={post.id}
+          contentOwnerId={post.author_id}
+          module="network"
+          initialStats={{
+            likes: post.likes_count || 0,
+            comments: post.comments_count || 0,
+            shares: post.shares_count || 0,
+            views: 0, // TODO: Add views tracking
+          }}
+          variant="default"
+          onComment={() => onCommentClick?.(post.id)}
+        />
 
         {/* Enhanced Comments Section */}
         <EnhancedCommentsSection
@@ -230,6 +212,5 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         />
       </CardContent>
     </Card>
-    </motion.div>
   );
 };

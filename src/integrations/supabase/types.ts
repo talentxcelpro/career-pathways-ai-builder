@@ -23064,26 +23064,22 @@ export type Database = {
       }
       unified_candidates: {
         Row: {
+          applied: boolean | null
           applied_at: string | null
           company: string | null
           created_at: string | null
           description: string | null
           email: string | null
-          experience_years: number | null
-          github_url: string | null
           id: string | null
-          industry: string | null
           linkedin_url: string | null
           location: string | null
-          looking_for_job: boolean | null
           name: string | null
-          phone: string | null
-          portfolio_url: string | null
-          profile_picture_url: string | null
+          profile_photo_url: string | null
           resume_url: string | null
           skills: string[] | null
           source: string | null
           title: string | null
+          user_id: string | null
         }
         Relationships: []
       }
