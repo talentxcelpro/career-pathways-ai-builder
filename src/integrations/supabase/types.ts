@@ -23062,6 +23062,27 @@ export type Database = {
           },
         ]
       }
+      unified_candidates: {
+        Row: {
+          applied: boolean | null
+          applied_at: string | null
+          company: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          id: string | null
+          linkedin_url: string | null
+          location: string | null
+          name: string | null
+          profile_photo_url: string | null
+          resume_url: string | null
+          skills: string[] | null
+          source: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_team_invitation: {
