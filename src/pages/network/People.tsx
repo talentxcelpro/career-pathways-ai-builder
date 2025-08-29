@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,7 +26,9 @@ import {
   Award,
   Eye,
   Share2,
-  Send
+  Send,
+  Navigation,
+  Loader2
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { usePeopleSearch } from '@/hooks/usePeopleSearch';
@@ -42,6 +43,8 @@ const People = () => {
   const { trackProfileView } = useProfileViews();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('discover');
+  const [userLocation, setUserLocation] = useState<{latitude: number, longitude: number} | null>(null);
+  const [locationPermission, setLocationPermission] = useState<'pending' | 'granted' | 'denied'>('pending');
   
   const {
     searchTerm,
@@ -65,43 +68,154 @@ const People = () => {
   const isLoading = searchTerm ? naturalSearchLoading : basicLoading;
   const error = searchTerm ? naturalSearchError : basicError;
 
-  // Fetch stories/recent activity
-  const { data: stories } = useQuery({
-    queryKey: ['user-stories'],
+  // Get user location for nearby search
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          setLocationPermission('granted');
+        },
+        (error) => {
+          console.log('Location access denied:', error);
+          setLocationPermission('denied');
+        }
+      );
+    }
+  }, []);
+
+  // Fetch real recent activity from posts
+  const { data: recentActivity } = useQuery({
+    queryKey: ['recent-activity'],
     queryFn: async () => {
       const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, profile_picture_url, headline, created_at')
-        .not('profile_picture_url', 'is', null)
+        .from('posts')
+        .select(`
+          id,
+          created_at,
+          content,
+          profiles!posts_user_id_fkey (
+            id,
+            full_name,
+            profile_picture_url,
+            headline
+          )
+        `)
+        .not('profiles.profile_picture_url', 'is', null)
         .order('created_at', { ascending: false })
         .limit(10);
       
-      return data?.map(profile => ({
-        ...profile,
-        story_type: ['career_update', 'achievement', 'new_role', 'certification'][Math.floor(Math.random() * 4)],
-        time_ago: Math.floor(Math.random() * 24) + 'h'
+      return data?.filter(post => post.profiles).map(post => ({
+        id: post.profiles.id,
+        full_name: post.profiles.full_name,
+        profile_picture_url: post.profiles.profile_picture_url,
+        headline: post.profiles.headline,
+        activity_type: 'post',
+        time_ago: getTimeAgo(post.created_at),
+        preview: post.content?.substring(0, 50) + '...'
       }));
     }
   });
 
-  // Trending professionals
+  // Helper functions
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffHours < 1) return 'now';
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${diffDays}d`;
+  };
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  // Fetch trending professionals based on real metrics
   const { data: trending } = useQuery({
     queryKey: ['trending-people'],
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title, headline, location')
+        .select('id, full_name, profile_picture_url, title, headline, location, profile_views_count, connections_count')
         .not('full_name', 'is', null)
-        .limit(8)
-        .order('profile_views_count', { ascending: false });
+        .order('profile_views_count', { ascending: false })
+        .limit(8);
       
       return data?.map(profile => ({
         ...profile,
-        trending_score: Math.floor(Math.random() * 100) + 50,
-        growth: `+${Math.floor(Math.random() * 50) + 10}%`
+        trending_score: profile.profile_views_count || 0,
+        growth: `+${Math.floor(((profile.profile_views_count || 0) / 100) * 15)}%`
       }));
     }
   });
+
+  // Fetch nearby people based on location
+  const { data: nearbyPeople, isLoading: nearbyLoading } = useQuery({
+    queryKey: ['nearby-people', userLocation],
+    queryFn: async () => {
+      if (!userLocation) return [];
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, profile_picture_url, title, headline, location, latitude, longitude')
+        .not('full_name', 'is', null)
+        .not('latitude', 'is', null)
+        .not('longitude', 'is', null)
+        .limit(50);
+      
+      // Calculate distance and sort
+      const withDistance = data?.map(profile => {
+        const distance = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          profile.latitude,
+          profile.longitude
+        );
+        return { ...profile, distance };
+      }).filter(profile => profile.distance <= 50) // Within 50km
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 12);
+      
+      return withDistance;
+    },
+    enabled: !!userLocation
+  });
+
+  const requestLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          setLocationPermission('granted');
+          toast.success('Location enabled! Finding nearby professionals...');
+        },
+        (error) => {
+          setLocationPermission('denied');
+          toast.error('Location access denied. Enable location to find nearby professionals.');
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by this browser.');
+    }
+  };
 
   const handleConnect = async (userId: string, userName: string) => {
     try {
@@ -133,6 +247,10 @@ const People = () => {
     navigate(profilePath);
   };
 
+  const handleMessage = (person: any) => {
+    navigate(`/network/messages/new?userId=${person.id}&name=${person.full_name}`);
+  };
+
   const formatDisplayName = (profile: any) => {
     return profile?.full_name || 'Professional User';
   };
@@ -148,9 +266,9 @@ const People = () => {
     return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
   };
 
-  const getStoryIcon = (type: string) => {
+  const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'career_update': return <Briefcase className="h-3 w-3" />;
+      case 'post': return <MessageSquare className="h-3 w-3" />;
       case 'achievement': return <Award className="h-3 w-3" />;
       case 'new_role': return <TrendingUp className="h-3 w-3" />;
       case 'certification': return <Star className="h-3 w-3" />;
@@ -247,28 +365,32 @@ const People = () => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Play className="h-5 w-5 text-blue-600" />
-              Recent Updates
+              Recent Activity
             </h3>
             <div className="flex gap-4 overflow-x-auto pb-2">
-              {stories?.slice(0, 8).map((story, index) => (
-                <div key={story.id} className="flex-shrink-0 text-center cursor-pointer group">
+              {recentActivity?.slice(0, 8).map((activity, index) => (
+                <div 
+                  key={activity.id} 
+                  className="flex-shrink-0 text-center cursor-pointer group"
+                  onClick={() => handleProfileView(activity)}
+                >
                   <div className="relative mb-2">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-400 to-purple-500 p-0.5">
                       <Avatar className="w-full h-full border-2 border-white">
-                        <AvatarImage src={story.profile_picture_url} />
+                        <AvatarImage src={activity.profile_picture_url} />
                         <AvatarFallback className="bg-gradient-to-br from-blue-100 to-purple-100">
-                          {generateInitials(story)}
+                          {generateInitials(activity)}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                     <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
-                      {getStoryIcon(story.story_type)}
+                      {getActivityIcon(activity.activity_type)}
                     </div>
                   </div>
                   <p className="text-xs font-medium text-gray-700 truncate w-16">
-                    {story.full_name?.split(' ')[0]}
+                    {activity.full_name?.split(' ')[0]}
                   </p>
-                  <p className="text-xs text-gray-500">{story.time_ago}</p>
+                  <p className="text-xs text-gray-500">{activity.time_ago}</p>
                 </div>
               ))}
             </div>
@@ -287,8 +409,8 @@ const People = () => {
               Trending
             </TabsTrigger>
             <TabsTrigger value="nearby" className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              Nearby
+              <Navigation className="h-4 w-4" />
+              Nearby {userLocation && `(${nearbyPeople?.length || 0})`}
             </TabsTrigger>
           </TabsList>
 
@@ -351,7 +473,7 @@ const People = () => {
                               {/* Profile Avatar */}
                               <div className="flex items-start justify-between mb-4">
                                 <div className="relative">
-                                   <Avatar 
+                                  <Avatar 
                                     className="w-16 h-16 ring-4 ring-white shadow-lg cursor-pointer hover:ring-blue-300 transition-all duration-300 hover:scale-110"
                                     onClick={() => handleProfileView(person)}
                                   >
@@ -443,7 +565,7 @@ const People = () => {
                                   variant="ghost"
                                   size="sm"
                                   className="h-8 w-8 p-0 hover:bg-blue-50 hover:scale-110 transition-all duration-200"
-                                  onClick={() => navigate(`/network/messages/new?userId=${person.id}`)}
+                                  onClick={() => handleMessage(person)}
                                 >
                                   <Send className="h-4 w-4 text-blue-600" />
                                 </Button>
@@ -468,7 +590,11 @@ const People = () => {
                     </h3>
                     <div className="space-y-3">
                       {trending?.slice(0, 5).map((person, index) => (
-                        <div key={person.id} className="flex items-center gap-3 group cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2">
+                        <div 
+                          key={person.id} 
+                          className="flex items-center gap-3 group cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2"
+                          onClick={() => handleProfileView(person)}
+                        >
                           <div className="relative">
                             <Avatar className="w-10 h-10">
                               <AvatarImage src={person.profile_picture_url} />
@@ -520,7 +646,11 @@ const People = () => {
           <TabsContent value="trending" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {trending?.map((person, index) => (
-                <Card key={person.id} className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all">
+                <Card 
+                  key={person.id} 
+                  className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer"
+                  onClick={() => handleProfileView(person)}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4 mb-4">
                       <div className="relative">
@@ -549,14 +679,81 @@ const People = () => {
 
           {/* Nearby Tab */}
           <TabsContent value="nearby" className="space-y-6">
-            <div className="text-center py-12">
-              <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Discover People Nearby</h3>
-              <p className="text-gray-600 mb-6">Enable location to find professionals in your area</p>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-                Enable Location
-              </Button>
-            </div>
+            {!userLocation ? (
+              <div className="text-center py-12">
+                <Navigation className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Discover People Nearby</h3>
+                <p className="text-gray-600 mb-6">Enable location to find professionals in your area</p>
+                <Button 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  onClick={requestLocation}
+                >
+                  <Navigation className="h-4 w-4 mr-2" />
+                  Enable Location
+                </Button>
+              </div>
+            ) : nearbyLoading ? (
+              <div className="text-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+                <p className="text-gray-600">Finding professionals near you...</p>
+              </div>
+            ) : nearbyPeople && nearbyPeople.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {nearbyPeople.map((person) => (
+                  <Card 
+                    key={person.id} 
+                    className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer"
+                    onClick={() => handleProfileView(person)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-4 mb-4">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={person.profile_picture_url} />
+                          <AvatarFallback>{generateInitials(person)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h4 className="font-semibold">{formatDisplayName(person)}</h4>
+                          <p className="text-sm text-gray-600">{person.title}</p>
+                          <div className="flex items-center text-xs text-gray-500 mt-1">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            <span>{person.distance?.toFixed(1)}km away</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleConnect(person.id, person.full_name);
+                          }}
+                        >
+                          <UserPlus className="h-3 w-3 mr-1" />
+                          Connect
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMessage(person);
+                          }}
+                        >
+                          <Send className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <MapPin className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No Nearby Professionals</h3>
+                <p className="text-gray-600">No professionals found within 50km of your location</p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
