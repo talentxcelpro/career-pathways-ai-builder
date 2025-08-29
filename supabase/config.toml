@@ -109,3 +109,6 @@ verify_jwt = false
 
 [functions.sync-candidates]
 verify_jwt = false
+
+[functions.bulk-download-cvs]
+verify_jwt = false
