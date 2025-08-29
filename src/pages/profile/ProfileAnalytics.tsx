@@ -2,16 +2,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart3, TrendingUp, Eye, Users, MessageSquare, Download, Calendar } from "lucide-react";
+import { BarChart3, TrendingUp, Eye, Users, MessageSquare, Download, Calendar, Sparkles } from "lucide-react";
 import ProfileLayout from "@/components/profile/ProfileLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
+import { EnhancedCareerDashboard } from "@/components/profile/analytics/EnhancedCareerDashboard";
 
 const ProfileAnalytics = () => {
   const { user } = useAuth();
   const [timePeriod, setTimePeriod] = useState("30");
+  const [viewMode, setViewMode] = useState<'enhanced' | 'legacy'>('enhanced');
 
   // Fetch real-time analytics data
   const { data: analyticsData, isLoading } = useQuery({
@@ -115,7 +117,7 @@ const ProfileAnalytics = () => {
       description="Track your profile performance and engagement metrics"
     >
       <div className="space-y-6">
-        {/* Time Period Filter */}
+        {/* Enhanced Dashboard Toggle */}
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <Select value={timePeriod} onValueChange={setTimePeriod}>
@@ -129,12 +131,32 @@ const ProfileAnalytics = () => {
                 <SelectItem value="365">Last year</SelectItem>
               </SelectContent>
             </Select>
+            <Button 
+              variant={viewMode === 'enhanced' ? 'default' : 'outline'}
+              onClick={() => setViewMode('enhanced')}
+              className="flex items-center gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Enhanced Dashboard
+            </Button>
+            <Button 
+              variant={viewMode === 'legacy' ? 'default' : 'outline'}
+              onClick={() => setViewMode('legacy')}
+            >
+              Legacy View
+            </Button>
           </div>
           <Button variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>
         </div>
+
+        {/* Conditional Dashboard Rendering */}
+        {viewMode === 'enhanced' ? (
+          <EnhancedCareerDashboard />
+        ) : (
+          <div className="space-y-6">
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -360,6 +382,8 @@ const ProfileAnalytics = () => {
             </div>
           </CardContent>
         </Card>
+          </div>
+        )}
       </div>
     </ProfileLayout>
   );
