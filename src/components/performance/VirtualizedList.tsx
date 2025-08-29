@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useRef, useCallback } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList } from 'react-window';
 
 interface VirtualizedListProps<T> {
   items: T[];
@@ -18,7 +18,7 @@ function VirtualizedListComponent<T>({
   className,
   overscan = 5
 }: VirtualizedListProps<T>) {
-  const listRef = useRef<List>(null);
+  const listRef = useRef<FixedSizeList>(null);
 
   const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => (
     <div style={style}>
@@ -30,7 +30,7 @@ function VirtualizedListComponent<T>({
 
   return (
     <div className={className}>
-      <List
+      <FixedSizeList
         ref={listRef}
         height={containerHeight}
         width="100%"
@@ -40,7 +40,7 @@ function VirtualizedListComponent<T>({
         itemData={items}
       >
         {memoizedRow}
-      </List>
+      </FixedSizeList>
     </div>
   );
 }
