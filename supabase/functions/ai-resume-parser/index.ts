@@ -133,13 +133,12 @@ Guidelines:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Parse this resume text:\n\n${extractedText}` }
         ],
-        temperature: 0.1,
-        max_tokens: 2000
+        max_completion_tokens: 2000
       }),
     });
 

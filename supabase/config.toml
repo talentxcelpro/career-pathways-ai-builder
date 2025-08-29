@@ -112,3 +112,13 @@ verify_jwt = false
 
 [functions.bulk-download-cvs]
 verify_jwt = false
+
+# Resume Functions
+[functions.ai-ats-analyzer]
+verify_jwt = false
+
+[functions.ai-resume-content]
+verify_jwt = false
+
+[functions.ai-resume-parser]
+verify_jwt = false
