@@ -1,5 +1,5 @@
 // Service Worker for TalentXcel Auto-Update System
-const CACHE_NAME = 'talentxcel-v2.0.0';
+const CACHE_NAME = 'talentxcel-v2.0.1';
 const urlsToCache = [
   '/',
   '/mobile/network',
@@ -21,14 +21,26 @@ self.addEventListener('install', (event) => {
   self.skipWaiting(); // Force the waiting service worker to become active
 });
 
-// Fetch event - serve from cache or network
+// Fetch event - prefer network for navigations to avoid white screens after deploys
 self.addEventListener('fetch', (event) => {
+  const req = event.request;
+
+  // For navigation requests (HTML pages), use network-first and fallback to cache
+  if (req.mode === 'navigate' || (req.method === 'GET' && req.headers.get('accept')?.includes('text/html'))) {
+    event.respondWith(
+      fetch(req).then((response) => {
+        // Optionally update cached root with latest index
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put('/', copy));
+        return response;
+      }).catch(() => caches.match('/') || caches.match('/index.html'))
+    );
+    return;
+  }
+
+  // For other requests (assets, APIs), use cache-first
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      })
+    caches.match(req).then((cached) => cached || fetch(req))
   );
 });
 
