@@ -183,12 +183,13 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                 key={item.value}
                 label={item.label}
                 count={item.count}
-                checked={filters.experience_level.includes(item.value)}
+                checked={(filters.experience_level?.includes(item.value)) ?? false}
                 onChange={(checked) => {
+                  const current = filters.experience_level || [];
                   if (checked) {
-                    updateFilters('experience_level', [...filters.experience_level, item.value]);
+                    updateFilters('experience_level', [...current, item.value]);
                   } else {
-                    updateFilters('experience_level', filters.experience_level.filter(exp => exp !== item.value));
+                    updateFilters('experience_level', current.filter(exp => exp !== item.value));
                   }
                 }}
               />
@@ -253,7 +254,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                 key={item.value}
                 label={item.label}
                 count={item.count}
-                checked={filters.department.includes(item.value)}
+                checked={(filters.department?.includes(item.value)) ?? false}
                 onChange={() => toggleArrayFilter('department', item.value)}
               />
             ))}
@@ -270,7 +271,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                 key={item.value}
                 label={item.label}
                 count={item.count}
-                checked={filters.company_type.includes(item.value)}
+                checked={(filters.company_type?.includes(item.value)) ?? false}
                 onChange={() => toggleArrayFilter('company_type', item.value)}
               />
             ))}
@@ -289,7 +290,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                 count={item.count}
                 checked={
                   item.value === 'remote' ? filters.is_remote : 
-                  filters.work_mode.includes(item.value)
+                  (filters.work_mode?.includes(item.value) ?? false)
                 }
                 onChange={(checked) => {
                   if (item.value === 'remote') {
@@ -314,7 +315,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                     key={item.value}
                     label={item.label}
                     count={item.count}
-                    checked={filters.industry.includes(item.value)}
+                    checked={(filters.industry?.includes(item.value)) ?? false}
                     onChange={() => toggleArrayFilter('industry', item.value)}
                   />
                 ))}
@@ -334,7 +335,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                     key={item.value}
                     label={item.label}
                     count={item.count}
-                    checked={filters.role_category.includes(item.value)}
+                    checked={(filters.role_category?.includes(item.value)) ?? false}
                     onChange={() => toggleArrayFilter('role_category', item.value)}
                   />
                 ))}
@@ -354,7 +355,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                     key={item.value}
                     label={item.label}
                     count={item.count}
-                    checked={filters.education.includes(item.value)}
+                    checked={(filters.education?.includes(item.value)) ?? false}
                     onChange={() => toggleArrayFilter('education', item.value)}
                   />
                 ))}
@@ -372,7 +373,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                 key={item.value}
                 label={item.label}
                 count={item.count}
-                checked={filters.posted_by.includes(item.value)}
+                checked={(filters.posted_by?.includes(item.value)) ?? false}
                 onChange={() => toggleArrayFilter('posted_by', item.value)}
               />
             ))}
@@ -388,7 +389,7 @@ export const LiveJobFilters: React.FC<LiveJobFiltersProps> = ({
                 key={item.value}
                 label={item.label}
                 count={item.count}
-                checked={filters.freshness.includes(item.value)}
+                checked={(filters.freshness?.includes(item.value)) ?? false}
                 onChange={() => toggleArrayFilter('freshness', item.value)}
               />
             ))}
