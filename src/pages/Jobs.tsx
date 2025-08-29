@@ -27,6 +27,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 import { SocialPagination } from '@/components/ui/social-pagination';
+import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
+import { SmartJobRecommendations } from '@/components/jobs/SmartJobRecommendations';
+import { ApplicationTracker } from '@/components/jobs/ApplicationTracker';
+import { JobCard } from '@/components/jobs/JobCard';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -370,22 +374,22 @@ const Jobs = () => {
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-[#1E2A78]" />
                 <h1 className="text-xl font-bold text-[#1E2A78] font-display">
-                  Find Jobs Faster – Powered by TalentXcel AI Matching
+                  Your AI Career Companion – Smart Job Discovery
                 </h1>
               </div>
               <div className="hidden md:flex items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
                   <Filter className="h-4 w-4 text-[#28C76F]" />
-                  <span>AI Filters</span>
+                  <span>AI Matching</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Building className="h-4 w-4 text-[#28C76F]" />
-                  <span>Top Companies</span>
+                  <span>Smart Recommendations</span>
                 </div>
               </div>
             </div>
             <div className="bg-[#28C76F]/10 text-[#28C76F] px-3 py-1 rounded-full text-sm font-medium">
-              {totalCount} Jobs
+              {totalCount} Jobs • AI-Matched
             </div>
           </div>
           
@@ -467,38 +471,59 @@ const Jobs = () => {
         </div>
       </div>
 
-      {/* Main Content - Featured Jobs Above the Fold */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        {/* Featured Jobs Section - Immediately Visible */}
+      {/* Main Content - AI-Powered Job Discovery */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        {/* Personal Career Dashboard for logged-in users */}
+        {currentUser && (
+          <div className="mb-8">
+            <PersonalCareerDashboard 
+              user={currentUser}
+              savedJobsCount={savedJobs.length}
+              appliedJobsCount={0} // This would come from real data
+              profileViews={12} // This would come from real data
+            />
+          </div>
+        )}
+
+        {/* AI Job Recommendations for logged-in users */}
+        {currentUser && (
+          <div className="mb-8">
+            <SmartJobRecommendations 
+              userId={currentUser.id}
+              onJobSave={handleSaveJob}
+              savedJobs={savedJobs}
+            />
+          </div>
+        )}
+
+        {/* Application Tracker for logged-in users */}
+        {currentUser && (
+          <div className="mb-8">
+            <ApplicationTracker 
+              userId={currentUser.id}
+            />
+          </div>
+        )}
+
+        {/* Featured Jobs Section with Enhanced Cards */}
         {featuredJobs.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">✨</span>
-              <h2 className="text-xl font-bold text-gray-900">Featured Jobs (Top Priority)</h2>
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="text-xl">⭐</span>
+              <h2 className="text-2xl font-bold text-gray-900">Featured Opportunities</h2>
+              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                Handpicked for You
+              </Badge>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredJobs.slice(0, 6).map((job) => (
-                <div key={job.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      {job.companies?.logo_url && (
-                        <img src={job.companies.logo_url} alt={job.companies.name} className="w-8 h-8 rounded" />
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-sm">{job.title}</h3>
-                        <p className="text-xs text-gray-600">{job.companies?.name}</p>
-                      </div>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">Featured</Badge>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">{job.location} • {job.employment_type}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-primary">
-                      {job.salary_min && job.salary_max ? `₹${job.salary_min/100000}L - ₹${job.salary_max/100000}L` : 'Salary not disclosed'}
-                    </span>
-                    <Button size="sm" className="text-xs h-7 px-3">Apply</Button>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {featuredJobs.slice(0, 4).map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onSave={handleSaveJob}
+                  isSaved={savedJobs.includes(job.id)}
+                />
               ))}
             </div>
           </div>
@@ -529,18 +554,46 @@ const Jobs = () => {
               </div>
             </div>
 
-            <JobsListOptimized 
-              jobs={sortedJobs}
-              totalCount={totalCount}
-              hasMore={hasMore}
-              isLoading={isLoading}
-              mode="pagination"
-              onPageChange={goToPage}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              savedJobs={savedJobs}
-              onSaveJob={handleSaveJob}
-            />
+            {/* Enhanced Job Cards Grid */}
+            <div className="grid grid-cols-1 gap-4">
+              {regularJobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onSave={handleSaveJob}
+                  isSaved={savedJobs.includes(job.id)}
+                />
+              ))}
+            </div>
+
+            {/* Loading State */}
+            {isLoading && (
+              <div className="grid grid-cols-1 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-gray-100 rounded-lg p-6 animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                    <div className="h-20 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && regularJobs.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No jobs match your criteria
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Try adjusting your filters or search terms to find more opportunities
+                </p>
+                <Button onClick={handleClearFilters}>
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
