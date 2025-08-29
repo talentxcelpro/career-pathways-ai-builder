@@ -1,13 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useRealTimeAchievements } from '@/hooks/useRealTimeAchievements';
 import { PassportCard } from './PassportCard';
+import { AdvancedAchievementSystem } from './AdvancedAchievementSystem';
+import { JourneyTrackingAnalytics } from './JourneyTrackingAnalytics';
+import { AIRecommendationEngine } from './AIRecommendationEngine';
+import { SocialSharingFeatures } from './SocialSharingFeatures';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Award, 
   TrendingUp, 
@@ -20,7 +25,11 @@ import {
   ArrowRight,
   CheckCircle,
   AlertTriangle,
-  Star
+  Star,
+  BarChart3,
+  Brain,
+  Share2,
+  Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -35,6 +44,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
   const { metrics, insights, achievementTriggers, isLoading, error } = useRealCareerData(userId);
   const { triggerAchievementCheck, isAwarding } = useRealTimeAchievements();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Auto-check achievements when metrics change
   useEffect(() => {
