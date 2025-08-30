@@ -18,6 +18,16 @@ const PassportUrlRedirect = () => {
         return;
       }
 
+      // Check if the ID looks like a UUID (basic validation)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      
+      if (!uuidRegex.test(id)) {
+        // If it's not a UUID, it might be a username that got caught by this route
+        // Redirect to the username route
+        navigate(`/passport/${id}`, { replace: true });
+        return;
+      }
+
       try {
         const { data: profile, error } = await supabase
           .from('profiles')

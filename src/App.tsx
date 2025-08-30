@@ -159,12 +159,12 @@ const App = () => {
                        <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
                          <Route path="/debug" element={<DebugPage />} />
-                         <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
-                         {/* Legacy UUID-based passport redirect (UUID v4 pattern) */}
-                         <Route path="/passport/:id([0-9a-fA-F-]{36})" element={<PassportUrlRedirect />} />
-                         <Route path="/passport/:username" element={<CareerPassportDashboard />} />
-                         <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
-                         <Route path="/@:username" element={<CareerPassportDashboard />} />
+                          <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
+                          <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
+                          {/* Legacy UUID-based passport redirect - must come before username route */}
+                          <Route path="/passport/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})" element={<PassportUrlRedirect />} />
+                          <Route path="/passport/:username" element={<CareerPassportDashboard />} />
+                          <Route path="/@:username" element={<CareerPassportDashboard />} />
                         <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                       <Route path="/resume/new" element={<ResumeNew />} />
