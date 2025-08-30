@@ -87,7 +87,7 @@ export const MobileCareerPassport: React.FC = () => {
         // Fetch public profile data
         const { data: profileData } = await supabase
           .from('profiles')
-          .select('id, full_name, headline, location, profile_picture_url, talentxcel_id, bio, current_company, current_position, years_of_experience, skills')
+          .select('id, username, full_name, headline, location, profile_picture_url, talentxcel_id, bio, current_company, current_position, years_of_experience, skills')
           .eq('id', targetUserId)
           .single();
 
@@ -138,6 +138,7 @@ export const MobileCareerPassport: React.FC = () => {
         location: profile?.location,
         profile_picture_url: user?.user_metadata?.avatar_url || profile?.profile_picture_url,
         talentxcel_id: profile?.talentxcel_id,
+        username: (profile as any)?.username,
         // These fields will come from the publicPassportData for now
         bio: undefined,
         current_company: undefined,
@@ -164,7 +165,7 @@ export const MobileCareerPassport: React.FC = () => {
   const getDisplayName = () => displayData.profile?.full_name || 'Professional';
 
   const handleShare = async () => {
-    const shareUrl = `https://talentxcel.in/passport/${userId || user?.id}`;
+    const shareUrl = `https://talentxcel.in/passport/${displayData.profile?.username || userId || user?.id}`;
     const shareData = {
       title: `${getDisplayName()}'s Career Passport - TalentXcel`,
       text: `Check out ${getDisplayName()}'s professional career passport on TalentXcel`,

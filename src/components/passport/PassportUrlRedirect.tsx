@@ -27,7 +27,8 @@ const PassportUrlRedirect = () => {
 
         if (error) {
           console.error('Error fetching profile:', error);
-          navigate('/404');
+          // Fallback to legacy UUID route if we can't read username (e.g., RLS)
+          navigate(`/passport/user/${id}`, { replace: true });
         } else if (profile?.username) {
           // Redirect to SEO-friendly username URL
           navigate(`/passport/${profile.username}`, { replace: true });
@@ -37,7 +38,8 @@ const PassportUrlRedirect = () => {
         }
       } catch (err) {
         console.error('Unexpected error:', err);
-        navigate('/404');
+        // Fallback to legacy UUID route on unexpected errors
+        navigate(`/passport/user/${id}`, { replace: true });
       }
     };
 

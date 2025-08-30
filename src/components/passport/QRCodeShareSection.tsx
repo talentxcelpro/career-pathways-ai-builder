@@ -20,7 +20,7 @@ export function QRCodeShareSection({ userProfile, insights, userId }: QRCodeShar
   
   const baseUrl = window.location.origin;
   const profileUrl = `${baseUrl}/profile/${userProfile?.username || userId}`;
-  const passportUrl = `${baseUrl}/passport/${userId}`;
+  const passportUrl = `${baseUrl}/passport/${userProfile?.username || userId}`;
   
   const shareUrl = shareFormat === 'profile' ? profileUrl : passportUrl;
   

@@ -23,7 +23,8 @@ interface PassportCardProps {
 export function PassportCard({ userProfile, metrics, insights, userId }: PassportCardProps) {
   const { user } = useAuth();
   const currentUser = userId || user?.id;
-  const profileUrl = `${window.location.origin}/passport/${currentUser}`;
+  const slug = userProfile?.username || currentUser;
+  const profileUrl = `${window.location.origin}/passport/${slug}`;
   
   // Format issue date and expiry
   const issueDate = new Date().toLocaleDateString('en-US', { 
@@ -72,11 +73,12 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative">
-              {userProfile?.profile_picture_url ? (
+              {userProfile?.profile_picture_url || userProfile?.profile_photo_url ? (
                 <img 
-                  src={userProfile.profile_picture_url} 
-                  alt="Profile" 
+                  src={userProfile.profile_picture_url || userProfile.profile_photo_url} 
+                  alt={`${userProfile?.full_name || 'User'} profile photo`}
                   className="w-full h-full object-cover rounded-lg"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
                 />
               ) : (
                 <span className="text-2xl font-bold text-white">

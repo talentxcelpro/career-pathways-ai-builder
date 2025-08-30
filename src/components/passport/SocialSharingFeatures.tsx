@@ -170,12 +170,10 @@ export function SocialSharingFeatures({
   const generateShareUrl = (type: string = 'passport') => {
     const baseUrl = window.location.origin;
     const customUrl = socialSettings?.customUrl;
-    
-    if (customUrl && type === 'passport') {
-      return `${baseUrl}/passport/${customUrl}`;
-    }
-    
-    return `${baseUrl}/passport/${targetUserId}`;
+    const slug = type === 'passport'
+      ? (customUrl || userProfile?.username || targetUserId)
+      : (userProfile?.username || targetUserId);
+    return `${baseUrl}/passport/${slug}`;
   };
 
   const shareContent: ShareableContent[] = [

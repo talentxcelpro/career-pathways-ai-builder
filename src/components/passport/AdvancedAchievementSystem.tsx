@@ -70,7 +70,7 @@ export function AdvancedAchievementSystem({
   const targetUserId = userId || user?.id;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlyEarned, setShowOnlyEarned] = useState(false);
-  const shareUrlBase = `${window.location.origin}/passport/${targetUserId}`;
+  const shareUrlBase = `${window.location.origin}/passport/${userProfile?.username || targetUserId}`;
 
 
   const { data: achievements = [], isLoading } = useQuery({
