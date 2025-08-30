@@ -92,201 +92,206 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* TalentXcel Passport Card */}
-        <div className="flex justify-center mb-12">
-          <PassportCard 
-            userProfile={userProfile}
-            metrics={metrics}
-            insights={insights}
-          userId={userId}
-        />
-      </div>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* TalentXcel Passport Card */}
+          <div className="lg:col-span-1 flex justify-center lg:justify-start">
+            <PassportCard 
+              userProfile={userProfile}
+              metrics={metrics}
+              insights={insights}
+              userId={userId}
+            />
+          </div>
 
-      {/* Header Card with Real Scores */}
-      <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-purple-500/5">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Avatar className="w-16 h-16 ring-2 ring-white shadow-lg">
-                <AvatarImage 
-                  src={userProfile?.profile_picture_url} 
-                  alt={userProfile?.full_name || 'User'} 
-                />
-                <AvatarFallback className="text-lg font-semibold bg-primary text-primary-foreground">
-                  {userProfile?.full_name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
+          {/* Header Card with Real Scores */}
+          <div className="lg:col-span-2">
+            <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-purple-500/5 h-full">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-12 h-12 ring-2 ring-white shadow-lg">
+                      <AvatarImage 
+                        src={userProfile?.profile_picture_url} 
+                        alt={userProfile?.full_name || 'User'} 
+                      />
+                      <AvatarFallback className="text-sm font-semibold bg-primary text-primary-foreground">
+                        {userProfile?.full_name?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h1 className="text-xl font-bold text-foreground">
+                        {userProfile?.full_name || 'Career Professional'}
+                      </h1>
+                      <p className="text-muted-foreground text-sm">
+                        {userProfile?.headline || 'Building an Amazing Career'}
+                      </p>
+                      {userProfile?.location && (
+                        <p className="text-xs text-muted-foreground flex items-center">
+                          📍 {userProfile.location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(insights.career_readiness_score)}`}>
+                      {getScoreIcon(insights.career_readiness_score)}
+                      <span className="ml-1">{insights.career_readiness_score}% Ready</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {insights.industry_percentile}th percentile
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+
+              {/* Real-time Metrics Grid */}
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <MetricCard
+                    icon={<FileText className="w-4 h-4" />}
+                    label="Resumes"
+                    value={metrics.resumes_count}
+                    color="blue"
+                    onClick={() => isOwner && navigate('/resume')}
+                  />
+                  <MetricCard
+                    icon={<Briefcase className="w-4 h-4" />}
+                    label="Applications"
+                    value={metrics.jobs_applied_count}
+                    color="green"
+                    onClick={() => isOwner && navigate('/jobs')}
+                  />
+                  <MetricCard
+                    icon={<Users className="w-4 h-4" />}
+                    label="Connections"
+                    value={metrics.connections_count}
+                    color="purple"
+                    onClick={() => isOwner && navigate('/network')}
+                  />
+                  <MetricCard
+                    icon={<Award className="w-4 h-4" />}
+                    label="Assessments"
+                    value={metrics.assessments_completed}
+                    color="yellow"
+                    onClick={() => isOwner && navigate('/assessments')}
+                  />
+                </div>
+
+                {/* AI-Powered Scores */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ScoreCard
+                    title="Career Readiness"
+                    score={insights.career_readiness_score}
+                    description="Overall preparedness for career opportunities"
+                    icon={<Target className="w-5 h-5" />}
+                  />
+                  <ScoreCard
+                    title="Market Competitiveness"
+                    score={insights.market_competitiveness_score}
+                    description="How you compare to peers in the market"
+                    icon={<TrendingUp className="w-5 h-5" />}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* AI Insights & Recommendations */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Strengths & Improvement Areas */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-lg">
+                <Star className="w-4 h-4 mr-2 text-yellow-500" />
+                Career Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <div>
-                <h1 className="text-2xl font-bold text-foreground">
-                  {userProfile?.full_name || 'Career Professional'}
-                </h1>
-                <p className="text-muted-foreground">
-                  {userProfile?.headline || 'Building an Amazing Career'}
-                </p>
-                {userProfile?.location && (
-                  <p className="text-sm text-muted-foreground flex items-center">
-                    📍 {userProfile.location}
-                  </p>
-                )}
+                <h4 className="font-medium text-green-600 mb-2 text-sm">Strengths</h4>
+                <div className="space-y-1">
+                  {insights.strengths.map((strength, idx) => (
+                    <div key={idx} className="flex items-center text-xs">
+                      <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
+                      {strength}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="text-right">
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(insights.career_readiness_score)}`}>
-                {getScoreIcon(insights.career_readiness_score)}
-                <span className="ml-1">{insights.career_readiness_score}% Ready</span>
+              
+              <div>
+                <h4 className="font-medium text-orange-600 mb-2 text-sm">Improvement Areas</h4>
+                <div className="space-y-1">
+                  {insights.improvement_areas.map((area, idx) => (
+                    <div key={idx} className="flex items-center text-xs">
+                      <Target className="w-3 h-3 text-orange-500 mr-2 flex-shrink-0" />
+                      {area}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {insights.industry_percentile}th percentile
-              </p>
-            </div>
-          </div>
-        </CardHeader>
+            </CardContent>
+          </Card>
 
-        {/* Real-time Metrics Grid */}
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <MetricCard
-              icon={<FileText className="w-5 h-5" />}
-              label="Resumes"
-              value={metrics.resumes_count}
-              color="blue"
-              onClick={() => isOwner && navigate('/resume')}
-            />
-            <MetricCard
-              icon={<Briefcase className="w-5 h-5" />}
-              label="Applications"
-              value={metrics.jobs_applied_count}
-              color="green"
-              onClick={() => isOwner && navigate('/jobs')}
-            />
-            <MetricCard
-              icon={<Users className="w-5 h-5" />}
-              label="Connections"
-              value={metrics.connections_count}
-              color="purple"
-              onClick={() => isOwner && navigate('/network')}
-            />
-            <MetricCard
-              icon={<Award className="w-5 h-5" />}
-              label="Assessments"
-              value={metrics.assessments_completed}
-              color="yellow"
-              onClick={() => isOwner && navigate('/assessments')}
-            />
-          </div>
-
-          {/* AI-Powered Scores */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ScoreCard
-              title="Career Readiness"
-              score={insights.career_readiness_score}
-              description="Overall preparedness for career opportunities"
-              icon={<Target className="w-6 h-6" />}
-            />
-            <ScoreCard
-              title="Market Competitiveness"
-              score={insights.market_competitiveness_score}
-              description="How you compare to peers in the market"
-              icon={<TrendingUp className="w-6 h-6" />}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* AI Insights & Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Strengths & Improvement Areas */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Star className="w-5 h-5 mr-2 text-yellow-500" />
-              Career Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-medium text-green-600 mb-2">Strengths</h4>
-              <div className="space-y-1">
-                {insights.strengths.map((strength, idx) => (
-                  <div key={idx} className="flex items-center text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                    {strength}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-orange-600 mb-2">Improvement Areas</h4>
-              <div className="space-y-1">
-                {insights.improvement_areas.map((area, idx) => (
-                  <div key={idx} className="flex items-center text-sm">
-                    <Target className="w-4 h-4 text-orange-500 mr-2 flex-shrink-0" />
-                    {area}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Next Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Zap className="w-5 h-5 mr-2 text-blue-500" />
-              Recommended Actions
-            </CardTitle>
-            <CardDescription>
-              AI-powered suggestions to boost your career readiness
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {insights.next_actions.map((action, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                <span className="text-sm">{action}</span>
-                <ArrowRight className="w-4 h-4 text-muted-foreground" />
-              </div>
-            ))}
-            
-            {insights.ai_recommendations.length > 0 && (
-              <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                <h5 className="font-medium text-primary mb-2">AI Insight</h5>
-                {insights.ai_recommendations.map((rec, idx) => (
-                  <p key={idx} className="text-sm text-muted-foreground">{rec}</p>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          {/* Next Actions */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center text-lg">
+                <Zap className="w-4 h-4 mr-2 text-blue-500" />
+                Recommended Actions
+              </CardTitle>
+              <CardDescription className="text-xs">
+                AI-powered suggestions to boost your career readiness
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {insights.next_actions.map((action, idx) => (
+                <div key={idx} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                  <span className="text-xs">{action}</span>
+                  <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                </div>
+              ))}
+              
+              {insights.ai_recommendations.length > 0 && (
+                <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                  <h5 className="font-medium text-primary mb-1 text-xs">AI Insight</h5>
+                  {insights.ai_recommendations.map((rec, idx) => (
+                    <p key={idx} className="text-xs text-muted-foreground">{rec}</p>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Enhanced Features Tabs */}
         <Card className="overflow-hidden">
           <Tabs defaultValue="achievements" className="w-full">
             <div className="border-b">
               <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="achievements" className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4" />
+                <TabsTrigger value="achievements" className="flex items-center gap-2 text-xs">
+                  <Trophy className="w-3 h-3" />
                   Achievements
                 </TabsTrigger>
-                <TabsTrigger value="analytics" className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
+                <TabsTrigger value="analytics" className="flex items-center gap-2 text-xs">
+                  <BarChart3 className="w-3 h-3" />
                   Analytics
                 </TabsTrigger>
-                <TabsTrigger value="ai-insights" className="flex items-center gap-2">
-                  <Brain className="w-4 h-4" />
+                <TabsTrigger value="ai-insights" className="flex items-center gap-2 text-xs">
+                  <Brain className="w-3 h-3" />
                   AI Insights
                 </TabsTrigger>
-                <TabsTrigger value="social" className="flex items-center gap-2">
-                  <Share2 className="w-4 h-4" />
+                <TabsTrigger value="social" className="flex items-center gap-2 text-xs">
+                  <Share2 className="w-3 h-3" />
                   Social
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <TabsContent value="achievements" className="p-6">
+            <TabsContent value="achievements" className="p-4">
               <AdvancedAchievementSystem
                 achievements={earnedAchievements}
                 pendingAchievements={pendingAchievements}
@@ -295,7 +300,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
               />
             </TabsContent>
 
-            <TabsContent value="analytics" className="p-6">
+            <TabsContent value="analytics" className="p-4">
               <JourneyTrackingAnalytics
                 userId={userId}
                 metrics={metrics}
@@ -303,7 +308,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
               />
             </TabsContent>
 
-            <TabsContent value="ai-insights" className="p-6">
+            <TabsContent value="ai-insights" className="p-4">
               <AIRecommendationEngine
                 userId={userId}
                 metrics={metrics}
@@ -312,7 +317,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
               />
             </TabsContent>
 
-            <TabsContent value="social" className="p-6">
+            <TabsContent value="social" className="p-4">
               <SocialSharingFeatures
                 userProfile={userProfile}
                 metrics={metrics}
@@ -347,11 +352,11 @@ function MetricCard({ icon, label, value, color, onClick }: {
       className={`cursor-pointer transition-all hover:shadow-md ${onClick ? 'hover:scale-105' : ''}`}
       onClick={onClick}
     >
-      <CardContent className="p-4 text-center">
-        <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full mb-2 ${colorClasses[color as keyof typeof colorClasses]}`}>
+      <CardContent className="p-3 text-center">
+        <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full mb-1 ${colorClasses[color as keyof typeof colorClasses]}`}>
           {icon}
         </div>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-xl font-bold">{value}</div>
         <div className="text-xs text-muted-foreground">{label}</div>
       </CardContent>
     </Card>
@@ -366,18 +371,18 @@ function ScoreCard({ title, score, description, icon }: {
 }) {
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
             {icon}
-            <h3 className="text-lg font-semibold ml-2">{title}</h3>
+            <h3 className="text-sm font-semibold ml-2">{title}</h3>
           </div>
-          <Badge variant="secondary" className="text-lg px-3 py-1">
+          <Badge variant="secondary" className="text-sm px-2 py-1">
             {score}%
           </Badge>
         </div>
-        <Progress value={score} className="mb-2" />
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <Progress value={score} className="mb-2 h-2" />
+        <p className="text-xs text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
   );
