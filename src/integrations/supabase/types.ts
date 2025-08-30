@@ -23945,6 +23945,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      batch_refresh_career_passports: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       calculate_assessment_score: {
         Args: { attempt_uuid: string }
         Returns: undefined
@@ -24686,6 +24690,10 @@ export type Database = {
       refresh_ai_match_scores: {
         Args: { target_user_id?: string }
         Returns: undefined
+      }
+      refresh_career_passport_metrics: {
+        Args: { user_uuid: string }
+        Returns: Json
       }
       reject_company_access_request: {
         Args: { reason?: string; request_id: string }
