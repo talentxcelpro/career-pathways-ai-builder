@@ -217,7 +217,30 @@ export function AdvancedAchievementSystem({
                 <Filter className="w-4 h-4 mr-1" />
                 {showOnlyEarned ? 'All' : 'Earned Only'}
               </Button>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  // Share all achievements
+                  const shareContent = {
+                    id: 'achievements',
+                    type: 'profile' as const,
+                    title: `My TalentXcel Achievements`,
+                    description: `I've earned ${achievements.length} achievements and ${totalScore} points on TalentXcel!`,
+                    hashtags: ['Achievements', 'Career', 'TalentXcel']
+                  };
+                  
+                  if (navigator.share) {
+                    navigator.share({
+                      title: shareContent.title,
+                      text: shareContent.description,
+                      url: window.location.href
+                    });
+                  } else {
+                    navigator.clipboard.writeText(`${shareContent.title}\n\n${shareContent.description}\n\n${window.location.href}`);
+                  }
+                }}
+              >
                 <Share2 className="w-4 h-4 mr-1" />
                 Share
               </Button>
@@ -330,7 +353,19 @@ function AchievementCard({ achievement, onShare }: {
             variant="ghost"
             size="sm"
             className="w-full mt-3"
-            onClick={onShare}
+            onClick={() => {
+              const shareContent = {
+                title: `🏆 Achievement Unlocked: ${achievement.achievement_title}`,
+                text: `I just earned "${achievement.achievement_title}" (${achievement.points_awarded} points) on TalentXcel! ${achievement.achievement_description}`,
+                url: window.location.href
+              };
+              
+              if (navigator.share) {
+                navigator.share(shareContent);
+              } else {
+                navigator.clipboard.writeText(`${shareContent.title}\n\n${shareContent.text}\n\n${shareContent.url}`);
+              }
+            }}
           >
             <Share2 className="w-3 h-3 mr-1" />
             Share Achievement
