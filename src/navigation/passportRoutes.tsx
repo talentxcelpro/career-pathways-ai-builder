@@ -10,7 +10,12 @@ export const passportRoutes = [
   },
   {
     title: "Career Passport",
-    to: "/passport/:userId",
+    to: "/passport/user/:userId",
+    page: <CareerPassportDashboard />,
+  },
+  {
+    title: "Career Passport",
+    to: "/passport/:username",
     page: <CareerPassportDashboard />,
   },
 ];

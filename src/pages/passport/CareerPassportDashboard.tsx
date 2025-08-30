@@ -5,6 +5,7 @@ import { useCareerPassport } from '@/hooks/useCareerPassport';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserScores } from '@/hooks/useUserScores';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
+import { useUsernameRouting } from '@/hooks/useUsernameRouting';
 import { EnhancedCareerPassport } from '@/components/passport/EnhancedCareerPassport';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,8 +57,15 @@ export function CareerPassportDashboard() {
   const { userId, username } = useParams<{ userId?: string; username?: string }>();
   const { user } = useAuth();
   const { profile } = useProfile();
+  
+  // Use username routing hook for username-based URLs
+  const { userId: resolvedUserId, isLoading: usernameLoading, error: usernameError } = useUsernameRouting();
+  
+  // Determine the actual user ID to use
+  const targetUserId = userId || resolvedUserId || user?.id;
+  
   const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone, trackJourneyEvent, updateCareerPassport } = useCareerPassport();
-  const { data: userScores } = useUserScores(userId || user?.id);
+  const { data: userScores } = useUserScores(targetUserId);
   const navigate = useNavigate();
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const [publicProfile, setPublicProfile] = useState<any>(null);
@@ -69,12 +77,18 @@ export function CareerPassportDashboard() {
 
   useEffect(() => {
     const initializeView = async () => {
+      // Handle username error
+      if (username && usernameError) {
+        navigate('/404');
+        return;
+      }
+      
       // Check if viewing someone else's passport (public view)
-      if (userId && userId !== user?.id) {
+      if (targetUserId && targetUserId !== user?.id) {
         setIsPublicView(true);
-        await loadPublicPassportData(userId);
+        await loadPublicPassportData(targetUserId);
         if (user?.id) {
-          await checkConnectionStatus(userId);
+          await checkConnectionStatus(targetUserId);
         }
       } else if (user?.id) {
         // Load own profile data
@@ -155,7 +169,7 @@ export function CareerPassportDashboard() {
     };
 
     initializeView();
-  }, [userId, user?.id]);
+  }, [targetUserId, user?.id, username, usernameError, navigate]);
 
   // Set QR code URL when public profile is updated
   useEffect(() => {
@@ -260,14 +274,14 @@ export function CareerPassportDashboard() {
   };
 
   const handleSendConnectionRequest = async () => {
-    if (!userId || userId === user?.id) return;
+    if (!targetUserId || targetUserId === user?.id) return;
     
     try {
       const { error } = await supabase
         .from('connections')
         .insert([{
           requester_id: user?.id,
-          recipient_id: userId,
+          recipient_id: targetUserId,
           status: 'pending'
         }]);
 
@@ -281,7 +295,11 @@ export function CareerPassportDashboard() {
   };
 
   const handleShareProfile = () => {
-    const shareUrl = `https://talentxcel.in/passport/${userId}`;
+    // Generate username-based URL if available
+    const shareUrl = username 
+      ? `https://talentxcel.in/passport/${username}`
+      : `https://talentxcel.in/passport/user/${targetUserId}`;
+    
     navigator.clipboard.writeText(shareUrl);
     toast.success('Profile link copied to clipboard!');
   };
@@ -331,7 +349,7 @@ export function CareerPassportDashboard() {
           </div>
         )}
 
-        {(isLoading || publicLoading) ? (
+        {(isLoading || publicLoading || usernameLoading) ? (
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -354,7 +372,7 @@ export function CareerPassportDashboard() {
           </div>
         ) : displayData.profile ? (
           <EnhancedCareerPassport 
-            userId={userId || user?.id}
+            userId={targetUserId || user?.id}
             userProfile={displayData.profile}
             isOwner={displayData.isOwner}
             publicPassport={isPublicView ? publicPassportData : undefined}
