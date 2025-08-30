@@ -39,13 +39,38 @@ interface EnhancedCareerPassportProps {
   userId?: string;
   userProfile?: any;
   isOwner?: boolean;
+  publicPassport?: any;
 }
 
-export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: EnhancedCareerPassportProps) {
+export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, publicPassport }: EnhancedCareerPassportProps) {
   const { metrics, insights, achievementTriggers, isLoading, error } = useRealCareerData(userId);
   const { triggerAchievementCheck, isAwarding } = useRealTimeAchievements();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Use public summary data when viewing someone else's passport to avoid RLS issues
+  const viewMetrics = (!isOwner && publicPassport?.passport) ? {
+    resumes_count: publicPassport.passport.resumes_count || 0,
+    jobs_applied_count: publicPassport.passport.jobs_applied_count || 0,
+    connections_count: publicPassport.passport.connections_count || 0,
+    certifications_count: publicPassport.passport.certifications_count || 0,
+    assessments_completed: 0,
+    profile_completion_score: publicPassport.passport.completion_percentage || 0,
+    recent_activity_days: 0,
+    network_quality_score: 0,
+    skill_verification_count: 0,
+    learning_hours: 0,
+  } : metrics;
+
+  const viewInsights = (!isOwner && publicPassport?.passport) ? {
+    career_readiness_score: publicPassport.passport.career_readiness_score || 0,
+    market_competitiveness_score: publicPassport.passport.market_competitiveness_score || 0,
+    industry_percentile: 0,
+    strengths: [],
+    improvement_areas: [],
+    next_actions: [],
+    ai_recommendations: [],
+  } : insights;
 
   // Auto-check achievements when metrics change
   useEffect(() => {
@@ -100,8 +125,8 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
           <div className="lg:col-span-1 flex justify-center lg:justify-start">
             <PassportCard 
               userProfile={userProfile}
-              metrics={metrics}
-              insights={insights}
+              metrics={viewMetrics as any}
+              insights={viewInsights as any}
               userId={userId}
             />
           </div>
@@ -136,12 +161,12 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(insights.career_readiness_score)}`}>
-                      {getScoreIcon(insights.career_readiness_score)}
-                      <span className="ml-1">{insights.career_readiness_score}% Ready</span>
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(viewInsights.career_readiness_score)}`}>
+                      {getScoreIcon(viewInsights.career_readiness_score)}
+                      <span className="ml-1">{viewInsights.career_readiness_score}% Ready</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {insights.industry_percentile}th percentile
+                      {viewInsights.industry_percentile}th percentile
                     </p>
                   </div>
                 </div>
@@ -150,50 +175,50 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
               {/* Real-time Metrics Grid */}
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <MetricCard
-                    icon={<FileText className="w-4 h-4" />}
-                    label="Resumes"
-                    value={metrics.resumes_count}
-                    color="blue"
-                    onClick={() => isOwner && navigate('/resume')}
-                  />
-                  <MetricCard
-                    icon={<Briefcase className="w-4 h-4" />}
-                    label="Applications"
-                    value={metrics.jobs_applied_count}
-                    color="green"
-                    onClick={() => isOwner && navigate('/jobs')}
-                  />
-                  <MetricCard
-                    icon={<Users className="w-4 h-4" />}
-                    label="Connections"
-                    value={metrics.connections_count}
-                    color="purple"
-                    onClick={() => isOwner && navigate('/network')}
-                  />
-                  <MetricCard
-                    icon={<Award className="w-4 h-4" />}
-                    label="Assessments"
-                    value={metrics.assessments_completed}
-                    color="yellow"
-                    onClick={() => isOwner && navigate('/assessments')}
-                  />
+                    <MetricCard
+                      icon={<FileText className="w-4 h-4" />}
+                      label="Resumes"
+                      value={viewMetrics?.resumes_count || 0}
+                      color="blue"
+                      onClick={() => isOwner && navigate('/resume')}
+                    />
+                    <MetricCard
+                      icon={<Briefcase className="w-4 h-4" />}
+                      label="Applications"
+                      value={viewMetrics?.jobs_applied_count || 0}
+                      color="green"
+                      onClick={() => isOwner && navigate('/jobs')}
+                    />
+                    <MetricCard
+                      icon={<Users className="w-4 h-4" />}
+                      label="Connections"
+                      value={viewMetrics?.connections_count || 0}
+                      color="purple"
+                      onClick={() => isOwner && navigate('/network')}
+                    />
+                    <MetricCard
+                      icon={<Award className="w-4 h-4" />}
+                      label="Assessments"
+                      value={viewMetrics?.assessments_completed || 0}
+                      color="yellow"
+                      onClick={() => isOwner && navigate('/assessments')}
+                    />
                 </div>
 
                 {/* AI-Powered Scores */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ScoreCard
-                    title="Career Readiness"
-                    score={insights.career_readiness_score}
-                    description="Overall preparedness for career opportunities"
-                    icon={<Target className="w-5 h-5" />}
-                  />
-                  <ScoreCard
-                    title="Market Competitiveness"
-                    score={insights.market_competitiveness_score}
-                    description="How you compare to peers in the market"
-                    icon={<TrendingUp className="w-5 h-5" />}
-                  />
+                    <ScoreCard
+                      title="Career Readiness"
+                      score={viewInsights.career_readiness_score}
+                      description="Overall preparedness for career opportunities"
+                      icon={<Target className="w-5 h-5" />}
+                    />
+                    <ScoreCard
+                      title="Market Competitiveness"
+                      score={viewInsights.market_competitiveness_score}
+                      description="How you compare to peers in the market"
+                      icon={<TrendingUp className="w-5 h-5" />}
+                    />
                 </div>
               </CardContent>
             </Card>
@@ -271,7 +296,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
         {/* QR Code Share Section */}
         <QRCodeShareSection 
           userProfile={userProfile}
-          insights={insights}
+          insights={viewInsights as any}
           userId={userId}
         />
 

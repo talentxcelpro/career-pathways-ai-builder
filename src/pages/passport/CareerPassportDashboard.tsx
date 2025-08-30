@@ -357,6 +357,7 @@ export function CareerPassportDashboard() {
             userId={userId || user?.id}
             userProfile={displayData.profile}
             isOwner={displayData.isOwner}
+            publicPassport={isPublicView ? publicPassportData : undefined}
           />
         ) : (
           <div className="text-center py-12">

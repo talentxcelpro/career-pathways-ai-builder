@@ -25,6 +25,8 @@ import {
   Users
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+
 
 interface Achievement {
   id: string;
@@ -68,6 +70,8 @@ export function AdvancedAchievementSystem({
   const targetUserId = userId || user?.id;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlyEarned, setShowOnlyEarned] = useState(false);
+  const shareUrlBase = `${window.location.origin}/passport/${targetUserId}`;
+
 
   const { data: achievements = [], isLoading } = useQuery({
     queryKey: ['achievements', targetUserId],
@@ -220,24 +224,24 @@ export function AdvancedAchievementSystem({
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => {
-                  // Share all achievements
+                onClick={async () => {
                   const shareContent = {
-                    id: 'achievements',
-                    type: 'profile' as const,
                     title: `My TalentXcel Achievements`,
                     description: `I've earned ${achievements.length} achievements and ${totalScore} points on TalentXcel!`,
-                    hashtags: ['Achievements', 'Career', 'TalentXcel']
                   };
-                  
-                  if (navigator.share) {
-                    navigator.share({
-                      title: shareContent.title,
-                      text: shareContent.description,
-                      url: window.location.href
-                    });
-                  } else {
-                    navigator.clipboard.writeText(`${shareContent.title}\n\n${shareContent.description}\n\n${window.location.href}`);
+                  try {
+                    if (navigator.share) {
+                      await navigator.share({
+                        title: shareContent.title,
+                        text: shareContent.description,
+                        url: shareUrlBase
+                      });
+                    } else {
+                      await navigator.clipboard.writeText(`${shareContent.title}\n\n${shareContent.description}\n\n${shareUrlBase}`);
+                      toast.success('Share link copied to clipboard');
+                    }
+                  } catch (e) {
+                    toast.error('Sharing cancelled or failed');
                   }
                 }}
               >
@@ -264,7 +268,7 @@ export function AdvancedAchievementSystem({
                   <AchievementCard 
                     key={achievement.id} 
                     achievement={achievement}
-                    onShare={() => {/* Implement sharing */}}
+                    shareUrl={shareUrlBase}
                   />
                 ))}
               </div>
@@ -291,9 +295,9 @@ export function AdvancedAchievementSystem({
   );
 }
 
-function AchievementCard({ achievement, onShare }: {
+function AchievementCard({ achievement, shareUrl }: {
   achievement: Achievement;
-  onShare: () => void;
+  shareUrl: string;
 }) {
   const earnedDate = new Date(achievement.earned_at);
   
@@ -353,17 +357,20 @@ function AchievementCard({ achievement, onShare }: {
             variant="ghost"
             size="sm"
             className="w-full mt-3"
-            onClick={() => {
+            onClick={async () => {
               const shareContent = {
                 title: `🏆 Achievement Unlocked: ${achievement.achievement_title}`,
                 text: `I just earned "${achievement.achievement_title}" (${achievement.points_awarded} points) on TalentXcel! ${achievement.achievement_description}`,
-                url: window.location.href
               };
-              
-              if (navigator.share) {
-                navigator.share(shareContent);
-              } else {
-                navigator.clipboard.writeText(`${shareContent.title}\n\n${shareContent.text}\n\n${shareContent.url}`);
+              try {
+                if (navigator.share) {
+                  await navigator.share({ ...shareContent, url: shareUrl });
+                } else {
+                  await navigator.clipboard.writeText(`${shareContent.title}\n\n${shareContent.text}\n\n${shareUrl}`);
+                  toast.success('Achievement link copied');
+                }
+              } catch (e) {
+                toast.error('Sharing cancelled or failed');
               }
             }}
           >
