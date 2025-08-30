@@ -140,8 +140,19 @@ export function useRealTimeAchievements() {
 
       const newAchievements = [];
 
+      // Get existing achievements to prevent duplicates
+      const { data: existingAchievements = [] } = await supabase
+        .from('career_achievements')
+        .select('achievement_title')
+        .eq('user_id', user.id);
+
+      const existingTitles = new Set(existingAchievements.map(a => a.achievement_title));
+
       for (const trigger of achievementTriggers) {
-        if (trigger.earned && trigger.progress >= trigger.requirement) {
+        // Only process if achievement is earned, requirement met, and doesn't already exist
+        if (trigger.earned && 
+            trigger.progress >= trigger.requirement && 
+            !existingTitles.has(trigger.title)) {
           try {
             const achievement = await awardAchievement.mutateAsync({
               type: trigger.type,
@@ -151,6 +162,7 @@ export function useRealTimeAchievements() {
               verified: true
             });
             newAchievements.push(achievement);
+            existingTitles.add(trigger.title); // Prevent multiple awards in same batch
           } catch (error) {
             // Achievement might already exist, which is fine
             console.log(`Achievement ${trigger.title} already exists or failed to create`);

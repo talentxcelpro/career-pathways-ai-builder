@@ -81,7 +81,16 @@ export function AdvancedAchievementSystem({
         .order('earned_at', { ascending: false });
 
       if (error) throw error;
-      return data as Achievement[];
+      
+      // Remove duplicates based on achievement_title
+      const uniqueAchievements = data?.reduce((acc: Achievement[], current) => {
+        if (!acc.find(item => item.achievement_title === current.achievement_title)) {
+          acc.push(current);
+        }
+        return acc;
+      }, []) || [];
+      
+      return uniqueAchievements;
     },
     enabled: !!targetUserId,
   });

@@ -6,6 +6,7 @@ import { AdvancedAchievementSystem } from './AdvancedAchievementSystem';
 import { JourneyTrackingAnalytics } from './JourneyTrackingAnalytics';
 import { AIRecommendationEngine } from './AIRecommendationEngine';
 import { SocialSharingFeatures } from './SocialSharingFeatures';
+import { QRCodeShareSection } from './QRCodeShareSection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -266,6 +267,13 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true }: 
             </CardContent>
           </Card>
         </div>
+
+        {/* QR Code Share Section */}
+        <QRCodeShareSection 
+          userProfile={userProfile}
+          insights={insights}
+          userId={userId}
+        />
 
         {/* Enhanced Features Tabs */}
         <Card className="overflow-hidden">
