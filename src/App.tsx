@@ -24,6 +24,7 @@ import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
 import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
+import PassportUrlRedirect from "@/components/passport/PassportUrlRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
@@ -66,6 +67,7 @@ const publicRoutes = [
   '/', 
   '/platform',
   '/passport',
+  '/passport/:id',
   '/passport/:userId',
   '/passport/:username',
   '/passport/user/:userId',
@@ -158,6 +160,8 @@ const App = () => {
                          <Route path="/platform" element={<Platform />} />
                          <Route path="/debug" element={<DebugPage />} />
                          <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
+                         {/* Legacy UUID-based passport redirect (UUID v4 pattern) */}
+                         <Route path="/passport/:id([0-9a-fA-F-]{36})" element={<PassportUrlRedirect />} />
                          <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                          <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                          <Route path="/@:username" element={<CareerPassportDashboard />} />

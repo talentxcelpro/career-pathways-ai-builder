@@ -26,16 +26,16 @@ export function useUsernameRouting() {
           .from('profiles')
           .select('id')
           .eq('username', cleanUsername)
-          .single();
+          .maybeSingle();
 
         if (error) {
-          if (error.code === 'PGRST116') {
-            setError('User not found');
-          } else {
-            throw error;
-          }
-        } else {
+          throw error;
+        }
+        
+        if (data && data.id) {
           setUserId(data.id);
+        } else {
+          setError('User not found');
         }
       } catch (err) {
         console.error('Error fetching user by username:', err);
