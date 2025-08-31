@@ -167,90 +167,74 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
           </div>
         </ScrollArea>
 
-        {/* Comment Input - Enhanced */}
+        {/* Comment Input - Instagram Style */}
         {user && (
-          <div className={cn(
-            "border-t bg-background transition-all duration-200",
-            isComposing ? "p-4" : "p-4",
-            "pb-[max(1rem,env(safe-area-inset-bottom))]"
-          )}>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex gap-3 items-start">
-                <Avatar className="h-9 w-9 flex-shrink-0 ring-2 ring-background">
+          <div className="border-t bg-background/95 backdrop-blur-sm sticky bottom-0">
+            <form onSubmit={handleSubmit} className="p-4">
+              <div className="flex items-center gap-3">
+                {/* User Avatar */}
+                <Avatar className="h-8 w-8 flex-shrink-0">
                   <AvatarImage src={user.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20">
+                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-xs">
                     {user.user_metadata?.full_name?.[0]?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 space-y-2">
-                  <div className="relative">
-                    <Input
-                      ref={inputRef}
-                      value={newComment}
-                      onChange={handleInputChange}
-                      onFocus={handleInputFocus}
-                      onBlur={handleInputBlur}
-                      placeholder="Add a comment..."
-                      className={cn(
-                        "border-0 bg-muted/50 focus:bg-background text-sm transition-all duration-200",
-                        "resize-none min-h-[40px] rounded-xl",
-                        isComposing && "ring-2 ring-primary/20"
-                      )}
-                      disabled={isAddingComment}
-                      autoComplete="off"
-                      maxLength={500}
-                    />
-                    {newComment.length > 400 && (
-                      <div className="absolute right-2 top-2 text-xs text-muted-foreground">
-                        {500 - newComment.length}
-                      </div>
+                
+                {/* Input Field */}
+                <div className="flex-1">
+                  <Input
+                    ref={inputRef}
+                    value={newComment}
+                    onChange={handleInputChange}
+                    placeholder="Add a comment..."
+                    className={cn(
+                      "border-0 bg-transparent focus:bg-transparent text-sm",
+                      "shadow-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+                      "placeholder:text-muted-foreground h-auto py-2"
                     )}
-                  </div>
-                  
-                  {(isComposing || newComment.trim()) && (
-                    <div className="flex items-center justify-between animate-in slide-in-from-bottom-2 duration-200">
-                      <div className="text-xs text-muted-foreground">
-                        {newComment.length}/500 characters
-                      </div>
-                      <div className="flex gap-2">
-                        {newComment.trim() && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setNewComment('');
-                              setIsComposing(false);
-                              inputRef.current?.blur();
-                            }}
-                            className="text-xs"
-                          >
-                            Cancel
-                          </Button>
-                        )}
-                        <Button
-                          type="submit"
-                          size="sm"
-                          disabled={!newComment.trim() || isAddingComment}
-                          className={cn(
-                            "text-xs font-semibold transition-all duration-200",
-                            "disabled:opacity-50"
-                          )}
-                        >
-                          {isAddingComment ? (
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-                              Posting...
-                            </div>
-                          ) : (
-                            'Post'
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                    disabled={isAddingComment}
+                    autoComplete="off"
+                    maxLength={500}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        if (newComment.trim() && !isAddingComment) {
+                          handleSubmit(e);
+                        }
+                      }
+                    }}
+                  />
                 </div>
+                
+                {/* Post Button */}
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="sm"
+                  disabled={!newComment.trim() || isAddingComment}
+                  className={cn(
+                    "text-sm font-semibold h-auto p-2 transition-all duration-200 shrink-0",
+                    newComment.trim() && !isAddingComment 
+                      ? "text-primary hover:text-primary/80" 
+                      : "text-muted-foreground cursor-not-allowed"
+                  )}
+                >
+                  {isAddingComment ? (
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    "Post"
+                  )}
+                </Button>
               </div>
+              
+              {/* Character Count - Only show when close to limit */}
+              {newComment.length > 450 && (
+                <div className="text-xs text-muted-foreground mt-2 text-right">
+                  {newComment.length}/500
+                </div>
+              )}
             </form>
           </div>
         )}
