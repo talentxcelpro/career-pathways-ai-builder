@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Heart, MessageCircle, Share, Bookmark, UserPlus, Eye } from 'lucide-react';
+import { Heart, MessageCircle, Share, Eye, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useReelsEngagement } from '@/hooks/useReelsEngagement';
@@ -53,28 +54,15 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
   };
 
   return (
-    <div className={cn("flex flex-col items-center gap-4", className)}>
-      {/* Follow button */}
-      {!reel.is_following && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-12 w-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
-          onClick={handleFollow}
-          disabled={isFollowing}
-        >
-          <UserPlus className="h-5 w-5" />
-        </Button>
-      )}
-
+    <div className={cn("flex flex-col items-center gap-6", className)}>
       {/* Like */}
       <div className="flex flex-col items-center">
         <Button
           variant="ghost"
           size="icon"
           className={cn(
-            "h-12 w-12 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 transition-all",
-            reel.has_liked && "text-red-500"
+            "h-12 w-12 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-all",
+            reel.has_liked && "text-red-500 bg-red-500/20"
           )}
           onClick={handleLike}
           disabled={isLiking}
@@ -91,7 +79,7 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-12 w-12 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40"
+          className="h-12 w-12 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50"
           onClick={onComment}
         >
           <MessageCircle className="h-6 w-6" />
@@ -106,7 +94,7 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-12 w-12 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40"
+          className="h-12 w-12 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50"
           onClick={handleShare}
         >
           <Share className="h-6 w-6" />
@@ -116,12 +104,25 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         </span>
       </div>
 
+      {/* Follow button */}
+      {!reel.is_following && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-12 w-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
+          onClick={handleFollow}
+          disabled={isFollowing}
+        >
+          <UserPlus className="h-5 w-5" />
+        </Button>
+      )}
+
       {/* Views */}
       <div className="flex flex-col items-center">
         <Button
           variant="ghost"
           size="icon"
-          className="h-12 w-12 rounded-full bg-black/20 backdrop-blur-sm text-white"
+          className="h-12 w-12 rounded-full bg-black/30 backdrop-blur-sm text-white"
           disabled
         >
           <Eye className="h-6 w-6" />

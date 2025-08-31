@@ -1,3 +1,4 @@
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,14 +29,21 @@ export const useReelsData = () => {
   return useInfiniteQuery({
     queryKey: ['reels-feed', user?.id],
     queryFn: async ({ pageParam = 0 }) => {
+      console.log('Fetching reels with pageParam:', pageParam);
+      
       const { data, error } = await supabase.rpc('get_reel_feed', {
         user_id_param: user?.id || null,
         limit_param: 10,
         offset_param: pageParam * 10
       });
 
-      if (error) throw error;
-      return data as ReelData[];
+      if (error) {
+        console.error('Error fetching reels:', error);
+        throw error;
+      }
+
+      console.log('Fetched reels:', data?.length || 0);
+      return data as ReelData[] || [];
     },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === 10 ? allPages.length : undefined;
@@ -53,6 +61,7 @@ export const useReelViewTracking = () => {
     if (!user) return;
 
     try {
+      console.log('Tracking view for reel:', reelId);
       await supabase.rpc('increment_reel_view', {
         reel_id_param: reelId,
         user_id_param: user.id,

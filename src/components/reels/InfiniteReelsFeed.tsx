@@ -1,15 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useReelsData, useReelViewTracking } from '@/hooks/useReelsData';
-import { VideoReelPlayer } from './VideoReelPlayer';
-import { ReelEngagementActions } from './ReelEngagementActions';
-import { ReelsCommentsModal } from '@/components/mobile/ReelsCommentsModal';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useReelsData } from '@/hooks/useReelsData';
+import { ReelCard } from './ReelCard';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Plus, Loader2 } from 'lucide-react';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
+import { Plus, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface InfiniteReelsFeedProps {
   onUploadClick?: () => void;
@@ -18,13 +13,11 @@ interface InfiniteReelsFeedProps {
 export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   onUploadClick
 }) => {
-  const { user } = useAuth();
-  const { trackView } = useReelViewTracking();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedReelForComments, setSelectedReelForComments] = useState<any>(null);
-  const [showCommentsModal, setShowCommentsModal] = useState(false);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const reelRefs = useRef<Record<string, HTMLDivElement>>({});
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
 
   const {
     data,
@@ -32,98 +25,119 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    error,
+    isError,
     refetch
   } = useReelsData();
 
-  // Flatten all pages
-  const reels = data?.pages?.flat() || [];
+  const reels = data?.pages.flat() || [];
 
-  // Infinite scroll hook
-  const { isFetching: isScrollFetching } = useInfiniteScroll({
-    hasNextPage: hasNextPage || false,
-    fetchNextPage: () => fetchNextPage(),
-    threshold: 1000
-  });
-
-  // Track views when reel becomes active
+  // Auto-fetch more content when approaching the end
   useEffect(() => {
-    if (reels[currentIndex]) {
-      const currentReel = reels[currentIndex];
-      trackView(currentReel.id, 2); // Track after 2 seconds of view
-    }
-  }, [currentIndex, reels, trackView]);
-
-  // Handle scroll-based navigation
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const scrollTop = container.scrollTop;
-    const containerHeight = container.clientHeight;
-    
-    // Determine which reel is currently in view
-    const newIndex = Math.round(scrollTop / containerHeight);
-    
-    if (newIndex !== currentIndex && newIndex >= 0 && newIndex < reels.length) {
-      setCurrentIndex(newIndex);
-    }
-
-    // Load more when approaching the end
-    if (
-      hasNextPage &&
-      !isFetchingNextPage &&
-      scrollTop + containerHeight >= container.scrollHeight - 1000
-    ) {
+    if (currentIndex >= reels.length - 3 && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [currentIndex, reels.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const handleReelLike = (reelId: string) => {
-    // Handled by ReelEngagementActions
-  };
+  // Handle scroll navigation
+  const handleScroll = useCallback((direction: 'up' | 'down') => {
+    if (isScrolling) return;
 
-  const handleComment = (reel: any) => {
-    setSelectedReelForComments(reel);
-    setShowCommentsModal(true);
-  };
-
-  const handleViewProgress = (reelId: string, progress: number) => {
-    // Track view progress for analytics
-    if (progress > 5) { // More than 5 seconds watched
-      trackView(reelId, progress);
+    setIsScrolling(true);
+    
+    if (direction === 'down' && currentIndex < reels.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else if (direction === 'up' && currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
     }
-  };
 
-  if (!user) {
-    return (
-      <div className="h-screen bg-black flex items-center justify-center">
-        <div className="text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Join TalentXcel</h2>
-          <p className="text-white/80 mb-6">Sign in to discover career-focused reels</p>
-          <Button className="bg-primary text-primary-foreground">
-            Sign In
-          </Button>
-        </div>
-      </div>
-    );
-  }
+    // Clear existing timeout
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    // Allow scrolling again after animation
+    scrollTimeoutRef.current = setTimeout(() => {
+      setIsScrolling(false);
+    }, 500);
+  }, [currentIndex, reels.length, isScrolling]);
+
+  // Touch handlers for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchStartY(e.touches[0].clientY);
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const touchEndY = e.changedTouches[0].clientY;
+    const diff = touchStartY - touchEndY;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0) {
+        handleScroll('down');
+      } else {
+        handleScroll('up');
+      }
+    }
+  }, [touchStartY, handleScroll]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        handleScroll('down');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        handleScroll('up');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleScroll]);
+
+  // Wheel navigation for desktop
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    if (Math.abs(e.deltaY) > 10) {
+      handleScroll(e.deltaY > 0 ? 'down' : 'up');
+    }
+  }, [handleScroll]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
+
+  const handleComment = useCallback(() => {
+    toast.info('Comments feature coming soon!');
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    setCurrentIndex(0);
+    refetch();
+  }, [refetch]);
 
   if (isLoading) {
     return (
-      <div className="h-screen bg-black flex items-center justify-center">
+      <div className="w-full h-screen bg-black flex items-center justify-center">
         <div className="text-center text-white">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-sm">Loading career reels...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Loading reels...</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
-      <div className="h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full h-screen bg-black flex items-center justify-center">
         <div className="text-center text-white">
           <p className="mb-4">Unable to load reels</p>
-          <Button onClick={() => refetch()} variant="outline">
+          <Button onClick={handleRefresh} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Try Again
           </Button>
@@ -132,16 +146,15 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
     );
   }
 
-  if (reels.length === 0) {
+  if (!reels.length) {
     return (
-      <div className="h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full h-screen bg-black flex items-center justify-center">
         <div className="text-center text-white">
-          <h2 className="text-xl mb-4">No reels yet</h2>
-          <p className="mb-4 text-white/80">Be the first to share career content!</p>
+          <p className="mb-4">No reels available</p>
           {onUploadClick && (
-            <Button onClick={onUploadClick} className="bg-primary">
+            <Button onClick={onUploadClick}>
               <Plus className="h-4 w-4 mr-2" />
-              Create Reel
+              Create First Reel
             </Button>
           )}
         </div>
@@ -150,135 +163,74 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   }
 
   return (
-    <>
-      <div className="relative h-screen bg-black overflow-hidden">
-        {/* Header */}
-        <div className="absolute top-0 left-0 right-0 z-50 p-4 bg-gradient-to-b from-black/50 to-transparent">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-white font-bold text-lg">Career Reels</span>
-              <Badge variant="secondary" className="text-xs">
-                {currentIndex + 1}/{reels.length}
-              </Badge>
-            </div>
-            {onUploadClick && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-black/30 text-white hover:bg-black/50"
-                onClick={onUploadClick}
-              >
-                <Plus className="h-5 w-5" />
-              </Button>
-            )}
+    <div
+      ref={containerRef}
+      className="w-full h-screen overflow-hidden bg-black relative"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Reels Container */}
+      <div
+        className="w-full h-full transition-transform duration-500 ease-out"
+        style={{
+          transform: `translateY(-${currentIndex * 100}vh)`
+        }}
+      >
+        {reels.map((reel, index) => (
+          <div key={reel.id} className="w-full h-screen">
+            <ReelCard
+              reel={reel}
+              isActive={index === currentIndex}
+              onComment={handleComment}
+            />
           </div>
-        </div>
-
-        {/* Reels container */}
-        <div
-          ref={containerRef}
-          className="h-full overflow-y-auto snap-y snap-mandatory scrollbar-hide"
-          onScroll={handleScroll}
-        >
-          {reels.map((reel, index) => (
-            <div
-              key={reel.id}
-              ref={(el) => el && (reelRefs.current[reel.id] = el)}
-              className="relative w-full h-screen snap-start flex-shrink-0"
-            >
-              {/* Video Player */}
-              <VideoReelPlayer
-                src={reel.video_url}
-                isActive={index === currentIndex}
-                onDoubleClick={() => handleReelLike(reel.id)}
-                onViewProgress={(progress) => handleViewProgress(reel.id, progress)}
-                className="absolute inset-0"
-              />
-
-              {/* Content overlay */}
-              <div className="absolute inset-0 pointer-events-none">
-                {/* User info */}
-                <div className="absolute bottom-20 left-4 right-20 pointer-events-auto">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Avatar className="h-10 w-10 border-2 border-white">
-                      <AvatarImage src={reel.user_avatar} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {reel.user_name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="text-white font-semibold text-sm">
-                        {reel.user_name}
-                      </p>
-                      <p className="text-white/80 text-xs">
-                        {new Date(reel.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Title and description */}
-                  <div className="mb-2">
-                    <h3 className="text-white font-bold text-sm mb-1">
-                      {reel.title}
-                    </h3>
-                    {reel.description && (
-                      <p className="text-white/90 text-sm line-clamp-2">
-                        {reel.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Tags */}
-                  {reel.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {reel.tags.slice(0, 3).map((tag, tagIndex) => (
-                        <Badge
-                          key={tagIndex}
-                          variant="secondary"
-                          className="text-xs bg-white/20 text-white border-0"
-                        >
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Engagement actions */}
-                <div className="absolute bottom-32 right-4 pointer-events-auto">
-                  <ReelEngagementActions
-                    reel={reel}
-                    onComment={() => handleComment(reel)}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Loading indicator */}
-          {(isFetchingNextPage || isScrollFetching) && (
-            <div className="h-screen flex items-center justify-center bg-black">
-              <div className="text-center text-white">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p className="text-sm">Loading more reels...</p>
-              </div>
-            </div>
-          )}
-        </div>
+        ))}
       </div>
 
-      {/* Comments Modal */}
-      {selectedReelForComments && (
-        <ReelsCommentsModal
-          isOpen={showCommentsModal}
-          onClose={() => {
-            setShowCommentsModal(false);
-            setSelectedReelForComments(null);
-          }}
-          postId={selectedReelForComments.id}
-          postAuthor={selectedReelForComments.user_name}
-        />
+      {/* Upload Button */}
+      {onUploadClick && (
+        <div className="absolute top-4 right-4 z-50">
+          <Button
+            onClick={onUploadClick}
+            size="icon"
+            className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg"
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </div>
       )}
-    </>
+
+      {/* Loading More Indicator */}
+      {isFetchingNextPage && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-black/70 rounded-full px-3 py-2 flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <span className="text-white text-sm">Loading more...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Progress Indicators */}
+      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-1 z-40">
+        {reels.slice(Math.max(0, currentIndex - 2), currentIndex + 3).map((_, index) => {
+          const actualIndex = Math.max(0, currentIndex - 2) + index;
+          return (
+            <div
+              key={actualIndex}
+              className={`w-1 h-8 rounded-full transition-all duration-300 ${
+                actualIndex === currentIndex 
+                  ? 'bg-white' 
+                  : 'bg-white/30'
+              }`}
+            />
+          );
+        })}
+      </div>
+
+      {/* Navigation Instructions (for desktop) */}
+      <div className="absolute bottom-4 left-4 text-white/70 text-xs hidden md:block">
+        <p>Use arrow keys or scroll to navigate</p>
+      </div>
+    </div>
   );
 };

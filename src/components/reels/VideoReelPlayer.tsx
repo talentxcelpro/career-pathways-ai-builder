@@ -1,77 +1,89 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface VideoReelPlayerProps {
-  src: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
   isActive: boolean;
-  onDoubleClick?: () => void;
-  onViewProgress?: (progress: number) => void;
+  onVideoLoad?: () => void;
+  onTimeUpdate?: (currentTime: number) => void;
+  autoPlay?: boolean;
   className?: string;
 }
 
 export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
-  src,
+  videoUrl,
+  thumbnailUrl,
   isActive,
-  onDoubleClick,
-  onViewProgress,
+  onVideoLoad,
+  onTimeUpdate,
+  autoPlay = true,
   className
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [showControls, setShowControls] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (isActive) {
-      video.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {
-        setIsPlaying(false);
-      });
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
-  }, [isActive]);
+    const handleLoadedData = () => {
+      setIsLoading(false);
+      onVideoLoad?.();
+    };
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const handleError = () => {
+      setError(true);
+      setIsLoading(false);
+    };
 
     const handleTimeUpdate = () => {
-      const progress = (video.currentTime / video.duration) * 100;
-      setProgress(progress);
-      onViewProgress?.(video.currentTime);
+      onTimeUpdate?.(video.currentTime);
     };
 
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
 
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('error', handleError);
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('play', handlePlay);
     video.addEventListener('pause', handlePause);
 
     return () => {
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('error', handleError);
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
     };
-  }, [onViewProgress]);
+  }, [onVideoLoad, onTimeUpdate]);
 
-  const togglePlayPause = () => {
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    if (isActive && autoPlay && !error) {
+      video.play().catch(() => setError(true));
+    } else {
+      video.pause();
+    }
+  }, [isActive, autoPlay, error]);
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video || error) return;
 
     if (isPlaying) {
       video.pause();
     } else {
-      video.play();
+      video.play().catch(() => setError(true));
     }
   };
 
@@ -83,67 +95,82 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
     setIsMuted(video.muted);
   };
 
-  const handleVideoClick = () => {
-    setShowControls(true);
-    setTimeout(() => setShowControls(false), 2000);
-  };
+  if (error) {
+    return (
+      <div className={cn(
+        "relative w-full h-full bg-gray-900 flex items-center justify-center",
+        className
+      )}>
+        <div className="text-white text-center">
+          <div className="text-2xl mb-2">⚠️</div>
+          <p className="text-sm">Unable to load video</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div 
-      className={cn("relative w-full h-full bg-black overflow-hidden", className)}
-      onClick={handleVideoClick}
-      onDoubleClick={onDoubleClick}
-    >
+    <div className={cn("relative w-full h-full group", className)}>
       <video
         ref={videoRef}
-        src={src}
         className="w-full h-full object-cover"
-        loop
+        src={videoUrl}
+        poster={thumbnailUrl}
         muted={isMuted}
+        loop
         playsInline
         preload="metadata"
+        onClick={togglePlay}
       />
 
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20">
-        <div 
-          className="h-full bg-white transition-all duration-200"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      {/* Controls overlay */}
-      {showControls && (
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-12 w-12 rounded-full bg-black/50 text-white hover:bg-black/70"
-              onClick={togglePlayPause}
-            >
-              {isPlaying ? (
-                <Pause className="h-6 w-6" />
-              ) : (
-                <Play className="h-6 w-6" />
-              )}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
-              onClick={toggleMute}
-            >
-              {isMuted ? (
-                <VolumeX className="h-5 w-5" />
-              ) : (
-                <Volume2 className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
       )}
+
+      {/* Play/Pause overlay */}
+      {!isPlaying && !isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-16 w-16 rounded-full bg-black/50 text-white hover:bg-black/70"
+            onClick={togglePlay}
+          >
+            <Play className="h-8 w-8 fill-current" />
+          </Button>
+        </div>
+      )}
+
+      {/* Controls overlay */}
+      <div className="absolute bottom-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
+          onClick={togglePlay}
+        >
+          {isPlaying ? (
+            <Pause className="h-5 w-5" />
+          ) : (
+            <Play className="h-5 w-5 fill-current" />
+          )}
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
+          onClick={toggleMute}
+        >
+          {isMuted ? (
+            <VolumeX className="h-5 w-5" />
+          ) : (
+            <Volume2 className="h-5 w-5" />
+          )}
+        </Button>
+      </div>
     </div>
   );
 };

@@ -12680,6 +12680,30 @@ export type Database = {
           },
         ]
       }
+      likes: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       live_backlinks: {
         Row: {
           anchor_text: string
@@ -16512,16 +16536,55 @@ export type Database = {
         }
         Relationships: []
       }
+      reel_views: {
+        Row: {
+          completed: boolean | null
+          created_at: string
+          duration_watched: number | null
+          id: string
+          ip_address: unknown | null
+          reel_id: string
+          user_agent: string | null
+          user_id: string | null
+          viewed_at: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string
+          duration_watched?: number | null
+          id?: string
+          ip_address?: unknown | null
+          reel_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string
+          duration_watched?: number | null
+          id?: string
+          ip_address?: unknown | null
+          reel_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Relationships: []
+      }
       reels: {
         Row: {
           channel_index: number
+          comments_count: number | null
           created_at: string
           description: string | null
           duration_seconds: number | null
           error_message: string | null
           id: string
+          likes_count: number | null
           published_at: string | null
           scheduled_at: string | null
+          shares_count: number | null
           status: string
           tags: string[] | null
           thumbnail_url: string | null
@@ -16529,17 +16592,21 @@ export type Database = {
           updated_at: string
           user_id: string
           video_url: string | null
+          views_count: number | null
           youtube_video_id: string | null
         }
         Insert: {
           channel_index?: number
+          comments_count?: number | null
           created_at?: string
           description?: string | null
           duration_seconds?: number | null
           error_message?: string | null
           id?: string
+          likes_count?: number | null
           published_at?: string | null
           scheduled_at?: string | null
+          shares_count?: number | null
           status?: string
           tags?: string[] | null
           thumbnail_url?: string | null
@@ -16547,17 +16614,21 @@ export type Database = {
           updated_at?: string
           user_id: string
           video_url?: string | null
+          views_count?: number | null
           youtube_video_id?: string | null
         }
         Update: {
           channel_index?: number
+          comments_count?: number | null
           created_at?: string
           description?: string | null
           duration_seconds?: number | null
           error_message?: string | null
           id?: string
+          likes_count?: number | null
           published_at?: string | null
           scheduled_at?: string | null
+          shares_count?: number | null
           status?: string
           tags?: string[] | null
           thumbnail_url?: string | null
@@ -16565,6 +16636,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           video_url?: string | null
+          views_count?: number | null
           youtube_video_id?: string | null
         }
         Relationships: []
@@ -20561,6 +20633,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shares: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          platform: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          platform?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          platform?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       sharing_analytics: {
         Row: {
@@ -24777,6 +24876,32 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_reel_feed: {
+        Args: {
+          limit_param?: number
+          offset_param?: number
+          user_id_param?: string
+        }
+        Returns: {
+          comments_count: number
+          created_at: string
+          description: string
+          duration_seconds: number
+          has_liked: boolean
+          id: string
+          is_following: boolean
+          likes_count: number
+          shares_count: number
+          tags: string[]
+          thumbnail_url: string
+          title: string
+          user_avatar: string
+          user_id: string
+          user_name: string
+          video_url: string
+          views_count: number
+        }[]
+      }
       get_scraped_job_applications: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -24885,6 +25010,14 @@ export type Database = {
           profile_user_id: string
           viewer_agent?: string
           viewer_ip?: unknown
+        }
+        Returns: undefined
+      }
+      increment_reel_view: {
+        Args: {
+          duration_watched_param?: number
+          reel_id_param: string
+          user_id_param?: string
         }
         Returns: undefined
       }

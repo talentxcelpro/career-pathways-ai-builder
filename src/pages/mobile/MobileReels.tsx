@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
@@ -8,10 +9,11 @@ export const MobileReels = () => {
 
   const handleUploadSuccess = () => {
     toast.success("Your reel has been uploaded successfully!");
-};
+    setShowUploadModal(false);
+  };
 
   return (
-    <>
+    <div className="w-full h-screen overflow-hidden">
       <InfiniteReelsFeed 
         onUploadClick={() => setShowUploadModal(true)}
       />
@@ -22,6 +24,6 @@ export const MobileReels = () => {
         onClose={() => setShowUploadModal(false)}
         onUploadSuccess={handleUploadSuccess}
       />
-    </>
+    </div>
   );
 };
