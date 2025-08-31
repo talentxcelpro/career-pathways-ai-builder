@@ -13,6 +13,7 @@ export const resumeRoutes = [
     icon: <FileText className="h-4 w-4" />,
     page: <ErrorBoundary><ResumeNew /></ErrorBoundary>,
     requiresAuth: false,
+    requiresAdminAccess: true,
   },
   {
     title: "TalentXcel Resume Builder",
@@ -20,17 +21,20 @@ export const resumeRoutes = [
     icon: <Sparkles className="h-4 w-4" />,
     page: <TalentXcelResumeBuilder />,
     requiresAuth: true,
+    requiresAdminAccess: true,
   },
   {
     title: "Edit Resume",
     to: "/resume/edit/:id",
     page: <EditResume />,
     requiresAuth: true,
+    requiresAdminAccess: true,
   },
   {
     title: "Resume Editor V1",
     to: "/resume/editor/:id",
     page: <ErrorBoundary><ResumeEditorV1 /></ErrorBoundary>,
     requiresAuth: true,
+    requiresAdminAccess: true,
   },
 ];

@@ -11,4 +11,5 @@ export interface NavItem {
   isNew?: boolean;
   requiresAuth?: boolean;
   requiresEmployerAccess?: boolean;
+  requiresAdminAccess?: boolean;
 }
