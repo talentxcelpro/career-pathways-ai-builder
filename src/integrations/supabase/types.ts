@@ -4326,6 +4326,69 @@ export type Database = {
         }
         Relationships: []
       }
+      cache_config: {
+        Row: {
+          cache_key: string
+          cache_type: string
+          compression_enabled: boolean | null
+          created_at: string | null
+          id: string
+          tags: string[] | null
+          ttl_seconds: number
+          updated_at: string | null
+        }
+        Insert: {
+          cache_key: string
+          cache_type?: string
+          compression_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          tags?: string[] | null
+          ttl_seconds?: number
+          updated_at?: string | null
+        }
+        Update: {
+          cache_key?: string
+          cache_type?: string
+          compression_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          tags?: string[] | null
+          ttl_seconds?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      cache_stats: {
+        Row: {
+          cache_key: string
+          data_size_bytes: number | null
+          id: string
+          metadata: Json | null
+          operation_type: string
+          response_time_ms: number | null
+          timestamp: string | null
+        }
+        Insert: {
+          cache_key: string
+          data_size_bytes?: number | null
+          id?: string
+          metadata?: Json | null
+          operation_type: string
+          response_time_ms?: number | null
+          timestamp?: string | null
+        }
+        Update: {
+          cache_key?: string
+          data_size_bytes?: number | null
+          id?: string
+          metadata?: Json | null
+          operation_type?: string
+          response_time_ms?: number | null
+          timestamp?: string | null
+        }
+        Relationships: []
+      }
       candidate_communications: {
         Row: {
           candidate_id: string | null
@@ -13038,6 +13101,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          application_updates: boolean | null
+          created_at: string
+          email_enabled: boolean | null
+          id: string
+          job_alerts: boolean | null
+          network_activity: boolean | null
+          push_enabled: boolean | null
+          system_updates: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_updates?: boolean | null
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          job_alerts?: boolean | null
+          network_activity?: boolean | null
+          push_enabled?: boolean | null
+          system_updates?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_updates?: boolean | null
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          job_alerts?: boolean | null
+          network_activity?: boolean | null
+          push_enabled?: boolean | null
+          system_updates?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_templates: {
         Row: {
           content: string
@@ -13774,6 +13876,33 @@ export type Database = {
           percentile_90?: number | null
           role_level?: string | null
           sample_size?: number | null
+        }
+        Relationships: []
+      }
+      performance_cache_metrics: {
+        Row: {
+          id: string
+          labels: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          recorded_at: string | null
+        }
+        Insert: {
+          id?: string
+          labels?: Json | null
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          recorded_at?: string | null
+        }
+        Update: {
+          id?: string
+          labels?: Json | null
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          recorded_at?: string | null
         }
         Relationships: []
       }
@@ -24223,6 +24352,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_old_cache_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_old_notifications: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -24627,6 +24760,22 @@ export type Database = {
           growth_rate: number
           job_count: number
           location: string
+        }[]
+      }
+      get_trending_jobs: {
+        Args: { limit_count?: number }
+        Returns: {
+          applications_count: number
+          company_name: string
+          created_at: string
+          employment_type: string
+          id: string
+          is_remote: boolean
+          location: string
+          salary_max: number
+          salary_min: number
+          title: string
+          views_count: number
         }[]
       }
       get_unified_analytics: {
