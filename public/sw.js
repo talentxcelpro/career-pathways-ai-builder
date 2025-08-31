@@ -1,106 +1,86 @@
 const CACHE_NAME = 'talentxcel-v1';
-const STATIC_CACHE = 'talentxcel-static-v1';
-const DYNAMIC_CACHE = 'talentxcel-dynamic-v1';
-
-// Assets to cache on install
-const STATIC_ASSETS = [
+const urlsToCache = [
   '/',
-  '/manifest.json',
-  '/offline.html',
-  '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'
+  '/jobs',
+  '/profile',
+  '/resume',
+  '/network',
+  '/manifest.json'
 ];
 
-// Install event - cache static assets
+// Install event
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then(cache => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
   );
 });
 
-// Activate event - clean old caches
+// Fetch event
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Return cached version or fetch from network
+        return response || fetch(event.request);
+      })
+  );
+});
+
+// Activate event
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+          if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    })
   );
 });
 
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', event => {
-  const { request } = event;
-  
-  // Skip non-GET requests
-  if (request.method !== 'GET') return;
-  
-  // Handle different request types
-  if (request.destination === 'image') {
-    event.respondWith(handleImageRequest(request));
-  } else if (request.url.includes('/api/')) {
-    event.respondWith(handleAPIRequest(request));
-  } else {
-    event.respondWith(handleNavigationRequest(request));
-  }
+// Push notification event
+self.addEventListener('push', event => {
+  const options = {
+    body: event.data ? event.data.text() : 'New job opportunities available!',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    },
+    actions: [
+      {
+        action: 'explore',
+        title: 'View Jobs',
+        icon: '/icon-192.png'
+      },
+      {
+        action: 'close',
+        title: 'Close',
+        icon: '/icon-192.png'
+      }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification('TalentXcel', options)
+  );
 });
 
-// Handle image requests with cache-first strategy
-async function handleImageRequest(request) {
-  const cache = await caches.open(STATIC_CACHE);
-  const cached = await cache.match(request);
-  
-  if (cached) return cached;
-  
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    // Return placeholder if offline
-    return new Response('', { status: 204 });
-  }
-}
+// Notification click event
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
 
-// Handle API requests with network-first strategy
-async function handleAPIRequest(request) {
-  const cache = await caches.open(DYNAMIC_CACHE);
-  
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    const cached = await cache.match(request);
-    return cached || new Response('{"error":"Offline"}', {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' }
-    });
+  if (event.action === 'explore') {
+    event.waitUntil(
+      clients.openWindow('/jobs')
+    );
   }
-}
-
-// Handle navigation requests
-async function handleNavigationRequest(request) {
-  const cache = await caches.open(STATIC_CACHE);
-  
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    const cached = await cache.match(request);
-    return cached || cache.match('/offline.html');
-  }
-}
+});

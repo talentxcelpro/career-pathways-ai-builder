@@ -14,6 +14,7 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { AIProvider } from "./contexts/AIContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
+import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
@@ -235,6 +236,8 @@ const App = () => {
                       </React.Suspense>
                     </main>
                     <Footer />
+                    <InstallPrompt />
+                    <InstallButton />
                   </div>
                 </MobileAppWrapper>
                   <Analytics />
