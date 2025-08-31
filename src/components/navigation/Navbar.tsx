@@ -123,6 +123,16 @@ export const Navbar = () => {
   const { isAdmin } = useAdminAccess();
   const { hasEmployerAccess, employerStatus } = useEmployerAccess();
 
+  // Hide specific modules from navbar for non-admins
+  const hiddenForNonAdmin = [
+    '/companies',
+    '/resume-builder',
+    '/tools',
+    '/services',
+    '/learning',
+    '/career-map',
+  ];
+  const visibleNavItems = isAdmin ? mainNavItems : mainNavItems.filter(item => !hiddenForNonAdmin.includes(item.to));
 
   const getEmployerButtonText = () => {
     if (!user) return 'Sign In';
@@ -162,7 +172,7 @@ export const Navbar = () => {
             <>
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
-                {mainNavItems.map((item) => {
+                {visibleNavItems.map((item) => {
                   const isActive = isCurrentPath(item.to);
                   return (
                     <Link
@@ -318,7 +328,7 @@ export const Navbar = () => {
         {user && isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
-              {mainNavItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const isActive = isCurrentPath(item.to);
                 return (
                   <Link
