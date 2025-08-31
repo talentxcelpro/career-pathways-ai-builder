@@ -8,6 +8,7 @@ import { MobileAppPreview } from './MobileAppPreview';
 import { AppleFooter } from './AppleFooter';
 import { AppInstallBanner } from '@/components/install/AppInstallBanner';
 import { UniversalAppPrompt } from '@/components/install/UniversalAppPrompt';
+import { AdvancedPerformanceMonitor } from '@/components/performance/AdvancedPerformanceMonitor';
 
 export const LandingPage = () => {
   return (
@@ -20,6 +21,7 @@ export const LandingPage = () => {
       <MobileAppPreview />
       <AppleFooter />
       <UniversalAppPrompt />
+      <AdvancedPerformanceMonitor />
     </div>
   );
 };

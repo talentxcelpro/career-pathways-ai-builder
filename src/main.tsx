@@ -7,6 +7,9 @@ import './utils/resourcePreloader'
 import './utils/performanceBudget'
 import './utils/serviceWorker'
 import './utils/imageOptimizer'
+import './utils/criticalCSS'
+import './utils/layoutStability'
+import './utils/networkOptimization'
 import './index.css'
 
 createRoot(document.getElementById("root")!).render(
