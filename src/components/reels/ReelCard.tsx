@@ -102,11 +102,11 @@ export const ReelCard: React.FC<ReelCardProps> = ({
       </div>
 
       {/* Engagement Actions */}
-      <div className="absolute right-0 bottom-16 md:bottom-20">
+      <div className="absolute right-2 bottom-24 md:bottom-32 z-20">
         <ReelEngagementActions
           reel={reel}
           onComment={() => setShowComments(true)}
-          className="p-2 md:p-4"
+          className="p-1 md:p-2"
         />
       </div>
 

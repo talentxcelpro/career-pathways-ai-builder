@@ -108,7 +108,7 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
 
         {/* Comment Input */}
         {user && (
-          <div className="p-4 border-t bg-background">
+          <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
             <form onSubmit={handleSubmit} className="flex gap-2">
               <Avatar className="h-8 w-8 flex-shrink-0">
                 <AvatarImage src={user.user_metadata?.avatar_url} />
@@ -121,13 +121,15 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Add a comment..."
-                  className="flex-1 rounded-full border-muted"
+                  className="flex-1 rounded-full border-muted bg-muted/50 focus:bg-background"
                   disabled={isAddingComment}
+                  autoComplete="off"
+                  autoFocus={false}
                 />
                 <Button
                   type="submit"
                   size="icon"
-                  className="rounded-full h-10 w-10"
+                  className="rounded-full h-10 w-10 touch-manipulation"
                   disabled={!newComment.trim() || isAddingComment}
                 >
                   <Send className="h-4 w-4" />
