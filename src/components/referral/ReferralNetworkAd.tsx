@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TalentXcelLogo } from '@/components/branding/TalentXcelLogo';
+import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-logo';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
 import { 
   Gift, 

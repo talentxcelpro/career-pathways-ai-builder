@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TalentXcelLogo } from '@/components/branding/TalentXcelLogo';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -22,8 +21,9 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, descrip
       <div className="w-full max-w-md relative z-10">
         {/* Enhanced Brand Header */}
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <TalentXcelLogo variant="symbol" size="xl" />
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 relative">
+            <span className="text-white font-bold text-xl">TX</span>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">

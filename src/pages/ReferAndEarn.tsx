@@ -21,7 +21,7 @@ import {
   ArrowRight,
   Share2
 } from 'lucide-react';
-import { TalentXcelLogo } from '@/components/branding/TalentXcelLogo';
+import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-logo';
 
 const ReferAndEarn: React.FC = () => {
   const { referralData, loading, generateReferralLink, copyReferralLink, shareOnPlatform } = useReferralSystem();
