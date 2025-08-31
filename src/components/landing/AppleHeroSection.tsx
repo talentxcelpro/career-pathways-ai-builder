@@ -56,8 +56,8 @@ export const AppleHeroSection = () => {
                   <div className="text-slate-600">Professionals</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-semibold text-slate-900">500+</div>
-                  <div className="text-slate-600">Companies</div>
+                  <div className="text-2xl font-semibold text-slate-900">1K+</div>
+                  <div className="text-slate-600">Businesses</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-semibold text-slate-900">95%</div>
