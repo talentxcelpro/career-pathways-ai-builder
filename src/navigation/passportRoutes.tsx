@@ -1,6 +1,6 @@
 import { Award } from "lucide-react";
 import CareerPassportDashboard from "../pages/passport/CareerPassportDashboard";
-
+import PassportRouteHandler from "@/components/passport/PassportRouteHandler";
 export const passportRoutes = [
   {
     title: "Career Passport",
@@ -18,6 +18,6 @@ export const passportRoutes = [
   {
     title: "Career Passport",
     to: "/passport/:username",
-    page: <CareerPassportDashboard />,
+    page: <PassportRouteHandler />,
   },
 ];
