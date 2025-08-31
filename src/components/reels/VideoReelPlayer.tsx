@@ -143,31 +143,18 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         </div>
       )}
 
-      {/* Controls overlay */}
-      <div className="absolute bottom-4 right-4 flex flex-col gap-2 opacity-100 transition-opacity z-10">
+      {/* Controls overlay - Only play/pause */}
+      <div className="absolute bottom-4 right-4 opacity-100 transition-opacity z-10">
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
+          className="h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70"
           onClick={togglePlay}
         >
           {isPlaying ? (
-            <Pause className="h-5 w-5" />
+            <Pause className="h-4 w-4" />
           ) : (
-            <Play className="h-5 w-5 fill-current" />
-          )}
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
-          onClick={toggleMute}
-        >
-          {isMuted ? (
-            <VolumeX className="h-5 w-5" />
-          ) : (
-            <Volume2 className="h-5 w-5" />
+            <Play className="h-4 w-4 fill-current" />
           )}
         </Button>
       </div>

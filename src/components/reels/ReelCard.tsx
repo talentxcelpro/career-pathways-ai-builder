@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VideoReelPlayer } from './VideoReelPlayer';
 import { ReelEngagementActions } from './ReelEngagementActions';
@@ -21,6 +21,8 @@ export const ReelCard: React.FC<ReelCardProps> = ({
 }) => {
   const [hasTrackedView, setHasTrackedView] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { trackView } = useReelViewTracking();
 
   const handleVideoLoad = useCallback(() => {
@@ -37,6 +39,14 @@ export const ReelCard: React.FC<ReelCardProps> = ({
     }
   }, [hasTrackedView, trackView, reel.id]);
 
+  const handleToggleMute = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = !video.muted;
+      setIsMuted(video.muted);
+    }
+  };
+
   return (
     <div className="relative w-full h-screen bg-black flex">
       {/* Video Player */}
@@ -48,6 +58,12 @@ export const ReelCard: React.FC<ReelCardProps> = ({
           onVideoLoad={handleVideoLoad}
           onTimeUpdate={handleTimeUpdate}
           className="w-full h-full"
+        />
+        <video
+          ref={videoRef}
+          className="hidden"
+          src={reel.video_url}
+          muted={isMuted}
         />
 
         {/* Content Overlay */}
@@ -102,11 +118,13 @@ export const ReelCard: React.FC<ReelCardProps> = ({
       </div>
 
       {/* Engagement Actions */}
-      <div className="absolute right-2 bottom-24 md:bottom-32 z-20">
+      <div className="absolute right-2 bottom-20 md:bottom-24 z-20">
         <ReelEngagementActions
           reel={reel}
           onComment={() => setShowComments(true)}
-          className="p-1 md:p-2"
+          isMuted={isMuted}
+          onToggleMute={handleToggleMute}
+          className="p-1"
         />
       </div>
 
