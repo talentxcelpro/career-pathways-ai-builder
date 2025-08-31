@@ -5,6 +5,11 @@ import { Footer } from './Footer';
 export const FooterWrapper: React.FC = () => {
   const location = useLocation();
   
+  // Hide footer on jobs-related routes
+  if (location.pathname.startsWith('/jobs')) {
+    return null;
+  }
+  
   // Show full footer only on homepage
   if (location.pathname === '/') {
     return <Footer />;
