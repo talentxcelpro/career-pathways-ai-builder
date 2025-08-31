@@ -19,17 +19,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ isVisible, onComplet
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-blue-600 to-white">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gradient-primary">
       <div className="animate-scale-in">
         <TalentXcelLogo variant="symbol" size="xl" className="mb-6" />
       </div>
       
-      <div className="animate-fade-in animation-delay-300 text-center">
-        <h1 className="text-white text-2xl font-bold mb-2">
+      <div className="animate-fade-in animation-delay-300">
+        <h1 className="text-white text-2xl font-bold mb-2 text-center">
           TalentXcel
         </h1>
-        <p className="text-white/90 text-lg">
-          AI-powered career platform
+        <p className="text-white/90 text-center text-lg">
+          Where Talent Meets Opportunity
         </p>
       </div>
       

@@ -22,14 +22,14 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, descrip
       <div className="w-full max-w-md relative z-10">
         {/* Enhanced Brand Header */}
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-6">
             <TalentXcelLogo variant="symbol" size="xl" />
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
               TalentXcel
             </h1>
-            <p className="text-sm text-slate-500 font-medium">AI-powered career platform</p>
+            <p className="text-sm text-slate-600 font-medium">Your Career. One Platform. Endless Possibilities.</p>
           </div>
         </div>
         

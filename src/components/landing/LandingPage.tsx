@@ -11,7 +11,6 @@ import { UniversalAppPrompt } from '@/components/install/UniversalAppPrompt';
 import { AdvancedPerformanceMonitor } from '@/components/performance/AdvancedPerformanceMonitor';
 
 export const LandingPage = () => {
-  console.log('LandingPage component rendering...');
   return (
     <div className="min-h-screen">
       <AppInstallBanner />
@@ -22,7 +21,7 @@ export const LandingPage = () => {
       <MobileAppPreview />
       <AppleFooter />
       <UniversalAppPrompt />
-      {/* <AdvancedPerformanceMonitor /> */}
+      <AdvancedPerformanceMonitor />
     </div>
   );
 };

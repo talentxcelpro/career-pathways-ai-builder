@@ -27,10 +27,6 @@ export const AppleHeroSection = () => {
                 </span>
               </h1>
               
-              <div className="text-2xl lg:text-3xl font-bold text-slate-700 mb-4">
-                AI-powered career platform
-              </div>
-              
               <p className="text-xl lg:text-2xl text-slate-600 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 Your all-in-one platform for networking, skill-building, and discovering career opportunities tailored to your unique journey.
               </p>
