@@ -102,6 +102,7 @@ export function useProfilePosts(userId: string) {
       visibility?: 'public' | 'private' | 'followers';
       origin?: string;
       location?: string;
+      link_previews?: Array<{ url: string }>;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Must be logged in to create posts');
@@ -117,7 +118,8 @@ export function useProfilePosts(userId: string) {
           tags: postData.tags || [],
           visibility: postData.visibility || 'public',
           origin: postData.origin || 'profile',
-          location: postData.location
+          location: postData.location,
+          link_previews: postData.link_previews || []
         })
         .select()
         .single();

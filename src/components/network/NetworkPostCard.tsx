@@ -13,6 +13,7 @@ import MediaPreview from "@/components/posts/MediaPreview";
 import { VideoNetworkPostCard } from './VideoNetworkPostCard';
 import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
+import LinkPreview from "@/components/shared/LinkPreview";
 
 interface NetworkPost {
   id: string;
@@ -22,6 +23,7 @@ interface NetworkPost {
   headline?: string;
   media_urls?: string[];
   tags?: string[];
+  link_previews?: Array<{ url: string }>;
   likes_count?: number;
   comments_count?: number;
   shares_count?: number;
@@ -190,6 +192,19 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
               content={post.content} 
               mediaUrls={post.media_urls} 
             />
+          )}
+
+          {/* Link Previews */}
+          {post.link_previews && post.link_previews.length > 0 && (
+            <div className="space-y-3 mt-3">
+              {post.link_previews.map((linkData, index) => (
+                <LinkPreview 
+                  key={index} 
+                  url={linkData.url} 
+                  compact={post.link_previews!.length > 1}
+                />
+              ))}
+            </div>
           )}
           
           {/* Post Tags */}

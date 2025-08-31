@@ -6,6 +6,7 @@ import { ExternalLink, Globe, Github, Youtube, Twitter, Linkedin } from 'lucide-
 interface LinkPreviewProps {
   url: string;
   className?: string;
+  compact?: boolean;
 }
 
 interface LinkMetadata {
@@ -16,7 +17,7 @@ interface LinkMetadata {
   emoji: string;
 }
 
-export const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '' }) => {
+const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '', compact = false }) => {
   const [metadata, setMetadata] = useState<LinkMetadata | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -143,3 +144,5 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '' })
     </Card>
   );
 };
+
+export default LinkPreview;

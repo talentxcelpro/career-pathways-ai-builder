@@ -10,7 +10,7 @@ import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
-import { LinkPreview } from "@/components/shared/LinkPreview";
+import LinkPreview from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
 import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { NetworkStats } from "@/components/network/NetworkStats";

@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Text, Award, Briefcase, BarChart3, Image, Link as LinkIcon } from 'lucide-react';
+import { Text, Award, Briefcase, BarChart3, Image, Link as LinkIcon, X } from 'lucide-react';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useProfilePosts } from '@/hooks/useProfilePosts';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
+import { useUrlPreview } from '@/hooks/useUrlPreview';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import LinkPreview from '@/components/shared/LinkPreview';
 
 export const PostCreation = () => {
   const [activeType, setActiveType] = useState('text');
@@ -16,6 +19,7 @@ export const PostCreation = () => {
   const [linkUrl, setLinkUrl] = useState('');
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hiddenPreviews, setHiddenPreviews] = useState<Set<string>>(new Set());
   
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'post-media',
@@ -24,6 +28,11 @@ export const PostCreation = () => {
   });
   
   const { createPost } = useProfilePosts('global');
+  const { detectedUrls } = useUrlDetection(content);
+  
+  // Get preview data for detected URLs that aren't hidden
+  const visibleUrls = detectedUrls.filter(({ url }) => !hiddenPreviews.has(url));
+  const previewUrls = visibleUrls.map(({ url }) => url);
 
   const postTypes = [
     { id: 'text', label: 'Text', icon: Text, description: 'Share thoughts and insights' },
@@ -56,12 +65,16 @@ export const PostCreation = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Collect link previews for all detected URLs (including hidden ones for storage)
+      const linkPreviews = detectedUrls.map(({ url }) => ({ url }));
+
       await createPost.mutateAsync({
         content: content.trim(),
         media_urls: selectedMedia,
         post_type: activeType,
         visibility: 'public',
         tags: [],
+        link_previews: linkPreviews,
       });
 
       // Reset form
@@ -69,6 +82,7 @@ export const PostCreation = () => {
       setLinkUrl('');
       setSelectedMedia([]);
       setActiveType('text');
+      setHiddenPreviews(new Set());
       
       toast.success('Post shared successfully!');
     } catch (error) {
@@ -81,6 +95,18 @@ export const PostCreation = () => {
 
   const removeMedia = (urlToRemove: string) => {
     setSelectedMedia(prev => prev.filter(url => url !== urlToRemove));
+  };
+
+  const hidePreview = (url: string) => {
+    setHiddenPreviews(prev => new Set([...prev, url]));
+  };
+
+  const showPreview = (url: string) => {
+    setHiddenPreviews(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(url);
+      return newSet;
+    });
   };
 
   return (
@@ -127,6 +153,39 @@ export const PostCreation = () => {
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                 />
+              </div>
+            )}
+
+            {/* Link Previews */}
+            {visibleUrls.length > 0 && (
+              <div className="space-y-3">
+                {visibleUrls.map(({ url }) => (
+                  <div key={url} className="relative group">
+                    <LinkPreview url={url} compact />
+                    <button
+                      onClick={() => hidePreview(url)}
+                      className="absolute top-2 right-2 w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                      title="Hide preview"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Hidden preview indicator */}
+            {hiddenPreviews.size > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {Array.from(hiddenPreviews).map((url) => (
+                  <button
+                    key={url}
+                    onClick={() => showPreview(url)}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors border border-border rounded px-2 py-1"
+                  >
+                    🔗 Show preview for {new URL(url).hostname}
+                  </button>
+                ))}
               </div>
             )}
 
