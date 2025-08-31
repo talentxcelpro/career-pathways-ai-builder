@@ -890,6 +890,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_coach_sessions: {
+        Row: {
+          ai_suggestions: Json | null
+          created_at: string | null
+          id: string
+          is_completed: boolean | null
+          message: string
+          session_type: string
+          user_id: string
+          user_response: string | null
+        }
+        Insert: {
+          ai_suggestions?: Json | null
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          message: string
+          session_type: string
+          user_id: string
+          user_response?: string | null
+        }
+        Update: {
+          ai_suggestions?: Json | null
+          created_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          message?: string
+          session_type?: string
+          user_id?: string
+          user_response?: string | null
+        }
+        Relationships: []
+      }
       ai_content_library: {
         Row: {
           approved_by: string | null
@@ -4731,6 +4764,51 @@ export type Database = {
         }
         Relationships: []
       }
+      career_insights: {
+        Row: {
+          category: string
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          insight_type: string
+          is_trending: boolean | null
+          likes_count: number | null
+          published_at: string | null
+          tags: string[] | null
+          title: string
+          views_count: number | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          insight_type: string
+          is_trending?: boolean | null
+          likes_count?: number | null
+          published_at?: string | null
+          tags?: string[] | null
+          title: string
+          views_count?: number | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          insight_type?: string
+          is_trending?: boolean | null
+          likes_count?: number | null
+          published_at?: string | null
+          tags?: string[] | null
+          title?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
       career_milestones: {
         Row: {
           achievement_date: string
@@ -7424,6 +7502,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      connection_suggestions: {
+        Row: {
+          common_colleges: string[] | null
+          common_companies: string[] | null
+          common_connections: number | null
+          common_skills: string[] | null
+          created_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          reason: string
+          score: number | null
+          suggested_user_id: string
+          user_id: string
+        }
+        Insert: {
+          common_colleges?: string[] | null
+          common_companies?: string[] | null
+          common_connections?: number | null
+          common_skills?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          reason: string
+          score?: number | null
+          suggested_user_id: string
+          user_id: string
+        }
+        Update: {
+          common_colleges?: string[] | null
+          common_companies?: string[] | null
+          common_connections?: number | null
+          common_skills?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          reason?: string
+          score?: number | null
+          suggested_user_id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       connections: {
         Row: {
@@ -10940,6 +11060,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_alert_preferences: {
+        Row: {
+          alert_name: string
+          created_at: string | null
+          frequency: string | null
+          id: string
+          is_active: boolean | null
+          job_types: string[] | null
+          keywords: string[] | null
+          last_sent_at: string | null
+          locations: string[] | null
+          salary_max: number | null
+          salary_min: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_name: string
+          created_at?: string | null
+          frequency?: string | null
+          id?: string
+          is_active?: boolean | null
+          job_types?: string[] | null
+          keywords?: string[] | null
+          last_sent_at?: string | null
+          locations?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_name?: string
+          created_at?: string | null
+          frequency?: string | null
+          id?: string
+          is_active?: boolean | null
+          job_types?: string[] | null
+          keywords?: string[] | null
+          last_sent_at?: string | null
+          locations?: string[] | null
+          salary_max?: number | null
+          salary_min?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       job_alerts: {
         Row: {
@@ -24112,17 +24280,28 @@ export type Database = {
         Returns: string
       }
       create_notification: {
-        Args: {
-          p_icon?: string
-          p_link?: string
-          p_message: string
-          p_module: string
-          p_priority?: string
-          p_related_id?: string
-          p_title: string
-          p_type: string
-          p_user_id: string
-        }
+        Args:
+          | {
+              p_action_url?: string
+              p_data?: Json
+              p_message: string
+              p_notification_type: string
+              p_priority?: string
+              p_scheduled_at?: string
+              p_title: string
+              p_user_id: string
+            }
+          | {
+              p_icon?: string
+              p_link?: string
+              p_message: string
+              p_module: string
+              p_priority?: string
+              p_related_id?: string
+              p_title: string
+              p_type: string
+              p_user_id: string
+            }
         Returns: string
       }
       create_permission_request: {
@@ -24824,6 +25003,10 @@ export type Database = {
           p_module: string
           p_score_impact?: number
         }
+        Returns: undefined
+      }
+      update_engagement_metrics: {
+        Args: { p_increment?: number; p_metric_type: string; p_user_id: string }
         Returns: undefined
       }
       update_time_decay_scores: {
