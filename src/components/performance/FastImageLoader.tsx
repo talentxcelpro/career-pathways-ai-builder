@@ -1,5 +1,6 @@
 import React, { useState, useCallback, memo } from 'react';
 import { cn } from '@/lib/utils';
+import { ImageOptimizer } from '@/utils/imageOptimizer';
 
 interface FastImageLoaderProps {
   src: string;
@@ -9,6 +10,10 @@ interface FastImageLoaderProps {
   placeholder?: string;
   onLoad?: () => void;
   priority?: boolean;
+  width?: number;
+  height?: number;
+  quality?: number;
+  sizes?: string;
 }
 
 export const FastImageLoader = memo<FastImageLoaderProps>(({
@@ -18,10 +23,19 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
   aspectRatio = '16/9',
   placeholder = '/placeholder.svg',
   onLoad,
-  priority = false
+  priority = false,
+  width,
+  height,
+  quality = 85,
+  sizes
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  
+  // Generate optimized URLs
+  const optimizedSrc = ImageOptimizer.getOptimizedUrl(src, { width, height, quality, format: 'webp' });
+  const srcSet = width ? ImageOptimizer.generateSrcSet(src, [width * 0.5, width, width * 1.5, width * 2]) : undefined;
+  const imageSizes = sizes || (width ? `${width}px` : ImageOptimizer.generateSizes());
 
   const handleLoad = useCallback(() => {
     setIsLoaded(true);
@@ -41,7 +55,9 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
       
       {/* Main Image */}
       <img
-        src={hasError ? placeholder : src}
+        src={hasError ? placeholder : optimizedSrc}
+        srcSet={hasError ? undefined : srcSet}
+        sizes={hasError ? undefined : imageSizes}
         alt={alt}
         className={cn(
           'absolute inset-0 w-full h-full object-cover transition-opacity duration-300',
@@ -51,6 +67,8 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
         onError={handleError}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
+        width={width}
+        height={height}
       />
     </div>
   );

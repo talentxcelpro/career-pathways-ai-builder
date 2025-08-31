@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -11,8 +12,13 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
+    mode === 'production' && visualizer({
+      filename: 'dist/bundle-analysis.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -24,9 +30,19 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom'],
-          'ui': ['@radix-ui/react-avatar'],
+          'ui': [
+            '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', 
+            '@radix-ui/react-popover', '@radix-ui/react-tabs',
+            '@radix-ui/react-avatar', '@radix-ui/react-button'
+          ],
+          'charts': ['recharts'],
+          'animations': ['framer-motion'],
+          'heavy-tools': [
+            'mammoth', 'pdfjs-dist', 'docx', 'tesseract.js',
+            '@huggingface/transformers'
+          ],
           'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom'],
-          'utils': ['date-fns', 'clsx', 'class-variance-authority']
+          'utils': ['date-fns', 'clsx', 'class-variance-authority', 'zod']
         }
       }
     },

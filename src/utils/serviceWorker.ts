@@ -1,3 +1,92 @@
+// Service Worker utilities for caching and offline support
+export class ServiceWorkerManager {
+  private static isRegistered = false;
+
+  // Register service worker
+  static async register() {
+    if ('serviceWorker' in navigator && !this.isRegistered) {
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        this.isRegistered = true;
+        
+        console.log('✅ Service Worker registered:', registration.scope);
+        
+        // Handle updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New content available, notify user
+                this.notifyUpdate();
+              }
+            });
+          }
+        });
+        
+        return registration;
+      } catch (error) {
+        console.warn('❌ Service Worker registration failed:', error);
+      }
+    }
+  }
+
+  // Notify user of updates
+  static notifyUpdate() {
+    if (typeof window !== 'undefined' && 'confirm' in window) {
+      if (confirm('New version available! Reload to update?')) {
+        window.location.reload();
+      }
+    }
+  }
+
+  // Update service worker
+  static async update() {
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        await registration.update();
+      }
+    }
+  }
+
+  // Clear all caches
+  static async clearCaches() {
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map(cacheName => caches.delete(cacheName))
+      );
+    }
+  }
+
+  // Check if app is running offline
+  static isOffline(): boolean {
+    return typeof navigator !== 'undefined' && !navigator.onLine;
+  }
+
+  // Initialize service worker
+  static init() {
+    if (typeof window === 'undefined') return;
+    
+    // Register on load
+    window.addEventListener('load', () => {
+      this.register();
+    });
+
+    // Handle online/offline events
+    window.addEventListener('online', () => {
+      console.log('🟢 App is online');
+    });
+
+    window.addEventListener('offline', () => {
+      console.log('🔴 App is offline');
+    });
+  }
+}
+
+// Service Worker script content (to be placed in public/sw.js)
+export const SERVICE_WORKER_SCRIPT = `
 const CACHE_NAME = 'talentxcel-v1';
 const STATIC_CACHE = 'talentxcel-static-v1';
 const DYNAMIC_CACHE = 'talentxcel-dynamic-v1';
@@ -104,3 +193,7 @@ async function handleNavigationRequest(request) {
     return cached || cache.match('/offline.html');
   }
 }
+`;
+
+// Auto-initialize
+ServiceWorkerManager.init();
