@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => ({
           'ui': [
             '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', 
             '@radix-ui/react-popover', '@radix-ui/react-tabs',
-            '@radix-ui/react-avatar', '@radix-ui/react-button'
+            '@radix-ui/react-avatar', '@radix-ui/react-slot'
           ],
           'charts': ['recharts'],
           'animations': ['framer-motion'],
