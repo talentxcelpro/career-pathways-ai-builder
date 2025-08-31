@@ -20634,6 +20634,42 @@ export type Database = {
           },
         ]
       }
+      sessions: {
+        Row: {
+          created_at: string | null
+          device_fingerprint: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          token: string
+          user_agent: string | null
+          user_id: string
+          valid: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          device_fingerprint?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          token: string
+          user_agent?: string | null
+          user_id: string
+          valid?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          device_fingerprint?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          token?: string
+          user_agent?: string | null
+          user_id?: string
+          valid?: boolean | null
+        }
+        Relationships: []
+      }
       shares: {
         Row: {
           content_id: string
@@ -24484,6 +24520,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_old_cache_stats: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -24593,6 +24633,17 @@ export type Database = {
       create_seo_pages_for_job: {
         Args: { p_job_id: string }
         Returns: undefined
+      }
+      create_user_session: {
+        Args: {
+          p_device_fingerprint?: string
+          p_expires_at: string
+          p_ip_address?: unknown
+          p_token: string
+          p_user_agent?: string
+          p_user_id: string
+        }
+        Returns: string
       }
       detect_salary_frequency_issues: {
         Args: Record<PropertyKey, never>
@@ -25021,6 +25072,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      invalidate_session: {
+        Args: { p_token: string }
+        Returns: boolean
+      }
       is_app_admin: {
         Args: { _user_id: string }
         Returns: boolean
@@ -25192,6 +25247,10 @@ export type Database = {
       refresh_career_passport_metrics: {
         Args: { user_uuid: string }
         Returns: Json
+      }
+      refresh_session: {
+        Args: { p_new_expires_at: string; p_token: string }
+        Returns: boolean
       }
       reject_company_access_request: {
         Args: { reason?: string; request_id: string }
@@ -25408,6 +25467,15 @@ export type Database = {
       validate_secure_input: {
         Args: { input_data: Json; validation_rules?: Json }
         Returns: Json
+      }
+      validate_session: {
+        Args: { p_token: string }
+        Returns: {
+          expires_at: string
+          is_valid: boolean
+          session_id: string
+          user_id: string
+        }[]
       }
       validate_user_input: {
         Args: { input_text: string; input_type?: string; max_length?: number }
