@@ -34,7 +34,12 @@ export class WebSocketManager {
       console.log(`Channel ${channelName} status:`, status);
       
       if (status === 'CHANNEL_ERROR') {
-        console.error(`Channel ${channelName} error:`, err);
+        console.warn(`Channel ${channelName} error:`, err);
+        // Don't retry on connection errors, just log
+        if (err && typeof err === 'object' && (err as any)._type === 'undefined') {
+          console.warn(`WebSocket connection error for ${channelName}, ignoring...`);
+          return;
+        }
         this.handleChannelError(channelName, err);
       } else if (status === 'SUBSCRIBED') {
         console.log(`✅ Channel ${channelName} subscribed successfully`);

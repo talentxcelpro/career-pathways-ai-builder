@@ -1,144 +1,116 @@
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { cn } from '@/lib/utils';
 import { useReelsData } from '@/hooks/useReelsData';
 import { ReelCard } from './ReelCard';
 import { Button } from '@/components/ui/button';
-import { Plus, RefreshCw } from 'lucide-react';
-import { toast } from 'sonner';
+import { Plus, Upload, RefreshCw } from 'lucide-react';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 interface InfiniteReelsFeedProps {
-  onUploadClick?: () => void;
+  onUploadClick: () => void;
+  className?: string;
 }
 
 export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
-  onUploadClick
+  onUploadClick,
+  className
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStartY, setTouchStartY] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error, refetch } = useReelsData();
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const observerTargets = useRef<Map<number, HTMLDivElement>>(new Map());
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-    refetch
-  } = useReelsData();
-
+  // Flatten all pages into a single array of reels
   const reels = data?.pages.flat() || [];
 
-  // Auto-fetch more content when approaching the end
+  // Load more reels when approaching the end
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  useIntersectionObserver(loadMoreRef, 
+    useCallback(() => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]),
+    { threshold: 0.1 }
+  );
+
+  // Set up intersection observer for each reel to track which one is active
   useEffect(() => {
-    if (currentIndex >= reels.length - 3 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    if (!containerRef.current || reels.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0');
+            setActiveIndex(index);
+          }
+        });
+      },
+      {
+        root: containerRef.current,
+        threshold: 0.6, // Reel is considered active when 60% visible
+        rootMargin: '-20% 0px'
+      }
+    );
+
+    // Observe all reel elements
+    observerTargets.current.forEach((element) => {
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [reels.length]);
+
+  const setObserverRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
+    if (el) {
+      observerTargets.current.set(index, el);
+    } else {
+      observerTargets.current.delete(index);
     }
-  }, [currentIndex, reels.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, []);
 
-  // Handle scroll navigation
-  const handleScroll = useCallback((direction: 'up' | 'down') => {
-    if (isScrolling) return;
-
-    setIsScrolling(true);
+  // Handle scroll to ensure reels snap properly
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const scrollTop = container.scrollTop;
+    const itemHeight = container.clientHeight;
+    const newIndex = Math.round(scrollTop / itemHeight);
     
-    if (direction === 'down' && currentIndex < reels.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else if (direction === 'up' && currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < reels.length) {
+      setActiveIndex(newIndex);
     }
-
-    // Clear existing timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-
-    // Allow scrolling again after animation
-    scrollTimeoutRef.current = setTimeout(() => {
-      setIsScrolling(false);
-    }, 500);
-  }, [currentIndex, reels.length, isScrolling]);
-
-  // Touch handlers for mobile
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    setTouchStartY(e.touches[0].clientY);
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    const touchEndY = e.changedTouches[0].clientY;
-    const diff = touchStartY - touchEndY;
-    const minSwipeDistance = 50;
-
-    if (Math.abs(diff) > minSwipeDistance) {
-      if (diff > 0) {
-        handleScroll('down');
-      } else {
-        handleScroll('up');
-      }
-    }
-  }, [touchStartY, handleScroll]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown' || e.key === ' ') {
-        e.preventDefault();
-        handleScroll('down');
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        handleScroll('up');
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleScroll]);
-
-  // Wheel navigation for desktop
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    if (Math.abs(e.deltaY) > 10) {
-      handleScroll(e.deltaY > 0 ? 'down' : 'up');
-    }
-  }, [handleScroll]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-      return () => container.removeEventListener('wheel', handleWheel);
-    }
-  }, [handleWheel]);
-
-  const handleComment = useCallback(() => {
-    toast.info('Comments feature coming soon!');
-  }, []);
+  }, [activeIndex, reels.length]);
 
   const handleRefresh = useCallback(() => {
-    setCurrentIndex(0);
+    setActiveIndex(0);
     refetch();
   }, [refetch]);
 
   if (isLoading) {
     return (
       <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Loading reels...</p>
+        <div className="flex flex-col items-center gap-4 text-white">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          <p>Loading amazing reels...</p>
         </div>
       </div>
     );
   }
 
-  if (isError) {
+  if (error) {
     return (
       <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="text-center text-white">
-          <p className="mb-4">Unable to load reels</p>
-          <Button onClick={handleRefresh} variant="outline">
-            <RefreshCw className="h-4 w-4 mr-2" />
+        <div className="flex flex-col items-center gap-4 text-white text-center p-6">
+          <div className="text-6xl mb-4">😞</div>
+          <h3 className="text-xl font-semibold">Oops! Something went wrong</h3>
+          <p className="text-gray-300 mb-6">We couldn't load the reels right now</p>
+          <Button 
+            onClick={handleRefresh} 
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
             Try Again
           </Button>
         </div>
@@ -149,88 +121,64 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   if (!reels.length) {
     return (
       <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="text-center text-white">
-          <p className="mb-4">No reels available</p>
-          {onUploadClick && (
-            <Button onClick={onUploadClick}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create First Reel
-            </Button>
-          )}
+        <div className="flex flex-col items-center gap-6 text-white text-center p-6">
+          <div className="text-8xl mb-4">🎬</div>
+          <h3 className="text-2xl font-bold mb-2">No Reels Yet!</h3>
+          <p className="text-gray-300 mb-6 max-w-sm">
+            Be the first to share your career journey or professional insights
+          </p>
+          <Button
+            onClick={onUploadClick}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg"
+          >
+            <Upload className="mr-2 h-5 w-5" />
+            Create Your First Reel
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div
+    <div 
       ref={containerRef}
-      className="w-full h-screen overflow-hidden bg-black relative"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className={cn(
+        "w-full h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide",
+        className
+      )}
+      onScroll={handleScroll}
+      style={{ 
+        scrollbarWidth: 'none', 
+        msOverflowStyle: 'none'
+      }}
     >
-      {/* Reels Container */}
-      <div
-        className="w-full h-full transition-transform duration-500 ease-out"
-        style={{
-          transform: `translateY(-${currentIndex * 100}vh)`
-        }}
-      >
-        {reels.map((reel, index) => (
-          <div key={reel.id} className="w-full h-screen">
-            <ReelCard
-              reel={reel}
-              isActive={index === currentIndex}
-              onComment={handleComment}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Upload Button */}
-      {onUploadClick && (
-        <div className="absolute top-4 right-4 z-50">
-          <Button
-            onClick={onUploadClick}
-            size="icon"
-            className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg"
-          >
-            <Plus className="h-6 w-6" />
-          </Button>
+      {reels.map((reel, index) => (
+        <div
+          key={reel.id}
+          ref={setObserverRef(index)}
+          data-index={index}
+          className="w-full h-screen snap-start snap-always flex-shrink-0"
+        >
+          <ReelCard
+            reel={reel}
+            isActive={index === activeIndex}
+            onComment={() => {}}
+          />
         </div>
-      )}
+      ))}
 
-      {/* Loading More Indicator */}
-      {isFetchingNextPage && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-black/70 rounded-full px-3 py-2 flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            <span className="text-white text-sm">Loading more...</span>
+      {/* Loading indicator for infinite scroll */}
+      {hasNextPage && (
+        <div 
+          ref={loadMoreRef}
+          className="h-screen w-full bg-black flex items-center justify-center snap-start"
+        >
+          <div className="flex flex-col items-center gap-4 text-white">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            <p className="text-sm">Loading more reels...</p>
           </div>
         </div>
       )}
-
-      {/* Progress Indicators */}
-      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-1 z-40">
-        {reels.slice(Math.max(0, currentIndex - 2), currentIndex + 3).map((_, index) => {
-          const actualIndex = Math.max(0, currentIndex - 2) + index;
-          return (
-            <div
-              key={actualIndex}
-              className={`w-1 h-8 rounded-full transition-all duration-300 ${
-                actualIndex === currentIndex 
-                  ? 'bg-white' 
-                  : 'bg-white/30'
-              }`}
-            />
-          );
-        })}
-      </div>
-
-      {/* Navigation Instructions (for desktop) */}
-      <div className="absolute bottom-4 left-4 text-white/70 text-xs hidden md:block">
-        <p>Use arrow keys or scroll to navigate</p>
-      </div>
     </div>
   );
 };

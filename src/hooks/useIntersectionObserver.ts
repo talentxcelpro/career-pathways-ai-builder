@@ -1,38 +1,62 @@
-import { useEffect, useState, RefObject } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-interface IntersectionObserverOptions {
-  threshold?: number | number[];
-  rootMargin?: string;
-  root?: Element | null;
-}
+// Overloaded hook - version 1: callback style  
+export function useIntersectionObserver(
+  target: React.RefObject<Element>,
+  callback: () => void,
+  options?: IntersectionObserverInit
+): void;
 
-export const useIntersectionObserver = (
-  elementRef: RefObject<Element>,
-  options: IntersectionObserverOptions = {}
-): boolean => {
+// Overloaded hook - version 2: boolean style
+export function useIntersectionObserver(
+  target: React.RefObject<Element>,
+  options?: IntersectionObserverInit
+): boolean;
+
+// Implementation
+export function useIntersectionObserver(
+  target: React.RefObject<Element>,
+  callbackOrOptions?: (() => void) | IntersectionObserverInit,
+  optionsWhenCallback?: IntersectionObserverInit
+): boolean | void {
+  const observer = useRef<IntersectionObserver | null>(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
 
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return;
+  const isCallbackStyle = typeof callbackOrOptions === 'function';
+  const callback = isCallbackStyle ? callbackOrOptions : undefined;
+  const options = isCallbackStyle ? optionsWhenCallback : callbackOrOptions;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsIntersecting(entry.isIntersecting);
+  useEffect(() => {
+    if (!target.current) return;
+
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (callback) {
+              callback();
+            } else {
+              setIsIntersecting(true);
+            }
+          } else if (!callback) {
+            setIsIntersecting(false);
+          }
+        });
       },
-      {
-        threshold: 0.1,
-        rootMargin: '50px',
-        ...options
-      }
+      options || {}
     );
 
-    observer.observe(element);
+    observer.current.observe(target.current);
 
     return () => {
-      observer.unobserve(element);
+      if (observer.current) {
+        observer.current.disconnect();
+      }
     };
-  }, [elementRef, options]);
+  }, [target, callback, options]);
 
-  return isIntersecting;
+  // Return boolean for non-callback style
+  if (!callback) {
+    return isIntersecting;
+  }
 };
