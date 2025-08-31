@@ -37,75 +37,21 @@ export function AchievementHub({
   const [selectedCategory, setSelectedCategory] = useState('all');
   const navigate = useNavigate();
 
-  // Sample milestone data - in real app, this would come from backend
-  const careerMilestones = [
-    { 
-      id: 1, 
-      title: 'Profile Perfectionist', 
-      description: 'Complete your professional profile', 
-      progress: 85, 
-      target: 100, 
-      isCompleted: false,
-      points: 100,
-      category: 'profile',
-      action: () => navigate('/profile/edit')
-    },
-    { 
-      id: 2, 
-      title: 'Resume Ready', 
-      description: 'Create your first resume', 
-      progress: 100, 
-      target: 100, 
-      isCompleted: true,
-      points: 150,
-      category: 'resume',
-      earnedAt: '2024-01-15'
-    },
-    { 
-      id: 3, 
-      title: 'Skill Showcase', 
-      description: 'Add 10+ skills to your profile', 
-      progress: 7, 
-      target: 10, 
-      isCompleted: false,
-      points: 75,
-      category: 'skills',
-      action: () => navigate('/profile/skills')
-    },
-    { 
-      id: 4, 
-      title: 'Network Builder', 
-      description: 'Connect with 25 professionals', 
-      progress: 12, 
-      target: 25, 
-      isCompleted: false,
-      points: 200,
-      category: 'network',
-      action: () => navigate('/network')
-    },
-    { 
-      id: 5, 
-      title: 'Job Hunter', 
-      description: 'Apply to 10 jobs', 
-      progress: 3, 
-      target: 10, 
-      isCompleted: false,
-      points: 300,
-      category: 'jobs',
-      action: () => navigate('/jobs')
-    },
-    { 
-      id: 6, 
-      title: 'Certified Professional', 
-      description: 'Earn 3 certifications', 
-      progress: 1, 
-      target: 3, 
-      isCompleted: false,
-      points: 500,
-      category: 'certification',
-      action: () => navigate('/learning')
-    }
-  ];
+  // Use real achievements data instead of mock data
+  const realAchievements = achievements || [];
+  const realBadges = userBadges || [];
+  
+  const careerMilestones = realAchievements.map(achievement => ({
+    id: achievement.id,
+    title: achievement.achievement_title,
+    description: achievement.achievement_description,
+    progress: 100, // Achievement is completed if it exists
+    target: 100,
+    isCompleted: true,
+    points: achievement.points_awarded,
+    category: achievement.achievement_type || 'general',
+    earnedAt: achievement.earned_at
+  }));
 
   const categories = [
     { id: 'all', label: 'All', icon: Award },
@@ -285,33 +231,12 @@ export function AchievementHub({
 
                   {/* Action or Completion Info */}
                   <div className="mt-4 flex items-center justify-between">
-                    {milestone.isCompleted ? (
-                      <div className="flex items-center gap-2 text-green-600">
-                        <CheckCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                          Completed {milestone.earnedAt && new Date(milestone.earnedAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {isOwner && milestone.action && (
-                          <Button 
-                            size="sm" 
-                            onClick={milestone.action}
-                            className="flex items-center gap-2"
-                          >
-                            <Unlock className="w-4 h-4" />
-                            Continue
-                          </Button>
-                        )}
-                        {!isOwner && (
-                          <div className="flex items-center gap-2 text-gray-500">
-                            <Lock className="w-4 h-4" />
-                            <span className="text-sm">In Progress</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                     <div className="flex items-center gap-2 text-green-600">
+                       <CheckCircle className="w-4 h-4" />
+                       <span className="text-sm font-medium">
+                         Completed {milestone.earnedAt && new Date(milestone.earnedAt).toLocaleDateString()}
+                       </span>
+                     </div>
                   </div>
                 </CardContent>
               </Card>

@@ -169,8 +169,8 @@ const App = () => {
                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                           <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
-                          {/* Legacy UUID-based passport redirect - must come before username route */}
-                          <Route path="/passport/:id([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})" element={<PassportUrlRedirect />} />
+                           {/* Legacy UUID-based passport redirect - must come before username route */}
+                           <Route path="/passport/:userId" element={<PassportUrlRedirect />} />
                           <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                           <Route path="/@:username" element={<CareerPassportDashboard />} />
                         <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />

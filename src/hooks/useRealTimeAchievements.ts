@@ -83,16 +83,9 @@ export function useRealTimeAchievements() {
       return data;
     },
     onSuccess: (data, variables) => {
-      // Only show notification if this is a new achievement (not already processed)
-      if (data && !processedAchievements.current.has(`${user?.id}-${variables.title}-notified`)) {
-        // Mark notification as shown
+      // Mark achievement as processed (no notification)
+      if (data) {
         processedAchievements.current.add(`${user?.id}-${variables.title}-notified`);
-        
-        // Show achievement notification
-        toast.success(`🏆 Achievement Unlocked: ${variables.title}!`, {
-          description: `You earned ${variables.points} points!`,
-          duration: 5000
-        });
       }
       
       // Invalidate relevant queries

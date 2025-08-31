@@ -147,7 +147,6 @@ export const useGamification = () => {
     },
     onSuccess: (achievement) => {
       queryClient.invalidateQueries({ queryKey: ['gamification'] });
-      toast.success(`Achievement Unlocked: ${achievement.achievement_title}! +${achievement.points_awarded} points`);
     },
     onError: (error: any) => {
       if (!error.message.includes('already earned')) {
