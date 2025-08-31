@@ -29,15 +29,19 @@ export class WebSocketManager {
     this.channels.set(channelName, channel);
     this.retryAttempts.set(channelName, 0);
 
-    // Add error handling
+    // Add error handling with better logging
     channel.subscribe((status, err) => {
-      console.log(`Channel ${channelName} status:`, status, err);
+      console.log(`Channel ${channelName} status:`, status);
       
       if (status === 'CHANNEL_ERROR') {
+        console.error(`Channel ${channelName} error:`, err);
         this.handleChannelError(channelName, err);
       } else if (status === 'SUBSCRIBED') {
+        console.log(`✅ Channel ${channelName} subscribed successfully`);
         this.retryAttempts.set(channelName, 0);
         this.config.onReconnect?.();
+      } else if (status === 'CLOSED') {
+        console.log(`Channel ${channelName} closed`);
       }
     });
 
@@ -47,16 +51,22 @@ export class WebSocketManager {
   private handleChannelError(channelName: string, error?: Error) {
     const attempts = this.retryAttempts.get(channelName) || 0;
     
-    if (attempts < (this.config.maxRetries || 5)) {
+    if (attempts < (this.config.maxRetries || 3)) {
       console.log(`Retrying channel ${channelName} in ${this.config.retryDelay}ms (attempt ${attempts + 1})`);
       
       setTimeout(() => {
         this.retryAttempts.set(channelName, attempts + 1);
+        
+        // Remove the failed channel first
+        this.removeChannel(channelName);
+        
+        // Create a new channel with the same name
         const newChannel = this.createChannel(channelName);
         this.channels.set(channelName, newChannel);
       }, this.config.retryDelay);
     } else {
-      console.error(`Max retries reached for channel ${channelName}`);
+      console.error(`❌ Max retries reached for channel ${channelName}`);
+      this.removeChannel(channelName); // Clean up failed channel
       this.config.onError?.(error || new Error(`Channel ${channelName} failed after ${attempts} attempts`));
     }
   }

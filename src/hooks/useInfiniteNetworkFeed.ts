@@ -146,60 +146,79 @@ export const useInfiniteNetworkFeed = ({
   useEffect(() => {
     if (!user) return;
 
-    const channelName = `network-feed-${feedType}`;
-    const channel = websocketManager.createChannel(channelName);
+    let cleanup: (() => void) | undefined;
 
-    // Listen for new posts
-    channel.on('postgres_changes', {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'posts',
-      filter: 'status=eq.published'
-    }, (payload) => {
-      const newPost = payload.new as NetworkPost;
+    try {
+      const channelName = `network-feed-${feedType}`;
+      console.log(`🔄 Setting up channel: ${channelName}`);
       
-      // Check if this post should appear in current feed
-      const shouldInclude = feedType === 'all' || 
-        (feedType === 'smart' && user?.id) || // TODO: Add connection check
-        (feedType === 'trending' && newPost.likes_count >= 5);
+      const channel = websocketManager.createChannel(channelName);
 
-      if (shouldInclude && latestPostRef.current !== newPost.id) {
-        setNewPostsAvailable(prev => prev + 1);
-      }
-    });
-
-    // Listen for post updates (likes, comments, etc.)
-    channel.on('postgres_changes', {
-      event: 'UPDATE',
-      schema: 'public',
-      table: 'posts'
-    }, (payload) => {
-      const updatedPost = payload.new as NetworkPost;
-      
-      // Update the specific post in cache
-      queryClient.setQueryData(['networkFeed', feedType, user?.id], (oldData: any) => {
-        if (!oldData) return oldData;
+      // Listen for new posts
+      channel.on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'posts',
+        filter: 'status=eq.published'
+      }, (payload) => {
+        console.log('📬 New post received:', payload);
+        const newPost = payload.new as NetworkPost;
         
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page: any) => ({
-            ...page,
-            posts: page.posts.map((post: NetworkPost) => 
-              post.id === updatedPost.id ? { ...post, ...updatedPost } : post
-            )
-          }))
-        };
+        // Check if this post should appear in current feed
+        const shouldInclude = feedType === 'all' || 
+          (feedType === 'smart' && user?.id) || // TODO: Add connection check
+          (feedType === 'trending' && newPost.likes_count >= 5);
+
+        if (shouldInclude && latestPostRef.current !== newPost.id) {
+          setNewPostsAvailable(prev => prev + 1);
+        }
       });
-    });
 
-    channel.subscribe((status) => {
-      setRealtimeConnected(status === 'SUBSCRIBED');
-      console.log(`🔥 Feed channel ${channelName} status:`, status);
-    });
+      // Listen for post updates (likes, comments, etc.)
+      channel.on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'posts'
+      }, (payload) => {
+        console.log('📝 Post updated:', payload);
+        const updatedPost = payload.new as NetworkPost;
+        
+        // Update the specific post in cache
+        queryClient.setQueryData(['networkFeed', feedType, user?.id], (oldData: any) => {
+          if (!oldData) return oldData;
+          
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              posts: page.posts.map((post: NetworkPost) => 
+                post.id === updatedPost.id ? { ...post, ...updatedPost } : post
+              )
+            }))
+          };
+        });
+      });
 
-    return () => {
-      websocketManager.removeChannel(channelName);
-    };
+      channel.subscribe((status) => {
+        console.log(`🔥 Feed channel ${channelName} status:`, status);
+        setRealtimeConnected(status === 'SUBSCRIBED');
+        
+        if (status === 'CHANNEL_ERROR') {
+          console.error(`❌ Channel ${channelName} failed to connect`);
+          setRealtimeConnected(false);
+        }
+      });
+
+      cleanup = () => {
+        console.log(`🧹 Cleaning up channel: ${channelName}`);
+        websocketManager.removeChannel(channelName);
+      };
+    } catch (error) {
+      console.error('❌ Error setting up realtime channel:', error);
+      setRealtimeConnected(false);
+    }
+
+    return cleanup;
   }, [user, feedType, queryClient]);
 
   // Auto-refresh functionality
