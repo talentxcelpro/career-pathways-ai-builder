@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VideoReelPlayer } from './VideoReelPlayer';
 import { ReelEngagementActions } from './ReelEngagementActions';
+import { ReelCommentsModal } from './ReelCommentsModal';
 import { ReelData } from '@/hooks/useReelsData';
 import { useReelViewTracking } from '@/hooks/useReelsData';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,6 +20,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
   onComment
 }) => {
   const [hasTrackedView, setHasTrackedView] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const { trackView } = useReelViewTracking();
 
   const handleVideoLoad = useCallback(() => {
@@ -103,10 +105,17 @@ export const ReelCard: React.FC<ReelCardProps> = ({
       <div className="absolute right-0 bottom-20">
         <ReelEngagementActions
           reel={reel}
-          onComment={onComment}
+          onComment={() => setShowComments(true)}
           className="p-4"
         />
       </div>
+
+      {/* Comments Modal */}
+      <ReelCommentsModal
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+        reelId={reel.id}
+      />
     </div>
   );
 };
