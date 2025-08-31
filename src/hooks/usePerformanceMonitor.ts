@@ -230,8 +230,9 @@ export function usePerformanceMonitor(componentName?: string) {
       ...additionalData,
     };
 
-    // Report to Google Analytics
-    if (typeof gtag !== 'undefined') {
+    // Report to Google Analytics (if available)
+    if (typeof window !== 'undefined' && 'gtag' in window) {
+      const gtag = (window as any).gtag;
       gtag('event', 'performance_metrics', {
         custom_map: reportData,
       });

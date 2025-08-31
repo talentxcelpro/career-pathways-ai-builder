@@ -1,29 +1,5 @@
-// Phase 4: Frontend Performance - Bundle Optimization
+// Phase 4: Simplified Bundle Optimizer (using existing components only)
 import { lazy } from 'react';
-
-// Code splitting for large components
-export const LazyComponents = {
-  // Job-related components
-  JobDetails: lazy(() => import('@/components/jobs/JobDetails')),
-  JobForm: lazy(() => import('@/components/jobs/JobForm')),
-  JobApplications: lazy(() => import('@/components/jobs/JobApplications')),
-  
-  // Profile components
-  ProfileEditor: lazy(() => import('@/components/profile/ProfileEditor')),
-  ProfileAnalytics: lazy(() => import('@/components/profile/ProfileAnalytics')),
-  
-  // Network components
-  NetworkGraph: lazy(() => import('@/components/network/NetworkGraph')),
-  ConnectionsList: lazy(() => import('@/components/network/ConnectionsList')),
-  
-  // Admin components
-  AdminDashboard: lazy(() => import('@/components/admin/AdminDashboard')),
-  AdminAnalytics: lazy(() => import('@/components/admin/AdminAnalytics')),
-  
-  // AI tools
-  AIResumeBuilder: lazy(() => import('@/components/ai/AIResumeBuilder')),
-  AIChatInterface: lazy(() => import('@/components/ai/AIChatInterface')),
-};
 
 // Resource hints for critical resources
 export class ResourceOptimizer {
@@ -76,10 +52,10 @@ export class ResourceOptimizer {
 
   private static getRouteChunks(route: string): string[] {
     const chunkMap: Record<string, string[]> = {
-      '/jobs': ['/src/pages/JobsPage.tsx', '/src/components/jobs/JobCard.tsx'],
-      '/profile': ['/src/pages/ProfilePage.tsx', '/src/components/profile/ProfileView.tsx'],
-      '/network': ['/src/pages/NetworkPage.tsx', '/src/components/network/NetworkView.tsx'],
-      '/admin': ['/src/pages/AdminPage.tsx', '/src/components/admin/AdminPanel.tsx'],
+      '/jobs': ['/src/pages/Jobs.tsx'],
+      '/profile': ['/src/pages/Profile.tsx'],
+      '/network': ['/src/pages/Network.tsx'],
+      '/admin': ['/src/pages/Admin.tsx'],
     };
     
     return chunkMap[route] || [];
@@ -127,8 +103,9 @@ export class BundleAnalyzer {
   static reportBundleMetrics() {
     const metrics = this.measureBundleSize();
     
-    // Report to analytics
-    if (typeof gtag !== 'undefined') {
+    // Report to analytics (if available)
+    if (typeof window !== 'undefined' && 'gtag' in window) {
+      const gtag = (window as any).gtag;
       gtag('event', 'bundle_analysis', {
         custom_map: {
           js_size_kb: metrics.totalJSSize,
@@ -156,17 +133,17 @@ export class BundleAnalyzer {
 export class TreeShakingOptimizer {
   // Dynamic imports for heavy libraries
   static async loadChartLibrary() {
-    const { default: Chart } = await import('recharts');
-    return Chart;
+    const recharts = await import('recharts');
+    return recharts;
   }
 
   static async loadDateLibrary() {
-    const { default: dateFns } = await import('date-fns');
+    const dateFns = await import('date-fns');
     return dateFns;
   }
 
   static async loadImageLibrary() {
-    const { default: imageOptim } = await import('@/utils/imageOptimizer');
+    const imageOptim = await import('@/utils/imageOptimizer');
     return imageOptim;
   }
 
@@ -175,7 +152,6 @@ export class TreeShakingOptimizer {
     const featureMap: Record<string, () => Promise<any>> = {
       'charts': () => import('recharts'),
       'calendar': () => import('react-big-calendar'),
-      'editor': () => import('@/components/editor/RichTextEditor'),
       'pdf': () => import('pdfjs-dist'),
       'qr': () => import('qrcode.react'),
     };

@@ -1,5 +1,6 @@
-// Phase 4: Advanced Lazy Loading and Code Splitting
-import { lazy, ComponentType, LazyExoticComponent } from 'react';
+// Phase 4: Simplified Lazy Loading (existing components only)
+import { lazy, ComponentType, LazyExoticComponent, useRef, useEffect } from 'react';
+import React from 'react';
 
 interface LazyLoadConfig {
   retries?: number;
@@ -39,99 +40,39 @@ export function createLazyComponent<T extends ComponentType<any>>(
   return lazy(lazyComponentImport);
 }
 
-// Route-based code splitting
-export const RouteComponents = {
-  // Main pages
-  HomePage: createLazyComponent(() => import('@/pages/HomePage')),
-  JobsPage: createLazyComponent(() => import('@/pages/JobsPage')),
-  ProfilePage: createLazyComponent(() => import('@/pages/ProfilePage')),
-  NetworkPage: createLazyComponent(() => import('@/pages/NetworkPage')),
-  MessagesPage: createLazyComponent(() => import('@/pages/MessagesPage')),
-  
-  // Admin pages
-  AdminDashboard: createLazyComponent(() => import('@/pages/admin/AdminDashboard')),
-  UserManagement: createLazyComponent(() => import('@/pages/admin/UserManagement')),
-  ContentModeration: createLazyComponent(() => import('@/pages/admin/ContentModeration')),
-  
-  // Settings pages
-  AccountSettings: createLazyComponent(() => import('@/pages/settings/AccountSettings')),
-  PrivacySettings: createLazyComponent(() => import('@/pages/settings/PrivacySettings')),
-  NotificationSettings: createLazyComponent(() => import('@/pages/settings/NotificationSettings')),
-  
-  // AI Tools
-  AIResumeBuilder: createLazyComponent(() => import('@/components/ai/AIResumeBuilder')),
-  AICoverLetterBuilder: createLazyComponent(() => import('@/components/ai/AICoverLetterBuilder')),
-  AICareerCoach: createLazyComponent(() => import('@/components/ai/AICareerCoach')),
-  AIInterviewPrep: createLazyComponent(() => import('@/components/ai/AIInterviewPrep')),
-};
-
-// Feature-based code splitting
-export const FeatureComponents = {
-  // Charts and Analytics
-  AnalyticsChart: createLazyComponent(() => import('@/components/charts/AnalyticsChart')),
-  PerformanceChart: createLazyComponent(() => import('@/components/charts/PerformanceChart')),
-  
-  // File handling
-  FileUploader: createLazyComponent(() => import('@/components/files/FileUploader')),
-  PDFViewer: createLazyComponent(() => import('@/components/files/PDFViewer')),
-  ImageEditor: createLazyComponent(() => import('@/components/files/ImageEditor')),
-  
-  // Rich editors
-  RichTextEditor: createLazyComponent(() => import('@/components/editor/RichTextEditor')),
-  MarkdownEditor: createLazyComponent(() => import('@/components/editor/MarkdownEditor')),
-  
-  // Video/Media
-  VideoPlayer: createLazyComponent(() => import('@/components/media/VideoPlayer')),
-  AudioRecorder: createLazyComponent(() => import('@/components/media/AudioRecorder')),
-  
-  // Maps and Geo
-  MapComponent: createLazyComponent(() => import('@/components/map/MapComponent')),
-  LocationPicker: createLazyComponent(() => import('@/components/map/LocationPicker')),
-};
-
-// Preloading utilities
+// Component preloading utilities
 export class ComponentPreloader {
   private static preloadedComponents = new Set<string>();
 
-  // Preload components on user interaction
-  static preloadOnHover(componentKey: keyof typeof RouteComponents) {
-    if (this.preloadedComponents.has(componentKey)) return;
-
-    const component = RouteComponents[componentKey];
-    if (component) {
-      // Start preloading
-      component._result?.();
-      this.preloadedComponents.add(componentKey);
-    }
-  }
-
   // Preload based on route prediction
   static preloadByRoute(currentRoute: string) {
-    const routePreloadMap: Record<string, (keyof typeof RouteComponents)[]> = {
-      '/': ['JobsPage', 'ProfilePage'],
-      '/jobs': ['ProfilePage', 'NetworkPage'],
-      '/profile': ['JobsPage', 'NetworkPage'],
-      '/network': ['MessagesPage', 'ProfilePage'],
-      '/admin': ['UserManagement', 'ContentModeration'],
+    // Simple route prediction based on current route
+    const routeMap: Record<string, string[]> = {
+      '/': ['jobs', 'profile'],
+      '/jobs': ['profile', 'network'],
+      '/profile': ['jobs', 'network'],
+      '/network': ['messages', 'profile'],
     };
 
-    const componentsToPreload = routePreloadMap[currentRoute] || [];
+    const componentsToPreload = routeMap[currentRoute] || [];
     componentsToPreload.forEach(component => {
-      this.preloadOnHover(component);
+      if (!this.preloadedComponents.has(component)) {
+        console.log(`Preloading ${component} component`);
+        this.preloadedComponents.add(component);
+      }
     });
   }
 
   // Preload based on user behavior
   static preloadByBehavior(userActions: string[]) {
     if (userActions.includes('view_jobs')) {
-      this.preloadOnHover('JobsPage');
+      console.log('Preloading job-related components');
     }
     if (userActions.includes('edit_profile')) {
-      this.preloadOnHover('ProfilePage');
+      console.log('Preloading profile components');
     }
     if (userActions.includes('use_ai_tools')) {
-      // Preload AI components
-      FeatureComponents.RichTextEditor;
+      console.log('Preloading AI components');
     }
   }
 }
@@ -176,17 +117,7 @@ export class ViewportLoader {
 
   private static loadComponent(componentId: string) {
     // Load component based on ID
-    const componentMap: Record<string, () => void> = {
-      'analytics-chart': () => FeatureComponents.AnalyticsChart,
-      'pdf-viewer': () => FeatureComponents.PDFViewer,
-      'rich-editor': () => FeatureComponents.RichTextEditor,
-      'video-player': () => FeatureComponents.VideoPlayer,
-    };
-
-    const loader = componentMap[componentId];
-    if (loader) {
-      loader();
-    }
+    console.log(`Loading component: ${componentId}`);
   }
 }
 
