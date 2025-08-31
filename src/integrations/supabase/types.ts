@@ -23897,6 +23897,54 @@ export type Database = {
         }
         Relationships: []
       }
+      video_analytics: {
+        Row: {
+          completion_rate: number
+          content_id: string
+          content_type: string
+          created_at: string | null
+          id: string
+          is_liked: boolean | null
+          is_shared: boolean | null
+          platform: string | null
+          session_id: string | null
+          updated_at: string | null
+          user_agent: string | null
+          viewer_id: string
+          watch_time_seconds: number
+        }
+        Insert: {
+          completion_rate?: number
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          is_liked?: boolean | null
+          is_shared?: boolean | null
+          platform?: string | null
+          session_id?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          viewer_id: string
+          watch_time_seconds?: number
+        }
+        Update: {
+          completion_rate?: number
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          is_liked?: boolean | null
+          is_shared?: boolean | null
+          platform?: string | null
+          session_id?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          viewer_id?: string
+          watch_time_seconds?: number
+        }
+        Relationships: []
+      }
       video_comments: {
         Row: {
           body: string | null
@@ -23928,6 +23976,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      video_engagement_events: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string | null
+          engagement_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          engagement_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          engagement_type?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       video_likes: {
         Row: {
@@ -25362,6 +25437,30 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      track_video_engagement: {
+        Args: {
+          content_id: string
+          content_type: string
+          engagement_type: string
+          user_id: string
+        }
+        Returns: undefined
+      }
+      track_video_view: {
+        Args: {
+          completion_rate: number
+          content_id: string
+          content_type: string
+          is_liked?: boolean
+          is_shared?: boolean
+          platform?: string
+          session_id?: string
+          user_agent?: string
+          viewer_id: string
+          watch_time_seconds: number
+        }
+        Returns: undefined
       }
       update_ai_feature_status: {
         Args: {
