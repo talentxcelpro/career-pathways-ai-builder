@@ -62,7 +62,7 @@ export const useReelsEngagement = () => {
     },
     onError: (error) => {
       console.error('Like error:', error);
-      toast.error('Something went wrong');
+      toast.error('Unable to update like. Please try again.');
     }
   });
 
@@ -78,15 +78,19 @@ export const useReelsEngagement = () => {
         toast.success('Link copied to clipboard!');
       }
 
-      // Track share
-      await supabase
-        .from('shares')
-        .insert({
-          user_id: user?.id,
-          content_id: reelId,
-          content_type: 'reel',
-          platform: 'native'
-        });
+      // Track share (best-effort)
+      try {
+        await supabase
+          .from('shares')
+          .insert({
+            user_id: user?.id,
+            content_id: reelId,
+            content_type: 'reel',
+            platform: 'native'
+          });
+      } catch (err) {
+        console.warn('Share tracking failed (non-blocking):', err);
+      }
     },
     onSuccess: (_, variables) => {
       // Update share count

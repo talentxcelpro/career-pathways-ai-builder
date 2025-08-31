@@ -57,7 +57,8 @@ export const useReelsData = () => {
 
         if (postsError) {
           console.error('Error fetching posts fallback:', postsError);
-          throw postsError;
+          // Gracefully degrade to an empty feed instead of failing the whole query
+          return [] as ReelData[];
         }
 
         const videoPosts = (posts || []).filter((p: any) => Array.isArray(p.media_urls) && p.media_urls.some((u: string) => typeof u === 'string' && u.toLowerCase().endsWith('.mp4')));
