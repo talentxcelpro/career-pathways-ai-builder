@@ -196,7 +196,7 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
                         "resize-none min-h-[40px] rounded-xl",
                         isComposing && "ring-2 ring-primary/20"
                       )}
-                      disabled={isAddingComment || isComposing}
+                      disabled={isAddingComment}
                       autoComplete="off"
                       maxLength={500}
                     />
@@ -231,13 +231,13 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
                         <Button
                           type="submit"
                           size="sm"
-                          disabled={!newComment.trim() || isAddingComment || isComposing}
+                          disabled={!newComment.trim() || isAddingComment}
                           className={cn(
                             "text-xs font-semibold transition-all duration-200",
                             "disabled:opacity-50"
                           )}
                         >
-                          {isAddingComment || isComposing ? (
+                          {isAddingComment ? (
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
                               Posting...
