@@ -8,23 +8,35 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, session } = useAuth();
   const location = useLocation();
 
+  // Show loading spinner while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Checking authentication...</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    // Redirect to index page if not authenticated
-    return <Navigate to="/" state={{ from: location }} replace />;
+  // Validate session isn't expired
+  if (session) {
+    const now = Math.floor(Date.now() / 1000);
+    const expiresAt = session.expires_at;
+    
+    if (expiresAt && now >= expiresAt) {
+      console.log('Session expired in ProtectedRoute');
+      return <Navigate to="/" state={{ from: location, reason: 'expired' }} replace />;
+    }
+  }
+
+  // Redirect to login if no user or session
+  if (!user || !session) {
+    return <Navigate to="/" state={{ from: location, reason: 'unauthorized' }} replace />;
   }
 
   return <>{children}</>;

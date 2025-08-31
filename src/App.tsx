@@ -13,7 +13,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { AIProvider } from "./contexts/AIContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
-import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
+import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
@@ -103,12 +103,13 @@ const App = () => {
       <BrowserRouter>
         <TooltipProvider>
           <AnalyticsProvider>
-            <AuthProvider>
+            <AuthErrorBoundary>
+              <AuthProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
                 {/* <RealtimeProvider showToasts={false}> */}
                 <CopilotProvider>
-                  <ContentSecurityPolicy />
+                  {/* <ContentSecurityPolicy /> */}
                 <Toaster
                   duration={10000}
                   position="top-center"
@@ -254,7 +255,8 @@ const App = () => {
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
-            </AuthProvider>
+              </AuthProvider>
+            </AuthErrorBoundary>
           </AnalyticsProvider>
         </TooltipProvider>
       </BrowserRouter>

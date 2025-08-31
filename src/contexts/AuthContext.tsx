@@ -45,26 +45,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (!mounted) return;
 
         console.log('Auth state changed:', event, session?.user?.email);
         
+        // Synchronous state updates only
         setSession(session);
         setUser(session?.user ?? null);
         
         // Handle different auth events
         if (event === 'SIGNED_OUT') {
-          // Clear any cached data
-          localStorage.removeItem('supabase.auth.token');
+          // Clear any cached data immediately
+          localStorage.clear();
+          sessionStorage.clear();
           // Force redirect to index page after logout
-          navigate('/', { replace: true });
+          setTimeout(() => {
+            if (mounted) {
+              navigate('/', { replace: true });
+            }
+          }, 0);
         } else if (event === 'SIGNED_IN' && session?.user) {
-          // Fast redirect for successful login
-          const currentPath = window.location.pathname;
-          if (currentPath === '/' || currentPath.startsWith('/auth')) {
-            navigate('/network', { replace: true });
-          }
+          // Defer navigation to prevent deadlock
+          setTimeout(() => {
+            if (mounted) {
+              const currentPath = window.location.pathname;
+              if (currentPath === '/' || currentPath.startsWith('/auth')) {
+                navigate('/network', { replace: true });
+              }
+            }
+          }, 0);
         } else if (event === 'TOKEN_REFRESHED') {
           console.log('Token refreshed successfully');
         }
@@ -75,23 +85,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Check for existing session immediately
+    // Check for existing session with better error handling
     const initializeAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error('Error getting session:', error);
+          // Clear corrupted session data
+          localStorage.clear();
+          sessionStorage.clear();
+          if (mounted) {
+            setSession(null);
+            setUser(null);
+          }
         } else if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Auto-redirect to network if user is already logged in and on index page
+          // Validate session if it exists
+          if (session) {
+            const now = Math.floor(Date.now() / 1000);
+            const expiresAt = session.expires_at;
+            
+            if (expiresAt && now >= expiresAt) {
+              console.log('Session expired, clearing...');
+              await supabase.auth.signOut();
+              return;
+            }
+          }
+          
+          // Auto-redirect logic with timeout to prevent blocking
           if (session?.user && window.location.pathname === '/') {
-            navigate('/network', { replace: true });
+            setTimeout(() => {
+              if (mounted) {
+                navigate('/network', { replace: true });
+              }
+            }, 0);
           }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
+        // Clear potentially corrupted data
+        localStorage.clear();
+        sessionStorage.clear();
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+        }
       } finally {
         if (mounted) {
           setLoading(false);
