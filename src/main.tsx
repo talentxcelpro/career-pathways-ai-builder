@@ -12,6 +12,24 @@ import './utils/layoutStability'
 import './utils/networkOptimization'
 import './index.css'
 
+// Phase 4: Initialize performance optimizations
+if (typeof window !== 'undefined') {
+  // Dynamic imports to avoid blocking initial load
+  Promise.all([
+    import('./utils/performanceOptimizer'),
+    import('./utils/bundleOptimizer'),
+    import('./utils/lazyLoading')
+  ]).then(([
+    { initializePerformanceOptimization },
+    { initializeBundleOptimization },
+    { initializeLazyLoading }
+  ]) => {
+    initializePerformanceOptimization();
+    initializeBundleOptimization();
+    initializeLazyLoading();
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <PerformanceMonitor>

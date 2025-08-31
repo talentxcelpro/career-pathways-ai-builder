@@ -1,263 +1,311 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+// Phase 4: Performance Monitoring Dashboard
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useWebVitals } from '@/hooks/useWebVitals';
-import { Activity, Zap, Clock, BarChart3, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { BundleAnalyzer } from '@/utils/bundleOptimizer';
+import { PerformanceOptimizer } from '@/utils/performanceOptimizer';
 
-export const PerformanceDashboard: React.FC = () => {
-  const { metrics, insights, sendToAnalytics } = useWebVitals();
-  const [connectionType, setConnectionType] = useState<string>('unknown');
-  const [deviceMemory, setDeviceMemory] = useState<number | undefined>();
+interface PerformanceDashboardProps {
+  isAdmin?: boolean;
+}
+
+export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ 
+  isAdmin = false 
+}) => {
+  const { 
+    metrics, 
+    getPerformanceScore, 
+    getPerformanceWarnings,
+    isPerformanceGood 
+  } = usePerformanceMonitor('PerformanceDashboard');
+
+  const [bundleMetrics, setBundleMetrics] = useState<any>(null);
+  const [performanceReport, setPerformanceReport] = useState<any>(null);
 
   useEffect(() => {
-    // Get connection info
-    if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
-      setConnectionType(connection.effectiveType || 'unknown');
+    // Get bundle metrics
+    const bundle = BundleAnalyzer.measureBundleSize();
+    setBundleMetrics(bundle);
+
+    // Get performance report (admin only)
+    if (isAdmin) {
+      const optimizer = PerformanceOptimizer.getInstance();
+      const report = optimizer.getPerformanceReport();
+      setPerformanceReport(report);
     }
+  }, [isAdmin]);
 
-    // Get device memory
-    if ('deviceMemory' in navigator) {
-      setDeviceMemory((navigator as any).deviceMemory);
-    }
-
-    // Send metrics to analytics after 5 seconds
-    const timer = setTimeout(() => {
-      sendToAnalytics();
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [sendToAnalytics]);
+  const scores = getPerformanceScore();
+  const warnings = getPerformanceWarnings();
 
   const getScoreColor = (score: string) => {
     switch (score) {
-      case 'good': return 'bg-green-500';
-      case 'needs-improvement': return 'bg-yellow-500';
-      case 'poor': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'good': return 'text-green-600 bg-green-50';
+      case 'needs-improvement': return 'text-yellow-600 bg-yellow-50';
+      case 'poor': return 'text-red-600 bg-red-50';
+      default: return 'text-gray-600 bg-gray-50';
     }
   };
 
-  const getMetricColor = (metric: string, value: number | null) => {
-    if (value === null) return 'text-gray-500';
-    
-    switch (metric) {
-      case 'lcp':
-        return value <= 2500 ? 'text-green-600' : value <= 4000 ? 'text-yellow-600' : 'text-red-600';
-      case 'fid':
-      case 'inp':
-        return value <= 100 ? 'text-green-600' : value <= 300 ? 'text-yellow-600' : 'text-red-600';
-      case 'cls':
-        return value <= 0.1 ? 'text-green-600' : value <= 0.25 ? 'text-yellow-600' : 'text-red-600';
-      case 'ttfb':
-        return value <= 800 ? 'text-green-600' : value <= 1800 ? 'text-yellow-600' : 'text-red-600';
-      default:
-        return 'text-gray-600';
-    }
-  };
-
-  const formatMetricValue = (metric: string, value: number | null) => {
-    if (value === null) return 'N/A';
-    
-    switch (metric) {
-      case 'cls':
-        return value.toFixed(3);
-      case 'lcp':
-      case 'fid':
-      case 'inp':
-      case 'fcp':
-      case 'ttfb':
-        return `${Math.round(value)}ms`;
-      default:
-        return Math.round(value).toString();
+  const getScoreLabel = (score: string) => {
+    switch (score) {
+      case 'good': return 'Good';
+      case 'needs-improvement': return 'Needs Improvement';
+      case 'poor': return 'Poor';
+      default: return 'Unknown';
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Overall Score */}
-      {insights && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Performance Score
-            </CardTitle>
-            <CardDescription>
-              Overall Core Web Vitals performance assessment
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <div className={`w-4 h-4 rounded-full ${getScoreColor(insights.score)}`} />
-              <span className="text-2xl font-bold capitalize">{insights.score.replace('-', ' ')}</span>
-              {insights.score === 'poor' && <AlertTriangle className="h-5 w-5 text-red-500" />}
-            </div>
-            {insights.recommendations.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm font-medium mb-2">Recommendations:</p>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  {insights.recommendations.slice(0, 3).map((rec, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary">•</span>
-                      {rec}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Core Web Vitals */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">LCP</CardTitle>
-            <CardDescription className="text-xs">Largest Contentful Paint</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              <span className={getMetricColor('lcp', metrics.lcp)}>
-                {formatMetricValue('lcp', metrics.lcp)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Target: &lt;2.5s
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">INP</CardTitle>
-            <CardDescription className="text-xs">Interaction to Next Paint</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              <span className={getMetricColor('inp', metrics.inp || metrics.fid)}>
-                {formatMetricValue('inp', metrics.inp || metrics.fid)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Target: &lt;200ms
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">CLS</CardTitle>
-            <CardDescription className="text-xs">Cumulative Layout Shift</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              <span className={getMetricColor('cls', metrics.cls)}>
-                {formatMetricValue('cls', metrics.cls)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Target: &lt;0.1
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">TTFB</CardTitle>
-            <CardDescription className="text-xs">Time to First Byte</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              <span className={getMetricColor('ttfb', metrics.ttfb)}>
-                {formatMetricValue('ttfb', metrics.ttfb)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Target: &lt;800ms
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Additional Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Zap className="h-4 w-4" />
-              Connection
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-medium capitalize">{connectionType}</div>
-            <p className="text-xs text-muted-foreground">Network type</p>
-          </CardContent>
-        </Card>
-
-        {deviceMemory && (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Device Memory
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-medium">{deviceMemory} GB</div>
-              <p className="text-xs text-muted-foreground">Available RAM</p>
-            </CardContent>
-          </Card>
-        )}
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              FCP
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-medium">
-              {formatMetricValue('fcp', metrics.fcp)}
-            </div>
-            <p className="text-xs text-muted-foreground">First Contentful Paint</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Performance Tips */}
+      {/* Overall Performance Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Performance Tips
+          <CardTitle className="flex items-center justify-between">
+            Performance Overview
+            <Badge variant={isPerformanceGood ? "default" : "destructive"}>
+              {isPerformanceGood ? 'Healthy' : 'Needs Attention'}
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-medium mb-2">Quick Wins</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Enable browser caching</li>
-                <li>• Optimize images (WebP format)</li>
-                <li>• Minimize JavaScript bundles</li>
-                <li>• Use CDN for static assets</li>
-              </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Core Web Vitals */}
+            <div className="space-y-2">
+              <h4 className="font-medium">Largest Contentful Paint</h4>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {metrics.lcp ? `${Math.round(metrics.lcp)}ms` : 'Measuring...'}
+                </span>
+                <Badge className={getScoreColor(scores.lcp || 'unknown')}>
+                  {getScoreLabel(scores.lcp || 'unknown')}
+                </Badge>
+              </div>
             </div>
-            <div>
-              <h4 className="font-medium mb-2">Advanced Optimizations</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Implement code splitting</li>
-                <li>• Use service workers</li>
-                <li>• Preload critical resources</li>
-                <li>• Minimize main thread work</li>
-              </ul>
+
+            <div className="space-y-2">
+              <h4 className="font-medium">First Input Delay</h4>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {metrics.fid ? `${Math.round(metrics.fid)}ms` : 'Measuring...'}
+                </span>
+                <Badge className={getScoreColor(scores.fid || 'unknown')}>
+                  {getScoreLabel(scores.fid || 'unknown')}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-medium">Cumulative Layout Shift</h4>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {metrics.cls ? metrics.cls.toFixed(3) : 'Measuring...'}
+                </span>
+                <Badge className={getScoreColor(scores.cls || 'unknown')}>
+                  {getScoreLabel(scores.cls || 'unknown')}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-medium">Time to First Byte</h4>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {metrics.ttfb ? `${Math.round(metrics.ttfb)}ms` : 'Measuring...'}
+                </span>
+                <Badge className={getScoreColor(scores.ttfb || 'unknown')}>
+                  {getScoreLabel(scores.ttfb || 'unknown')}
+                </Badge>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Bundle Information */}
+      {bundleMetrics && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Bundle Analysis</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {bundleMetrics.totalJSSize}KB
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  JavaScript ({bundleMetrics.jsChunks} chunks)
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {bundleMetrics.totalCSSSize}KB
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  CSS ({bundleMetrics.cssChunks} chunks)
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">
+                  {bundleMetrics.loadTime}ms
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Load Time
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* System Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>System Resources</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {metrics.memoryUsage && (
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Memory Usage</span>
+                  <span>{metrics.memoryUsage}MB</span>
+                </div>
+                <Progress 
+                  value={Math.min((metrics.memoryUsage / 256) * 100, 100)} 
+                  className="h-2"
+                />
+              </div>
+            )}
+
+            {metrics.connectionType && (
+              <div className="flex justify-between">
+                <span className="text-sm font-medium">Connection</span>
+                <Badge variant="outline">
+                  {metrics.connectionType}
+                  {metrics.bandwidth && ` (${metrics.bandwidth} Mbps)`}
+                </Badge>
+              </div>
+            )}
+
+            {metrics.componentMountTime && (
+              <div className="flex justify-between">
+                <span className="text-sm font-medium">Component Mount Time</span>
+                <span className="text-sm text-muted-foreground">
+                  {metrics.componentMountTime}ms
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Performance Warnings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {warnings.length > 0 ? (
+              <div className="space-y-2">
+                {warnings.map((warning, index) => (
+                  <div 
+                    key={index}
+                    className="p-3 bg-yellow-50 border border-yellow-200 rounded-md"
+                  >
+                    <div className="text-sm text-yellow-800">{warning}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-muted-foreground">
+                🎉 No performance issues detected
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Additional Metrics (First Contentful Paint, INP) */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Additional Metrics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {metrics.fcp && (
+              <div className="text-center">
+                <div className="text-lg font-semibold">
+                  {Math.round(metrics.fcp)}ms
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  First Contentful Paint
+                </div>
+              </div>
+            )}
+
+            {metrics.inp && (
+              <div className="text-center">
+                <div className="text-lg font-semibold">
+                  {Math.round(metrics.inp)}ms
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Interaction to Next Paint
+                </div>
+              </div>
+            )}
+
+            {metrics.renderTime && (
+              <div className="text-center">
+                <div className="text-lg font-semibold">
+                  {metrics.renderTime}ms
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Render Time
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Admin-only Performance Report */}
+      {isAdmin && performanceReport && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Advanced Performance Report</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">Active Optimizations</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {Object.entries(performanceReport.optimizations).map(([key, enabled]) => (
+                    <Badge 
+                      key={key}
+                      variant={enabled ? "default" : "secondary"}
+                    >
+                      {key}: {enabled ? 'ON' : 'OFF'}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-2">Performance Metrics History</h4>
+                <div className="text-sm text-muted-foreground">
+                  <pre className="bg-gray-50 p-3 rounded overflow-auto max-h-40">
+                    {JSON.stringify(performanceReport.metrics, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
