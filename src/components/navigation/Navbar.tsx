@@ -127,7 +127,6 @@ export const Navbar = () => {
   const hiddenForNonAdmin = [
     '/resume-builder',
     '/tools',
-    '/services',
     '/learning',
     '/career-map',
   ];
@@ -310,6 +309,12 @@ export const Navbar = () => {
                 className="hidden md:inline-flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               >
                 <span>Companies</span>
+              </Link>
+              <Link
+                to="/services"
+                className="hidden md:inline-flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              >
+                <span>Services</span>
               </Link>
               <Button 
                 variant="ghost" 
