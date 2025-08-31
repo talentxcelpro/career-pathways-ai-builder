@@ -51,7 +51,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
         />
 
         {/* Content Overlay */}
-        <div className="absolute bottom-0 left-0 right-16 p-4 bg-gradient-to-t from-black/70 to-transparent">
+        <div className="absolute bottom-0 left-0 right-20 p-4 bg-gradient-to-t from-black/70 to-transparent">
           {/* User Info */}
           <div className="flex items-center gap-3 mb-3">
             <Avatar className="h-10 w-10 border-2 border-white">

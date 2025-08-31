@@ -19,7 +19,7 @@ export const useReelsEngagement = () => {
           .delete()
           .eq('user_id', user.id)
           .eq('content_id', reelId)
-          .eq('content_type', 'reel');
+          .eq('content_type', 'post');
         
         if (error) throw error;
       } else {
@@ -29,7 +29,7 @@ export const useReelsEngagement = () => {
           .insert({
             user_id: user.id,
             content_id: reelId,
-            content_type: 'reel'
+            content_type: 'post'
           });
         
         if (error) throw error;
@@ -85,7 +85,7 @@ export const useReelsEngagement = () => {
           .insert({
             user_id: user?.id,
             content_id: reelId,
-            content_type: 'reel',
+            content_type: 'post',
             platform: 'native'
           });
       } catch (err) {
