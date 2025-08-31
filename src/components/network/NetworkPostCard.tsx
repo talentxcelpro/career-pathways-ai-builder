@@ -10,6 +10,7 @@ import { useShareContent } from "@/hooks/useShareContent";
 import { EngagementActions } from "@/components/engagement/EngagementActions";
 import ProBadge from "@/components/network/ProBadge";
 import MediaPreview from "@/components/posts/MediaPreview";
+import { VideoNetworkPostCard } from './VideoNetworkPostCard';
 import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,6 +48,20 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   openComments,
   onCommentClick
 }) => {
+  // Check if this post contains video content
+  const hasVideo = post.media_urls?.some(url => 
+    url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
+  );
+
+  // If it's a video post, render the specialized video card
+  if (hasVideo) {
+    return (
+      <VideoNetworkPostCard 
+        post={post} 
+        onCommentClick={onCommentClick}
+      />
+    );
+  }
   const { createPostShareData } = useShareContent();
   const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
 
