@@ -18,13 +18,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -36,21 +36,21 @@
       "short_name": "Feed",
       "description": "View your professional network feed",
       "url": "/mobile/network",
-      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png", "sizes": "192x192"}]
     },
     {
       "name": "Job Search",
       "short_name": "Jobs",
       "description": "Find new opportunities",
       "url": "/mobile/jobs",
-      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png", "sizes": "192x192"}]
     },
     {
       "name": "Professional Reels",
       "short_name": "Reels",
       "description": "Watch career content",
       "url": "/mobile/reels",
-      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png", "sizes": "192x192"}]
     }
   ],
   "prefer_related_applications": false
