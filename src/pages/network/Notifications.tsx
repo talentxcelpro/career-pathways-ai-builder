@@ -13,7 +13,7 @@ import {
   LayoutList,
   Sparkles
 } from "lucide-react";
-import { TalentXcelNotificationLogo } from "@/assets/talentxcel-notification-logo";
+import { TalentXcelLogo } from "@/components/branding/TalentXcelLogo";
 import { NotificationPillars, NOTIFICATION_PILLARS } from "@/components/notifications/NotificationsPillars";
 import { SmartNotificationCard } from "@/components/notifications/SmartNotificationCard";
 import { useNotifications } from "@/hooks/useNotifications"; // Using the old, stable hook

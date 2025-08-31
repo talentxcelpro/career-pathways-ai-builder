@@ -40,6 +40,7 @@ import { AuthDialog } from '@/components/auth/AuthDialog';
 import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
+import { TalentXcelLogo } from '@/components/branding/TalentXcelLogo';
 
 
 export const Navbar = () => {
@@ -150,11 +151,7 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-8 w-8 rounded-sm"
-              />
+              <TalentXcelLogo variant="full" size="md" />
             </Link>
           </div>
 
