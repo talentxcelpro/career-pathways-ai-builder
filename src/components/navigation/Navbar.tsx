@@ -125,7 +125,6 @@ export const Navbar = () => {
 
   // Hide specific modules from navbar for non-admins
   const hiddenForNonAdmin = [
-    '/companies',
     '/resume-builder',
     '/tools',
     '/services',
@@ -306,6 +305,12 @@ export const Navbar = () => {
           ) : (
             /* Guest Navigation */
             <div className="flex items-center space-x-4">
+              <Link
+                to="/companies"
+                className="hidden md:inline-flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              >
+                <span>Companies</span>
+              </Link>
               <Button 
                 variant="ghost" 
                 onClick={getEmployerButtonAction()}
