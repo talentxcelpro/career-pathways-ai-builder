@@ -59,34 +59,35 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
 
   return (
     <div className={cn("flex flex-col items-center gap-2 touch-manipulation", className)}>
-      {/* Volume */}
-      <div className="flex flex-col items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 touch-manipulation border border-white/20"
-          onClick={onToggleMute}
-        >
-          {isMuted ? (
-            <VolumeX className="h-4 w-4" />
-          ) : (
-            <Volume2 className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
 
       {/* Follow button */}
       {!reel.is_following && (
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg touch-manipulation border border-white/20"
+          className="h-9 w-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg touch-manipulation border border-white/20"
           onClick={handleFollow}
           disabled={isFollowing}
         >
-          <UserPlus className="h-4 w-4" />
+          <UserPlus className="h-3.5 w-3.5" />
         </Button>
       )}
+
+      {/* Volume (placed after follow) */}
+      <div className="flex flex-col items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 touch-manipulation border border-white/20"
+          onClick={onToggleMute}
+        >
+          {isMuted ? (
+            <VolumeX className="h-3.5 w-3.5" />
+          ) : (
+            <Volume2 className="h-3.5 w-3.5" />
+          )}
+        </Button>
+      </div>
 
       {/* Like */}
       <div className="flex flex-col items-center">
@@ -94,13 +95,13 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
           variant="ghost"
           size="icon"
           className={cn(
-            "h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-all touch-manipulation border border-white/20",
+            "h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-all touch-manipulation border border-white/20",
             reel.has_liked && "text-red-500 bg-red-500/30"
           )}
           onClick={handleLike}
           disabled={isLiking}
         >
-          <Heart className={cn("h-4 w-4", reel.has_liked && "fill-current")} />
+          <Heart className={cn("h-3.5 w-3.5", reel.has_liked && "fill-current")} />
         </Button>
         <span className="text-white text-xs font-medium mt-1">
           {formatCount(reel.likes_count)}
@@ -112,10 +113,10 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 touch-manipulation border border-white/20"
+          className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 touch-manipulation border border-white/20"
           onClick={onComment}
         >
-          <MessageCircle className="h-4 w-4" />
+          <MessageCircle className="h-3.5 w-3.5" />
         </Button>
         <span className="text-white text-xs font-medium mt-1">
           {formatCount(reel.comments_count)}
@@ -127,10 +128,10 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 touch-manipulation border border-white/20"
+          className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 touch-manipulation border border-white/20"
           onClick={handleShare}
         >
-          <Share className="h-4 w-4" />
+          <Share className="h-3.5 w-3.5" />
         </Button>
         <span className="text-white text-xs font-medium mt-1">
           {formatCount(reel.shares_count)}
@@ -142,10 +143,10 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm text-white touch-manipulation border border-white/20"
+          className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white touch-manipulation border border-white/20"
           disabled
         >
-          <Eye className="h-4 w-4" />
+          <Eye className="h-3.5 w-3.5" />
         </Button>
         <span className="text-white text-xs font-medium mt-1">
           {formatCount(reel.views_count)}

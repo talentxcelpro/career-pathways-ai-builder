@@ -15,21 +15,19 @@ export const useReelsEngagement = () => {
       if (hasLiked) {
         // Unlike
         const { error } = await supabase
-          .from('likes')
+          .from('post_likes')
           .delete()
           .eq('user_id', user.id)
-          .eq('content_id', reelId)
-          .eq('content_type', 'post');
+          .eq('post_id', reelId);
         
         if (error) throw error;
       } else {
         // Like
         const { error } = await supabase
-          .from('likes')
+          .from('post_likes')
           .insert({
             user_id: user.id,
-            content_id: reelId,
-            content_type: 'post'
+            post_id: reelId
           });
         
         if (error) throw error;
@@ -60,9 +58,14 @@ export const useReelsEngagement = () => {
         };
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Like error:', error);
-      toast.error('Unable to update like. Please try again.');
+      const msg = error?.message || '';
+      if (msg.includes('Not authenticated') || msg.includes('permission')) {
+        toast.error('Please sign in to like reels.');
+      } else {
+        toast.error('Unable to update like. Please try again.');
+      }
     }
   });
 

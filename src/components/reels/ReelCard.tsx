@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VideoReelPlayer } from './VideoReelPlayer';
 import { ReelEngagementActions } from './ReelEngagementActions';
@@ -22,7 +22,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
   const [hasTrackedView, setHasTrackedView] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  
   const { trackView } = useReelViewTracking();
 
   const handleVideoLoad = useCallback(() => {
@@ -40,11 +40,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
   }, [hasTrackedView, trackView, reel.id]);
 
   const handleToggleMute = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = !video.muted;
-      setIsMuted(video.muted);
-    }
+    setIsMuted((prev) => !prev);
   };
 
   return (
@@ -57,13 +53,8 @@ export const ReelCard: React.FC<ReelCardProps> = ({
           isActive={isActive}
           onVideoLoad={handleVideoLoad}
           onTimeUpdate={handleTimeUpdate}
-          className="w-full h-full"
-        />
-        <video
-          ref={videoRef}
-          className="hidden"
-          src={reel.video_url}
           muted={isMuted}
+          className="w-full h-full"
         />
 
         {/* Content Overlay */}

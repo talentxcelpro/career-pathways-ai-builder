@@ -1,6 +1,6 @@
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +11,7 @@ interface VideoReelPlayerProps {
   onVideoLoad?: () => void;
   onTimeUpdate?: (currentTime: number) => void;
   autoPlay?: boolean;
+  muted?: boolean;
   className?: string;
 }
 
@@ -21,11 +22,12 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   onVideoLoad,
   onTimeUpdate,
   autoPlay = true,
+  muted = true,
   className
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -87,13 +89,6 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
     }
   };
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.muted = !video.muted;
-    setIsMuted(video.muted);
-  };
 
   if (error) {
     return (
@@ -116,7 +111,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         className="w-full h-full object-cover"
         src={videoUrl}
         poster={thumbnailUrl}
-        muted={isMuted}
+        muted={muted}
         loop
         playsInline
         preload="metadata"
@@ -135,10 +130,10 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="h-16 w-16 rounded-full bg-black/50 text-white hover:bg-black/70"
+            className="h-14 w-14 rounded-full bg-black/50 text-white hover:bg-black/70"
             onClick={togglePlay}
           >
-            <Play className="h-8 w-8 fill-current" />
+            <Play className="h-7 w-7 fill-current" />
           </Button>
         </div>
       )}
@@ -148,13 +143,13 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70"
+          className="h-7 w-7 rounded-full bg-black/50 text-white hover:bg-black/70"
           onClick={togglePlay}
         >
           {isPlaying ? (
-            <Pause className="h-4 w-4" />
+            <Pause className="h-3.5 w-3.5" />
           ) : (
-            <Play className="h-4 w-4 fill-current" />
+            <Play className="h-3.5 w-3.5 fill-current" />
           )}
         </Button>
       </div>

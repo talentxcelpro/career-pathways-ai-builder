@@ -28,7 +28,7 @@ export const MobileReels = () => {
             onClick={() => setShowUploadModal(true)}
             className="text-white hover:bg-white/20 rounded-full"
           >
-            <Plus className="h-6 w-6" />
+            <Plus className="h-5 w-5" />
           </Button>
         </div>
       </div>
@@ -47,7 +47,7 @@ export const MobileReels = () => {
             onClick={() => navigate('/')}
             className="text-white hover:bg-white/20 rounded-full"
           >
-            <Home className="h-6 w-6" />
+            <Home className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
@@ -55,15 +55,15 @@ export const MobileReels = () => {
             onClick={() => navigate('/network')}
             className="text-white hover:bg-white/20 rounded-full"
           >
-            <Search className="h-6 w-6" />
+            <Search className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowUploadModal(true)}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-full h-12 w-12"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-full h-10 w-10"
           >
-            <Plus className="h-6 w-6" />
+            <Plus className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
@@ -71,7 +71,7 @@ export const MobileReels = () => {
             onClick={() => navigate('/profile')}
             className="text-white hover:bg-white/20 rounded-full"
           >
-            <User className="h-6 w-6" />
+            <User className="h-5 w-5" />
           </Button>
         </div>
       </div>

@@ -48,11 +48,11 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm overscroll-contain">
       <div className={cn(
         "w-full max-w-lg bg-background rounded-t-3xl shadow-xl",
         "animate-in slide-in-from-bottom-2 duration-300",
-        "max-h-[70vh] flex flex-col",
+        "max-h-[80vh] flex flex-col",
         className
       )}>
         {/* Header */}
@@ -108,8 +108,8 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
 
         {/* Comment Input */}
         {user && (
-          <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
-            <form onSubmit={handleSubmit} className="flex gap-2">
+          <div className="p-3 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)]">
+            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
               <Avatar className="h-8 w-8 flex-shrink-0">
                 <AvatarImage src={user.user_metadata?.avatar_url} />
                 <AvatarFallback>
@@ -124,15 +124,15 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
                   className="flex-1 rounded-full border-muted bg-muted/50 focus:bg-background"
                   disabled={isAddingComment}
                   autoComplete="off"
-                  autoFocus={false}
+                  autoFocus={true}
                 />
                 <Button
                   type="submit"
                   size="icon"
-                  className="rounded-full h-10 w-10 touch-manipulation"
+                  className="rounded-full h-9 w-9 touch-manipulation"
                   disabled={!newComment.trim() || isAddingComment}
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </form>

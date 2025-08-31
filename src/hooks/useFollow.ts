@@ -18,7 +18,8 @@ export const useFollow = () => {
           .from('follows')
           .delete()
           .eq('follower_id', user.id)
-          .eq('following_id', userId);
+          .eq('followed_id', userId)
+          .eq('followed_type', 'user');
         
         if (error) throw error;
       } else {
@@ -27,7 +28,8 @@ export const useFollow = () => {
           .from('follows')
           .insert({
             follower_id: user.id,
-            following_id: userId
+            followed_id: userId,
+            followed_type: 'user'
           });
         
         if (error) throw error;
@@ -54,9 +56,14 @@ export const useFollow = () => {
 
       toast.success(newFollowState ? 'Following!' : 'Unfollowed');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Follow error:', error);
-      toast.error('Something went wrong');
+      const msg = error?.message || '';
+      if (msg.includes('Not authenticated') || msg.includes('permission')) {
+        toast.error('Please sign in to follow users.');
+      } else {
+        toast.error('Unable to update follow. Please try again.');
+      }
     }
   });
 
