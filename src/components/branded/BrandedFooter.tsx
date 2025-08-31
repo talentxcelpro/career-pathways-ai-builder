@@ -4,7 +4,6 @@ import { Mail, Phone } from 'lucide-react';
 
 export const BrandedFooter: React.FC = () => {
   const moduleLinks = [
-    { name: 'Jobs', href: '/jobs' },
     { name: 'Companies', href: '/companies' },
     { name: 'Tools', href: '/tools' },
     { name: 'Services', href: '/services' },
