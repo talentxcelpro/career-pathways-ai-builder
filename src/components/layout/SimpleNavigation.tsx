@@ -11,37 +11,66 @@ import {
   Award
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAdminAccess } from '@/hooks/useAdminAccess';
+import { filterNavigationByPermissions } from '@/utils/navigationFilter';
 
-const navigationItems = [
+const allNavigationItems = [
   {
     title: 'Home',
     href: '/',
-    icon: Home
+    icon: Home,
+    isPublic: true,
+    requiresAuth: false
   },
   {
     title: 'Network',
     href: '/network',
-    icon: Users
+    icon: Users,
+    isPublic: true,
+    requiresAuth: true
   },
   {
     title: 'Jobs',
     href: '/jobs',
-    icon: Briefcase
+    icon: Briefcase,
+    isPublic: true,
+    requiresAuth: false
   },
   {
-    title: 'Learn',
-    href: '/learning',
-    icon: GraduationCap
+    title: 'Employer',
+    href: '/employer',
+    icon: Briefcase,
+    isPublic: true,
+    requiresAuth: false
   },
   {
-    title: 'Profile',
-    href: '/profile',
-    icon: User
+    title: 'Colleges',
+    href: '/colleges',
+    icon: GraduationCap,
+    isPublic: true,
+    requiresAuth: false
   },
   {
     title: 'Passport',
     href: '/passport',
-    icon: Award
+    icon: Award,
+    isPublic: true,
+    requiresAuth: true
+  },
+  {
+    title: 'Profile',
+    href: '/profile',
+    icon: User,
+    isPublic: true,
+    requiresAuth: true
+  },
+  {
+    title: 'Learn',
+    href: '/learning',
+    icon: GraduationCap,
+    isPublic: false,
+    requiresAdminAccess: true
   }
 ];
 
@@ -55,6 +84,29 @@ export const SimpleNavigation: React.FC<SimpleNavigationProps> = ({
   variant = 'horizontal' 
 }) => {
   const location = useLocation();
+  const { user } = useAuth();
+  const { isAdmin, isLoading } = useAdminAccess();
+
+  // Filter navigation items based on user permissions
+  const visibleItems = allNavigationItems.filter(item => {
+    // Admin-only routes
+    if (item.requiresAdminAccess) {
+      return user && isAdmin;
+    }
+
+    // Public routes that require authentication
+    if (item.isPublic && item.requiresAuth) {
+      return user;
+    }
+
+    // Completely public routes
+    if (item.isPublic || item.requiresAuth === false) {
+      return true;
+    }
+
+    // Default to requiring authentication
+    return user;
+  });
 
   return (
     <nav className={cn(
@@ -62,7 +114,7 @@ export const SimpleNavigation: React.FC<SimpleNavigationProps> = ({
       variant === 'vertical' ? "flex-col" : "flex-row",
       className
     )}>
-      {navigationItems.map((item) => {
+      {visibleItems.map((item) => {
         const isActive = location.pathname === item.href || 
           (item.href !== '/' && location.pathname.startsWith(item.href));
         

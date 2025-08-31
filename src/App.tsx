@@ -33,6 +33,7 @@ import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
+import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
@@ -128,33 +129,38 @@ const App = () => {
                     <main className="flex-1">
                       <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                         <Routes>
-                       {navItems.map((item: NavItem) => {
-                          // Check if route is explicitly marked as public or in our public routes list
-                          const isPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
-                            // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
-                            if (route.includes(':')) {
-                              const routePattern = route.replace(/:[^/]+/g, '[^/]+');
-                              return new RegExp(`^${routePattern}$`).test(item.to);
-                            }
-                            return route === item.to;
-                          });
-                         
-                        return (
-                          <Route 
-                            key={item.to} 
-                            path={item.to} 
-                            element={
-                               isPublicRoute ? (
-                                 item.page
-                               ) : item.to.startsWith('/admin') ? (
-                                 <ProtectedRoute><AdminLayout>{item.page}</AdminLayout></ProtectedRoute>
-                               ) : (
-                                 <ProtectedRoute>{item.page}</ProtectedRoute>
-                               )
-                            }
-                          />
-                        );
-                       })}
+                        {navItems.map((item: NavItem) => {
+                           // Check if route is explicitly marked as public or in our public routes list
+                           const isLegacyPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
+                             // Handle dynamic routes like /companies/:id, /profile/:id, /:slug, /jobs/:id, and /employer/team/accept/:token
+                             if (route.includes(':')) {
+                               const routePattern = route.replace(/:[^/]+/g, '[^/]+');
+                               return new RegExp(`^${routePattern}$`).test(item.to);
+                             }
+                             return route === item.to;
+                           });
+                          
+                         return (
+                           <Route 
+                             key={item.to} 
+                             path={item.to} 
+                             element={
+                                isLegacyPublicRoute || item.isPublic ? (
+                                  <PublicAccessGuard 
+                                    requiresAdminAccess={item.requiresAdminAccess}
+                                    isPublic={item.isPublic || isLegacyPublicRoute}
+                                  >
+                                    {item.page}
+                                  </PublicAccessGuard>
+                                ) : item.to.startsWith('/admin') ? (
+                                  <ProtectedRoute><AdminLayout>{item.page}</AdminLayout></ProtectedRoute>
+                                ) : (
+                                  <ProtectedRoute>{item.page}</ProtectedRoute>
+                                )
+                             }
+                           />
+                         );
+                        })}
                        
                        {/* Legacy UUID-based profile redirects */}
                        <Route path="/profile/:id" element={<ProfileUrlRedirect />} />

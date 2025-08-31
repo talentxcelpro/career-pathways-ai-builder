@@ -7,6 +7,8 @@ export const passportRoutes = [
     to: "/passport",
     icon: <Award className="h-4 w-4" />,
     page: <CareerPassportDashboard />,
+    isPublic: true,
+    requiresAuth: true,
   },
   {
     title: "Career Passport",

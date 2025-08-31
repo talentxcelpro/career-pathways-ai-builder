@@ -26,6 +26,8 @@ export const jobRoutes = [
     to: "/jobs",
     icon: <Briefcase className="h-4 w-4" />,
     page: <Jobs />,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
     title: "Job Details",

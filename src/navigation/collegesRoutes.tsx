@@ -13,6 +13,8 @@ export const collegesRoutes = [
     title: "Colleges",
     to: "/colleges",
     page: <EnhancedColleges />,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
     title: "College Detail",

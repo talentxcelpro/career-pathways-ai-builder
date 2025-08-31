@@ -12,4 +12,5 @@ export interface NavItem {
   requiresAuth?: boolean;
   requiresEmployerAccess?: boolean;
   requiresAdminAccess?: boolean;
+  isPublic?: boolean;
 }

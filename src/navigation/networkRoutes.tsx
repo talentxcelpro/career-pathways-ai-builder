@@ -35,6 +35,8 @@ export const networkRoutes = [
     to: "/network",
     icon: <Users className="h-4 w-4" />,
     page: <NetworkMain />,
+    isPublic: true,
+    requiresAuth: true,
   },
   {
     title: "Network People",

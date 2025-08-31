@@ -15,6 +15,7 @@ export const employerRoutes = [
     to: "/employer",
     page: <EmployerLanding />,
     requiresAuth: false,
+    isPublic: true,
   },
   
   // Employer Access Request (public route)
