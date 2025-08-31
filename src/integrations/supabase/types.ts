@@ -16452,6 +16452,39 @@ export type Database = {
         }
         Relationships: []
       }
+      push_tokens: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          id: string
+          is_active: boolean | null
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       realtime_subscriptions: {
         Row: {
           channel_name: string
@@ -24666,6 +24699,10 @@ export type Database = {
       get_last_seen_text: {
         Args: { last_seen_timestamp: string }
         Returns: string
+      }
+      get_notification_stats: {
+        Args: { user_id_param: string }
+        Returns: Json
       }
       get_or_create_user_referral: {
         Args: { user_uuid: string }
