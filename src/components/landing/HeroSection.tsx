@@ -24,6 +24,10 @@ export const HeroSection = () => {
                 </span>
               </h1>
               
+              <div className="text-xl md:text-2xl font-bold text-gray-700 mb-6">
+                AI-powered career platform
+              </div>
+              
               <p className="text-gray-600 text-lg md:text-xl mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
                 Your all-in-one platform for networking, skill-building, and finding the perfect career opportunities tailored to your unique journey.
               </p>
