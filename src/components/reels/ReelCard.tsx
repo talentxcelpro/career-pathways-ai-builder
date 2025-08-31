@@ -51,17 +51,17 @@ export const ReelCard: React.FC<ReelCardProps> = ({
         />
 
         {/* Content Overlay */}
-        <div className="absolute bottom-0 left-0 right-20 p-4 bg-gradient-to-t from-black/70 to-transparent">
+        <div className="absolute bottom-0 left-0 right-16 p-2 md:p-4 bg-gradient-to-t from-black/70 to-transparent">
           {/* User Info */}
-          <div className="flex items-center gap-3 mb-3">
-            <Avatar className="h-10 w-10 border-2 border-white">
+          <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+            <Avatar className="h-8 w-8 md:h-10 md:w-10 border-2 border-white">
               <AvatarImage src={reel.user_avatar} alt={reel.user_name} />
               <AvatarFallback className="bg-gray-700 text-white">
                 {reel.user_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="text-white font-semibold text-sm">
+              <p className="text-white font-semibold text-xs md:text-sm">
                 @{reel.user_name}
               </p>
               <p className="text-gray-300 text-xs">
@@ -71,15 +71,15 @@ export const ReelCard: React.FC<ReelCardProps> = ({
           </div>
 
           {/* Content */}
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             {reel.title && (
-              <h3 className="text-white font-medium text-base leading-tight">
+              <h3 className="text-white font-medium text-sm md:text-base leading-tight">
                 {reel.title}
               </h3>
             )}
             
             {reel.description && (
-              <p className="text-gray-200 text-sm leading-relaxed">
+              <p className="text-gray-200 text-xs md:text-sm leading-relaxed">
                 {reel.description}
               </p>
             )}
@@ -90,7 +90,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
                 {reel.tags.slice(0, 3).map((tag, index) => (
                   <span
                     key={index}
-                    className="text-blue-300 text-sm font-medium"
+                    className="text-blue-300 text-xs md:text-sm font-medium"
                   >
                     #{tag}
                   </span>
@@ -102,11 +102,11 @@ export const ReelCard: React.FC<ReelCardProps> = ({
       </div>
 
       {/* Engagement Actions */}
-      <div className="absolute right-0 bottom-20">
+      <div className="absolute right-0 bottom-16 md:bottom-20">
         <ReelEngagementActions
           reel={reel}
           onComment={() => setShowComments(true)}
-          className="p-4"
+          className="p-2 md:p-4"
         />
       </div>
 

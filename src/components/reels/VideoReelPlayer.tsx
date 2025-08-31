@@ -144,7 +144,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       )}
 
       {/* Controls overlay */}
-      <div className="absolute bottom-4 right-4 flex flex-col gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+      <div className="absolute bottom-4 right-4 flex flex-col gap-2 opacity-100 transition-opacity z-10">
         <Button
           variant="ghost"
           size="icon"

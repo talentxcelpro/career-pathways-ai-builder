@@ -36,7 +36,7 @@ export const useReelComments = (reelId: string) => {
           )
         `)
         .eq('content_id', reelId)
-        .eq('content_type', 'reel')
+        .eq('content_type', 'post')
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -67,7 +67,7 @@ export const useReelComments = (reelId: string) => {
           content,
           user_id: user.id,
           content_id: reelId,
-          content_type: 'reel'
+          content_type: 'post'
         })
         .select(`
           id,

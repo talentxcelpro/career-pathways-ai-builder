@@ -53,7 +53,7 @@ export const useReelsData = () => {
           .select('id, user_id, created_at, headline, content, media_urls')
           .eq('is_deleted', false)
           .order('created_at', { ascending: false })
-          .range(offset, offset + limit - 1);
+          .limit(100);
 
         if (postsError) {
           console.error('Error fetching posts fallback:', postsError);
