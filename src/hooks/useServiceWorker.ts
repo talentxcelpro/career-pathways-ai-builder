@@ -20,24 +20,11 @@ export const useServiceWorker = () => {
 
     const registerSW = async () => {
       try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        setState(prev => ({ ...prev, isRegistered: true }));
-
-        // Check for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                setState(prev => ({ ...prev, updateAvailable: true }));
-              }
-            });
-          }
-        });
-
-        console.log('Service Worker registered successfully');
+        // Disabled SW registration to avoid caching old bundles
+        console.log('Service Worker registration disabled');
+        setState(prev => ({ ...prev, isRegistered: false }));
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        console.error('Service Worker check failed:', error);
       }
     };
 

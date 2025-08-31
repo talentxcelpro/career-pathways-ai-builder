@@ -147,28 +147,9 @@ export const AutoUpdateSystem: React.FC = () => {
     }
   }, [queryClient]);
 
-  // Service Worker registration for background updates
+  // Service Worker registration disabled to prevent stale caches
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then((registration) => {
-        console.log('Service Worker registered:', registration);
-        
-        // Listen for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                toast.success('New version available! Page will refresh automatically.');
-                setTimeout(() => window.location.reload(), 2000);
-              }
-            });
-          }
-        });
-      }).catch((error) => {
-        console.log('Service Worker registration failed:', error);
-      });
-    }
+    console.log('AutoUpdateSystem: SW registration disabled');
   }, []);
 
   const getStatusIcon = (status: string) => {

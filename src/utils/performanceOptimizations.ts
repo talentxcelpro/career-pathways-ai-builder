@@ -296,7 +296,7 @@ export const optimizeForMobile = () => {
 // Initialize all optimizations
 export const initializePerformanceOptimizations = () => {
   optimizeResourceLoading();
-  registerServiceWorker();
+  // registerServiceWorker(); // disabled to avoid stale caches
   optimizeForMobile();
   
   // Add global performance monitoring
