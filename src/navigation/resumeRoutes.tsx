@@ -14,6 +14,7 @@ export const resumeRoutes = [
     page: <ErrorBoundary><ResumeNew /></ErrorBoundary>,
     requiresAuth: false,
     requiresAdminAccess: true,
+    isPublic: false,
   },
   {
     title: "TalentXcel Resume Builder",
@@ -22,6 +23,7 @@ export const resumeRoutes = [
     page: <TalentXcelResumeBuilder />,
     requiresAuth: true,
     requiresAdminAccess: true,
+    isPublic: false,
   },
   {
     title: "Edit Resume",
@@ -29,6 +31,7 @@ export const resumeRoutes = [
     page: <EditResume />,
     requiresAuth: true,
     requiresAdminAccess: true,
+    isPublic: false,
   },
   {
     title: "Resume Editor V1",
@@ -36,5 +39,6 @@ export const resumeRoutes = [
     page: <ErrorBoundary><ResumeEditorV1 /></ErrorBoundary>,
     requiresAuth: true,
     requiresAdminAccess: true,
+    isPublic: false,
   },
 ];

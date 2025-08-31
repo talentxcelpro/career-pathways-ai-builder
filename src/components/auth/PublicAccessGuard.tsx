@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
-import { ComingSoonPage } from './ComingSoonPage';
+import { RestrictedAccessPage } from './RestrictedAccessPage';
 
 interface PublicAccessGuardProps {
   children: React.ReactNode;
@@ -33,7 +33,8 @@ export const PublicAccessGuard: React.FC<PublicAccessGuardProps> = ({
       return <Navigate to="/" state={{ from: location }} replace />;
     }
     if (!isAdmin) {
-      return <ComingSoonPage feature="This Feature" />;
+      const routeName = location.pathname.split('/')[1] || 'Feature';
+      return <RestrictedAccessPage moduleName={routeName.charAt(0).toUpperCase() + routeName.slice(1)} />;
     }
     return <>{children}</>;
   }
