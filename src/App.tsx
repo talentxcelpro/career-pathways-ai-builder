@@ -14,6 +14,8 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { AIProvider } from "./contexts/AIContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
+import { BundleErrorFallback } from "./components/BundleErrorFallback";
+import { ErrorBoundary } from "react-error-boundary";
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
@@ -99,12 +101,13 @@ const publicRoutes = [
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <AnalyticsProvider>
-            <AuthErrorBoundary>
-              <AuthProvider>
+    <ErrorBoundary FallbackComponent={BundleErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <TooltipProvider>
+            <AnalyticsProvider>
+              <AuthErrorBoundary>
+                <AuthProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
                 {/* <RealtimeProvider showToasts={false}> */}
@@ -255,12 +258,13 @@ const App = () => {
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
-              </AuthProvider>
-            </AuthErrorBoundary>
-          </AnalyticsProvider>
-        </TooltipProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+                </AuthProvider>
+              </AuthErrorBoundary>
+            </AnalyticsProvider>
+          </TooltipProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

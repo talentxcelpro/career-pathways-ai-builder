@@ -65,16 +65,14 @@ export class ServiceWorkerManager {
     return typeof navigator !== 'undefined' && !navigator.onLine;
   }
 
-  // Initialize service worker
+  // Initialize service worker with cache invalidation
   static init() {
     if (typeof window === 'undefined') return;
     
-    // Register on load
-    window.addEventListener('load', () => {
-      this.register();
-    });
-
-    // Handle online/offline events
+    // First, unregister any existing service workers to prevent cache issues
+    this.unregisterAll();
+    
+    // Handle online/offline events only (no SW registration for now)
     window.addEventListener('online', () => {
       console.log('🟢 App is online');
     });
@@ -82,6 +80,24 @@ export class ServiceWorkerManager {
     window.addEventListener('offline', () => {
       console.log('🔴 App is offline');
     });
+  }
+
+  // Unregister all service workers to prevent cache issues
+  static async unregisterAll() {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(
+          registrations.map(registration => {
+            console.log('🗑️ Unregistering service worker:', registration.scope);
+            return registration.unregister();
+          })
+        );
+        console.log('✅ All service workers unregistered');
+      } catch (error) {
+        console.warn('❌ Error unregistering service workers:', error);
+      }
+    }
   }
 }
 
