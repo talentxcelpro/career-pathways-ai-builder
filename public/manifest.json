@@ -1,5 +1,5 @@
 {
-  "name": "TalentXcel",
+  "name": "TalentXcel - AI-Powered Career Platform",
   "short_name": "TalentXcel",
   "description": "Your Career. One Platform. Endless Possibilities. Find jobs, grow skills, network with professionals.",
   "start_url": "/?utm_source=web_app_manifest",
@@ -18,13 +18,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png",
+      "src": "/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png",
+      "src": "/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -36,21 +36,21 @@
       "short_name": "Feed",
       "description": "View your professional network feed",
       "url": "/mobile/network",
-      "icons": [{"src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png", "sizes": "192x192"}]
+      "icons": [{"src": "/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png", "sizes": "192x192"}]
     },
     {
       "name": "Job Search",
       "short_name": "Jobs",
       "description": "Find new opportunities",
       "url": "/mobile/jobs",
-      "icons": [{"src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png", "sizes": "192x192"}]
+      "icons": [{"src": "/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png", "sizes": "192x192"}]
     },
     {
       "name": "Professional Reels",
       "short_name": "Reels",
       "description": "Watch career content",
       "url": "/mobile/reels",
-      "icons": [{"src": "/lovable-uploads/e801d49a-1d82-423d-a8a0-cb1562630b2c.png", "sizes": "192x192"}]
+      "icons": [{"src": "/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png", "sizes": "192x192"}]
     }
   ],
   "prefer_related_applications": false
