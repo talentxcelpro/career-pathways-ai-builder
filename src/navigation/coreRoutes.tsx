@@ -26,6 +26,7 @@ import { MobileAnalytics } from "../components/mobile/MobileAnalytics";
 import { MobileSocialNetwork } from "../components/mobile/MobileSocialNetwork";
 import PublicServiceProfile from "../pages/PublicServiceProfile";
 import MyApplications from "../pages/MyApplications";
+import { AccessControlTestPage } from "../components/admin/AccessControlTestPage";
 
 export const coreRoutes = [
   {
@@ -163,6 +164,13 @@ export const coreRoutes = [
     title: "Public Service Profile",
     to: "/:username/services",
     page: <PublicServiceProfile />,
+  },
+  {
+    title: "Access Control Test",
+    to: "/access-control-test",
+    page: <div className="p-4"><AccessControlTestPage /></div>,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
     title: "Not Found",
