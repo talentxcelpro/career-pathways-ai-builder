@@ -181,14 +181,79 @@ export function initializeBundleOptimization() {
     }, 1000);
   });
   
-  // Prefetch routes on interaction
-  document.addEventListener('mouseenter', (e) => {
+  // Performance tracking
+  if ('PerformanceObserver' in window) {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          if (entry.entryType === 'navigation') {
+            const navEntry = entry as PerformanceNavigationTiming;
+            console.log(`🚀 Page load: ${navEntry.loadEventEnd - navEntry.fetchStart}ms`);
+          }
+        });
+      });
+      observer.observe({ entryTypes: ['navigation'] });
+    } catch (error) {
+      console.warn('Performance monitoring not available:', error);
+    }
+  }
+  
+  // Enhanced prefetching with multiple triggers
+  const prefetchedRoutes = new Set<string>();
+  
+  // Prefetch on hover (faster than mouseenter)
+  document.addEventListener('mouseover', (e) => {
     const target = e.target as HTMLElement;
     const link = target.closest('a[href]') as HTMLAnchorElement;
     
     if (link && link.href && link.origin === window.location.origin) {
       const route = new URL(link.href).pathname;
-      ResourceOptimizer.prefetchRoute(route);
+      if (!prefetchedRoutes.has(route)) {
+        ResourceOptimizer.prefetchRoute(route);
+        prefetchedRoutes.add(route);
+      }
     }
   }, { passive: true });
+
+  // Prefetch on touch start for mobile
+  document.addEventListener('touchstart', (e) => {
+    const target = e.target as HTMLElement;
+    const link = target.closest('a[href]') as HTMLAnchorElement;
+    
+    if (link && link.href && link.origin === window.location.origin) {
+      const route = new URL(link.href).pathname;
+      if (!prefetchedRoutes.has(route)) {
+        ResourceOptimizer.prefetchRoute(route);
+        prefetchedRoutes.add(route);
+      }
+    }
+  }, { passive: true });
+
+  // Intersection observer for visible links
+  if ('IntersectionObserver' in window) {
+    const linkObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.target instanceof HTMLAnchorElement) {
+          const link = entry.target;
+          if (link.href && link.origin === window.location.origin) {
+            const route = new URL(link.href).pathname;
+            if (!prefetchedRoutes.has(route)) {
+              // Delay prefetch slightly to avoid prefetching everything immediately
+              setTimeout(() => {
+                ResourceOptimizer.prefetchRoute(route);
+                prefetchedRoutes.add(route);
+              }, 1000);
+            }
+          }
+        }
+      });
+    }, { rootMargin: '100px' });
+
+    // Observe all links after a short delay
+    setTimeout(() => {
+      document.querySelectorAll('a[href]').forEach(link => {
+        linkObserver.observe(link);
+      });
+    }, 2000);
+  }
 }
