@@ -1,11 +1,13 @@
-const CACHE_NAME = 'talentxcel-v1';
+const CACHE_NAME = 'talentxcel-v2';
 const urlsToCache = [
   '/',
   '/jobs',
   '/profile',
   '/resume',
   '/network',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 // Install event

@@ -21,18 +21,27 @@ export function usePWA() {
     const checkInstalled = () => {
       const standalone = window.matchMedia('(display-mode: standalone)').matches;
       const fullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
-      setIsStandalone(standalone || fullscreen);
-      setIsInstalled(standalone || fullscreen);
+      const isInWebAppiOS = (window.navigator as any).standalone === true;
+      const installedState = standalone || fullscreen || isInWebAppiOS;
+      setIsStandalone(installedState);
+      setIsInstalled(installedState);
+      return installedState;
     };
 
     // Check if device is iOS
     const checkIOS = () => {
       const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
       setIsIOS(isIOSDevice);
+      return isIOSDevice;
     };
 
-    checkInstalled();
-    checkIOS();
+    const installedState = checkInstalled();
+    const isIOSDevice = checkIOS();
+    
+    // For iOS Safari, we can show install prompt if not already installed  
+    if (isIOSDevice && !installedState) {
+      setCanInstall(true);
+    }
 
     // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -107,7 +116,7 @@ export function usePWA() {
   };
 
   return {
-    canInstall: canInstall && !isInstalled,
+    canInstall: (canInstall && !isInstalled) || (isIOS && !isInstalled),
     isInstalled,
     isStandalone,
     isIOS,

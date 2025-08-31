@@ -15,6 +15,7 @@ import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
 import { ContentSecurityPolicy } from "./components/security/ContentSecurityPolicy";
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
+import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
@@ -238,6 +239,7 @@ const App = () => {
                     <Footer />
                     <InstallPrompt />
                     <InstallButton />
+                    <IOSInstallPrompt />
                   </div>
                 </MobileAppWrapper>
                   <Analytics />
