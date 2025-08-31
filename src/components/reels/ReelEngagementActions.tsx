@@ -18,7 +18,7 @@ interface ReelEngagementActionsProps {
 export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
   reel,
   onComment,
-  isMuted = true,
+  isMuted = false, // Default volume ON
   onToggleMute,
   className
 }) => {
@@ -138,17 +138,17 @@ export const ReelEngagementActions: React.FC<ReelEngagementActionsProps> = ({
         </span>
       </div>
 
-      {/* Views */}
+      {/* Views - Emphasized */}
       <div className="flex flex-col items-center">
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white touch-manipulation border border-white/20"
+          className="h-9 w-9 rounded-full bg-blue-500/40 backdrop-blur-sm text-white touch-manipulation border border-blue-300/40"
           disabled
         >
           <Eye className="h-3.5 w-3.5" />
         </Button>
-        <span className="text-white text-xs font-medium mt-1">
+        <span className="text-white text-xs font-bold mt-1 bg-blue-500/20 px-2 py-1 rounded-full">
           {formatCount(reel.views_count)}
         </span>
       </div>

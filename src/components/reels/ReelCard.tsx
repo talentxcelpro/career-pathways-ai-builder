@@ -21,7 +21,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
 }) => {
   const [hasTrackedView, setHasTrackedView] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false); // Default volume ON
   
   const { trackView } = useReelViewTracking();
 

@@ -22,7 +22,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   onVideoLoad,
   onTimeUpdate,
   autoPlay = true,
-  muted = true,
+  muted = false, // Default volume ON
   className
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);

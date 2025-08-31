@@ -40,38 +40,46 @@ export const MobileReels = () => {
 
       {/* Mobile Bottom Navigation */}
       <div className="absolute bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-t border-white/20">
-        <div className="flex items-center justify-around py-3">
+        <div className="flex items-center justify-around py-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/')}
-            className="text-white hover:bg-white/20 rounded-full"
+            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
           >
-            <Home className="h-5 w-5" />
+            <Home className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate('/network')}
-            className="text-white hover:bg-white/20 rounded-full"
+            onClick={() => navigate('/jobs')}
+            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
           >
-            <Search className="h-5 w-5" />
+            <Search className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowUploadModal(true)}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-full h-10 w-10"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-full h-9 w-9"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/network')}
+            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
+          >
+            <User className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/profile')}
-            className="text-white hover:bg-white/20 rounded-full"
+            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
           >
-            <User className="h-5 w-5" />
+            <User className="h-4 w-4" />
           </Button>
         </div>
       </div>

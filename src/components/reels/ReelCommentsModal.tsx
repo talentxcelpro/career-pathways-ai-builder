@@ -48,11 +48,11 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm overscroll-contain">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm overscroll-contain">
       <div className={cn(
         "w-full max-w-lg bg-background rounded-t-3xl shadow-xl",
         "animate-in slide-in-from-bottom-2 duration-300",
-        "max-h-[80vh] flex flex-col",
+        "max-h-[70vh] flex flex-col", // Reduced height like Instagram
         className
       )}>
         {/* Header */}
@@ -106,33 +106,34 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
           </div>
         </ScrollArea>
 
-        {/* Comment Input */}
+        {/* Comment Input - Instagram Style */}
         {user && (
-          <div className="p-3 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)]">
-            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+          <div className="p-4 border-t bg-background sticky bottom-0 left-0 right-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <form onSubmit={handleSubmit} className="flex gap-3 items-center">
               <Avatar className="h-8 w-8 flex-shrink-0">
                 <AvatarImage src={user.user_metadata?.avatar_url} />
                 <AvatarFallback>
                   {user.user_metadata?.full_name?.[0]?.toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 flex gap-2">
+              <div className="flex-1 flex gap-3 items-center">
                 <Input
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Add a comment..."
-                  className="flex-1 rounded-full border-muted bg-muted/50 focus:bg-background"
+                  className="flex-1 border-0 bg-transparent focus:ring-0 focus:border-0 text-sm placeholder:text-muted-foreground"
                   disabled={isAddingComment}
                   autoComplete="off"
-                  autoFocus={true}
+                  autoFocus={false}
                 />
                 <Button
                   type="submit"
-                  size="icon"
-                  className="rounded-full h-9 w-9 touch-manipulation"
+                  variant="ghost"
+                  size="sm"
+                  className="text-primary font-semibold hover:bg-transparent disabled:opacity-50"
                   disabled={!newComment.trim() || isAddingComment}
                 >
-                  <Send className="h-3.5 w-3.5" />
+                  Post
                 </Button>
               </div>
             </form>
