@@ -48,8 +48,14 @@ export class WebSocketManager {
     return channel;
   }
 
-  private handleChannelError(channelName: string, error?: Error) {
+  private handleChannelError(channelName: string, error?: any) {
     const attempts = this.retryAttempts.get(channelName) || 0;
+    
+    // Don't retry if it's a connection error - just log it
+    if (error && (error.message?.includes('WebSocket') || error.code)) {
+      console.warn(`WebSocket connection issue for channel ${channelName}:`, error);
+      return;
+    }
     
     if (attempts < (this.config.maxRetries || 3)) {
       console.log(`Retrying channel ${channelName} in ${this.config.retryDelay}ms (attempt ${attempts + 1})`);

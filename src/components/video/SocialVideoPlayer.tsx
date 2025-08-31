@@ -3,6 +3,7 @@ import { Play, Pause, Volume2, VolumeX, Heart, MessageCircle, Share2 } from 'luc
 import { Button } from '@/components/ui/button';
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay';
 import { useVideoViewTracking } from '@/hooks/useVideoViewTracking';
+import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import { cn } from '@/lib/utils';
 
 interface SocialVideoPlayerProps {
@@ -60,6 +61,33 @@ export const SocialVideoPlayer: React.FC<SocialVideoPlayerProps> = ({
   const [videoDuration, setVideoDuration] = useState(0);
   
   const { trackVideoView, trackVideoEngagement } = useVideoViewTracking();
+
+  // Enhanced swipe gesture handling
+  const swipeHandlers = useSwipeGestures({
+    onDoubleTap: () => {
+      if (onDoubleTap || onLike) {
+        setShowHeartAnimation(true);
+        if (onDoubleTap) {
+          onDoubleTap();
+        } else if (onLike) {
+          onLike();
+        }
+        
+        // Track engagement
+        if (contentId) {
+          trackVideoEngagement(contentId, contentType, 'like');
+        }
+        
+        setTimeout(() => setShowHeartAnimation(false), 1000);
+      }
+    },
+    onSwipeUp: () => {
+      console.log('Swipe up detected - could navigate to next video');
+    },
+    onSwipeDown: () => {
+      console.log('Swipe down detected - could navigate to previous video');
+    }
+  });
 
   const {
     containerRef,
@@ -167,7 +195,7 @@ export const SocialVideoPlayer: React.FC<SocialVideoPlayerProps> = ({
   }
 
   return (
-    <div ref={containerRef} className={cn("relative w-full h-full group", className)}>
+    <div ref={containerRef} className={cn("relative w-full h-full group", className)} {...swipeHandlers}>
       {/* Main video container */}
       <div className="relative w-full h-full overflow-hidden rounded-lg bg-black">
         <video
