@@ -30,20 +30,73 @@ export const useReelsData = () => {
     queryKey: ['reels-feed', user?.id],
     queryFn: async ({ pageParam = 0 }) => {
       console.log('Fetching reels with pageParam:', pageParam);
+      const limit = 10;
+      const offset = pageParam * limit;
       
-      const { data, error } = await supabase.rpc('get_reel_feed', {
-        user_id_param: user?.id || null,
-        limit_param: 10,
-        offset_param: pageParam * 10
-      });
+      // Primary: try RPC (server-optimized feed)
+      try {
+        const { data, error } = await supabase.rpc('get_reel_feed', {
+          user_id_param: user?.id || null,
+          limit_param: limit,
+          offset_param: offset
+        });
 
-      if (error) {
-        console.error('Error fetching reels:', error);
-        throw error;
+        if (error) throw error;
+        console.log('Fetched reels (rpc):', data?.length || 0);
+        return (data as ReelData[]) || [];
+      } catch (err: any) {
+        // Fallback: derive reels from posts with video media
+        console.warn('RPC get_reel_feed failed, using posts fallback:', err?.message || err);
+        
+        const { data: posts, error: postsError } = await supabase
+          .from('posts')
+          .select('id, user_id, created_at, headline, content, media_urls')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (postsError) {
+          console.error('Error fetching posts fallback:', postsError);
+          throw postsError;
+        }
+
+        const videoPosts = (posts || []).filter((p: any) => Array.isArray(p.media_urls) && p.media_urls.some((u: string) => typeof u === 'string' && u.toLowerCase().endsWith('.mp4')));
+        const userIds = Array.from(new Set(videoPosts.map((p: any) => p.user_id).filter(Boolean)));
+
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url')
+          .in('id', userIds);
+
+        const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+
+        const mapped: ReelData[] = videoPosts.map((p: any) => {
+          const videoUrl: string = p.media_urls.find((u: string) => u.toLowerCase().endsWith('.mp4'));
+          const prof = profileMap.get(p.user_id);
+          return {
+            id: p.id,
+            title: p.headline || '',
+            description: p.content || '',
+            video_url: videoUrl,
+            thumbnail_url: '',
+            duration_seconds: 0,
+            tags: [],
+            user_id: p.user_id,
+            created_at: p.created_at,
+            views_count: 0,
+            likes_count: 0,
+            comments_count: 0,
+            shares_count: 0,
+            is_following: false,
+            has_liked: false,
+            user_name: prof?.full_name || 'Creator',
+            user_avatar: prof?.profile_picture_url || ''
+          } as ReelData;
+        });
+
+        console.log('Fetched reels (fallback):', mapped.length);
+        return mapped;
       }
-
-      console.log('Fetched reels:', data?.length || 0);
-      return data as ReelData[] || [];
     },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === 10 ? allPages.length : undefined;
