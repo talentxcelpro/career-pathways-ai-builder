@@ -40,8 +40,8 @@ const PassportUrlRedirect = () => {
           // Fallback to legacy UUID route if we can't read username (e.g., RLS)
           navigate(`/passport/user/${id}`, { replace: true });
         } else if (profile?.username) {
-          // Redirect to SEO-friendly username URL
-          navigate(`/passport/${profile.username}`, { replace: true });
+          // Redirect to SEO-friendly profile URL
+          navigate(`/profile/${profile.username}`, { replace: true });
         } else {
           // Fallback to legacy UUID route if no username
           navigate(`/passport/user/${id}`, { replace: true });
