@@ -64,13 +64,6 @@ const allNavigationItems = [
     icon: User,
     isPublic: true,
     requiresAuth: true
-  },
-  {
-    title: 'Learn',
-    href: '/learning',
-    icon: GraduationCap,
-    isPublic: false,
-    requiresAdminAccess: true
   }
 ];
 
@@ -89,11 +82,6 @@ export const SimpleNavigation: React.FC<SimpleNavigationProps> = ({
 
   // Filter navigation items based on user permissions
   const visibleItems = allNavigationItems.filter(item => {
-    // Admin-only routes
-    if (item.requiresAdminAccess) {
-      return user && isAdmin;
-    }
-
     // Public routes that require authentication
     if (item.isPublic && item.requiresAuth) {
       return user;
