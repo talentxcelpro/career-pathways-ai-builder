@@ -1,0 +1,19 @@
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { Footer } from './Footer';
+
+export const FooterWrapper: React.FC = () => {
+  const location = useLocation();
+  
+  // Show full footer only on homepage
+  if (location.pathname === '/') {
+    return <Footer />;
+  }
+  
+  // Show minimal copyright footer on all other pages
+  return (
+    <div className="w-full text-center py-4 text-sm text-muted-foreground bg-background border-t">
+      © {new Date().getFullYear()} TalentXcel. All rights reserved.
+    </div>
+  );
+};

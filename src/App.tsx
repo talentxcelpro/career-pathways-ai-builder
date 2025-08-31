@@ -2,12 +2,12 @@ import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
-import { Footer } from "./components/layout/Footer";
+import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
@@ -241,8 +241,8 @@ const App = () => {
        {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                         </Routes>
                       </React.Suspense>
-                    </main>
-                    <Footer />
+                     </main>
+                    <FooterWrapper />
                     <InstallPrompt />
                     <InstallButton />
                     <IOSInstallPrompt />
