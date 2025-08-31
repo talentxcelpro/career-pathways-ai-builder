@@ -19,7 +19,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ isVisible, onComplet
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-primary to-white">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-blue-600 to-white">
       <div className="animate-scale-in">
         <TalentXcelLogo variant="symbol" size="xl" className="mb-6" />
       </div>

@@ -11,6 +11,8 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
   size = 'md', 
   className = "" 
 }) => {
+  console.log('TalentXcelLogo rendering with variant:', variant, 'size:', size);
+  
   const sizeClasses = {
     sm: 'h-6 w-auto',
     md: 'h-8 w-auto', 
@@ -25,15 +27,18 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
     xl: 'h-16 w-16'
   };
 
+  // Simple fallback logo as a circle with TX
+  const FallbackLogo = ({ className: fallbackClassName }: { className: string }) => (
+    <div className={`${fallbackClassName} rounded-full bg-blue-600 flex items-center justify-center text-white font-bold`}>
+      TX
+    </div>
+  );
+
   // Logo symbol only (TX in circle)
   if (variant === 'symbol') {
     return (
       <div className={`${symbolSizeClasses[size]} ${className}`}>
-        <img 
-          src="/lovable-uploads/10629e7a-a6d3-4387-b48c-37030cf3dad5.png"
-          alt="TalentXcel"
-          className="w-full h-full object-contain"
-        />
+        <FallbackLogo className="w-full h-full" />
       </div>
     );
   }
@@ -43,7 +48,7 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
     return (
       <div className={`${className} flex items-center`}>
         <span className="font-bold text-foreground">
-          talent<span className="text-primary">Xcel</span>
+          talent<span className="text-blue-600">Xcel</span>
         </span>
       </div>
     );
@@ -52,13 +57,9 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
   // Full logo with symbol and text
   return (
     <div className={`${className} flex items-center gap-2`}>
-      <img 
-        src="/lovable-uploads/10629e7a-a6d3-4387-b48c-37030cf3dad5.png"
-        alt="TalentXcel"
-        className={symbolSizeClasses[size]}
-      />
+      <FallbackLogo className={symbolSizeClasses[size]} />
       <span className={`font-bold text-foreground ${size === 'sm' ? 'text-sm' : size === 'lg' ? 'text-lg' : size === 'xl' ? 'text-xl' : 'text-base'}`}>
-        talent<span className="text-primary">Xcel</span>
+        talent<span className="text-blue-600">Xcel</span>
       </span>
     </div>
   );
