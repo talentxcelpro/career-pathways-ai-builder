@@ -26,7 +26,7 @@ import { SEOCompaniesLocation } from "@/components/seo/SEOCompaniesLocation";
 import { SEOPosts } from "@/components/seo/SEOPosts";
 import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
-import PassportUrlRedirect from "@/components/passport/PassportUrlRedirect";
+import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
@@ -88,6 +88,7 @@ const publicRoutes = [
   '/jobs/:role/:location',
   '/companies',
   '/companies/:id',
+  '/companies/:slug',
   '/:slug', // Company slug route
   '/profile/:username',
   '/network/people/:id',
@@ -169,8 +170,8 @@ const App = () => {
                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                           <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
-                           {/* Legacy UUID-based passport redirect - must come before username route */}
-                           <Route path="/passport/:userId" element={<PassportUrlRedirect />} />
+                            {/* Legacy UUID-based passport redirect - instant redirect */}
+                            <Route path="/passport/:userId" element={<FastPassportRedirect />} />
                           <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                           <Route path="/@:username" element={<CareerPassportDashboard />} />
                         <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
