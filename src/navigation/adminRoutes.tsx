@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link } from "lucide-react";
 import { BotPostManager } from "../components/admin/BotPostManager";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
@@ -42,6 +42,7 @@ import BacklinkDashboard from "../pages/admin/BacklinkDashboard";
 import { SEODashboard } from "../components/admin/SEODashboard";
 import { SEODashboardNew } from "../components/admin/SEODashboardNew";
 import { JobDataManager } from "../components/admin/JobDataManager";
+import LinkBuildingDashboard from "../pages/admin/LinkBuildingDashboard";
 import AgentOperationsPage from "../pages/admin/AgentOperations";
 
 export const adminRoutes = [
@@ -344,6 +345,13 @@ export const adminRoutes = [
     to: "/admin/integration-hub",
     icon: <Network className="h-4 w-4" />,
     page: <IntegrationHub />,
+    requiresAuth: true,
+  },
+  {
+    title: "Link Building Command Center",
+    to: "/admin/link-building",
+    icon: <Link className="h-4 w-4" />,
+    page: <LinkBuildingDashboard />,
     requiresAuth: true,
   },
   {
