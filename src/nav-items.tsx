@@ -26,6 +26,7 @@ import { analyticsRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
 import { publicRoutes } from "./navigation/publicRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
+import CampaignManager from "./pages/CampaignManager";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -35,6 +36,18 @@ export const aiAgentRoutes = [
     icon: "brain",
     page: <AIAgentDashboard />,
     description: "Your personalized AI career companion"
+  }
+];
+
+// Campaign Manager routes
+export const campaignRoutes = [
+  {
+    title: "Campaign Manager",
+    to: "/campaigns",
+    icon: "target",
+    page: <CampaignManager />,
+    description: "Launch and manage content & outreach campaigns",
+    requiresAdminAccess: true
   }
 ];
 
@@ -63,6 +76,7 @@ export const navItems = [
   ...analyticsRoutes,
   ...growthRoutes,
   ...aiAgentRoutes,
+  ...campaignRoutes,
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,
