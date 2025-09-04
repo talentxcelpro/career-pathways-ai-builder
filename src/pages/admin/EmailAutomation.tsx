@@ -11,8 +11,9 @@ import EmailTemplateTest from '@/components/admin/EmailTemplateTest';
 import { BulkEmailCampaign } from '@/components/admin/BulkEmailCampaign';
 import { GrowthCommunicationSystem } from '@/components/admin/GrowthCommunicationSystem';
 import { CommunicationDashboard } from '@/components/admin/CommunicationDashboard';
+import { EmailSecurityValidator } from '@/components/admin/EmailSecurityValidator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp } from "lucide-react";
+import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield } from "lucide-react";
 
 const EmailAutomationPage = () => {
   return (
@@ -21,7 +22,7 @@ const EmailAutomationPage = () => {
       description="Configure automated email templates, settings, and monitoring"
     >
       <Tabs defaultValue="automation" className="w-full">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <BarChart className="h-4 w-4" />
             Automation
@@ -53,6 +54,10 @@ const EmailAutomationPage = () => {
           <TabsTrigger value="growth-system" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Growth System
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
           </TabsTrigger>
         </TabsList>
 
@@ -89,6 +94,10 @@ const EmailAutomationPage = () => {
         <TabsContent value="growth-system" className="space-y-6">
           <CommunicationDashboard />
           <GrowthCommunicationSystem />
+        </TabsContent>
+
+        <TabsContent value="security" className="space-y-6">
+          <EmailSecurityValidator />
         </TabsContent>
       </Tabs>
     </UnifiedAdminLayout>

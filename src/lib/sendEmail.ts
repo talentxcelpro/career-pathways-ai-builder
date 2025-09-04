@@ -23,10 +23,10 @@ const createTransporter = () => {
   });
 };
 
-interface EmailOptions {
+interface TemplateEmailOptions {
   to: string;
-  subject: string;
-  html: string;
+  template_name: string;
+  template_data?: Record<string, any>;
   from?: string;
   replyTo?: string;
 }
@@ -38,36 +38,151 @@ interface QueueEmailOptions {
   data?: Record<string, any>;
 }
 
-export async function sendEmail({ to, subject, html, from, replyTo }: EmailOptions): Promise<boolean> {
+// REMOVED: sendEmail function that accepts raw HTML
+// Now ONLY template-based emails are allowed
+
+export async function sendTemplateEmail({ to, template_name, template_data = {}, from, replyTo }: TemplateEmailOptions): Promise<boolean> {
   try {
+    // ENFORCE: Must use template - no raw HTML allowed
+    if (!template_name) {
+      throw new Error('Template name is required. Direct HTML content is not allowed.');
+    }
+
+    // Get template from database
+    const { data: templateData, error: templateError } = await supabase
+      .from('email_templates')
+      .select('subject, html_template, is_active')
+      .eq('template_name', template_name)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (templateError) {
+      console.error('Error fetching template:', templateError);
+      throw new Error(`Failed to fetch template: ${templateError.message}`);
+    }
+
+    if (!templateData) {
+      throw new Error(`Template '${template_name}' not found or disabled. Only predefined templates are allowed.`);
+    }
+
+    // Validate template has HTML content
+    if (!templateData.html_template || templateData.html_template.trim() === '') {
+      throw new Error(`Template '${template_name}' has no HTML content. Template must contain valid HTML.`);
+    }
+
     const transporter = createTransporter();
+    const fromEmail = from || process.env.SMTP_FROM || 'noreply@talentxcel.in';
     
-    const fromEmail = from || process.env.SMTP_FROM || 'admin@talentxcel.in';
-    
+    // Prepare template data with required platform variables
+    const emailData = {
+      ...template_data,
+      platform_name: 'TalentXcel',
+      support_email: 'support@talentxcel.in',
+      current_year: new Date().getFullYear().toString(),
+      current_date: new Date().toLocaleDateString(),
+      website_url: 'https://talentxcel.in'
+    };
+
+    // Replace template variables
+    const subject = templateData.subject.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+      const value = emailData[key];
+      if (value === undefined || value === null) {
+        console.warn(`Missing template variable: ${key}`);
+        return match; // Keep original placeholder if no value found
+      }
+      return String(value);
+    });
+
+    const htmlContent = templateData.html_template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+      const value = emailData[key];
+      if (value === undefined || value === null) {
+        console.warn(`Missing template variable: ${key}`);
+        return match; // Keep original placeholder if no value found
+      }
+      return String(value);
+    });
+
+    // Final validation: Ensure we have valid HTML content
+    if (!htmlContent || htmlContent.trim() === '') {
+      throw new Error('Generated email content is empty. Template processing failed.');
+    }
+
     const mailOptions = {
       from: fromEmail,
       to,
       subject,
-      html,
+      html: htmlContent,
       replyTo: replyTo || fromEmail,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully via Amazon SES to:', to);
+    console.log(`✅ Template email '${template_name}' sent successfully to:`, to);
+    
+    // Log the email delivery event
+    try {
+      await supabase
+        .from('email_delivery_events')
+        .insert({
+          template_name,
+          recipient_email: to,
+          status: 'sent',
+          sent_at: new Date().toISOString()
+        });
+    } catch (logError) {
+      console.warn('Failed to log email delivery event:', logError);
+    }
+
     return true;
   } catch (error: any) {
-    console.error('Amazon SES SMTP error:', error.message);
+    console.error(`❌ Template email send error for '${template_name}':`, error.message);
+    
+    // Log failed delivery
+    try {
+      await supabase
+        .from('email_delivery_events')
+        .insert({
+          template_name,
+          recipient_email: to,
+          status: 'failed',
+          error_message: error.message,
+          sent_at: new Date().toISOString()
+        });
+    } catch (logError) {
+      console.warn('Failed to log email delivery failure:', logError);
+    }
+    
     throw error;
   }
 }
 
-export async function queueEmail({ to, subject, template, data = {} }: QueueEmailOptions): Promise<string> {
+export async function queueTemplateEmail({ to, template, data = {} }: QueueEmailOptions): Promise<string> {
   try {
+    // ENFORCE: Must use template
+    if (!template) {
+      throw new Error('Template name is required. Direct content is not allowed.');
+    }
+
+    // Validate template exists before queuing
+    const { data: templateExists, error: templateError } = await supabase
+      .from('email_templates')
+      .select('id, template_name, is_active')
+      .eq('template_name', template)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (templateError) {
+      console.error('Error validating template:', templateError);
+      throw new Error(`Failed to validate template: ${templateError.message}`);
+    }
+
+    if (!templateExists) {
+      throw new Error(`Template '${template}' not found or disabled. Only predefined templates can be queued.`);
+    }
+
     const { data: queueData, error } = await supabase
       .from('email_queue')
       .insert({
         to_email: to,
-        subject,
         template,
         data,
         status: 'pending'
@@ -76,14 +191,14 @@ export async function queueEmail({ to, subject, template, data = {} }: QueueEmai
       .single();
 
     if (error) {
-      console.error('Error queuing email:', error);
+      console.error('Error queuing template email:', error);
       throw error;
     }
 
-    console.log('Email queued successfully:', queueData.id);
+    console.log(`✅ Template email '${template}' queued successfully:`, queueData.id);
     return queueData.id;
   } catch (error) {
-    console.error('Error in queueEmail:', error);
+    console.error('Error in queueTemplateEmail:', error);
     throw error;
   }
 }
@@ -109,7 +224,7 @@ export async function processEmailQueue(): Promise<void> {
       return;
     }
 
-    console.log(`Processing ${pendingEmails.length} pending emails`);
+    console.log(`Processing ${pendingEmails.length} pending template emails`);
 
     for (const email of pendingEmails) {
       try {
@@ -119,19 +234,16 @@ export async function processEmailQueue(): Promise<void> {
           .update({ status: 'processing' })
           .eq('id', email.id);
 
-        // Import templates dynamically to avoid circular imports
-        const templates = (await import('./emailTemplates')).default;
-        const html = templates[email.template as keyof typeof templates]?.(email.data as Record<string, any> || {});
-
-        if (!html) {
-          throw new Error(`Template '${email.template}' not found`);
+        // ENFORCE: Only process emails with templates
+        if (!email.template) {
+          throw new Error('Email in queue missing template name. Skipping.');
         }
 
-        // Send the email
-        await sendEmail({
+        // Send using template-only function
+        await sendTemplateEmail({
           to: email.to_email,
-          subject: email.subject,
-          html
+          template_name: email.template,
+          template_data: email.data || {}
         });
 
         // Mark as sent
@@ -143,10 +255,10 @@ export async function processEmailQueue(): Promise<void> {
           })
           .eq('id', email.id);
 
-        console.log(`Email sent successfully: ${email.id}`);
+        console.log(`✅ Template email sent successfully: ${email.id}`);
 
       } catch (error: any) {
-        console.error(`Failed to send email ${email.id}:`, error.message);
+        console.error(`❌ Failed to send template email ${email.id}:`, error.message);
 
         // Update with error and increment retry count
         await supabase
@@ -164,19 +276,30 @@ export async function processEmailQueue(): Promise<void> {
   }
 }
 
-// Utility function to send immediate emails (bypassing queue)
-export async function sendImmediateEmail({ to, subject, template, data = {} }: QueueEmailOptions): Promise<boolean> {
+// Utility function to send immediate template emails (bypassing queue)
+export async function sendImmediateTemplateEmail({ to, template, data = {} }: QueueEmailOptions): Promise<boolean> {
   try {
-    const templates = (await import('./emailTemplates')).default;
-    const html = templates[template as keyof typeof templates]?.(data);
-
-    if (!html) {
-      throw new Error(`Template '${template}' not found`);
+    // ENFORCE: Must use template
+    if (!template) {
+      throw new Error('Template name is required. Direct content is not allowed.');
     }
 
-    return await sendEmail({ to, subject, html });
+    return await sendTemplateEmail({ 
+      to, 
+      template_name: template, 
+      template_data: data 
+    });
   } catch (error) {
-    console.error('Error sending immediate email:', error);
+    console.error('Error sending immediate template email:', error);
     throw error;
   }
 }
+
+// DEPRECATED: Legacy function names - redirect to template functions
+export const sendEmail = () => {
+  throw new Error('DEPRECATED: sendEmail() is no longer allowed. Use sendTemplateEmail() instead.');
+};
+
+export const sendImmediateEmail = () => {
+  throw new Error('DEPRECATED: sendImmediateEmail() is no longer allowed. Use sendImmediateTemplateEmail() instead.');
+};

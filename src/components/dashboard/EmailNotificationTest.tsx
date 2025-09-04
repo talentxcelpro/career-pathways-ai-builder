@@ -29,7 +29,7 @@ export const EmailNotificationTest: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('send-automated-email', {
+      const { data, error } = await supabase.functions.invoke('send-template-email', {
         body: {
           template_name: template,
           recipient_email: email,
