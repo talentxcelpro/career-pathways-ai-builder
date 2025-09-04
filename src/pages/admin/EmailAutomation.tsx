@@ -8,8 +8,9 @@ import { EmailSystemTester } from '@/components/admin/EmailSystemTester';
 import { EmailTemplateManager } from '@/components/admin/EmailTemplateManager';
 import { EmailAutomationQueueTester } from '@/components/admin/EmailAutomationQueueTester';
 import EmailTemplateTest from '@/components/admin/EmailTemplateTest';
+import { BulkEmailCampaign } from '@/components/admin/BulkEmailCampaign';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Settings, Monitor, TestTube, Clock, BarChart } from "lucide-react";
+import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users } from "lucide-react";
 
 const EmailAutomationPage = () => {
   return (
@@ -18,7 +19,7 @@ const EmailAutomationPage = () => {
       description="Configure automated email templates, settings, and monitoring"
     >
       <Tabs defaultValue="automation" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <BarChart className="h-4 w-4" />
             Automation
@@ -42,6 +43,10 @@ const EmailAutomationPage = () => {
           <TabsTrigger value="testing" className="flex items-center gap-2">
             <TestTube className="h-4 w-4" />
             Testing
+          </TabsTrigger>
+          <TabsTrigger value="bulk-campaign" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Bulk Campaign
           </TabsTrigger>
         </TabsList>
 
@@ -69,6 +74,10 @@ const EmailAutomationPage = () => {
           <EmailSystemTester />
           <EmailTemplateTest />
           <EmailAutomationQueueTester />
+        </TabsContent>
+
+        <TabsContent value="bulk-campaign" className="space-y-6">
+          <BulkEmailCampaign />
         </TabsContent>
       </Tabs>
     </UnifiedAdminLayout>
