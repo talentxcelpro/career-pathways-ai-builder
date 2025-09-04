@@ -20,23 +20,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   backgroundGradient = true
 }) => {
   return (
-    <section className={`py-16 px-4 text-center ${backgroundGradient ? 'bg-gradient-to-br from-primary/5 via-brand-green/5 to-accent/10' : ''}`}>
+    <section className={`py-16 px-4 text-center animate-fade-in ${backgroundGradient ? 'bg-gradient-hero' : ''}`}>
       <div className="max-w-4xl mx-auto">
-        <div className="relative inline-block mb-6">
+        <div className="relative inline-block mb-6 animate-fade-in-down">
           {showAIBadge ? (
             <AIStatusIndicator module="TalentXcel" feature="AI-Powered">
-            <h1 className="text-headline md:text-display font-heading text-foreground">
+            <h1 className="text-headline md:text-display font-heading text-foreground animate-glow-pulse">
                 {title}
               </h1>
             </AIStatusIndicator>
           ) : (
-            <h1 className="text-headline md:text-display font-heading text-foreground">
+            <h1 className="text-headline md:text-display font-heading text-foreground animate-glow-pulse">
               {title}
             </h1>
           )}
         </div>
         
-        <p className="text-body-large text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-body-large text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed animate-fade-in-up">
           {subtitle}
         </p>
         
@@ -44,7 +44,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <Button 
             onClick={ctaAction}
             size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-semibold shadow-elegant hover:shadow-glow transition-all duration-500 animate-bounce-in hover:scale-105 transform"
           >
             {ctaText}
           </Button>

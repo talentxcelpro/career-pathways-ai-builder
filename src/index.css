@@ -89,45 +89,236 @@
   }
 }
 
-/* Performance-optimized animations */
+/* TalentXcel Premium Animation System */
+
+/* Core Entry Animations */
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px) scale(0.98); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
 }
 
-@keyframes slide-up {
-  from { 
+@keyframes fade-in-up {
+  0% { 
     opacity: 0; 
-    transform: translateY(20px); 
+    transform: translateY(40px); 
   }
-  to { 
+  100% { 
     opacity: 1; 
     transform: translateY(0); 
   }
 }
 
-@keyframes scale-in {
-  from { 
+@keyframes fade-in-down {
+  0% { 
     opacity: 0; 
-    transform: scale(0.95); 
+    transform: translateY(-20px); 
   }
-  to { 
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slide-up {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slide-in-left {
+  0% { 
+    opacity: 0; 
+    transform: translateX(-100px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slide-in-right {
+  0% { 
+    opacity: 0; 
+    transform: translateX(100px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes scale-in {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  50% { 
+    transform: scale(1.02); 
+  }
+  100% { 
     opacity: 1; 
     transform: scale(1); 
   }
 }
 
+/* Premium Micro-interactions */
+@keyframes glow-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 20px hsla(var(--primary) / 0.3); 
+  }
+  50% { 
+    box-shadow: 0 0 40px hsla(var(--primary) / 0.6); 
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-10px); 
+  }
+}
+
+@keyframes bounce-in {
+  0% { 
+    transform: scale(0.3); 
+    opacity: 0; 
+  }
+  50% { 
+    transform: scale(1.05); 
+  }
+  70% { 
+    transform: scale(0.9); 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+@keyframes rotate-scale {
+  0% { 
+    transform: rotate(0deg) scale(1); 
+  }
+  50% { 
+    transform: rotate(180deg) scale(1.1); 
+  }
+  100% { 
+    transform: rotate(360deg) scale(1); 
+  }
+}
+
+/* Page Transitions */
+@keyframes page-enter {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px) scale(0.98); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+@keyframes page-exit {
+  0% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateY(-20px) scale(0.98); 
+  }
+}
+
+/* Stagger Animation */
+@keyframes stagger-fade-in {
+  0% { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Animation Classes */
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+  animation: fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-slide-up {
-  animation: slide-up 0.4s ease-out;
+  animation: slide-up 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-scale-in {
-  animation: scale-in 0.2s ease-out;
+  animation: scale-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-rotate-scale {
+  animation: rotate-scale 2s ease-in-out infinite;
+}
+
+.animate-page-enter {
+  animation: page-enter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-page-exit {
+  animation: page-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stagger Children */
+.stagger-children > * {
+  animation: stagger-fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
 
 /* Optimize font loading */
 @font-face {
