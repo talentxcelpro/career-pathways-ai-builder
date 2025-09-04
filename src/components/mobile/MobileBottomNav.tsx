@@ -58,10 +58,10 @@ export const MobileBottomNav = () => {
   if (!user) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-50 md:hidden shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
       <div className="safe-area-padding-bottom" />
-      <div className="flex items-center justify-around px-4 py-3">
-        {navItems.map((item) => {
+      <div className="flex items-center justify-around px-2 py-3">
+        {navItems.map((item, index) => {
           const isActive = isCurrentPath(item.to);
           const Icon = item.icon;
           
@@ -70,33 +70,37 @@ export const MobileBottomNav = () => {
               key={item.to}
               to={item.to}
               className={cn(
-                "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-300 relative min-w-0 flex-1",
+                "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
+                "animate-fade-in",
                 isActive 
-                  ? "text-primary scale-110" 
-                  : "text-gray-600 hover:text-primary hover:scale-105"
+                  ? "text-primary scale-110 transform" 
+                  : "text-muted-foreground hover:text-primary hover:scale-105 transform"
               )}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative">
                 <div className={cn(
-                  "p-2 rounded-2xl transition-all duration-300",
+                  "p-2.5 rounded-2xl transition-all duration-500 transform",
                   isActive 
-                    ? "bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg" 
-                    : "hover:bg-gray-50"
+                    ? "bg-gradient-brand shadow-brand animate-glow-pulse" 
+                    : "hover:bg-gradient-brand-soft group-hover:shadow-card"
                 )}>
                   <Icon className={cn(
-                    "transition-all duration-300",
-                    isActive ? "h-6 w-6" : "h-5 w-5"
+                    "transition-all duration-500 transform",
+                    isActive ? "h-6 w-6 text-white animate-bounce-in" : "h-5 w-5 group-hover:scale-110"
                   )} />
                 </div>
                 {item.badge && (item.to === '/mobile/network' ? unreadMessages > 0 : false) && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-[10px] min-w-[20px] flex items-center justify-center bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-pulse">
-                    {(item.to === '/mobile/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/mobile/network' ? unreadMessages : 0)}
-                  </Badge>
+                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
+                    <span className="text-[10px] font-bold min-w-[20px] text-center">
+                      {(item.to === '/mobile/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/mobile/network' ? unreadMessages : 0)}
+                    </span>
+                  </div>
                 )}
               </div>
               <span className={cn(
-                "text-[10px] font-medium truncate w-full text-center mt-1 transition-all duration-300",
-                isActive ? "font-semibold" : ""
+                "text-[10px] font-medium truncate w-full text-center mt-1 transition-all duration-500",
+                isActive ? "font-bold text-primary" : "group-hover:font-semibold"
               )}>
                 {item.label}
               </span>

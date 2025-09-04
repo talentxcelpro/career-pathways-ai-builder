@@ -77,34 +77,34 @@ export const MobileHeader = () => {
 
   return (
     <>
-      <header className="bg-card border-b border-border sticky top-0 z-40 md:hidden">
+      <header className="bg-gradient-card/80 backdrop-blur-apple border-b border-border/50 sticky top-0 z-40 md:hidden shadow-elegant animate-fade-in-down">
         <div className="flex items-center justify-between px-4 py-2 h-14">
           {/* Left - Menu Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2"
+            className="p-2 hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
           >
             <Menu className="h-5 w-5" />
           </Button>
 
           {/* Center - TalentXcel Logo */}
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 flex justify-center animate-scale-in">
             <img 
               src={talentxcelLogo} 
               alt="TalentXcel" 
-              className="h-8 w-auto"
+              className="h-8 w-auto transition-transform duration-300 hover:scale-105"
             />
           </div>
 
           {/* Right - Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 animate-slide-in-right">
             {/* Search */}
             <Button 
               variant="ghost" 
               size="sm" 
-              className="p-2"
+              className="p-2 hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
               onClick={() => navigate('/mobile/search')}
             >
               <Search className="h-5 w-5" />
@@ -114,7 +114,7 @@ export const MobileHeader = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="p-2 relative"
+              className="p-2 relative hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
               onClick={() => navigate('/network/messages')}
             >
               <MessageSquare className="h-5 w-5" />
@@ -122,10 +122,13 @@ export const MobileHeader = () => {
 
             {/* Notifications */}
             <Link to="/network/notifications">
-              <Button variant="ghost" size="sm" className="p-2 relative">
+              <Button variant="ghost" size="sm" className="p-2 relative hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl">
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] min-w-[16px] flex items-center justify-center">
+                  <Badge 
+                    variant="glow"
+                    className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] min-w-[16px] flex items-center justify-center animate-bounce-in"
+                  >
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </Badge>
                 )}
@@ -133,11 +136,12 @@ export const MobileHeader = () => {
             </Link>
 
             {/* Profile */}
-            <Link to="/profile">
+            <Link to="/profile" className="hover:scale-110 transition-all duration-300">
               <UserAvatar
                 src={profile?.profile_picture_url}
                 userName={profile?.full_name}
                 size="sm"
+                className="ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300"
               />
             </Link>
           </div>
