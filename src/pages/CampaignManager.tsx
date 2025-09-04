@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Play, Pause, BarChart3, Users, Target, Mail } from 'lucide-react';
+import { Plus, Play, Pause, BarChart3, Users, Target, Mail, Bot, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreateCampaignDialog } from '@/components/campaigns/CreateCampaignDialog';
 import { CampaignStats } from '@/components/campaigns/CampaignStats';
 import { OutreachTargets } from '@/components/campaigns/OutreachTargets';
+import { AutomationDashboard } from '@/components/campaigns/AutomationDashboard';
 
 export default function CampaignManager() {
   const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
@@ -130,10 +131,14 @@ export default function CampaignManager() {
       </div>
 
       <Tabs defaultValue="campaigns" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="campaigns" className="gap-2">
             <Target className="h-4 w-4" />
             Campaigns
+          </TabsTrigger>
+          <TabsTrigger value="automation" className="gap-2">
+            <Bot className="h-4 w-4" />
+            Automation
           </TabsTrigger>
           <TabsTrigger value="outreach" className="gap-2">
             <Mail className="h-4 w-4" />
@@ -281,6 +286,10 @@ export default function CampaignManager() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="automation">
+          <AutomationDashboard />
         </TabsContent>
 
         <TabsContent value="outreach">
