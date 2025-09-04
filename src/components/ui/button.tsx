@@ -5,24 +5,25 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-3.5 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-xs font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-3.5 [&_svg]:shrink-0 transform hover:scale-105 active:scale-95",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "bg-gradient-primary text-primary-foreground hover:shadow-elegant hover:shadow-glow",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-lg",
+        outline: "border border-input bg-background hover:bg-gradient-card hover:text-accent-foreground hover:shadow-card",
+        secondary: "bg-gradient-card text-secondary-foreground hover:bg-secondary/80 hover:shadow-card",
+        ghost: "hover:bg-gradient-card hover:text-accent-foreground hover:shadow-sm",
+        link: "text-primary underline-offset-4 hover:underline hover:text-primary-light",
+        brand: "bg-gradient-brand text-white hover:shadow-brand hover:shadow-glow",
+        premium: "bg-gradient-glass backdrop-blur-apple border border-glass-border text-foreground hover:shadow-glass hover:bg-gradient-brand-soft",
+        glow: "bg-primary text-primary-foreground hover:shadow-glow animate-glow-pulse",
       },
       size: {
         default: "h-8 px-3 py-1.5",
-        sm: "h-7 rounded-md px-2.5",
-        lg: "h-9 rounded-md px-6",
+        sm: "h-7 rounded-md px-2.5 text-xs",
+        lg: "h-10 rounded-md px-6 text-base font-semibold",
+        xl: "h-12 rounded-md px-8 text-lg font-semibold",
         icon: "h-8 w-8",
       },
     },
