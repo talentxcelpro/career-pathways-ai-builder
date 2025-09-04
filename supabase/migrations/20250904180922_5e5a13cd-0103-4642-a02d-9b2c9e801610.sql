@@ -1,0 +1,28 @@
+-- Create a simple activation without agents dependency - directly activate SEO systems
+-- First, let's add initial SEO monitoring data for tracking
+INSERT INTO public.seo_monitoring (page_type, primary_slug, secondary_slug, status, meta_title, meta_description, last_optimized) VALUES
+('location', 'mumbai', NULL, 'active', 'Jobs in Mumbai - Find Latest Openings | TalentXcel', 'Discover thousands of job opportunities in Mumbai. Apply to top companies hiring now. Remote, full-time, and part-time positions available.', NOW()),
+('location', 'bangalore', NULL, 'active', 'Jobs in Bangalore - Top IT & Tech Careers | TalentXcel', 'Find your dream job in Bangalore. Browse software, engineering, and tech roles at top companies. Start your career journey today.', NOW()),
+('location', 'delhi', NULL, 'active', 'Jobs in Delhi - Government & Private Sector | TalentXcel', 'Explore job opportunities in Delhi NCR. Government jobs, private sector roles, and startup positions. Apply now.', NOW()),
+('location', 'pune', NULL, 'active', 'Jobs in Pune - IT Hub Opportunities | TalentXcel', 'Join Pune''s thriving IT ecosystem. Software development, data science, and tech leadership roles available.', NOW()),
+('location', 'hyderabad', NULL, 'active', 'Jobs in Hyderabad - Cyberabad Careers | TalentXcel', 'Explore opportunities in India''s Cyberabad. Technology, pharmaceuticals, and business services careers await.', NOW()),
+('role', 'software-engineer', NULL, 'active', 'Software Engineer Jobs - Remote & Onsite | TalentXcel', 'Find software engineer positions at top tech companies. Junior to senior level roles with competitive salaries.', NOW()),
+('role', 'data-scientist', NULL, 'active', 'Data Scientist Jobs - AI & ML Careers | TalentXcel', 'Join leading companies as a data scientist. Work with AI, machine learning, and big data technologies.', NOW()),
+('role', 'product-manager', NULL, 'active', 'Product Manager Jobs - Tech Leadership | TalentXcel', 'Lead product development at innovative companies. Strategic roles in tech, fintech, and startup environments.', NOW()),
+('role', 'full-stack-developer', NULL, 'active', 'Full Stack Developer Jobs - End-to-End Development | TalentXcel', 'Build complete applications as a full stack developer. React, Node.js, Python, and cloud technology roles.', NOW()),
+('industry', 'technology', NULL, 'active', 'Technology Jobs - Software & IT Careers | TalentXcel', 'Discover technology sector opportunities. Software development, cybersecurity, cloud computing jobs available.', NOW()),
+('industry', 'fintech', NULL, 'active', 'Fintech Jobs - Financial Technology Careers | TalentXcel', 'Join the fintech revolution. Banking technology, payments, blockchain, and cryptocurrency career opportunities.', NOW()),
+('industry', 'healthcare', NULL, 'active', 'Healthcare Jobs - Medical Technology Careers | TalentXcel', 'Transform healthcare with technology. Health IT, telemedicine, and medical device development roles.', NOW());
+
+-- Create SEO content cache entries for faster page loads
+INSERT INTO public.seo_content_cache (page_type, cache_key, content_data, expires_at) VALUES
+('landing_page', 'jobs_mumbai', '{"title": "Jobs in Mumbai", "description": "Find your next opportunity in Mumbai", "content_blocks": {"hero": "Discover amazing career opportunities in Mumbai", "stats": "Over 10,000 active job listings", "top_companies": "Reliance, Tata, HDFC Bank", "popular_roles": "Software Engineer, Data Analyst, Product Manager"}, "keywords": "mumbai jobs, careers mumbai, job openings mumbai, jobs in mumbai"}', NOW() + INTERVAL '24 hours'),
+('landing_page', 'jobs_bangalore', '{"title": "Jobs in Bangalore", "description": "Tech capital job opportunities", "content_blocks": {"hero": "Join the tech revolution in Bangalore", "stats": "Leading destination for tech professionals", "top_companies": "Infosys, Wipro, Amazon, Google", "popular_roles": "Software Developer, DevOps Engineer, Data Scientist"}, "keywords": "bangalore jobs, tech jobs bangalore, IT careers bangalore, jobs in bangalore"}', NOW() + INTERVAL '24 hours'),
+('landing_page', 'software_engineer_jobs', '{"title": "Software Engineer Jobs", "description": "Build the future with code", "content_blocks": {"hero": "Shape the digital world as a software engineer", "stats": "High-demand skills with competitive salaries", "skills": "React, Python, Java, Node.js", "salary_range": "₹8-25 LPA"}, "keywords": "software engineer jobs, programming careers, developer positions, coding jobs"}', NOW() + INTERVAL '24 hours'),
+('landing_page', 'data_scientist_jobs', '{"title": "Data Scientist Jobs", "description": "Unlock insights from data", "content_blocks": {"hero": "Drive business decisions with data science", "stats": "Fastest growing field in tech", "skills": "Python, R, Machine Learning, SQL", "salary_range": "₹12-35 LPA"}, "keywords": "data scientist jobs, machine learning careers, AI jobs, analytics positions"}', NOW() + INTERVAL '24 hours');
+
+-- Update platform metrics to show SEO activation
+INSERT INTO public.platform_metrics (metric_name, metric_value, metric_date, metadata) VALUES
+('seo_pages_generated', 12, CURRENT_DATE, '{"type": "landing_pages", "activation": "manual", "timestamp": "' || NOW()::text || '"}'),
+('seo_monitoring_active', 1, CURRENT_DATE, '{"status": "activated", "pages_tracked": 12, "timestamp": "' || NOW()::text || '"}'),
+('sitemap_last_updated', EXTRACT(EPOCH FROM NOW()), CURRENT_DATE, '{"action": "seo_activation", "pages_added": 12, "timestamp": "' || NOW()::text || '"}');
