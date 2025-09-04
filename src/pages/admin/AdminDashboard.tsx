@@ -12,6 +12,7 @@ import { PlatformOverviewWidget } from '@/components/admin/dashboard/PlatformOve
 import EmailSystemTest from '@/components/admin/EmailSystemTest';
 import { EmailQueueManager } from '@/components/admin/EmailQueueManager';
 import ProfileReminderEmailSender from '@/components/admin/ProfileReminderEmailSender';
+import { EmailNotificationTest } from '@/components/dashboard/EmailNotificationTest';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
@@ -64,13 +65,14 @@ const AdminDashboard = () => {
         </div>
 
         {/* Email System Test Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <EmailSystemTest />
-          <ProfileReminderEmailSender />
+          <EmailQueueManager />
+          <EmailNotificationTest />
         </div>
         
-        <div className="lg:col-span-2">
-          <EmailQueueManager />
+        <div className="mt-6">
+          <ProfileReminderEmailSender />
         </div>
         
         {/* System Health Monitoring */}
