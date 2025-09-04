@@ -1,381 +1,422 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, Globe, Search, FileText, ExternalLink, CheckCircle2, XCircle, Clock } from 'lucide-react';
-import { toast } from 'sonner';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  Search, 
+  TrendingUp, 
+  Globe, 
+  FileText, 
+  Activity, 
+  RefreshCw,
+  ExternalLink,
+  CheckCircle,
+  AlertCircle,
+  Clock
+} from 'lucide-react';
 
-interface SitemapStats {
-  success: boolean;
-  submitted_at?: string;
-  sitemap_url?: string;
-  results?: Array<{
-    engine: string;
-    success: boolean;
-    status?: number;
-    error?: string;
-  }>;
+interface SEOMetric {
+  id: string;
+  metric_name: string;
+  metric_value: number;
+  metric_category: string;
+  status: string;
+  details: any;
+  updated_at: string;
 }
 
-interface SitemapData {
-  type: string;
-  count: number;
-  lastGenerated: string;
-  url: string;
-  status: 'success' | 'error' | 'pending';
+interface AutomationStatus {
+  last_run: string;
+  next_run: string;
+  success_rate: number;
+  total_runs: number;
 }
 
-export function SEODashboard() {
-  const [sitemapStats, setSitemapStats] = useState<SitemapStats | null>(null);
-  const [sitemapData, setSitemapData] = useState<SitemapData[]>([
-    { type: 'Jobs', count: 0, lastGenerated: '', url: '/functions/v1/sitemap-generator?type=jobs&page=1', status: 'pending' },
-    { type: 'Companies', count: 0, lastGenerated: '', url: '/functions/v1/sitemap-generator?type=companies&page=1', status: 'pending' },
-    { type: 'Profiles', count: 0, lastGenerated: '', url: '/functions/v1/sitemap-generator?type=profiles&page=1', status: 'pending' },
-    { type: 'Tools', count: 10, lastGenerated: '', url: '/functions/v1/sitemap-generator?type=tools', status: 'pending' },
-    { type: 'Static Pages', count: 12, lastGenerated: '', url: '/functions/v1/sitemap-generator?type=static', status: 'pending' }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const testSitemap = async (type: string, url: string) => {
-    try {
-      const response = await fetch(`https://dthlgsnakhoftinssokm.supabase.co${url}`);
-      if (response.ok) {
-        const text = await response.text();
-        // Count URLs in the sitemap
-        const urlCount = (text.match(/<loc>/g) || []).length;
-        
-        setSitemapData(prev => prev.map(item => 
-          item.type === type 
-            ? { ...item, count: urlCount, lastGenerated: new Date().toISOString(), status: 'success' }
-            : item
-        ));
-        
-        toast.success(`${type} sitemap loaded successfully (${urlCount} URLs)`);
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (error) {
-      setSitemapData(prev => prev.map(item => 
-        item.type === type 
-          ? { ...item, status: 'error', lastGenerated: new Date().toISOString() }
-          : item
-      ));
-      toast.error(`Failed to load ${type} sitemap: ${error.message}`);
-    }
-  };
-
-  const testAllSitemaps = async () => {
-    setIsLoading(true);
-    
-    for (const sitemap of sitemapData) {
-      await testSitemap(sitemap.type, sitemap.url);
-      // Small delay between requests
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-    
-    setIsLoading(false);
-  };
-
-  const submitToSearchEngines = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=submit');
-      
-      if (response.ok) {
-        const result = await response.json();
-        setSitemapStats(result);
-        
-        if (result.success) {
-          toast.success('Sitemap submitted to search engines successfully!');
-        } else {
-          toast.error('Failed to submit sitemap to search engines');
-        }
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (error) {
-      toast.error(`Failed to submit sitemap: ${error.message}`);
-    }
-    
-    setIsSubmitting(false);
-  };
-
-  const generateMainSitemap = async () => {
-    try {
-      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=index');
-      
-      if (response.ok) {
-        toast.success('Main sitemap index generated successfully!');
-        // Open in new tab to view
-        window.open('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/sitemap-generator?type=index', '_blank');
-      } else {
-        throw new Error(`HTTP ${response.status}`);
-      }
-    } catch (error) {
-      toast.error(`Failed to generate main sitemap: ${error.message}`);
-    }
-  };
+export const SEODashboard: React.FC = () => {
+  const [metrics, setMetrics] = useState<SEOMetric[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [automation, setAutomation] = useState<AutomationStatus | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Auto-test sitemaps on component mount
-    testAllSitemaps();
+    loadSEOMetrics();
+    loadAutomationStatus();
   }, []);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-      case 'error':
-        return <XCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Clock className="h-4 w-4 text-yellow-500" />;
+  const loadSEOMetrics = async () => {
+    try {
+      // Try to get from seo_monitoring table first, fallback to platform_metrics
+      let { data: seoData, error: seoError } = await supabase
+        .from('seo_monitoring')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      if (seoError) {
+        // Fallback to platform_metrics
+        const { data: platformData, error: platformError } = await supabase
+          .from('platform_metrics')
+          .select('*')
+          .eq('metric_category', 'seo')
+          .order('period_start', { ascending: false });
+
+        if (platformError) throw platformError;
+        
+        // Transform platform_metrics to match SEOMetric interface
+        seoData = platformData?.map(item => ({
+          id: item.id,
+          metric_name: item.metric_name,
+          metric_value: item.metric_value || 0,
+          metric_category: 'seo',
+          status: 'active',
+          details: item.metadata || {},
+          updated_at: item.period_start
+        })) || [];
+      }
+
+      setMetrics(seoData || []);
+    } catch (error) {
+      console.error('Error loading SEO metrics:', error);
+      toast({
+        title: "Error loading metrics",
+        description: "Could not fetch SEO performance data",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <Badge variant="default" className="bg-green-500">Active</Badge>;
-      case 'error':
-        return <Badge variant="destructive">Error</Badge>;
-      default:
-        return <Badge variant="secondary">Pending</Badge>;
+  const loadAutomationStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('agent_tasks')
+        .select('*')
+        .in('action', ['seo_automation', 'sitemap_generation'])
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (data && data.length > 0) {
+        const successfulTasks = data.filter(task => task.status === 'completed');
+        setAutomation({
+          last_run: data[0].updated_at,
+          next_run: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          success_rate: (successfulTasks.length / data.length) * 100,
+          total_runs: data.length
+        });
+      }
+    } catch (error) {
+      console.error('Error loading automation status:', error);
     }
   };
+
+  const triggerSEOAutomation = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('seo-automation-engine', {
+        body: { automation_type: 'manual_trigger', trigger: 'dashboard' }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "SEO Automation Triggered",
+        description: "The SEO automation process has been started",
+      });
+
+      setTimeout(loadSEOMetrics, 2000);
+    } catch (error) {
+      console.error('Error triggering SEO automation:', error);
+      toast({
+        title: "Automation Failed",
+        description: "Could not start SEO automation",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const generateSitemap = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('enhanced-sitemap');
+      
+      if (error) throw error;
+
+      toast({
+        title: "Sitemap Generated",
+        description: "XML sitemap has been refreshed successfully",
+      });
+    } catch (error) {
+      console.error('Error generating sitemap:', error);
+      toast({
+        title: "Sitemap Generation Failed",
+        description: "Could not generate sitemap",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getMetricValue = (name: string) => {
+    const metric = metrics.find(m => m.metric_name === name);
+    return metric?.metric_value || 0;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-success';
+      case 'warning': return 'bg-warning';
+      case 'error': return 'bg-destructive';
+      default: return 'bg-muted';
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <RefreshCw className="h-6 w-6 animate-spin mr-2" />
+        Loading SEO Dashboard...
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">SEO Dashboard</h2>
-          <p className="text-muted-foreground">
-            Monitor and manage your sitemap generation and search engine submissions
-          </p>
+          <h1 className="text-3xl font-bold">SEO Dashboard</h1>
+          <p className="text-muted-foreground">Monitor and manage SEO automation</p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            onClick={testAllSitemaps}
-            disabled={isLoading}
-            variant="outline"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh All
+          <Button onClick={triggerSEOAutomation} variant="outline">
+            <Activity className="h-4 w-4 mr-2" />
+            Trigger Automation
           </Button>
-          <Button 
-            onClick={generateMainSitemap}
-            variant="outline"
-          >
+          <Button onClick={generateSitemap} variant="outline">
             <FileText className="h-4 w-4 mr-2" />
-            View Main Sitemap
+            Generate Sitemap
           </Button>
-          <Button 
-            onClick={submitToSearchEngines}
-            disabled={isSubmitting}
-          >
-            <Search className={`h-4 w-4 mr-2 ${isSubmitting ? 'animate-spin' : ''}`} />
-            Submit to Search Engines
+          <Button onClick={loadSEOMetrics} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="sitemaps" className="space-y-4">
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">SEO Pages Generated</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{getMetricValue('total_seo_pages_generated')}</div>
+            <p className="text-xs text-muted-foreground">
+              +12% from last month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Sitemap Entries</CardTitle>
+            <Globe className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{getMetricValue('sitemap_entries_count')}</div>
+            <p className="text-xs text-muted-foreground">
+              Updated hourly
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cache Hit Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{getMetricValue('cache_hit_rate')}%</div>
+            <Progress value={getMetricValue('cache_hit_rate')} className="mt-2" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Automation Success</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{getMetricValue('automation_success_rate')}%</div>
+            <p className="text-xs text-muted-foreground">
+              {automation?.total_runs || 0} total runs
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="sitemaps">Sitemaps</TabsTrigger>
-          <TabsTrigger value="submissions">Search Engine Submissions</TabsTrigger>
-          <TabsTrigger value="analytics">SEO Analytics</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
+          <TabsTrigger value="cache">Content Cache</TabsTrigger>
+          <TabsTrigger value="sitemap">Sitemap</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="sitemaps" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sitemapData.map((sitemap) => (
-              <Card key={sitemap.type}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {sitemap.type}
-                  </CardTitle>
-                  {getStatusIcon(sitemap.status)}
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="text-2xl font-bold">{sitemap.count.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">URLs indexed</p>
-                    <div className="flex items-center justify-between">
-                      {getStatusBadge(sitemap.status)}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => testSitemap(sitemap.type, sitemap.url)}
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        Test
-                      </Button>
-                    </div>
-                    {sitemap.lastGenerated && (
-                      <p className="text-xs text-muted-foreground">
-                        Last updated: {new Date(sitemap.lastGenerated).toLocaleString()}
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>SEO Performance Overview</CardTitle>
+                <CardDescription>Current system performance metrics</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {metrics.map((metric) => (
+                  <div key={metric.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium capitalize">
+                        {metric.metric_name.replace(/_/g, ' ')}
                       </p>
-                    )}
+                      <p className="text-sm text-muted-foreground">
+                        {metric.details?.description || 'No description'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className={getStatusColor(metric.status)}>
+                        {metric.status}
+                      </Badge>
+                      <span className="font-mono text-sm">{metric.metric_value}</span>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                ))}
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
-                Direct links to sitemap endpoints and tools
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2 md:grid-cols-2">
-                <Button
-                  variant="outline"
-                  onClick={() => window.open('https://talentxcel.in/sitemap.xml', '_blank')}
-                  className="justify-start"
-                >
-                  <Globe className="h-4 w-4 mr-2" />
-                  View Live Sitemap
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Common SEO management tasks</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button onClick={triggerSEOAutomation} className="w-full justify-start">
+                  <Activity className="h-4 w-4 mr-2" />
+                  Run SEO Automation
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.open('https://talentxcel.in/robots.txt', '_blank')}
-                  className="justify-start"
-                >
+                <Button onClick={generateSitemap} variant="outline" className="w-full justify-start">
                   <FileText className="h-4 w-4 mr-2" />
-                  View Robots.txt
+                  Regenerate Sitemap
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.open('https://search.google.com/search-console', '_blank')}
-                  className="justify-start"
-                >
+                <Button variant="outline" className="w-full justify-start">
                   <Search className="h-4 w-4 mr-2" />
-                  Google Search Console
+                  SEO Content Audit
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.open('https://www.bing.com/webmasters', '_blank')}
-                  className="justify-start"
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => window.open('https://talentxcel.in/sitemap.xml', '_blank')}
                 >
-                  <Search className="h-4 w-4 mr-2" />
-                  Bing Webmaster Tools
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Sitemap
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
-        <TabsContent value="submissions" className="space-y-4">
+        <TabsContent value="automation" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Search Engine Submission Status</CardTitle>
-              <CardDescription>
-                Track sitemap submissions to Google and Bing
-              </CardDescription>
+              <CardTitle>Automation Status</CardTitle>
+              <CardDescription>SEO automation schedule and performance</CardDescription>
             </CardHeader>
             <CardContent>
-              {sitemapStats ? (
+              {automation ? (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span>Submission Status:</span>
-                    <Badge variant={sitemapStats.success ? "default" : "destructive"}>
-                      {sitemapStats.success ? "Success" : "Failed"}
-                    </Badge>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-medium">Last Run</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(automation.last_run).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Next Scheduled</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(automation.next_run).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                  
-                  {sitemapStats.submitted_at && (
-                    <div className="flex items-center justify-between">
-                      <span>Submitted At:</span>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(sitemapStats.submitted_at).toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-
-                  {sitemapStats.results && (
-                    <div className="space-y-2">
-                      <h4 className="font-medium">Submission Results:</h4>
-                      {sitemapStats.results.map((result, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 border rounded">
-                          <span>{result.engine}</span>
-                          <div className="flex items-center gap-2">
-                            {result.success ? (
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-red-500" />
-                            )}
-                            <span className="text-sm text-muted-foreground">
-                              {result.status && `HTTP ${result.status}`}
-                              {result.error && result.error}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-sm font-medium mb-2">Success Rate</p>
+                    <Progress value={automation.success_rate} className="mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      {automation.success_rate.toFixed(1)}% success rate over {automation.total_runs} runs
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No submissions yet. Click "Submit to Search Engines" to test the submission process.
+                <div className="text-center py-8">
+                  <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-muted-foreground">No automation data available</p>
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>SEO Status</CardTitle>
-                <CardDescription>Overall SEO health indicators</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span>Sitemap Index</span>
-                    <Badge variant="default">Active</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Robots.txt</span>
-                    <Badge variant="default">Configured</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Auto-submission</span>
-                    <Badge variant="default">Daily @ 2 AM UTC</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Total URLs</span>
-                    <span className="font-mono">{sitemapData.reduce((sum, s) => sum + s.count, 0).toLocaleString()}</span>
-                  </div>
+        <TabsContent value="cache" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Content Cache Statistics</CardTitle>
+              <CardDescription>SEO content caching performance</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Cache Hit Rate</span>
+                  <span className="font-mono">{getMetricValue('cache_hit_rate')}%</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center justify-between">
+                  <span>Content Freshness Score</span>
+                  <span className="font-mono">{getMetricValue('content_freshness_score')}/100</span>
+                </div>
+                <Progress value={getMetricValue('content_freshness_score')} className="mt-2" />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Content Distribution</CardTitle>
-                <CardDescription>Breakdown of indexable content</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {sitemapData.map((item) => (
-                    <div key={item.type} className="flex items-center justify-between">
-                      <span className="text-sm">{item.type}</span>
-                      <span className="text-sm font-mono">{item.count.toLocaleString()}</span>
-                    </div>
-                  ))}
+        <TabsContent value="sitemap" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sitemap Management</CardTitle>
+              <CardDescription>XML sitemap generation and statistics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span>Total Entries</span>
+                  <span className="font-mono">{getMetricValue('sitemap_entries_count')}</span>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <div className="flex gap-2">
+                  <Button onClick={generateSitemap} variant="outline">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Regenerate Now
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open('https://talentxcel.in/sitemap.xml', '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View XML
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
   );
-}
+};

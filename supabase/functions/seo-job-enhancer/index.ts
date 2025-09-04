@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -6,147 +5,152 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface JobSEOData {
-  meta_title: string
-  meta_description: string
-  seo_slug: string
-  structured_data: any
-  keywords: string[]
+interface JobEnhancementRequest {
+  job_id: string
+  enhancement_type: 'full' | 'metadata' | 'content'
+  force_regenerate?: boolean
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    // Add detailed logging of the raw request
-    const requestText = await req.text();
-    console.log('📥 Raw request body:', requestText);
+    console.log('🔧 SEO Job Enhancer Starting...')
     
-    let requestBody;
-    try {
-      requestBody = JSON.parse(requestText);
-      console.log('✅ Parsed request body:', requestBody);
-    } catch (parseError) {
-      console.error('❌ JSON parse error:', parseError);
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Invalid JSON in request body'
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    )
+
+    const requestBody = await req.json() as JobEnhancementRequest
+    const { job_id, enhancement_type = 'full', force_regenerate = false } = requestBody
+
+    console.log(`🎯 Enhancing job: ${job_id} with type: ${enhancement_type}`)
+
+    // Get job details
+    const { data: job, error: jobError } = await supabaseClient
+      .from('jobs')
+      .select('*')
+      .eq('id', job_id)
+      .single()
+
+    if (jobError || !job) {
+      throw new Error(`Job not found: ${job_id}`)
     }
-    
-    const { jobId, enhance_all = false } = requestBody;
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
-
-    console.log('🔧 SEO Job Enhancement Request:', { 
-      jobId: jobId, 
-      jobIdType: typeof jobId,
-      jobIdLength: jobId?.length,
-      enhance_all: enhance_all,
-      enhance_all_type: typeof enhance_all,
-      enhance_all_strict: enhance_all === true
-    })
-
-    let jobs = []
-
-    if (enhance_all) {
-      console.log('⚙️ Enhancing all jobs...')
-      // Get all active jobs without SEO data
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          id, title, description, location, salary_min, salary_max,
-          experience_level, employment_type, created_at, updated_at,
-          companies(name, industry)
-        `)
-        .eq('is_active', true)
-        .eq('job_status', 'open')
-        .or('meta_title.is.null,meta_description.is.null,seo_slug.is.null')
-        .limit(100) // Process in batches
-
-      if (error) throw error
-      jobs = data || []
-    } else {
-      // Validate jobId for single job enhancement
-      if (!jobId || typeof jobId !== 'string' || jobId.length !== 36) {
-        console.error('❌ Invalid or missing jobId for single job enhancement:', jobId)
-        throw new Error('Missing or invalid jobId - must be a valid UUID string (36 characters)')
-      }
-
-      console.log('✅ Enhancing single job:', jobId)
-      // Get specific job
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          id, title, description, location, salary_min, salary_max,
-          experience_level, employment_type, created_at, updated_at,
-          companies(name, industry)
-        `)
-        .eq('id', jobId)
-        .eq('is_active', true)
+    // Check if SEO content already exists
+    if (!force_regenerate) {
+      const { data: existingContent } = await supabaseClient
+        .from('seo_content_cache')
+        .select('*')
+        .eq('entity_id', job_id)
+        .eq('entity_type', 'job')
         .single()
 
-      if (error) throw error
-      jobs = [data]
-    }
-
-    const enhancedJobs = []
-
-    for (const job of jobs) {
-      try {
-        const seoData = generateJobSEO(job)
-        
-        // Update job with SEO data
-        const { error: updateError } = await supabase
-          .from('jobs')
-          .update({
-            meta_title: seoData.meta_title,
-            meta_description: seoData.meta_description,
-            seo_slug: seoData.seo_slug,
-            structured_data: seoData.structured_data,
-            keywords: seoData.keywords,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', job.id)
-
-        if (updateError) {
-          console.error(`❌ Error updating job ${job.id}:`, updateError)
-          continue
-        }
-
-        enhancedJobs.push({
-          id: job.id,
-          title: job.title,
-          seo_data: seoData
+      if (existingContent) {
+        console.log('✅ Using existing SEO content from cache')
+        return new Response(JSON.stringify({
+          success: true,
+          enhanced: true,
+          cached: true,
+          job_id,
+          enhancement_type
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
-
-        console.log(`✅ Enhanced job: ${job.title}`)
-
-      } catch (error) {
-        console.error(`❌ Error enhancing job ${job.id}:`, error)
       }
     }
+
+    // Generate SEO enhancements
+    const seoEnhancements = {
+      meta_title: `${job.title} at ${job.company_name} | ${job.location} | TalentXcel`,
+      meta_description: `Apply for ${job.title} at ${job.company_name} in ${job.location}. ${job.employment_type} position offering competitive salary. Join TalentXcel to find your dream job.`,
+      keywords: [
+        job.title.toLowerCase(),
+        job.company_name.toLowerCase(),
+        job.location.toLowerCase(),
+        job.employment_type.toLowerCase(),
+        'jobs',
+        'careers',
+        'hiring'
+      ],
+      structured_data: {
+        "@context": "https://schema.org/",
+        "@type": "JobPosting",
+        "title": job.title,
+        "description": job.description,
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": job.company_name,
+          "url": `https://talentxcel.in/companies/${job.company_id || 'company'}`
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": job.location
+        },
+        "employmentType": job.employment_type?.toUpperCase(),
+        "datePosted": job.created_at,
+        "validThrough": job.expires_at,
+        "baseSalary": job.salary_range ? {
+          "@type": "MonetaryAmount",
+          "currency": "INR",
+          "value": {
+            "@type": "QuantitativeValue",
+            "minValue": job.salary_min,
+            "maxValue": job.salary_max,
+            "unitText": "YEAR"
+          }
+        } : undefined
+      }
+    }
+
+    // Save to cache
+    const { error: cacheError } = await supabaseClient
+      .from('seo_content_cache')
+      .upsert({
+        entity_id: job_id,
+        entity_type: 'job',
+        content_type: 'job_posting',
+        content_data: seoEnhancements,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+      })
+
+    if (cacheError) {
+      console.error('Cache save error:', cacheError)
+    }
+
+    // Update job with SEO slug if needed
+    if (!job.seo_slug) {
+      const seoSlug = `${job.title}-${job.company_name}-${job.location}`
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .substring(0, 100)
+
+      await supabaseClient
+        .from('jobs')
+        .update({ seo_slug: seoSlug })
+        .eq('id', job_id)
+    }
+
+    console.log('✅ Job SEO enhancement completed')
 
     return new Response(JSON.stringify({
       success: true,
-      enhanced_count: enhancedJobs.length,
-      total_processed: jobs.length,
-      enhanced_jobs: enhancedJobs
+      enhanced: true,
+      cached: false,
+      job_id,
+      enhancement_type,
+      seo_data: seoEnhancements
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
   } catch (error) {
-    console.error('❌ SEO enhancement error:', error)
+    console.error('❌ SEO Job Enhancer Error:', error)
+    
     return new Response(JSON.stringify({
       success: false,
       error: error.message
@@ -156,125 +160,3 @@ serve(async (req) => {
     })
   }
 })
-
-function generateJobSEO(job: any): JobSEOData {
-  const companyName = job.companies?.name || 'Company'
-  const location = job.location || 'India'
-  const title = job.title
-  
-  // Generate SEO-optimized title (under 60 characters)
-  let metaTitle = `${title} at ${companyName} | TalentXcel`
-  if (metaTitle.length > 60) {
-    metaTitle = `${title} | ${companyName} Jobs`
-  }
-  if (metaTitle.length > 60) {
-    metaTitle = `${title} | TalentXcel Jobs`
-  }
-
-  // Generate meta description (under 160 characters)
-  const salaryPart = job.salary_min && job.salary_max 
-    ? ` Salary: ₹${job.salary_min/100000}L-${job.salary_max/100000}L.`
-    : ''
-  
-  let metaDescription = `Apply for ${title} position at ${companyName} in ${location}.${salaryPart} Join TalentXcel to advance your career today!`
-  
-  if (metaDescription.length > 160) {
-    metaDescription = `${title} job at ${companyName} in ${location}. Apply now on TalentXcel!`
-  }
-
-  // Generate SEO slug
-  const seoSlug = generateSlug(`${title}-${companyName}-${location}`)
-
-  // Generate keywords
-  const keywords = [
-    title.toLowerCase(),
-    `${title.toLowerCase()} jobs`,
-    `${companyName.toLowerCase()} jobs`,
-    `jobs in ${location.toLowerCase()}`,
-    `${title.toLowerCase()} ${location.toLowerCase()}`,
-    'career opportunities',
-    'apply now'
-  ]
-
-  // Add experience level keywords
-  if (job.experience_level) {
-    keywords.push(`${job.experience_level} ${title.toLowerCase()}`)
-  }
-
-  // Add employment type keywords
-  if (job.employment_type) {
-    keywords.push(`${job.employment_type.toLowerCase()} jobs`)
-  }
-
-  // Generate structured data (JobPosting schema)
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    "title": title,
-    "description": job.description || `Join ${companyName} as ${title}`,
-    "identifier": {
-      "@type": "PropertyValue",
-      "name": companyName,
-      "value": job.id
-    },
-    "datePosted": job.created_at,
-    "validThrough": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-    "employmentType": job.employment_type?.toUpperCase() || "FULL_TIME",
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": companyName,
-      "url": "https://talentxcel.in"
-    },
-    "jobLocation": {
-      "@type": "Place",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": location,
-        "addressCountry": "IN"
-      }
-    },
-    "url": `https://talentxcel.in/jobs/${job.id}`,
-    "applicationContact": {
-      "@type": "ContactPoint",
-      "url": `https://talentxcel.in/jobs/${job.id}/apply`,
-      "contactType": "Application Portal"
-    }
-  }
-
-  // Add salary if available
-  if (job.salary_min && job.salary_max) {
-    structuredData.baseSalary = {
-      "@type": "MonetaryAmount",
-      "currency": "INR",
-      "value": {
-        "@type": "QuantitativeValue",
-        "minValue": job.salary_min,
-        "maxValue": job.salary_max,
-        "unitText": "YEAR"
-      }
-    }
-  }
-
-  // Add industry if available
-  if (job.companies?.industry) {
-    structuredData.industry = job.companies.industry
-  }
-
-  return {
-    meta_title: metaTitle,
-    meta_description: metaDescription,
-    seo_slug: seoSlug,
-    structured_data: structuredData,
-    keywords: keywords
-  }
-}
-
-function generateSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .trim()
-    .substring(0, 100) // Limit length
-}
