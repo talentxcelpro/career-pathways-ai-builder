@@ -24,6 +24,7 @@ import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { analyticsRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
+import { publicRoutes } from "./navigation/publicRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 
 // AI Agent routes
@@ -38,6 +39,7 @@ export const aiAgentRoutes = [
 ];
 
 export const navItems = [
+  ...publicRoutes,
   ...coreRoutes,
   ...authRoutes,
   ...profileRoutes,

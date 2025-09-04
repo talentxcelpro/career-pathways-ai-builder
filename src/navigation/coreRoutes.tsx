@@ -173,6 +173,13 @@ export const coreRoutes = [
     requiresAuth: false,
   },
   {
+    title: "Public Tools",
+    to: "/public-tools",
+    page: <div className="min-h-screen bg-background"><div className="container mx-auto"><div className="p-4">{/* PublicTools content will be imported */}</div></div></div>,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
     title: "Not Found",
     to: "*",
     page: <NotFound />,

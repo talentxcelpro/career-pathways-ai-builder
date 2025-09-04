@@ -36,6 +36,7 @@ import { SearchConsoleVerification } from "./components/analytics/SearchConsoleV
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
+import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
@@ -247,14 +248,15 @@ const App = () => {
                       
        {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                         </Routes>
-                      </React.Suspense>
-                     </main>
-                    <FooterWrapper />
-                    <InstallPrompt />
-                    <InstallButton />
-                    <IOSInstallPrompt />
-                  </div>
-                </MobileAppWrapper>
+                       </React.Suspense>
+                      </main>
+                     <FooterWrapper />
+                     <OnboardingFlow />
+                     <InstallPrompt />
+                     <InstallButton />
+                     <IOSInstallPrompt />
+                   </div>
+                 </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
                 {/* </RealtimeProvider> */}
