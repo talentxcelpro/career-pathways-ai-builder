@@ -25421,6 +25421,15 @@ export type Database = {
         Args: { reason?: string; request_id: string }
         Returns: Json
       }
+      send_bulk_notifications: {
+        Args: {
+          message: string
+          notification_type: string
+          title: string
+          user_ids: string[]
+        }
+        Returns: number
+      }
       send_system_notification: {
         Args: {
           p_link?: string
