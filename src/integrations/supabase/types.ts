@@ -25404,7 +25404,9 @@ export type Database = {
         }[]
       }
       get_unified_analytics: {
-        Args: { p_employer_id?: string; p_job_id?: string }
+        Args:
+          | Record<PropertyKey, never>
+          | { p_employer_id?: string; p_job_id?: string }
         Returns: {
           company_name: string
           conversion_rate: number
