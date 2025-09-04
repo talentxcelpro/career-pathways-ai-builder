@@ -1,0 +1,30 @@
+-- Batch 17: Fix function search_path issues for additional get_* functions
+
+ALTER FUNCTION public.get_agent_by_role(p_role text) SET search_path = public;
+ALTER FUNCTION public.get_backlink_dashboard_stats() SET search_path = public;
+ALTER FUNCTION public.get_bot_display_info(bot_uuid uuid) SET search_path = public;
+ALTER FUNCTION public.get_connection_suggestions(user_uuid uuid, p_limit integer) SET search_path = public;
+ALTER FUNCTION public.get_due_agents() SET search_path = public;
+ALTER FUNCTION public.get_email_domain(email_address text) SET search_path = public;
+ALTER FUNCTION public.get_job_categories_with_counts() SET search_path = public;
+ALTER FUNCTION public.get_job_redirect_history(job_uuid uuid) SET search_path = public;
+ALTER FUNCTION public.get_job_skills(job_id_param uuid) SET search_path = public;
+ALTER FUNCTION public.get_jobs_paginated_optimized(p_page integer, p_limit integer, p_search text, p_location text, p_employment_types text[], p_experience_levels text[], p_min_salary integer, p_max_salary integer, p_is_remote boolean, p_skills text[], p_sort_by text) SET search_path = public;
+ALTER FUNCTION public.get_last_seen_text(last_seen_timestamp timestamp with time zone) SET search_path = public;
+ALTER FUNCTION public.get_matching_candidates(job_id_param uuid) SET search_path = public;
+ALTER FUNCTION public.get_notification_stats(user_id_param uuid) SET search_path = public;
+ALTER FUNCTION public.get_or_create_user_referral(user_uuid uuid) SET search_path = public;
+ALTER FUNCTION public.get_pending_agent_tasks(limit_count integer) SET search_path = public;
+ALTER FUNCTION public.get_post_reaction_counts(post_uuid uuid) SET search_path = public;
+ALTER FUNCTION public.get_profile_completion_insights() SET search_path = public;
+ALTER FUNCTION public.get_ranked_content(p_module text, p_content_type text, p_limit integer, p_offset integer) SET search_path = public;
+ALTER FUNCTION public.get_recent_posts(limit_count integer) SET search_path = public;
+ALTER FUNCTION public.get_reel_feed(user_id_param uuid, limit_param integer, offset_param integer) SET search_path = public;
+ALTER FUNCTION public.get_scraped_job_applications() SET search_path = public;
+ALTER FUNCTION public.get_trending_job_locations() SET search_path = public;
+ALTER FUNCTION public.get_trending_jobs(limit_count integer) SET search_path = public;
+ALTER FUNCTION public.get_trending_skills(p_limit integer) SET search_path = public;
+ALTER FUNCTION public.get_unified_analytics(p_employer_id uuid, p_job_id uuid) SET search_path = public;
+ALTER FUNCTION public.get_user_app_role(_user_id uuid) SET search_path = public;
+ALTER FUNCTION public.get_user_pro_plan(p_user_id uuid) SET search_path = public;
+ALTER FUNCTION public.get_user_subscription_tier(user_uuid uuid) SET search_path = public;
