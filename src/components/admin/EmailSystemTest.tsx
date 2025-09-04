@@ -30,7 +30,7 @@ const EmailSystemTest = () => {
       const emailPayload = {
         to: testEmail,
         subject: 'Welcome to TalentXcel! 🎉',
-        html: `
+        body: `
           <h2>Welcome to TalentXcel!</h2>
           <p>Hello Test User,</p>
           <p>Welcome to TalentXcel platform! We're excited to have you on board.</p>
@@ -80,7 +80,7 @@ const EmailSystemTest = () => {
       const emailPayload = {
         to: testEmail,
         subject: 'New Job Match for You! 💼',
-        html: `
+        body: `
           <h2>New Job Match Found!</h2>
           <p>Hello Test User,</p>
           <p>We found a great job match for you:</p>

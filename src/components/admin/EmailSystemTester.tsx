@@ -140,7 +140,7 @@ export const EmailSystemTester = () => {
         to: "talentxcelpro@gmail.com",
         from: "TalentXcel <noreply@talentxcel.in>",
         subject: "Test Email from TalentXcel System",
-        html: "<h1>✅ System Test Email</h1><p>This is a system test to verify email functionality.</p><p>Sent at: " + new Date().toLocaleString() + "</p>",
+        body: "<h1>✅ System Test Email</h1><p>This is a system test to verify email functionality.</p><p>Sent at: " + new Date().toLocaleString() + "</p>",
         smtp: {
           host: "email-smtp.eu-north-1.amazonaws.com",
           port: "587",
