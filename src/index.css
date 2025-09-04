@@ -180,37 +180,51 @@ img.loaded {
 
 @layer base {
   :root {
-    /* TalentXcel Color Palette - Darker Text */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 3%;
+    /* TalentXcel Enhanced Color Palette */
+    --background: 0 0% 99%;
+    --foreground: 228 63% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
+    --card-foreground: 228 63% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
+    --popover-foreground: 228 63% 15%;
 
-    --primary: 220 91% 60%;
+    /* TalentXcel Brand Colors - Enhanced */
+    --primary: 228 63% 29%; /* TalentXcel Deep Blue #1E2A78 */
     --primary-foreground: 0 0% 100%;
+    --primary-light: 228 63% 45%;
+    --primary-lighter: 228 63% 85%;
 
-    --secondary: 240 9% 98%;
-    --secondary-foreground: 220 91% 60%;
+    --brand-green: 142 64% 48%; /* TalentXcel Emerald Green #28C76F */
+    --brand-green-foreground: 0 0% 100%;
+    --brand-green-light: 142 64% 65%;
+    --brand-green-lighter: 142 64% 90%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --secondary: 234 48% 97%;
+    --secondary-foreground: 228 63% 35%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 12%;
+    --muted: 228 20% 97%;
+    --muted-foreground: 228 15% 42%;
 
-    --destructive: 336 75% 52%;
+    --accent: 234 48% 96%;
+    --accent-foreground: 228 63% 20%;
+
+    --destructive: 0 79% 63%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 140 75% 42%;
+    --success: 142 64% 48%;
     --success-foreground: 0 0% 100%;
 
-    --border: 0 0% 88%;
-    --input: 0 0% 94%;
-    --ring: 203 89% 53%;
+    --warning: 35 100% 63%;
+    --warning-foreground: 0 0% 100%;
+
+    --info: 220 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 228 20% 90%;
+    --input: 228 20% 95%;
+    --ring: 228 63% 29%;
 
     /* TalentXcel Typography & Layout - Compact */
     --radius: 6px;
@@ -219,16 +233,28 @@ img.loaded {
     /* TalentXcel Shadows */
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
     
-    /* Apple-inspired gradients for marketplace */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(220 91% 70%));
+    /* TalentXcel Premium Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brand-green)));
+    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--brand-green) / 0.1));
+    --gradient-success: linear-gradient(135deg, hsl(var(--brand-green)), hsl(var(--brand-green-light)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--primary) / 0.05));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(var(--accent)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--brand-green) / 0.05));
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+    --gradient-overlay: linear-gradient(180deg, transparent, hsl(var(--background) / 0.8));
     
-    /* Apple-inspired shadows for premium feel */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.1);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.08);
-    --shadow-float: 0 8px 30px -8px hsl(var(--foreground) / 0.1);
+    /* Glass Morphism Effects */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    
+    /* Premium Shadows with Brand Colors */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.15);
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.12);
+    --shadow-brand: 0 8px 25px -8px hsl(var(--brand-green) / 0.3);
+    --shadow-float: 0 8px 30px -8px hsl(var(--foreground) / 0.08);
+    --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -246,36 +272,50 @@ img.loaded {
   }
 
   .dark {
-    --background: 210 29% 10%;
-    --foreground: 0 0% 100%;
+    --background: 228 63% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 210 29% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 228 63% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 210 29% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 228 63% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 203 89% 53%;
+    /* TalentXcel Brand Colors - Dark Mode */
+    --primary: 228 63% 55%;
     --primary-foreground: 0 0% 100%;
+    --primary-light: 228 63% 70%;
+    --primary-lighter: 228 63% 25%;
 
-    --secondary: 210 29% 20%;
-    --secondary-foreground: 0 0% 100%;
+    --brand-green: 142 64% 55%;
+    --brand-green-foreground: 0 0% 100%;
+    --brand-green-light: 142 64% 70%;
+    --brand-green-lighter: 142 64% 20%;
 
-    --muted: 210 29% 20%;
-    --muted-foreground: 210 29% 85%;
+    --secondary: 228 63% 15%;
+    --secondary-foreground: 0 0% 90%;
 
-    --accent: 210 29% 20%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 228 30% 18%;
+    --muted-foreground: 228 15% 75%;
 
-    --destructive: 336 75% 52%;
+    --accent: 228 30% 20%;
+    --accent-foreground: 0 0% 90%;
+
+    --destructive: 0 79% 63%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 140 75% 42%;
+    --success: 142 64% 55%;
     --success-foreground: 0 0% 100%;
 
-    --border: 210 29% 20%;
-    --input: 210 29% 20%;
-    --ring: 203 89% 53%;
+    --warning: 35 100% 63%;
+    --warning-foreground: 0 0% 100%;
+
+    --info: 220 91% 65%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 228 30% 22%;
+    --input: 228 30% 18%;
+    --ring: 228 63% 55%;
 
     --sidebar-background: 210 29% 8%;
     --sidebar-foreground: 0 0% 100%;
@@ -286,16 +326,28 @@ img.loaded {
     --sidebar-border: 210 29% 15%;
     --sidebar-ring: 203 89% 53%;
     
-    /* Dark mode Apple-inspired gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(203 89% 65%));
+    /* TalentXcel Dark Mode Premium Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brand-green)));
+    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--brand-green) / 0.2));
+    --gradient-success: linear-gradient(135deg, hsl(var(--brand-green)), hsl(var(--brand-green-light)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--primary) / 0.1));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)), hsl(var(--accent)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--brand-green) / 0.1));
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    --gradient-overlay: linear-gradient(180deg, transparent, hsl(var(--background) / 0.9));
     
-    /* Dark mode shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.2);
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
-    --shadow-float: 0 8px 30px -8px hsl(var(--foreground) / 0.2);
+    /* Dark Mode Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    
+    /* Dark Mode Premium Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
+    --shadow-brand: 0 8px 25px -8px hsl(var(--brand-green) / 0.4);
+    --shadow-float: 0 8px 30px -8px rgba(0, 0, 0, 0.3);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   }
 
   /* Admin panel animations */
@@ -486,7 +538,7 @@ img.loaded {
     height: 1.25rem !important;
   }
   
-  /* Apple-inspired utility classes */
+  /* TalentXcel Premium Utility Classes */
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
   }
@@ -495,8 +547,88 @@ img.loaded {
     box-shadow: var(--shadow-glow);
   }
   
+  .shadow-brand {
+    box-shadow: var(--shadow-brand);
+  }
+  
   .shadow-float {
     box-shadow: var(--shadow-float);
+  }
+
+  .shadow-glass {
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Glass Morphism Components */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Premium Gradient Backgrounds */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-brand {
+    background: var(--gradient-brand);
+  }
+
+  .bg-gradient-brand-soft {
+    background: var(--gradient-brand-soft);
+  }
+
+  .bg-gradient-success {
+    background: var(--gradient-success);
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-glass {
+    background: var(--gradient-glass);
+  }
+
+  /* Enhanced Interactive States */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .hover-glow {
+    transition: box-shadow 0.3s ease;
+  }
+
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Brand Color Utilities */
+  .text-brand-green {
+    color: hsl(var(--brand-green));
+  }
+
+  .bg-brand-green {
+    background-color: hsl(var(--brand-green));
+  }
+
+  .border-brand-green {
+    border-color: hsl(var(--brand-green));
   }
   
   .gradient-primary {

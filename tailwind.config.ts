@@ -29,12 +29,16 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(228, 63%, 29%)', // #1E2A78 - TalentXcel Deep Blue
-					foreground: 'hsl(0, 0%, 100%)'
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))',
+					light: 'hsl(var(--primary-light))',
+					lighter: 'hsl(var(--primary-lighter))'
 				},
 				'brand-green': {
-					DEFAULT: 'hsl(142, 64%, 48%)', // #28C76F - TalentXcel Emerald Green
-					foreground: 'hsl(0, 0%, 100%)'
+					DEFAULT: 'hsl(var(--brand-green))',
+					foreground: 'hsl(var(--brand-green-foreground))',
+					light: 'hsl(var(--brand-green-light))',
+					lighter: 'hsl(var(--brand-green-lighter))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(240, 9%, 98%)', // #FAFAFA
@@ -47,6 +51,14 @@ export default {
 				success: {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
+				},
+				info: {
+					DEFAULT: 'hsl(var(--info))',
+					foreground: 'hsl(var(--info-foreground))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
@@ -123,9 +135,20 @@ export default {
 			},
 			boxShadow: {
 				card: 'var(--shadow-card)',
-				'apple-light': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-				'apple-medium': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-				'apple-heavy': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+				elegant: 'var(--shadow-elegant)',
+				glow: 'var(--shadow-glow)',
+				brand: 'var(--shadow-brand)',
+				float: 'var(--shadow-float)',
+				glass: 'var(--shadow-glass)',
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-brand': 'var(--gradient-brand)',
+				'gradient-brand-soft': 'var(--gradient-brand-soft)',
+				'gradient-success': 'var(--gradient-success)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-glass': 'var(--gradient-glass)',
+				'gradient-overlay': 'var(--gradient-overlay)',
 			},
 			backdropBlur: {
 				'apple': '20px',
