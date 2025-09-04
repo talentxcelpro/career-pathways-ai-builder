@@ -96,6 +96,7 @@ const publicRoutes = [
   '/:slug', // Company slug route
   '/profile/:username',
   '/network/people/:id',
+  '/mobile/network',
   '/employer', // Employer landing page (shows different content based on auth)
   '/employer/request-access',
   '/employer/team/accept/:token' // Invitation acceptance
