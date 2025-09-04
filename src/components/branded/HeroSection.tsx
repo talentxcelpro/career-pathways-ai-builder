@@ -25,18 +25,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div className="relative inline-block mb-6">
           {showAIBadge ? (
             <AIStatusIndicator module="TalentXcel" feature="AI-Powered">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground font-display">
+            <h1 className="text-headline md:text-display font-heading text-foreground">
                 {title}
               </h1>
             </AIStatusIndicator>
           ) : (
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground font-display">
+            <h1 className="text-headline md:text-display font-heading text-foreground">
               {title}
             </h1>
           )}
         </div>
         
-        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-body-large text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
           {subtitle}
         </p>
         

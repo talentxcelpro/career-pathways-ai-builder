@@ -11,8 +11,10 @@ export default {
 	prefix: "",
 	theme: {
 		fontFamily: {
-			sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-			display: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui'],
+			sans: ['Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+			heading: ['Poppins', 'Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+			display: ['Poppins', 'Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+			mono: ['SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'monospace'],
 		},
 		container: {
 			center: true,
@@ -121,11 +123,45 @@ export default {
 				}
 			},
 			fontSize: {
-				'heading-xl': ['24px', { lineHeight: '1.2', fontWeight: '700' }],
-				'heading-lg': ['18px', { lineHeight: '1.3', fontWeight: '700' }],
-				'heading-md': ['16px', { lineHeight: '1.4', fontWeight: '600' }],
-				'body': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
-				'caption': ['12px', { lineHeight: '1.4', fontWeight: '400' }],
+				// Display & Headlines
+				'display': ['3rem', { lineHeight: '1.2', fontWeight: '800', letterSpacing: '-0.02em' }],      // 48px
+				'headline': ['2.25rem', { lineHeight: '1.25', fontWeight: '700', letterSpacing: '-0.015em' }],   // 36px
+				'title': ['1.875rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '-0.01em' }],    // 30px
+				'subtitle': ['1.5rem', { lineHeight: '1.375', fontWeight: '600', letterSpacing: '0' }],       // 24px
+				'subheading': ['1.25rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0' }],      // 20px
+				
+				// Body Text
+				'body-large': ['1.125rem', { lineHeight: '1.6', fontWeight: '400', letterSpacing: '0' }],     // 18px
+				'body': ['1rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }],               // 16px
+				'body-small': ['0.875rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }],     // 14px
+				'caption': ['0.75rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.025em' }],   // 12px
+				
+				// Legacy support
+				'heading-xl': ['1.5rem', { lineHeight: '1.375', fontWeight: '600' }],   // 24px
+				'heading-lg': ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],   // 18px
+				'heading-md': ['1rem', { lineHeight: '1.4', fontWeight: '500' }],       // 16px
+			},
+			letterSpacing: {
+				'tighter': '-0.05em',
+				'tight': '-0.025em',
+				'normal': '0',
+				'wide': '0.025em',
+				'wider': '0.05em',
+			},
+			lineHeight: {
+				'tight': '1.25',
+				'snug': '1.375',
+				'normal': '1.5',
+				'relaxed': '1.625',
+				'loose': '2',
+			},
+			fontWeight: {
+				'light': '300',
+				'normal': '400',
+				'medium': '500',
+				'semibold': '600',
+				'bold': '700',
+				'extrabold': '800',
 			},
 			borderRadius: {
 				DEFAULT: 'var(--radius)',
