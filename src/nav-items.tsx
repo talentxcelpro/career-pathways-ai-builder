@@ -23,6 +23,7 @@ import { referralRoutes } from "./navigation/referralRoutes";
 import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { analyticsRoutes } from "./navigation/analyticsRoutes";
+import { growthRoutes } from "./navigation/growthRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 
 // AI Agent routes
@@ -58,6 +59,7 @@ export const navItems = [
   ...referralRoutes,
   ...mobileRoutes,
   ...analyticsRoutes,
+  ...growthRoutes,
   ...aiAgentRoutes,
   ...seoRoutes,
   ...adminRoutes,
