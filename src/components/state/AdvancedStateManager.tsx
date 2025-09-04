@@ -47,6 +47,34 @@ interface AdvancedStateManagerProps {
   autoOptimize?: boolean;
 }
 
+// Mock store monitoring (would integrate with actual state management)
+const mockStores: StateStore[] = [
+  {
+    name: 'auth',
+    size: 1.2,
+    updateCount: 45,
+    lastAccessed: new Date(),
+    subscribers: 12,
+    type: 'zustand'
+  },
+  {
+    name: 'ui',
+    size: 2.8,
+    updateCount: 156,
+    lastAccessed: new Date(Date.now() - 5000),
+    subscribers: 8,
+    type: 'react'
+  },
+  {
+    name: 'data',
+    size: 5.4,
+    updateCount: 89,
+    lastAccessed: new Date(Date.now() - 2000),
+    subscribers: 15,
+    type: 'custom'
+  }
+];
+
 export const AdvancedStateManager: React.FC<AdvancedStateManagerProps> = memo(({
   className,
   enableMonitoring = true,
@@ -67,7 +95,7 @@ export const AdvancedStateManager: React.FC<AdvancedStateManagerProps> = memo(({
     }
   });
 
-  const [stores, setStores] = useState<StateStore[]>([]);
+  const [stores, setStores] = useState<StateStore[]>(mockStores);
   const [isMonitoring, setIsMonitoring] = useState(enableMonitoring);
   const [optimizationTips, setOptimizationTips] = useState<string[]>([]);
 
@@ -76,28 +104,25 @@ export const AdvancedStateManager: React.FC<AdvancedStateManagerProps> = memo(({
     if (!isMonitoring) return;
 
     const monitoringInterval = setInterval(() => {
-      // Calculate total store size from actual stores
+      // Calculate total store size
       const totalSize = stores.reduce((sum, store) => sum + store.size, 0);
       
-      // Calculate total subscriptions from actual stores
+      // Calculate total subscriptions
       const totalSubs = stores.reduce((sum, store) => sum + store.subscribers, 0);
       
-      // Real performance metrics from Performance API
-      const perfEntries = performance.getEntriesByType('measure');
-      const avgUpdateTime = perfEntries.length > 0 
-        ? perfEntries.reduce((sum, entry) => sum + entry.duration, 0) / perfEntries.length
-        : 0;
-      const slowUpdates = perfEntries.filter(entry => entry.duration > 16).length; // > 1 frame
-      const errorCount = 0; // Would track actual errors in real implementation
+      // Mock performance metrics
+      const avgUpdateTime = Math.random() * 10 + 2; // 2-12ms
+      const slowUpdates = Math.floor(Math.random() * 3);
+      const errorCount = Math.floor(Math.random() * 2);
       
       // Memory usage from performance API
       const memoryUsage = 'memory' in performance 
         ? (performance as any).memory.usedJSHeapSize / 1024 / 1024
-        : 0;
+        : totalSize * 2; // Fallback estimation
 
       setMetrics(prev => ({
         storeSize: totalSize,
-        updateFrequency: totalSize > 0 ? Math.random() * 50 + 10 : 0, // Only show activity if stores exist
+        updateFrequency: Math.random() * 50 + 10,
         renderCount: prev.renderCount + Math.floor(Math.random() * 5),
         memoryUsage,
         subscriptions: totalSubs,
@@ -109,13 +134,12 @@ export const AdvancedStateManager: React.FC<AdvancedStateManagerProps> = memo(({
         }
       }));
 
-      // Generate optimization tips based on actual metrics
+      // Generate optimization tips
       const tips: string[] = [];
       if (totalSize > 10) tips.push('Consider splitting large stores');
       if (avgUpdateTime > 8) tips.push('Optimize state update logic');
       if (totalSubs > 30) tips.push('Review subscription patterns');
       if (errorCount > 0) tips.push('Fix state update errors');
-      if (stores.length === 0) tips.push('No active stores detected - add state management');
       
       setOptimizationTips(tips);
     }, 2000);
@@ -124,8 +148,7 @@ export const AdvancedStateManager: React.FC<AdvancedStateManagerProps> = memo(({
   }, [isMonitoring, stores]);
 
   const optimizeStores = useCallback(async () => {
-    // Real optimization would interact with actual state management
-    if (stores.length === 0) return;
+    // Mock optimization process
     setStores(prev => prev.map(store => ({
       ...store,
       size: store.size * 0.9, // Reduce size by 10%
@@ -251,39 +274,31 @@ export const AdvancedStateManager: React.FC<AdvancedStateManagerProps> = memo(({
           
           <ScrollArea className="h-48">
             <div className="space-y-2">
-              {stores.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Database className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No active stores detected</p>
-                  <p className="text-xs">Connect your state management to monitor stores</p>
-                </div>
-              ) : (
-                stores.map((store, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 rounded-md border"
-                  >
-                    <div className="flex items-center gap-3">
-                      {getStoreTypeIcon(store.type)}
-                      <div>
-                        <div className="font-medium text-sm">{store.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {store.updateCount} updates • {store.subscribers} subscribers
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right">
-                      <div className="text-sm font-medium">
-                        {store.size.toFixed(1)}KB
-                      </div>
+              {stores.map((store, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 rounded-md border"
+                >
+                  <div className="flex items-center gap-3">
+                    {getStoreTypeIcon(store.type)}
+                    <div>
+                      <div className="font-medium text-sm">{store.name}</div>
                       <div className="text-xs text-muted-foreground">
-                        {store.type}
+                        {store.updateCount} updates • {store.subscribers} subscribers
                       </div>
                     </div>
                   </div>
-                ))
-              )}
+                  
+                  <div className="text-right">
+                    <div className="text-sm font-medium">
+                      {store.size.toFixed(1)}KB
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {store.type}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </ScrollArea>
         </div>
