@@ -16,13 +16,7 @@ export const EmailTestButton = () => {
         to: "talentxcelpro@gmail.com",
         from: "TalentXcel <noreply@talentxcel.in>",
         subject: "Test Email from TalentXcel",
-        html: "<h1>✅ SMTP Test Email</h1><p>This is a test email to verify the SMTP email system is working correctly.</p><p>Sent at: " + new Date().toLocaleString() + "</p>",
-        smtp: {
-          host: "email-smtp.eu-north-1.amazonaws.com",
-          port: "587",
-          user: "", // Will be populated from Supabase secrets
-          pass: ""  // Will be populated from Supabase secrets
-        }
+        body: "<h1>✅ SMTP Test Email</h1><p>This is a test email to verify the SMTP email system is working correctly.</p><p>Sent at: " + new Date().toLocaleString() + "</p>"
       };
       
       console.log('📧 SMTP Email payload:', emailPayload);
