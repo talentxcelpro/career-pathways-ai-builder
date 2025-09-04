@@ -21643,6 +21643,42 @@ export type Database = {
         }
         Relationships: []
       }
+      system_errors: {
+        Row: {
+          context: Json | null
+          created_at: string | null
+          error_message: string
+          error_stack: string | null
+          error_type: string
+          id: string
+          is_resolved: boolean | null
+          resolved_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string | null
+          error_message: string
+          error_stack?: string | null
+          error_type: string
+          id?: string
+          is_resolved?: boolean | null
+          resolved_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string | null
+          error_message?: string
+          error_stack?: string | null
+          error_type?: string
+          id?: string
+          is_resolved?: boolean | null
+          resolved_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       system_metrics: {
         Row: {
           id: string
