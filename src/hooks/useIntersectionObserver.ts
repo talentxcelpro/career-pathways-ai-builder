@@ -1,62 +1,70 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, RefObject } from 'react';
 
-// Overloaded hook - version 1: callback style  
-export function useIntersectionObserver(
-  target: React.RefObject<Element>,
-  callback: () => void,
-  options?: IntersectionObserverInit
-): void;
+interface UseIntersectionObserverProps {
+  element: Element | null;
+  rootMargin?: string;
+  threshold?: number | number[];
+  freezeOnceVisible?: boolean;
+  root?: Element | null;
+}
 
-// Overloaded hook - version 2: boolean style
-export function useIntersectionObserver(
-  target: React.RefObject<Element>,
-  options?: IntersectionObserverInit
-): boolean;
-
-// Implementation
-export function useIntersectionObserver(
-  target: React.RefObject<Element>,
-  callbackOrOptions?: (() => void) | IntersectionObserverInit,
-  optionsWhenCallback?: IntersectionObserverInit
-): boolean | void {
-  const observer = useRef<IntersectionObserver | null>(null);
+export const useIntersectionObserver = ({
+  element,
+  rootMargin = '0px',
+  threshold = 0,
+  freezeOnceVisible = false,
+  root = null
+}: UseIntersectionObserverProps) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
-
-  const isCallbackStyle = typeof callbackOrOptions === 'function';
-  const callback = isCallbackStyle ? callbackOrOptions : undefined;
-  const options = isCallbackStyle ? optionsWhenCallback : callbackOrOptions;
+  const [hasIntersected, setHasIntersected] = useState(false);
 
   useEffect(() => {
-    if (!target.current) return;
+    if (!element) return;
 
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            if (callback) {
-              callback();
-            } else {
-              setIsIntersecting(true);
-            }
-          } else if (!callback) {
-            setIsIntersecting(false);
-          }
-        });
+    // If we've already intersected and freeze is enabled, don't observe
+    if (freezeOnceVisible && hasIntersected) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isElementIntersecting = entry.isIntersecting;
+        setIsIntersecting(isElementIntersecting);
+        
+        if (isElementIntersecting && !hasIntersected) {
+          setHasIntersected(true);
+        }
       },
-      options || {}
+      {
+        root,
+        rootMargin,
+        threshold
+      }
     );
 
-    observer.current.observe(target.current);
+    observer.observe(element);
 
     return () => {
-      if (observer.current) {
-        observer.current.disconnect();
-      }
+      observer.unobserve(element);
     };
-  }, [target, callback, options]);
+  }, [element, rootMargin, threshold, freezeOnceVisible, hasIntersected, root]);
 
-  // Return boolean for non-callback style
-  if (!callback) {
-    return isIntersecting;
-  }
+  return {
+    isIntersecting,
+    hasIntersected
+  };
+};
+
+export const useIntersectionObserverRef = <T extends Element = Element>(
+  options?: Omit<UseIntersectionObserverProps, 'element'>
+) => {
+  const [element, setElement] = useState<T | null>(null);
+  const { isIntersecting, hasIntersected } = useIntersectionObserver({
+    element,
+    ...options
+  });
+
+  return {
+    ref: setElement,
+    isIntersecting,
+    hasIntersected
+  };
 };
