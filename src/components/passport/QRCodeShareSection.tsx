@@ -57,16 +57,48 @@ export function QRCodeShareSection({ userProfile, insights, userId }: QRCodeShar
       const ctx = canvas.getContext('2d');
       const img = new Image();
       
+      // Enhanced QR code with branding
       img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
+        canvas.width = 320;
+        canvas.height = 400;
+        
+        // White background
+        ctx!.fillStyle = '#ffffff';
+        ctx!.fillRect(0, 0, 320, 400);
+        
+        // TalentXcel branding header
+        ctx!.fillStyle = '#1f2937';
+        ctx!.font = 'bold 16px Arial';
+        ctx!.textAlign = 'center';
+        ctx!.fillText('TalentXcel Career Passport', 160, 30);
+        
+        // User name
+        ctx!.font = '14px Arial';
+        ctx!.fillStyle = '#6b7280';
+        ctx!.fillText(userProfile?.full_name || 'Professional Profile', 160, 50);
+        
+        // QR Code
+        ctx!.drawImage(img, 80, 70, 160, 160);
+        
+        // Career scores
+        ctx!.font = '12px Arial';
+        ctx!.fillStyle = '#374151';
+        ctx!.fillText(`Career Readiness: ${insights.career_readiness_score}%`, 160, 260);
+        ctx!.fillText(`Market Competitiveness: ${insights.market_competitiveness_score}%`, 160, 280);
+        
+        // Footer
+        ctx!.font = '10px Arial';
+        ctx!.fillStyle = '#9ca3af';
+        ctx!.fillText('Scan to view professional profile', 160, 320);
+        ctx!.fillText('Powered by TalentXcel', 160, 340);
         
         const pngFile = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
-        downloadLink.download = 'career-passport-qr.png';
+        downloadLink.download = `${userProfile?.full_name || 'career'}-passport-qr.png`;
         downloadLink.href = pngFile;
         downloadLink.click();
+        
+        toast.success('Enhanced QR code downloaded!');
       };
       
       img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
