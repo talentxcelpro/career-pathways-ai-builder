@@ -23,7 +23,10 @@ import {
   Brain,
   Crown,
   Bot,
-  Upload
+  Upload,
+  TrendingUp,
+  Star,
+  Eye
 } from 'lucide-react';
 import {
   Sidebar,
@@ -231,6 +234,33 @@ const adminMenuItems = [
   }
 ];
 
+const growthMenuItems = [
+  {
+    title: 'User Acquisition Hub',
+    url: '/growth/acquisition',
+    icon: Users,
+    description: 'Advanced referral system and growth tools'
+  },
+  {
+    title: 'Content Creation Studio',
+    url: '/growth/content-studio',
+    icon: Star,
+    description: 'AI-powered content creation and scheduling'
+  },
+  {
+    title: 'Enhanced Company Profiles',
+    url: '/growth/company-profiles',
+    icon: TrendingUp,
+    description: 'Rich company pages with media and analytics'
+  },
+  {
+    title: 'Advanced Analytics',
+    url: '/growth/analytics',
+    icon: BarChart3,
+    description: 'Deep hiring insights and competitor analysis'
+  }
+];
+
 export const AdminSidebar: React.FC = () => {
   const { state } = useSidebar();
   const location = useLocation();
@@ -292,6 +322,35 @@ export const AdminSidebar: React.FC = () => {
                                 {item.badge}
                               </Badge>
                             )}
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Growth Tools
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {growthMenuItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{item.title}</span>
                           </div>
                           <p className="text-xs text-muted-foreground truncate">
                             {item.description}
