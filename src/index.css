@@ -448,15 +448,15 @@ img.loaded {
 
 @layer base {
   :root {
-    /* TalentXcel Enhanced Color Palette */
+    /* TalentXcel Enhanced Color Palette - Darker Text for Better Readability */
     --background: 0 0% 99%;
-    --foreground: 228 63% 12%;
+    --foreground: 228 63% 8%; /* Darker for better contrast */
 
     --card: 0 0% 100%;
-    --card-foreground: 228 63% 15%;
+    --card-foreground: 228 63% 10%; /* Darker for better contrast */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 228 63% 15%;
+    --popover-foreground: 228 63% 10%; /* Darker for better contrast */
 
     /* TalentXcel Brand Colors - Enhanced */
     --primary: 228 63% 29%; /* TalentXcel Deep Blue #1E2A78 */
@@ -470,13 +470,13 @@ img.loaded {
     --brand-green-lighter: 142 64% 90%;
 
     --secondary: 234 48% 97%;
-    --secondary-foreground: 228 63% 35%;
+    --secondary-foreground: 228 63% 25%; /* Darker for better contrast */
 
     --muted: 228 20% 97%;
-    --muted-foreground: 228 15% 42%;
+    --muted-foreground: 228 15% 30%; /* Darker for better contrast */
 
     --accent: 234 48% 96%;
-    --accent-foreground: 228 63% 20%;
+    --accent-foreground: 228 63% 15%; /* Darker for better contrast */
 
     --destructive: 0 79% 63%;
     --destructive-foreground: 0 0% 100%;
@@ -568,13 +568,13 @@ img.loaded {
 
   .dark {
     --background: 228 63% 8%;
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 95%; /* Slightly darker for better readability */
 
     --card: 228 63% 10%;
-    --card-foreground: 0 0% 95%;
+    --card-foreground: 0 0% 92%; /* Slightly darker for better readability */
 
     --popover: 228 63% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover-foreground: 0 0% 92%; /* Slightly darker for better readability */
 
     /* TalentXcel Brand Colors - Dark Mode */
     --primary: 228 63% 55%;
@@ -588,13 +588,13 @@ img.loaded {
     --brand-green-lighter: 142 64% 20%;
 
     --secondary: 228 63% 15%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary-foreground: 0 0% 85%; /* Slightly darker for better readability */
 
     --muted: 228 30% 18%;
-    --muted-foreground: 228 15% 75%;
+    --muted-foreground: 228 15% 70%; /* Slightly darker for better readability */
 
     --accent: 228 30% 20%;
-    --accent-foreground: 0 0% 90%;
+    --accent-foreground: 0 0% 85%; /* Slightly darker for better readability */
 
     --destructive: 0 79% 63%;
     --destructive-foreground: 0 0% 100%;

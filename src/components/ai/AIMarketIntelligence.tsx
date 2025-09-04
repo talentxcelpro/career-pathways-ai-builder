@@ -53,143 +53,21 @@ const AIMarketIntelligence: React.FC = () => {
   const loadMarketData = async () => {
     setIsAnalyzing(true);
     
-    // Simulate AI market analysis
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const mockTrends: MarketTrend[] = [
-      {
-        skill: 'Artificial Intelligence',
-        growth: 45,
-        demand: 'high',
-        averageSalary: 145000,
-        jobCount: 15420,
-        trend: 'increasing',
-        forecastAccuracy: 92
-      },
-      {
-        skill: 'Cloud Computing',
-        growth: 35,
-        demand: 'high',
-        averageSalary: 125000,
-        jobCount: 22350,
-        trend: 'increasing',
-        forecastAccuracy: 88
-      },
-      {
-        skill: 'Cybersecurity',
-        growth: 30,
-        demand: 'high',
-        averageSalary: 115000,
-        jobCount: 18760,
-        trend: 'increasing',
-        forecastAccuracy: 90
-      },
-      {
-        skill: 'Data Science',
-        growth: 25,
-        demand: 'medium',
-        averageSalary: 120000,
-        jobCount: 12890,
-        trend: 'stable',
-        forecastAccuracy: 85
-      },
-      {
-        skill: 'DevOps',
-        growth: 28,
-        demand: 'high',
-        averageSalary: 118000,
-        jobCount: 16540,
-        trend: 'increasing',
-        forecastAccuracy: 87
-      }
-    ];
-
-    const mockLocations: LocationInsight[] = [
-      {
-        city: 'San Francisco',
-        country: 'USA',
-        jobCount: 8540,
-        averageSalary: 165000,
-        costOfLiving: 180,
-        growthRate: 22,
-        topCompanies: ['Google', 'Meta', 'Apple', 'Salesforce'],
-        marketSaturation: 85
-      },
-      {
-        city: 'Seattle',
-        country: 'USA',
-        jobCount: 6230,
-        averageSalary: 145000,
-        costOfLiving: 140,
-        growthRate: 28,
-        topCompanies: ['Amazon', 'Microsoft', 'Boeing', 'Expedia'],
-        marketSaturation: 72
-      },
-      {
-        city: 'Austin',
-        country: 'USA',
-        jobCount: 4560,
-        averageSalary: 125000,
-        costOfLiving: 110,
-        growthRate: 35,
-        topCompanies: ['Tesla', 'Indeed', 'Dell', 'IBM'],
-        marketSaturation: 58
-      },
-      {
-        city: 'Toronto',
-        country: 'Canada',
-        jobCount: 3420,
-        averageSalary: 95000,
-        costOfLiving: 105,
-        growthRate: 30,
-        topCompanies: ['Shopify', 'RBC', 'Manulife', 'Rogers'],
-        marketSaturation: 65
-      }
-    ];
-
-    const mockIndustries: IndustryInsight[] = [
-      {
-        name: 'Technology',
-        growth: 32,
-        jobOpenings: 45620,
-        averageSalary: 135000,
-        topSkills: ['AI/ML', 'Cloud Computing', 'Full Stack Development'],
-        futureOutlook: 'excellent',
-        automationRisk: 15
-      },
-      {
-        name: 'Healthcare',
-        growth: 18,
-        jobOpenings: 28340,
-        averageSalary: 98000,
-        topSkills: ['Healthcare IT', 'Telemedicine', 'Data Analytics'],
-        futureOutlook: 'excellent',
-        automationRisk: 25
-      },
-      {
-        name: 'Finance',
-        growth: 15,
-        jobOpenings: 22150,
-        averageSalary: 115000,
-        topSkills: ['FinTech', 'Blockchain', 'Risk Management'],
-        futureOutlook: 'good',
-        automationRisk: 40
-      },
-      {
-        name: 'Manufacturing',
-        growth: 8,
-        jobOpenings: 18920,
-        averageSalary: 85000,
-        topSkills: ['IoT', 'Automation', 'Quality Control'],
-        futureOutlook: 'moderate',
-        automationRisk: 65
-      }
-    ];
-
-    setMarketTrends(mockTrends);
-    setLocationInsights(mockLocations);
-    setIndustryInsights(mockIndustries);
-    setIsAnalyzing(false);
+    try {
+      // TODO: Replace with actual API calls to fetch real market data
+      // const trends = await marketIntelligenceAPI.getSkillTrends(selectedTimeframe);
+      // const locations = await marketIntelligenceAPI.getLocationInsights(selectedTimeframe);
+      // const industries = await marketIntelligenceAPI.getIndustryAnalysis(selectedTimeframe);
+      
+      // For now, clear data to show empty states until API integration
+      setMarketTrends([]);
+      setLocationInsights([]);
+      setIndustryInsights([]);
+    } catch (error) {
+      console.error('Failed to load market data:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const getTrendIcon = (trend: string) => {
@@ -271,8 +149,17 @@ const AIMarketIntelligence: React.FC = () => {
           </TabsList>
           
           <TabsContent value="skills" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {marketTrends.map((trend, index) => (
+            {marketTrends.length === 0 && !isAnalyzing ? (
+              <div className="text-center py-12">
+                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No Market Trends Available</h3>
+                <p className="text-muted-foreground">
+                  Connect your API to start receiving real-time market intelligence
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {marketTrends.map((trend, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
@@ -313,13 +200,23 @@ const AIMarketIntelligence: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
           
           <TabsContent value="locations" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {locationInsights.map((location, index) => (
+            {locationInsights.length === 0 && !isAnalyzing ? (
+              <div className="text-center py-12">
+                <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No Location Insights Available</h3>
+                <p className="text-muted-foreground">
+                  Connect your API to analyze location-based job market data
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {locationInsights.map((location, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -376,13 +273,23 @@ const AIMarketIntelligence: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
           
           <TabsContent value="industries" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {industryInsights.map((industry, index) => (
+            {industryInsights.length === 0 && !isAnalyzing ? (
+              <div className="text-center py-12">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No Industry Analysis Available</h3>
+                <p className="text-muted-foreground">
+                  Connect your API to analyze industry trends and opportunities
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {industryInsights.map((industry, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -438,8 +345,9 @@ const AIMarketIntelligence: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 

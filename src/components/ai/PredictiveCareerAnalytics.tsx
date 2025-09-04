@@ -38,66 +38,19 @@ const PredictiveCareerAnalytics: React.FC = () => {
   const generatePredictions = async () => {
     setIsAnalyzing(true);
     
-    // Simulate AI prediction generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const mockPredictions: CareerPrediction[] = [
-      {
-        role: 'Senior Data Scientist',
-        probability: 85,
-        timeframe: '12-18 months',
-        requiredSkills: ['Machine Learning', 'Python', 'Deep Learning', 'MLOps'],
-        salaryRange: { min: 120000, max: 180000 },
-        marketDemand: 'high',
-        trend: 'increasing'
-      },
-      {
-        role: 'AI Product Manager',
-        probability: 72,
-        timeframe: '18-24 months',
-        requiredSkills: ['Product Strategy', 'AI/ML Understanding', 'Stakeholder Management'],
-        salaryRange: { min: 140000, max: 200000 },
-        marketDemand: 'high',
-        trend: 'increasing'
-      },
-      {
-        role: 'Machine Learning Engineer',
-        probability: 68,
-        timeframe: '6-12 months',
-        requiredSkills: ['TensorFlow', 'PyTorch', 'Model Deployment', 'Cloud Platforms'],
-        salaryRange: { min: 110000, max: 160000 },
-        marketDemand: 'medium',
-        trend: 'stable'
-      }
-    ];
-
-    const mockSkillGaps: SkillGap[] = [
-      {
-        skill: 'Deep Learning',
-        currentLevel: 3,
-        requiredLevel: 8,
-        priority: 'high',
-        learningPath: ['Neural Networks Fundamentals', 'TensorFlow Certification', 'Advanced CNN/RNN']
-      },
-      {
-        skill: 'MLOps',
-        currentLevel: 2,
-        requiredLevel: 7,
-        priority: 'high',
-        learningPath: ['Docker & Kubernetes', 'CI/CD for ML', 'Model Monitoring']
-      },
-      {
-        skill: 'Product Strategy',
-        currentLevel: 4,
-        requiredLevel: 7,
-        priority: 'medium',
-        learningPath: ['Product Management Course', 'Market Research', 'User Experience Design']
-      }
-    ];
-
-    setPredictions(mockPredictions);
-    setSkillGaps(mockSkillGaps);
-    setIsAnalyzing(false);
+    try {
+      // TODO: Replace with actual API calls to fetch predictive analytics
+      // const predictions = await predictiveAnalyticsAPI.generateCareerPredictions(userProfile);
+      // const skillGaps = await predictiveAnalyticsAPI.analyzeSkillGaps(userProfile);
+      
+      // For now, clear data to show empty states until API integration
+      setPredictions([]);
+      setSkillGaps([]);
+    } catch (error) {
+      console.error('Failed to generate predictions:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const getTrendIcon = (trend: string) => {
@@ -164,8 +117,17 @@ const PredictiveCareerAnalytics: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {predictions.map((prediction, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-3">
+            {predictions.length === 0 && !isAnalyzing ? (
+              <div className="text-center py-8">
+                <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No Predictions Available</h3>
+                <p className="text-muted-foreground">
+                  Connect your API to generate AI-powered career predictions
+                </p>
+              </div>
+            ) : (
+              predictions.map((prediction, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-lg">{prediction.role}</h3>
                   <div className="flex items-center gap-2">
@@ -209,8 +171,9 @@ const PredictiveCareerAnalytics: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              </div>
-            ))}
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
 
@@ -223,7 +186,16 @@ const PredictiveCareerAnalytics: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {skillGaps.map((gap, index) => (
+            {skillGaps.length === 0 && !isAnalyzing ? (
+              <div className="text-center py-8">
+                <Star className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No Skill Analysis Available</h3>
+                <p className="text-muted-foreground">
+                  Connect your API to analyze skill gaps and get recommendations
+                </p>
+              </div>
+            ) : (
+              skillGaps.map((gap, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">{gap.skill}</h3>
@@ -258,7 +230,8 @@ const PredictiveCareerAnalytics: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
 

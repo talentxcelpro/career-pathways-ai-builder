@@ -57,80 +57,17 @@ const AdvancedAIJobMatching: React.FC = () => {
   const performAIMatching = async () => {
     setIsMatching(true);
     
-    // Simulate AI job matching
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const mockMatches: JobMatch[] = [
-      {
-        id: '1',
-        title: 'Senior AI Engineer',
-        company: 'TechFlow AI',
-        location: 'San Francisco, CA (Remote)',
-        salary: { min: 140000, max: 180000 },
-        matchScore: 94,
-        description: 'Lead AI initiatives and develop cutting-edge machine learning solutions.',
-        requirements: ['Python', 'TensorFlow', 'PyTorch', 'MLOps', '5+ years experience'],
-        benefits: ['Equity', 'Health Insurance', 'Flexible Hours', '$5K Learning Budget'],
-        postedDate: '2 days ago',
-        matchReasons: [
-          'Your ML skills perfectly align with requirements',
-          'Company culture matches your preferences',
-          'Salary exceeds your expectations by 15%'
-        ],
-        skillGaps: ['Kubernetes deployment experience'],
-        cultureFit: 92,
-        careerGrowth: 88,
-        workLifeBalance: 85,
-        remoteOption: true
-      },
-      {
-        id: '2',
-        title: 'Machine Learning Product Manager',
-        company: 'HealthTech Solutions',
-        location: 'Remote',
-        salary: { min: 130000, max: 170000 },
-        matchScore: 89,
-        description: 'Drive product strategy for AI-powered healthcare solutions.',
-        requirements: ['Product Management', 'ML Understanding', 'Healthcare Domain', 'Leadership'],
-        benefits: ['Stock Options', 'Health Coverage', 'Remote Work', 'Conference Budget'],
-        postedDate: '1 day ago',
-        matchReasons: [
-          'Your PM skills and ML background are ideal',
-          'Healthcare industry aligns with your interests',
-          'Remote-first company culture'
-        ],
-        skillGaps: ['Healthcare regulatory knowledge'],
-        cultureFit: 87,
-        careerGrowth: 91,
-        workLifeBalance: 89,
-        remoteOption: true
-      },
-      {
-        id: '3',
-        title: 'Data Science Lead',
-        company: 'FinanceAI Corp',
-        location: 'New York, NY (Hybrid)',
-        salary: { min: 150000, max: 190000 },
-        matchScore: 82,
-        description: 'Lead data science team building financial AI products.',
-        requirements: ['Python', 'Statistics', 'Finance Domain', 'Team Leadership', 'PhD preferred'],
-        benefits: ['High Salary', 'Bonus Structure', 'Health Benefits', 'Learning Stipend'],
-        postedDate: '3 days ago',
-        matchReasons: [
-          'Strong compensation package',
-          'Leadership role matches career goals',
-          'Growing fintech sector'
-        ],
-        skillGaps: ['Finance domain expertise', 'Team management experience'],
-        cultureFit: 78,
-        careerGrowth: 85,
-        workLifeBalance: 72,
-        remoteOption: false
-      }
-    ];
-
-    setJobMatches(mockMatches);
-    setIsMatching(false);
+    try {
+      // TODO: Replace with actual API calls to fetch AI job matches
+      // const matches = await aiJobMatchingAPI.getMatches(userProfile, preferences);
+      
+      // For now, clear data to show empty states until API integration
+      setJobMatches([]);
+    } catch (error) {
+      console.error('Failed to perform AI job matching:', error);
+    } finally {
+      setIsMatching(false);
+    }
   };
 
   const getMatchScoreColor = (score: number) => {
@@ -222,155 +159,170 @@ const AdvancedAIJobMatching: React.FC = () => {
 
         {/* Job Matches */}
         <div className="space-y-4">
-          {jobMatches.map((job) => (
-            <Card key={job.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-xl font-semibold">{job.title}</h3>
-                      <Badge className={`${getMatchScoreColor(job.matchScore)} font-bold`}>
-                        {job.matchScore}% Match
-                      </Badge>
-                      {job.remoteOption && (
-                        <Badge variant="secondary">Remote</Badge>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center gap-4 text-muted-foreground mb-3">
-                      <span className="font-medium">{job.company}</span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {job.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4" />
-                        ${job.salary.min.toLocaleString()} - ${job.salary.max.toLocaleString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {job.postedDate}
-                      </span>
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground mb-4">{job.description}</p>
-                  </div>
-                  
-                  <Button variant="outline" size="sm">
-                    <Heart className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                </div>
-
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="requirements">Requirements</TabsTrigger>
-                    <TabsTrigger value="culture">Culture Fit</TabsTrigger>
-                    <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="overview" className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">Requirements</h4>
-                        <div className="flex flex-wrap gap-1">
-                          {job.requirements.map((req) => (
-                            <Badge key={req} variant="outline">{req}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium mb-2">Benefits</h4>
-                        <div className="flex flex-wrap gap-1">
-                          {job.benefits.map((benefit) => (
-                            <Badge key={benefit} variant="secondary">{benefit}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="requirements" className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2 text-green-600">Your Strengths</h4>
-                        <div className="space-y-2">
-                          {job.requirements.slice(0, 3).map((req) => (
-                            <div key={req} className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                              <span className="text-sm">{req}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium mb-2 text-yellow-600">Skill Gaps</h4>
-                        <div className="space-y-2">
-                          {job.skillGaps.map((gap) => (
-                            <div key={gap} className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                              <span className="text-sm">{gap}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="culture" className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Culture Fit</span>
-                          <span className="text-sm">{job.cultureFit}%</span>
-                        </div>
-                        <Progress value={job.cultureFit} className={getScoreColor(job.cultureFit)} />
-                      </div>
-                      
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Career Growth</span>
-                          <span className="text-sm">{job.careerGrowth}%</span>
-                        </div>
-                        <Progress value={job.careerGrowth} className={getScoreColor(job.careerGrowth)} />
-                      </div>
-                      
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Work-Life Balance</span>
-                          <span className="text-sm">{job.workLifeBalance}%</span>
-                        </div>
-                        <Progress value={job.workLifeBalance} className={getScoreColor(job.workLifeBalance)} />
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="analysis" className="space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2">Why This Job Matches You</h4>
-                      <div className="space-y-2">
-                        {job.matchReasons.map((reason, index) => (
-                          <div key={index} className="flex items-start gap-2">
-                            <Zap className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm">{reason}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-                
-                <div className="flex gap-2 mt-4">
-                  <Button className="flex-1">Apply Now</Button>
-                  <Button variant="outline">Learn More</Button>
-                  <Button variant="outline">Contact Recruiter</Button>
-                </div>
+          {jobMatches.length === 0 && !isMatching ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Zap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">No Job Matches Yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Connect your API to start receiving AI-powered job recommendations
+                </p>
+                <Button onClick={performAIMatching} disabled={isMatching}>
+                  Get AI Matches
+                </Button>
               </CardContent>
             </Card>
-          ))}
+          ) : (
+            jobMatches.map((job) => (
+              <Card key={job.id} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-xl font-semibold">{job.title}</h3>
+                        <Badge className={`${getMatchScoreColor(job.matchScore)} font-bold`}>
+                          {job.matchScore}% Match
+                        </Badge>
+                        {job.remoteOption && (
+                          <Badge variant="secondary">Remote</Badge>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-muted-foreground mb-3">
+                        <span className="font-medium">{job.company}</span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {job.location}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <DollarSign className="h-4 w-4" />
+                          ${job.salary.min.toLocaleString()} - ${job.salary.max.toLocaleString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {job.postedDate}
+                        </span>
+                      </div>
+                      
+                      <p className="text-sm text-muted-foreground mb-4">{job.description}</p>
+                    </div>
+                    
+                    <Button variant="outline" size="sm">
+                      <Heart className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                  </div>
+
+                  <Tabs defaultValue="overview" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="overview">Overview</TabsTrigger>
+                      <TabsTrigger value="requirements">Requirements</TabsTrigger>
+                      <TabsTrigger value="culture">Culture Fit</TabsTrigger>
+                      <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="overview" className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-medium mb-2">Requirements</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {job.requirements.map((req) => (
+                              <Badge key={req} variant="outline">{req}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium mb-2">Benefits</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {job.benefits.map((benefit) => (
+                              <Badge key={benefit} variant="secondary">{benefit}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="requirements" className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-medium mb-2 text-green-600">Your Strengths</h4>
+                          <div className="space-y-2">
+                            {job.requirements.slice(0, 3).map((req) => (
+                              <div key={req} className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span className="text-sm">{req}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium mb-2 text-yellow-600">Skill Gaps</h4>
+                          <div className="space-y-2">
+                            {job.skillGaps.map((gap) => (
+                              <div key={gap} className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <span className="text-sm">{gap}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="culture" className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Culture Fit</span>
+                            <span className="text-sm">{job.cultureFit}%</span>
+                          </div>
+                          <Progress value={job.cultureFit} className={getScoreColor(job.cultureFit)} />
+                        </div>
+                        
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Career Growth</span>
+                            <span className="text-sm">{job.careerGrowth}%</span>
+                          </div>
+                          <Progress value={job.careerGrowth} className={getScoreColor(job.careerGrowth)} />
+                        </div>
+                        
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Work-Life Balance</span>
+                            <span className="text-sm">{job.workLifeBalance}%</span>
+                          </div>
+                          <Progress value={job.workLifeBalance} className={getScoreColor(job.workLifeBalance)} />
+                        </div>
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="analysis" className="space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-2">Why This Job Matches You</h4>
+                        <div className="space-y-2">
+                          {job.matchReasons.map((reason, index) => (
+                            <div key={index} className="flex items-start gap-2">
+                              <Zap className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                              <span className="text-sm">{reason}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                  
+                  <div className="flex gap-2 mt-4">
+                    <Button className="flex-1">Apply Now</Button>
+                    <Button variant="outline">Learn More</Button>
+                    <Button variant="outline">Contact Recruiter</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </TieredAccessGuard>
