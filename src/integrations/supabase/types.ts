@@ -9264,7 +9264,11 @@ export type Database = {
       }
       email_delivery_events: {
         Row: {
+          bounce_type: string | null
+          complaint_type: string | null
           created_at: string
+          delivery_attempt: number | null
+          delivery_confirmed_at: string | null
           email_id: string | null
           event_data: Json | null
           event_key: string | null
@@ -9273,11 +9277,18 @@ export type Database = {
           id: string
           ip_address: unknown | null
           link_url: string | null
+          provider: string | null
           recipient_email: string
+          response_time_ms: number | null
+          status: string | null
           user_agent: string | null
         }
         Insert: {
+          bounce_type?: string | null
+          complaint_type?: string | null
           created_at?: string
+          delivery_attempt?: number | null
+          delivery_confirmed_at?: string | null
           email_id?: string | null
           event_data?: Json | null
           event_key?: string | null
@@ -9286,11 +9297,18 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           link_url?: string | null
+          provider?: string | null
           recipient_email: string
+          response_time_ms?: number | null
+          status?: string | null
           user_agent?: string | null
         }
         Update: {
+          bounce_type?: string | null
+          complaint_type?: string | null
           created_at?: string
+          delivery_attempt?: number | null
+          delivery_confirmed_at?: string | null
           email_id?: string | null
           event_data?: Json | null
           event_key?: string | null
@@ -9299,7 +9317,10 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           link_url?: string | null
+          provider?: string | null
           recipient_email?: string
+          response_time_ms?: number | null
+          status?: string | null
           user_agent?: string | null
         }
         Relationships: [
