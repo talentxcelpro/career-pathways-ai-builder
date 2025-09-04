@@ -7757,6 +7757,42 @@ export type Database = {
         }
         Relationships: []
       }
+      content_engagement: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          engagement_type: string
+          engagement_value: number | null
+          id: string
+          metadata: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          engagement_type: string
+          engagement_value?: number | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          engagement_type?: string
+          engagement_value?: number | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_generation_queue: {
         Row: {
           attempts: number | null
@@ -14055,49 +14091,34 @@ export type Database = {
       }
       performance_metrics: {
         Row: {
-          cls: number | null
-          connection_type: string | null
-          created_at: string | null
-          device_memory: number | null
-          fcp: number | null
-          fid: number | null
+          category: string
+          dimensions: Json | null
           id: string
-          inp: number | null
-          lcp: number | null
-          page_url: string
-          session_id: string | null
-          ttfb: number | null
-          user_id: string | null
+          name: string
+          retention_days: number | null
+          timestamp: string | null
+          unit: string | null
+          value: number
         }
         Insert: {
-          cls?: number | null
-          connection_type?: string | null
-          created_at?: string | null
-          device_memory?: number | null
-          fcp?: number | null
-          fid?: number | null
+          category: string
+          dimensions?: Json | null
           id?: string
-          inp?: number | null
-          lcp?: number | null
-          page_url: string
-          session_id?: string | null
-          ttfb?: number | null
-          user_id?: string | null
+          name: string
+          retention_days?: number | null
+          timestamp?: string | null
+          unit?: string | null
+          value: number
         }
         Update: {
-          cls?: number | null
-          connection_type?: string | null
-          created_at?: string | null
-          device_memory?: number | null
-          fcp?: number | null
-          fid?: number | null
+          category?: string
+          dimensions?: Json | null
           id?: string
-          inp?: number | null
-          lcp?: number | null
-          page_url?: string
-          session_id?: string | null
-          ttfb?: number | null
-          user_id?: string | null
+          name?: string
+          retention_days?: number | null
+          timestamp?: string | null
+          unit?: string | null
+          value?: number
         }
         Relationships: []
       }
@@ -16092,6 +16113,7 @@ export type Database = {
           created_at: string | null
           current_company: string | null
           current_job_title: string | null
+          current_streak: number | null
           custom_logo_url: string | null
           custom_profile_url: string | null
           custom_theme: Json | null
@@ -16186,6 +16208,7 @@ export type Database = {
           created_at?: string | null
           current_company?: string | null
           current_job_title?: string | null
+          current_streak?: number | null
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
@@ -16280,6 +16303,7 @@ export type Database = {
           created_at?: string | null
           current_company?: string | null
           current_job_title?: string | null
+          current_streak?: number | null
           custom_logo_url?: string | null
           custom_profile_url?: string | null
           custom_theme?: Json | null
