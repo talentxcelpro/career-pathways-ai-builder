@@ -24906,6 +24906,17 @@ export type Database = {
           profile_picture_url: string
         }[]
       }
+      get_connection_suggestions: {
+        Args: { p_limit?: number; user_uuid: string }
+        Returns: {
+          company_name: string
+          full_name: string
+          mutual_connections: number
+          profile_picture_url: string
+          suggested_user_id: string
+          title: string
+        }[]
+      }
       get_due_agents: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -25125,6 +25136,14 @@ export type Database = {
           views_count: number
         }[]
       }
+      get_trending_skills: {
+        Args: { p_limit?: number }
+        Returns: {
+          growth_rate: number
+          skill_name: string
+          usage_count: number
+        }[]
+      }
       get_unified_analytics: {
         Args: { p_employer_id?: string; p_job_id?: string }
         Returns: {
@@ -25187,7 +25206,7 @@ export type Database = {
         Returns: undefined
       }
       increment_job_views: {
-        Args: { job_id: string }
+        Args: { job_uuid: string }
         Returns: undefined
       }
       increment_profile_views: {
@@ -25338,6 +25357,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      mark_notification_read: {
+        Args: { notification_uuid: string }
+        Returns: boolean
       }
       normalize_salary_to_annual: {
         Args: { amount: number; frequency: string }
@@ -25543,6 +25566,10 @@ export type Database = {
       }
       update_engagement_metrics: {
         Args: { p_increment?: number; p_metric_type: string; p_user_id: string }
+        Returns: undefined
+      }
+      update_profile_views: {
+        Args: { profile_uuid: string }
         Returns: undefined
       }
       update_time_decay_scores: {
