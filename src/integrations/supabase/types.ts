@@ -24699,28 +24699,17 @@ export type Database = {
         Returns: string
       }
       create_notification: {
-        Args:
-          | {
-              p_action_url?: string
-              p_data?: Json
-              p_message: string
-              p_notification_type: string
-              p_priority?: string
-              p_scheduled_at?: string
-              p_title: string
-              p_user_id: string
-            }
-          | {
-              p_icon?: string
-              p_link?: string
-              p_message: string
-              p_module: string
-              p_priority?: string
-              p_related_id?: string
-              p_title: string
-              p_type: string
-              p_user_id: string
-            }
+        Args: {
+          p_action_url?: string
+          p_icon?: string
+          p_message: string
+          p_module?: string
+          p_priority?: string
+          p_related_id?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
         Returns: string
       }
       create_permission_request: {
