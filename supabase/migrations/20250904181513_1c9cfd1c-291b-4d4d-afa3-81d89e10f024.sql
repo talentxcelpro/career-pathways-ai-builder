@@ -1,0 +1,23 @@
+-- Create SEO activation with correct table structures
+INSERT INTO public.seo_monitoring (page_url, page_type, metrics)
+VALUES
+  ('/jobs/location/mumbai', 'location', '{"title":"Jobs in Mumbai - Find Latest Openings | TalentXcel","description":"Discover thousands of job opportunities in Mumbai. Apply to top companies hiring now.","keywords":"mumbai jobs, careers mumbai, job openings mumbai"}'::jsonb),
+  ('/jobs/location/bangalore', 'location', '{"title":"Jobs in Bangalore - Top IT & Tech Careers | TalentXcel","description":"Find your dream job in Bangalore. Browse software, engineering, and tech roles at top companies.","keywords":"bangalore jobs, tech jobs bangalore, IT careers bangalore"}'::jsonb),
+  ('/jobs/location/delhi', 'location', '{"title":"Jobs in Delhi - Government & Private Sector | TalentXcel","description":"Explore job opportunities in Delhi NCR. Government jobs, private sector roles, and startup positions.","keywords":"delhi jobs, govt jobs delhi, private jobs delhi"}'::jsonb),
+  ('/jobs/role/software-engineer', 'role', '{"title":"Software Engineer Jobs - Remote & Onsite | TalentXcel","description":"Find software engineer positions at top tech companies. Junior to senior level roles with competitive salaries.","keywords":"software engineer jobs, programming careers, developer positions"}'::jsonb),
+  ('/jobs/role/data-scientist', 'role', '{"title":"Data Scientist Jobs - AI & ML Careers | TalentXcel","description":"Join leading companies as a data scientist. Work with AI, machine learning, and big data technologies.","keywords":"data scientist jobs, machine learning careers, AI jobs"}'::jsonb),
+  ('/industry/technology', 'industry', '{"title":"Technology Jobs - Software & IT Careers | TalentXcel","description":"Discover technology sector opportunities. Software development, cybersecurity, cloud computing jobs.","keywords":"technology jobs, IT careers, software jobs, tech industry"}'::jsonb),
+  ('/industry/fintech', 'industry', '{"title":"Fintech Jobs - Financial Technology Careers | TalentXcel","description":"Join the fintech revolution. Banking technology, payments, blockchain, and cryptocurrency careers.","keywords":"fintech jobs, financial technology, blockchain jobs, payments"}'::jsonb);
+
+INSERT INTO public.seo_content_cache (cache_key, content_type, content_data, expires_at)
+VALUES
+  ('jobs_mumbai', 'landing_page', '{"title":"Jobs in Mumbai","description":"Find your next opportunity in Mumbai","content_blocks":{"hero":"Discover amazing career opportunities in Mumbai","stats":"Over 10,000 active job listings","top_companies":"Reliance, Tata, HDFC Bank","popular_roles":"Software Engineer, Data Analyst, Product Manager"},"keywords":"mumbai jobs, careers mumbai, job openings mumbai, jobs in mumbai"}'::jsonb, NOW() + INTERVAL '24 hours'),
+  ('jobs_bangalore', 'landing_page', '{"title":"Jobs in Bangalore","description":"Tech capital job opportunities","content_blocks":{"hero":"Join the tech revolution in Bangalore","stats":"Leading destination for tech professionals","top_companies":"Infosys, Wipro, Amazon, Google","popular_roles":"Software Developer, DevOps Engineer, Data Scientist"},"keywords":"bangalore jobs, tech jobs bangalore, IT careers bangalore, jobs in bangalore"}'::jsonb, NOW() + INTERVAL '24 hours'),
+  ('software_engineer_jobs', 'landing_page', '{"title":"Software Engineer Jobs","description":"Build the future with code","content_blocks":{"hero":"Shape the digital world as a software engineer","stats":"High-demand skills with competitive salaries","skills":"React, Python, Java, Node.js","salary_range":"₹8-25 LPA"},"keywords":"software engineer jobs, programming careers, developer positions, coding jobs"}'::jsonb, NOW() + INTERVAL '24 hours'),
+  ('data_scientist_jobs', 'landing_page', '{"title":"Data Scientist Jobs","description":"Unlock insights from data","content_blocks":{"hero":"Drive business decisions with data science","stats":"Fastest growing field in tech","skills":"Python, R, Machine Learning, SQL","salary_range":"₹12-35 LPA"},"keywords":"data scientist jobs, machine learning careers, AI jobs, analytics positions"}'::jsonb, NOW() + INTERVAL '24 hours');
+
+INSERT INTO public.platform_metrics (metric_name, metric_value, metric_date, metadata)
+VALUES
+  ('seo_pages_generated', 7, CURRENT_DATE, '{"type":"landing_pages","activation":"manual","activation_date":"' || NOW()::text || '"}'::jsonb),
+  ('seo_monitoring_active', 1, CURRENT_DATE, '{"status":"activated","pages_tracked":7,"activation_date":"' || NOW()::text || '"}'::jsonb),
+  ('seo_cache_entries', 4, CURRENT_DATE, '{"type":"content_cache","activation":"manual","activation_date":"' || NOW()::text || '"}'::jsonb);
