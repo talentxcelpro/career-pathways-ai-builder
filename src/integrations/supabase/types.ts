@@ -3118,6 +3118,51 @@ export type Database = {
         }
         Relationships: []
       }
+      backlink_campaigns: {
+        Row: {
+          budget: number | null
+          campaign_name: string
+          campaign_type: string
+          completed_count: number | null
+          created_at: string
+          created_by: string | null
+          expected_completion: string | null
+          id: string
+          metadata: Json | null
+          status: string | null
+          success_rate: number | null
+          target_count: number | null
+        }
+        Insert: {
+          budget?: number | null
+          campaign_name: string
+          campaign_type: string
+          completed_count?: number | null
+          created_at?: string
+          created_by?: string | null
+          expected_completion?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          success_rate?: number | null
+          target_count?: number | null
+        }
+        Update: {
+          budget?: number | null
+          campaign_name?: string
+          campaign_type?: string
+          completed_count?: number | null
+          created_at?: string
+          created_by?: string | null
+          expected_completion?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          success_rate?: number | null
+          target_count?: number | null
+        }
+        Relationships: []
+      }
       backlink_content: {
         Row: {
           anchor_text: string
@@ -3238,6 +3283,68 @@ export type Database = {
             columns: ["backlink_id"]
             isOneToOne: false
             referencedRelation: "live_backlinks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backlink_opportunities: {
+        Row: {
+          campaign_id: string | null
+          contact_email: string | null
+          contact_name: string | null
+          created_at: string
+          domain_authority: number | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          opportunity_type: string
+          outreach_date: string | null
+          relevance_score: number | null
+          response_date: string | null
+          status: string | null
+          success_date: string | null
+          target_domain: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          created_at?: string
+          domain_authority?: number | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          opportunity_type: string
+          outreach_date?: string | null
+          relevance_score?: number | null
+          response_date?: string | null
+          status?: string | null
+          success_date?: string | null
+          target_domain: string
+        }
+        Update: {
+          campaign_id?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          created_at?: string
+          domain_authority?: number | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          opportunity_type?: string
+          outreach_date?: string | null
+          relevance_score?: number | null
+          response_date?: string | null
+          status?: string | null
+          success_date?: string | null
+          target_domain?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backlink_opportunities_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "backlink_campaigns"
             referencedColumns: ["id"]
           },
         ]
@@ -10999,6 +11106,42 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_links: {
+        Row: {
+          anchor_text: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          link_type: string
+          relevance_score: number | null
+          source_url: string
+          target_url: string
+        }
+        Insert: {
+          anchor_text: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          link_type?: string
+          relevance_score?: number | null
+          source_url: string
+          target_url: string
+        }
+        Update: {
+          anchor_text?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          link_type?: string
+          relevance_score?: number | null
+          source_url?: string
+          target_url?: string
+        }
+        Relationships: []
+      }
       internal_links_optimization: {
         Row: {
           anchor_text: string
@@ -12881,6 +13024,48 @@ export type Database = {
           created_at?: string
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      link_opportunities: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          opportunity_type: string
+          processed_at: string | null
+          relevance_score: number | null
+          status: string | null
+          suggested_anchor: string
+          target_url: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          opportunity_type: string
+          processed_at?: string | null
+          relevance_score?: number | null
+          status?: string | null
+          suggested_anchor: string
+          target_url: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          opportunity_type?: string
+          processed_at?: string | null
+          relevance_score?: number | null
+          status?: string | null
+          suggested_anchor?: string
+          target_url?: string
         }
         Relationships: []
       }
