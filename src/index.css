@@ -236,6 +236,8 @@
   --bg-muted: 51 65 85;
   --bg-accent: 30 41 59;
 }
+
+@keyframes slide-in-right {
   0% { 
     opacity: 0; 
     transform: translateX(100px); 
