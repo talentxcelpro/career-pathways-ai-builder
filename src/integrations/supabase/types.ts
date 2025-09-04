@@ -24944,6 +24944,13 @@ export type Database = {
           user_name: string
         }[]
       }
+      get_job_skills: {
+        Args: { job_id_param: string }
+        Returns: {
+          is_required: boolean
+          skill_name: string
+        }[]
+      }
       get_jobs_paginated_optimized: {
         Args: {
           p_employment_types?: string[]
@@ -24963,6 +24970,19 @@ export type Database = {
       get_last_seen_text: {
         Args: { last_seen_timestamp: string }
         Returns: string
+      }
+      get_matching_candidates: {
+        Args: { job_id_param: string }
+        Returns: {
+          email: string
+          full_name: string
+          location: string
+          match_score: number
+          matching_skills: string[]
+          profile_picture_url: string
+          title: string
+          user_id: string
+        }[]
       }
       get_notification_stats: {
         Args: { user_id_param: string }
