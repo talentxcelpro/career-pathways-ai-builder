@@ -7504,6 +7504,45 @@ export type Database = {
           },
         ]
       }
+      competitor_insights: {
+        Row: {
+          collected_at: string | null
+          company_id: string
+          competitor_domain: string
+          confidence_score: number | null
+          created_at: string | null
+          data_source: string | null
+          expires_at: string | null
+          id: string
+          insight_data: Json
+          insight_type: string
+        }
+        Insert: {
+          collected_at?: string | null
+          company_id: string
+          competitor_domain: string
+          confidence_score?: number | null
+          created_at?: string | null
+          data_source?: string | null
+          expires_at?: string | null
+          id?: string
+          insight_data?: Json
+          insight_type: string
+        }
+        Update: {
+          collected_at?: string | null
+          company_id?: string
+          competitor_domain?: string
+          confidence_score?: number | null
+          created_at?: string | null
+          data_source?: string | null
+          expires_at?: string | null
+          id?: string
+          insight_data?: Json
+          insight_type?: string
+        }
+        Relationships: []
+      }
       compliance_reports: {
         Row: {
           approved_at: string | null
@@ -7972,6 +8011,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      content_templates: {
+        Row: {
+          ai_prompt: string | null
+          content_type: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          tags: string[] | null
+          template_data: Json
+          title: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          ai_prompt?: string | null
+          content_type: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          tags?: string[] | null
+          template_data?: Json
+          title: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          ai_prompt?: string | null
+          content_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          tags?: string[] | null
+          template_data?: Json
+          title?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
       }
       contract_activities: {
         Row: {
@@ -10651,6 +10735,45 @@ export type Database = {
           name?: string
           rules?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      hiring_analytics: {
+        Row: {
+          benchmark_value: number | null
+          company_id: string | null
+          created_at: string | null
+          id: string
+          job_id: string | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          segment: Json | null
+        }
+        Insert: {
+          benchmark_value?: number | null
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          metric_type: string
+          metric_value: number
+          period_end: string
+          period_start: string
+          segment?: Json | null
+        }
+        Update: {
+          benchmark_value?: number | null
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          metric_type?: string
+          metric_value?: number
+          period_end?: string
+          period_start?: string
+          segment?: Json | null
         }
         Relationships: []
       }
@@ -16820,6 +16943,57 @@ export type Database = {
           },
         ]
       }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          referral_code: string
+          referred_at: string | null
+          referred_email: string | null
+          referred_id: string | null
+          referrer_id: string
+          reward_amount: number | null
+          reward_type: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          referral_code: string
+          referred_at?: string | null
+          referred_email?: string | null
+          referred_id?: string | null
+          referrer_id: string
+          reward_amount?: number | null
+          reward_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          referral_code?: string
+          referred_at?: string | null
+          referred_email?: string | null
+          referred_id?: string | null
+          referrer_id?: string
+          reward_amount?: number | null
+          reward_type?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           created_at: string | null
@@ -18659,6 +18833,51 @@ export type Database = {
           title?: string
           tool_name?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scheduled_content: {
+        Row: {
+          content: string
+          content_type: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          platform: string
+          published_at: string | null
+          scheduled_at: string
+          status: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          platform: string
+          published_at?: string | null
+          scheduled_at: string
+          status?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          platform?: string
+          published_at?: string | null
+          scheduled_at?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -24835,7 +25054,7 @@ export type Database = {
         Returns: Json
       }
       generate_referral_code: {
-        Args: { user_uuid: string }
+        Args: Record<PropertyKey, never> | { user_uuid: string }
         Returns: string
       }
       generate_referral_slug: {
@@ -25088,6 +25307,10 @@ export type Database = {
           video_url: string
           views_count: number
         }[]
+      }
+      get_referral_stats: {
+        Args: { referrer_uuid: string }
+        Returns: Json
       }
       get_scraped_job_applications: {
         Args: Record<PropertyKey, never>
