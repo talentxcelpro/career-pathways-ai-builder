@@ -25222,6 +25222,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      is_authenticated_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_company_admin_or_owner: {
         Args: { company_uuid: string }
         Returns: boolean
@@ -25322,6 +25326,14 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      log_security_violation: {
+        Args: {
+          attempted_action: string
+          table_name: string
+          violation_type: string
+        }
+        Returns: undefined
       }
       log_team_activity: {
         Args: {
@@ -25619,6 +25631,10 @@ export type Database = {
       }
       user_has_feature_access: {
         Args: { feature_name: string; user_uuid: string }
+        Returns: boolean
+      }
+      user_has_role: {
+        Args: { check_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
       user_owns_job: {
