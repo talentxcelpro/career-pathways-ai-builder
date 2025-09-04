@@ -1,0 +1,19 @@
+-- Activate SEO systems with correct JSON format
+INSERT INTO public.seo_monitoring (page_url, page_type, metrics, indexing_status) VALUES
+('/jobs/location/mumbai', 'location', '{"title": "Jobs in Mumbai - Find Latest Openings | TalentXcel", "description": "Discover thousands of job opportunities in Mumbai. Apply to top companies hiring now.", "keywords": "mumbai jobs, careers mumbai, job openings mumbai"}'::jsonb, 'indexed'),
+('/jobs/location/bangalore', 'location', '{"title": "Jobs in Bangalore - Top IT & Tech Careers | TalentXcel", "description": "Find your dream job in Bangalore. Browse software, engineering, and tech roles at top companies.", "keywords": "bangalore jobs, tech jobs bangalore, IT careers bangalore"}'::jsonb, 'indexed'),
+('/jobs/location/delhi', 'location', '{"title": "Jobs in Delhi - Government & Private Sector | TalentXcel", "description": "Explore job opportunities in Delhi NCR. Government jobs, private sector roles, and startup positions.", "keywords": "delhi jobs, govt jobs delhi, private jobs delhi"}'::jsonb, 'indexed'),
+('/jobs/role/software-engineer', 'role', '{"title": "Software Engineer Jobs - Remote & Onsite | TalentXcel", "description": "Find software engineer positions at top tech companies. Junior to senior level roles with competitive salaries.", "keywords": "software engineer jobs, programming careers, developer positions"}'::jsonb, 'indexed'),
+('/jobs/role/data-scientist', 'role', '{"title": "Data Scientist Jobs - AI & ML Careers | TalentXcel", "description": "Join leading companies as a data scientist. Work with AI, machine learning, and big data technologies.", "keywords": "data scientist jobs, machine learning careers, AI jobs"}'::jsonb, 'indexed'),
+('/industry/technology', 'industry', '{"title": "Technology Jobs - Software & IT Careers | TalentXcel", "description": "Discover technology sector opportunities. Software development, cybersecurity, cloud computing jobs.", "keywords": "technology jobs, IT careers, software jobs, tech industry"}'::jsonb, 'indexed');
+
+-- Add SEO content cache entries  
+INSERT INTO public.seo_content_cache (page_type, cache_key, content_data, expires_at) VALUES
+('landing_page', 'jobs_mumbai', '{"title": "Jobs in Mumbai", "description": "Find your next opportunity in Mumbai", "content_blocks": {"hero": "Discover amazing career opportunities in Mumbai", "stats": "Over 10,000 active job listings", "top_companies": "Reliance, Tata, HDFC Bank", "popular_roles": "Software Engineer, Data Analyst, Product Manager"}, "keywords": "mumbai jobs, careers mumbai, job openings mumbai, jobs in mumbai"}'::jsonb, NOW() + INTERVAL '24 hours'),
+('landing_page', 'jobs_bangalore', '{"title": "Jobs in Bangalore", "description": "Tech capital job opportunities", "content_blocks": {"hero": "Join the tech revolution in Bangalore", "stats": "Leading destination for tech professionals", "top_companies": "Infosys, Wipro, Amazon, Google", "popular_roles": "Software Developer, DevOps Engineer, Data Scientist"}, "keywords": "bangalore jobs, tech jobs bangalore, IT careers bangalore, jobs in bangalore"}'::jsonb, NOW() + INTERVAL '24 hours'),
+('landing_page', 'software_engineer_jobs', '{"title": "Software Engineer Jobs", "description": "Build the future with code", "content_blocks": {"hero": "Shape the digital world as a software engineer", "stats": "High-demand skills with competitive salaries", "skills": "React, Python, Java, Node.js", "salary_range": "₹8-25 LPA"}, "keywords": "software engineer jobs, programming careers, developer positions, coding jobs"}'::jsonb, NOW() + INTERVAL '24 hours');
+
+-- Update platform metrics
+INSERT INTO public.platform_metrics (metric_name, metric_value, metric_date, metadata) VALUES
+('seo_pages_generated', 6, CURRENT_DATE, '{"type": "landing_pages", "activation": "manual"}'::jsonb),
+('seo_monitoring_active', 1, CURRENT_DATE, '{"status": "activated", "pages_tracked": 6}'::jsonb);
