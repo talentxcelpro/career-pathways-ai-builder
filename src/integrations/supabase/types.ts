@@ -24562,7 +24562,9 @@ export type Database = {
         }[]
       }
       calculate_profile_completion_percentage: {
-        Args: { profile_row: Database["public"]["Tables"]["profiles"]["Row"] }
+        Args: {
+          profile_record: Database["public"]["Tables"]["profiles"]["Row"]
+        }
         Returns: number
       }
       calculate_reading_time: {
