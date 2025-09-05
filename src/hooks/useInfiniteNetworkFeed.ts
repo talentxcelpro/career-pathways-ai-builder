@@ -75,16 +75,18 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       try {
         const authorIds = Array.from(new Set((data ?? []).map((p: any) => p.author_id).filter(Boolean)));
         if (authorIds.length > 0) {
-          const { data: profilesData } = await supabase
+          const { data: profilesData, error: profileError } = await supabase
             .from('profiles')
             .select('id, full_name, profile_picture_url, title, location, is_verified')
             .in('id', authorIds);
-          if (profilesData) {
+          if (profileError) {
+            console.error('Profile fetch error:', profileError);
+          } else if (profilesData) {
             profilesMap = new Map(profilesData.map((p: any) => [p.id, p]));
           }
         }
       } catch (e) {
-        // Ignore profile fetch errors to avoid failing the feed
+        console.error('Profile fetch exception:', e);
       }
 
       // Transform data to include computed fields
