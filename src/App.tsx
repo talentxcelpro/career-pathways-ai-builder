@@ -41,6 +41,11 @@ import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
+import ToolsHub from './pages/tools/ToolsHub';
+import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
+import PublicJobSearch from './pages/tools/PublicJobSearch';
+import PublicMarketInsights from './pages/tools/PublicMarketInsights';
+import PublicInterviewPrep from './pages/tools/PublicInterviewPrep';
 import { ResumeEditorPage as ResumeEdit } from './pages/resume/ResumeEditorPage';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import MobileReelsPage from './pages/MobileReelsPage';
@@ -197,8 +202,15 @@ const App = () => {
                        <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
                        <Route path="/resume/create" element={<Navigate to="/resume/new" replace />} />
                        <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
-                       <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
-                       <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                        <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
+                        <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                        
+                        {/* Tools Routes */}
+                        <Route path="/tools" element={<ToolsHub />} />
+                        <Route path="/public/resume-builder" element={<PublicResumeBuilder />} />
+                        <Route path="/public/jobs" element={<PublicJobSearch />} />
+                        <Route path="/public/market-insights" element={<PublicMarketInsights />} />
+                        <Route path="/public/interview-prep" element={<PublicInterviewPrep />} />
                       
                        {/* Privacy policy redirect for consistency */}
                        <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
