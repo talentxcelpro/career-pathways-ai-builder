@@ -8,4 +8,10 @@ export const socialRoutes: NavItem[] = [
     page: <SocialHub />,
     requiresAuth: false,
   },
+  {
+    title: "Social Hub",
+    to: "/social-hub",
+    page: <SocialHub />,
+    requiresAuth: false,
+  },
 ];
