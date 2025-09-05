@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GoogleOneTapLogin } from './GoogleOneTapLogin';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -19,13 +20,15 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, descrip
       </div>
       
       <div className="w-full max-w-md relative z-10">
+        <GoogleOneTapLogin autoSelect />
         {/* Enhanced Brand Header */}
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 relative">
             <img 
               src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
-              alt="TalentXcel" 
+              alt="TalentXcel logo"
               className="w-10 h-10 rounded-lg object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
             />
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
           </div>
