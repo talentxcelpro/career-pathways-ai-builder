@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!mounted) return;
 
         console.log('Auth state changed:', event, session?.user?.email);
+        console.log('Current URL:', window.location.href);
         
         // Synchronous state updates only
         setSession(session);
@@ -56,25 +57,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Handle different auth events
         if (event === 'SIGNED_OUT') {
+          console.log('User signed out, clearing data');
           // Clear any cached data immediately
           localStorage.clear();
           sessionStorage.clear();
           // Force redirect to index page after logout
           setTimeout(() => {
-            if (mounted) {
+            if (mounted && window.location.pathname !== '/') {
+              console.log('Redirecting to home after signout');
               navigate('/', { replace: true });
             }
           }, 0);
         } else if (event === 'SIGNED_IN' && session?.user) {
-          // Defer navigation to prevent deadlock
+          console.log('User signed in, session:', session);
+          // Check if we're on auth pages or home and redirect appropriately
           setTimeout(() => {
             if (mounted) {
               const currentPath = window.location.pathname;
-              if (currentPath === '/' || currentPath.startsWith('/auth')) {
+              console.log('Current path after signin:', currentPath);
+              
+              // If on auth pages, redirect to onboarding first, then dashboard
+              if (currentPath.startsWith('/auth')) {
+                navigate('/onboarding?flow=resume&type=candidate', { replace: true });
+              } else if (currentPath === '/') {
                 navigate('/network', { replace: true });
               }
             }
-          }, 0);
+          }, 100); // Slightly longer delay to ensure navigation works
         } else if (event === 'TOKEN_REFRESHED') {
           console.log('Token refreshed successfully');
         }
@@ -88,18 +97,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for existing session with better error handling
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
-          // Clear corrupted session data
-          localStorage.clear();
-          sessionStorage.clear();
+          // Don't clear session on network errors
+          if (!error.message.includes('network') && !error.message.includes('timeout')) {
+            localStorage.clear();
+            sessionStorage.clear();
+          }
           if (mounted) {
             setSession(null);
             setUser(null);
           }
         } else if (mounted) {
+          console.log('Session found:', !!session, session?.user?.email);
           setSession(session);
           setUser(session?.user ?? null);
           
@@ -116,19 +129,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
           
           // Auto-redirect logic with timeout to prevent blocking
-          if (session?.user && window.location.pathname === '/') {
-            setTimeout(() => {
-              if (mounted) {
-                navigate('/network', { replace: true });
-              }
-            }, 0);
+          if (session?.user) {
+            const currentPath = window.location.pathname;
+            console.log('Auto-redirect check:', currentPath);
+            
+            if (currentPath === '/') {
+              setTimeout(() => {
+                if (mounted) {
+                  console.log('Auto-redirecting to network');
+                  navigate('/network', { replace: true });
+                }
+              }, 100);
+            }
           }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
-        // Clear potentially corrupted data
-        localStorage.clear();
-        sessionStorage.clear();
         if (mounted) {
           setSession(null);
           setUser(null);

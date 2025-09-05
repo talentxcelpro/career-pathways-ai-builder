@@ -83,10 +83,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     setIsLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/onboarding?flow=${currentFlow}&type=${userType}`;
+      // Use current domain for redirects
+      const baseUrl = window.location.origin;
+      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
+      
+      console.log('Auth attempt:', { authMode, userType, redirectUrl });
 
       if (authMode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
@@ -101,19 +105,36 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         });
 
         if (error) throw error;
+        
+        console.log('Signup successful:', data);
         toast.success('Check your email to verify your account!');
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password
         });
 
         if (error) throw error;
+        
+        console.log('Signin successful:', data);
         toast.success('Welcome back!');
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      toast.error(error.message || 'An error occurred');
+      
+      // More specific error messages
+      let errorMessage = 'An error occurred';
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and click the confirmation link';
+      } else if (error.message.includes('User already registered')) {
+        errorMessage = 'This email is already registered. Try signing in instead.';
+      } else {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -122,9 +143,14 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
   const handleSocialAuth = async (provider: 'google' | 'linkedin_oidc') => {
     try {
       setIsLoading(true);
-      const redirectUrl = `${window.location.origin}/onboarding?flow=${currentFlow}&type=${userType}`;
       
-      const { error } = await supabase.auth.signInWithOAuth({
+      // Use current domain for redirects
+      const baseUrl = window.location.origin;
+      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
+      
+      console.log('Social auth attempt:', { provider, redirectUrl });
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: redirectUrl,
@@ -136,9 +162,20 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       });
 
       if (error) throw error;
+      
+      console.log('Social auth initiated:', data);
+      // Don't set loading to false here as page will redirect
     } catch (error: any) {
       console.error('Social auth error:', error);
-      toast.error(error.message || 'An error occurred');
+      
+      let errorMessage = 'Social authentication failed';
+      if (error.message.includes('OAuth')) {
+        errorMessage = 'Please check your browser settings and try again';
+      } else {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
       setIsLoading(false);
     }
   };
