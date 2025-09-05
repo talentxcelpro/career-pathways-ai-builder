@@ -113,17 +113,28 @@ async function saveNewsArticles(articles: NewsArticle[]) {
 async function createNewsPosts(newsArticles: any[]) {
   if (!newsArticles.length) return;
 
-  // Get a bot user to post news as
-  const { data: botUser } = await supabase
+  // Get a bot user to post news as; if missing, fall back to an admin user
+  const { data: botUser, error: botErr } = await supabase
     .from('profiles')
     .select('id')
     .eq('is_ai_bot', true)
     .limit(1)
-    .single();
+    .maybeSingle();
 
-  const authorId = botUser?.id;
+  let authorId = botUser?.id as string | undefined;
+
   if (!authorId) {
-    console.warn('No bot user found, skipping news posts creation');
+    console.warn('No bot user found, falling back to admin user via RPC');
+    const { data: adminId, error: adminErr } = await supabase.rpc('admin_fallback_user');
+    if (adminErr) {
+      console.error('Failed to resolve admin fallback user:', adminErr);
+      return;
+    }
+    authorId = adminId as string | undefined;
+  }
+
+  if (!authorId) {
+    console.warn('No author could be resolved (bot/admin). Skipping news posts creation.');
     return;
   }
 
