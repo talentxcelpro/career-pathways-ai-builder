@@ -9,7 +9,16 @@ interface MobileAppWrapperProps {
 
 export const MobileAppWrapper: React.FC<MobileAppWrapperProps> = ({ children }) => {
   const { isMobile } = useMobileDetection();
-  const { user } = useAuth();
+  
+  // Check if we're in auth context safely
+  let user = null;
+  try {
+    const authContext = useAuth();
+    user = authContext?.user;
+  } catch (error) {
+    // Not in auth context yet, user remains null
+    console.log('Auth context not available:', error.message);
+  }
 
   // If it's mobile and user is authenticated, use the mobile app layout
   if (isMobile && user) {
