@@ -146,8 +146,13 @@ export const OnboardingFlow: React.FC = () => {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card variant="glass" className="w-full max-w-md max-h-[85vh] overflow-y-auto shadow-elegant">
         <CardHeader className="text-center pb-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 mx-auto mb-4 flex items-center justify-center">
-            <Zap className="h-8 w-8 text-white" />
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <img 
+              src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
+              alt="TalentXcel logo"
+              className="w-10 h-10 rounded-lg object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
+            />
           </div>
           <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Welcome to TalentXcel!
