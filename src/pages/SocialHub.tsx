@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { CareerGPTAssistant } from "@/components/social/CareerGPTAssistant";
-import { Users, BookOpen, Bot, Sparkles } from "lucide-react";
+import { NewsFeed } from "@/components/news/NewsFeed";
+import { Users, BookOpen, Bot, Sparkles, Newspaper } from "lucide-react";
 
 export default function SocialHub() {
   return (
@@ -16,7 +17,7 @@ export default function SocialHub() {
       </div>
 
       <Tabs defaultValue="feed" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="feed" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Professional Feed
@@ -24,6 +25,10 @@ export default function SocialHub() {
           <TabsTrigger value="content" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
             Career Content
+          </TabsTrigger>
+          <TabsTrigger value="news" className="flex items-center gap-2">
+            <Newspaper className="w-4 h-4" />
+            News
           </TabsTrigger>
           <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
             <Bot className="w-4 h-4" />
@@ -37,6 +42,10 @@ export default function SocialHub() {
 
         <TabsContent value="content" className="mt-6">
           <CareerContentHub />
+        </TabsContent>
+
+        <TabsContent value="news" className="mt-6">
+          <NewsFeed />
         </TabsContent>
 
         <TabsContent value="ai-assistant" className="mt-6">

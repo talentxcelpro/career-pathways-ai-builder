@@ -22034,7 +22034,7 @@ export type Database = {
           font: string | null
           font_size: string | null
           id: string
-          likes_count: number | null
+          is_active: boolean | null
           media_url: string | null
           type: string
           updated_at: string | null
@@ -22049,7 +22049,7 @@ export type Database = {
           font?: string | null
           font_size?: string | null
           id?: string
-          likes_count?: number | null
+          is_active?: boolean | null
           media_url?: string | null
           type: string
           updated_at?: string | null
@@ -22064,7 +22064,7 @@ export type Database = {
           font?: string | null
           font_size?: string | null
           id?: string
-          likes_count?: number | null
+          is_active?: boolean | null
           media_url?: string | null
           type?: string
           updated_at?: string | null
@@ -22072,6 +22072,35 @@ export type Database = {
           views_count?: number | null
         }
         Relationships: []
+      }
+      story_views: {
+        Row: {
+          id: string
+          story_id: string
+          viewed_at: string | null
+          viewer_id: string
+        }
+        Insert: {
+          id?: string
+          story_id: string
+          viewed_at?: string | null
+          viewer_id: string
+        }
+        Update: {
+          id?: string
+          story_id?: string
+          viewed_at?: string | null
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_views_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_college_interactions: {
         Row: {
@@ -25529,6 +25558,10 @@ export type Database = {
         Returns: undefined
       }
       cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_expired_stories: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
