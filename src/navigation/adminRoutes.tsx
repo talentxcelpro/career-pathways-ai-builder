@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper } from "lucide-react";
 import { BotPostManager } from "../components/admin/BotPostManager";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
@@ -44,6 +44,7 @@ import { SEODashboardNew } from "../components/admin/SEODashboardNew";
 import { JobDataManager } from "../components/admin/JobDataManager";
 import LinkBuildingDashboard from "../pages/admin/LinkBuildingDashboard";
 import AgentOperationsPage from "../pages/admin/AgentOperations";
+import NewsAutomationPage from "../pages/admin/NewsAutomationPage";
 
 export const adminRoutes = [
   {
@@ -359,6 +360,13 @@ export const adminRoutes = [
     to: "/admin/backlinks",
     icon: <Network className="h-4 w-4" />,
     page: <BacklinkDashboard />,
+    requiresAuth: true,
+  },
+  {
+    title: "News Automation",
+    to: "/admin/news-automation",
+    icon: <Newspaper className="h-4 w-4" />,
+    page: <NewsAutomationPage />,
     requiresAuth: true,
   }
 ];

@@ -26,7 +26,8 @@ import {
   Upload,
   TrendingUp,
   Star,
-  Eye
+  Eye,
+  Newspaper
 } from 'lucide-react';
 import {
   Sidebar,
@@ -231,6 +232,12 @@ const adminMenuItems = [
     url: '/admin/backlinks',
     icon: Network,
     description: 'Automated backlink management & monitoring'
+  },
+  {
+    title: 'News Automation',
+    url: '/admin/news-automation',
+    icon: Newspaper,
+    description: 'Test and manage news feed automation'
   }
 ];
 
