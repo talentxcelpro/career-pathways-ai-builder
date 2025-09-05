@@ -10,24 +10,24 @@ export const EmailTestButton = () => {
   const testEmailSystem = async () => {
     setIsTesting(true);
     try {
-      console.log('🧪 Testing SMTP email system...');
-      
-      const emailPayload = {
-        to: "talentxcelpro@gmail.com",
-        from: "TalentXcel <noreply@talentxcel.in>",
-        subject: "Test Email from TalentXcel",
-        body: "<h1>✅ SMTP Test Email</h1><p>This is a test email to verify the SMTP email system is working correctly.</p><p>Sent at: " + new Date().toLocaleString() + "</p>"
+      console.log('🧪 Testing unified email notification...');
+
+      const payload = {
+        event_name: 'welcome_email',
+        recipients: [
+          { recipient_email: 'arsh.wani@gmail.com', user_name: 'Arshid Hussain Wani' },
+          { recipient_email: 'Arshid.wani@icloud.com', user_name: 'Arshid Hussain Wani' },
+        ],
       };
-      
-      console.log('📧 SMTP Email payload:', emailPayload);
-      
-      // Use the working SMTP function
-      const { data, error } = await supabase.functions.invoke('send-email-smtp', {
-        body: emailPayload
+
+      console.log('📧 Notification payload:', payload);
+
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
+        body: payload,
       });
-      
+
       console.log('📨 Raw response:', { data, error });
-      
+
       if (error) {
         console.error('❌ Supabase invoke error:', error);
         throw error;
@@ -35,8 +35,8 @@ export const EmailTestButton = () => {
 
       if (data?.success) {
         toast({
-          title: "✅ Email Test Successful!",
-          description: `Test email sent successfully via SMTP. Message ID: ${data.messageId}`,
+          title: '✅ Email Test Successful!',
+          description: `Processed ${data.stats?.successful || 0}/${data.stats?.total || 0} emails.`,
         });
         console.log('✅ Email test successful:', data);
       } else {
