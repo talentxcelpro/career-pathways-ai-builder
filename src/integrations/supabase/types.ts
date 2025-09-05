@@ -9138,6 +9138,45 @@ export type Database = {
         }
         Relationships: []
       }
+      dynamic_user_segments: {
+        Row: {
+          conditions: Json
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          last_calculated: string | null
+          refresh_frequency: string | null
+          segment_name: string
+          updated_at: string
+          user_count: number | null
+        }
+        Insert: {
+          conditions: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_calculated?: string | null
+          refresh_frequency?: string | null
+          segment_name: string
+          updated_at?: string
+          user_count?: number | null
+        }
+        Update: {
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_calculated?: string | null
+          refresh_frequency?: string | null
+          segment_name?: string
+          updated_at?: string
+          user_count?: number | null
+        }
+        Relationships: []
+      }
       education: {
         Row: {
           academic_projects: string[] | null
@@ -9213,6 +9252,107 @@ export type Database = {
           suggested_price_range?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      email_ab_test_results: {
+        Row: {
+          clicked_at: string | null
+          conversion_value: number | null
+          converted_at: string | null
+          created_at: string
+          id: string
+          opened_at: string | null
+          recipient_email: string
+          sent_at: string | null
+          test_id: string
+          variant: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          conversion_value?: number | null
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          opened_at?: string | null
+          recipient_email: string
+          sent_at?: string | null
+          test_id: string
+          variant: string
+        }
+        Update: {
+          clicked_at?: string | null
+          conversion_value?: number | null
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          opened_at?: string | null
+          recipient_email?: string
+          sent_at?: string | null
+          test_id?: string
+          variant?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_ab_test_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "email_ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_ab_tests: {
+        Row: {
+          confidence_level: number | null
+          created_at: string
+          end_date: string | null
+          id: string
+          start_date: string | null
+          status: string | null
+          template_type: string
+          test_name: string
+          traffic_split: number | null
+          updated_at: string
+          variant_a_content: string
+          variant_a_subject: string
+          variant_b_content: string
+          variant_b_subject: string
+          winning_variant: string | null
+        }
+        Insert: {
+          confidence_level?: number | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          template_type: string
+          test_name: string
+          traffic_split?: number | null
+          updated_at?: string
+          variant_a_content: string
+          variant_a_subject: string
+          variant_b_content: string
+          variant_b_subject: string
+          winning_variant?: string | null
+        }
+        Update: {
+          confidence_level?: number | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          status?: string | null
+          template_type?: string
+          test_name?: string
+          traffic_split?: number | null
+          updated_at?: string
+          variant_a_content?: string
+          variant_a_subject?: string
+          variant_b_content?: string
+          variant_b_subject?: string
+          winning_variant?: string | null
         }
         Relationships: []
       }
@@ -9572,6 +9712,63 @@ export type Database = {
           push_on_welcome?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      email_performance_metrics: {
+        Row: {
+          bounced: number | null
+          click_rate: number | null
+          clicked: number | null
+          conversion_rate: number | null
+          converted: number | null
+          created_at: string
+          delivered: number | null
+          email_id: string | null
+          id: string
+          open_rate: number | null
+          opened: number | null
+          revenue_generated: number | null
+          sent_date: string
+          template_type: string
+          total_sent: number | null
+          unsubscribed: number | null
+        }
+        Insert: {
+          bounced?: number | null
+          click_rate?: number | null
+          clicked?: number | null
+          conversion_rate?: number | null
+          converted?: number | null
+          created_at?: string
+          delivered?: number | null
+          email_id?: string | null
+          id?: string
+          open_rate?: number | null
+          opened?: number | null
+          revenue_generated?: number | null
+          sent_date: string
+          template_type: string
+          total_sent?: number | null
+          unsubscribed?: number | null
+        }
+        Update: {
+          bounced?: number | null
+          click_rate?: number | null
+          clicked?: number | null
+          conversion_rate?: number | null
+          converted?: number | null
+          created_at?: string
+          delivered?: number | null
+          email_id?: string | null
+          id?: string
+          open_rate?: number | null
+          opened?: number | null
+          revenue_generated?: number | null
+          sent_date?: string
+          template_type?: string
+          total_sent?: number | null
+          unsubscribed?: number | null
         }
         Relationships: []
       }
@@ -23214,6 +23411,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_behavior_events: {
+        Row: {
+          browser: string | null
+          created_at: string
+          device_type: string | null
+          event_category: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          page_url: string | null
+          referrer: string | null
+          session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_category: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_category?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_bookmarks: {
         Row: {
           created_at: string
@@ -23290,6 +23532,42 @@ export type Database = {
           target_salary?: number | null
           timeline_months?: number | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_content_preferences: {
+        Row: {
+          content_style: string | null
+          created_at: string
+          id: string
+          interests: Json | null
+          last_engagement_date: string | null
+          preferred_length: string | null
+          topics_engaged_with: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_style?: string | null
+          created_at?: string
+          id?: string
+          interests?: Json | null
+          last_engagement_date?: string | null
+          preferred_length?: string | null
+          topics_engaged_with?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_style?: string | null
+          created_at?: string
+          id?: string
+          interests?: Json | null
+          last_engagement_date?: string | null
+          preferred_length?: string | null
+          topics_engaged_with?: Json | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -23781,6 +24059,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_predictions: {
+        Row: {
+          confidence_score: number
+          created_at: string
+          factors: Json | null
+          id: string
+          prediction_type: string
+          prediction_value: number
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          confidence_score: number
+          created_at?: string
+          factors?: Json | null
+          id?: string
+          prediction_type: string
+          prediction_value: number
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          confidence_score?: number
+          created_at?: string
+          factors?: Json | null
+          id?: string
+          prediction_type?: string
+          prediction_value?: number
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       user_prefill_cache: {
         Row: {
           ai_generated_at: string | null
@@ -24086,6 +24397,71 @@ export type Database = {
           session_timeout_minutes?: number | null
           two_factor_enabled?: boolean | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_segment_membership: {
+        Row: {
+          added_at: string | null
+          id: string
+          score: number | null
+          segment_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          id?: string
+          score?: number | null
+          segment_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          id?: string
+          score?: number | null
+          segment_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_segment_membership_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_user_segments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_send_time_preferences: {
+        Row: {
+          created_at: string
+          engagement_score_by_hour: Json | null
+          id: string
+          last_updated: string | null
+          preferred_day_of_week: number | null
+          preferred_hour: number | null
+          timezone: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          engagement_score_by_hour?: Json | null
+          id?: string
+          last_updated?: string | null
+          preferred_day_of_week?: number | null
+          preferred_hour?: number | null
+          timezone?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          engagement_score_by_hour?: Json | null
+          id?: string
+          last_updated?: string | null
+          preferred_day_of_week?: number | null
+          preferred_hour?: number | null
+          timezone?: string | null
           user_id?: string
         }
         Relationships: []
