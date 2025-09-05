@@ -70,7 +70,14 @@ async function fetchNewsArticles(): Promise<NewsArticle[]> {
 }
 
 async function saveNewsArticles(articles: NewsArticle[]) {
-  const newsToInsert = articles.map(article => ({
+  // Remove duplicates by URL to prevent conflict errors
+  const uniqueArticles = articles.filter((article, index, self) => 
+    index === self.findIndex(a => a.url === article.url)
+  );
+
+  console.log(`Deduped from ${articles.length} to ${uniqueArticles.length} articles`);
+
+  const newsToInsert = uniqueArticles.map(article => ({
     title: article.title,
     description: article.description || '',
     content: article.content || '',
@@ -90,7 +97,7 @@ async function saveNewsArticles(articles: NewsArticle[]) {
     .from('news_articles')
     .upsert(newsToInsert, { 
       onConflict: 'url',
-      ignoreDuplicates: false 
+      ignoreDuplicates: true 
     })
     .select();
 
