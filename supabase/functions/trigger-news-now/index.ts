@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,34 +14,28 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log('🚀 Manually triggering news automation...');
 
-    // Trigger news-feed-automation function
-    const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/news-feed-automation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Include Authorization to support deployments where JWT verification is enabled
-        'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
-        'apikey': Deno.env.get('SUPABASE_ANON_KEY') || ''
-      },
-      body: JSON.stringify({ trigger: 'manual', timestamp: new Date().toISOString() }),
-    });
+    // Trigger news-feed-automation function via Supabase client (avoid direct HTTP)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const sb = createClient(supabaseUrl, supabaseAnonKey);
 
-    const result = await response.json();
+    const { data: result, error: invokeError } = await sb.functions.invoke('news-feed-automation', {
+      body: { trigger: 'manual', timestamp: new Date().toISOString() }
+    });
     console.log('News automation result:', result);
 
-    if (response.ok) {
-      return new Response(JSON.stringify({
-        success: true,
-        message: 'News automation triggered successfully',
-        result: result,
-        timestamp: new Date().toISOString()
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
-    } else {
-      throw new Error(`News automation failed: ${JSON.stringify(result)}`);
+    if (invokeError) {
+      throw new Error(`News automation failed: ${invokeError.message}`);
     }
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'News automation triggered successfully',
+      result,
+      timestamp: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
 
   } catch (error: any) {
     console.error("❌ Manual news trigger failed:", error);
