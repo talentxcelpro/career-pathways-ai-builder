@@ -28,7 +28,7 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   };
 
   useGoogleOneTap({
-    clientId: '1019718523965-4j8u6i7g48fcfq0g5f1a4j2v4b5o8k9m.apps.googleusercontent.com', // Replace with your actual client ID
+    clientId: '888146676949-fl3fn4ijhgduneqmmpbbpamlio30lm8g.apps.googleusercontent.com', // Updated with your actual client ID
     onSuccess: handleSuccess,
     onError: handleError,
     autoSelect,
