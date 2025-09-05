@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { LandingPage } from "@/components/landing/LandingPage";
+import { GoogleOneTapLogin } from "@/components/auth/GoogleOneTapLogin";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,7 +32,12 @@ const Index = () => {
   }
 
   // Show landing page immediately, even while auth is checking
-  return <LandingPage />;
+  return (
+    <>
+      <GoogleOneTapLogin autoSelect />
+      <LandingPage />
+    </>
+  );
 };
 
 export default Index;
