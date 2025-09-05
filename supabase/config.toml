@@ -29,17 +29,8 @@ verify_jwt = false
 [functions.process-email-queue]
 verify_jwt = false
 
-[functions.simple-test]
-verify_jwt = false
-
 # AI Content Generation Functions
 [functions.ai-comprehensive]
-verify_jwt = false
-
-[functions.ai-comprehensive-generator]
-verify_jwt = false
-
-[functions.ai-comprehensive-generator-v2]
 verify_jwt = false
 
 [functions.ai-content-generator]
@@ -48,19 +39,7 @@ verify_jwt = false
 [functions.daily-content-factory]
 verify_jwt = false
 
-[functions.health]
-verify_jwt = false
-
 [functions.health-check]
-verify_jwt = false
-
-[functions.ping]
-verify_jwt = false
-
-[functions.test-function-2025]
-verify_jwt = false
-
-[functions.arsh]
 verify_jwt = false
 
 # Content queue processors (both names supported)
