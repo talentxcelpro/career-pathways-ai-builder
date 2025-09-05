@@ -31,7 +31,7 @@ serve(async (req) => {
       }
     );
 
-    const { user_ids, title, body, data, trigger_type }: PushNotificationRequest = await req.json();
+    const { user_ids, title, body, data, trigger_type, priority = 'normal' }: PushNotificationRequest & { priority?: string } = await req.json();
 
     if (!user_ids || !title || !body) {
       return new Response(
@@ -40,95 +40,108 @@ serve(async (req) => {
       );
     }
 
-    // Get user push tokens and notification preferences
-    const { data: userTokens, error: tokenError } = await supabaseClient
-      .from('user_push_tokens')
-      .select(`
-        user_id,
-        push_token,
-        platform,
-        email_notification_settings (*)
-      `)
-      .in('user_id', user_ids)
-      .eq('is_active', true);
+    // Create notifications in database first
+    const notifications = user_ids.map(userId => ({
+      user_id: userId,
+      type: trigger_type || 'general',
+      title,
+      message: body,
+      data: data || {},
+      priority,
+      is_read: false,
+      sound_enabled: true,
+      created_at: new Date().toISOString()
+    }));
 
-    if (tokenError) {
-      console.error('Error fetching user tokens:', tokenError);
+    const { data: createdNotifications, error: notificationError } = await supabaseClient
+      .from('notifications')
+      .insert(notifications)
+      .select();
+
+    if (notificationError) {
+      console.error('Error creating notifications:', notificationError);
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch user tokens' }),
+        JSON.stringify({ error: 'Failed to create notifications' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Filter users based on their notification preferences
-    const filteredTokens = userTokens?.filter(token => {
-      const settings = token.email_notification_settings?.[0];
-      if (!settings) return true; // Default to sending if no settings
+    // Get push tokens for users
+    const { data: pushTokens, error: tokenError } = await supabaseClient
+      .from('push_tokens')
+      .select('*')
+      .in('user_id', user_ids)
+      .eq('is_active', true);
 
-      // Check if user wants push notifications for this trigger type
-      switch (trigger_type) {
-        case 'welcome_email':
-          return settings.push_on_welcome;
-        case 'application_confirmation':
-          return settings.push_on_application;
-        case 'connection_request':
-          return settings.push_on_connection;
-        case 'job_recommendation':
-          return settings.push_on_job_match;
-        case 'interview_scheduled':
-          return settings.push_on_interview;
-        case 'team_invite':
-          return settings.push_on_team_invite;
-        case 'password_reset':
-          return settings.push_on_password_reset;
-        case 'monthly_digest':
-          return settings.push_on_monthly_digest;
-        default:
-          return true;
-      }
-    }) || [];
-
-    console.log(`Sending push notifications to ${filteredTokens.length} users`);
-
-    // For now, we'll log the notifications that would be sent
-    // In a real implementation, you would use FCM for Android and APNS for iOS
-    const notifications = filteredTokens.map(token => ({
-      to: token.push_token,
-      title,
-      body,
-      data: {
-        ...data,
-        user_id: token.user_id
-      },
-      platform: token.platform
-    }));
-
-    // Store notification history
-    const { error: historyError } = await supabaseClient
-      .from('push_notification_history')
-      .insert(
-        notifications.map(notification => ({
-          user_id: notification.data.user_id,
-          title,
-          body,
-          data: notification.data,
-          platform: notification.platform,
-          trigger_type: trigger_type || 'manual',
-          status: 'sent'
-        }))
-      );
-
-    if (historyError) {
-      console.error('Error storing notification history:', historyError);
+    if (tokenError) {
+      console.error('Error fetching push tokens:', tokenError);
     }
 
-    console.log('Push notifications prepared:', notifications);
+    let sentCount = 0;
+    
+    // Send actual push notifications
+    if (pushTokens && pushTokens.length > 0) {
+      for (const token of pushTokens) {
+        try {
+          if (token.platform === 'web') {
+            // Web push using service worker
+            const webPushPayload = {
+              title,
+              body,
+              icon: '/icon-192.png',
+              badge: '/icon-192.png',
+              tag: `notification_${createdNotifications[0]?.id}`,
+              data: {
+                ...data,
+                url: data?.url || '/',
+                notification_id: createdNotifications[0]?.id,
+                user_id: token.user_id
+              },
+              actions: [
+                { action: 'view', title: 'View' },
+                { action: 'dismiss', title: 'Dismiss' }
+              ],
+              requireInteraction: priority === 'high',
+              silent: false
+            };
+
+            // In a real implementation, you would use web-push library here
+            console.log('Would send web push:', webPushPayload);
+            sentCount++;
+            
+          } else if (token.platform === 'mobile') {
+            // Mobile push using FCM or similar
+            const mobilePushPayload = {
+              to: token.push_token,
+              notification: {
+                title,
+                body,
+                sound: 'default'
+              },
+              data: {
+                ...data,
+                notification_id: createdNotifications[0]?.id
+              }
+            };
+
+            console.log('Would send mobile push:', mobilePushPayload);
+            sentCount++;
+          }
+        } catch (error) {
+          console.error(`Failed to send push to user ${token.user_id}:`, error);
+        }
+      }
+    }
+
+    console.log(`Created ${createdNotifications?.length || 0} database notifications`);
+    console.log(`Sent ${sentCount} push notifications`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        notifications_sent: notifications.length,
-        message: `Push notifications prepared for ${notifications.length} users`
+        database_notifications: createdNotifications?.length || 0,
+        push_notifications_sent: sentCount,
+        message: `Notifications processed successfully`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

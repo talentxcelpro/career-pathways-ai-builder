@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
@@ -120,6 +121,7 @@ const App = () => {
             <AnalyticsProvider>
               <AuthErrorBoundary>
                 <AuthProvider>
+                  <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
                 {/* <RealtimeProvider showToasts={false}> */}
@@ -285,6 +287,7 @@ const App = () => {
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
+                  </NotificationProvider>
                 </AuthProvider>
               </AuthErrorBoundary>
             </AnalyticsProvider>

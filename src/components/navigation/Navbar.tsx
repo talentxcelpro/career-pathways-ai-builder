@@ -39,6 +39,7 @@ import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { AuthDialog } from '@/components/auth/AuthDialog';
 import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 
@@ -218,12 +219,7 @@ export const Navbar = () => {
               <div className="flex items-center space-x-4">
 
                 {/* Notifications */}
-                <Link to="/network/notifications">
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
-                    <NotificationBadge count={unreadCount} />
-                  </Button>
-                </Link>
+                <NotificationBell />
 
                 {/* User Dropdown */}
                 <DropdownMenu>

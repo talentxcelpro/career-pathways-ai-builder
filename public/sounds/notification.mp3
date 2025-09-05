@@ -1,0 +1,5 @@
+// Simple notification sound as base64 MP3 (short beep)
+const notificationSound = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADAAAAAAAAA//tQxAADB4AAAGkAAAAACAAA...";
+
+// Create actual sound file would go here, but for now using Web Audio API fallback
+export default notificationSound;

@@ -28,6 +28,7 @@ import { publicRoutes } from "./navigation/publicRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
 import MobileSearch from "./pages/mobile/MobileSearch";
+import NotificationsPage from "./pages/NotificationsPage";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -65,6 +66,18 @@ export const mobileSearchRoutes = [
   }
 ];
 
+// Notifications route
+export const notificationRoutes = [
+  {
+    title: "Notifications",
+    to: "/notifications",
+    icon: "bell",
+    page: <NotificationsPage />,
+    description: "Real-time notifications and alerts",
+    requiresAuth: true
+  }
+];
+
 export const navItems = [
   ...publicRoutes,
   ...coreRoutes,
@@ -88,6 +101,7 @@ export const navItems = [
   ...referralRoutes,
   ...mobileRoutes,
   ...mobileSearchRoutes,
+  ...notificationRoutes,
   ...analyticsRoutes,
   ...growthRoutes,
   ...aiAgentRoutes,

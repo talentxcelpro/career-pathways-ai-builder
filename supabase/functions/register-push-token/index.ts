@@ -53,13 +53,26 @@ serve(async (req) => {
       );
     }
 
-    // Store push token
+    // Deactivate old tokens for this user/platform
+    const { error: deactivateError } = await supabaseClient
+      .from('push_tokens')
+      .update({ is_active: false })
+      .eq('user_id', user.id)
+      .eq('platform', platform);
+
+    if (deactivateError) {
+      console.log('Could not deactivate old tokens:', deactivateError);
+    }
+
+    // Store new push token
     const { error: insertError } = await supabaseClient
-      .from('user_push_tokens')
-      .upsert({
+      .from('push_tokens')
+      .insert({
         user_id: user.id,
         push_token: push_token,
         platform: platform,
+        is_active: true,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       });
 
@@ -71,8 +84,13 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Registered push token for user ${user.id} on platform ${platform}`);
+
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true,
+        message: 'Push token registered successfully'
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
