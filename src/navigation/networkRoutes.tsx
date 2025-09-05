@@ -30,6 +30,7 @@ import MyNetwork from "../pages/network/MyNetwork";
 import Discover from "../pages/network/Discover";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
+import { EnhancedMobileNetwork } from "../components/mobile/EnhancedMobileNetwork";
 
 export const networkRoutes = [
   {
@@ -43,7 +44,7 @@ export const networkRoutes = [
   {
     title: "Mobile Network",
     to: "/mobile/network",
-    page: <NetworkPage />,
+    page: <EnhancedMobileNetwork />,
     isPublic: true,
     requiresAuth: true,
   },

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { MobilePullToRefresh } from '@/components/mobile/MobilePullToRefresh';
 import { StoryBubbles } from '@/components/mobile/StoryBubbles';
@@ -9,11 +10,14 @@ import { NetworkPost } from '@/components/mobile/NetworkPost';
 import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
 import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
 import { MobileNetworkSkeleton } from '@/components/mobile/MobileNetworkSkeleton';
-import { SwipeableCard } from '@/components/mobile/SwipeableCard';
+import { EnhancedSwipeableCard } from '@/components/mobile/EnhancedSwipeableCard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus, Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Plus, Heart, MessageCircle, Share2, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { formatTimeAgo } from '@/utils/formatTime';
 
@@ -21,6 +25,9 @@ export const EnhancedMobileNetwork: React.FC = () => {
   const { user } = useAuth();
   const [showCreatePost, setShowCreatePost] = useState(false);
   const { triggerHaptic } = useHapticFeedback();
+  
+  // Real-time synchronization
+  const { isOnline, syncStatus, performSync, queueAction } = useRealtimeSync();
   
   const {
     posts,
@@ -43,6 +50,9 @@ export const EnhancedMobileNetwork: React.FC = () => {
   const handleRefresh = async () => {
     triggerHaptic('light');
     await refetch();
+    if (isOnline) {
+      await performSync();
+    }
   };
 
   const handlePostInteraction = (type: 'like' | 'comment' | 'share') => {
@@ -86,6 +96,21 @@ export const EnhancedMobileNetwork: React.FC = () => {
 
   return (
     <MobileLayout>
+      {/* Real-time Connection Status */}
+      <div className={`w-full py-2 px-4 text-center text-sm transition-all duration-300 ${
+        isOnline 
+          ? 'bg-green-50 text-green-700 border-b border-green-200' 
+          : 'bg-orange-50 text-orange-700 border-b border-orange-200'
+      }`}>
+        <div className="flex items-center justify-center gap-2">
+          {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
+          <span>{isOnline ? 'Connected - Real-time sync active' : 'Working Offline - Changes will sync when connected'}</span>
+          {Object.values(syncStatus).some(status => status === 'syncing') && (
+            <RefreshCw className="h-4 w-4 animate-spin" />
+          )}
+        </div>
+      </div>
+
       <MobilePullToRefresh onRefresh={handleRefresh}>
         <div className="min-h-screen bg-background">
           <StoryBubbles />
@@ -151,13 +176,18 @@ export const EnhancedMobileNetwork: React.FC = () => {
 
               return (
                 <div key={post.id}>
-                  <SwipeableCard
+                  <EnhancedSwipeableCard
                     onSwipeLeft={() => handleSwipeLeft(post.id)}
                     onSwipeRight={() => handleSwipeRight(post.id)}
+                    onDoubleTap={() => {
+                      triggerHaptic('success');
+                      // Quick like on double tap
+                      console.log('Double tap like:', post.id);
+                    }}
                     className="px-4 mb-4"
                   >
                     <NetworkPost post={transformedPost} />
-                  </SwipeableCard>
+                  </EnhancedSwipeableCard>
                   {/* Insert "People You May Know" after the second post */}
                   {index === 1 && (
                     <div className="px-4 mb-4">
@@ -195,6 +225,9 @@ export const EnhancedMobileNetwork: React.FC = () => {
                 setShowCreatePost(false);
                 triggerHaptic('success');
                 refetch();
+                if (isOnline) {
+                  performSync();
+                }
               }}
             />
           </div>
