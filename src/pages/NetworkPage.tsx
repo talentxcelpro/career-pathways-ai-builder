@@ -6,6 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { updateMetaTags } from '@/utils/metaTags';
+import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { 
   Users, 
   MessageCircle, 
@@ -42,13 +46,44 @@ interface NetworkProfile {
   connectionStatus: 'connected' | 'pending' | 'none';
   industry: string;
   experience: string;
+  email?: string;
+}
+
+interface Connection {
+  id: string;
+  requester_id: string;
+  recipient_id: string;
+  status: 'pending' | 'accepted' | 'declined';
+  created_at: string;
+  profiles?: {
+    id: string;
+    full_name: string;
+    profile_picture_url: string;
+    headline: string;
+    title: string;
+    current_company: string;
+    location: string;
+    skills: string[];
+  };
 }
 
 const NetworkPage = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('discover');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [profiles, setProfiles] = useState<NetworkProfile[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<Connection[]>([]);
+  
+  // Use real-time connections hook for discover tab
+  const { 
+    users, 
+    loading: discoverLoading, 
+    sendConnectionRequest, 
+    getLastSeenText, 
+    stats,
+    refetch 
+  } = useRealtimeConnections();
 
   useEffect(() => {
     updateMetaTags({
@@ -56,121 +91,168 @@ const NetworkPage = () => {
       description: 'Connect with industry professionals, expand your network, and discover career opportunities through meaningful professional relationships.'
     });
 
-    // Generate mock data for networking
-    const mockProfiles: NetworkProfile[] = [
-      {
-        id: '1',
-        name: 'Priya Sharma',
-        title: 'Senior Software Engineer',
-        company: 'Tech Mahindra',
-        location: 'Bangalore, India',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b512d6ef?w=150&h=150&fit=crop&crop=face',
-        skills: ['React', 'Node.js', 'Python', 'AWS'],
-        mutualConnections: 12,
-        isOnline: true,
-        lastActive: 'Active now',
-        connectionStatus: 'none',
-        industry: 'Technology',
-        experience: '5+ years'
-      },
-      {
-        id: '2',
-        name: 'Rahul Gupta',
-        title: 'Product Manager',
-        company: 'Flipkart',
-        location: 'Mumbai, India',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-        skills: ['Product Strategy', 'Analytics', 'Agile', 'Leadership'],
-        mutualConnections: 8,
-        isOnline: false,
-        lastActive: '2 hours ago',
-        connectionStatus: 'connected',
-        industry: 'E-commerce',
-        experience: '7+ years'
-      },
-      {
-        id: '3',
-        name: 'Sneha Patel',
-        title: 'UX Designer',
-        company: 'Zomato',
-        location: 'Delhi, India',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-        skills: ['Figma', 'User Research', 'Prototyping', 'Design Systems'],
-        mutualConnections: 15,
-        isOnline: true,
-        lastActive: 'Active now',
-        connectionStatus: 'pending',
-        industry: 'Food Tech',
-        experience: '4+ years'
-      },
-      {
-        id: '4',
-        name: 'Arjun Singh',
-        title: 'Data Scientist',
-        company: 'Paytm',
-        location: 'Noida, India',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-        skills: ['Python', 'Machine Learning', 'SQL', 'TensorFlow'],
-        mutualConnections: 6,
-        isOnline: false,
-        lastActive: '1 day ago',
-        connectionStatus: 'none',
-        industry: 'Fintech',
-        experience: '3+ years'
-      },
-      {
-        id: '5',
-        name: 'Kavya Menon',
-        title: 'Marketing Manager',
-        company: 'Byju\'s',
-        location: 'Bangalore, India',
-        avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
-        skills: ['Digital Marketing', 'Content Strategy', 'SEO', 'Analytics'],
-        mutualConnections: 20,
-        isOnline: true,
-        lastActive: 'Active now',
-        connectionStatus: 'connected',
-        industry: 'EdTech',
-        experience: '6+ years'
-      },
-      {
-        id: '6',
-        name: 'Vikram Rao',
-        title: 'DevOps Engineer',
-        company: 'Swiggy',
-        location: 'Hyderabad, India',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-        skills: ['Docker', 'Kubernetes', 'AWS', 'Jenkins'],
-        mutualConnections: 9,
-        isOnline: false,
-        lastActive: '5 hours ago',
-        connectionStatus: 'none',
-        industry: 'Food Delivery',
-        experience: '5+ years'
-      }
-    ];
+    if (user) {
+      fetchConnections();
+      fetchPendingRequests();
+    }
+  }, [user]);
 
-    setProfiles(mockProfiles);
-  }, []);
+  // Fetch existing connections
+  const fetchConnections = async () => {
+    if (!user?.id) return;
 
-  const filteredProfiles = profiles.filter(profile =>
-    profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    profile.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    profile.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    profile.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+    try {
+      const { data, error } = await supabase
+        .from('connections')
+        .select(`
+          *,
+          profiles!connections_recipient_id_fkey(
+            id,
+            full_name,
+            profile_picture_url,
+            headline,
+            title,
+            current_company,
+            location,
+            skills
+          )
+        `)
+        .eq('status', 'accepted')
+        .eq('requester_id', user.id);
+
+      if (error) throw error;
+      setConnections(data || []);
+    } catch (error) {
+      console.error('Error fetching connections:', error);
+    }
+  };
+
+  // Fetch pending connection requests
+  const fetchPendingRequests = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('connections')
+        .select(`
+          *,
+          profiles!connections_requester_id_fkey(
+            id,
+            full_name,
+            profile_picture_url,
+            headline,
+            title,
+            current_company,
+            location,
+            skills
+          )
+        `)
+        .eq('status', 'pending')
+        .eq('recipient_id', user.id);
+
+      if (error) throw error;
+      setPendingRequests(data || []);
+    } catch (error) {
+      console.error('Error fetching pending requests:', error);
+    }
+  };
+
+  // Convert real user data to NetworkProfile format
+  const convertToNetworkProfile = (user: any, connectionStatus: 'connected' | 'pending' | 'none' = 'none'): NetworkProfile => ({
+    id: user.id,
+    name: user.full_name || 'Unknown User',
+    title: user.title || user.headline || 'Professional',
+    company: user.current_company || 'Company',
+    location: user.location || 'Location',
+    avatar: user.profile_picture_url || '',
+    skills: user.skills || [],
+    mutualConnections: Math.floor(Math.random() * 20), // TODO: Calculate real mutual connections
+    isOnline: user.is_online || false,
+    lastActive: user.is_online ? 'Active now' : getLastSeenText(user.last_seen),
+    connectionStatus,
+    industry: 'Technology', // TODO: Add industry to profiles table
+    experience: '3+ years', // TODO: Calculate from profile data
+    email: user.email
+  });
+
+  // Convert discover users to profiles
+  const discoverProfiles = users.map(user => convertToNetworkProfile(user, 'none'));
+  
+  // Convert connections to profiles
+  const connectedProfiles = connections.map(conn => 
+    convertToNetworkProfile(conn.profiles, 'connected')
+  );
+  
+  // Convert pending requests to profiles
+  const pendingProfiles = pendingRequests.map(req => 
+    convertToNetworkProfile(req.profiles, 'pending')
   );
 
-  const handleConnect = (profileId: string) => {
-    setProfiles(prev => prev.map(profile => 
-      profile.id === profileId 
-        ? { ...profile, connectionStatus: 'pending' as const }
-        : profile
-    ));
+  // Combine all profiles for search
+  const allProfiles = [...discoverProfiles, ...connectedProfiles, ...pendingProfiles];
+
+  const getFilteredProfiles = (profiles: NetworkProfile[]) => 
+    profiles.filter(profile =>
+      profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      profile.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      profile.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      profile.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
+  const handleConnect = async (profileId: string) => {
+    try {
+      const result = await sendConnectionRequest(profileId);
+      if (result.success) {
+        toast.success('Connection request sent!');
+        refetch(); // Refresh the discover list
+      } else {
+        toast.error('Failed to send connection request');
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast.error('Something went wrong');
+    }
+  };
+
+  const handleAcceptRequest = async (connectionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .update({ status: 'accepted' })
+        .eq('id', connectionId);
+
+      if (error) throw error;
+
+      toast.success('Connection request accepted!');
+      fetchConnections();
+      fetchPendingRequests();
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+      toast.error('Failed to accept connection request');
+    }
+  };
+
+  const handleDeclineRequest = async (connectionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('connections')
+        .delete()
+        .eq('id', connectionId);
+
+      if (error) throw error;
+
+      toast.success('Connection request declined');
+      fetchPendingRequests();
+    } catch (error) {
+      console.error('Error declining connection:', error);
+      toast.error('Failed to decline connection request');
+    }
   };
 
   const handleMessage = (profileId: string) => {
-    // In a real app, this would open a chat interface
+    // TODO: Navigate to messages page or open chat interface
     console.log('Opening chat with profile:', profileId);
+    toast.info('Messaging feature coming soon!');
   };
 
   const ProfileCard = ({ profile }: { profile: NetworkProfile }) => (
@@ -241,41 +323,66 @@ const NetworkPage = () => {
             {profile.mutualConnections} mutual connections
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
-            {profile.connectionStatus === 'none' && (
-              <Button 
-                size="sm" 
-                className="flex-1" 
-                onClick={() => handleConnect(profile.id)}
-              >
-                <UserPlus className="w-4 h-4 mr-1" />
-                Connect
-              </Button>
-            )}
-            {profile.connectionStatus === 'connected' && (
-              <>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => handleMessage(profile.id)}
-                >
-                  <MessageCircle className="w-4 h-4 mr-1" />
-                  Message
-                </Button>
-                <Button size="sm" variant="outline">
-                  <Phone className="w-4 h-4" />
-                </Button>
-              </>
-            )}
-            {profile.connectionStatus === 'pending' && (
-              <Button size="sm" variant="outline" className="flex-1" disabled>
-                <Clock className="w-4 h-4 mr-1" />
-                Pending
-              </Button>
-            )}
-          </div>
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-2">
+                {profile.connectionStatus === 'none' && (
+                  <Button 
+                    size="sm" 
+                    className="flex-1" 
+                    onClick={() => handleConnect(profile.id)}
+                    disabled={discoverLoading}
+                  >
+                    <UserPlus className="w-4 h-4 mr-1" />
+                    Connect
+                  </Button>
+                )}
+                {profile.connectionStatus === 'connected' && (
+                  <>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleMessage(profile.id)}
+                    >
+                      <MessageCircle className="w-4 h-4 mr-1" />
+                      Message
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Phone className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+                {profile.connectionStatus === 'pending' && activeTab === 'requests' && (
+                  <>
+                    <Button 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => {
+                        const request = pendingRequests.find(r => r.profiles?.id === profile.id);
+                        if (request) handleAcceptRequest(request.id);
+                      }}
+                    >
+                      Accept
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => {
+                        const request = pendingRequests.find(r => r.profiles?.id === profile.id);
+                        if (request) handleDeclineRequest(request.id);
+                      }}
+                    >
+                      Decline
+                    </Button>
+                  </>
+                )}
+                {profile.connectionStatus === 'pending' && activeTab !== 'requests' && (
+                  <Button size="sm" variant="outline" className="flex-1" disabled>
+                    <Clock className="w-4 h-4 mr-1" />
+                    Pending
+                  </Button>
+                )}
+              </div>
         </div>
       </CardContent>
     </Card>
@@ -358,53 +465,56 @@ const NetworkPage = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-primary">{filteredProfiles.length}</div>
+                    <div className="text-2xl font-bold text-primary">{discoverProfiles.length}</div>
                     <div className="text-sm text-slate-600">Professionals Found</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-green-600">
-                      {profiles.filter(p => p.connectionStatus === 'connected').length}
-                    </div>
+                    <div className="text-2xl font-bold text-green-600">{connections.length}</div>
                     <div className="text-sm text-slate-600">Connections</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-orange-600">
-                      {profiles.filter(p => p.connectionStatus === 'pending').length}
-                    </div>
+                    <div className="text-2xl font-bold text-orange-600">{pendingRequests.length}</div>
                     <div className="text-sm text-slate-600">Pending</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {profiles.filter(p => p.isOnline).length}
-                    </div>
+                    <div className="text-2xl font-bold text-blue-600">{stats.online}</div>
                     <div className="text-sm text-slate-600">Online Now</div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Profiles Grid */}
-              <div className={`grid gap-4 ${
-                viewMode === 'grid' 
-                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-                  : 'grid-cols-1'
-              }`}>
-                {filteredProfiles.map(profile => (
-                  <ProfileCard key={profile.id} profile={profile} />
-                ))}
-              </div>
-
-              {filteredProfiles.length === 0 && (
+              {discoverLoading ? (
                 <div className="text-center py-12">
-                  <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">No professionals found</h3>
-                  <p className="text-slate-600">Try adjusting your search criteria</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-slate-600">Loading professionals...</p>
                 </div>
+              ) : (
+                <>
+                  {/* Profiles Grid */}
+                  <div className={`grid gap-4 ${
+                    viewMode === 'grid' 
+                      ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                      : 'grid-cols-1'
+                  }`}>
+                    {getFilteredProfiles(discoverProfiles).map(profile => (
+                      <ProfileCard key={profile.id} profile={profile} />
+                    ))}
+                  </div>
+
+                  {getFilteredProfiles(discoverProfiles).length === 0 && (
+                    <div className="text-center py-12">
+                      <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">No professionals found</h3>
+                      <p className="text-slate-600">Try adjusting your search criteria or check back later</p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </TabsContent>
@@ -415,17 +525,23 @@ const NetworkPage = () => {
                 <CardHeader>
                   <CardTitle>Your Professional Network</CardTitle>
                   <CardDescription>
-                    You have {profiles.filter(p => p.connectionStatus === 'connected').length} professional connections
+                    You have {connections.length} professional connections
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {profiles
-                      .filter(profile => profile.connectionStatus === 'connected')
-                      .map(profile => (
+                  {connections.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">No connections yet</h3>
+                      <p className="text-slate-600">Start building your network by connecting with professionals</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {getFilteredProfiles(connectedProfiles).map(profile => (
                         <ProfileCard key={profile.id} profile={profile} />
                       ))}
-                  </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -437,17 +553,23 @@ const NetworkPage = () => {
                 <CardHeader>
                   <CardTitle>Connection Requests</CardTitle>
                   <CardDescription>
-                    You have {profiles.filter(p => p.connectionStatus === 'pending').length} pending connection requests
+                    You have {pendingRequests.length} pending connection requests
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {profiles
-                      .filter(profile => profile.connectionStatus === 'pending')
-                      .map(profile => (
+                  {pendingRequests.length === 0 ? (
+                    <div className="text-center py-12">
+                      <UserPlus className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-slate-900 mb-2">No pending requests</h3>
+                      <p className="text-slate-600">You'll see connection requests here when people want to connect with you</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {getFilteredProfiles(pendingProfiles).map(profile => (
                         <ProfileCard key={profile.id} profile={profile} />
                       ))}
-                  </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
