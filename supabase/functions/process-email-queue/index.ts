@@ -178,7 +178,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { default: nodemailer } = await import("npm:nodemailer@6.9.1");
 
     // Configure SMTP transporter
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
       port: parseInt(Deno.env.get('SMTP_PORT') || '465'),
       secure: true, // true for 465, false for other ports
