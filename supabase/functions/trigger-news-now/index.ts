@@ -18,6 +18,9 @@ const handler = async (req: Request): Promise<Response> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        // Include Authorization to support deployments where JWT verification is enabled
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+        'apikey': Deno.env.get('SUPABASE_ANON_KEY') || ''
       },
       body: JSON.stringify({ trigger: 'manual', timestamp: new Date().toISOString() }),
     });
