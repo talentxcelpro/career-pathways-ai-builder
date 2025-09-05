@@ -171,31 +171,33 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('Template not found or error, using default:', templateError.message);
     }
 
-    // Send email directly via SMTP (bypass unified service for now)
+    // Send email using direct SMTP with nodemailer
     console.log('Sending email via direct SMTP...');
     
-    const emailResponse = await supabase.functions.invoke('send-email-smtp', {
-      body: {
-        to: email.recipient_email,
-        from: 'TalentXcel <noreply@talentxcel.in>',
-        subject: emailSubject,
-        html: emailHtml,
-        smtp: {
-          host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
-          port: Deno.env.get('SMTP_PORT') || '587',
-          user: 'WILL_BE_SET_FROM_SUPABASE_SECRETS',
-          pass: 'WILL_BE_SET_FROM_SUPABASE_SECRETS'
-        }
-      }
+    // Import nodemailer dynamically
+    const { default: nodemailer } = await import("npm:nodemailer@6.9.1");
+
+    // Configure SMTP transporter
+    const transporter = nodemailer.createTransporter({
+      host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
+      port: parseInt(Deno.env.get('SMTP_PORT') || '465'),
+      secure: true, // true for 465, false for other ports
+      auth: {
+        user: Deno.env.get('SMTP_USER'),
+        pass: Deno.env.get('SMTP_PASS'),
+      },
     });
 
-        if (emailResponse.error) {
-          throw new Error(JSON.stringify(emailResponse.error));
-        }
+    // Send email using nodemailer
+    const mailResult = await transporter.sendMail({
+      from: `TalentXcel <${Deno.env.get('SMTP_FROM_EMAIL') || 'noreply@talentxcel.in'}>`,
+      to: email.recipient_email,
+      subject: emailSubject,
+      html: emailHtml,
+      text: emailHtml.replace(/<[^>]+>/g, ''), // Plain text fallback
+    });
 
-        if (emailResponse.data?.error) {
-          throw new Error(emailResponse.data.error);
-        }
+    console.log('Email sent successfully:', mailResult.messageId);
 
         console.log(`Email sent successfully to ${email.recipient_email}`);
 

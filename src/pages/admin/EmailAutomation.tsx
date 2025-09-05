@@ -12,8 +12,9 @@ import { BulkEmailCampaign } from '@/components/admin/BulkEmailCampaign';
 import { GrowthCommunicationSystem } from '@/components/admin/GrowthCommunicationSystem';
 import { CommunicationDashboard } from '@/components/admin/CommunicationDashboard';
 import { EmailSecurityValidator } from '@/components/admin/EmailSecurityValidator';
+import { EmailAutomationFixer } from '@/components/admin/EmailAutomationFixer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield } from "lucide-react";
+import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield, Wrench } from "lucide-react";
 
 const EmailAutomationPage = () => {
   return (
@@ -22,10 +23,14 @@ const EmailAutomationPage = () => {
       description="Configure automated email templates, settings, and monitoring"
     >
       <Tabs defaultValue="automation" className="w-full">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <BarChart className="h-4 w-4" />
             Automation
+          </TabsTrigger>
+          <TabsTrigger value="fixer" className="flex items-center gap-2">
+            <Wrench className="h-4 w-4" />
+            Fixer
           </TabsTrigger>
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
@@ -63,6 +68,10 @@ const EmailAutomationPage = () => {
 
         <TabsContent value="automation" className="space-y-6">
           <EmailAutomationDashboard />
+        </TabsContent>
+
+        <TabsContent value="fixer" className="space-y-6">
+          <EmailAutomationFixer />
         </TabsContent>
 
         <TabsContent value="templates" className="space-y-6">
