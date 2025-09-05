@@ -24,6 +24,7 @@ import { MobileLayout } from "@/components/mobile/MobileLayout";
 import { UserPresence } from "@/components/realtime/UserPresence";
 import { VideoCallButton } from "@/components/network/VideoCallButton";
 import { LiveEventCard } from "@/components/network/LiveEventCard";
+import { TestNewsAutomation } from "@/components/news/TestNewsAutomation";
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
@@ -222,6 +223,9 @@ const Network = () => {
                 </div>
               }>
                 <SmartConnectAI />
+                <div className="mt-6">
+                  <TestNewsAutomation />
+                </div>
               </React.Suspense>
             </div>
           </TabsContent>
