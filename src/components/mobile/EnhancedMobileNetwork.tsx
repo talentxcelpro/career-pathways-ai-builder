@@ -1,238 +1,54 @@
 import React, { useState } from 'react';
-import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
-import { useAuth } from '@/contexts/AuthContext';
-import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { useRealtimeSync } from '@/hooks/useRealtimeSync';
-import { MobileLayout } from '@/components/mobile/MobileLayout';
-import { MobilePullToRefresh } from '@/components/mobile/MobilePullToRefresh';
-import { StoryBubbles } from '@/components/mobile/StoryBubbles';
-import { NetworkPost } from '@/components/mobile/NetworkPost';
-import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
-import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
-import { MobileNetworkSkeleton } from '@/components/mobile/MobileNetworkSkeleton';
-import { EnhancedSwipeableCard } from '@/components/mobile/EnhancedSwipeableCard';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Plus, Heart, MessageCircle, Share2, Wifi, WifiOff, RefreshCw } from 'lucide-react';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { formatTimeAgo } from '@/utils/formatTime';
+import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
+import { EnhancedMobileFeed } from './EnhancedMobileFeed';
+import { MobileStories } from './MobileStories';
+import { MobileMessaging } from './MobileMessaging';
+import { MobileEvents } from './MobileEvents';
+import { AIJobRecommendations } from './AIJobRecommendations';
+import { SkillEndorsements } from './SkillEndorsements';
+import { LiveNetworking } from './LiveNetworking';
+import { ProfessionalGamification } from './ProfessionalGamification';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const EnhancedMobileNetwork: React.FC = () => {
-  const { user } = useAuth();
-  const [showCreatePost, setShowCreatePost] = useState(false);
-  const { triggerHaptic } = useHapticFeedback();
-  
-  // Real-time synchronization
-  const { isOnline, syncStatus, performSync, queueAction } = useRealtimeSync();
-  
-  const {
-    posts,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch
-  } = useInfiniteNetworkFeed({ feedType: 'all' });
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState<'feed' | 'stories' | 'network' | 'messages' | 'events' | 'jobs' | 'skills' | 'live' | 'achievements'>('feed');
 
-  // Infinite scroll
-  const { isFetching } = useInfiniteScroll({
-    hasNextPage: !!hasNextPage,
-    fetchNextPage,
-    threshold: 300
-  });
-
-  const handleRefresh = async () => {
-    triggerHaptic('light');
-    await refetch();
-    if (isOnline) {
-      await performSync();
-    }
-  };
-
-  const handlePostInteraction = (type: 'like' | 'comment' | 'share') => {
-    triggerHaptic(type === 'like' ? 'success' : 'light');
-  };
-
-  const handleSwipeLeft = (postId: string) => {
-    // Could implement "save for later" or "not interested"
-    triggerHaptic('medium');
-    console.log('Swiped left on post:', postId);
-  };
-
-  const handleSwipeRight = (postId: string) => {
-    // Could implement quick like
-    triggerHaptic('success');
-    console.log('Swiped right (liked) post:', postId);
-  };
-
-  const allPosts = posts || [];
-
-  if (isLoading) {
+  if (!isMobile) {
     return (
-      <MobileLayout>
-        <MobileNetworkSkeleton />
-      </MobileLayout>
-    );
-  }
-
-  if (isError) {
-    return (
-      <MobileLayout>
-        <div className="min-h-screen bg-background flex items-center justify-center p-4">
-          <div className="text-center">
-            <p className="text-destructive mb-4">Failed to load posts: {error?.message}</p>
-            <Button onClick={() => refetch()}>Try again</Button>
-          </div>
-        </div>
-      </MobileLayout>
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">This view is optimized for mobile devices.</p>
+      </div>
     );
   }
 
   return (
-    <MobileLayout>
-      {/* Real-time Connection Status */}
-      <div className={`w-full py-2 px-4 text-center text-sm transition-all duration-300 ${
-        isOnline 
-          ? 'bg-green-50 text-green-700 border-b border-green-200' 
-          : 'bg-orange-50 text-orange-700 border-b border-orange-200'
-      }`}>
-        <div className="flex items-center justify-center gap-2">
-          {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-          <span>{isOnline ? 'Connected - Real-time sync active' : 'Working Offline - Changes will sync when connected'}</span>
-          {Object.values(syncStatus).some(status => status === 'syncing') && (
-            <RefreshCw className="h-4 w-4 animate-spin" />
-          )}
-        </div>
+    <div className="h-full flex flex-col bg-background">
+      {/* Tab Navigation */}
+      <div className="flex bg-card border-b border-border/50 overflow-x-auto scrollbar-hide">
+        <button onClick={() => setActiveTab('feed')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'feed' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Feed</button>
+        <button onClick={() => setActiveTab('stories')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'stories' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Stories</button>
+        <button onClick={() => setActiveTab('network')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'network' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Network</button>
+        <button onClick={() => setActiveTab('messages')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'messages' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Messages</button>
+        <button onClick={() => setActiveTab('events')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Events</button>
+        <button onClick={() => setActiveTab('jobs')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'jobs' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Jobs</button>
+        <button onClick={() => setActiveTab('skills')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'skills' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Skills</button>
+        <button onClick={() => setActiveTab('live')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'live' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Live</button>
+        <button onClick={() => setActiveTab('achievements')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'achievements' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Growth</button>
       </div>
 
-      <MobilePullToRefresh onRefresh={handleRefresh}>
-        <div className="min-h-screen bg-background">
-          <StoryBubbles />
-          
-          {/* Quick Post Creation */}
-          <div className="p-4">
-            <Card className="p-3 bg-card border-0 shadow-sm rounded-2xl">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.user_metadata?.picture} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                    {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  variant="ghost"
-                  className="flex-1 justify-start text-muted-foreground h-9 rounded-xl bg-muted/50"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setShowCreatePost(true);
-                  }}
-                >
-                  Share your thoughts...
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="rounded-xl"
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setShowCreatePost(true);
-                  }}
-                >
-                  <Plus className="h-5 w-5" />
-                </Button>
-              </div>
-            </Card>
-          </div>
-          
-          {/* Posts Feed */}
-          <div className="pb-20">
-            {allPosts.map((post, index) => {
-              // Transform post to match NetworkPost interface
-              const transformedPost = {
-                id: post.id,
-                type: 'content' as const,
-                title: post.headline || post.content?.split('\n')[0]?.substring(0, 100) || 'Professional Update',
-                company: post.profiles?.current_company || post.profiles?.full_name || 'Professional',
-                location: 'Remote',
-                description: post.content || 'Professional update...',
-                tags: post.ai_topics || ['Professional', 'Career'],
-                timeAgo: formatTimeAgo(post.created_at),
-                interactions: {
-                  interested: post.likes_count || 0,
-                  comments: post.comments_count || 0,
-                  shares: post.shares_count || 0
-                },
-                author: {
-                  name: post.profiles?.full_name || 'Professional User',
-                  avatar: post.profiles?.profile_picture_url
-                }
-              };
-
-              return (
-                <div key={post.id}>
-                  <EnhancedSwipeableCard
-                    onSwipeLeft={() => handleSwipeLeft(post.id)}
-                    onSwipeRight={() => handleSwipeRight(post.id)}
-                    onDoubleTap={() => {
-                      triggerHaptic('success');
-                      // Quick like on double tap
-                      console.log('Double tap like:', post.id);
-                    }}
-                    className="px-4 mb-4"
-                  >
-                    <NetworkPost post={transformedPost} />
-                  </EnhancedSwipeableCard>
-                  {/* Insert "People You May Know" after the second post */}
-                  {index === 1 && (
-                    <div className="px-4 mb-4">
-                      <PeopleYouMayKnow />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            
-            {/* Loading more indicator */}
-            {(isFetchingNextPage || isFetching) && (
-              <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              </div>
-            )}
-            
-            {allPosts.length === 0 && (
-              <div className="p-8 text-center">
-                <p className="text-muted-foreground">No posts available yet.</p>
-                <p className="text-sm text-muted-foreground/70 mt-2">
-                  Connect with more professionals to see their updates!
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Post Creation Modal */}
-        {showCreatePost && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-            <MobilePostCreation
-              onClose={() => setShowCreatePost(false)}
-              onPostCreated={() => {
-                setShowCreatePost(false);
-                triggerHaptic('success');
-                refetch();
-                if (isOnline) {
-                  performSync();
-                }
-              }}
-            />
-          </div>
-        )}
-      </MobilePullToRefresh>
-    </MobileLayout>
+      {/* Tab Content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'feed' && <EnhancedMobileFeed />}
+        {activeTab === 'stories' && <MobileStories />}
+        {activeTab === 'network' && <RealTimeMobileNetwork />}
+        {activeTab === 'messages' && <MobileMessaging />}
+        {activeTab === 'events' && <MobileEvents />}
+        {activeTab === 'jobs' && <AIJobRecommendations />}
+        {activeTab === 'skills' && <SkillEndorsements />}
+        {activeTab === 'live' && <LiveNetworking />}
+        {activeTab === 'achievements' && <ProfessionalGamification />}
+      </div>
+    </div>
   );
 };
