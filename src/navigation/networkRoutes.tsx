@@ -29,6 +29,7 @@ import ArticleDetail from "../pages/network/ArticleDetail";
 import MyNetwork from "../pages/network/MyNetwork";
 import Discover from "../pages/network/Discover";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
+import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
 
 export const networkRoutes = [
   {
@@ -166,5 +167,10 @@ export const networkRoutes = [
     title: "Network Suggestions",
     to: "/network/suggestions",
     page: <Suggestions />,
+  },
+  {
+    title: "Mobile Network Analysis",
+    to: "/network/mobile-analysis",
+    page: <ComprehensiveMobileNetworkAnalysis />,
   },
 ];
