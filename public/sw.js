@@ -76,7 +76,7 @@ self.addEventListener('push', event => {
     }
   }
 
-  // Enhanced notification options
+  // Enhanced notification options with rich formatting
   const options = {
     body: notificationData.body,
     icon: notificationData.icon || '/icon-192.png',
@@ -95,21 +95,74 @@ self.addEventListener('push', event => {
       user_id: notificationData.user_id,
       type: notificationData.type,
       dateOfArrival: Date.now(),
+      rich_content: notificationData.rich_content,
+      actions: notificationData.actions,
       ...notificationData.data
     },
-    actions: notificationData.actions || [
-      {
-        action: 'view',
-        title: 'View',
-        icon: '/icon-192.png'
-      },
-      {
-        action: 'dismiss',
-        title: 'Dismiss',
-        icon: '/icon-192.png'
-      }
-    ]
+    actions: getNotificationActions(notificationData.type, notificationData.actions)
   };
+
+  function getNotificationActions(type, customActions) {
+    if (customActions && customActions.length > 0) {
+      return customActions;
+    }
+    
+    // Default actions based on notification type
+    switch (type) {
+      case 'profile_completion_reminder':
+        return [
+          {
+            action: 'complete',
+            title: '✨ Complete Profile',
+            icon: '/icon-192.png'
+          },
+          {
+            action: 'dismiss',
+            title: 'Later',
+            icon: '/icon-192.png'
+          }
+        ];
+      case 'job_match':
+        return [
+          {
+            action: 'view_job',
+            title: '💼 View Job',
+            icon: '/icon-192.png'
+          },
+          {
+            action: 'dismiss',
+            title: 'Dismiss',
+            icon: '/icon-192.png'
+          }
+        ];
+      case 'welcome':
+        return [
+          {
+            action: 'explore',
+            title: '🚀 Get Started',
+            icon: '/icon-192.png'
+          },
+          {
+            action: 'dismiss',
+            title: 'OK',
+            icon: '/icon-192.png'
+          }
+        ];
+      default:
+        return [
+          {
+            action: 'view',
+            title: 'View',
+            icon: '/icon-192.png'
+          },
+          {
+            action: 'dismiss',
+            title: 'Dismiss',
+            icon: '/icon-192.png'
+          }
+        ];
+    }
+  }
 
   // Show notification
   event.waitUntil(
@@ -142,15 +195,29 @@ self.addEventListener('notificationclick', event => {
     return;
   }
 
-  // Default action or 'view' action
-  const targetUrl = data.url || '/';
+  // Handle different actions with specific URLs
+  let targetUrl = data.url || '/';
+  
+  switch (action) {
+    case 'complete':
+      targetUrl = '/profile';
+      break;
+    case 'view_job':
+      targetUrl = '/jobs';
+      break;
+    case 'explore':
+      targetUrl = '/jobs';
+      break;
+    default:
+      targetUrl = data.url || '/';
+  }
   
   event.waitUntil(
     self.clients.matchAll({ type: 'window' })
       .then(clients => {
         // Check if there's already a window/tab open with this URL
         for (let client of clients) {
-          if (client.url === targetUrl && 'focus' in client) {
+          if (client.url.includes(targetUrl.split('/')[1]) && 'focus' in client) {
             return client.focus();
           }
         }

@@ -12,6 +12,9 @@ interface PushNotificationRequest {
   body: string;
   data?: Record<string, any>;
   trigger_type?: string;
+  rich_content?: string;
+  actions?: Array<{action: string, label: string, url?: string}>;
+  image?: string;
 }
 
 serve(async (req) => {
@@ -31,7 +34,7 @@ serve(async (req) => {
       }
     );
 
-    const { user_ids, title, body, data, trigger_type, priority = 'normal' }: PushNotificationRequest & { priority?: string } = await req.json();
+    const { user_ids, title, body, data, trigger_type, priority = 'normal', rich_content, actions, image }: PushNotificationRequest & { priority?: string } = await req.json();
 
     if (!user_ids || !title || !body) {
       return new Response(
@@ -46,7 +49,12 @@ serve(async (req) => {
       type: trigger_type || 'general',
       title,
       message: body,
-      data: data || {},
+      data: {
+        ...(data || {}),
+        rich_content,
+        actions,
+        image
+      },
       priority,
       is_read: false,
       sound_enabled: true,
@@ -84,26 +92,54 @@ serve(async (req) => {
       for (const token of pushTokens) {
         try {
           if (token.platform === 'web') {
-            // Web push using service worker
+            // Web push using service worker with rich formatting
             const webPushPayload = {
               title,
-              body,
+              body: rich_content || body,
               icon: '/icon-192.png',
               badge: '/icon-192.png',
+              image: image,
               tag: `notification_${createdNotifications[0]?.id}`,
+              type: trigger_type,
+              rich_content,
               data: {
                 ...data,
                 url: data?.url || '/',
                 notification_id: createdNotifications[0]?.id,
-                user_id: token.user_id
+                user_id: token.user_id,
+                rich_content,
+                actions
               },
-              actions: [
-                { action: 'view', title: 'View' },
-                { action: 'dismiss', title: 'Dismiss' }
-              ],
+              actions: actions || getDefaultActions(trigger_type),
               requireInteraction: priority === 'high',
-              silent: false
+              silent: false,
+              priority
             };
+
+            function getDefaultActions(type) {
+              switch (type) {
+                case 'profile_completion_reminder':
+                  return [
+                    { action: 'complete', title: '✨ Complete Profile' },
+                    { action: 'dismiss', title: 'Later' }
+                  ];
+                case 'job_match':
+                  return [
+                    { action: 'view_job', title: '💼 View Job' },
+                    { action: 'dismiss', title: 'Dismiss' }
+                  ];
+                case 'welcome':
+                  return [
+                    { action: 'explore', title: '🚀 Get Started' },
+                    { action: 'dismiss', title: 'OK' }
+                  ];
+                default:
+                  return [
+                    { action: 'view', title: 'View' },
+                    { action: 'dismiss', title: 'Dismiss' }
+                  ];
+              }
+            }
 
             // In a real implementation, you would use web-push library here
             console.log('Would send web push:', webPushPayload);
