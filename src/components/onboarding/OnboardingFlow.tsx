@@ -143,45 +143,45 @@ export const OnboardingFlow: React.FC = () => {
   const progress = (completedSteps / availableSteps.length) * 100;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <Card variant="glass" className="w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto shadow-elegant mx-2">
-        <CardHeader className="text-center pb-3 px-4 pt-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 mx-auto mb-3 flex items-center justify-center shadow-lg">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-1 sm:p-2">
+      <Card variant="glass" className="w-full max-w-[320px] sm:max-w-[380px] max-h-[85vh] overflow-y-auto shadow-elegant mx-1">
+        <CardHeader className="text-center pb-2 px-3 pt-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 mx-auto mb-2 flex items-center justify-center shadow-md">
             <img 
               src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
               alt="TalentXcel logo"
-              className="w-7 h-7 rounded-lg object-cover"
+              className="w-5 h-5 rounded object-cover"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
             />
           </div>
-          <CardTitle className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <CardTitle className="text-sm sm:text-base font-semibold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             Welcome to TalentXcel!
           </CardTitle>
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            Let's get you started with your career journey
+          <p className="text-muted-foreground text-xs">
+            Get started with your career journey
           </p>
-          <div className="mt-3">
+          <div className="mt-2">
             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-              <span>{completedSteps} of {availableSteps.length} completed</span>
+              <span>{completedSteps}/{availableSteps.length}</span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <Progress value={progress} className="h-1.5" />
+            <Progress value={progress} className="h-1" />
           </div>
         </CardHeader>
-        <CardContent className="space-y-2 px-4 pb-4">
+        <CardContent className="space-y-1.5 px-3 pb-3">
           {availableSteps.map((step, index) => (
             <div
               key={step.id}
-              className={`group relative rounded-lg p-2.5 transition-all duration-300 ${
+              className={`group relative rounded-md p-2 transition-all duration-200 ${
                 step.completed
-                  ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 shadow-sm'
+                  ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200'
                   : index === currentStep
-                  ? 'bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-md'
+                  ? 'bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20'
                   : 'bg-gradient-to-r from-muted/30 to-muted/10 border border-muted hover:border-primary/30'
               }`}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2.5 flex-1 min-w-0">
+                <div className="flex items-center space-x-2 flex-1 min-w-0">
                   <div className={`relative flex-shrink-0 ${
                     step.completed 
                       ? 'text-emerald-500' 
@@ -190,9 +190,9 @@ export const OnboardingFlow: React.FC = () => {
                       : 'text-muted-foreground'
                   }`}>
                     {step.completed ? (
-                      <CheckCircle className="h-4 w-4" />
+                      <CheckCircle className="h-3 w-3" />
                     ) : (
-                      <div className={`h-4 w-4 rounded-full border-2 ${
+                      <div className={`h-3 w-3 rounded-full border-2 ${
                         index === currentStep ? 'border-primary bg-primary/20' : 'border-current'
                       }`} />
                     )}
@@ -203,10 +203,10 @@ export const OnboardingFlow: React.FC = () => {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-medium text-xs sm:text-sm text-foreground truncate">
+                    <h3 className="font-medium text-xs text-foreground truncate">
                       {step.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground line-clamp-1 sm:line-clamp-2">
+                    <p className="text-xs text-muted-foreground line-clamp-1 hidden sm:block">
                       {step.description}
                     </p>
                   </div>
@@ -216,7 +216,7 @@ export const OnboardingFlow: React.FC = () => {
                   disabled={step.completed}
                   variant={step.completed ? "ghost" : index === currentStep ? "default" : "outline"}
                   size="sm"
-                  className={`ml-2 flex-shrink-0 text-xs h-7 px-2 ${
+                  className={`ml-1 flex-shrink-0 text-xs h-6 px-2 ${
                     step.completed 
                       ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' 
                       : index === currentStep 
@@ -224,29 +224,29 @@ export const OnboardingFlow: React.FC = () => {
                       : ''
                   }`}
                 >
-                  {step.completed ? 'Done' : step.action.split(' ')[0]}
-                  {!step.completed && <ArrowRight className="h-3 w-3 ml-1" />}
+                  {step.completed ? '✓' : step.action.split(' ')[0]}
+                  {!step.completed && <ArrowRight className="h-2.5 w-2.5 ml-0.5" />}
                 </Button>
               </div>
             </div>
           ))}
           
-          <div className="flex gap-2 pt-3 border-t border-muted/50">
+          <div className="flex gap-1.5 pt-2 border-t border-muted/50">
             <Button 
               variant="outline" 
               onClick={handleSkipOnboarding}
-              className="flex-1 text-xs h-8"
+              className="flex-1 text-xs h-7"
               size="sm"
             >
-              Skip for now
+              Skip
             </Button>
             <Button 
               onClick={handleCompleteOnboarding}
               disabled={completedSteps < availableSteps.length}
-              className="flex-1 text-xs shadow-sm h-8"
+              className="flex-1 text-xs shadow-sm h-7"
               size="sm"
             >
-              {completedSteps === availableSteps.length ? 'Finish' : 'Complete All'}
+              {completedSteps === availableSteps.length ? 'Done' : 'Complete'}
             </Button>
           </div>
         </CardContent>
