@@ -70,18 +70,26 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData?.user?.id;
 
-      // Fetch profiles separately (no FK join available between posts.author_id and profiles.id)
+      // Fetch profiles for all posts using both author_id and user_id
       let profilesMap = new Map<string, any>();
       try {
-        const authorIds = Array.from(new Set((data ?? []).map((p: any) => p.author_id).filter(Boolean)));
-        if (authorIds.length > 0) {
+        // Get all possible user IDs (both author_id and user_id from posts)
+        const allUserIds = Array.from(new Set([
+          ...(data ?? []).map((p: any) => p.author_id).filter(Boolean),
+          ...(data ?? []).map((p: any) => p.user_id).filter(Boolean)
+        ]));
+        
+        if (allUserIds.length > 0) {
+          console.log('Fetching profiles for user IDs:', allUserIds);
           const { data: profilesData, error: profileError } = await supabase
             .from('profiles')
-            .select('id, full_name, profile_picture_url, title, location, is_verified')
-            .in('id', authorIds);
+            .select('id, full_name, profile_picture_url, title, location')
+            .in('id', allUserIds);
+          
           if (profileError) {
             console.error('Profile fetch error:', profileError);
           } else if (profilesData) {
+            console.log('Fetched profiles:', profilesData);
             profilesMap = new Map(profilesData.map((p: any) => [p.id, p]));
           }
         }
@@ -90,12 +98,18 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       }
 
       // Transform data to include computed fields
-      const transformedData = (data ?? []).map((post: any) => ({
-        ...post,
-        profiles: profilesMap.get(post.author_id) ?? undefined,
-        isLiked: Array.isArray(post.post_likes) && userId ? post.post_likes.some((like: any) => like.user_id === userId) : false,
-        isSaved: Array.isArray(post.post_saves) && userId ? post.post_saves.some((save: any) => save.user_id === userId) : false,
-      }));
+      const transformedData = (data ?? []).map((post: any) => {
+        // Try to get profile using author_id first, then user_id as fallback
+        const profile = profilesMap.get(post.author_id) || profilesMap.get(post.user_id);
+        console.log(`Post ${post.id}: author_id=${post.author_id}, user_id=${post.user_id}, profile=`, profile);
+        
+        return {
+          ...post,
+          profiles: profile,
+          isLiked: Array.isArray(post.post_likes) && userId ? post.post_likes.some((like: any) => like.user_id === userId) : false,
+          isSaved: Array.isArray(post.post_saves) && userId ? post.post_saves.some((save: any) => save.user_id === userId) : false,
+        };
+      });
 
       return {
         data: transformedData,
