@@ -47,14 +47,6 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         .from('posts')
         .select(`
           *,
-          profiles:author_id (
-            id,
-            full_name,
-            profile_picture_url,
-            title,
-            location,
-            is_verified
-          ),
           post_likes!left (user_id),
           post_saves!left (user_id)
         `)
@@ -72,12 +64,34 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
 
       if (error) throw error;
 
+      // Fetch current user once
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+
+      // Fetch profiles separately (no FK join available between posts.author_id and profiles.id)
+      let profilesMap = new Map<string, any>();
+      try {
+        const authorIds = Array.from(new Set((data ?? []).map((p: any) => p.author_id).filter(Boolean)));
+        if (authorIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, full_name, profile_picture_url, title, location, is_verified')
+            .in('id', authorIds);
+          if (profilesData) {
+            profilesMap = new Map(profilesData.map((p: any) => [p.id, p]));
+          }
+        }
+      } catch (e) {
+        // Ignore profile fetch errors to avoid failing the feed
+      }
+
       // Transform data to include computed fields
-      const transformedData = data?.map(post => ({
+      const transformedData = (data ?? []).map((post: any) => ({
         ...post,
-        isLiked: post.post_likes?.some((like: any) => like.user_id === (supabase.auth.getUser() as any)?.data?.user?.id) || false,
-        isSaved: post.post_saves?.some((save: any) => save.user_id === (supabase.auth.getUser() as any)?.data?.user?.id) || false,
-      })) || [];
+        profiles: profilesMap.get(post.author_id) ?? undefined,
+        isLiked: Array.isArray(post.post_likes) && userId ? post.post_likes.some((like: any) => like.user_id === userId) : false,
+        isSaved: Array.isArray(post.post_saves) && userId ? post.post_saves.some((save: any) => save.user_id === userId) : false,
+      }));
 
       return {
         data: transformedData,
