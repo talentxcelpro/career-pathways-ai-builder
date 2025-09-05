@@ -109,3 +109,8 @@ verify_jwt = false
 [functions.trigger-news-now]
 verify_jwt = false
 
+# Email Notifications Function
+[functions.send-email-notification]
+verify_jwt = false
+
+
