@@ -156,7 +156,7 @@ const Network = () => {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               }>
-                <Posts feedType="smart" />
+                <Posts feedType="connections" />
               </React.Suspense>
             </div>
           </TabsContent>

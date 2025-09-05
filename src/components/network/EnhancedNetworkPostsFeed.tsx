@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { NetworkPostCard } from './NetworkPostCard';
 import { NewPostsBanner } from './NewPostsBanner';
 import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
@@ -9,13 +9,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
 interface EnhancedNetworkPostsFeedProps {
-  feedType: 'all' | 'smart' | 'trending';
+  feedType: 'all' | 'connections' | 'trending';
 }
 
 export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> = ({
   feedType
 }) => {
   const [openComments, setOpenComments] = React.useState<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  
   
   const {
     data,
@@ -26,9 +28,27 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
     isFetchingNextPage,
     fetchNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ type: feedType });
+  } = useInfiniteNetworkFeed({ type: feedType === 'connections' ? 'connections' : feedType });
 
   const posts = data?.pages.flatMap(page => page.data) || [];
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const handleCommentClick = (postId: string) => {
     setOpenComments(openComments === postId ? null : postId);
@@ -69,9 +89,9 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
     return (
       <div className="space-y-4">
         <NewPostsBanner 
-          newPostsCount={newPostsAvailable}
-          isConnected={realtimeConnected}
-          onRefresh={refreshFeed}
+          newPostsCount={0}
+          isConnected={false}
+          onRefresh={() => refetch()}
         />
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -105,9 +125,9 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
     return (
       <div className="space-y-4">
         <NewPostsBanner 
-          newPostsCount={newPostsAvailable}
-          isConnected={realtimeConnected}
-          onRefresh={refreshFeed}
+          newPostsCount={0}
+          isConnected={false}
+          onRefresh={() => refetch()}
         />
         <Card className="bg-card/95 backdrop-blur-sm">
           <CardContent className="p-8 text-center">
@@ -115,14 +135,14 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
               <div className="text-2xl">📱</div>
               <h3 className="text-lg font-semibold">No posts yet</h3>
               <p className="text-muted-foreground">
-                {feedType === 'smart' 
-                  ? "Connect with professionals to see posts in your smart feed"
+                {feedType === 'connections'
+                  ? "Connect with professionals to see posts from your network"
                   : feedType === 'trending'
                   ? "No trending posts available right now"
                   : "Be the first to share something with your network!"
                 }
               </p>
-              <Button variant="outline" onClick={refreshFeed}>
+              <Button variant="outline" onClick={() => refetch()}>
                 Refresh feed
               </Button>
             </div>
@@ -136,9 +156,9 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
     <div className="space-y-4">
       {/* New Posts Banner */}
       <NewPostsBanner 
-        newPostsCount={newPostsAvailable}
-        isConnected={realtimeConnected}
-        onRefresh={refreshFeed}
+        newPostsCount={0}
+        isConnected={true}
+        onRefresh={() => refetch()}
       />
 
       {/* Posts Feed */}

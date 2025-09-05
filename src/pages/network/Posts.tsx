@@ -40,7 +40,7 @@ import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
 
 
-const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'smart' | 'trending' }) => {
+const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const feedFilter = feedType; // Use the prop instead of state
