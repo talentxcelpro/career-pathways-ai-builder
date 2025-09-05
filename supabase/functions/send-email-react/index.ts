@@ -2,6 +2,8 @@ import React from 'npm:react@18.3.1'
 import { Resend } from 'npm:resend@4.0.0'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { ProfileCompletionEmail } from './_templates/profile-completion.tsx'
+import { WelcomeEmail } from './_templates/welcome-email.tsx'
+import { JobRecommendationEmail } from './_templates/job-recommendation.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
@@ -59,8 +61,33 @@ Deno.serve(async (req) => {
           })
         )
         break
+      case 'welcome':
+      case 'welcome_email':
+        console.log('🎉 Rendering welcome email template...')
+        html = await renderAsync(
+          React.createElement(WelcomeEmail, {
+            candidate_name: data.candidate_name || data.name || 'User',
+            first_name: data.first_name
+          })
+        )
+        break
+      case 'job_recommendation':
+      case 'job_match':
+        console.log('💼 Rendering job recommendation template...')
+        html = await renderAsync(
+          React.createElement(JobRecommendationEmail, {
+            candidate_name: data.candidate_name || data.name || 'User',
+            job_title: data.job_title,
+            company_name: data.company_name,
+            location: data.location,
+            experience_level: data.experience_level,
+            salary_range: data.salary_range,
+            job_id: data.job_id
+          })
+        )
+        break
       default:
-        throw new Error(`Unknown template: ${template}`)
+        throw new Error(`Unknown template: ${template}. Available templates: profile_completion_reminder, welcome, welcome_email, job_recommendation, job_match`)
     }
 
     console.log('✉️ Sending email via Resend...')

@@ -16,8 +16,8 @@ interface UnifiedEmailRequest {
   event_key?: string;             // e.g., "profile_completion_reminder"
   template?: string;              // alias for event_key for compatibility
   data?: AnyJson;                 // template variables
-  subject?: string;               // passthrough mode: subject + html
-  html?: string;                  // passthrough mode: raw HTML (will be wrapped in master)
+  subject?: string;               // DEPRECATED: use templates instead
+  html?: string;                  // DEPRECATED: use templates instead
   from?: string;                  // optional from
   trackingPixel?: boolean;        // default true
   priority?: "high" | "medium" | "low";
@@ -47,73 +47,6 @@ function initSes() {
   return sesClient;
 }
 
-// Master template per spec (Handlebars)
-const MASTER_TEMPLATE_SOURCE = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>{{email_title}}</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    body{margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI','Helvetica Neue',sans-serif;color:#1a1a1a;}
-    .container{max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.05);}
-    .header{background:linear-gradient(to right,#1e3a8a,#2563eb);padding:24px;text-align:center;color:#fff;}
-    .logo{font-size:24px;font-weight:700;text-decoration:none;display:block;color:#fff;}
-    .logo span{color:#facc15;}
-    .subheader{font-size:14px;margin-top:6px;color:#e0e7ff;}
-    .body{padding:32px 24px;}
-    .body p{font-size:15px;line-height:1.6;margin-bottom:16px;}
-    .body ul{padding-left:20px;margin-bottom:24px;}
-    .body ul li{margin-bottom:10px;}
-    .cta{text-align:center;margin-top:20px;}
-    .cta a{background:#1e40af;color:#fff;text-decoration:none;padding:14px 28px;font-weight:700;border-radius:6px;display:inline-block;}
-    .footer{padding:20px;background:#f1f5f9;font-size:12px;text-align:center;color:#6b7280;}
-    .footer a{color:#2563eb;margin:0 6px;text-decoration:none;}
-    @media (prefers-color-scheme:dark){
-      body{background:#111827;color:#f3f4f6;}
-      .container{background:#1f2937;}
-      .header{background:#1e3a8a;}
-      .footer{background:#111827;color:#9ca3af;}
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <a href="https://talentxcel.in" class="logo">Talent<span>Xcel</span></a>
-      <h2 style="margin:10px 0">{{email_title}}</h2>
-      <div class="subheader">{{email_subheader}}</div>
-    </div>
-    <div class="body">
-      {{{email_body_html}}}
-      <div class="cta">
-        <a href="{{cta_link}}">{{cta_text}}</a>
-      </div>
-      <p style="font-size:13px;color:#6b7280;text-align:center;margin-top:40px">
-        This email was sent automatically by TalentXcel. Please do not reply.
-      </p>
-    </div>
-    <div class="footer">
-      © 2025 TalentXcel Services | <a href="https://talentxcel.in">talentxcel.in</a><br />
-      <div style="margin-top:10px">
-        <a href="https://talentxcel.in/network">Network</a>
-        <a href="https://talentxcel.in/jobs">Jobs</a>
-        <a href="https://talentxcel.in/employer">Employer</a>
-        <a href="https://talentxcel.in/companies">Companies</a>
-        <a href="https://talentxcel.in/resume">Resume Builder</a>
-        <a href="https://talentxcel.in/tools">Tools</a>
-        <a href="https://talentxcel.in/services">Services</a>
-        <a href="https://talentxcel.in/learning">Learning</a>
-        <a href="https://talentxcel.in/colleges">Colleges</a>
-        <a href="https://talentxcel.in/career-map">Career Map</a>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-
-const MASTER_TEMPLATE = Handlebars.compile(MASTER_TEMPLATE_SOURCE);
-
 function toSnakeKey(s?: string) {
   if (!s) return "";
   return s.trim().toLowerCase().replace(/[\s\-]+/g, "_");
@@ -128,31 +61,75 @@ function appendUtm(link: string, eventKey: string) {
   return url.toString();
 }
 
-async function fetchEventDefinition(eventKey: string) {
-  const { data, error } = await supabase
+// Get template from either email_event_definitions or email_automation_settings
+async function fetchTemplate(eventKey: string) {
+  // First, try email_event_definitions (new system)
+  const { data: eventDef, error: eventError } = await supabase
     .from("email_event_definitions")
     .select("*")
     .eq("event_key", eventKey)
+    .eq("is_enabled", true)
     .single();
-  if (error || !data) {
-    throw new Error(`Unknown or disabled email event: ${eventKey}`);
+
+  if (eventDef && !eventError) {
+    console.log(`✅ Found template in email_event_definitions: ${eventKey}`);
+    return {
+      subject: eventDef.email_title_template,
+      html: eventDef.email_body_html_template,
+      type: 'event_definition'
+    };
   }
-  return data;
+
+  // Fallback to email_automation_settings (legacy system)
+  const { data: autoSettings, error: autoError } = await supabase
+    .from("email_automation_settings")
+    .select("subject_template, html_template")
+    .eq("trigger_type", eventKey)
+    .eq("is_enabled", true)
+    .single();
+
+  if (autoSettings && !autoError) {
+    console.log(`✅ Found template in email_automation_settings: ${eventKey}`);
+    return {
+      subject: autoSettings.subject_template,
+      html: autoSettings.html_template,
+      type: 'automation_settings'
+    };
+  }
+
+  // Last resort: check email_templates table
+  const { data: template, error: templateError } = await supabase
+    .from("email_templates")
+    .select("subject, html_template")
+    .eq("name", eventKey)
+    .eq("is_active", true)
+    .single();
+
+  if (template && !templateError) {
+    console.log(`✅ Found template in email_templates: ${eventKey}`);
+    return {
+      subject: template.subject,
+      html: template.html_template,
+      type: 'email_templates'
+    };
+  }
+
+  throw new Error(`Template not found for event: ${eventKey}. Available tables checked: email_event_definitions, email_automation_settings, email_templates`);
 }
 
-function renderFromDefinition(def: any, variables: AnyJson) {
-  const title = Handlebars.compile(def.email_title_template)(variables);
-  const subheader = Handlebars.compile(def.email_subheader_template || "")(variables);
-  const bodyHtml = Handlebars.compile(def.email_body_html_template)(variables);
-  const ctaText = Handlebars.compile(def.cta_text_template || "Visit TalentXcel")(variables);
-  const rawCtaLink = Handlebars.compile(def.cta_link_template || "https://talentxcel.in")(variables);
-  return {
-    title,
-    subheader,
-    bodyHtml,
-    ctaText,
-    ctaLink: rawCtaLink,
-  };
+function renderTemplate(templateText: string, variables: AnyJson) {
+  try {
+    // Use Handlebars for more robust template rendering
+    const template = Handlebars.compile(templateText);
+    return template(variables);
+  } catch (error) {
+    console.warn(`⚠️ Handlebars failed, falling back to simple replacement:`, error);
+    // Fallback to simple variable replacement
+    return templateText.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+      const value = variables[key];
+      return value !== undefined ? String(value) : match;
+    });
+  }
 }
 
 async function sendViaSES(to: string, subject: string, html: string, tags: { Name: string; Value: string }[], textFallback?: string) {
@@ -201,7 +178,17 @@ Deno.serve(async (req) => {
     const trackingPixel = payload.trackingPixel !== false;
     const priority = payload.priority || "medium";
     const eventKeyInput = toSnakeKey(payload.event_key || payload.template);
-    const variables = payload.data || {};
+    const variables = {
+      // Default variables
+      candidate_name: "User",
+      name: "User",
+      company_name: "TalentXcel",
+      website_url: "https://talentxcel.in",
+      support_email: "support@talentxcel.in",
+      current_year: new Date().getFullYear().toString(),
+      platform_name: "TalentXcel",
+      ...payload.data || {}
+    };
 
     if (!to) {
       return new Response(JSON.stringify({ success: false, error: "Missing 'to' address" }), {
@@ -210,59 +197,53 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Decide mode: event-driven or passthrough (subject+html)
-    let subject = payload.subject || "";
-    let finalHtml = "";
-    let usedEventKey = eventKeyInput || "passthrough";
-
-    if (eventKeyInput) {
-      // Fetch event definition and render
-      const def = await fetchEventDefinition(eventKeyInput);
-      const rendered = renderFromDefinition(def, variables);
-
-      const compiledHtml = MASTER_TEMPLATE({
-        email_title: rendered.title,
-        email_subheader: rendered.subheader || "",
-        email_body_html: rendered.bodyHtml,
-        cta_text: rendered.ctaText || "Visit TalentXcel",
-        cta_link: appendUtm(rendered.ctaLink || "https://talentxcel.in", eventKeyInput),
-      });
-
-      subject = rendered.title;
-      finalHtml = compiledHtml;
-    } else if (payload.subject && payload.html) {
-      // Backward-compatible passthrough wrapped in master template
-      const ctaText = "Open TalentXcel";
-      const ctaLink = "https://talentxcel.in";
-      const compiledHtml = MASTER_TEMPLATE({
-        email_title: payload.subject,
-        email_subheader: "",
-        email_body_html: payload.html,
-        cta_text: ctaText,
-        cta_link: appendUtm(ctaLink, usedEventKey),
-      });
-      subject = payload.subject;
-      finalHtml = compiledHtml;
-    } else {
-      return new Response(JSON.stringify({ success: false, error: "Provide either event_key/template or subject+html" }), {
+    // ENFORCE: Templates must be used - no raw HTML
+    if (!eventKeyInput && payload.subject && payload.html) {
+      console.warn("⚠️ DEPRECATED: Raw HTML email detected. Please use templates instead.");
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: "Raw HTML emails are deprecated. Please use event_key or template parameter to specify a template.",
+        available_templates: ["welcome", "profile_completion_reminder", "job_recommendation", "application_confirmation", "connection_request"]
+      }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Tracking pixel
-    const trackingId = crypto.randomUUID();
-    if (trackingPixel) {
-      const pixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" style="display:none;" alt="" />`;
-      finalHtml += pixel;
+    if (!eventKeyInput) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: "event_key or template parameter is required",
+        available_templates: ["welcome", "profile_completion_reminder", "job_recommendation", "application_confirmation", "connection_request"]
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Send
-    const { result, responseTime } = await sendViaSES(to, subject, finalHtml, [
+    // Fetch and render template
+    const templateData = await fetchTemplate(eventKeyInput);
+    const subject = renderTemplate(templateData.subject, variables);
+    const finalHtml = renderTemplate(templateData.html, variables);
+
+    console.log(`📧 Sending templated email: ${eventKeyInput} to ${to}`);
+    console.log(`📋 Template source: ${templateData.type}`);
+
+    // Tracking pixel
+    const trackingId = crypto.randomUUID();
+    let emailWithTracking = finalHtml;
+    if (trackingPixel) {
+      const pixel = `<img src="https://dthlgsnakhoftinssokm.supabase.co/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" style="display:none;" alt="" />`;
+      emailWithTracking = finalHtml + pixel;
+    }
+
+    // Send via SES
+    const { result, responseTime } = await sendViaSES(to, subject, emailWithTracking, [
       { Name: "source", Value: "talentxcel" },
       { Name: "provider", Value: "aws_ses" },
       { Name: "priority", Value: priority },
-      { Name: "event_key", Value: usedEventKey },
+      { Name: "event_key", Value: eventKeyInput },
+      { Name: "template_source", Value: templateData.type },
     ]);
 
     // Log delivery
@@ -271,13 +252,13 @@ Deno.serve(async (req) => {
         message_id: (result as any).MessageId,
         email_address: to,
         subject,
-        template_name: usedEventKey,
+        template_name: eventKeyInput,
         template_data: variables,
         status: "sent",
         provider: "aws_ses",
         response_time_ms: responseTime,
         tracking_id: trackingPixel ? trackingId : null,
-        event_key: usedEventKey,
+        event_key: eventKeyInput,
         created_at: new Date().toISOString(),
       });
     } catch (logErr) {
@@ -286,18 +267,21 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true,
-      message: "Email sent",
+      message: "Templated email sent successfully",
       messageId: (result as any).MessageId,
       provider: "aws_ses",
-      event_key: usedEventKey,
+      event_key: eventKeyInput,
+      template_source: templateData.type,
       responseTime,
       trackingId: trackingPixel ? trackingId : null,
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (error: any) {
     console.error("❌ unified-email-service error:", error?.message || error);
+    
     // Attempt failure log
     try {
       await supabase.from("email_delivery_events").insert({
@@ -314,6 +298,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({
       success: false,
       error: error?.message || "Unknown error",
+      help: "Ensure you're using event_key or template parameter with a valid template name",
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
