@@ -1,69 +1,134 @@
 {
-  "name": "TalentXcel - AI-Powered Career Platform",
+  "name": "TalentXcel - Career Platform for India",
   "short_name": "TalentXcel",
-  "description": "Find your dream job with AI-powered matching, resume building, and career insights",
+  "description": "Find jobs, build resumes, and advance your career. Made for India's job market.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#3b82f6",
+  "background_color": "#1a1a1a",
+  "theme_color": "#0066cc",
   "orientation": "portrait-primary",
-  "prefer_related_applications": false,
   "scope": "/",
-  "icons": [
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["productivity", "business", "education"],
+  "screenshots": [
     {
-      "src": "/favicon.ico",
-      "sizes": "48x48",
-      "type": "image/x-icon"
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Home screen showing job recommendations"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/screenshots/desktop-dashboard.png", 
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Desktop dashboard with career tools"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96", 
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/icon-512.png", 
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     }
   ],
-  "categories": ["business", "productivity", "education"],
   "shortcuts": [
     {
       "name": "Find Jobs",
       "short_name": "Jobs",
-      "description": "Browse and search for job opportunities",
-      "url": "/jobs",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "description": "Search for jobs in your city",
+      "url": "/mobile/jobs?utm_source=homescreen",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
-      "name": "My Profile",
-      "short_name": "Profile", 
-      "description": "View and edit your profile",
-      "url": "/profile",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "name": "Build Resume",
+      "short_name": "Resume", 
+      "description": "Create or update your resume",
+      "url": "/mobile/resume?utm_source=homescreen",
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
-      "name": "Resume Builder",
-      "short_name": "Resume",
-      "description": "Build and enhance your resume",
-      "url": "/resume",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "name": "Interview Prep",
+      "short_name": "Interview",
+      "description": "Practice for your next interview",
+      "url": "/mobile/interview?utm_source=homescreen", 
+      "icons": [
+        {
+          "src": "/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Government Jobs",
+      "short_name": "Govt Jobs",
+      "description": "Latest government job openings",
+      "url": "/mobile/govt-jobs?utm_source=homescreen",
+      "icons": [
+        {
+          "src": "/icon-96x96.png", 
+          "sizes": "96x96"
+        }
+      ]
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshot-mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshot-desktop.png", 
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ]
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
