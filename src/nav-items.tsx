@@ -27,6 +27,7 @@ import { growthRoutes } from "./navigation/growthRoutes";
 import { publicRoutes } from "./navigation/publicRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
+import MobileSearch from "./pages/mobile/MobileSearch";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -48,6 +49,19 @@ export const campaignRoutes = [
     page: <CampaignManager />,
     description: "Launch and manage content & outreach campaigns",
     requiresAdminAccess: true
+  }
+];
+
+// Mobile Search route
+export const mobileSearchRoutes = [
+  {
+    title: "Mobile Search",
+    to: "/mobile/search",
+    icon: "search",
+    page: <MobileSearch />,
+    description: "Mobile search interface",
+    isPublic: true,
+    requiresAuth: true
   }
 ];
 
@@ -73,6 +87,7 @@ export const navItems = [
   ...assessmentRoutes,
   ...referralRoutes,
   ...mobileRoutes,
+  ...mobileSearchRoutes,
   ...analyticsRoutes,
   ...growthRoutes,
   ...aiAgentRoutes,
