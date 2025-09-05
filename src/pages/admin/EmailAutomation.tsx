@@ -13,8 +13,11 @@ import { GrowthCommunicationSystem } from '@/components/admin/GrowthCommunicatio
 import { CommunicationDashboard } from '@/components/admin/CommunicationDashboard';
 import { EmailSecurityValidator } from '@/components/admin/EmailSecurityValidator';
 import { EmailAutomationFixer } from '@/components/admin/EmailAutomationFixer';
+import { AIEmailAutomationDashboard } from '@/components/admin/AIEmailAutomationDashboard';
+import { AdvancedABTestingEngine } from '@/components/admin/AdvancedABTestingEngine';
+import { SmartUserSegmentation } from '@/components/admin/SmartUserSegmentation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield, Wrench } from "lucide-react";
+import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield, Wrench, Target } from "lucide-react";
 
 const EmailAutomationPage = () => {
   return (
