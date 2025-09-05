@@ -121,10 +121,32 @@ export default function PublicInterviewPrep() {
   return (
     <>
       <Helmet>
-        <title>Interview Preparation | AI Mock Interviews & Practice - TalentXcel</title>
-        <meta name="description" content="Ace your interviews with AI-powered mock interviews, question banks, and STAR method training. Practice with real interview scenarios." />
-        <meta name="keywords" content="interview preparation, mock interview, interview questions, STAR method, interview practice" />
+        <title>Interview Questions and Answers 2025 | HR Interview Tips | Mock Interview Practice - TalentXcel</title>
+        <meta name="description" content="Master interviews with 500+ questions and answers, HR interview tips, AI mock interview practice. STAR method training for job interview success." />
+        <meta name="keywords" content="interview questions and answers, HR interview tips, mock interview practice, STAR method, interview preparation, job interview questions" />
         <link rel="canonical" href="https://talentxcel.in/public/interview-prep" />
+        <meta property="og:title" content="Interview Questions and Answers 2025 | Mock Interview Practice - TalentXcel" />
+        <meta property="og:description" content="Master interviews with 500+ questions and answers, HR interview tips, AI mock interview practice." />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            "name": "Interview Preparation Course",
+            "description": "Comprehensive interview preparation with AI mock interviews and expert tips",
+            "provider": {
+              "@type": "Organization",
+              "name": "TalentXcel"
+            },
+            "courseMode": "online",
+            "educationalLevel": "All levels",
+            "teaches": [
+              "Interview techniques",
+              "STAR method",
+              "Mock interview practice",
+              "Behavioral questions"
+            ]
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">

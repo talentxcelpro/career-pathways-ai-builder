@@ -12,7 +12,9 @@ import {
   Sparkles,
   TrendingUp,
   Users,
-  Clock
+  Clock,
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -72,13 +74,43 @@ export default function PublicJobSearch() {
   return (
     <>
       <Helmet>
-        <title>Job Search | Find Your Dream Job - TalentXcel</title>
-        <meta name="description" content="Search thousands of jobs from top companies. Find remote, full-time, and contract positions. AI-powered job matching to find your perfect role." />
-        <meta name="keywords" content="job search, jobs, careers, employment, hiring, remote jobs, full-time jobs" />
+        <title>Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel</title>
+        <meta name="description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities. AI-powered job matching with top companies." />
+        <meta name="keywords" content="jobs in India 2025, latest IT jobs, fresher jobs, remote jobs India, job search, software engineer jobs, product manager jobs" />
         <link rel="canonical" href="https://talentxcel.in/public/jobs" />
+        <meta property="og:title" content="Jobs in India 2025 | Latest IT Jobs, Fresher Jobs, Remote Jobs - TalentXcel" />
+        <meta property="og:description" content="Find latest jobs in India 2025. Browse 15,000+ IT jobs, fresher positions, remote work opportunities." />
+        <meta property="og:image" content="https://talentxcel.in/og-jobs.jpg" />
+        <meta property="og:url" content="https://talentxcel.in/public/jobs" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "JobBoard",
+            "name": "TalentXcel Jobs",
+            "description": "Find latest jobs in India with AI-powered matching",
+            "url": "https://talentxcel.in/public/jobs",
+            "hiringOrganization": {
+              "@type": "Organization",
+              "name": "TalentXcel"
+            },
+            "jobLocation": {
+              "@type": "Place",
+              "addressCountry": "IN"
+            }
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+        {/* Sticky Banner */}
+        <div className="sticky top-0 z-50 bg-gradient-to-r from-green-600 to-blue-600 text-white py-2">
+          <div className="container mx-auto px-4 flex items-center justify-between">
+            <div className="text-sm font-medium">🚀 15,000+ active jobs from top companies</div>
+            <Link to="/auth/register">
+              <Button size="sm" variant="secondary" className="text-xs">Apply Instantly</Button>
+            </Link>
+          </div>
+        </div>
         {/* Hero Section */}
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
@@ -241,6 +273,42 @@ export default function PublicJobSearch() {
                     {search}
                   </Button>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Internal Linking */}
+          <Card className="mb-12 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-center mb-6">Boost Your Job Search Success</h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                <Link to="/public/resume-builder" className="group">
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <FileText className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                      <h3 className="font-semibold mb-2">Perfect Resume</h3>
+                      <p className="text-sm text-muted-foreground">Build ATS-optimized resume for applications</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+                <Link to="/public/interview-prep" className="group">
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <MessageSquare className="h-8 w-8 text-orange-600 mx-auto mb-3" />
+                      <h3 className="font-semibold mb-2">Interview Ready</h3>
+                      <p className="text-sm text-muted-foreground">Ace interviews with AI practice</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+                <Link to="/public/market-insights" className="group">
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-3" />
+                      <h3 className="font-semibold mb-2">Salary Research</h3>
+                      <p className="text-sm text-muted-foreground">Know your market value before applying</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               </div>
             </CardContent>
           </Card>

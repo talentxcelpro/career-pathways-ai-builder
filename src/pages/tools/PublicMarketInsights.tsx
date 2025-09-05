@@ -59,10 +59,32 @@ export default function PublicMarketInsights() {
   return (
     <>
       <Helmet>
-        <title>Career Market Insights | Salary Data & Job Trends - TalentXcel</title>
-        <meta name="description" content="Get real-time career market insights, salary data, and job trends. Make informed career decisions with our comprehensive market analysis." />
-        <meta name="keywords" content="career insights, salary data, job market trends, career guidance, market analysis" />
+        <title>Job Market Trends 2025 | Salary Insights India | Career Growth Sectors - TalentXcel</title>
+        <meta name="description" content="Get real-time job market trends 2025, salary insights for India, and career growth analysis. Data-driven insights for informed career decisions." />
+        <meta name="keywords" content="job market trends 2025, salary insights India, career growth sectors, job market analysis, salary data India, tech jobs growth" />
         <link rel="canonical" href="https://talentxcel.in/public/market-insights" />
+        <meta property="og:title" content="Job Market Trends 2025 | Salary Insights India - TalentXcel" />
+        <meta property="og:description" content="Get real-time job market trends 2025, salary insights for India, and career growth analysis." />
+        <meta property="og:image" content="https://talentxcel.in/og-market-insights.jpg" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Report",
+            "name": "India Job Market Trends 2025",
+            "description": "Comprehensive job market analysis and salary insights for India",
+            "datePublished": "2025-01-01",
+            "author": {
+              "@type": "Organization",
+              "name": "TalentXcel"
+            },
+            "about": [
+              "Job market trends",
+              "Salary benchmarks",
+              "Industry growth analysis",
+              "Career insights"
+            ]
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
