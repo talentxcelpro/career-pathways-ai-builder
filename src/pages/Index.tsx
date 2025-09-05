@@ -1,10 +1,14 @@
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
-import { LandingPage } from "@/components/landing/LandingPage";
-import { GoogleOneTapLogin } from "@/components/auth/GoogleOneTapLogin";
 import { ErrorBoundary } from 'react-error-boundary';
+const LandingPage = lazy(() =>
+  import('@/components/landing/LandingPage').then(m => ({ default: m.LandingPage }))
+);
+const GoogleOneTapLogin = lazy(() =>
+  import('@/components/auth/GoogleOneTapLogin').then(m => ({ default: m.GoogleOneTapLogin }))
+);
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
