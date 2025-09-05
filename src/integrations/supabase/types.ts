@@ -13687,6 +13687,63 @@ export type Database = {
         }
         Relationships: []
       }
+      news_articles: {
+        Row: {
+          author: string | null
+          category: string
+          content: string | null
+          created_at: string
+          description: string | null
+          engagement_score: number | null
+          id: string
+          image_url: string | null
+          is_trending: boolean | null
+          published_at: string
+          sentiment_score: number | null
+          source_name: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          engagement_score?: number | null
+          id?: string
+          image_url?: string | null
+          is_trending?: boolean | null
+          published_at: string
+          sentiment_score?: number | null
+          source_name: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          author?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          engagement_score?: number | null
+          id?: string
+          image_url?: string | null
+          is_trending?: boolean | null
+          published_at?: string
+          sentiment_score?: number | null
+          source_name?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           application_updates: boolean | null
@@ -15073,6 +15130,7 @@ export type Database = {
           location: string | null
           media_urls: string[] | null
           metadata: Json | null
+          news_article_id: string | null
           origin: string | null
           post_type: string | null
           preview_url: string | null
@@ -15115,6 +15173,7 @@ export type Database = {
           location?: string | null
           media_urls?: string[] | null
           metadata?: Json | null
+          news_article_id?: string | null
           origin?: string | null
           post_type?: string | null
           preview_url?: string | null
@@ -15157,6 +15216,7 @@ export type Database = {
           location?: string | null
           media_urls?: string[] | null
           metadata?: Json | null
+          news_article_id?: string | null
           origin?: string | null
           post_type?: string | null
           preview_url?: string | null
@@ -15180,6 +15240,13 @@ export type Database = {
             columns: ["bot_id"]
             isOneToOne: false
             referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_news_article_id_fkey"
+            columns: ["news_article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
             referencedColumns: ["id"]
           },
           {

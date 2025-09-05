@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { NewsArticle } from './useNewsArticles';
 
 export interface NetworkPost {
   id: string;
@@ -13,7 +14,7 @@ export interface NetworkPost {
   comments_count?: number;
   shares_count?: number;
   is_public: boolean;
-  post_type: 'text' | 'image' | 'video' | 'article' | 'job' | 'event';
+  post_type: 'text' | 'image' | 'video' | 'article' | 'job' | 'event' | 'news';
   headline?: string;
   profiles?: {
     id: string;
@@ -29,6 +30,8 @@ export interface NetworkPost {
   post_saves?: {
     user_id: string;
   }[];
+  news_article?: NewsArticle;
+  is_news_post?: boolean;
 }
 
 interface FeedFilters {
@@ -46,7 +49,20 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       let query = supabase
         .from('posts')
         .select(`
-          *
+          *,
+          news_articles (
+            id,
+            title,
+            description,
+            url,
+            source_name,
+            author,
+            published_at,
+            image_url,
+            category,
+            tags,
+            is_trending
+          )
         `)
         .eq('is_public', true)
         .eq('status', 'published')
@@ -106,6 +122,8 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         return {
           ...post,
           profiles: profile,
+          news_article: post.news_articles && Array.isArray(post.news_articles) ? post.news_articles[0] : post.news_articles,
+          is_news_post: !!post.news_article_id,
           isLiked: Array.isArray(post.post_likes) && userId ? post.post_likes.some((like: any) => like.user_id === userId) : false,
           isSaved: Array.isArray(post.post_saves) && userId ? post.post_saves.some((save: any) => save.user_id === userId) : false,
         };
