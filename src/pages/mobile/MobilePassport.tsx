@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -25,6 +25,11 @@ import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 
 export const MobilePassport = () => {
   const { user } = useAuth();
+
+  // Redirect to talentxcel.in/passport
+  useEffect(() => {
+    window.location.href = 'https://talentxcel.in/passport';
+  }, []);
 
   // Mock user data - will be replaced with real profile data
   const profileData = {

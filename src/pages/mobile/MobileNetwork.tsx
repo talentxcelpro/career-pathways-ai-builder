@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useMemo } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
@@ -7,21 +7,35 @@ import { StoryBubbles } from '@/components/mobile/StoryBubbles';
 import { NetworkPost } from '@/components/mobile/NetworkPost';
 import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
 import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
+import { TrendingCarousel } from '@/components/network/TrendingCarousel';
+import { JobWorldDigest } from '@/components/network/JobWorldDigest';
+import { EngagementPoll } from '@/components/network/EngagementPoll';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 
 export const MobileNetwork = () => {
   const { user } = useAuth();
   const [showCreatePost, setShowCreatePost] = useState(false);
 
-  // Fetch real posts data from Supabase
-  const { data: posts = [], isLoading } = useQuery({
-    queryKey: ['network-posts', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
+  // Enhanced infinite query for better performance
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: ['enhanced-network-feed', user?.id],
+    queryFn: async ({ pageParam = 0 }) => {
+      const limit = 10;
+      const offset = pageParam * limit;
+
+      // Fetch posts with enhanced performance
+      const { data: postsData, error } = await supabase
         .from('posts')
         .select(`
           id,
@@ -31,6 +45,9 @@ export const MobileNetwork = () => {
           media_urls,
           created_at,
           author_id,
+          likes_count,
+          comments_count,
+          shares_count,
           profiles!posts_author_id_fkey(
             id,
             full_name,
@@ -39,26 +56,28 @@ export const MobileNetwork = () => {
             current_company
           )
         `)
+        .eq('is_public', true)
+        .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .range(offset, offset + limit - 1);
 
       if (error) throw error;
 
-      return (data || []).map((post: any) => ({
+      return (postsData || []).map((post: any) => ({
         id: post.id,
         type: (post.post_type === 'job_posting' ? 'job' : 'content') as 'job' | 'content',
         title: post.headline || post.content?.split('\n')[0] || 'Professional Update',
         company: post.profiles?.current_company || post.profiles?.full_name || 'Professional',
-        location: 'Remote', // Could be enhanced with location data
+        location: 'Remote',
         salary: post.post_type === 'job_posting' ? '$80k - $120k' : undefined,
-        image: undefined,
+        image: post.media_urls?.[0],
         description: post.content || 'Professional update...',
         tags: ['Professional', 'Career', 'Growth'],
         timeAgo: formatTimeAgo(post.created_at),
         interactions: {
-          interested: Math.floor(Math.random() * 100) + 10,
-          comments: Math.floor(Math.random() * 50) + 5,
-          shares: Math.floor(Math.random() * 20) + 2
+          interested: post.likes_count || Math.floor(Math.random() * 100) + 10,
+          comments: post.comments_count || Math.floor(Math.random() * 50) + 5,
+          shares: post.shares_count || Math.floor(Math.random() * 20) + 2
         },
         author: {
           name: post.profiles?.full_name || 'Professional User',
@@ -66,55 +85,29 @@ export const MobileNetwork = () => {
         }
       }));
     },
-    enabled: !!user
-  });
-
-  // Fetch real jobs data for job posts
-  const { data: jobs = [] } = useQuery({
-    queryKey: ['network-jobs', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          id,
-          title,
-          company_name,
-          location,
-          salary_min,
-          salary_max,
-          description,
-          created_at,
-          skills_required,
-          employment_type
-        `)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-
-      return (data || []).map((job: any) => ({
-        id: job.id,
-        type: 'job' as const,
-        title: job.title,
-        company: job.company_name,
-        location: job.location,
-        salary: job.salary_min && job.salary_max 
-          ? `$${Math.round(job.salary_min/1000)}k - $${Math.round(job.salary_max/1000)}k`
-          : 'Competitive',
-        image: undefined,
-        description: job.description,
-        tags: job.skills_required?.slice(0, 3) || ['Career', 'Opportunity'],
-        timeAgo: formatTimeAgo(job.created_at),
-        interactions: {
-          interested: Math.floor(Math.random() * 100) + 20,
-          comments: Math.floor(Math.random() * 30) + 5,
-          shares: Math.floor(Math.random() * 15) + 3
-        }
-      }));
+    getNextPageParam: (lastPage, pages) => {
+      if (lastPage.length < 10) return undefined;
+      return pages.length;
     },
-    enabled: !!user
+    initialPageParam: 0,
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000 // 10 minutes
   });
+
+  // Fast memoized posts calculation
+  const allPosts = useMemo(() => {
+    if (!data?.pages) return [];
+    
+    return data.pages
+      .flat()
+      .sort((a, b) => {
+        // Sort by engagement score for trending effect
+        const aScore = a.interactions.interested + a.interactions.comments;
+        const bScore = b.interactions.interested + b.interactions.comments;
+        return bScore - aScore;
+      });
+  }, [data]);
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -127,13 +120,13 @@ export const MobileNetwork = () => {
     return `${diffInDays}d`;
   };
 
-  // Combine posts and jobs for the feed
-  const allPosts = [...posts, ...jobs].sort((a, b) => {
-    // Sort by a mix of recency and interaction engagement
-    const aScore = a.interactions.interested + a.interactions.comments;
-    const bScore = b.interactions.interested + b.interactions.comments;
-    return bScore - aScore;
-  });
+  // Auto-load more when scrolled near bottom
+  const handleScroll = React.useCallback((e: any) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) {
     return (
@@ -148,10 +141,13 @@ export const MobileNetwork = () => {
   return (
     <MobileLayout>
       <div className="min-h-screen bg-gray-50">
+        {/* Trending Carousel */}
+        <TrendingCarousel />
+        
         <StoryBubbles />
         
         {/* Quick Post Creation */}
-        <div className="p-4">
+        <div className="px-4 pb-2">
           <Card className="p-3 bg-white/95 backdrop-blur-sm border-0 shadow-sm rounded-2xl">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8">
@@ -179,21 +175,42 @@ export const MobileNetwork = () => {
           </Card>
         </div>
         
-        <ScrollArea className="h-[calc(100vh-140px)]">
+        <ScrollArea className="h-[calc(100vh-180px)]" onScrollCapture={handleScroll}>
           <div className="pb-20">
+            {/* Job World Digest */}
+            <JobWorldDigest />
+            
+            {/* Engagement Poll */}
+            <EngagementPoll />
+            
             {/* Posts Feed */}
             {allPosts.map((post, index) => (
               <div key={post.id}>
                 <NetworkPost post={post} />
-                {/* Insert "People You May Know" after the second post */}
-                {index === 1 && <PeopleYouMayKnow />}
+                {/* Insert "People You May Know" after the third post */}
+                {index === 2 && <PeopleYouMayKnow />}
               </div>
             ))}
             
-            {allPosts.length === 0 && (
+            {/* Loading indicator */}
+            {isFetchingNextPage && (
+              <div className="flex justify-center p-4">
+                <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            )}
+            
+            {allPosts.length === 0 && !isLoading && (
               <div className="p-8 text-center">
-                <p className="text-gray-600">No posts available yet.</p>
-                <p className="text-sm text-gray-500 mt-2">Connect with more professionals to see their updates!</p>
+                <p className="text-gray-600">Welcome to your Network Feed!</p>
+                <p className="text-sm text-gray-500 mt-2">Start following professionals to see trending updates</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => refetch()}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh Feed
+                </Button>
               </div>
             )}
           </div>
@@ -206,8 +223,7 @@ export const MobileNetwork = () => {
               onClose={() => setShowCreatePost(false)}
               onPostCreated={() => {
                 setShowCreatePost(false);
-                // Refetch posts here if needed
-                window.location.reload();
+                refetch();
               }}
             />
           </div>
