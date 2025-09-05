@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, X } from 'lucide-react';
+import { ConnectionActions } from './ConnectionActions';
 
 interface Person {
   id: string;
@@ -140,15 +141,11 @@ export const PeopleYouMayKnow: React.FC = () => {
               </div>
               
               <div className="flex items-center gap-2 ml-3">
-                <Button
+                <ConnectionActions
+                  userId={person.id}
                   size="sm"
-                  variant="outline"
                   className="rounded-full px-4 py-1 h-8 border-primary text-primary hover:bg-primary hover:text-white"
-                  onClick={() => handleConnect(person.id)}
-                >
-                  <UserPlus className="h-3 w-3 mr-1" />
-                  Connect
-                </Button>
+                />
                 <Button
                   size="sm"
                   variant="ghost"

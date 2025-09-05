@@ -195,23 +195,6 @@ export const RealTimeMobileNetwork: React.FC = () => {
 
   return (
     <MobileLayout>
-      {/* Connection Status Bar */}
-      <div className={`w-full py-2 px-4 text-center text-sm transition-all duration-300 ${
-        isOnline 
-          ? 'bg-green-50 text-green-700 border-b border-green-200' 
-          : 'bg-orange-50 text-orange-700 border-b border-orange-200'
-      }`}>
-        <div className="flex items-center justify-center gap-2">
-          {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-          <span>{isOnline ? 'Connected - Real-time sync' : 'Working Offline'}</span>
-          {pendingOperations > 0 && (
-            <>
-              <RefreshCw className="h-4 w-4 animate-spin" />
-              <span>({pendingOperations} pending)</span>
-            </>
-          )}
-        </div>
-      </div>
 
       <MobilePullToRefresh onRefresh={handleRefresh}>
         <div className="min-h-screen bg-background">
