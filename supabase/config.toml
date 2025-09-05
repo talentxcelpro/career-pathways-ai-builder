@@ -122,3 +122,11 @@ verify_jwt = false
 
 [functions.ai-resume-parser]
 verify_jwt = false
+
+# News automation functions
+[functions.news-feed-automation]
+verify_jwt = false
+
+[functions.trigger-news-now]
+verify_jwt = false
+
