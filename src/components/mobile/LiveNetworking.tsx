@@ -44,44 +44,15 @@ interface LiveNetworkingProps {
 export const LiveNetworking: React.FC<LiveNetworkingProps> = ({ className = '' }) => {
   const [currentEvent, setCurrentEvent] = useState<LiveNetworkingEvent>({
     id: '1',
-    title: 'AI in Product Management - Interactive Discussion',
+    title: 'Professional Networking Session',
     host: {
       id: 'host1',
-      name: 'Sarah Johnson',
-      avatar: '/api/placeholder/50/50',
-      title: 'VP Product at TechCorp'
+      name: 'Host',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face',
+      title: 'Session Host'
     },
     participants: [
-      {
-        id: 'p1',
-        name: 'Alex Chen',
-        avatar: '/api/placeholder/40/40',
-        title: 'Senior Engineer',
-        isMuted: false,
-        isVideoOn: true,
-        isHandRaised: false,
-        isPresenting: false
-      },
-      {
-        id: 'p2',
-        name: 'Maria Garcia',
-        avatar: '/api/placeholder/40/40',
-        title: 'Product Manager',
-        isMuted: true,
-        isVideoOn: true,
-        isHandRaised: true,
-        isPresenting: false
-      },
-      {
-        id: 'p3',
-        name: 'John Doe',
-        avatar: '/api/placeholder/40/40',
-        title: 'Data Scientist',
-        isMuted: false,
-        isVideoOn: false,
-        isHandRaised: false,
-        isPresenting: false
-      }
+      // Empty array - will be populated with real participants
     ],
     type: 'discussion',
     category: 'tech',
@@ -99,8 +70,7 @@ export const LiveNetworking: React.FC<LiveNetworkingProps> = ({ className = '' }
   const [showChat, setShowChat] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState([
-    { id: '1', user: 'Alex Chen', message: 'Great insights on AI implementation!', timestamp: '10:23' },
-    { id: '2', user: 'Maria Garcia', message: 'I have a question about scalability', timestamp: '10:24' }
+    // Empty array - will be populated with real chat messages
   ]);
 
   const videoRef = useRef<HTMLVideoElement>(null);

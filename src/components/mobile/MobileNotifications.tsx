@@ -60,7 +60,7 @@ export const MobileNotifications = () => {
         id: '3',
         type: 'network',
         title: 'Connection Request',
-        message: 'Sarah Johnson wants to connect with you',
+        message: 'You have a new connection request',
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
         read: true,
         icon: <Users className="h-4 w-4 text-blue-500" />

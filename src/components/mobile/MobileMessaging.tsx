@@ -36,73 +36,12 @@ interface MobileMessagingProps {
 
 export const MobileMessaging: React.FC<MobileMessagingProps> = ({ className = '' }) => {
   const [chats] = useState<Chat[]>([
-    {
-      id: '1',
-      participant: {
-        id: 'user1',
-        name: 'Sarah Johnson',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop&crop=face',
-        title: 'Product Manager',
-        isOnline: true
-      },
-      lastMessage: {
-        id: 'msg1',
-        senderId: 'user1',
-        content: 'Hey! How are you doing?',
-        timestamp: '10:30 AM',
-        type: 'text',
-        status: 'read'
-      },
-      unreadCount: 2
-    },
-    {
-      id: '2',
-      participant: {
-        id: 'user2',
-        name: 'Alex Chen',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face',
-        title: 'Software Engineer',
-        isOnline: false,
-        lastSeen: '2h ago'
-      },
-      lastMessage: {
-        id: 'msg2',
-        senderId: 'me',
-        content: 'Thanks for the feedback!',
-        timestamp: 'Yesterday',
-        type: 'text',
-        status: 'delivered'
-      },
-      unreadCount: 0
-    }
+    // Empty for now - will be populated with real data from backend
   ]);
 
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      senderId: 'user1',
-      content: 'Hey! How are you doing?',
-      timestamp: '10:30 AM',
-      type: 'text',
-      status: 'read'
-    },
-    {
-      id: '2',
-      senderId: 'me',
-      content: 'I\'m good, thanks! Just working on some new features.',
-      timestamp: '10:32 AM',
-      type: 'text',
-      status: 'delivered'
-    },
-    {
-      id: '3',
-      senderId: 'user1',
-      content: 'That sounds exciting! Would love to hear more about it.',
-      timestamp: '10:35 AM',
-      type: 'text',
-      status: 'read'
-    }
+    // Will be populated with real chat messages
   ]);
 
   const [newMessage, setNewMessage] = useState('');
@@ -163,50 +102,62 @@ export const MobileMessaging: React.FC<MobileMessagingProps> = ({ className = ''
 
       {/* Chat List */}
       <div className="divide-y divide-border">
-        {chats.map(chat => (
-          <button
-            key={chat.id}
-            onClick={() => setActiveChat(chat)}
-            className="w-full p-4 flex items-center space-x-3 hover:bg-muted/50 transition-colors text-left"
-          >
-            <div className="relative">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={chat.participant.avatar} alt={chat.participant.name} />
-                <AvatarFallback className="bg-primary/10 text-primary">
-                  {chat.participant.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              {chat.participant.isOnline && (
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full" />
-              )}
+        {chats.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+              <Send className="w-8 h-8 text-muted-foreground" />
             </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {chat.participant.name}
-                </p>
-                <span className="text-xs text-muted-foreground">
-                  {chat.lastMessage.timestamp}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground truncate mt-0.5">
-                {chat.participant.title}
-              </p>
-              <div className="flex items-center justify-between mt-1">
-                <p className="text-sm text-muted-foreground truncate flex-1">
-                  {chat.lastMessage.senderId === 'me' ? 'You: ' : ''}
-                  {chat.lastMessage.content}
-                </p>
-                {chat.unreadCount > 0 && (
-                  <div className="ml-2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
-                    {chat.unreadCount}
-                  </div>
+            <p className="text-lg font-medium text-foreground mb-2">No messages yet</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Start networking and connect with professionals to begin conversations
+            </p>
+          </div>
+        ) : (
+          chats.map(chat => (
+            <button
+              key={chat.id}
+              onClick={() => setActiveChat(chat)}
+              className="w-full p-4 flex items-center space-x-3 hover:bg-muted/50 transition-colors text-left"
+            >
+              <div className="relative">
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src={chat.participant.avatar} alt={chat.participant.name} />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {chat.participant.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                {chat.participant.isOnline && (
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full" />
                 )}
               </div>
-            </div>
-          </button>
-        ))}
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {chat.participant.name}
+                  </p>
+                  <span className="text-xs text-muted-foreground">
+                    {chat.lastMessage.timestamp}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground truncate mt-0.5">
+                  {chat.participant.title}
+                </p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-sm text-muted-foreground truncate flex-1">
+                    {chat.lastMessage.senderId === 'me' ? 'You: ' : ''}
+                    {chat.lastMessage.content}
+                  </p>
+                  {chat.unreadCount > 0 && (
+                    <div className="ml-2 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                      {chat.unreadCount}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </button>
+          ))
+        )}
       </div>
     </div>
   );

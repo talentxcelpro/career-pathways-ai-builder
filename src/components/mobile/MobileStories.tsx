@@ -26,31 +26,7 @@ interface MobileStoriesProps {
 
 export const MobileStories: React.FC<MobileStoriesProps> = ({ className = '' }) => {
   const [stories] = useState<Story[]>([
-    {
-      id: '1',
-      user: { id: 'user1', name: 'Sarah', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop&crop=face' },
-      media: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=500&fit=crop',
-      type: 'image',
-      timestamp: '2h',
-      viewed: false
-    },
-    {
-      id: '2', 
-      user: { id: 'user2', name: 'Alex', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face' },
-      media: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=500&fit=crop',
-      type: 'video',
-      timestamp: '4h',
-      viewed: true,
-      duration: 15
-    },
-    {
-      id: '3',
-      user: { id: 'user3', name: 'Maria', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face' },
-      media: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=500&fit=crop', 
-      type: 'image',
-      timestamp: '6h',
-      viewed: false
-    }
+    // Empty for now - will be populated with real stories from backend
   ]);
 
   const [viewingStory, setViewingStory] = useState<Story | null>(null);
@@ -212,35 +188,43 @@ export const MobileStories: React.FC<MobileStoriesProps> = ({ className = '' }) 
           </div>
 
           {/* Stories */}
-          {stories.map(story => (
-            <div key={story.id} className="flex-shrink-0 text-center">
-              <button
-                onClick={() => handleStoryTap(story)}
-                className="relative group"
-              >
-                <div className={`w-16 h-16 rounded-full p-0.5 ${
-                  story.viewed 
-                    ? 'bg-muted-foreground/30' 
-                    : 'bg-gradient-to-tr from-primary via-primary-foreground to-primary'
-                }`}>
-                  <Avatar className="w-full h-full ring-2 ring-background">
-                    <AvatarImage src={story.user.avatar} />
-                    <AvatarFallback className="bg-muted text-muted-foreground">
-                      {story.user.name[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                {story.type === 'video' && (
-                  <div className="absolute bottom-1 right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                    <Play className="w-2 h-2 text-primary-foreground fill-current" />
-                  </div>
-                )}
-              </button>
-              <p className="text-xs text-foreground mt-1 truncate max-w-[64px]">
-                {story.user.name}
-              </p>
+          {stories.length === 0 ? (
+            <div className="flex-shrink-0 text-center px-4">
+              <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center">
+                <div className="text-xs text-muted-foreground">No stories</div>
+              </div>
             </div>
-          ))}
+          ) : (
+            stories.map(story => (
+              <div key={story.id} className="flex-shrink-0 text-center">
+                <button
+                  onClick={() => handleStoryTap(story)}
+                  className="relative group"
+                >
+                  <div className={`w-16 h-16 rounded-full p-0.5 ${
+                    story.viewed 
+                      ? 'bg-muted-foreground/30' 
+                      : 'bg-gradient-to-tr from-primary via-primary-foreground to-primary'
+                  }`}>
+                    <Avatar className="w-full h-full ring-2 ring-background">
+                      <AvatarImage src={story.user.avatar} />
+                      <AvatarFallback className="bg-muted text-muted-foreground">
+                        {story.user.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  {story.type === 'video' && (
+                    <div className="absolute bottom-1 right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                      <Play className="w-2 h-2 text-primary-foreground fill-current" />
+                    </div>
+                  )}
+                </button>
+                <p className="text-xs text-foreground mt-1 truncate max-w-[64px]">
+                  {story.user.name}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
