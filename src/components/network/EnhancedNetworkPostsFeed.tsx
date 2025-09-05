@@ -18,18 +18,17 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
   const [openComments, setOpenComments] = React.useState<string | null>(null);
   
   const {
-    posts,
+    data,
     isLoading,
     isError,
     error,
     hasNextPage,
     isFetchingNextPage,
-    loadMoreRef,
-    newPostsAvailable,
-    realtimeConnected,
-    refreshFeed,
+    fetchNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ feedType });
+  } = useInfiniteNetworkFeed({ type: feedType });
+
+  const posts = data?.pages.flatMap(page => page.data) || [];
 
   const handleCommentClick = (postId: string) => {
     setOpenComments(openComments === postId ? null : postId);

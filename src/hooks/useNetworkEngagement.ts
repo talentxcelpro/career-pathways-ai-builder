@@ -1,158 +1,79 @@
-import { useCallback } from 'react';
-import { useRealtimeEngagement } from './useRealtimeEngagement';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-/**
- * Network-specific engagement hook
- * Provides network module specific engagement actions and real-time updates
- */
-export const useNetworkEngagement = () => {
-  const { user } = useAuth();
-  const engagement = useRealtimeEngagement('network');
+interface EngagementEvent {
+  type: 'like' | 'comment' | 'share' | 'bookmark' | 'connect' | 'message';
+  targetId: string;
+  targetType: 'post' | 'profile' | 'comment';
+  metadata?: Record<string, any>;
+}
 
-  // Handle connection requests with engagement tracking
-  const sendConnectionRequest = useCallback(async (recipientId: string) => {
-    if (!user) return;
+export function useNetworkEngagement() {
+  const [events, setEvents] = useState<EngagementEvent[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-    try {
-      // Check if connection already exists
-      const { data: existingConnection } = await supabase
-        .from('connections')
-        .select('id, status')
-        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${user.id})`)
-        .single();
-
-      if (existingConnection) {
-        toast.error('Connection request already exists or you are already connected');
-        return;
-      }
-
-      // Create connection request
-      const { error } = await supabase
-        .from('connections')
-        .insert({
-          requester_id: user.id,
-          recipient_id: recipientId,
-          status: 'pending'
-        });
-
-      if (error) throw error;
-
-      // Track engagement event
-      await engagement.publishEvent(
-        'connection_request',
-        'user',
-        recipientId,
-        recipientId
-      );
-
-      toast.success('Connection request sent!');
-    } catch (error) {
-      console.error('Error sending connection request:', error);
-      toast.error('Failed to send connection request');
-    }
-  }, [user, engagement]);
-
-  // Handle connection acceptance
-  const acceptConnectionRequest = useCallback(async (connectionId: string, requesterId: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('connections')
-        .update({ status: 'accepted' })
-        .eq('id', connectionId);
-
-      if (error) throw error;
-
-      // Track engagement event
-      await engagement.publishEvent(
-        'connection_accepted',
-        'user',
-        requesterId,
-        requesterId
-      );
-
-      toast.success('Connection request accepted!');
-    } catch (error) {
-      console.error('Error accepting connection:', error);
-      toast.error('Failed to accept connection request');
-    }
-  }, [user, engagement]);
-
-  // Handle post sharing with network tracking
-  const sharePost = useCallback(async (postId: string, postOwnerId: string) => {
-    if (!user) return;
-
-    try {
-      await engagement.shareContent('post', postId, postOwnerId);
-      toast.success('Post shared to your network!');
-    } catch (error) {
-      console.error('Error sharing post:', error);
-      toast.error('Failed to share post');
-    }
-  }, [user, engagement]);
-
-  // Get network activity statistics
-  const getNetworkStats = useCallback(() => {
-    const networkEvents = engagement.events.filter(event => event.module === 'network');
-    const recentActivity = networkEvents.filter(event => {
-      const eventTime = new Date(event.created_at);
-      const now = new Date();
-      const hourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-      return eventTime > hourAgo;
-    });
-
-    return {
-      totalEvents: networkEvents.length,
-      recentActivity: recentActivity.length,
-      connections: engagement.onlineUsers.size,
-      activeUsers: Array.from(engagement.onlineUsers.values()).filter(user => user.is_online).length
-    };
-  }, [engagement]);
-
-  // Get trending network content
-  const getTrendingContent = useCallback(() => {
-    const contentMap = new Map<string, { id: string; score: number; type: string }>();
+  const trackEvent = useCallback(async (event: EngagementEvent) => {
+    setEvents(prev => [...prev, event]);
     
-    engagement.contentScores.forEach((score, contentId) => {
-      // Filter by module through events if available  
-      const hasNetworkActivity = engagement.events.some(event => 
-        event.event_type.includes('network') || event.event_type.includes('post') || event.event_type.includes('connection')
-      );
-      
-      if (hasNetworkActivity) {
-        contentMap.set(contentId, {
-          id: contentId,
-          score: score.likes_count + score.comments_count + score.shares_count,
-          type: score.content_type
+    try {
+      // Track engagement in analytics
+      await supabase.from('user_activities').insert({
+        activity_type: event.type,
+        activity_data: {
+          target_id: event.targetId,
+          target_type: event.targetType,
+          ...event.metadata
+        }
+      });
+    } catch (error) {
+      console.error('Failed to track engagement:', error);
+    }
+  }, []);
+
+  const sharePost = useCallback(async (postId: string, originalAuthorId: string) => {
+    setIsProcessing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Increment shares count (would need a stored procedure)
+      await supabase.rpc('increment_post_shares', { post_id: postId });
+
+      // Create notification for original author
+      if (originalAuthorId !== user.id) {
+        await supabase.from('notifications').insert({
+          user_id: originalAuthorId,
+          type: 'post_shared',
+          title: 'Post Shared',
+          message: 'Someone shared your post',
+          metadata: { 
+            post_id: postId,
+            shared_by: user.id 
+          }
         });
       }
-    });
 
-    return Array.from(contentMap.values())
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
-  }, [engagement]);
+      await trackEvent({
+        type: 'share',
+        targetId: postId,
+        targetType: 'post',
+        metadata: { original_author: originalAuthorId }
+      });
+
+      toast.success('Post shared successfully');
+    } catch (error) {
+      console.error('Failed to share post:', error);
+      toast.error('Failed to share post');
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [trackEvent]);
 
   return {
-    // Real-time engagement data
-    ...engagement,
-    
-    // Network-specific actions
-    sendConnectionRequest,
-    acceptConnectionRequest,
+    events,
+    isProcessing,
     sharePost,
-    
-    // Network analytics
-    getNetworkStats,
-    getTrendingContent,
-    
-    // Connection status
-    isConnected: engagement.isConnected,
-    onlineUsers: engagement.onlineUsers,
-    contentScores: engagement.contentScores
+    trackEvent
   };
-};
+}

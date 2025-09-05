@@ -1,121 +1,116 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 
-interface SwipeableCardProps {
+interface EnhancedSwipeableCardProps {
+  children: React.ReactNode;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
   onDoubleTap?: () => void;
-  children: React.ReactNode;
   className?: string;
   swipeThreshold?: number;
-  doubleTapDelay?: number;
 }
 
-export const EnhancedSwipeableCard: React.FC<SwipeableCardProps> = ({
+export const EnhancedSwipeableCard: React.FC<EnhancedSwipeableCardProps> = ({
+  children,
   onSwipeLeft,
   onSwipeRight,
   onDoubleTap,
-  children,
   className = '',
-  swipeThreshold = 100,
-  doubleTapDelay = 300
+  swipeThreshold = 50
 }) => {
+  const [startX, setStartX] = useState(0);
+  const [currentX, setCurrentX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastTap, setLastTap] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
-  const startX = useRef(0);
-  const startY = useRef(0);
-  const currentX = useRef(0);
-  const isDragging = useRef(false);
-  const lastTap = useRef(0);
+  const { triggerHaptic } = useHapticFeedback();
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    startX.current = touch.clientX;
-    startY.current = touch.clientY;
-    currentX.current = 0;
-    isDragging.current = false;
+    setStartX(e.touches[0].clientX);
+    setCurrentX(e.touches[0].clientX);
+    setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!cardRef.current) return;
-
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - startX.current;
-    const deltaY = touch.clientY - startY.current;
-
-    // Only start dragging if horizontal movement is dominant
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-      isDragging.current = true;
-      currentX.current = deltaX;
-
-      // Apply transform with resistance
-      const resistance = Math.abs(deltaX) > swipeThreshold ? 0.5 : 1;
-      const transform = deltaX * resistance;
-      
-      cardRef.current.style.transform = `translateX(${transform}px)`;
-      cardRef.current.style.opacity = `${1 - Math.abs(deltaX) / (swipeThreshold * 3)}`;
-
-      // Prevent scrolling when swiping
-      e.preventDefault();
+    if (!isDragging) return;
+    
+    const deltaX = e.touches[0].clientX - startX;
+    setCurrentX(e.touches[0].clientX);
+    
+    if (cardRef.current) {
+      cardRef.current.style.transform = `translateX(${deltaX}px)`;
+      cardRef.current.style.opacity = `${1 - Math.abs(deltaX) / 200}`;
     }
   };
 
   const handleTouchEnd = () => {
-    if (!cardRef.current) return;
-
-    const absX = Math.abs(currentX.current);
-
-    if (isDragging.current && absX > swipeThreshold) {
-      // Trigger swipe action
-      if (currentX.current > 0 && onSwipeRight) {
+    if (!isDragging) return;
+    
+    const deltaX = currentX - startX;
+    
+    if (Math.abs(deltaX) > swipeThreshold) {
+      triggerHaptic('medium');
+      
+      if (deltaX > 0 && onSwipeRight) {
         onSwipeRight();
-      } else if (currentX.current < 0 && onSwipeLeft) {
+      } else if (deltaX < 0 && onSwipeLeft) {
         onSwipeLeft();
       }
     }
-
+    
     // Reset card position
-    cardRef.current.style.transform = 'translateX(0)';
-    cardRef.current.style.opacity = '1';
-    cardRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-
-    // Reset transition after animation
-    setTimeout(() => {
-      if (cardRef.current) {
-        cardRef.current.style.transition = '';
-      }
-    }, 300);
-
-    isDragging.current = false;
-    currentX.current = 0;
+    if (cardRef.current) {
+      cardRef.current.style.transform = 'translateX(0)';
+      cardRef.current.style.opacity = '1';
+    }
+    
+    setIsDragging(false);
+    setStartX(0);
+    setCurrentX(0);
   };
 
   const handleTap = () => {
     const now = Date.now();
-    const timeSinceLastTap = now - lastTap.current;
-
-    if (timeSinceLastTap < doubleTapDelay && timeSinceLastTap > 0) {
-      // Double tap detected
-      if (onDoubleTap) {
-        onDoubleTap();
-      }
+    const DOUBLE_TAP_DELAY = 300;
+    
+    if (lastTap && (now - lastTap) < DOUBLE_TAP_DELAY) {
+      triggerHaptic('light');
+      onDoubleTap?.();
     }
-
-    lastTap.current = now;
+    
+    setLastTap(now);
   };
 
   return (
     <div
       ref={cardRef}
-      className={`touch-pan-y select-none ${className}`}
+      className={`touch-pan-y transition-transform duration-200 ${className}`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       onClick={handleTap}
       style={{
-        willChange: 'transform, opacity',
-        touchAction: 'pan-y'
+        transition: isDragging ? 'none' : 'transform 0.2s ease-out, opacity 0.2s ease-out'
       }}
     >
       {children}
+      
+      {/* Swipe indicators */}
+      {isDragging && Math.abs(currentX - startX) > 20 && (
+        <>
+          {currentX > startX && (
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-500 opacity-70">
+              <span className="text-2xl">👍</span>
+            </div>
+          )}
+          {currentX < startX && (
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 opacity-70">
+              <span className="text-2xl">🔖</span>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

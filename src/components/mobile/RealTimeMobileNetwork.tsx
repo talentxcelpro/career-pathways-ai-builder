@@ -44,13 +44,13 @@ interface MobileNetworkPost {
 export const RealTimeMobileNetwork: React.FC = () => {
   const { user } = useAuth();
   const { triggerHaptic } = useHapticFeedback();
-  const { isOnline, syncStatus, performSync, queueAction } = useRealtimeSync();
+  const { isOnline, sync, lastSync, pendingOperations } = useRealtimeSync();
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
-    posts,
+    data,
     isLoading,
     isError,
     error,
@@ -58,18 +58,21 @@ export const RealTimeMobileNetwork: React.FC = () => {
     hasNextPage,
     isFetchingNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ feedType: 'all' });
+  } = useInfiniteNetworkFeed({ type: 'all' });
+
+  // Flatten all pages into a single array
+  const posts = data?.pages.flatMap(page => page.data) || [];
 
   // Transform posts for mobile display
-  const mobilePosts: MobileNetworkPost[] = (posts || []).map(post => ({
+  const mobilePosts: MobileNetworkPost[] = posts.map(post => ({
     id: post.id,
     content: post.content || '',
     author: {
       name: post.profiles?.full_name || 'Unknown User',
       avatar: post.profiles?.profile_picture_url,
-      title: post.profiles?.title || post.profiles?.headline
+      title: post.profiles?.title
     },
-    timeAgo: formatTimeAgo(post.created_at),
+    timeAgo: new Date(post.created_at).toLocaleDateString(),
     likes: post.likes_count || 0,
     comments: post.comments_count || 0,
     shares: post.shares_count || 0,
@@ -81,7 +84,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
     triggerHaptic('light');
     if (isOnline) {
       await refetch();
-      await performSync();
+      await sync('posts', { action: 'refresh' });
     }
   };
 
@@ -100,13 +103,27 @@ export const RealTimeMobileNetwork: React.FC = () => {
 
       if (isOnline) {
         // Try immediate creation
-        const { error } = await supabase.from('posts').insert(postData);
+        const { error } = await supabase.from('posts').insert({
+          content: newPostContent.trim(),
+          author_id: user?.id,
+          user_id: user?.id,
+          is_public: true,
+          status: 'published',
+          post_type: 'text'
+        });
         if (error) throw error;
       } else {
         // Queue for offline
-        queueAction({
-          type: 'post_create',
-          data: postData
+        await sync('posts', { 
+          action: 'create', 
+          data: {
+            content: newPostContent.trim(),
+            author_id: user?.id,
+            user_id: user?.id,
+            is_public: true,
+            status: 'published',
+            post_type: 'text'
+          }
         });
       }
 
@@ -121,12 +138,15 @@ export const RealTimeMobileNetwork: React.FC = () => {
       console.error('Error creating post:', error);
       
       // Queue for retry
-      queueAction({
-        type: 'post_create',
+      await sync('posts', { 
+        action: 'create', 
         data: {
           content: newPostContent.trim(),
           author_id: user?.id,
-          created_at: new Date().toISOString()
+          user_id: user?.id,
+          is_public: true,
+          status: 'published',
+          post_type: 'text'
         }
       });
       
@@ -140,24 +160,8 @@ export const RealTimeMobileNetwork: React.FC = () => {
 
   const handleLike = async (postId: string) => {
     triggerHaptic('success');
-    
-    const likeData = {
-      post_id: postId,
-      user_id: user?.id,
-      created_at: new Date().toISOString()
-    };
-
-    if (isOnline) {
-      try {
-        // Immediate like
-        const { error } = await supabase.from('post_likes').insert(likeData);
-        if (error) throw error;
-      } catch (error) {
-        queueAction({ type: 'post_like', data: likeData });
-      }
-    } else {
-      queueAction({ type: 'post_like', data: likeData });
-    }
+    await sync('posts', { action: 'like', postId });
+    await refetch(); // Refresh to show updated like count
   };
 
   const handleComment = (postId: string) => {
@@ -200,8 +204,11 @@ export const RealTimeMobileNetwork: React.FC = () => {
         <div className="flex items-center justify-center gap-2">
           {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
           <span>{isOnline ? 'Connected - Real-time sync' : 'Working Offline'}</span>
-          {Object.values(syncStatus).some(status => status === 'syncing') && (
-            <RefreshCw className="h-4 w-4 animate-spin" />
+          {pendingOperations > 0 && (
+            <>
+              <RefreshCw className="h-4 w-4 animate-spin" />
+              <span>({pendingOperations} pending)</span>
+            </>
           )}
         </div>
       </div>
