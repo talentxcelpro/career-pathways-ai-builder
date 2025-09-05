@@ -46,23 +46,25 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       let query = supabase
         .from('posts')
         .select(`
-          *,
-          post_likes!left (user_id),
-          post_saves!left (user_id)
+          *
         `)
         .eq('is_public', true)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      // Apply filters
-      if (filters.type === 'trending') {
-        query = query.gte('likes_count', 5);
-      }
+      // Apply filters (safe: skip DB-specific columns to avoid errors)
+      // if (filters.type === 'trending') {
+      //   // Optionally sort by likes_count if available in your schema
+      //   // query = query.order('likes_count', { ascending: false });
+      // }
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('useInfiniteNetworkFeed query error:', error);
+        throw error;
+      }
 
       // Fetch current user once
       const { data: userData } = await supabase.auth.getUser();
