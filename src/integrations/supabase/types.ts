@@ -13519,6 +13519,8 @@ export type Database = {
           content: string
           conversation_id: string | null
           created_at: string | null
+          duration_seconds: number | null
+          file_size_mb: number | null
           id: string
           is_read: boolean | null
           message_type: string | null
@@ -13527,12 +13529,15 @@ export type Database = {
           sender_id: string | null
           status: string | null
           updated_at: string | null
+          voice_transcript: string | null
         }
         Insert: {
           attachments?: Json | null
           content: string
           conversation_id?: string | null
           created_at?: string | null
+          duration_seconds?: number | null
+          file_size_mb?: number | null
           id?: string
           is_read?: boolean | null
           message_type?: string | null
@@ -13541,12 +13546,15 @@ export type Database = {
           sender_id?: string | null
           status?: string | null
           updated_at?: string | null
+          voice_transcript?: string | null
         }
         Update: {
           attachments?: Json | null
           content?: string
           conversation_id?: string | null
           created_at?: string | null
+          duration_seconds?: number | null
+          file_size_mb?: number | null
           id?: string
           is_read?: boolean | null
           message_type?: string | null
@@ -13555,6 +13563,7 @@ export type Database = {
           sender_id?: string | null
           status?: string | null
           updated_at?: string | null
+          voice_transcript?: string | null
         }
         Relationships: [
           {
@@ -13779,6 +13788,39 @@ export type Database = {
           push_enabled?: boolean | null
           system_updates?: boolean | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_settings: {
+        Row: {
+          created_at: string | null
+          email_enabled: boolean | null
+          enabled: boolean | null
+          id: string
+          notification_type: string
+          push_enabled: boolean | null
+          sound_enabled: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_enabled?: boolean | null
+          enabled?: boolean | null
+          id?: string
+          notification_type: string
+          push_enabled?: boolean | null
+          sound_enabled?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_enabled?: boolean | null
+          enabled?: boolean | null
+          id?: string
+          notification_type?: string
+          push_enabled?: boolean | null
+          sound_enabled?: boolean | null
           user_id?: string
         }
         Relationships: []
