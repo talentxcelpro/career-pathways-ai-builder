@@ -62,19 +62,18 @@ export const MobileBottomNav = () => {
           const Icon = item.icon;
           
           return (
-            item.to === '/mobile/jobs' ? (
-              <a
-                key={item.to}
-                href="https://talentxcel.in/mobile/jobs"
-                className={cn(
-                  "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
-                  "animate-fade-in",
-                  isActive 
-                    ? "text-primary scale-110 transform" 
-                    : "text-muted-foreground hover:text-primary hover:scale-105 transform"
-                )}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+            <Link
+              key={item.to}
+              to={item.to}
+              className={cn(
+                "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
+                "animate-fade-in",
+                isActive 
+                  ? "text-primary scale-110 transform" 
+                  : "text-muted-foreground hover:text-primary hover:scale-105 transform"
+              )}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
               <div className="relative">
                 <div className={cn(
                   "p-2.5 rounded-2xl transition-all duration-500 transform",
@@ -87,7 +86,13 @@ export const MobileBottomNav = () => {
                     isActive ? "h-6 w-6 text-white animate-bounce-in" : "h-5 w-5 group-hover:scale-110"
                   )} />
                 </div>
-                {/* Jobs tab doesn't have badges */}
+                {item.badge && (item.to === '/mobile/network' ? unreadMessages > 0 : false) && (
+                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
+                    <span className="text-[10px] font-bold min-w-[20px] text-center">
+                      {(item.to === '/mobile/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/mobile/network' ? unreadMessages : 0)}
+                    </span>
+                  </div>
+                )}
               </div>
               <span className={cn(
                 "text-[10px] font-medium truncate w-full text-center mt-1 transition-all duration-500",
@@ -95,48 +100,7 @@ export const MobileBottomNav = () => {
               )}>
                 {item.label}
               </span>
-              </a>
-            ) : (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
-                  "animate-fade-in",
-                  isActive 
-                    ? "text-primary scale-110 transform" 
-                    : "text-muted-foreground hover:text-primary hover:scale-105 transform"
-                )}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="relative">
-                  <div className={cn(
-                    "p-2.5 rounded-2xl transition-all duration-500 transform",
-                    isActive 
-                      ? "bg-gradient-brand shadow-brand animate-glow-pulse" 
-                      : "hover:bg-gradient-brand-soft group-hover:shadow-card"
-                  )}>
-                    <Icon className={cn(
-                      "transition-all duration-500 transform",
-                      isActive ? "h-6 w-6 text-white animate-bounce-in" : "h-5 w-5 group-hover:scale-110"
-                    )} />
-                  </div>
-                  {item.badge && item.to === '/mobile/network' && unreadMessages > 0 && (
-                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
-                      <span className="text-[10px] font-bold min-w-[20px] text-center">
-                        {unreadMessages > 99 ? '99+' : unreadMessages}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <span className={cn(
-                  "text-[10px] font-medium truncate w-full text-center mt-1 transition-all duration-500",
-                  isActive ? "font-bold text-primary" : "group-hover:font-semibold"
-                )}>
-                  {item.label}
-                </span>
-              </Link>
-            )
+            </Link>
           );
         })}
       </div>
