@@ -54,8 +54,13 @@ export const ReelsHeader: React.FC<ReelsHeaderProps> = ({
         </div>
 
         {/* Center - Logo */}
-        <div className="text-white font-bold text-lg">
-          TalentXcel
+        <div className="flex items-center">
+          <img 
+            src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
+            alt="TalentXcel" 
+            className="h-6 w-auto"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
+          />
         </div>
 
         {/* Right side - Action buttons */}

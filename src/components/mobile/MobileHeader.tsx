@@ -92,9 +92,10 @@ export const MobileHeader = () => {
           {/* Center - TalentXcel Logo */}
           <div className="flex-1 flex justify-center animate-scale-in">
             <img 
-              src={talentxcelLogo} 
+              src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
               alt="TalentXcel" 
               className="h-8 w-auto transition-transform duration-300 hover:scale-105"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
             />
           </div>
 
