@@ -77,8 +77,13 @@ export const MobileAuth = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-accent/10 flex flex-col">
       {/* Header */}
       <div className="text-center pt-12 pb-8 px-6">
-        <div className="w-16 h-16 bg-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
-          <Briefcase className="w-8 h-8 text-white" />
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+          <img 
+            src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
+            alt="TalentXcel logo"
+            className="w-10 h-10 rounded-lg object-cover"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
+          />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">TalentXcel</h1>
         <p className="text-gray-600">Your AI-powered career companion</p>
