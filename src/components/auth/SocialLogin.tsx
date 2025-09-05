@@ -55,11 +55,22 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
   return (
     <div className="space-y-3">
+      {variant === 'prominent' && (
+        <div className="text-center mb-4">
+          <p className="text-sm font-semibold text-foreground flex items-center justify-center gap-2">
+            ⚡ Fast Login
+          </p>
+          <p className="text-xs text-muted-foreground">Sign up with one click</p>
+        </div>
+      )}
+      
       <Button
-        variant="outline"
-        className={`w-full ${buttonClass} border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-3 py-2.5`}
         onClick={handleGoogleLogin}
         disabled={loading}
+        className={`w-full ${buttonClass} ${variant === 'prominent' 
+          ? 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 shadow-md' 
+          : 'border border-gray-300 hover:bg-gray-50'
+        } transition-colors duration-200 flex items-center justify-center gap-3 py-3`}
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
@@ -84,8 +95,8 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
           </svg>
         )}
         {showText && (
-          <span className="text-gray-700 font-medium">
-            {loading ? 'Signing in...' : 'Sign in with Google'}
+          <span className="font-semibold">
+            {loading ? 'Signing up...' : 'Continue with Google'}
           </span>
         )}
       </Button>

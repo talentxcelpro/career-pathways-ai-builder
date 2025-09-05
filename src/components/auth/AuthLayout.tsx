@@ -22,7 +22,11 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, descrip
         {/* Enhanced Brand Header */}
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 relative">
-            <span className="text-white font-bold text-xl">TX</span>
+            <img 
+              src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
+              alt="TalentXcel" 
+              className="w-10 h-10 rounded-lg object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
           </div>
           <div className="space-y-2">
