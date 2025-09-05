@@ -41,7 +41,7 @@ export const MobileMessaging: React.FC<MobileMessagingProps> = ({ className = ''
       participant: {
         id: 'user1',
         name: 'Sarah Johnson',
-        avatar: '/api/placeholder/50/50',
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop&crop=face',
         title: 'Product Manager',
         isOnline: true
       },
@@ -60,7 +60,7 @@ export const MobileMessaging: React.FC<MobileMessagingProps> = ({ className = ''
       participant: {
         id: 'user2',
         name: 'Alex Chen',
-        avatar: '/api/placeholder/50/50',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face',
         title: 'Software Engineer',
         isOnline: false,
         lastSeen: '2h ago'

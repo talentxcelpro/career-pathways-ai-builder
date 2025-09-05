@@ -69,10 +69,10 @@ export const RealTimeMobileNetwork: React.FC = () => {
     content: post.content || '',
     author: {
       name: post.profiles?.full_name || 'Unknown User',
-      avatar: post.profiles?.profile_picture_url,
-      title: post.profiles?.title
+      avatar: post.profiles?.profile_picture_url || `https://images.unsplash.com/photo-${Math.random() > 0.5 ? '1494790108755-2616b612b786' : '1472099645785-5658abf4ff4e'}?w=40&h=40&fit=crop&crop=face`,
+      title: post.profiles?.title || 'Professional'
     },
-    timeAgo: new Date(post.created_at).toLocaleDateString(),
+    timeAgo: formatTimeAgo(post.created_at),
     likes: post.likes_count || 0,
     comments: post.comments_count || 0,
     shares: post.shares_count || 0,

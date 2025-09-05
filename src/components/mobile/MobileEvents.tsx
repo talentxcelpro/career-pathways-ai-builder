@@ -48,12 +48,12 @@ export const MobileEvents: React.FC<MobileEventsProps> = ({ className = '' }) =>
       organizer: {
         id: 'org1',
         name: 'TechCorp',
-        avatar: '/api/placeholder/40/40',
+        avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=40&h=40&fit=crop&crop=face',
         title: 'Technology Company'
       },
       attendees: 142,
       maxAttendees: 200,
-      image: '/api/placeholder/350/200',
+      image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=350&h=200&fit=crop',
       price: 25,
       category: 'workshop',
       isAttending: false,
@@ -71,7 +71,7 @@ export const MobileEvents: React.FC<MobileEventsProps> = ({ className = '' }) =>
       organizer: {
         id: 'org2',
         name: 'StartupSF',
-        avatar: '/api/placeholder/40/40',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
         title: 'Startup Community'
       },
       attendees: 89,

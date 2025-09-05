@@ -28,16 +28,16 @@ export const MobileStories: React.FC<MobileStoriesProps> = ({ className = '' }) 
   const [stories] = useState<Story[]>([
     {
       id: '1',
-      user: { id: 'user1', name: 'Sarah', avatar: '/api/placeholder/60/60' },
-      media: '/api/placeholder/300/500',
+      user: { id: 'user1', name: 'Sarah', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop&crop=face' },
+      media: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=500&fit=crop',
       type: 'image',
       timestamp: '2h',
       viewed: false
     },
     {
       id: '2', 
-      user: { id: 'user2', name: 'Alex', avatar: '/api/placeholder/60/60' },
-      media: '/api/placeholder/300/500',
+      user: { id: 'user2', name: 'Alex', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face' },
+      media: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=500&fit=crop',
       type: 'video',
       timestamp: '4h',
       viewed: true,
@@ -45,8 +45,8 @@ export const MobileStories: React.FC<MobileStoriesProps> = ({ className = '' }) 
     },
     {
       id: '3',
-      user: { id: 'user3', name: 'Maria', avatar: '/api/placeholder/60/60' },
-      media: '/api/placeholder/300/500', 
+      user: { id: 'user3', name: 'Maria', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face' },
+      media: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=500&fit=crop', 
       type: 'image',
       timestamp: '6h',
       viewed: false
