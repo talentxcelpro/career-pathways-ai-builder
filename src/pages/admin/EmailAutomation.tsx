@@ -64,7 +64,19 @@ const EmailAutomationPage = () => {
             <Shield className="h-4 w-4" />
             Security
           </TabsTrigger>
+          <TabsTrigger value="ab-testing" className="flex items-center gap-2">
+            <TestTube className="h-4 w-4" />
+            A/B Testing
+          </TabsTrigger>
+          <TabsTrigger value="segmentation" className="flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            Segmentation
+          </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="ai-dashboard" className="space-y-6">
+          <AIEmailAutomationDashboard />
+        </TabsContent>
 
         <TabsContent value="automation" className="space-y-6">
           <EmailAutomationDashboard />
@@ -107,6 +119,14 @@ const EmailAutomationPage = () => {
 
         <TabsContent value="security" className="space-y-6">
           <EmailSecurityValidator />
+        </TabsContent>
+
+        <TabsContent value="ab-testing" className="space-y-6">
+          <AdvancedABTestingEngine />
+        </TabsContent>
+
+        <TabsContent value="segmentation" className="space-y-6">
+          <SmartUserSegmentation />
         </TabsContent>
       </Tabs>
     </UnifiedAdminLayout>
