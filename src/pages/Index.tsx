@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense, lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from 'react-error-boundary';
+import TestEmailSender from '@/components/dev/TestEmailSender';
 const LandingPage = lazy(() =>
   import('@/components/landing/LandingPage').then(m => ({ default: m.LandingPage }))
 );
@@ -14,6 +15,7 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [disableOneTap, setDisableOneTap] = useState(false);
+  const enableTestSend = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('send_emails') === '1';
 
   // Detect iOS Safari to avoid potential One Tap issues
   useEffect(() => {
@@ -61,6 +63,7 @@ const Index = () => {
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
         </div>
       }>
+        {enableTestSend && <TestEmailSender />}
         {!disableOneTap && <GoogleOneTapLogin autoSelect />}
         <LandingPage />
       </Suspense>

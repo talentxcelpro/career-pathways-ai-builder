@@ -81,13 +81,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Using template: ${mapping.template_name}`);
 
-    // Get the email template
+    // Get the email template (support both "name" and legacy fields)
     const { data: template, error: templateError } = await supabase
       .from('email_templates')
-      .select('subject, html_template, content, is_active')
-      .eq('template_name', mapping.template_name)
+      .select('subject, html_template, content, is_active, name, template_type')
+      .or(`name.eq.${mapping.template_name},template_type.eq.${mapping.template_name}`)
       .eq('is_active', true)
-      .single();
+      .maybeSingle();
 
     if (templateError || !template) {
       console.error('Template error:', templateError);
