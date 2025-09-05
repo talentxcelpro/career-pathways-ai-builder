@@ -143,43 +143,65 @@ export const OnboardingFlow: React.FC = () => {
   const progress = (completedSteps / availableSteps.length) * 100;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to TalentXcel!</CardTitle>
-          <p className="text-muted-foreground">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <Card variant="glass" className="w-full max-w-md max-h-[85vh] overflow-y-auto shadow-elegant">
+        <CardHeader className="text-center pb-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/60 mx-auto mb-4 flex items-center justify-center">
+            <Zap className="h-8 w-8 text-white" />
+          </div>
+          <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Welcome to TalentXcel!
+          </CardTitle>
+          <p className="text-muted-foreground text-sm">
             Let's get you started with your career journey
           </p>
-          <Progress value={progress} className="mt-4" />
-          <p className="text-sm text-muted-foreground">
-            {completedSteps} of {availableSteps.length} steps completed
-          </p>
+          <div className="mt-4">
+            <div className="flex justify-between text-xs text-muted-foreground mb-2">
+              <span>{completedSteps} of {availableSteps.length} completed</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-3 px-6 pb-6">
           {availableSteps.map((step, index) => (
             <div
               key={step.id}
-              className={`border rounded-lg p-4 transition-all ${
-                index === currentStep
-                  ? 'border-primary bg-primary/5'
-                  : step.completed
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-muted'
+              className={`group relative rounded-xl p-3 transition-all duration-300 hover:scale-[1.02] ${
+                step.completed
+                  ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 shadow-sm'
+                  : index === currentStep
+                  ? 'bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-md'
+                  : 'bg-gradient-to-r from-muted/30 to-muted/10 border border-muted hover:border-primary/30'
               }`}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  {step.completed ? (
-                    <CheckCircle className="h-6 w-6 text-green-500" />
-                  ) : (
-                    <div className="h-6 w-6 rounded-full border-2 border-muted-foreground" />
-                  )}
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold">{step.title}</h3>
-                      {getTierIcon(step.tier)}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  <div className={`relative flex-shrink-0 ${
+                    step.completed 
+                      ? 'text-emerald-500' 
+                      : index === currentStep 
+                      ? 'text-primary' 
+                      : 'text-muted-foreground'
+                  }`}>
+                    {step.completed ? (
+                      <CheckCircle className="h-5 w-5" />
+                    ) : (
+                      <div className={`h-5 w-5 rounded-full border-2 ${
+                        index === currentStep ? 'border-primary bg-primary/20' : 'border-current'
+                      }`} />
+                    )}
+                    {step.tier !== 'free' && (
+                      <div className="absolute -top-1 -right-1">
+                        {getTierIcon(step.tier)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium text-sm text-foreground truncate">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground line-clamp-2">
                       {step.description}
                     </p>
                   </div>
@@ -187,25 +209,39 @@ export const OnboardingFlow: React.FC = () => {
                 <Button
                   onClick={() => handleStepAction(step)}
                   disabled={step.completed}
-                  variant={index === currentStep ? 'default' : 'outline'}
+                  variant={step.completed ? "ghost" : index === currentStep ? "default" : "outline"}
                   size="sm"
+                  className={`ml-3 flex-shrink-0 text-xs ${
+                    step.completed 
+                      ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' 
+                      : index === currentStep 
+                      ? 'shadow-sm' 
+                      : ''
+                  }`}
                 >
-                  {step.completed ? 'Completed' : step.action}
-                  {!step.completed && <ArrowRight className="h-4 w-4 ml-2" />}
+                  {step.completed ? 'Done' : step.action.split(' ')[0]}
+                  {!step.completed && <ArrowRight className="h-3 w-3 ml-1" />}
                 </Button>
               </div>
             </div>
           ))}
           
-          <div className="flex justify-between pt-6 border-t">
-            <Button variant="outline" onClick={handleSkipOnboarding}>
+          <div className="flex gap-3 pt-4 border-t border-muted/50">
+            <Button 
+              variant="outline" 
+              onClick={handleSkipOnboarding}
+              className="flex-1 text-xs"
+              size="sm"
+            >
               Skip for now
             </Button>
             <Button 
               onClick={handleCompleteOnboarding}
               disabled={completedSteps < availableSteps.length}
+              className="flex-1 text-xs shadow-sm"
+              size="sm"
             >
-              Complete Onboarding
+              {completedSteps === availableSteps.length ? 'Finish' : 'Complete All'}
             </Button>
           </div>
         </CardContent>
