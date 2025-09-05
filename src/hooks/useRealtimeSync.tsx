@@ -10,6 +10,7 @@ export interface RealtimeSyncHook {
   queuedActions: QueuedAction[];
   performSync: () => Promise<void>;
   queueAction: (action: Omit<QueuedAction, 'id' | 'timestamp' | 'attempts'>) => void;
+  sync: (table: string, data: any) => Promise<void>;
 }
 
 interface SyncStatus {
@@ -299,12 +300,57 @@ export const useRealtimeSync = (): RealtimeSyncHook => {
     }
   }, []);
 
+  const sync = useCallback(async (table: string, data: any) => {
+    if (isOnline) {
+      try {
+        // Execute immediately if online
+        switch (table) {
+          case 'posts':
+            if (data.action === 'like') {
+              await supabase.from('post_likes').upsert({ 
+                post_id: data.postId, 
+                user_id: user?.id 
+              });
+            } else if (data.action === 'save') {
+              await supabase.from('saved_posts').upsert({ 
+                post_id: data.postId, 
+                user_id: user?.id 
+              });
+            }
+            break;
+          case 'events':
+            if (data.action === 'attend') {
+              await supabase.from('event_attendees').upsert({ 
+                event_id: data.eventId, 
+                user_id: user?.id 
+              });
+            }
+            break;
+          case 'messages':
+            await supabase.from('direct_messages').insert({
+              ...data.message,
+              sender_id: user?.id
+            });
+            break;
+        }
+      } catch (error) {
+        console.error('Sync error:', error);
+        // Queue for retry
+        queueAction({ type: 'post_like', data });
+      }
+    } else {
+      // Queue for when online
+      queueAction({ type: 'post_like', data });
+    }
+  }, [isOnline, user, queueAction]);
+
   return {
     isOnline,
     syncStatus,
     lastSyncTime,
     queuedActions,
     performSync,
-    queueAction
+    queueAction,
+    sync
   };
 };
