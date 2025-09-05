@@ -1,12 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  HomeIcon, 
   Briefcase, 
-  Users, 
-  User, 
   Play,
-  MessageCircle
+  MessageCircle,
+  CreditCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -43,15 +41,13 @@ export const MobileBottomNav = () => {
   });
 
   const navItems: NavItem[] = [
-    { to: '/network', icon: HomeIcon, label: 'Home' },
-    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs' },
-    { to: '/mobile/reels', icon: Play, label: 'Reels' },
     { to: '/mobile/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
-    { to: '/mobile/profile', icon: User, label: 'Profile' },
+    { to: '/mobile/reels', icon: Play, label: 'Reels' },
+    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs' },
+    { to: '/mobile/passport', icon: CreditCard, label: 'Passport' },
   ];
 
   const isCurrentPath = (path: string) => {
-    if (path === '/network' && (location.pathname === '/' || location.pathname === '/network')) return true;
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 

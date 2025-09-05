@@ -49,6 +49,7 @@ import PublicInterviewPrep from './pages/tools/PublicInterviewPrep';
 import { ResumeEditorPage as ResumeEdit } from './pages/resume/ResumeEditorPage';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import MobileReelsPage from './pages/MobileReelsPage';
+import { MobilePassport } from './pages/mobile/MobilePassport';
 import UserManagement from "@/pages/admin/UserManagement";
 import TalentDatabase from "@/pages/admin/TalentDatabase";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
@@ -187,7 +188,8 @@ const App = () => {
                           <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                           <Route path="/@:username" element={<CareerPassportDashboard />} />
                          <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
-                         <Route path="/mobile/reels" element={<ProtectedRoute><MobileReelsPage /></ProtectedRoute>} />
+                          <Route path="/mobile/reels" element={<ProtectedRoute><MobileReelsPage /></ProtectedRoute>} />
+                          <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />
                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                       <Route path="/resume/new" element={<ResumeNew />} />
                       <Route path="/resume/edit/:id" element={<ResumeEdit />} />
