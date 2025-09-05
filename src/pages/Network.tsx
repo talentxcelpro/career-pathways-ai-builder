@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
+import { NewsFeed } from "@/components/news/NewsFeed";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
@@ -11,7 +12,7 @@ import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
-import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles } from "lucide-react";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper } from "lucide-react";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
@@ -110,7 +111,7 @@ const Network = () => {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+          <TabsList className="grid w-full grid-cols-8 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
             <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline">Feed</span>
@@ -138,6 +139,10 @@ const Network = () => {
             <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Sparkles className="w-3 h-3" />
               <span className="hidden sm:inline">AI Connect</span>
+            </TabsTrigger>
+            <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Newspaper className="w-3 h-3" />
+              <span className="hidden sm:inline">News</span>
             </TabsTrigger>
             <TabsTrigger value="live-events" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Users className="w-3 h-3" />
@@ -223,6 +228,18 @@ const Network = () => {
                 </div>
               }>
                 <SmartConnectAI />
+              </React.Suspense>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="news" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <NewsFeed />
               </React.Suspense>
             </div>
           </TabsContent>
