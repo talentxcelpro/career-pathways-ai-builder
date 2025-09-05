@@ -378,16 +378,28 @@ export class PerformanceOptimizer {
 
   private cleanupEventListeners() {
     // Track and cleanup event listeners to prevent memory leaks
-    const listeners = new WeakMap();
+    const listeners = new WeakMap<any, Array<{ type: any; listener: any; options: any }>>();
     
-    const originalAddEventListener = EventTarget.prototype.addEventListener;
-    EventTarget.prototype.addEventListener = function(type, listener, options) {
-      if (!listeners.has(this)) {
-        listeners.set(this, []);
+    const originalAddEventListener = EventTarget.prototype.addEventListener as any;
+    EventTarget.prototype.addEventListener = function (this: any, type: any, listener: any, options?: any) {
+      try {
+        // Some libraries call addEventListener with an unbound "this" (undefined)
+        // WeakMap keys must be objects, so fallback to window when needed
+        const target: any = (this && (typeof this === 'object' || typeof this === 'function')) ? this : window;
+
+        let list = listeners.get(target);
+        if (!list) {
+          list = [];
+          listeners.set(target, list);
+        }
+        list.push({ type, listener, options });
+
+        return originalAddEventListener.call(target, type, listener, options);
+      } catch (_) {
+        // Fail-safe: never block event registration
+        return originalAddEventListener.call(this as any, type, listener, options);
       }
-      listeners.get(this).push({ type, listener, options });
-      return originalAddEventListener.call(this, type, listener, options);
-    };
+    } as any;
   }
 
   private implementObjectPooling() {
