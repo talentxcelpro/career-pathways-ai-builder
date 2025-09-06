@@ -143,7 +143,7 @@ const App = () => {
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
-                  <SidebarProvider>
+                  <SidebarProvider defaultOpen={false}>
                     <div className="min-h-screen flex w-full">
                       <OfflineIndicator />
                       <AppSidebar />

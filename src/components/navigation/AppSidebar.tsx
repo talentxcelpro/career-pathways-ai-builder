@@ -26,6 +26,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useEmployerAccess } from '@/hooks/useEmployerAccess';
@@ -84,19 +89,32 @@ export function AppSidebar() {
 
   return (
     <Sidebar className={isCollapsed ? 'w-14' : 'w-60'} collapsible="icon">
-      <SidebarContent>
+      <SidebarContent className="gap-0">
         {/* Main Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+        <SidebarGroup className="px-0">
+          {!isCollapsed && <SidebarGroupLabel>Navigation</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {visibleNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url} className={getNavClassName(item.url)}>
-                      <item.icon className="h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
-                    </Link>
+                    {isCollapsed ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link to={item.url} className={getNavClassName(item.url)}>
+                            <item.icon className="h-4 w-4" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <p>{item.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <Link to={item.url} className={getNavClassName(item.url)}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -104,20 +122,43 @@ export function AppSidebar() {
               {/* Notifications */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/notifications" className={getNavClassName('/notifications')}>
-                    <div className="relative">
-                      <Bell className="h-4 w-4" />
-                      {unreadCount > 0 && (
-                        <Badge 
-                          variant="destructive" 
-                          className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] flex items-center justify-center"
-                        >
-                          {unreadCount > 9 ? '9+' : unreadCount}
-                        </Badge>
-                      )}
-                    </div>
-                    {!isCollapsed && <span>Notifications</span>}
-                  </Link>
+                  {isCollapsed ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link to="/notifications" className={getNavClassName('/notifications')}>
+                          <div className="relative">
+                            <Bell className="h-4 w-4" />
+                            {unreadCount > 0 && (
+                              <Badge 
+                                variant="destructive" 
+                                className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] flex items-center justify-center"
+                              >
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                              </Badge>
+                            )}
+                          </div>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>Notifications</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Link to="/notifications" className={getNavClassName('/notifications')}>
+                      <div className="relative">
+                        <Bell className="h-4 w-4" />
+                        {unreadCount > 0 && (
+                          <Badge 
+                            variant="destructive" 
+                            className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] flex items-center justify-center"
+                          >
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </Badge>
+                        )}
+                      </div>
+                      <span>Notifications</span>
+                    </Link>
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -126,17 +167,30 @@ export function AppSidebar() {
 
         {/* Employer Navigation */}
         {hasEmployerAccess && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Employer</SidebarGroupLabel>
+          <SidebarGroup className="px-0">
+            {!isCollapsed && <SidebarGroupLabel>Employer</SidebarGroupLabel>}
             <SidebarGroupContent>
               <SidebarMenu>
                 {employerItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Link to={item.url} className={getNavClassName(item.url)}>
-                        <item.icon className="h-4 w-4" />
-                        {!isCollapsed && <span>{item.title}</span>}
-                      </Link>
+                      {isCollapsed ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link to={item.url} className={getNavClassName(item.url)}>
+                              <item.icon className="h-4 w-4" />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            <p>{item.title}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Link to={item.url} className={getNavClassName(item.url)}>
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -147,17 +201,30 @@ export function AppSidebar() {
 
         {/* Admin Navigation */}
         {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+          <SidebarGroup className="px-0">
+            {!isCollapsed && <SidebarGroupLabel>Admin</SidebarGroupLabel>}
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <Link to={item.url} className={getNavClassName(item.url)}>
-                        <item.icon className="h-4 w-4" />
-                        {!isCollapsed && <span>{item.title}</span>}
-                      </Link>
+                      {isCollapsed ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link to={item.url} className={getNavClassName(item.url)}>
+                              <item.icon className="h-4 w-4" />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent side="right">
+                            <p>{item.title}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Link to={item.url} className={getNavClassName(item.url)}>
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -167,16 +234,29 @@ export function AppSidebar() {
         )}
 
         {/* Settings */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
+        <SidebarGroup className="px-0">
+          {!isCollapsed && <SidebarGroupLabel>Account</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/profile/settings" className={getNavClassName('/profile/settings')}>
-                    <Settings className="h-4 w-4" />
-                    {!isCollapsed && <span>Settings</span>}
-                  </Link>
+                  {isCollapsed ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link to="/profile/settings" className={getNavClassName('/profile/settings')}>
+                          <Settings className="h-4 w-4" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>Settings</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Link to="/profile/settings" className={getNavClassName('/profile/settings')}>
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
