@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw } from 'lucide-react';
 import { EnhancedSwipeableCard } from './EnhancedSwipeableCard';
-import { LinkedInStyleSuggestions } from './LinkedInStyleSuggestions';
 import { useNetworkEngagement } from '@/hooks/useNetworkEngagement';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { useInfiniteNetworkFeed, NetworkPost } from '@/hooks/useInfiniteNetworkFeed';
@@ -119,7 +118,7 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
       onDoubleTap={() => handleLike(post.id)}
       className="mb-3"
     >
-      <Card className="mx-4 bg-card border-border/50 shadow-sm">
+      <Card className="bg-card border-border/50 shadow-sm">
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center space-x-3">
@@ -247,15 +246,48 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
   );
 
   return (
-    <div className={`${className} bg-background`}>
-      {/* Suggested Connections */}
-      <LinkedInStyleSuggestions />
+    <div className={`${className}`}>
+      {/* Feed Filters */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 mb-4">
+        <div className="flex items-center space-x-2 p-4">
+          <Button
+            variant={filter === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('all')}
+            className="text-xs"
+          >
+            All
+          </Button>
+          <Button
+            variant={filter === 'connections' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('connections')}
+            className="text-xs"
+          >
+            Connections
+          </Button>
+          <Button
+            variant={filter === 'trending' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('trending')}
+            className="text-xs"
+          >
+            Trending
+          </Button>
+          {!isOnline && (
+            <div className="ml-auto flex items-center space-x-1 text-xs text-muted-foreground">
+              <div className="w-2 h-2 bg-orange-500 rounded-full" />
+              <span>Offline</span>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Posts Feed */}
       {isLoading && posts.length === 0 ? (
-        <div className="space-y-4">
+        <div className="px-4 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i} className="mx-4 p-4">
+            <Card key={i} className="p-4">
               <div className="flex items-start space-x-3">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 space-y-2">
@@ -276,11 +308,9 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
           </Button>
         </div>
       ) : (
-        <div className="pb-6">
-          {posts.map((post, index) => (
-            <div key={post.id} className="mb-3">
-              <PostCard post={post} />
-            </div>
+        <div className="px-4 pb-6">
+          {posts.map(post => (
+            <PostCard key={post.id} post={post} />
           ))}
         </div>
       )}
