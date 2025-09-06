@@ -22,14 +22,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
+import { PushNotificationToggle } from '@/components/mobile/PushNotificationToggle';
 
 export const MobilePassport = () => {
   const { user } = useAuth();
 
-  // Redirect to talentxcel.in/passport
-  useEffect(() => {
-    window.location.href = 'https://talentxcel.in/passport';
-  }, []);
+  // Remove redirect - this is now the passport page
 
   // Mock user data - will be replaced with real profile data
   const profileData = {
@@ -53,13 +51,13 @@ export const MobilePassport = () => {
         <div className="flex items-center justify-between p-4">
           <h1 className="text-xl font-bold text-foreground">Career Passport</h1>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => console.log('QR Code clicked')}>
               <QrCode className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => navigator.share?.({title: 'My Career Passport', url: window.location.href})}>
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => console.log('Settings clicked')}>
               <Settings className="h-5 w-5" />
             </Button>
           </div>
@@ -81,6 +79,7 @@ export const MobilePassport = () => {
                 <Button 
                   size="icon" 
                   className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary hover:bg-primary/90"
+                  onClick={() => console.log('Change photo clicked')}
                 >
                   <Camera className="h-4 w-4" />
                 </Button>
@@ -94,7 +93,7 @@ export const MobilePassport = () => {
                 </div>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => console.log('Edit profile clicked')}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
             </Button>
@@ -125,7 +124,7 @@ export const MobilePassport = () => {
 
         {/* Career Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 text-center">
+          <Card className="p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => console.log('Skills clicked')}>
             <div className="flex items-center justify-center mb-2">
               <Star className="h-5 w-5 text-yellow-500" />
             </div>
@@ -133,7 +132,7 @@ export const MobilePassport = () => {
             <p className="text-xs text-muted-foreground">Skills Verified</p>
           </Card>
           
-          <Card className="p-4 text-center">
+          <Card className="p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => console.log('Connections clicked')}>
             <div className="flex items-center justify-center mb-2">
               <User className="h-5 w-5 text-blue-500" />
             </div>
@@ -141,7 +140,7 @@ export const MobilePassport = () => {
             <p className="text-xs text-muted-foreground">Connections</p>
           </Card>
           
-          <Card className="p-4 text-center">
+          <Card className="p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => console.log('Achievements clicked')}>
             <div className="flex items-center justify-center mb-2">
               <Trophy className="h-5 w-5 text-purple-500" />
             </div>
@@ -149,7 +148,7 @@ export const MobilePassport = () => {
             <p className="text-xs text-muted-foreground">Achievements</p>
           </Card>
           
-          <Card className="p-4 text-center">
+          <Card className="p-4 text-center cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => console.log('Recommendations clicked')}>
             <div className="flex items-center justify-center mb-2">
               <Briefcase className="h-5 w-5 text-green-500" />
             </div>
@@ -162,7 +161,7 @@ export const MobilePassport = () => {
         <Card className="p-4">
           <h3 className="font-semibold text-foreground mb-3">Professional Identity</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 transition-colors" onClick={() => console.log('Career level clicked')}>
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-blue-100 rounded-full">
                   <Briefcase className="h-4 w-4 text-blue-600" />
@@ -175,7 +174,7 @@ export const MobilePassport = () => {
               <Badge variant="outline">{profileData.careerLevel}</Badge>
             </div>
             
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 transition-colors" onClick={() => console.log('Education clicked')}>
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-purple-100 rounded-full">
                   <GraduationCap className="h-4 w-4 text-purple-600" />
@@ -188,7 +187,7 @@ export const MobilePassport = () => {
               <Badge variant="outline">Bachelor's</Badge>
             </div>
             
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 transition-colors" onClick={() => console.log('Global visibility clicked')}>
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-green-100 rounded-full">
                   <Globe className="h-4 w-4 text-green-600" />
@@ -205,11 +204,14 @@ export const MobilePassport = () => {
           </div>
         </Card>
 
+        {/* Push Notifications */}
+        <PushNotificationToggle />
+
         {/* Quick Actions */}
         <Card className="p-4">
           <h3 className="font-semibold text-foreground mb-3">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-3">
-            <Button variant="outline" className="justify-start h-auto p-3">
+            <Button variant="outline" className="justify-start h-auto p-3" onClick={() => console.log('Schedule clicked')}>
               <div className="flex flex-col items-start">
                 <div className="flex items-center space-x-2 mb-1">
                   <Calendar className="h-4 w-4" />
@@ -219,7 +221,7 @@ export const MobilePassport = () => {
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-3">
+            <Button variant="outline" className="justify-start h-auto p-3" onClick={() => console.log('Skills clicked')}>
               <div className="flex flex-col items-start">
                 <div className="flex items-center space-x-2 mb-1">
                   <Star className="h-4 w-4" />
@@ -229,7 +231,7 @@ export const MobilePassport = () => {
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-3">
+            <Button variant="outline" className="justify-start h-auto p-3" onClick={() => console.log('Portfolio clicked')}>
               <div className="flex flex-col items-start">
                 <div className="flex items-center space-x-2 mb-1">
                   <Trophy className="h-4 w-4" />
@@ -239,7 +241,7 @@ export const MobilePassport = () => {
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-3">
+            <Button variant="outline" className="justify-start h-auto p-3" onClick={() => console.log('References clicked')}>
               <div className="flex flex-col items-start">
                 <div className="flex items-center space-x-2 mb-1">
                   <User className="h-4 w-4" />

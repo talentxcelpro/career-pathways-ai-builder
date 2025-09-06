@@ -45,7 +45,7 @@ export const MobileBottomNav = () => {
     { to: '/mobile/network', icon: Home, label: 'Network' },
     { to: '/mobile/reels', icon: Play, label: 'JobTok' },
     { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs & Passport' },
-    { to: '/mobile/nessport', icon: CreditCard, label: 'Nessport' },
+    { to: '/passport', icon: CreditCard, label: 'Passport' },
     { to: '/mobile/notifications', icon: Bell, label: 'Notifications', badge: unreadMessages > 0 },
   ];
 
