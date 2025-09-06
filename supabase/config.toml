@@ -113,4 +113,8 @@ verify_jwt = false
 [functions.send-email-notification]
 verify_jwt = false
 
+# Storage proxy for public media (used by cdn.talentxcel.in fallback)
+[functions.storage-proxy]
+verify_jwt = false
+
 

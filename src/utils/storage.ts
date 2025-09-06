@@ -1,8 +1,9 @@
 import { supabase } from '@/integrations/supabase/client';
 
-// Custom domain configuration
-const CUSTOM_STORAGE_DOMAIN = 'talentxcel.in';
+// Storage URL config
+const CUSTOM_CDN_HOST = 'cdn.talentxcel.in';
 const SUPABASE_PROJECT_REF = 'dthlgsnakhoftinssokm';
+const FUNCTION_PROXY_BASE = `https://${SUPABASE_PROJECT_REF}.functions.supabase.co/storage-proxy/`;
 
 /**
  * Converts a Supabase storage URL to use custom domain
@@ -10,9 +11,15 @@ const SUPABASE_PROJECT_REF = 'dthlgsnakhoftinssokm';
 export const getCustomStorageUrl = (originalUrl: string): string => {
   if (!originalUrl) return originalUrl;
   
-  // Replace Supabase domain with custom domain
-  const supabaseStoragePattern = new RegExp(`https://${SUPABASE_PROJECT_REF}\\.supabase\\.co/storage/v1/object/public/`, 'g');
-  return originalUrl.replace(supabaseStoragePattern, `https://cdn.${CUSTOM_STORAGE_DOMAIN}/`);
+  // If it's a Supabase public storage URL, convert to our proxy edge function (reliable)
+  const publicBaseRegex = /https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//i;
+  if (publicBaseRegex.test(originalUrl)) {
+    const path = originalUrl.replace(publicBaseRegex, '');
+    // Prefer edge function proxy to avoid 404s while CDN is not configured
+    return `${FUNCTION_PROXY_BASE}${path}`;
+    // To switch to CDN later, replace with: `https://${CUSTOM_CDN_HOST}/${path}`
+  }
+  return originalUrl;
 };
 
 /**
@@ -62,6 +69,12 @@ export const convertStorageUrls = (urls: string[]): string[] => {
 export const getOriginalStorageUrl = (customUrl: string): string => {
   if (!customUrl) return customUrl;
   
-  const customDomainPattern = new RegExp(`https://cdn\\.${CUSTOM_STORAGE_DOMAIN.replace('.', '\\.')}/`, 'g');
-  return customUrl.replace(customDomainPattern, `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/`);
+  const publicBase = `https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/`;
+  if (customUrl.startsWith(`https://${CUSTOM_CDN_HOST}/`)) {
+    return customUrl.replace(`https://${CUSTOM_CDN_HOST}/`, publicBase);
+  }
+  if (customUrl.startsWith(FUNCTION_PROXY_BASE)) {
+    return customUrl.replace(FUNCTION_PROXY_BASE, publicBase);
+  }
+  return customUrl;
 };
