@@ -93,7 +93,18 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '', compact 
       >
         <div className="flex items-start space-x-3">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">{displayMetadata.emoji || getEmojiForDomain(displayMetadata.domain || 'unknown')}</span>
+            {displayMetadata.favicon ? (
+              <img 
+                src={displayMetadata.favicon} 
+                alt="Site favicon" 
+                className="w-4 h-4 rounded-sm"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              <span className="text-lg">{displayMetadata.emoji || getEmojiForDomain(displayMetadata.domain || 'unknown')}</span>
+            )}
             <IconComponent className="h-4 w-4 text-muted-foreground" />
           </div>
           

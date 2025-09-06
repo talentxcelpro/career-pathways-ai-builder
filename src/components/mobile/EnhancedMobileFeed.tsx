@@ -3,6 +3,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw } from 'lucide-react';
+import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
+import { PostActions } from '@/components/posts/PostActions';
+import LinkPreview from '@/components/shared/LinkPreview';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
 import { EnhancedSwipeableCard } from './EnhancedSwipeableCard';
 import { useNetworkEngagement } from '@/hooks/useNetworkEngagement';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
@@ -111,7 +115,10 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const PostCard: React.FC<{ post: NetworkPost }> = ({ post }) => (
+  const PostCard: React.FC<{ post: NetworkPost }> = ({ post }) => {
+    const { detectedUrls } = useUrlDetection(post.content);
+    
+    return (
     <EnhancedSwipeableCard
       onSwipeLeft={() => handleSwipeLeft(post.id)}
       onSwipeRight={() => handleSwipeRight(post.id)}
@@ -147,9 +154,13 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
               </p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
+          <EnhancedPostMenu
+            postId={post.id}
+            authorId={post.author_id || ''}
+            currentUserId={post.author_id}
+            postContent={post.content}
+            isOwnPost={true}
+          />
         </div>
 
         {/* Post Content */}
@@ -157,6 +168,20 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
           <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
             {post.content}
           </p>
+          
+          {/* Link Previews */}
+          {detectedUrls.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {detectedUrls.slice(0, 1).map((urlData, index) => (
+                <LinkPreview 
+                  key={`${urlData.url}-${index}`}
+                  url={urlData.url}
+                  className="border rounded-lg"
+                  compact={true}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Post Media */}
@@ -243,7 +268,8 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
         </div>
       </Card>
     </EnhancedSwipeableCard>
-  );
+    );
+  };
 
   return (
     <div className={`${className}`}>

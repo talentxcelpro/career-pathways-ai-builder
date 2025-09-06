@@ -6,6 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useFileUpload } from '@/hooks/useFileUpload';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
+import LinkPreview from '@/components/shared/LinkPreview';
 import { Camera, Video, MapPin, Image as ImageIcon, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,6 +29,9 @@ export const MobilePostCreation: React.FC<MobilePostCreationProps> = ({
   const [location, setLocation] = useState('');
   const [mediaFiles, setMediaFiles] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // URL detection for link previews
+  const { detectedUrls } = useUrlDetection(content);
 
   const handleMediaUpload = async (files: FileList | null, type: 'image' | 'video') => {
     if (!files || !user) return;
@@ -191,6 +196,20 @@ export const MobilePostCreation: React.FC<MobilePostCreationProps> = ({
                   <X className="h-3 w-3" />
                 </Button>
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* Link Previews */}
+        {detectedUrls.length > 0 && (
+          <div className="space-y-2">
+            {detectedUrls.slice(0, 2).map((urlData, index) => (
+              <LinkPreview 
+                key={`${urlData.url}-${index}`}
+                url={urlData.url}
+                className="border rounded-lg"
+                compact={true}
+              />
             ))}
           </div>
         )}

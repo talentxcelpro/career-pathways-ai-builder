@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfilePosts } from '@/hooks/useProfilePosts';
 import { toast } from 'sonner';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
+import LinkPreview from '@/components/shared/LinkPreview';
 
 interface MobileCreatePostProps {
   onPostCreate?: () => void;
@@ -29,6 +31,9 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
   const [isPosting, setIsPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  
+  // URL detection for link previews
+  const { detectedUrls } = useUrlDetection(content);
 
   const handleMediaSelect = (files: FileList | null, type: 'image' | 'video') => {
     if (!files || files.length === 0) return;
@@ -163,6 +168,20 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
                         <X className="w-3 h-3" />
                       </Button>
                     </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Link Previews */}
+              {detectedUrls.length > 0 && (
+                <div className="space-y-2">
+                  {detectedUrls.slice(0, 2).map((urlData, index) => (
+                    <LinkPreview 
+                      key={`${urlData.url}-${index}`}
+                      url={urlData.url}
+                      className="border rounded-lg"
+                      compact={true}
+                    />
                   ))}
                 </div>
               )}
