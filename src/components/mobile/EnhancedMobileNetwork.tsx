@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EnhancedMobileFeed } from './EnhancedMobileFeed';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Search, Bell } from 'lucide-react';
 
+const careerNews = [
+  "Global Career News • 5 Tips to Negotiate Salary...",
+  "Tech Industry Update • Remote Work Trends 2024...",
+  "Professional Development • New Certification Programs...",
+  "Market Insights • Top Skills in Demand This Quarter...",
+  "Career Growth • Leadership Development Opportunities..."
+];
+
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentNewsIndex((prev) => (prev + 1) % careerNews.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!isMobile) {
     return (
@@ -27,11 +44,9 @@ export const EnhancedMobileNetwork: React.FC = () => {
         </div>
         
         {/* Career News Ticker */}
-        <div className="mt-2 py-1">
-          <div className="text-sm text-muted-foreground overflow-hidden">
-            <div className="whitespace-nowrap animate-scroll">
-              Global Career News • 5 Tips to Negotiate Salary...
-            </div>
+        <div className="mt-2 py-1 overflow-hidden">
+          <div className="text-sm text-muted-foreground transition-all duration-500 ease-in-out">
+            {careerNews[currentNewsIndex]}
           </div>
         </div>
       </div>
