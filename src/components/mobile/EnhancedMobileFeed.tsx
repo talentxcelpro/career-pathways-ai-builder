@@ -246,7 +246,7 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
       <Card className="bg-card border-border/50 shadow-sm">
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-3">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.location.href = `/user/${post.author_id}`}>
             <Avatar className="w-10 h-10 ring-2 ring-primary/20">
               <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
               <AvatarFallback className="bg-primary/10 text-primary">
@@ -255,7 +255,7 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-1">
-                <p className="text-sm font-semibold text-foreground truncate">
+                <p className="text-sm font-semibold text-foreground truncate hover:text-primary transition-colors">
                   {post.profiles?.full_name || 'Unknown User'}
                 </p>
                 {post.profiles?.is_verified && (
@@ -359,7 +359,11 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
             <span className="text-xs">Like</span>
           </Button>
           
-          <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-muted-foreground">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => window.location.href = `/network/posts/${post.id}`}
+            className="flex items-center space-x-2 text-muted-foreground">
             <MessageCircle className="w-4 h-4" />
             <span className="text-xs">Comment</span>
           </Button>

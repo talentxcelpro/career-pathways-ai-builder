@@ -32,6 +32,7 @@ interface MobileNetworkPost {
   id: string;
   content: string;
   author: {
+    id: string;
     name: string;
     avatar?: string;
     title?: string;
@@ -71,6 +72,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
     id: post.id,
     content: post.content || '',
     author: {
+      id: post.author_id || post.user_id || '',
       name: post.profiles?.full_name || 'Unknown User',
       avatar: post.profiles?.profile_picture_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
       title: post.profiles?.title || 'Professional'
@@ -271,23 +273,23 @@ export const RealTimeMobileNetwork: React.FC = () => {
                   return (
                 <Card key={post.id} className="rounded-none border-x-0 border-t-0 border-b">
                   <div className="p-4 space-y-3">
-                    {/* Post Header */}
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={post.author.avatar} />
-                          <AvatarFallback>
-                            {post.author.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-semibold text-sm">{post.author.name}</h3>
-                          {post.author.title && (
-                            <p className="text-xs text-muted-foreground">{post.author.title}</p>
-                          )}
-                          <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
-                        </div>
-                      </div>
+                     {/* Post Header */}
+                     <div className="flex items-start justify-between">
+                       <div className="flex items-start gap-3 cursor-pointer" onClick={() => window.location.href = `/user/${post.author.id}`}>
+                         <Avatar className="h-10 w-10">
+                           <AvatarImage src={post.author.avatar} />
+                           <AvatarFallback>
+                             {post.author.name.split(' ').map(n => n[0]).join('')}
+                           </AvatarFallback>
+                         </Avatar>
+                         <div>
+                           <h3 className="font-semibold text-sm hover:text-primary transition-colors">{post.author.name}</h3>
+                           {post.author.title && (
+                             <p className="text-xs text-muted-foreground">{post.author.title}</p>
+                           )}
+                           <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
+                         </div>
+                       </div>
                       <EnhancedPostMenu
                         postId={post.id}
                         authorId={post.author.name}
@@ -346,15 +348,15 @@ export const RealTimeMobileNetwork: React.FC = () => {
                         <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
                         Like
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="flex-1 gap-2"
-                        onClick={() => handleComment(post.id)}
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                        Comment
-                      </Button>
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         className="flex-1 gap-2"
+                         onClick={() => window.location.href = `/network/posts/${post.id}`}
+                       >
+                         <MessageCircle className="h-4 w-4" />
+                         Comment
+                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
