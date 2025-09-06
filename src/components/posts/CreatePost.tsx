@@ -21,6 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
+import LinkPreview from '@/components/shared/LinkPreview';
 
 interface Attachment {
   id: string;
@@ -40,6 +41,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   
   // URL detection for link previews
   const { detectedUrls } = useUrlDetection(content);
+  
+  // Debug logging
+  console.log('🔍 CreatePost - Current content:', content);
+  console.log('🔗 CreatePost - Detected URLs:', detectedUrls);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [location, setLocation] = useState('');
   const [showLocationInput, setShowLocationInput] = useState(false);
@@ -315,6 +320,19 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Link Previews */}
+        {detectedUrls.length > 0 && (
+          <div className="mb-4 space-y-2">
+            {detectedUrls.map((urlData, index) => (
+              <LinkPreview 
+                key={`${urlData.url}-${index}`}
+                url={urlData.url}
+                className="border rounded-lg"
+              />
+            ))}
           </div>
         )}
 

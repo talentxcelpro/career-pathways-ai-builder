@@ -25,30 +25,38 @@ export const useUrlPreview = (url: string | null): UseUrlPreviewReturn => {
   const fetchMetadata = async (targetUrl: string) => {
     if (!targetUrl) return;
 
+    console.log('🔍 Fetching URL metadata for:', targetUrl);
     setLoading(true);
     setError(null);
 
     try {
+      console.log('📡 Calling supabase function: url-metadata');
       const { data, error: functionError } = await supabase.functions.invoke('url-metadata', {
         body: { url: targetUrl }
       });
 
+      console.log('📊 Function response:', { data, error: functionError });
+
       if (functionError) {
+        console.error('❌ Function error:', functionError);
         throw new Error(functionError.message);
       }
 
       if (data) {
+        console.log('✅ Successfully fetched metadata:', data);
         setMetadata({
           url: targetUrl,
           title: data.title,
           description: data.description,
-          image: data.image,
+          image: data.image_url || data.image, // Handle both field names
           domain: data.domain,
-          favicon: data.favicon
+          favicon: data.favicon_url || data.favicon // Handle both field names
         });
+      } else {
+        console.warn('⚠️ No data returned from function');
       }
     } catch (err) {
-      console.error('Failed to fetch URL metadata:', err);
+      console.error('💥 Failed to fetch URL metadata:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch URL preview');
       setMetadata(null);
     } finally {

@@ -30,6 +30,8 @@ export const useUrlDetection = (text: string) => {
   }, [text]);
 
   useEffect(() => {
+    console.log('🔍 URL Detection - Input text:', text);
+    console.log('🔗 Extracted URLs:', extractUrls);
     setDetectedUrls(extractUrls);
   }, [extractUrls]);
 
