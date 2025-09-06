@@ -11,6 +11,7 @@ import { useProfilePosts } from '@/hooks/useProfilePosts';
 import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MobileCreatePostProps {
   onPostCreate?: () => void;
@@ -78,11 +79,37 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
       // Upload media if any
       let mediaUrls: string[] = [];
       if (selectedMedia.length > 0) {
-        // For now, we'll use placeholder URLs
-        // In a real app, you'd upload to Supabase storage
-        mediaUrls = selectedMedia.map((file, index) => 
-          `https://placeholder.com/media-${Date.now()}-${index}`
-        );
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+
+        for (let i = 0; i < selectedMedia.length; i++) {
+          const file = selectedMedia[i];
+          const fileExtension = file.name.split('.').pop();
+          const randomId = Math.random().toString(36).substring(2, 15);
+          const filename = `${randomId}.${fileExtension}`;
+          const filePath = `${user.id}/${filename}`;
+
+          try {
+            const { data, error } = await supabase.storage
+              .from('post-media')
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+              });
+
+            if (error) {
+              console.error('Error uploading file:', error);
+              toast.error(`Failed to upload ${file.name}`);
+              continue;
+            }
+
+            const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
+            mediaUrls.push(publicUrl);
+          } catch (uploadError) {
+            console.error('Upload error:', uploadError);
+            toast.error(`Failed to upload ${file.name}`);
+          }
+        }
       }
 
       await createPost.mutateAsync({

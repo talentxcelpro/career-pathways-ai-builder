@@ -58,7 +58,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
   
   // Separate URLs into media URLs and preview URLs
   const mediaItems = allMediaUrls.filter(url => {
-    if (!url || url.includes('placeholder.com') || url.includes('example.com')) {
+    if (!url || url.includes('placeholder.com') || url.includes('example.com') || !url.startsWith('http')) {
       return false;
     }
     

@@ -201,36 +201,48 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({
           <div className="px-4 pb-3">
             {post.media_urls.length === 1 ? (
               <div className="rounded-lg overflow-hidden">
-                {hasImages && (
+                {hasImages && !post.media_urls[0].includes('placeholder.com') && (
                   <img
                     src={post.media_urls[0]}
                     alt="Post media"
                     className="w-full h-auto max-h-96 object-cover"
                     loading="lazy"
+                    onError={(e) => {
+                      // Hide image if it fails to load
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 )}
-                {hasVideos && (
+                {hasVideos && !post.media_urls[0].includes('placeholder.com') && (
                   <video
                     src={post.media_urls[0]}
                     controls
                     className="w-full h-auto max-h-96 object-cover"
                     preload="metadata"
+                    onError={(e) => {
+                      // Hide video if it fails to load
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 )}
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 rounded-lg overflow-hidden">
-                {post.media_urls.slice(0, 4).map((url, index) => (
+                {post.media_urls.filter(url => !url.includes('placeholder.com')).slice(0, 4).map((url, index) => (
                   <div key={index} className="relative aspect-square">
                     <img
                       src={url}
                       alt={`Media ${index + 1}`}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      onError={(e) => {
+                        // Hide image if it fails to load
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
-                    {index === 3 && post.media_urls.length > 4 && (
+                    {index === 3 && post.media_urls.filter(url => !url.includes('placeholder.com')).length > 4 && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-semibold">
-                        +{post.media_urls.length - 4} more
+                        +{post.media_urls.filter(url => !url.includes('placeholder.com')).length - 4} more
                       </div>
                     )}
                   </div>
