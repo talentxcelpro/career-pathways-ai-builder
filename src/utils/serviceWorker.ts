@@ -69,8 +69,7 @@ export class ServiceWorkerManager {
   static init() {
     if (typeof window === 'undefined') return;
     
-    // Clear all caches and unregister service workers to fix MIME type issues
-    this.clearCaches();
+    // First, unregister any existing service workers to prevent cache issues
     this.unregisterAll();
     
     // Handle online/offline events only (no SW registration for now)

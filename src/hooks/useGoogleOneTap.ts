@@ -62,8 +62,6 @@ export const useGoogleOneTap = ({
     if (!window.google || disabled) return;
 
     try {
-      console.log('Initializing Google One Tap...');
-      
       window.google.accounts.id.initialize({
         client_id: clientId,
         callback: handleCredentialResponse,
@@ -71,24 +69,14 @@ export const useGoogleOneTap = ({
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
         use_fedcm_for_prompt: true,
-        ux_mode: 'popup',
-        state_cookie_domain: window.location.hostname,
       });
 
-      // Show the One Tap prompt with immediate display
+      // Show the One Tap prompt
       window.google.accounts.id.prompt((notification: any) => {
-        console.log('Google One Tap notification:', notification);
-        
-        if (notification.isNotDisplayed()) {
-          console.log('Google One Tap not displayed - user may have dismissed it previously');
-        } else if (notification.isSkippedMoment()) {
-          console.log('Google One Tap skipped - user may not be signed in to Google');
-        } else if (notification.isDismissedMoment()) {
-          console.log('Google One Tap dismissed by user');
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          console.log('Google One Tap not displayed or skipped');
         }
       });
-      
-      console.log('Google One Tap initialized successfully');
     } catch (error) {
       console.error('Failed to initialize Google One Tap:', error);
     }
