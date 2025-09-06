@@ -10,6 +10,7 @@ import { useUrlDetection } from '@/hooks/useUrlDetection';
 import { EnhancedSwipeableCard } from './EnhancedSwipeableCard';
 import { useNetworkEngagement } from '@/hooks/useNetworkEngagement';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
+import { supabase } from '@/integrations/supabase/client';
 import { useInfiniteNetworkFeed, NetworkPost } from '@/hooks/useInfiniteNetworkFeed';
 import { VirtualizedNetworkFeed } from '@/components/performance/VirtualizedNetworkFeed';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -72,9 +73,42 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
   }, [sync, triggerHaptic, refetch]);
 
   const handleSave = useCallback(async (postId: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.info('Please sign in to save posts');
+      return;
+    }
+    
     triggerHaptic('medium');
+    
+    // Check if already saved
+    const { data: existingSave } = await supabase
+      .from('saved_posts')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', session.user.id)
+      .single();
+    
+    if (existingSave) {
+      // Remove bookmark
+      await supabase
+        .from('saved_posts')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', session.user.id);
+      toast.success('Removed from bookmarks');
+    } else {
+      // Add bookmark
+      await supabase
+        .from('saved_posts')
+        .insert({ 
+          post_id: postId, 
+          user_id: session.user.id 
+        });
+      toast.success('Post saved to bookmarks');
+    }
+    
     await sync('posts', { action: 'save', postId });
-    toast.success('Post saved to bookmarks');
     await refetch();
   }, [sync, triggerHaptic, refetch]);
 

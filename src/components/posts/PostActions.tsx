@@ -63,9 +63,46 @@ export const PostActions: React.FC<PostActionsProps> = ({
     }
   });
 
-  // Save functionality - temporarily disabled until saved_posts table is created
-  const handleSave = () => {
-    toast.info('Save functionality coming soon!');
+  // Save functionality 
+  const handleSave = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.info('Please sign in to save posts');
+      return;
+    }
+    
+    if (isSaved) {
+      // Remove from saved posts
+      const { error } = await supabase
+        .from('saved_posts')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', session.user.id);
+      
+      if (error) {
+        toast.error('Failed to remove bookmark');
+        return;
+      }
+      
+      setIsSaved(false);
+      toast.success('Removed from bookmarks');
+    } else {
+      // Add to saved posts
+      const { error } = await supabase
+        .from('saved_posts')
+        .insert({ 
+          post_id: postId, 
+          user_id: session.user.id 
+        });
+      
+      if (error && error.code !== '23505') { // Ignore duplicate error
+        toast.error('Failed to save post');
+        return;
+      }
+      
+      setIsSaved(true);
+      toast.success('Post saved to bookmarks');
+    }
   };
 
   const handleLike = async () => {
