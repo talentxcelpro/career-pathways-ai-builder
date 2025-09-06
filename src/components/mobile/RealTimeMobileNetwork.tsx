@@ -374,24 +374,30 @@ export const RealTimeMobileNetwork: React.FC = () => {
               })
             )}
 
-            {/* Load More */}
+            {/* Enhanced Load More Section */}
             {hasNextPage && (
-              <div className="p-4 text-center">
+              <div className="p-4 text-center border-t">
                 <Button
                   variant="outline"
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
-                  className="w-full"
+                  className="w-full max-w-sm mx-auto"
                 >
                   {isFetchingNextPage ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      Loading...
-                    </>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <span>Loading more posts...</span>
+                    </div>
                   ) : (
                     'Load More Posts'
                   )}
                 </Button>
+              </div>
+            )}
+            
+            {!hasNextPage && mobilePosts.length > 0 && (
+              <div className="text-center py-6 border-t">
+                <p className="text-sm text-muted-foreground">You've reached the end of your feed</p>
               </div>
             )}
 

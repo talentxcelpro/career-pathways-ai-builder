@@ -341,19 +341,30 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
         </div>
       )}
 
-      {/* Load More */}
+      {/* Infinite Scroll Load More Trigger */}
       <div ref={loadMoreRef} className="px-4 pb-4">
-        {isFetchingNextPage && (
-          <div className="flex items-center justify-center py-4">
-            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-            <span className="text-sm text-muted-foreground">Loading more posts...</span>
+        {isFetchingNextPage ? (
+          <div className="flex items-center justify-center py-6">
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm font-medium">Loading more posts...</span>
+            </div>
           </div>
-        )}
-        {!hasNextPage && posts.length > 0 && (
-          <p className="text-center text-sm text-muted-foreground py-4">
-            You've reached the end!
-          </p>
-        )}
+        ) : hasNextPage ? (
+          <div className="text-center py-4">
+            <Button 
+              variant="outline" 
+              onClick={() => fetchNextPage()}
+              className="w-full"
+            >
+              Load More Posts
+            </Button>
+          </div>
+        ) : posts.length > 0 ? (
+          <div className="text-center py-6">
+            <p className="text-sm text-muted-foreground">You've reached the end of your feed</p>
+          </div>
+        ) : null}
       </div>
     </div>
   );
