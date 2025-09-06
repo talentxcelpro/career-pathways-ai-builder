@@ -6,7 +6,6 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useGlobalSearch } from '@/hooks/useGlobalSearch';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ProfileDetailsSheet } from '@/components/network/ProfileDetailsSheet';
 
 interface GlobalSearchProps {
   className?: string;
@@ -111,84 +110,44 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
           {!isLoading && results.length > 0 && (
             <div className="py-2">
-              {results.map((result) => {
-                // If it's a user result, wrap in ProfileDetailsSheet
-                if (result.type === 'user') {
-                  return (
-                    <ProfileDetailsSheet
-                      key={`${result.type}-${result.id}`}
-                      profileId={result.id}
-                      trigger={
-                        <div 
-                          onClick={handleResultClick}
-                          className="block px-4 py-3 hover:bg-muted/50 transition-colors cursor-pointer w-full"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0">
-                              {result.avatar ? (
-                                <Avatar className="h-8 w-8">
-                                  <AvatarImage src={result.avatar} alt={result.title} />
-                                  <AvatarFallback>
-                                    {result.title.split(' ').map(n => n[0]).join('')}
-                                  </AvatarFallback>
-                                </Avatar>
-                              ) : (
-                                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                                  {getResultIcon(result.type)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm truncate">
-                                {result.title}
-                              </div>
-                              {result.subtitle && (
-                                <div className="text-xs text-muted-foreground truncate">
-                                  {result.subtitle}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-shrink-0 text-xs text-muted-foreground capitalize">
-                              {result.type}
-                            </div>
-                          </div>
-                        </div>
-                      }
-                    />
-                  );
-                }
-
-                // For non-user results, use regular Link
-                return (
-                  <Link
-                    key={`${result.type}-${result.id}`}
-                    to={result.url}
-                    onClick={handleResultClick}
-                    className="block px-4 py-3 hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0">
+              {results.map((result) => (
+                <Link
+                  key={`${result.type}-${result.id}`}
+                  to={result.url}
+                  onClick={handleResultClick}
+                  className="block px-4 py-3 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      {result.type === 'user' && result.avatar ? (
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={result.avatar} alt={result.title} />
+                          <AvatarFallback>
+                            {result.title.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                      ) : (
                         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
                           {getResultIcon(result.type)}
                         </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">
-                          {result.title}
-                        </div>
-                        {result.subtitle && (
-                          <div className="text-xs text-muted-foreground truncate">
-                            {result.subtitle}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-shrink-0 text-xs text-muted-foreground capitalize">
-                        {result.type}
-                      </div>
+                      )}
                     </div>
-                  </Link>
-                );
-              })}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm truncate">
+                        {result.title}
+                      </div>
+                      {result.subtitle && (
+                        <div className="text-xs text-muted-foreground truncate">
+                          {result.subtitle}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 text-xs text-muted-foreground capitalize">
+                      {result.type}
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           )}
         </div>

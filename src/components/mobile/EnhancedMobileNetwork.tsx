@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
 import { EnhancedMobileFeed } from './EnhancedMobileFeed';
-import { StoryBubbles } from './StoryBubbles';
+import { MobileStories } from './MobileStories';
 import { MobileMessaging } from './MobileMessaging';
 import { MobileEvents } from './MobileEvents';
 import { AIJobRecommendations } from './AIJobRecommendations';
@@ -9,14 +9,10 @@ import { SkillEndorsements } from './SkillEndorsements';
 import { LiveNetworking } from './LiveNetworking';
 import { ProfessionalGamification } from './ProfessionalGamification';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<'feed' | 'stories' | 'network' | 'messages' | 'events' | 'jobs' | 'skills' | 'live' | 'achievements'>('feed');
-  const [showCreatePost, setShowCreatePost] = useState(false);
 
   if (!isMobile) {
     return (
@@ -26,77 +22,32 @@ export const EnhancedMobileNetwork: React.FC = () => {
     );
   }
 
-  // Compact navigation - essential features only
-  const tabs = [
-    { id: 'feed', label: 'Home' },
-    { id: 'network', label: 'Network' },
-    { id: 'jobs', label: 'Jobs' },
-    { id: 'messages', label: 'Messages' },
-    { id: 'live', label: 'Live' }
-  ];
-
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Compact Navigation */}
-      <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border/20 z-30">
-        <div className="safe-area-padding-top">
-          <div className="flex justify-center px-2 py-2">
-            <div className="flex bg-card/60 rounded-xl p-0.5 shadow-sm border border-border/30 w-full max-w-md">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={cn(
-                    "flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 min-h-[36px] flex items-center justify-center",
-                    activeTab === tab.id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* Tab Navigation */}
+      <div className="flex bg-card border-b border-border/50 overflow-x-auto scrollbar-hide">
+        <button onClick={() => setActiveTab('feed')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'feed' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Feed</button>
+        <button onClick={() => setActiveTab('stories')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'stories' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Stories</button>
+        <button onClick={() => setActiveTab('network')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'network' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Network</button>
+        <button onClick={() => setActiveTab('messages')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'messages' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Messages</button>
+        <button onClick={() => setActiveTab('events')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Events</button>
+        <button onClick={() => setActiveTab('jobs')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'jobs' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Jobs</button>
+        <button onClick={() => setActiveTab('skills')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'skills' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Skills</button>
+        <button onClick={() => setActiveTab('live')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'live' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Live</button>
+        <button onClick={() => setActiveTab('achievements')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'achievements' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Growth</button>
       </div>
 
-      {/* Content Area - Maximized Space */}
-      <div className="flex-1 overflow-hidden safe-area-padding-bottom bg-background">
-        {activeTab === 'feed' && (
-          <div className="h-full flex flex-col">
-            {/* Minimal CTA Bar */}
-            <div className="px-4 py-3 border-b border-border/20">
-              <button
-                onClick={() => setShowCreatePost(true)}
-                className="w-full h-10 bg-card border border-border/50 rounded-lg flex items-center px-4 text-muted-foreground hover:bg-muted/30 transition-colors"
-              >
-                What's on your mind?
-              </button>
-            </div>
-            
-            {/* Feed Content - Full Height */}
-            <div className="flex-1 overflow-hidden">
-              <EnhancedMobileFeed />
-            </div>
-            
-            {/* Post Creation Modal */}
-            {showCreatePost && (
-              <div className="fixed inset-0 bg-black/70 z-50 flex items-end">
-                <div className="w-full">
-                  <MobilePostCreation
-                    onClose={() => setShowCreatePost(false)}
-                    onPostCreated={() => setShowCreatePost(false)}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+      {/* Tab Content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'feed' && <EnhancedMobileFeed />}
+        {activeTab === 'stories' && <MobileStories />}
         {activeTab === 'network' && <RealTimeMobileNetwork />}
-        {activeTab === 'jobs' && <AIJobRecommendations />}
         {activeTab === 'messages' && <MobileMessaging />}
+        {activeTab === 'events' && <MobileEvents />}
+        {activeTab === 'jobs' && <AIJobRecommendations />}
+        {activeTab === 'skills' && <SkillEndorsements />}
         {activeTab === 'live' && <LiveNetworking />}
+        {activeTab === 'achievements' && <ProfessionalGamification />}
       </div>
     </div>
   );
