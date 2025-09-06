@@ -29,8 +29,8 @@ const ProfileUrlRedirect = () => {
           console.error('Error fetching profile:', error);
           navigate('/404');
         } else if (profile?.username) {
-          // Redirect to SEO-friendly URL
-          navigate(`/profile/${profile.username}`, { replace: true });
+          // Redirect to unified profile route
+          navigate(`/user/${profile.username}`, { replace: true });
         } else {
           navigate('/404');
         }

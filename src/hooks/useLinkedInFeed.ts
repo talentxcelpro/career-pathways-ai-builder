@@ -197,54 +197,77 @@ export const useLinkedInFeed = () => {
   const handleLike = async (postId: string) => {
     if (!user) return;
 
+    // Optimistic update to avoid flicker
+    const key = ['linkedInMobilePosts'] as const;
+    const previous = queryClient.getQueryData<LinkedInPost[]>(key);
+
+    const toggleInCache = (liked: boolean) => {
+      if (!previous) return;
+      const updated = previous.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              stats: {
+                ...p.stats,
+                isLiked: liked,
+                likes: p.stats.likes + (liked ? 1 : -1),
+              },
+            }
+          : p
+      );
+      queryClient.setQueryData(key, updated);
+    };
+
+    // Determine current like state from cache
+    const isCurrentlyLiked = previous?.find((p) => p.id === postId)?.stats.isLiked ?? false;
+    // Apply optimistic toggle
+    toggleInCache(!isCurrentlyLiked);
+
     try {
-      // Check if already liked
+      // Check if already liked in DB (source of truth)
       const { data: existingLike } = await supabase
         .from('post_likes')
         .select('id')
         .eq('post_id', postId)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existingLike) {
-        // Unlike - publish engagement event
         await supabase.rpc('publish_engagement_event', {
           p_event_type: 'unlike',
           p_content_type: 'post',
           p_content_id: postId,
           p_user_id: user.id,
-          p_content_owner_id: null, // We'll get this from the posts table in the function
-          p_module: 'network'
+          p_content_owner_id: null,
+          p_module: 'network',
         });
-        
         await supabase
           .from('post_likes')
           .delete()
           .eq('post_id', postId)
           .eq('user_id', user.id);
       } else {
-        // Like - publish engagement event
         await supabase.rpc('publish_engagement_event', {
           p_event_type: 'like',
           p_content_type: 'post',
           p_content_id: postId,
           p_user_id: user.id,
-          p_content_owner_id: null, // We'll get this from the posts table in the function
-          p_module: 'network'
+          p_content_owner_id: null,
+          p_module: 'network',
         });
-        
         await supabase
           .from('post_likes')
-          .insert({
-            post_id: postId,
-            user_id: user.id
-          });
+          .insert({ post_id: postId, user_id: user.id });
       }
 
-      // Refresh the posts
-      queryClient.invalidateQueries({ queryKey: ['linkedInMobilePosts'] });
+      // Optionally refresh in background without resetting list
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: key });
+      }, 400);
     } catch (error) {
       console.error('Error toggling like:', error);
+      // Revert optimistic update on error
+      if (previous) queryClient.setQueryData(key, previous);
     }
   };
 
