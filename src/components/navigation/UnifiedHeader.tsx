@@ -9,8 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Search, User, Building2, Settings, LogOut } from 'lucide-react';
+import { Search, User, Building2, Settings, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -112,8 +111,6 @@ export function UnifiedHeader() {
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
       <div className="flex items-center gap-2 px-4">
-        <SidebarTrigger className="-ml-1" />
-        <div className="h-4 w-px bg-sidebar-border" />
         <Link to="/" className="flex items-center gap-2">
           <img 
             src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 

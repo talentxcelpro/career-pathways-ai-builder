@@ -7,9 +7,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/navigation/AppSidebar";
 import { UnifiedHeader } from "@/components/navigation/UnifiedHeader";
+import { DesktopNavigation } from "@/components/navigation/DesktopNavigation";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -144,11 +143,11 @@ const App = () => {
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
-                  <SidebarProvider>
                     <div className="min-h-screen flex w-full">
                       <OfflineIndicator />
-                      <AppSidebar />
-                      <SidebarInset>
+                      <DesktopNavigation />
+                      <div className="flex-1 flex flex-col">
+                        <UnifiedHeader />
                         <main className="flex-1 p-4">
                       <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                         <Routes>
@@ -278,15 +277,14 @@ const App = () => {
        {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                          </Routes>
                         </React.Suspense>
-                        </main>
-                        <FooterWrapper />
-                        <OnboardingFlow />
-                        <InstallPrompt />
-                        <InstallButton />
-                        <IOSInstallPrompt />
-                      </SidebarInset>
-                    </div>
-                  </SidebarProvider>
+                         </main>
+                         <FooterWrapper />
+                         <OnboardingFlow />
+                         <InstallPrompt />
+                         <InstallButton />
+                         <IOSInstallPrompt />
+                       </div>
+                     </div>
                   </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
