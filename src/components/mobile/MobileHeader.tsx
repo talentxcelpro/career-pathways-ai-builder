@@ -77,8 +77,8 @@ export const MobileHeader = () => {
 
   return (
     <>
-      <header className="bg-gradient-card/80 backdrop-blur-apple border-b border-border/50 sticky top-0 z-40 md:hidden shadow-elegant animate-fade-in-down">
-        <div className="flex items-center justify-between px-4 py-2 h-14">
+      <header className="bg-background/95 backdrop-blur-xl border-b border-border/30 sticky top-0 z-50 md:hidden shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3 h-16" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))' }}>
           {/* Left - Menu Button */}
           <Button
             variant="ghost"

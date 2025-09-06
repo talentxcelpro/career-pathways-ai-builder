@@ -126,8 +126,8 @@ export const MobilePostCreation: React.FC<MobilePostCreationProps> = ({
   };
 
   return (
-    <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl rounded-t-3xl">
-      <div className="p-4 space-y-4">
+    <Card className="bg-background/98 backdrop-blur-xl border-0 shadow-2xl rounded-t-3xl min-h-[60vh] max-h-[85vh] overflow-hidden">
+      <div className="p-5 space-y-5 pb-[env(safe-area-inset-bottom,20px)]">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -161,7 +161,8 @@ export const MobilePostCreation: React.FC<MobilePostCreationProps> = ({
           placeholder="What's happening in your career?"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="min-h-[100px] resize-none border-0 focus-visible:ring-0 text-lg placeholder:text-gray-500"
+          className="min-h-[120px] resize-none border-0 focus-visible:ring-0 text-lg placeholder:text-muted-foreground bg-transparent"
+          autoFocus
         />
 
         {/* Media Preview */}
