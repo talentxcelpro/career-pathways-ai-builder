@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
 import { EnhancedMobileFeed } from './EnhancedMobileFeed';
-import { MobileStories } from './MobileStories';
+import { StoryBubbles } from './StoryBubbles';
 import { MobileMessaging } from './MobileMessaging';
 import { MobileEvents } from './MobileEvents';
 import { AIJobRecommendations } from './AIJobRecommendations';
@@ -10,10 +10,13 @@ import { LiveNetworking } from './LiveNetworking';
 import { ProfessionalGamification } from './ProfessionalGamification';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<'feed' | 'stories' | 'network' | 'messages' | 'events' | 'jobs' | 'skills' | 'live' | 'achievements'>('feed');
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   if (!isMobile) {
     return (
@@ -61,8 +64,25 @@ export const EnhancedMobileNetwork: React.FC = () => {
 
       {/* Tab Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'feed' && <EnhancedMobileFeed />}
-        {activeTab === 'stories' && <MobileStories />}
+        {activeTab === 'feed' && (
+          <>
+            <div className="px-4 py-2">
+              <Button variant="outline" className="w-full rounded-xl" onClick={() => setShowCreatePost(true)}>
+                Share your thoughts...
+              </Button>
+            </div>
+            <EnhancedMobileFeed />
+            {showCreatePost && (
+              <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+                <MobilePostCreation
+                  onClose={() => setShowCreatePost(false)}
+                  onPostCreated={() => setShowCreatePost(false)}
+                />
+              </div>
+            )}
+          </>
+        )}
+        {activeTab === 'stories' && <StoryBubbles />}
         {activeTab === 'network' && <RealTimeMobileNetwork />}
         {activeTab === 'messages' && <MobileMessaging />}
         {activeTab === 'events' && <MobileEvents />}

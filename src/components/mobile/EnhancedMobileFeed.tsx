@@ -11,6 +11,7 @@ import { VirtualizedNetworkFeed } from '@/components/performance/VirtualizedNetw
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { ProfileDetailsSheet } from '@/components/network/ProfileDetailsSheet';
 
 interface Post {
   id: string;
@@ -121,32 +122,37 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
       <Card className="bg-card border-border/50 shadow-sm">
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-3">
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-10 h-10 ring-2 ring-primary/20">
-              <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
-              <AvatarFallback className="bg-primary/10 text-primary">
-                {post.profiles?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-1">
-                <p className="text-sm font-semibold text-foreground truncate">
-                  {post.profiles?.full_name || 'Unknown User'}
-                </p>
-                {post.profiles?.is_verified && (
-                  <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+          <ProfileDetailsSheet
+            profileId={post.author_id}
+            trigger={
+              <div className="flex items-center space-x-3 cursor-pointer">
+                <Avatar className="w-10 h-10 ring-2 ring-primary/20">
+                  <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {post.profiles?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-1">
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      {post.profiles?.full_name || 'Unknown User'}
+                    </p>
+                    {post.profiles?.is_verified && (
+                      <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                      </div>
+                    )}
                   </div>
-                )}
+                  <p className="text-xs text-muted-foreground truncate">
+                    {post.profiles?.title || 'Professional'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground truncate">
-                {post.profiles?.title || 'Professional'}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {new Date(post.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
+            }
+          />
           <Button variant="ghost" size="icon" className="text-muted-foreground">
             <MoreHorizontal className="w-4 h-4" />
           </Button>
