@@ -17,9 +17,8 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
-import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
+import { AddictiveFeed } from "@/components/mobile/AddictiveFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
-import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { MobileLayout } from "@/components/mobile/MobileLayout";
 import { UserPresence } from "@/components/realtime/UserPresence";
@@ -30,17 +29,6 @@ const Network = () => {
   const { isMobile } = useMobileDetection();
   const { user } = useAuth();
   
-  const {
-    posts,
-    loading,
-    error,
-    handleLike,
-    handleBookmark,
-    handleShare,
-    handleComment,
-    handleConnect,
-    handleApply
-  } = useLinkedInFeed();
 
   // SEO meta tags and structured data
   React.useEffect(() => {
@@ -87,19 +75,11 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile LinkedIn-style interface
+  // Mobile interface with real AI feed
   if (isMobile && user) {
     return (
       <MobileLayout>
-        <LinkedInMobileFeed
-          posts={posts}
-          onLike={handleLike}
-          onBookmark={handleBookmark}
-          onShare={handleShare}
-          onComment={handleComment}
-          onConnect={handleConnect}
-          onApply={handleApply}
-        />
+        <AddictiveFeed />
       </MobileLayout>
     );
   }
