@@ -67,11 +67,16 @@ export const TopNavTabs: React.FC<TopNavTabsProps> = ({
             <span>{tab.label}</span>
             {tab.count !== undefined && (
               <span className={cn(
-                "min-w-[20px] h-5 px-1.5 rounded-full text-xs flex items-center justify-center transition-all duration-200 animate-pulse",
+                "min-w-[20px] h-5 px-1.5 rounded-full text-xs flex items-center justify-center transition-all duration-200",
+                "animate-pulse shadow-sm ring-1 ring-white/20",
                 activeTab === tab.id
-                  ? "bg-primary/20 text-primary font-semibold"
-                  : "bg-muted text-muted-foreground"
-              )}>
+                  ? "bg-gradient-to-r from-primary/30 to-primary/20 text-primary font-bold animate-bounce"
+                  : "bg-gradient-to-r from-destructive/20 to-destructive/30 text-destructive-foreground animate-ping"
+              )}
+              style={{
+                animationDuration: activeTab === tab.id ? '1s' : '2s',
+                animationIterationCount: 'infinite'
+              }}>
                 {tab.count > 99 ? '99+' : tab.count}
               </span>
             )}

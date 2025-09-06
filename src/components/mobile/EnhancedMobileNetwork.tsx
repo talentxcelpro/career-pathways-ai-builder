@@ -7,22 +7,25 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Messages from '@/pages/network/Messages';
 import Events from '@/pages/network/Events';
 import { MobileJobs } from '@/pages/mobile/MobileJobs';
+import { useRealtimeCounts } from '@/hooks/useRealtimeCounts';
 
 type TabType = 'feed' | 'network' | 'messages' | 'events' | 'jobs' | 'skills';
-
-const tabs = [
-  { id: 'feed' as TabType, label: 'Feed', count: 23 },
-  { id: 'network' as TabType, label: 'Network', count: 156 },
-  { id: 'messages' as TabType, label: 'Messages', count: 5 },
-  { id: 'events' as TabType, label: 'Events', count: 12 },
-  { id: 'jobs' as TabType, label: 'Jobs', count: 47 },
-  { id: 'skills' as TabType, label: 'Skills' },
-];
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<TabType>('feed');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const { feedCount, networkCount, messagesCount, eventsCount, jobsCount } = useRealtimeCounts();
+
+  const tabs = [
+    { id: 'feed' as TabType, label: 'Feed', count: feedCount },
+    { id: 'network' as TabType, label: 'Network', count: networkCount > 99 ? 99 : networkCount },
+    { id: 'messages' as TabType, label: 'Messages', count: messagesCount },
+    { id: 'events' as TabType, label: 'Events', count: eventsCount },
+    { id: 'jobs' as TabType, label: 'Jobs', count: jobsCount },
+    { id: 'skills' as TabType, label: 'Skills' },
+  ];
+
 
   // Always render content; show a hint when not on mobile viewport
   const NotMobileHint = !isMobile ? (
