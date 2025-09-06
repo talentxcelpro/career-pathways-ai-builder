@@ -39,12 +39,23 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch event
+// Fetch event with proper error handling
 self.addEventListener('fetch', event => {
+  // Skip cross-origin requests that might violate CSP
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        return response || fetch(event.request);
+        return response || fetch(event.request).catch(() => {
+          // Return offline page for navigation requests if fetch fails
+          if (event.request.mode === 'navigate') {
+            return caches.match('/offline.html');
+          }
+          throw error;
+        });
       })
   );
 });
