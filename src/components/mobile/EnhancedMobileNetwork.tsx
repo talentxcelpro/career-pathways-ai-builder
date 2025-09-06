@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TopNavTabs } from './TopNavTabs';
 import { FilterButtons, FilterType } from './FilterButtons';
-import { AddictiveFeed } from './AddictiveFeed';
+import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type TabType = 'feed' | 'network' | 'messages' | 'events' | 'jobs' | 'skills';
@@ -20,20 +20,19 @@ export const EnhancedMobileNetwork: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('feed');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
-  if (!isMobile) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-muted-foreground">This view is optimized for mobile devices.</p>
-      </div>
-    );
-  }
+  // Always render content; show a hint when not on mobile viewport
+  const NotMobileHint = !isMobile ? (
+    <div className="flex items-center justify-center h-10 text-xs text-muted-foreground border-b border-gray-200">
+      This view is optimized for mobile devices.
+    </div>
+  ) : null;
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'feed':
-        return <AddictiveFeed />;
+        return <RealTimeMobileNetwork />;
       case 'network':
-        return <AddictiveFeed />;
+        return <RealTimeMobileNetwork />;
       case 'messages':
         return (
           <div className="flex items-center justify-center h-64 text-gray-500">
@@ -59,12 +58,13 @@ export const EnhancedMobileNetwork: React.FC = () => {
           </div>
         );
       default:
-        return <AddictiveFeed />;
+        return <RealTimeMobileNetwork />;
     }
   };
 
   return (
     <div className="h-full flex flex-col bg-white">
+      {NotMobileHint}
       {/* Top Navigation Tabs */}
       <TopNavTabs
         tabs={tabs}
