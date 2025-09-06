@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
@@ -376,12 +377,13 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                          userId={post.author_id || post.user_id || ''}
                          trigger={
                            <div className="flex items-start gap-3 flex-1 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.98] transition-all">
-                             <Avatar className="h-10 w-10 ring-2 ring-primary/10">
-                               <AvatarImage src={post.author.avatar || undefined} />
-                               <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                                 {post.author.name ? post.author.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-                               </AvatarFallback>
-                             </Avatar>
+                              {/* Use reusable avatar component with robust fallbacks */}
+                              <UserAvatar 
+                                src={post.author.avatar || undefined}
+                                userName={post.author.name}
+                                size="md"
+                                className="ring-2 ring-primary/10"
+                              />
                              <div>
                                <h3 className="font-semibold text-sm hover:text-primary transition-colors">
                                  {post.author.name}
