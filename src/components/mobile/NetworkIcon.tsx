@@ -8,33 +8,27 @@ interface NetworkIconProps {
 
 export const NetworkIcon: React.FC<NetworkIconProps> = ({ className, isActive }) => {
   return (
-    <div className={cn("flex flex-col items-center gap-1", className)}>
+    <div className={cn("flex flex-col items-center", className)}>
       <div className="relative">
         <div className={cn(
-          "w-8 h-8 rounded-2xl flex items-center justify-center transition-all duration-200",
+          "w-6 h-6 rounded-2xl flex items-center justify-center transition-all duration-200",
           isActive 
             ? "bg-gradient-to-br from-blue-600 to-green-500 shadow-lg" 
             : "bg-gradient-to-br from-gray-400 to-gray-500"
         )}>
           <svg 
-            width="16" 
-            height="16" 
+            width="14" 
+            height="14" 
             viewBox="0 0 24 24" 
             fill="none" 
             className="text-white"
             stroke="currentColor" 
-            strokeWidth="2"
+            strokeWidth="2.5"
           >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
       </div>
-      <span className={cn(
-        "text-xs font-medium transition-colors duration-200",
-        isActive ? "text-blue-600" : "text-gray-600"
-      )}>
-        Network
-      </span>
     </div>
   );
 };
