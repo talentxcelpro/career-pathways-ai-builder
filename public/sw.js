@@ -1,11 +1,7 @@
 // Enhanced Service Worker with proper push notification handling
-const CACHE_NAME = 'talentxcel-v3';
+const CACHE_NAME = 'talentxcel-v4';
 const urlsToCache = [
-  '/',
-  '/jobs',
-  '/profile',
-  '/resume',
-  '/network',
+  '/offline.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
@@ -16,47 +12,58 @@ const urlsToCache = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
 // Activate event
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then(cacheNames => Promise.all(
+      cacheNames.map(cacheName => cacheName !== CACHE_NAME && caches.delete(cacheName))
+    ))
   );
   self.clients.claim();
 });
 
-// Fetch event with proper error handling
-self.addEventListener('fetch', event => {
-  // Skip cross-origin requests that might violate CSP
-  if (!event.request.url.startsWith(self.location.origin)) {
+// Fetch event with robust strategies to prevent stale HTML/JS mismatch
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  // Skip cross-origin
+  if (url.origin !== self.location.origin) return;
+
+  // Network-first for navigations/HTML to avoid cached old index.html
+  if (req.mode === 'navigate' || req.destination === 'document' || (req.headers.get('accept') || '').includes('text/html')) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(async () => {
+          const cached = await caches.match(req);
+          return cached || caches.match('/offline.html');
+        })
+    );
     return;
   }
-  
+
+  // Cache-first for static assets; fallback to network
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request).catch(() => {
-          // Return offline page for navigation requests if fetch fails
-          if (event.request.mode === 'navigate') {
-            return caches.match('/offline.html');
-          }
-          throw error;
-        });
-      })
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req).then((res) => {
+        if (req.method === 'GET' && url.origin === self.location.origin && !url.pathname.startsWith('/api')) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
+        }
+        return res;
+      }).catch(() => caches.match('/offline.html'));
+    })
   );
 });
 
