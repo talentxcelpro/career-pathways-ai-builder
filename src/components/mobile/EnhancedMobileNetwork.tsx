@@ -1,27 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { EnhancedMobileFeed } from './EnhancedMobileFeed';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Search, Bell } from 'lucide-react';
 
-const careerNews = [
-  "Global Career News • 5 Tips to Negotiate Salary...",
-  "Tech Industry Update • Remote Work Trends 2024...",
-  "Professional Development • New Certification Programs...",
-  "Market Insights • Top Skills in Demand This Quarter...",
-  "Career Growth • Leadership Development Opportunities..."
-];
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
-  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentNewsIndex((prev) => (prev + 1) % careerNews.length);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   if (!isMobile) {
     return (
@@ -40,16 +24,6 @@ export const EnhancedMobileNetwork: React.FC = () => {
           <div className="flex items-center gap-3">
             <Search className="h-5 w-5 text-muted-foreground" />
             <Bell className="h-5 w-5 text-muted-foreground" />
-          </div>
-        </div>
-        
-        {/* Career News Ticker */}
-        <div className="mt-2 py-1 overflow-hidden h-5">
-          <div 
-            className="text-sm text-muted-foreground animate-fade-in"
-            key={currentNewsIndex}
-          >
-            {careerNews[currentNewsIndex]}
           </div>
         </div>
       </div>
