@@ -181,8 +181,11 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
             <span className="text-sm">Loading more posts...</span>
           </div>
         ) : hasNextPage ? (
-          <div className="text-sm text-muted-foreground">
-            Scroll down for more posts
+          <div className="flex flex-col items-center gap-3">
+            <div className="text-sm text-muted-foreground">Scroll down for more posts</div>
+            <Button variant="outline" size="sm" onClick={() => fetchNextPage()}>
+              Load more
+            </Button>
           </div>
         ) : posts.length > 0 ? (
           <div className="text-sm text-muted-foreground">
