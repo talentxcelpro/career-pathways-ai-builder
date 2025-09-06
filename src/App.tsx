@@ -7,7 +7,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
-import { Navbar } from "./components/navigation/Navbar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/navigation/AppSidebar";
+import { UnifiedHeader } from "@/components/navigation/UnifiedHeader";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -142,10 +144,12 @@ const App = () => {
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
-                  <div className="min-h-screen flex flex-col">
-                    <OfflineIndicator />
-                    <Navbar />
-                    <main className="flex-1">
+                  <SidebarProvider>
+                    <div className="min-h-screen flex w-full">
+                      <OfflineIndicator />
+                      <AppSidebar />
+                      <SidebarInset>
+                        <main className="flex-1 p-4">
                       <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                         <Routes>
                         {navItems.map((item: NavItem) => {
@@ -272,16 +276,18 @@ const App = () => {
                       <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
                       
        {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
-                        </Routes>
-                       </React.Suspense>
-                      </main>
-                     <FooterWrapper />
-                     <OnboardingFlow />
-                     <InstallPrompt />
-                     <InstallButton />
-                     <IOSInstallPrompt />
-                   </div>
-                 </MobileAppWrapper>
+                         </Routes>
+                        </React.Suspense>
+                        </main>
+                        <FooterWrapper />
+                        <OnboardingFlow />
+                        <InstallPrompt />
+                        <InstallButton />
+                        <IOSInstallPrompt />
+                      </SidebarInset>
+                    </div>
+                  </SidebarProvider>
+                  </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
                 {/* </RealtimeProvider> */}
