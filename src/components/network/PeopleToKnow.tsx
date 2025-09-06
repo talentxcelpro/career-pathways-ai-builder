@@ -160,7 +160,7 @@ export const PeopleToKnow = () => {
                       style={{ animationDelay: `${(categoryIndex * 3 + index) * 0.05}s` }}
                     >
                       <div className="flex items-center space-x-3 min-w-0 flex-1">
-                        <Link to={`/network/people/${person.id}`}>
+                        <Link to={`/user/${person.id}`}>
                           <Avatar className="w-8 h-8 ring-2 ring-transparent group-hover:ring-accent/20 transition-all">
                             <AvatarImage src={person.profile_picture_url} />
                             <AvatarFallback className="bg-gradient-to-br from-accent/20 to-primary/20 text-foreground font-semibold text-xs">
@@ -170,7 +170,7 @@ export const PeopleToKnow = () => {
                         </Link>
                         <div className="min-w-0 flex-1">
                           <Link 
-                            to={`/network/people/${person.id}`}
+                            to={`/user/${person.id}`}
                             className="text-sm font-medium text-foreground hover:text-accent transition-colors story-link"
                           >
                             {formatDisplayName(person)}

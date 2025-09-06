@@ -93,7 +93,7 @@ export const ConnectionsList = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <Link to={`/network/people/${otherUser?.id}`}>
+                    <Link to={`/user/${otherUser?.id}`}>
                       <Avatar className="w-12 h-12 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
                         <AvatarImage src={otherUser?.profile_picture_url} />
                         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-foreground font-semibold">
@@ -103,7 +103,7 @@ export const ConnectionsList = () => {
                     </Link>
                     <div className="flex-1">
                       <Link 
-                        to={`/network/people/${otherUser?.id}`}
+                        to={`/user/${otherUser?.id}`}
                         className="font-semibold text-foreground hover:text-primary transition-colors story-link"
                       >
                         {formatDisplayName(otherUser)}

@@ -103,28 +103,43 @@ const LinkedInPostCard: React.FC<{
       {/* Post Header */}
       <div className="p-5 pb-3">
         <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3 flex-1">
-            <Avatar className="w-12 h-12 ring-2 ring-white shadow-lg">
-              <AvatarImage src={post.user.avatar} alt={post.user.name} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                <User className="w-6 h-6" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2">
-                <h3 className="font-semibold text-gray-900 text-sm truncate">
-                  {post.user.name}
-                </h3>
+            <div className="flex items-start space-x-3 flex-1">
+              <button
+                onClick={() => window.location.href = `/user/${post.user.id}`}
+                className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
+              >
+                <Avatar className="w-12 h-12 ring-2 ring-white shadow-lg hover:ring-blue-200 transition-all cursor-pointer">
+                  <AvatarImage src={post.user.avatar} alt={post.user.name} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                    <User className="w-6 h-6" />
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => window.location.href = `/user/${post.user.id}`}
+                    className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded text-left"
+                  >
+                    <h3 className="font-semibold text-gray-900 text-sm truncate hover:text-blue-600 transition-colors">
+                      {post.user.name}
+                    </h3>
+                  </button>
                 {post.isPromoted && (
                   <Badge variant="secondary" className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700">
                     Promoted
                   </Badge>
                 )}
               </div>
-              <p className="text-xs text-gray-600 truncate font-medium">{post.user.title}</p>
-              {post.user.company && (
-                <p className="text-xs text-gray-500 truncate">{post.user.company}</p>
-              )}
+                  <button
+                    onClick={() => window.location.href = `/user/${post.user.id}`}
+                    className="text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded w-full"
+                  >
+                    <p className="text-xs text-gray-600 truncate font-medium hover:text-blue-600 transition-colors">{post.user.title}</p>
+                    {post.user.company && (
+                      <p className="text-xs text-gray-500 truncate hover:text-blue-600 transition-colors">{post.user.company}</p>
+                    )}
+                  </button>
               <div className="flex items-center space-x-2 mt-1">
                 <span className="text-xs text-gray-500">{post.timestamp}</span>
                 {post.isJobPost && (
