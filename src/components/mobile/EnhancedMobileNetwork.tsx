@@ -1,5 +1,4 @@
 import React from 'react';
-import { TalentXcelHeader } from './TalentXcelHeader';
 import { TalentXcelFeed } from './TalentXcelFeed';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -16,7 +15,6 @@ export const EnhancedMobileNetwork: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <TalentXcelHeader />
       <div className="flex-1 overflow-y-auto">
         <TalentXcelFeed />
       </div>
