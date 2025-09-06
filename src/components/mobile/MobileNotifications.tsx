@@ -20,6 +20,13 @@ interface NotificationSettings {
 export const MobileNotifications = () => {
   const { user } = useAuth();
   const { notifications, unreadCount, markAsRead } = useEnhancedNotifications();
+  
+  // Filter out copilot-related notifications
+  const filteredNotifications = notifications.filter(n => 
+    !n.title?.toLowerCase().includes('copilot') &&
+    !n.message?.toLowerCase().includes('copilot') &&
+    !n.title?.toLowerCase().includes('talentxcel copilot')
+  );
   const [settings, setSettings] = useState<NotificationSettings>({
     jobAlerts: true,
     applicationUpdates: true,
@@ -171,7 +178,7 @@ export const MobileNotifications = () => {
 
         {/* Notifications List */}
         <div className="space-y-2">
-          {notifications.length === 0 ? (
+          {filteredNotifications.length === 0 ? (
             <Card className="border-0 shadow-sm">
               <CardContent className="text-center py-12">
                 <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
@@ -182,7 +189,7 @@ export const MobileNotifications = () => {
               </CardContent>
             </Card>
           ) : (
-            notifications.map((notification) => (
+            filteredNotifications.map((notification) => (
               <Card 
                 key={notification.id}
                 className={cn(
