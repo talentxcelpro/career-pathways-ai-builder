@@ -40,16 +40,13 @@ export const FastImage: React.FC<FastImageProps> = ({
       return;
     }
 
-    // Get optimized URL based on props
-    const optimized = thumbnail 
-      ? ImageOptimizer.getThumbnailUrl(src)
-      : ImageOptimizer.getOptimizedUrl(src, { 
-          width, 
-          height, 
-          quality,
-          format: 'webp',
-          fit: 'cover' 
-        });
+    // Get optimized URL based on props  
+    const optimized = ImageOptimizer.getOptimizedUrl(src, { 
+      width: thumbnail ? 400 : width, 
+      height: thumbnail ? 400 : height, 
+      quality: thumbnail ? 80 : quality,
+      format: 'webp'
+    });
     
     setOptimizedSrc(optimized);
 

@@ -133,7 +133,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
           
           const itemClass = isVideo
             ? `w-full aspect-video rounded-lg bg-black`
-            : `w-full ${isMessage ? 'h-32' : 'h-64'} object-cover object-center rounded-lg`;
+            : `w-full ${isMessage ? 'h-32' : 'aspect-square'} object-cover object-center rounded-lg cursor-pointer hover:opacity-90 transition-opacity`;
 
           
           return (
@@ -149,14 +149,20 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                 />
               ) : (
                 isVideo ? (
-                  <VideoPlayer url={url} className={itemClass} fit="contain" />
+                  <VideoPlayer url={url} className={itemClass} fit="cover" />
                 ) : (
-                  <MediaItem
-                    mediaUrl={url}
-                    isVideo={false}
+                  <div 
                     className={itemClass}
-                    index={index}
-                  />
+                    onClick={() => window.open(url, '_blank')}
+                  >
+                    <FastImage
+                      src={url}
+                      alt={`Media ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      quality={95}
+                    />
+                  </div>
                 )
               )}
               {index === 3 && mediaItems.length > 4 && (

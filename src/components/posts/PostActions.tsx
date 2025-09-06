@@ -77,7 +77,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
     likeMutation.mutate();
   };
 
-  // Create share content if postData is available
+  // Create share content and post data for enhanced sharing
   const shareContent = postData ? createPostShareData(postData) : {
     id: postId,
     type: 'post' as const,
@@ -86,6 +86,14 @@ export const PostActions: React.FC<PostActionsProps> = ({
     hashtags: ['TalentXcel', 'Networking']
   };
 
+  // Enhanced post data for native sharing
+  const enhancedPostData = postData ? {
+    content: postData.content,
+    mediaUrls: postData.media_urls || [],
+    authorName: postData.profiles?.full_name || postData.profiles?.display_name,
+    profileUrl: `${window.location.origin}/profile/${postData.author_id}`
+  } : undefined;
+
   return (
     <div className="flex items-center justify-between pt-3 border-t">
       <div className="flex items-center gap-4">
@@ -93,7 +101,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           variant="ghost"
           size="sm"
           onClick={handleLike}
-          className={`gap-2 ${isLiked ? 'text-red-500' : 'text-gray-500'}`}
+          className={`gap-2 ${isLiked ? 'text-red-500' : 'text-gray-500'} transition-all hover:scale-105`}
         >
           <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
           <span>{likes}</span>
@@ -103,7 +111,7 @@ export const PostActions: React.FC<PostActionsProps> = ({
           variant="ghost"
           size="sm"
           onClick={onCommentClick}
-          className="gap-2 text-gray-500"
+          className="gap-2 text-gray-500 transition-all hover:scale-105"
         >
           <MessageCircle className="h-4 w-4" />
           <span>{initialComments}</span>
@@ -111,9 +119,11 @@ export const PostActions: React.FC<PostActionsProps> = ({
         
         <ShareButton
           content={shareContent}
+          postData={enhancedPostData}
           variant="ghost"
           size="sm"
           showText={false}
+          className="transition-all hover:scale-105"
         />
       </div>
       

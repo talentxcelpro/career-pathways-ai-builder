@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Share2 } from 'lucide-react';
 import { UniversalShare, ShareableContent } from './UniversalShare';
 import { useShareContent } from '@/hooks/useShareContent';
+import { useNativeShare } from '@/hooks/useNativeShare';
 
 interface ShareButtonProps {
   content: ShareableContent;
@@ -12,6 +13,13 @@ interface ShareButtonProps {
   size?: 'default' | 'sm' | 'lg' | 'icon';
   showText?: boolean;
   className?: string;
+  // Enhanced for social post sharing
+  postData?: {
+    content: string;
+    mediaUrls?: string[];
+    authorName?: string;
+    profileUrl?: string;
+  };
 }
 
 export const ShareButton: React.FC<ShareButtonProps> = ({
@@ -19,10 +27,26 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   variant = 'ghost',
   size = 'sm',
   showText = true,
-  className = ''
+  className = '',
+  postData
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { trackShare } = useShareContent();
+  const { canShare, sharePostWithFallback } = useNativeShare();
+
+  const handleNativeShare = async () => {
+    if (postData && canShare()) {
+      try {
+        await sharePostWithFallback(postData);
+        trackShare('native', content.type, content.id);
+        return;
+      } catch (error) {
+        console.error('Native share failed:', error);
+      }
+    }
+    // Fallback to dialog
+    setIsOpen(true);
+  };
 
   const handleShareComplete = (platform: string) => {
     trackShare(platform, content.type, content.id);
@@ -30,17 +54,18 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          className={`gap-2 transition-smooth hover:scale-105 ${className}`}
-        >
-          <Share2 className="h-4 w-4" />
-          {showText && <span>Share</span>}
-        </Button>
-      </DialogTrigger>
+    <>
+      <Button
+        variant={variant}
+        size={size}
+        className={`gap-2 transition-smooth hover:scale-105 ${className}`}
+        onClick={handleNativeShare}
+      >
+        <Share2 className="h-4 w-4" />
+        {showText && <span>Share</span>}
+      </Button>
+      
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -53,7 +78,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           showTitle={false}
           onShareComplete={handleShareComplete}
         />
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

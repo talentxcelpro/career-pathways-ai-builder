@@ -176,26 +176,56 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
                 className="border-0 bg-gray-50/80 rounded-2xl text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
               />
 
-              {/* Media Preview */}
+              {/* Media Preview - Keep visible even when posting */}
               {mediaPreview.length > 0 && (
-                <div className="flex space-x-3 overflow-x-auto">
-                  {mediaPreview.map((preview, index) => (
-                    <div key={index} className="relative flex-shrink-0">
-                      <img
-                        src={preview}
-                        alt={`Preview ${index + 1}`}
-                        className="w-16 h-16 object-cover rounded-xl border-2 border-white shadow-sm"
-                      />
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-medium text-gray-700">Media ({mediaPreview.length})</p>
+                    {!isPosting && (
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full"
-                        onClick={() => removeMedia(index)}
+                        size="sm"
+                        onClick={() => {setMediaPreview([]); setSelectedMedia([])}}
+                        className="text-xs text-red-500 hover:text-red-600"
                       >
-                        <X className="w-3 h-3" />
+                        Clear All
                       </Button>
-                    </div>
-                  ))}
+                    )}
+                  </div>
+                  <div className={`grid gap-2 ${mediaPreview.length === 1 ? 'grid-cols-1' : mediaPreview.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                    {mediaPreview.map((preview, index) => {
+                      const file = selectedMedia[index];
+                      const isVideo = file?.type.startsWith('video/');
+                      return (
+                        <div key={index} className="relative group">
+                          {isVideo ? (
+                            <video
+                              src={preview}
+                              className="w-full aspect-square object-cover rounded-lg border shadow-sm"
+                              muted
+                              playsInline
+                            />
+                          ) : (
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full aspect-square object-cover rounded-lg border shadow-sm"
+                            />
+                          )}
+                          {!isPosting && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => removeMedia(index)}
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
