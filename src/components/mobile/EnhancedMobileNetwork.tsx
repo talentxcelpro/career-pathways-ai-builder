@@ -18,7 +18,7 @@ export const EnhancedMobileNetwork: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentNewsIndex((prev) => (prev + 1) % careerNews.length);
-    }, 4000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -44,8 +44,11 @@ export const EnhancedMobileNetwork: React.FC = () => {
         </div>
         
         {/* Career News Ticker */}
-        <div className="mt-2 py-1 overflow-hidden">
-          <div className="text-sm text-muted-foreground transition-all duration-500 ease-in-out">
+        <div className="mt-2 py-1 overflow-hidden h-5">
+          <div 
+            className="text-sm text-muted-foreground animate-fade-in"
+            key={currentNewsIndex}
+          >
             {careerNews[currentNewsIndex]}
           </div>
         </div>
