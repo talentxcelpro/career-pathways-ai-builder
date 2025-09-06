@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Briefcase, 
+  Home,
   Play,
-  MessageCircle,
-  CreditCard
+  Briefcase,
+  CreditCard,
+  Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -41,10 +42,11 @@ export const MobileBottomNav = () => {
   });
 
   const navItems: NavItem[] = [
-    { to: '/mobile/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
-    { to: '/mobile/reels', icon: Play, label: 'Reels' },
-    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs' },
-    { to: '/mobile/passport', icon: CreditCard, label: 'Passport' },
+    { to: '/mobile/network', icon: Home, label: 'Network' },
+    { to: '/mobile/reels', icon: Play, label: 'JobTok' },
+    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs & Passport' },
+    { to: '/mobile/nessport', icon: CreditCard, label: 'Nessport' },
+    { to: '/mobile/notifications', icon: Bell, label: 'Notifications', badge: unreadMessages > 0 },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -54,9 +56,9 @@ export const MobileBottomNav = () => {
   if (!user) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 md:hidden">
       <div className="safe-area-padding-bottom" />
-      <div className="flex items-center justify-around px-2 py-3">
+      <div className="flex items-center justify-around px-1 py-2">
         {navItems.map((item, index) => {
           const isActive = isCurrentPath(item.to);
           const Icon = item.icon;
@@ -66,37 +68,28 @@ export const MobileBottomNav = () => {
               key={item.to}
               to={item.to}
               className={cn(
-                "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
-                "animate-fade-in",
+                "flex flex-col items-center justify-center px-3 py-2 transition-all duration-200 relative min-w-0 flex-1",
                 isActive 
-                  ? "text-primary scale-110 transform" 
-                  : "text-muted-foreground hover:text-primary hover:scale-105 transform"
+                  ? "text-blue-600" 
+                  : "text-gray-600"
               )}
-              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative">
-                <div className={cn(
-                  "p-2.5 rounded-2xl transition-all duration-500 transform",
-                  isActive 
-                    ? "bg-gradient-brand shadow-brand animate-glow-pulse" 
-                    : "hover:bg-gradient-brand-soft group-hover:shadow-card"
-                )}>
-                  <Icon className={cn(
-                    "transition-all duration-500 transform",
-                    isActive ? "h-6 w-6 text-white animate-bounce-in" : "h-5 w-5 group-hover:scale-110"
-                  )} />
-                </div>
-                {item.badge && (item.to === '/mobile/network' ? unreadMessages > 0 : false) && (
-                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
-                    <span className="text-[10px] font-bold min-w-[20px] text-center">
-                      {(item.to === '/mobile/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/mobile/network' ? unreadMessages : 0)}
+                <Icon className={cn(
+                  "transition-all duration-200",
+                  isActive ? "h-6 w-6 text-blue-600" : "h-6 w-6 text-gray-600"
+                )} />
+                {item.badge && item.to === '/mobile/notifications' && unreadMessages > 0 && (
+                  <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white border border-white rounded-full flex items-center justify-center">
+                    <span className="text-[10px] font-bold">
+                      {unreadMessages > 9 ? '9+' : unreadMessages}
                     </span>
                   </div>
                 )}
               </div>
               <span className={cn(
-                "text-[10px] font-medium truncate w-full text-center mt-1 transition-all duration-500",
-                isActive ? "font-bold text-primary" : "group-hover:font-semibold"
+                "text-[11px] font-medium truncate w-full text-center mt-1",
+                isActive ? "text-blue-600" : "text-gray-600"
               )}>
                 {item.label}
               </span>
