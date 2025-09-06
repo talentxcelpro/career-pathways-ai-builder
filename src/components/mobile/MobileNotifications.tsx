@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { useEnhancedNotifications } from '@/hooks/useEnhancedNotifications';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -63,7 +63,24 @@ export const MobileNotifications = () => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  const getAvatarSrc = (n: any) => n?.data?.image || n?.data?.avatar || n?.image || '';
+  const getAvatarSrc = (n: any) =>
+    n?.data?.actor?.avatar_url ||
+    n?.data?.actor_avatar ||
+    n?.data?.avatar_url ||
+    n?.data?.avatar ||
+    n?.avatar_url ||
+    n?.image ||
+    n?.avatar ||
+    '';
+  const getActorName = (n: any) =>
+    n?.data?.actor?.name ||
+    n?.data?.actor_name ||
+    n?.data?.user?.name ||
+    n?.data?.name ||
+    n?.actor_name ||
+    n?.sender_name ||
+    '';
+  const getCreatedAt = (n: any) => n?.created_at || n?.data?.created_at || n?.inserted_at || (n as any)?.timestamp;
   const getTargetUrl = (n: any) => n?.data?.url || (n as any).link || (n as any).action_url || '';
   const openNotification = async (n: any) => {
     try {
@@ -177,7 +194,12 @@ export const MobileNotifications = () => {
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 mt-1">
-                      {getNotificationIcon(notification.type)}
+                      <UserAvatar 
+                        src={getAvatarSrc(notification)}
+                        userName={getActorName(notification) || notification.title}
+                        size="md"
+                        hasUnread={!notification.is_read}
+                      />
                     </div>
                     
                     <div className="flex-1 min-w-0">
@@ -186,6 +208,11 @@ export const MobileNotifications = () => {
                           <h3 className="text-sm font-medium text-foreground line-clamp-2">
                             {notification.title}
                           </h3>
+                          {getActorName(notification) && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {getActorName(notification)}
+                            </p>
+                          )}
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                             {notification.message}
                           </p>
@@ -193,7 +220,7 @@ export const MobileNotifications = () => {
                         
                         <div className="flex items-center gap-2 ml-3 flex-shrink-0">
                           <span className="text-xs text-muted-foreground">
-                            {formatTimeAgo(notification.created_at)}
+                            {formatTimeAgo(getCreatedAt(notification))}
                           </span>
                           {!notification.is_read && (
                             <div className="w-2 h-2 bg-blue-500 rounded-full" />
