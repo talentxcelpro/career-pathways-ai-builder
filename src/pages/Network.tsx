@@ -111,38 +111,38 @@ const Network = () => {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-7">
-            <TabsTrigger value="feed" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <MessageSquare className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">Feed</span>
+          <TabsList className="grid w-full grid-cols-7 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
+            <TabsTrigger value="feed" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <MessageSquare className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="smart-feed" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <Sparkles className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">Smart</span>
+            <TabsTrigger value="smart-feed" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <Sparkles className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">Smart</span>
             </TabsTrigger>
-            <TabsTrigger value="trending" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <TrendingUp className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">Trending</span>
+            <TabsTrigger value="trending" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <TrendingUp className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">Trending</span>
             </TabsTrigger>
-            <TabsTrigger value="connections" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <Users className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">Connect</span>
+            <TabsTrigger value="connections" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <Users className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">Connect</span>
             </TabsTrigger>
-            <TabsTrigger value="discover" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <UserPlus className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">Discover</span>
+            <TabsTrigger value="discover" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <UserPlus className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">Discover</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <TrendingUp className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">Analytics</span>
+            <TabsTrigger value="analytics" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <TrendingUp className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-connect" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <Sparkles className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">AI</span>
+            <TabsTrigger value="ai-connect" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <Sparkles className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">AI</span>
             </TabsTrigger>
-            <TabsTrigger value="news" className="flex items-center gap-0.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1">
-              <Newspaper className="w-2.5 h-2.5" />
-              <span className="hidden sm:inline text-[10px]">News</span>
+            <TabsTrigger value="news" className="flex flex-col items-center justify-center gap-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-[9px] py-0.5 px-1 min-w-0">
+              <Newspaper className="w-2.5 h-2.5 mb-0.5" />
+              <span className="leading-none">News</span>
             </TabsTrigger>
           </TabsList>
 
