@@ -17,7 +17,6 @@ export const usePushNotifications = () => {
     if (isSupported) {
       setPermission(Notification.permission);
       checkExistingSubscription();
-      registerServiceWorker();
     }
 
     // Initialize native push notifications on mobile
@@ -25,24 +24,6 @@ export const usePushNotifications = () => {
       initializeNativePush();
     }
   }, [isSupported, user]);
-
-  const registerServiceWorker = async () => {
-    if ('serviceWorker' in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service Worker registered successfully:', registration);
-        
-        // Listen for messages from service worker
-        navigator.serviceWorker.addEventListener('message', (event) => {
-          if (event.data.type === 'PUSH_NOTIFICATION_RECEIVED') {
-            console.log('Push notification received in app:', event.data);
-          }
-        });
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
-      }
-    }
-  };
 
   const checkExistingSubscription = async () => {
     try {

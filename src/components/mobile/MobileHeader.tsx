@@ -77,8 +77,8 @@ export const MobileHeader = () => {
 
   return (
     <>
-      <header className="bg-gradient-card/80 backdrop-blur-apple border-b border-border/50 sticky top-0 z-40 md:hidden shadow-elegant animate-fade-in-down">
-        <div className="flex items-center justify-between px-4 py-2 h-14">
+      <header className="bg-background/98 backdrop-blur-xl border-b border-border/20 sticky top-0 z-50 md:hidden shadow-lg">
+        <div className="flex items-center justify-between px-4 py-3 h-16 safe-area-padding-top">
           {/* Left - Menu Button */}
           <Button
             variant="ghost"
@@ -99,51 +99,41 @@ export const MobileHeader = () => {
             />
           </div>
 
-          {/* Right - Actions */}
-          <div className="flex items-center space-x-1 animate-slide-in-right">
+          {/* Professional Action Bar */}
+          <div className="flex items-center gap-1 animate-slide-in-right">
             {/* Search */}
             <Button 
               variant="ghost" 
               size="sm" 
-              className="p-2 hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
+              className="p-2.5 hover:scale-110 transition-all duration-300 hover:bg-primary/10 rounded-xl touch-target"
               onClick={() => navigate('/mobile/search')}
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-5 w-5 text-foreground" />
             </Button>
 
-            {/* Messages */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-2 relative hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
-              onClick={() => navigate('/network/messages')}
-            >
-              <MessageSquare className="h-5 w-5" />
-            </Button>
-
-            {/* Notifications */}
+            {/* Notifications with Professional Badge */}
             <Link to="/network/notifications">
-              <Button variant="ghost" size="sm" className="p-2 relative hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="sm" className="p-2.5 relative hover:scale-110 transition-all duration-300 hover:bg-primary/10 rounded-xl touch-target">
+                <Bell className="h-5 w-5 text-foreground" />
                 {unreadCount > 0 && (
-                  <Badge 
-                    variant="glow"
-                    className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] min-w-[16px] flex items-center justify-center animate-bounce-in"
-                  >
+                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-brand-green to-brand-green/80 text-primary-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center shadow-lg animate-bounce-in">
                     {unreadCount > 99 ? '99+' : unreadCount}
-                  </Badge>
+                  </div>
                 )}
               </Button>
             </Link>
 
-            {/* Profile */}
-            <Link to="/profile" className="hover:scale-110 transition-all duration-300">
-              <UserAvatar
-                src={profile?.profile_picture_url}
-                userName={profile?.full_name}
-                size="sm"
-                className="ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300"
-              />
+            {/* Enterprise Profile Button */}
+            <Link to="/profile" className="hover:scale-110 transition-all duration-300 ml-1">
+              <div className="relative">
+                <UserAvatar
+                  src={profile?.profile_picture_url}
+                  userName={profile?.full_name}
+                  size="sm"
+                  className="ring-2 ring-primary/30 hover:ring-primary/60 transition-all duration-300 shadow-md"
+                />
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-brand-green rounded-full border-2 border-background" />
+              </div>
             </Link>
           </div>
         </div>

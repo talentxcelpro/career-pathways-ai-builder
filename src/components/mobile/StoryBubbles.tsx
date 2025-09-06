@@ -133,30 +133,30 @@ export const StoryBubbles: React.FC = () => {
 
   return (
     <>
-      <div className="px-4 py-4 bg-white/95 backdrop-blur-sm">
+      <div className="px-4 py-4 bg-background/98 backdrop-blur-sm border-b border-border/20">
         <ScrollArea>
           <div className="flex gap-4 pb-2">
             {/* Your Story - Add Story Button */}
             <div 
-              className="flex flex-col items-center min-w-0 cursor-pointer active:scale-95 transition-all duration-200"
+              className="flex flex-col items-center min-w-0 cursor-pointer active:scale-95 transition-all duration-300 hover:scale-105"
               onClick={() => handleStoryClick('add')}
             >
               <div className="relative">
-                <div className="relative p-0.5 bg-gradient-to-tr from-gray-300 to-gray-400 rounded-full">
-                  <div className="bg-white rounded-full p-1">
-                    <Avatar className="h-16 w-16">
+                <div className="relative p-0.5 bg-gradient-to-tr from-primary/30 to-primary/50 rounded-full animate-pulse">
+                  <div className="bg-background rounded-full p-1">
+                    <Avatar className="h-16 w-16 ring-2 ring-primary/20">
                       <AvatarImage src={profile?.profile_picture_url} />
-                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white text-lg">
+                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-lg font-semibold">
                         {getInitials()}
                       </AvatarFallback>
                     </Avatar>
                   </div>
                 </div>
-                <div className="absolute -bottom-1 -right-1 bg-primary text-white rounded-full p-1.5 border-2 border-white shadow-lg">
+                <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-full p-1.5 border-2 border-background shadow-lg hover:shadow-xl transition-all duration-300">
                   <Plus className="h-4 w-4" />
                 </div>
               </div>
-              <span className="text-xs text-gray-700 mt-2 font-medium text-center max-w-[70px] truncate">
+              <span className="text-xs text-foreground mt-2 font-semibold text-center max-w-[70px] truncate">
                 Your Story
               </span>
             </div>
@@ -191,16 +191,16 @@ export const StoryBubbles: React.FC = () => {
 
       {/* Create Story Modal */}
       <Dialog open={showCreateStory} onOpenChange={setShowCreateStory}>
-        <DialogContent className="max-w-sm mx-auto rounded-3xl p-0 overflow-hidden">
+        <DialogContent className="max-w-sm mx-auto rounded-3xl p-0 overflow-hidden bg-background/98 backdrop-blur-xl border-0 shadow-2xl">
           <DialogHeader className="p-6 pb-4">
-            <DialogTitle className="text-center text-xl font-semibold">Create Story</DialogTitle>
+            <DialogTitle className="text-center text-xl font-semibold text-foreground">Create Your Story</DialogTitle>
           </DialogHeader>
           
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-6 pb-8 space-y-4">
             <Button
               onClick={() => handleCreateStory('photo')}
               disabled={isLoading}
-              className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-medium flex items-center gap-3"
+              className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/95 hover:to-primary/85 text-primary-foreground font-semibold flex items-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -214,7 +214,7 @@ export const StoryBubbles: React.FC = () => {
               onClick={() => handleCreateStory('text')}
               disabled={isLoading}
               variant="outline"
-              className="w-full h-14 rounded-2xl border-2 font-medium flex items-center gap-3 hover:bg-gray-50"
+              className="w-full h-14 rounded-2xl border-2 border-border/50 font-semibold flex items-center gap-3 hover:bg-muted/50 hover:border-primary/30 transition-all duration-300 hover:scale-[1.02]"
             >
               <Type className="h-5 w-5" />
               Create Text Story
@@ -224,7 +224,7 @@ export const StoryBubbles: React.FC = () => {
               onClick={() => handleCreateStory('gallery')}
               disabled={isLoading}
               variant="outline"
-              className="w-full h-14 rounded-2xl border-2 font-medium flex items-center gap-3 hover:bg-gray-50"
+              className="w-full h-14 rounded-2xl border-2 border-border/50 font-semibold flex items-center gap-3 hover:bg-muted/50 hover:border-primary/30 transition-all duration-300 hover:scale-[1.02]"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
