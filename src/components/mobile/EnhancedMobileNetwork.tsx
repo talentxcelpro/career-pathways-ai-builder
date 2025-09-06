@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { TopNavTabs } from './TopNavTabs';
 import { FilterButtons, FilterType } from './FilterButtons';
 import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
+import { MobileEvents } from './MobileEvents';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Messages from '@/pages/network/Messages';
+import Events from '@/pages/network/Events';
+import { MobileJobs } from '@/pages/mobile/MobileJobs';
 
 type TabType = 'feed' | 'network' | 'messages' | 'events' | 'jobs' | 'skills';
 
@@ -34,23 +38,11 @@ export const EnhancedMobileNetwork: React.FC = () => {
       case 'network':
         return <RealTimeMobileNetwork />;
       case 'messages':
-        return (
-          <div className="flex items-center justify-center h-64 text-gray-500">
-            <p>Messages coming soon...</p>
-          </div>
-        );
+        return <Messages />;
       case 'events':
-        return (
-          <div className="flex items-center justify-center h-64 text-gray-500">
-            <p>Events coming soon...</p>
-          </div>
-        );
+        return <Events />;
       case 'jobs':
-        return (
-          <div className="flex items-center justify-center h-64 text-gray-500">
-            <p>Jobs coming soon...</p>
-          </div>
-        );
+        return <MobileJobs />;
       case 'skills':
         return (
           <div className="flex items-center justify-center h-64 text-gray-500">
