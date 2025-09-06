@@ -50,15 +50,6 @@ export const TalentXcelFeed: React.FC = () => {
 
   return (
     <div className="pb-6">
-      {/* News Banner */}
-      <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center space-x-3">
-          <div className="text-sm">
-            <span className="font-semibold text-gray-900">Global Career News</span>
-            <span className="text-gray-600 ml-2">5 Tips to Negotiate Salary...</span>
-          </div>
-        </div>
-      </div>
 
       {/* Posts */}
       <div className="space-y-4 mt-4 px-4">
