@@ -46,11 +46,12 @@ const BacklinkDashboard: React.FC = () => {
         toast.success(`Discovered ${data.targets_discovered} new targets`);
         fetchStats(); // Refresh stats
       } else {
-        toast.error('Prospecting failed');
+        console.error('Prospecting returned failure:', data);
+        toast.error(data?.error || 'Prospecting failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting prospecting:', error);
-      toast.error('Failed to start prospecting');
+      toast.error(error?.message || 'Failed to start prospecting');
     } finally {
       setActionLoading(null);
     }

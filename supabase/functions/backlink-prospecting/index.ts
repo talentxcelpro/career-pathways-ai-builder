@@ -88,7 +88,6 @@ const searchWebsites = async (keyword: string, limit: number = 10): Promise<any[
       return Array.isArray(websites) ? websites : [];
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', parseError);
-      
       // Fallback: generate some sample data
       return Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
         domain: `example-${i + 1}.com`,
@@ -147,28 +146,40 @@ serve(async (req) => {
     const insertedTargets = [];
     for (const target of finalTargets) {
       try {
-        const { data, error } = await supabase
+        // Ensure unique by domain without requiring DB constraint
+        const { data: existing, error: existsError } = await supabase
           .from('backlink_targets')
-          .upsert({
-            domain: target.domain,
-            website_url: target.website_url,
-            contact_email: target.contact_email,
-            niche: target.niche,
-            domain_authority: target.domain_authority || 0,
-            traffic_estimate: target.traffic_estimate || 0,
-            language: language,
-            discovered_via: 'ai_search',
-            status: 'active'
-          }, {
-            onConflict: 'domain',
-            ignoreDuplicates: true
-          })
-          .select()
-          .single();
+          .select('id')
+          .eq('domain', target.domain)
+          .maybeSingle();
+
+        if (existsError) {
+          console.error('Error checking existing target:', existsError);
+        }
+
+        let data = null; let error = null;
+        if (!existing) {
+          const res = await supabase
+            .from('backlink_targets')
+            .insert({
+              domain: target.domain,
+              website_url: target.website_url,
+              contact_email: target.contact_email,
+              niche: target.niche,
+              domain_authority: target.domain_authority || 0,
+              traffic_estimate: target.traffic_estimate || 0,
+              language: language,
+              discovered_via: target.discovered_via || 'ai_search',
+              status: 'active'
+            })
+            .select()
+            .single();
+          data = res.data; error = res.error;
+        }
 
         if (!error && data) {
           insertedTargets.push(data);
-        } else if (error && !error.message.includes('duplicate')) {
+        } else if (error) {
           console.error('Error inserting target:', error);
         }
       } catch (insertError) {
@@ -178,14 +189,23 @@ serve(async (req) => {
 
     // Update metrics
     const today = new Date().toISOString().split('T')[0];
-    await supabase
+    // Safe metrics update without relying on unique constraints or missing columns
+    const { data: existingMetric } = await supabase
       .from('backlink_metrics')
-      .upsert({
-        metric_date: today,
-        targets_discovered: insertedTargets.length
-      }, {
-        onConflict: 'metric_date'
-      });
+      .select('id, new_targets, metric_date')
+      .eq('metric_date', today)
+      .maybeSingle();
+
+    if (existingMetric?.id) {
+      await supabase
+        .from('backlink_metrics')
+        .update({ new_targets: (existingMetric.new_targets || 0) + insertedTargets.length })
+        .eq('id', existingMetric.id);
+    } else {
+      await supabase
+        .from('backlink_metrics')
+        .insert({ metric_date: today, new_targets: insertedTargets.length });
+    }
 
     console.log(`Successfully discovered and inserted ${insertedTargets.length} targets`);
 
