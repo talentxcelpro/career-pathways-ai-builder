@@ -9,6 +9,7 @@ import { SkillEndorsements } from './SkillEndorsements';
 import { LiveNetworking } from './LiveNetworking';
 import { ProfessionalGamification } from './ProfessionalGamification';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
@@ -22,19 +23,40 @@ export const EnhancedMobileNetwork: React.FC = () => {
     );
   }
 
+  const tabs = [
+    { id: 'feed', label: 'Feed' },
+    { id: 'stories', label: 'Stories' },
+    { id: 'network', label: 'Network' },
+    { id: 'messages', label: 'Messages' },
+    { id: 'events', label: 'Events' },
+    { id: 'jobs', label: 'Jobs' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'live', label: 'Live' },
+    { id: 'achievements', label: 'Growth' }
+  ];
+
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Tab Navigation */}
-      <div className="flex bg-card border-b border-border/50 overflow-x-auto scrollbar-hide">
-        <button onClick={() => setActiveTab('feed')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'feed' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Feed</button>
-        <button onClick={() => setActiveTab('stories')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'stories' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Stories</button>
-        <button onClick={() => setActiveTab('network')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'network' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Network</button>
-        <button onClick={() => setActiveTab('messages')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'messages' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Messages</button>
-        <button onClick={() => setActiveTab('events')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Events</button>
-        <button onClick={() => setActiveTab('jobs')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'jobs' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Jobs</button>
-        <button onClick={() => setActiveTab('skills')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'skills' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Skills</button>
-        <button onClick={() => setActiveTab('live')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'live' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Live</button>
-        <button onClick={() => setActiveTab('achievements')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'achievements' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Growth</button>
+      {/* Mobile-First Tab Navigation - LinkedIn Style */}
+      <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border/50 z-10">
+        <div className="flex overflow-x-auto scrollbar-hide px-4 py-2">
+          {tabs.map((tab, index) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "flex-none px-4 py-2 mx-1 text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap",
+                "transform hover:scale-105 active:scale-95",
+                activeTab === tab.id
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+              style={{ animationDelay: `${index * 0.05}s` }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}
