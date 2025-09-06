@@ -165,21 +165,77 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
   };
 
   const handleLike = async (postId: string) => {
-    triggerHaptic('success');
-    await sync('posts', { action: 'like', postId });
-    await refetch(); // Refresh to show updated like count
+    try {
+      triggerHaptic('success');
+      if (!user?.id) throw new Error('Please sign in to like posts');
+
+      // Check if like exists
+      const { data: existingLike } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingLike) {
+        // Unlike
+        const { error: delErr } = await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+        if (delErr) throw delErr;
+        // Decrement counter via RPC if available
+        await supabase.rpc('decrement_post_likes', { post_id: postId });
+      } else {
+        // Like
+        const { error: insErr } = await supabase
+          .from('post_likes')
+          .insert({ post_id: postId, user_id: user.id });
+        if (insErr) throw insErr;
+        // Increment counter via RPC if available
+        await supabase.rpc('increment_post_likes', { post_id: postId });
+      }
+
+      await refetch();
+    } catch (e) {
+      console.error('Like error:', e);
+    }
   };
 
-  const handleComment = (postId: string) => {
-    triggerHaptic('light');
-    // TODO: Open comment modal or navigate to post detail
-    console.log('Comment on post:', postId);
+  const handleComment = async (postId: string) => {
+    try {
+      triggerHaptic('light');
+      if (!user?.id) throw new Error('Please sign in to comment');
+      const content = window.prompt('Write a comment');
+      if (!content || !content.trim()) return;
+      const { error: cErr } = await supabase
+        .from('post_comments')
+        .insert({ post_id: postId, user_id: user.id, content: content.trim() });
+      if (cErr) throw cErr;
+      await refetch();
+    } catch (e) {
+      console.error('Comment error:', e);
+    }
   };
 
   const handleShare = (postId: string) => {
-    triggerHaptic('light');
-    // TODO: Implement share functionality
-    console.log('Share post:', postId);
+    try {
+      triggerHaptic('light');
+      const shareUrl = `${window.location.origin}/post/${postId}`;
+      const text = 'Check out this post on Career Network';
+      if (navigator.share) {
+        navigator.share({ title: 'Career Network', text, url: shareUrl });
+      } else {
+        // Fallback to LinkedIn/Twitter
+        const linkedIn = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+        const twitter = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(linkedIn, '_blank');
+        setTimeout(() => window.open(twitter, '_blank'), 300);
+      }
+    } catch (e) {
+      console.error('Share error:', e);
+    }
   };
 
   if (isError) {
