@@ -21,12 +21,18 @@ export const MobileNotifications = () => {
   const { user } = useAuth();
   const { notifications, unreadCount, markAsRead } = useEnhancedNotifications();
   
-  // Filter out copilot-related notifications
-  const filteredNotifications = notifications.filter(n => 
-    !n.title?.toLowerCase().includes('copilot') &&
-    !n.message?.toLowerCase().includes('copilot') &&
-    !n.title?.toLowerCase().includes('talentxcel copilot')
-  );
+  // Clean notifications - remove copilot-related ones with diagnostics
+  const filteredNotifications = notifications.filter(n => {
+    const isCopilot = n.title?.toLowerCase().includes('copilot') ||
+                     n.message?.toLowerCase().includes('copilot') ||
+                     n.title?.toLowerCase().includes('talentxcel copilot');
+    
+    if (isCopilot) {
+      console.log('🚫 Filtered out copilot notification:', n.title);
+    }
+    
+    return !isCopilot;
+  });
   const [settings, setSettings] = useState<NotificationSettings>({
     jobAlerts: true,
     applicationUpdates: true,

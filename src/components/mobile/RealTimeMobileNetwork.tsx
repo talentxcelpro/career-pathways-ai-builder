@@ -108,24 +108,34 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
   // Flatten all pages into a single array
   const posts = data?.pages.flatMap(page => page.data) || [];
 
-  // Transform posts for mobile display
-  const mobilePosts: MobileNetworkPost[] = posts.map(post => ({
-    id: post.id,
-    content: post.content || '',
-    author_id: post.author_id,
-    user_id: post.user_id,
-    author: {
-      name: post.profiles?.full_name || 'Anonymous User',
-      avatar: post.profiles?.avatar_url || post.profiles?.profile_picture_url,
-      title: post.profiles?.title
-    },
-    timeAgo: formatTimeAgo(post.created_at),
-    likes: post.likes_count || 0,
-    comments: post.comments_count || 0,
-    shares: post.shares_count || 0,
-    isLiked: post.isLiked || false,
-    media: post.media_urls
-  }));
+  // Transform posts for mobile display with diagnostics
+  const mobilePosts: MobileNetworkPost[] = posts.map(post => {
+    console.log('🔍 Post transform:', { 
+      postId: post.id, 
+      authorId: post.author_id, 
+      userId: post.user_id,
+      profiles: post.profiles,
+      fullName: post.profiles?.full_name
+    });
+    
+    return {
+      id: post.id,
+      content: post.content || '',
+      author_id: post.author_id,
+      user_id: post.user_id,
+      author: {
+        name: post.profiles?.full_name || 'Unknown User',
+        avatar: post.profiles?.profile_picture_url || post.profiles?.avatar_url,
+        title: post.profiles?.title
+      },
+      timeAgo: formatTimeAgo(post.created_at),
+      likes: post.likes_count || 0,
+      comments: post.comments_count || 0,
+      shares: post.shares_count || 0,
+      isLiked: post.isLiked || false,
+      media: post.media_urls
+    };
+  });
 
   const handleRefresh = async () => {
     triggerHaptic('light');
