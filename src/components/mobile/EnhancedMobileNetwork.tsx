@@ -34,9 +34,9 @@ export const EnhancedMobileNetwork: React.FC = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'feed':
-        return <RealTimeMobileNetwork />;
+        return <RealTimeMobileNetwork activeFilter={activeFilter} />;
       case 'network':
-        return <RealTimeMobileNetwork />;
+        return <RealTimeMobileNetwork activeFilter={activeFilter} />;
       case 'messages':
         return <Messages />;
       case 'events':
@@ -50,7 +50,7 @@ export const EnhancedMobileNetwork: React.FC = () => {
           </div>
         );
       default:
-        return <RealTimeMobileNetwork />;
+        return <RealTimeMobileNetwork activeFilter={activeFilter} />;
     }
   };
 

@@ -41,7 +41,13 @@ interface MobileNetworkPost {
   media?: string[];
 }
 
-export const RealTimeMobileNetwork: React.FC = () => {
+interface RealTimeMobileNetworkProps {
+  activeFilter?: 'all' | 'connections' | 'trending';
+}
+
+export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({ 
+  activeFilter = 'all' 
+}) => {
   const { user } = useAuth();
   const { triggerHaptic } = useHapticFeedback();
   const { isOnline, sync, lastSync, pendingOperations } = useRealtimeSync();
@@ -58,7 +64,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
     hasNextPage,
     isFetchingNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ type: 'all' });
+  } = useInfiniteNetworkFeed({ type: activeFilter });
 
   // Flatten all pages into a single array
   const posts = data?.pages.flatMap(page => page.data) || [];
@@ -203,7 +209,11 @@ export const RealTimeMobileNetwork: React.FC = () => {
           <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b">
             <div className="flex items-center justify-between p-4">
               <div>
-                <h1 className="text-xl font-bold">Network</h1>
+                <h1 className="text-xl font-bold">
+                  {activeFilter === 'all' ? 'All Posts' : 
+                   activeFilter === 'connections' ? 'My Network' : 
+                   'Trending Now'}
+                </h1>
                 <p className="text-sm text-muted-foreground">
                   {mobilePosts.length} professional updates
                 </p>
@@ -266,28 +276,49 @@ export const RealTimeMobileNetwork: React.FC = () => {
                   <div className="p-4 space-y-3">
                     {/* Post Header */}
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-10 w-10">
+                      <div 
+                        className="flex items-start gap-3 flex-1 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.98] transition-all"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          // Navigate to profile
+                          console.log('View profile:', post.author.name);
+                        }}
+                      >
+                        <Avatar className="h-10 w-10 ring-2 ring-primary/10">
                           <AvatarImage src={post.author.avatar} />
-                          <AvatarFallback>
+                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                             {post.author.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <h3 className="font-semibold text-sm">{post.author.name}</h3>
+                          <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                            {post.author.name}
+                          </h3>
                           {post.author.title && (
                             <p className="text-xs text-muted-foreground">{post.author.title}</p>
                           )}
                           <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 hover:bg-muted active:scale-95 transition-transform"
+                        onClick={() => triggerHaptic('light')}
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </div>
 
                     {/* Post Content */}
-                    <div className="space-y-3">
+                    <div 
+                      className="space-y-3 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.99] transition-all"
+                      onClick={() => {
+                        triggerHaptic('light');
+                        // Navigate to post detail
+                        console.log('View post detail:', post.id);
+                      }}
+                    >
                       <p className="text-sm leading-relaxed">{post.content}</p>
                       
                       {/* Media if present */}
@@ -296,7 +327,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
                           <img 
                             src={post.media[0]} 
                             alt="Post media" 
-                            className="w-full h-48 object-cover"
+                            className="w-full h-48 object-cover hover:scale-105 transition-transform"
                           />
                         </div>
                       )}
@@ -305,8 +336,21 @@ export const RealTimeMobileNetwork: React.FC = () => {
                     {/* Engagement Stats */}
                     {(post.likes > 0 || post.comments > 0) && (
                       <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
-                        <span>{post.likes} likes</span>
-                        <span>{post.comments} comments</span>
+                        <button 
+                          className="hover:text-primary transition-colors active:scale-95"
+                          onClick={() => {
+                            triggerHaptic('light');
+                            console.log('View likes for post:', post.id);
+                          }}
+                        >
+                          {post.likes} {post.likes === 1 ? 'like' : 'likes'}
+                        </button>
+                        <button 
+                          className="hover:text-primary transition-colors active:scale-95"
+                          onClick={() => handleComment(post.id)}
+                        >
+                          {post.comments} {post.comments === 1 ? 'comment' : 'comments'}
+                        </button>
                       </div>
                     )}
 
@@ -315,7 +359,9 @@ export const RealTimeMobileNetwork: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`flex-1 gap-2 ${post.isLiked ? 'text-red-500' : ''}`}
+                        className={`flex-1 gap-2 hover:bg-red-50 hover:text-red-600 active:scale-95 transition-all ${
+                          post.isLiked ? 'text-red-500 bg-red-50' : 'hover:bg-muted'
+                        }`}
                         onClick={() => handleLike(post.id)}
                       >
                         <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
@@ -324,7 +370,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-1 gap-2"
+                        className="flex-1 gap-2 hover:bg-blue-50 hover:text-blue-600 active:scale-95 transition-all"
                         onClick={() => handleComment(post.id)}
                       >
                         <MessageCircle className="h-4 w-4" />
@@ -333,7 +379,7 @@ export const RealTimeMobileNetwork: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-1 gap-2"
+                        className="flex-1 gap-2 hover:bg-green-50 hover:text-green-600 active:scale-95 transition-all"
                         onClick={() => handleShare(post.id)}
                       >
                         <Share2 className="h-4 w-4" />

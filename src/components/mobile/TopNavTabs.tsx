@@ -46,7 +46,7 @@ export const TopNavTabs: React.FC<TopNavTabsProps> = ({
       {/* Tabs Container */}
       <div 
         ref={tabsRef}
-        className="flex overflow-x-auto scrollbar-hide relative bg-white border-b border-gray-200"
+        className="flex overflow-x-auto scrollbar-hide relative bg-background border-b border-border"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {tabs.map((tab) => (
@@ -57,20 +57,20 @@ export const TopNavTabs: React.FC<TopNavTabsProps> = ({
             }}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              "flex items-center space-x-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all duration-200",
-              "hover:text-blue-600 hover:bg-blue-50",
+              "flex items-center space-x-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 min-w-[80px] sm:min-w-[100px]",
+              "hover:text-primary hover:bg-primary/10",
               activeTab === tab.id 
-                ? "text-blue-600" 
-                : "text-gray-600"
+                ? "text-primary bg-primary/5" 
+                : "text-muted-foreground"
             )}
           >
             <span>{tab.label}</span>
             {tab.count !== undefined && (
               <span className={cn(
-                "min-w-[20px] h-5 px-1.5 rounded-full text-xs flex items-center justify-center transition-all duration-200",
+                "min-w-[20px] h-5 px-1.5 rounded-full text-xs flex items-center justify-center transition-all duration-200 animate-pulse",
                 activeTab === tab.id
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-600"
+                  ? "bg-primary/20 text-primary font-semibold"
+                  : "bg-muted text-muted-foreground"
               )}>
                 {tab.count > 99 ? '99+' : tab.count}
               </span>
@@ -80,7 +80,7 @@ export const TopNavTabs: React.FC<TopNavTabsProps> = ({
         
         {/* Active Tab Indicator */}
         <div
-          className="absolute bottom-0 h-0.5 bg-blue-600 transition-all duration-300 ease-out"
+          className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out shadow-sm"
           style={{
             left: `${indicatorStyle.left}px`,
             width: `${indicatorStyle.width}px`,

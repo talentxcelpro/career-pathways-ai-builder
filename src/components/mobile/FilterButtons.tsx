@@ -38,7 +38,7 @@ export const FilterButtons: React.FC<FilterButtonsProps> = ({
   className
 }) => {
   return (
-    <div className={cn("flex items-center space-x-2 px-4 py-3 bg-white", className)}>
+    <div className={cn("flex items-center space-x-2 px-4 py-3 bg-background border-b overflow-x-auto scrollbar-hide", className)}>
       {filters.map((filter) => {
         const Icon = filter.icon;
         const isActive = activeFilter === filter.id;
@@ -50,10 +50,10 @@ export const FilterButtons: React.FC<FilterButtonsProps> = ({
             size="sm"
             onClick={() => onFilterChange(filter.id)}
             className={cn(
-              "flex items-center space-x-2 transition-all duration-200 hover-scale",
+              "flex items-center space-x-2 transition-all duration-200 hover-scale active:scale-95 min-w-[80px] sm:min-w-[100px]",
               isActive 
-                ? "bg-blue-600 text-white shadow-md hover:bg-blue-700" 
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90 ring-2 ring-primary/20" 
+                : "bg-background text-foreground border-border hover:bg-muted hover:border-muted-foreground/50"
             )}
           >
             <Icon className="w-4 h-4" />
