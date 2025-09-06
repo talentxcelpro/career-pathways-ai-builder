@@ -93,7 +93,8 @@ const BacklinkDashboard: React.FC = () => {
         .limit(1);
 
       if (!targets || targets.length === 0) {
-        toast.error('No targets found. Run prospecting first.');
+        toast.error('No targets found. Running prospecting first...');
+        await startProspecting();
         return;
       }
 
@@ -134,7 +135,8 @@ const BacklinkDashboard: React.FC = () => {
         .limit(5);
 
       if (!targets || targets.length === 0) {
-        toast.error('No targets found. Run prospecting first.');
+        toast.error('No targets found. Running prospecting first...');
+        await startProspecting();
         return;
       }
 
@@ -181,6 +183,23 @@ const BacklinkDashboard: React.FC = () => {
       description="Automated backlink management and monitoring"
     >
       <div className="space-y-6">
+        {/* No Targets Warning */}
+        {stats?.total_targets === 0 && (
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0">
+                  <Network className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-amber-800">No Targets Found</h3>
+                  <p className="text-sm text-amber-700">Click "Start Prospecting" below to discover backlink targets.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
@@ -249,7 +268,7 @@ const BacklinkDashboard: React.FC = () => {
               <div className="space-y-2">
                 <Button 
                   className="w-full" 
-                  variant="outline"
+                  variant={stats?.total_targets === 0 ? "default" : "outline"}
                   onClick={startProspecting}
                   disabled={actionLoading === 'prospecting'}
                 >
@@ -258,7 +277,7 @@ const BacklinkDashboard: React.FC = () => {
                   ) : (
                     <Network className="h-4 w-4 mr-2" />
                   )}
-                  Start Prospecting
+                  {stats?.total_targets === 0 ? 'Start Prospecting (Required)' : 'Start Prospecting'}
                 </Button>
                 <Button className="w-full" variant="outline">
                   <Settings className="h-4 w-4 mr-2" />
