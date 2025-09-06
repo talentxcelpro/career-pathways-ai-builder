@@ -31,7 +31,7 @@ export const usePerformantNavigation = () => {
     }));
 
     // Log performance in development
-    if (process.env.NODE_ENV === 'development') {
+    if ((import.meta as any)?.env?.MODE === 'development') {
       console.log(`🚀 Navigation to ${location.pathname}: ${navigationTime.toFixed(2)}ms`);
     }
   }, [location.pathname]);
@@ -121,7 +121,7 @@ export const usePerformantNavigation = () => {
       try {
         const observer = new PerformanceObserver((list) => {
           list.getEntries().forEach((entry) => {
-            if (process.env.NODE_ENV === 'development') {
+            if ((import.meta as any)?.env?.MODE === 'development') {
               const value = entry.duration || (entry as any).value || 0;
               console.log(`Performance: ${entry.name}`, value);
             }

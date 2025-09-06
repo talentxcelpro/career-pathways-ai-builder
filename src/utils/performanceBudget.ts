@@ -79,7 +79,7 @@ export class PerformanceBudgetMonitor {
     const violation = `${metric} violation: ${actual.toFixed(2)} > ${target} (${((actual - target) / target * 100).toFixed(1)}% over budget)`;
     this.violations.push(violation);
     
-    if (process.env.NODE_ENV === 'development') {
+    if ((import.meta as any)?.env?.MODE === 'development') {
       console.warn('🚨 Performance Budget Violation:', violation);
     }
 

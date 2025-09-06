@@ -24,7 +24,7 @@ export class PerformanceTracker {
     existing.push(duration);
     this.metrics.set(label, existing);
 
-    if (process.env.NODE_ENV === 'development') {
+    if ((import.meta as any)?.env?.MODE === 'development') {
       console.log(`⚡ ${label}: ${duration.toFixed(2)}ms`);
     }
 
@@ -64,7 +64,7 @@ export class PerformanceTracker {
     existing.push(value);
     this.metrics.set(`webvital_${name}`, existing);
 
-    if (process.env.NODE_ENV === 'development') {
+    if ((import.meta as any)?.env?.MODE === 'development') {
       console.log(`📊 ${name}: ${value.toFixed(2)}`);
     }
   }
