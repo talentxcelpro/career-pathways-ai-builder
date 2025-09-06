@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { EnhancedSwipeableCard } from './EnhancedSwipeableCard';
 import { useNetworkEngagement } from '@/hooks/useNetworkEngagement';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
@@ -12,7 +11,6 @@ import { VirtualizedNetworkFeed } from '@/components/performance/VirtualizedNetw
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { ProfileDetailsSheet } from '@/components/network/ProfileDetailsSheet';
 
 interface Post {
   id: string;
@@ -123,37 +121,32 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
       <Card className="bg-card border-border/50 shadow-sm">
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-3">
-          <ProfileDetailsSheet
-            profileId={post.author_id}
-            trigger={
-              <div className="flex items-center space-x-3 cursor-pointer">
-                <Avatar className="w-10 h-10 ring-2 ring-primary/20">
-                  <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {post.profiles?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-1">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {post.profiles?.full_name || 'Unknown User'}
-                    </p>
-                    {post.profiles?.is_verified && (
-                      <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-primary-foreground rounded-full" />
-                      </div>
-                    )}
+          <div className="flex items-center space-x-3">
+            <Avatar className="w-10 h-10 ring-2 ring-primary/20">
+              <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
+              <AvatarFallback className="bg-primary/10 text-primary">
+                {post.profiles?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center space-x-1">
+                <p className="text-sm font-semibold text-foreground truncate">
+                  {post.profiles?.full_name || 'Unknown User'}
+                </p>
+                {post.profiles?.is_verified && (
+                  <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-primary-foreground rounded-full" />
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {post.profiles?.title || 'Professional'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </p>
-                </div>
+                )}
               </div>
-            }
-          />
+              <p className="text-xs text-muted-foreground truncate">
+                {post.profiles?.title || 'Professional'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {new Date(post.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
           <Button variant="ghost" size="icon" className="text-muted-foreground">
             <MoreHorizontal className="w-4 h-4" />
           </Button>
@@ -254,54 +247,37 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
 
   return (
     <div className={`${className}`}>
-      {/* Feed Filters - Cleaner Design */}
-      <div className="sticky top-0 z-20 bg-background/98 backdrop-blur-sm border-b border-border/30 mb-3">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <div className="flex items-center gap-2 flex-1">
-            <Button
-              variant={filter === 'all' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFilter('all')}
-              className={cn(
-                "text-xs font-medium px-4 py-2 rounded-full transition-all duration-300 min-h-[36px]",
-                filter === 'all' 
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25" 
-                  : "hover:bg-muted/80 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              All Posts
-            </Button>
-            <Button
-              variant={filter === 'connections' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFilter('connections')}
-              className={cn(
-                "text-xs font-medium px-4 py-2 rounded-full transition-all duration-300 min-h-[36px]",
-                filter === 'connections' 
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25" 
-                  : "hover:bg-muted/80 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              My Network
-            </Button>
-            <Button
-              variant={filter === 'trending' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setFilter('trending')}
-              className={cn(
-                "text-xs font-medium px-4 py-2 rounded-full transition-all duration-300 min-h-[36px]",
-                filter === 'trending' 
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25" 
-                  : "hover:bg-muted/80 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Trending
-            </Button>
-          </div>
+      {/* Feed Filters */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 mb-4">
+        <div className="flex items-center space-x-2 p-4">
+          <Button
+            variant={filter === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('all')}
+            className="text-xs"
+          >
+            All
+          </Button>
+          <Button
+            variant={filter === 'connections' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('connections')}
+            className="text-xs"
+          >
+            Connections
+          </Button>
+          <Button
+            variant={filter === 'trending' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('trending')}
+            className="text-xs"
+          >
+            Trending
+          </Button>
           {!isOnline && (
-            <div className="flex items-center gap-1.5 text-xs text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full">
-              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-              <span className="font-medium">Offline</span>
+            <div className="ml-auto flex items-center space-x-1 text-xs text-muted-foreground">
+              <div className="w-2 h-2 bg-orange-500 rounded-full" />
+              <span>Offline</span>
             </div>
           )}
         </div>
