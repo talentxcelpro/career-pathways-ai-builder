@@ -115,7 +115,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
     user_id: post.user_id,
     author: {
       name: post.profiles?.full_name || 'Unknown User',
-      avatar: post.profiles?.profile_picture_url || post.profiles?.avatar_url,
+      avatar: post.profiles?.avatar_url || post.profiles?.profile_picture_url,
       title: post.profiles?.title
     },
     timeAgo: formatTimeAgo(post.created_at),

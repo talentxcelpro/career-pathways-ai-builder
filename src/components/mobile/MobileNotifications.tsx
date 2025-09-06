@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useEnhancedNotifications } from '@/hooks/useEnhancedNotifications';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +18,7 @@ interface NotificationSettings {
 }
 
 export const MobileNotifications = () => {
+  const { user } = useAuth();
   const { notifications, unreadCount, markAsRead } = useEnhancedNotifications();
   const [settings, setSettings] = useState<NotificationSettings>({
     jobAlerts: true,
@@ -65,13 +67,19 @@ export const MobileNotifications = () => {
   const getTargetUrl = (n: any) => n?.data?.url || (n as any).link || (n as any).action_url || '';
   const openNotification = async (n: any) => {
     try {
-      await markAsRead(n.id); // store handles auth errors internally
+      if (user?.id) {
+        await markAsRead(n.id);
+      }
     } catch (e) {
       console.warn('markAsRead failed (non-blocking):', e);
     }
     const url = getTargetUrl(n);
-    if (url) {
+    if (url && url.startsWith('/')) {
+      // Use router navigation for internal URLs
       window.location.href = url;
+    } else if (url) {
+      // External URLs
+      window.open(url, '_blank');
     }
   };
 

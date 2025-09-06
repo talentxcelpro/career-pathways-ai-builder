@@ -84,8 +84,12 @@ export const LinkedInStyleNotificationCenter: React.FC = () => {
       console.warn('markAsRead failed (non-blocking):', e);
     }
     const url = getTargetUrl(n);
-    if (url) {
+    if (url && url.startsWith('/')) {
+      // Use router navigation for internal URLs
       window.location.href = url;
+    } else if (url) {
+      // External URLs
+      window.open(url, '_blank');
     }
   };
 
