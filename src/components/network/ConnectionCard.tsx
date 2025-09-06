@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserPlus, MessageCircle, MapPin, Building, Eye } from "lucide-react";
 import { Link } from 'react-router-dom';
+import { MobileUserProfileModal } from '@/components/mobile/MobileUserProfileModal';
 
 interface ConnectionCardProps {
   profile: {
@@ -56,41 +57,47 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
       <CardContent className="p-6">
         <div className="text-center space-y-4">
           {/* Profile Picture - Clickable to view profile */}
-          <Link to={`/network/people/${profile.id}`} className="block">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center hover:scale-105 transition-transform">
-              {profile.profile_picture_url ? (
-                <img 
-                  src={profile.profile_picture_url} 
-                  alt={formatDisplayName(profile)}
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <span className="text-white font-semibold text-lg">
-                  {generateInitials(profile)}
-                </span>
-              )}
-            </div>
-          </Link>
+          <MobileUserProfileModal 
+            userId={profile.id}
+            trigger={
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center hover:scale-105 transition-transform cursor-pointer">
+                {profile.profile_picture_url ? (
+                  <img 
+                    src={profile.profile_picture_url} 
+                    alt={formatDisplayName(profile)}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white font-semibold text-lg">
+                    {generateInitials(profile)}
+                  </span>
+                )}
+              </div>
+            }
+          />
 
           {/* Basic Info - Clickable to view profile */}
-          <Link to={`/network/people/${profile.id}`} className="block hover:text-blue-600 transition-colors">
-            <div>
-              <h3 className="font-semibold text-lg text-gray-900">
-                {formatDisplayName(profile)}
-                {profile.title && (
-                  <>
-                    <span className="text-gray-400 mx-2">|</span>
-                    <span className="text-base font-normal text-gray-600">{profile.title}</span>
-                  </>
+          <MobileUserProfileModal 
+            userId={profile.id}
+            trigger={
+              <div className="cursor-pointer hover:text-blue-600 transition-colors">
+                <h3 className="font-semibold text-lg text-gray-900">
+                  {formatDisplayName(profile)}
+                  {profile.title && (
+                    <>
+                      <span className="text-gray-400 mx-2">|</span>
+                      <span className="text-base font-normal text-gray-600">{profile.title}</span>
+                    </>
+                  )}
+                </h3>
+                {profile.headline && (
+                  <p className="text-gray-600 text-sm">
+                    {profile.headline}
+                  </p>
                 )}
-              </h3>
-              {profile.headline && (
-                <p className="text-gray-600 text-sm">
-                  {profile.headline}
-                </p>
-              )}
-            </div>
-          </Link>
+              </div>
+            }
+          />
 
           {/* Location and Company */}
           <div className="space-y-1">

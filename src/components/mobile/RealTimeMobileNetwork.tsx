@@ -10,6 +10,7 @@ import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { MobilePullToRefresh } from '@/components/mobile/MobilePullToRefresh';
+import { MobileUserProfileModal } from '@/components/mobile/MobileUserProfileModal';
 import { formatTimeAgo } from '@/utils/formatTime';
 import { 
   Plus, 
@@ -28,6 +29,8 @@ import {
 interface MobileNetworkPost {
   id: string;
   content: string;
+  author_id?: string;
+  user_id?: string;
   author: {
     name: string;
     avatar?: string;
@@ -330,32 +333,31 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
               mobilePosts.map((post) => (
                 <Card key={post.id} className="rounded-none border-x-0 border-t-0 border-b">
                   <div className="p-4 space-y-3">
-                    {/* Post Header */}
-                    <div className="flex items-start justify-between">
-                      <div 
-                        className="flex items-start gap-3 flex-1 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.98] transition-all"
-                        onClick={() => {
-                          triggerHaptic('light');
-                          // Navigate to profile
-                          console.log('View profile:', post.author.name);
-                        }}
-                      >
-                        <Avatar className="h-10 w-10 ring-2 ring-primary/10">
-                          <AvatarImage src={post.author.avatar} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                            {post.author.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-semibold text-sm hover:text-primary transition-colors">
-                            {post.author.name}
-                          </h3>
-                          {post.author.title && (
-                            <p className="text-xs text-muted-foreground">{post.author.title}</p>
-                          )}
-                          <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
-                        </div>
-                      </div>
+                     {/* Post Header */}
+                     <div className="flex items-start justify-between">
+                       <MobileUserProfileModal 
+                         userId={post.author_id || post.user_id}
+                         trigger={
+                           <div className="flex items-start gap-3 flex-1 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.98] transition-all">
+                             <Avatar className="h-10 w-10 ring-2 ring-primary/10">
+                               <AvatarImage src={post.author.avatar} />
+                               <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                                 {post.author.name.split(' ').map(n => n[0]).join('')}
+                               </AvatarFallback>
+                             </Avatar>
+                             <div>
+                               <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                                 {post.author.name}
+                               </h3>
+                               {post.author.title && (
+                                 <p className="text-xs text-muted-foreground">{post.author.title}</p>
+                               )}
+                               <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
+                             </div>
+                           </div>
+                         }
+                         onConnectionChange={() => refetch()}
+                       />
                       <Button 
                         variant="ghost" 
                         size="icon" 
