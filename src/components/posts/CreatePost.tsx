@@ -20,6 +20,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
 
 interface Attachment {
   id: string;
@@ -36,6 +37,9 @@ interface CreatePostProps {
 export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
+  
+  // URL detection for link previews
+  const { detectedUrls } = useUrlDetection(content);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [location, setLocation] = useState('');
   const [showLocationInput, setShowLocationInput] = useState(false);
@@ -161,16 +165,23 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       console.log('Creating post with user:', user.id);
       console.log('Post content:', content);
       
+      // Prepare link previews data
+      const linkPreviews = detectedUrls.map(urlData => ({
+        url: urlData.url
+      }));
+
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
           content,
           post_type: 'text',
           author_id: user.id,
+          user_id: user.id,
           media_urls: attachments.map(att => att.url),
           location: location || null,
-          is_public: privacy === 'public',
-          tags: []
+          visibility: privacy,
+          tags: [],
+          link_previews: linkPreviews.length > 0 ? linkPreviews : null
         })
         .select()
         .single();

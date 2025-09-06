@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Globe, Github, Youtube, Twitter, Linkedin } from 'lucide-react';
+import { useUrlPreview } from '@/hooks/useUrlPreview';
 
 interface LinkPreviewProps {
   url: string;
@@ -9,49 +10,35 @@ interface LinkPreviewProps {
   compact?: boolean;
 }
 
-interface LinkMetadata {
-  title: string;
-  description: string;
-  image?: string;
-  domain: string;
-  emoji: string;
-}
-
 const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '', compact = false }) => {
-  const [metadata, setMetadata] = useState<LinkMetadata | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { metadata, loading, error } = useUrlPreview(url);
+  const [fallbackMetadata, setFallbackMetadata] = useState<any>(null);
 
   useEffect(() => {
-    const fetchMetadata = async () => {
-      setLoading(true);
+    if (error || !metadata) {
+      // Create fallback metadata if URL preview fails
       try {
-        // Simulate metadata extraction
         const domain = new URL(url).hostname.replace('www.', '');
         const emoji = getEmojiForDomain(domain);
         
-        // In a real implementation, you'd fetch actual metadata
-        setMetadata({
+        setFallbackMetadata({
           title: `${domain.charAt(0).toUpperCase() + domain.slice(1)} Link`,
-          description: `Visit ${domain} for more information`,
+          description: url,
           domain,
-          emoji,
-          image: `https://via.placeholder.com/400x200?text=${domain}`
+          emoji
         });
-      } catch (error) {
-        console.error('Failed to fetch link metadata:', error);
-        setMetadata({
+      } catch (urlError) {
+        setFallbackMetadata({
           title: 'External Link',
           description: url,
           domain: 'unknown',
           emoji: '🔗'
         });
-      } finally {
-        setLoading(false);
       }
-    };
+    }
+  }, [url, error, metadata]);
 
-    fetchMetadata();
-  }, [url]);
+  const displayMetadata = metadata || fallbackMetadata;
 
   const getEmojiForDomain = (domain: string): string => {
     if (domain.includes('github')) return '🐙';
@@ -92,9 +79,9 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '', compact 
     );
   }
 
-  if (!metadata) return null;
+  if (!displayMetadata) return null;
 
-  const IconComponent = getIconForDomain(metadata.domain);
+  const IconComponent = getIconForDomain(displayMetadata.domain || 'unknown');
 
   return (
     <Card className={`p-4 hover:shadow-md transition-shadow cursor-pointer ${className}`}>
@@ -106,33 +93,33 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url, className = '', compact 
       >
         <div className="flex items-start space-x-3">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">{metadata.emoji}</span>
+            <span className="text-2xl">{displayMetadata.emoji || getEmojiForDomain(displayMetadata.domain || 'unknown')}</span>
             <IconComponent className="h-4 w-4 text-muted-foreground" />
           </div>
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-1">
-              <h4 className="font-medium text-sm truncate">{metadata.title}</h4>
+              <h4 className="font-medium text-sm truncate">{displayMetadata.title || 'Link Preview'}</h4>
               <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
             </div>
             
             <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-              {metadata.description}
+              {displayMetadata.description || 'Click to visit this link'}
             </p>
             
             <div className="flex items-center justify-between">
               <Badge variant="outline" className="text-xs">
-                {metadata.domain}
+                {displayMetadata.domain || displayMetadata.site_name || 'External Site'}
               </Badge>
             </div>
           </div>
         </div>
         
-        {metadata.image && (
+        {(displayMetadata.image || displayMetadata.image_url) && (
           <div className="mt-3">
             <img 
-              src={metadata.image} 
-              alt={metadata.title}
+              src={displayMetadata.image || displayMetadata.image_url} 
+              alt={displayMetadata.title || 'Link preview'}
               className="w-full h-32 object-cover rounded-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';

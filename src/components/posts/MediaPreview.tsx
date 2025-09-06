@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import VideoPlayer from './VideoPlayer';
 import { FastImage } from '@/components/common/FastImage';
 import { ImageOptimizer } from '@/utils/imageOptimization';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
+import { useUrlPreview } from '@/hooks/useUrlPreview';
+import LinkPreview from '@/components/shared/LinkPreview';
 
 interface MediaPreviewProps {
   content: string;
@@ -47,14 +50,13 @@ const MediaItem: React.FC<MediaItemProps> = ({ mediaUrl, isVideo, className, ind
 };
 
 const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], isMessage = false }) => {
-  // Extract URLs from content
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const urlsInContent = content.match(urlRegex) || [];
+  // Use URL detection hook to find URLs in content
+  const { detectedUrls } = useUrlDetection(content);
   
   // Combine media URLs with URLs found in content
-  const allMediaUrls = [...mediaUrls, ...urlsInContent];
+  const allMediaUrls = [...mediaUrls, ...detectedUrls.map(u => u.url)];
   
-  // Filter for valid media URLs using optimized detection
+  // Separate URLs into media URLs and preview URLs
   const mediaItems = allMediaUrls.filter(url => {
     if (!url || url.includes('placeholder.com') || url.includes('example.com')) {
       return false;
@@ -68,8 +70,21 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
     return isYouTube || isValidImage || isValidVideo;
   });
 
-  // Remove URLs from content that will be displayed as media
-  const cleanContent = mediaItems.reduce((text, url) => {
+  // URLs that should show as link previews (not media)
+  const linkPreviewUrls = detectedUrls.filter(detectedUrl => {
+    const url = detectedUrl.url;
+    const lowercaseUrl = url.toLowerCase();
+    const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
+    const isValidImage = ImageOptimizer.isValidImageUrl(url);
+    const isValidVideo = ImageOptimizer.isValidVideoUrl(url);
+    
+    // Show as link preview if it's not a direct media URL
+    return !isYouTube && !isValidImage && !isValidVideo;
+  });
+
+  // Remove URLs from content that will be displayed as media or link previews
+  const allDisplayedUrls = [...mediaItems, ...linkPreviewUrls.map(u => u.url)];
+  const cleanContent = allDisplayedUrls.reduce((text, url) => {
     return text.replace(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '').trim();
   }, content);
 
@@ -79,7 +94,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
     .replace(/^\s+|\s+$/g, '') // Trim start and end
     .replace(/,\s*$/, ''); // Remove trailing comma
 
-  if (mediaItems.length === 0) {
+  if (mediaItems.length === 0 && linkPreviewUrls.length === 0) {
     return (
       <div>
         <p className={`${isMessage ? 'text-xs' : 'text-gray-900'} whitespace-pre-wrap`}>{content}</p>
@@ -93,13 +108,15 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
         <p className={`${isMessage ? 'text-xs' : 'text-gray-900'} whitespace-pre-wrap ${isMessage ? '' : 'mb-4'}`}>{finalContent}</p>
       )}
       
-      <div className={`grid gap-2 ${isMessage ? 'mt-1' : 'mt-4'}`} style={{
-        gridTemplateColumns: mediaItems.length === 1 ? '1fr' : 
-                           mediaItems.length === 2 ? '1fr 1fr' :
-                           mediaItems.length === 3 ? '1fr 1fr 1fr' :
-                           '1fr 1fr'
-      }}>
-        {mediaItems.slice(0, 4).map((url: string, index: number) => {
+      {/* Media Grid */}
+      {mediaItems.length > 0 && (
+        <div className={`grid gap-2 ${isMessage ? 'mt-1' : 'mt-4'}`} style={{
+          gridTemplateColumns: mediaItems.length === 1 ? '1fr' : 
+                             mediaItems.length === 2 ? '1fr 1fr' :
+                             mediaItems.length === 3 ? '1fr 1fr 1fr' :
+                             '1fr 1fr'
+        }}>
+          {mediaItems.slice(0, 4).map((url: string, index: number) => {
           const isVideo = ImageOptimizer.isValidVideoUrl(url);
           const isYouTube = url.includes('youtube.com/watch') || url.includes('youtu.be/');
           
@@ -152,7 +169,27 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
+      
+      {/* Link Previews */}
+      {linkPreviewUrls.length > 0 && (
+        <div className={`space-y-3 ${isMessage ? 'mt-1' : 'mt-4'}`}>
+          {linkPreviewUrls.slice(0, 3).map((detectedUrl, index) => (
+            <LinkPreview
+              key={index}
+              url={detectedUrl.url}
+              className={isMessage ? 'text-xs' : ''}
+              compact={isMessage}
+            />
+          ))}
+          {linkPreviewUrls.length > 3 && (
+            <div className="text-xs text-muted-foreground text-center">
+              +{linkPreviewUrls.length - 3} more links
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

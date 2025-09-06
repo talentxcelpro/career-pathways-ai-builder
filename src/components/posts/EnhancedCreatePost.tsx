@@ -22,6 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
 
 interface MediaFile {
   id: string;
@@ -47,6 +48,9 @@ interface EnhancedCreatePostProps {
 export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
+  
+  // URL detection for link previews
+  const { detectedUrls } = useUrlDetection(content);
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [location, setLocation] = useState('');
   const [showLocationInput, setShowLocationInput] = useState(false);
@@ -243,6 +247,11 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     try {
       console.log('Creating enhanced post with user:', user.id);
       
+      // Prepare link previews data
+      const linkPreviews = detectedUrls.map(urlData => ({
+        url: urlData.url
+      }));
+
       const { data: postData, error } = await supabase
         .from('posts')
         .insert({
@@ -252,10 +261,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           user_id: user.id,
           media_urls: mediaFiles.map(file => file.url),
           location: location || null,
-          is_public: privacy === 'public',
           visibility: privacy,
           origin: 'feed',
-          tags: tags
+          tags: tags,
+          link_previews: linkPreviews.length > 0 ? linkPreviews : null
         })
         .select()
         .single();
