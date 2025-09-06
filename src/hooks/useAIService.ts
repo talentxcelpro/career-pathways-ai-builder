@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAIRateLimit } from '@/hooks/useAIRateLimit';
 import { toast } from 'sonner';
 
 export interface AIServiceOptions {
@@ -19,14 +20,28 @@ export interface AIServiceResponse {
 }
 
 export const useAIService = () => {
+  const rateLimit = useAIRateLimit('ai_tools');
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentOperation, setCurrentOperation] = useState<string | null>(null);
 
   const invokeAITool = useCallback(async (options: AIServiceOptions): Promise<AIServiceResponse> => {
+    // Check rate limit before processing
+    if (!rateLimit.canMakeRequest()) {
+      const timeUntilReset = Math.ceil(rateLimit.getTimeUntilReset() / (1000 * 60));
+      toast.error(`Rate limit exceeded. Try again in ${timeUntilReset} minutes.`);
+      return {
+        success: false,
+        error: 'Rate limit exceeded'
+      };
+    }
+
     setIsProcessing(true);
     setCurrentOperation(options.toolSlug);
 
     try {
+      // Record the request for rate limiting
+      rateLimit.recordRequest();
+      
       console.log(`🚀 Invoking AI tool: ${options.toolSlug}`, options);
 
       // Direct HTTP call to the edge function
@@ -130,7 +145,7 @@ export const useAIService = () => {
       setIsProcessing(false);
       setCurrentOperation(null);
     }
-  }, []);
+  }, [rateLimit]);
 
   const enhanceResume = useCallback(async (resumeContent: any, options: {
     sectionType?: 'summary' | 'experience' | 'skills' | 'education' | 'all';

@@ -49,8 +49,8 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'terser',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-    assetsInlineLimit: 4096
+    chunkSizeWarningLimit: 600,
+    assetsInlineLimit: 8192
   },
   optimizeDeps: {
     include: [

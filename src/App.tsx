@@ -67,14 +67,19 @@ import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
 import { LiveEvent } from "@/components/realtime/LiveEvent";
 
-// Create query client optimized for SEO content caching
+// Create query client optimized for performance and SEO
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes for regular queries
-      retry: 2,
+      retry: 1, // Reduced retries for better performance
       refetchOnWindowFocus: false,
-      gcTime: 30 * 60 * 1000, // 30 minutes garbage collection time
+      gcTime: 15 * 60 * 1000, // Reduced to 15 minutes for memory efficiency
+      networkMode: 'online', // Only fetch when online
+    },
+    mutations: {
+      retry: 1,
+      networkMode: 'online',
     },
   },
 });
