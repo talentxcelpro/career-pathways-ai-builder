@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
+import { Home, Users, Plus, Bell, Briefcase } from 'lucide-react';
 import { EnhancedMobileFeed } from './EnhancedMobileFeed';
-import { MobileStories } from './MobileStories';
+import { RealTimeMobileNetwork } from './RealTimeMobileNetwork';
 import { MobileMessaging } from './MobileMessaging';
-import { MobileEvents } from './MobileEvents';
 import { AIJobRecommendations } from './AIJobRecommendations';
-import { SkillEndorsements } from './SkillEndorsements';
-import { LiveNetworking } from './LiveNetworking';
-import { ProfessionalGamification } from './ProfessionalGamification';
+import { LinkedInMobileHeader } from './LinkedInMobileHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState<'feed' | 'stories' | 'network' | 'messages' | 'events' | 'jobs' | 'skills' | 'live' | 'achievements'>('feed');
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'home' | 'network' | 'post' | 'notifications' | 'jobs'>('home');
 
   if (!isMobile) {
     return (
@@ -22,32 +21,89 @@ export const EnhancedMobileNetwork: React.FC = () => {
     );
   }
 
+  const handleCreatePost = () => {
+    navigate('/mobile/create-post');
+  };
+
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Tab Navigation */}
-      <div className="flex bg-card border-b border-border/50 overflow-x-auto scrollbar-hide">
-        <button onClick={() => setActiveTab('feed')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'feed' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Feed</button>
-        <button onClick={() => setActiveTab('stories')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'stories' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Stories</button>
-        <button onClick={() => setActiveTab('network')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'network' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Network</button>
-        <button onClick={() => setActiveTab('messages')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'messages' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Messages</button>
-        <button onClick={() => setActiveTab('events')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Events</button>
-        <button onClick={() => setActiveTab('jobs')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'jobs' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Jobs</button>
-        <button onClick={() => setActiveTab('skills')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'skills' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Skills</button>
-        <button onClick={() => setActiveTab('live')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'live' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Live</button>
-        <button onClick={() => setActiveTab('achievements')} className={`flex-none px-2 py-3 text-xs font-medium transition-colors whitespace-nowrap ${activeTab === 'achievements' ? 'text-primary border-b-2 border-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'}`}>Growth</button>
+    <div className="h-screen flex flex-col bg-background">
+      {/* Header */}
+      <LinkedInMobileHeader />
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'home' && <EnhancedMobileFeed />}
+        {activeTab === 'network' && <RealTimeMobileNetwork />}
+        {activeTab === 'notifications' && (
+          <div className="p-4">
+            <h2 className="text-lg font-semibold mb-4">Notifications</h2>
+            <p className="text-muted-foreground">No new notifications</p>
+          </div>
+        )}
+        {activeTab === 'jobs' && <AIJobRecommendations />}
       </div>
 
-      {/* Tab Content */}
-      <div className="flex-1 overflow-hidden">
-        {activeTab === 'feed' && <EnhancedMobileFeed />}
-        {activeTab === 'stories' && <MobileStories />}
-        {activeTab === 'network' && <RealTimeMobileNetwork />}
-        {activeTab === 'messages' && <MobileMessaging />}
-        {activeTab === 'events' && <MobileEvents />}
-        {activeTab === 'jobs' && <AIJobRecommendations />}
-        {activeTab === 'skills' && <SkillEndorsements />}
-        {activeTab === 'live' && <LiveNetworking />}
-        {activeTab === 'achievements' && <ProfessionalGamification />}
+      {/* Bottom Navigation - LinkedIn Style */}
+      <div className="bg-background border-t border-border/50 px-1 py-2 safe-area-bottom">
+        <div className="flex items-center justify-around">
+          <button
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === 'home' 
+                ? 'text-primary bg-primary/5' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-xs font-medium">Home</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('network')}
+            className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === 'network' 
+                ? 'text-primary bg-primary/5' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Users className="w-5 h-5" />
+            <span className="text-xs font-medium">My Network</span>
+          </button>
+
+          <button
+            onClick={handleCreatePost}
+            className="flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Plus className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="text-xs font-medium">Post</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('notifications')}
+            className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === 'notifications' 
+                ? 'text-primary bg-primary/5' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Bell className="w-5 h-5" />
+            <span className="text-xs font-medium">Notifications</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('jobs')}
+            className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
+              activeTab === 'jobs' 
+                ? 'text-primary bg-primary/5' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Briefcase className="w-5 h-5" />
+            <span className="text-xs font-medium">Jobs</span>
+          </button>
+        </div>
       </div>
     </div>
   );
