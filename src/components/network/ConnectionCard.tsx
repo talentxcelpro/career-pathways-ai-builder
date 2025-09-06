@@ -56,7 +56,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
       <CardContent className="p-6">
         <div className="text-center space-y-4">
           {/* Profile Picture - Clickable to view profile */}
-          <Link to={`/network/people/${profile.id}`} className="block">
+          <Link to={`/user/${profile.id}`} className="block">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mx-auto flex items-center justify-center hover:scale-105 transition-transform">
               {profile.profile_picture_url ? (
                 <img 
@@ -73,7 +73,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
           </Link>
 
           {/* Basic Info - Clickable to view profile */}
-          <Link to={`/network/people/${profile.id}`} className="block hover:text-blue-600 transition-colors">
+          <Link to={`/user/${profile.id}`} className="block hover:text-blue-600 transition-colors">
             <div>
               <h3 className="font-semibold text-lg text-gray-900">
                 {formatDisplayName(profile)}
@@ -143,7 +143,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
                 <MessageCircle className="h-4 w-4 mr-1" />
                 Message
               </Button>
-              <Link to={`/network/people/${profile.id}`}>
+              <Link to={`/user/${profile.id}`}>
                 <Button size="sm" variant="outline">
                   <Eye className="h-4 w-4 mr-1" />
                   View

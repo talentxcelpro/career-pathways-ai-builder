@@ -65,7 +65,7 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
 
         {/* User info - centered */}
         <div className="flex items-center space-x-2 flex-1 justify-center">
-          <Link to={`/network/people/${otherUser?.id}`} className="hover:scale-105 transition-transform">
+          <Link to={`/user/${otherUser?.id}`} className="hover:scale-105 transition-transform">
             <div className="relative">
               <Avatar className="h-6 w-6 ring-1 ring-white shadow-sm">
                 <AvatarImage src={otherUser?.profile_picture_url} />
@@ -79,7 +79,7 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
           </Link>
           <div className="text-center">
             <Link 
-              to={`/network/people/${otherUser?.id}`}
+              to={`/user/${otherUser?.id}`}
               className="hover:text-blue-600 transition-colors cursor-pointer"
             >
               <h3 className="font-medium text-xs text-gray-900 truncate max-w-32 hover:underline">
@@ -140,7 +140,7 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
               sideOffset={5}
             >
               <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100">
-                <Link to={`/network/people/${otherUser?.id}`} className="flex items-center px-4 py-2 text-sm text-gray-700">
+                <Link to={`/user/${otherUser?.id}`} className="flex items-center px-4 py-2 text-sm text-gray-700">
                   <User className="mr-2 h-4 w-4" />
                   <span>View Profile</span>
                 </Link>

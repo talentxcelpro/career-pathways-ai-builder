@@ -542,7 +542,7 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => window.open(`/profile/${(candidate.name || 'unknown').toLowerCase().replace(/\s+/g, '')}`, '_blank')}
+                        onClick={() => window.open(`/user/${candidate.id}`, '_blank')}
                       >
                         Profile
                       </Button>

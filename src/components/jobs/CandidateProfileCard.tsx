@@ -37,7 +37,7 @@ export const CandidateProfileCard: React.FC<CandidateProfileCardProps> = ({
     <Card>
       <CardContent className="p-6">
         <div className="flex flex-col items-center text-center">
-          <Link to={`/network/people/${profile?.id}`} className="block mb-4 hover:scale-105 transition-transform">
+          <Link to={`/user/${profile?.id}`} className="block mb-4 hover:scale-105 transition-transform">
             <Avatar className="w-24 h-24 cursor-pointer">
               <AvatarImage src={profile?.profile_picture_url} />
               <AvatarFallback className="text-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white">
@@ -47,7 +47,7 @@ export const CandidateProfileCard: React.FC<CandidateProfileCardProps> = ({
           </Link>
           
           <Link 
-            to={`/network/people/${profile?.id}`}
+            to={`/user/${profile?.id}`}
             className="hover:text-blue-600 transition-colors"
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-1 cursor-pointer">

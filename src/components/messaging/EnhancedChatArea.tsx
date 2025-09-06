@@ -140,7 +140,7 @@ export const EnhancedChatArea: React.FC<EnhancedChatAreaProps> = ({
       <CardHeader className="border-b bg-card">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link to={`/network/people/${selectedConversation}`} className="hover:scale-105 transition-transform">
+            <Link to={`/user/${selectedConversation}`} className="hover:scale-105 transition-transform">
               <Avatar className="cursor-pointer h-12 w-12">
                 <AvatarImage src={conversationProfile?.profile_picture_url} />
                 <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
@@ -150,7 +150,7 @@ export const EnhancedChatArea: React.FC<EnhancedChatAreaProps> = ({
             </Link>
             <div className="flex-1">
               <Link 
-                to={`/network/people/${selectedConversation}`}
+                to={`/user/${selectedConversation}`}
                 className="hover:text-primary transition-colors"
               >
                 <h3 className="font-semibold cursor-pointer text-lg">

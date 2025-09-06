@@ -166,9 +166,9 @@ export const useProfileLinking = () => {
   // Navigate to profile
   const goToProfile = (userId: string, username?: string) => {
     if (username) {
-      navigate(`/@${username}`);
+      navigate(`/user/${username}`);
     } else {
-      navigate(`/profile/${userId}`);
+      navigate(`/user/${userId}`);
     }
   };
 

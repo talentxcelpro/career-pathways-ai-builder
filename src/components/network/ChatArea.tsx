@@ -111,7 +111,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       <CardHeader className="border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link to={`/network/people/${selectedConversation}`} className="hover:scale-105 transition-transform">
+            <Link to={`/user/${selectedConversation}`} className="hover:scale-105 transition-transform">
               <Avatar className="cursor-pointer">
                 <AvatarImage src={conversationProfile?.profile_picture_url} />
                 <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
@@ -121,7 +121,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             </Link>
             <div>
               <Link 
-                to={`/network/people/${selectedConversation}`}
+                to={`/user/${selectedConversation}`}
                 className="hover:text-blue-600 transition-colors"
               >
                 <h3 className="font-semibold cursor-pointer">

@@ -81,7 +81,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         {/* Post Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
-            <Link to={`/network/people/${post.author_id}`} className="block">
+            <Link to={`/user/${post.author_id}`} className="block">
               <div className="relative">
                 <div className="hover:scale-105 transition-transform">
                   <UserAvatar
@@ -100,7 +100,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             </Link>
             <div>
               <Link 
-                to={`/network/people/${post.author_id}`} 
+                to={`/user/${post.author_id}`} 
                 className="hover:text-blue-600 transition-colors"
               >
                 <h3 className="font-semibold text-gray-900">

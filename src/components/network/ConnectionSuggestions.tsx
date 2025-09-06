@@ -130,7 +130,7 @@ export const ConnectionSuggestions: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <Link to={`/network/people/${suggestion.id}`}>
+                    <Link to={`/user/${suggestion.id}`}>
                       <Avatar className="w-12 h-12 ring-2 ring-transparent group-hover:ring-secondary/20 transition-all">
                         <AvatarImage src={suggestion.profile_picture_url} />
                         <AvatarFallback className="bg-gradient-to-br from-secondary/20 to-primary/20 text-foreground font-semibold">
@@ -140,7 +140,7 @@ export const ConnectionSuggestions: React.FC = () => {
                     </Link>
                     <div className="flex-1">
                       <Link 
-                        to={`/network/people/${suggestion.id}`}
+                        to={`/user/${suggestion.id}`}
                         className="font-semibold text-foreground hover:text-secondary transition-colors story-link"
                       >
                         {formatDisplayName(suggestion)}

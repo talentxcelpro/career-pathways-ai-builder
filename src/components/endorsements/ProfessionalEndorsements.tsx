@@ -394,7 +394,7 @@ export const ProfessionalEndorsements: React.FC<ProfessionalEndorsementsProps> =
                     <div className="space-y-4">
                       {skillEndorsements.map((endorsement) => (
                         <div key={endorsement.id} className="flex gap-4 p-4 bg-muted/50 rounded-lg">
-                          <Link to={`/network/people/${endorsement.endorser.id}`}>
+                          <Link to={`/user/${endorsement.endorser.id}`}>
                             <Avatar className="h-12 w-12 hover:scale-105 transition-transform">
                               <AvatarImage src={endorsement.endorser.profile_picture_url} />
                               <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
@@ -406,7 +406,7 @@ export const ProfessionalEndorsements: React.FC<ProfessionalEndorsementsProps> =
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <Link 
-                                  to={`/network/people/${endorsement.endorser.id}`}
+                                  to={`/user/${endorsement.endorser.id}`}
                                   className="font-semibold hover:text-primary transition-colors"
                                 >
                                   {formatDisplayName(endorsement.endorser)}

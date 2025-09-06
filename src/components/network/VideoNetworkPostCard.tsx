@@ -141,7 +141,7 @@ export const VideoNetworkPostCard: React.FC<VideoNetworkPostCardProps> = ({
         <div className="p-4 pb-0">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-start space-x-3">
-              <Link to={`/network/people/${post.author_id}`} className="block">
+              <Link to={`/user/${post.author_id}`} className="block">
                 <div className="relative">
                   <Avatar className="hover:scale-105 transition-transform">
                     <AvatarImage src={post.profiles?.profile_picture_url} />
@@ -159,7 +159,7 @@ export const VideoNetworkPostCard: React.FC<VideoNetworkPostCardProps> = ({
               </Link>
               <div className="flex-1 min-w-0">
                 <Link 
-                  to={`/network/people/${post.author_id}`} 
+                  to={`/user/${post.author_id}`} 
                   className="hover:text-primary transition-colors"
                 >
                   <h3 className="font-semibold text-foreground truncate">

@@ -36,7 +36,7 @@ export default function ServiceCard({ service, onServiceClick }: ServiceCardProp
 
   const handleViewProfile = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(`/profile/${service.provider_id}`, '_blank');
+    window.open(`/user/${service.provider_id}`, '_blank');
   };
 
   const handleBookNow = (e: React.MouseEvent) => {

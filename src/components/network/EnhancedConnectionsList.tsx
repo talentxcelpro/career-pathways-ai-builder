@@ -218,7 +218,7 @@ export const EnhancedConnectionsList: React.FC = () => {
                 <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50/50 transition-colors group">
                   <div className="flex items-center space-x-4">
                     <div className="relative">
-                      <Link to={`/network/people/${user.id}`}>
+                      <Link to={`/user/${user.id}`}>
                         <Avatar className="cursor-pointer hover:scale-105 transition-transform">
                           <AvatarImage src={user.profile_picture_url} />
                           <AvatarFallback>
@@ -233,7 +233,7 @@ export const EnhancedConnectionsList: React.FC = () => {
                     
                     <div className="flex-1">
                       <Link 
-                        to={`/network/people/${user.id}`}
+                        to={`/user/${user.id}`}
                         className="hover:text-blue-600 transition-colors"
                       >
                         <h4 className="font-semibold text-gray-900">

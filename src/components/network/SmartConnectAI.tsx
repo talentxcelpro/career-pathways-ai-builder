@@ -322,7 +322,7 @@ export const SmartConnectAI: React.FC = () => {
                 <div key={match.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start space-x-3">
-                      <Link to={`/network/people/${match.id}`}>
+                      <Link to={`/user/${match.id}`}>
                         <Avatar className="w-12 h-12 cursor-pointer hover:scale-105 transition-transform">
                           <AvatarImage src={match.profile_picture_url} />
                           <AvatarFallback>
@@ -332,7 +332,7 @@ export const SmartConnectAI: React.FC = () => {
                       </Link>
                       <div>
                         <Link 
-                          to={`/network/people/${match.id}`}
+                          to={`/user/${match.id}`}
                           className="hover:text-primary transition-colors"
                         >
                           <h4 className="font-semibold">{match.full_name}</h4>

@@ -243,7 +243,7 @@ export const AISuggestionEngine: React.FC<AISuggestionEngineProps> = ({
                   </Avatar>
                   <div className="flex-1 space-y-2">
                     <div>
-                      <Link to={`/network/people/${person.id}`} className="font-medium hover:text-primary transition-colors">
+                      <Link to={`/user/${person.id}`} className="font-medium hover:text-primary transition-colors">
                         {formatDisplayName(person)}
                       </Link>
                       <p className="text-sm text-muted-foreground">
@@ -277,7 +277,7 @@ export const AISuggestionEngine: React.FC<AISuggestionEngineProps> = ({
                         )}
                         Connect
                       </Button>
-                      <Link to={`/network/people/${person.id}`}>
+                      <Link to={`/user/${person.id}`}>
                         <Button size="sm" variant="outline">
                           <Eye className="h-3 w-3 mr-1" />
                           View Profile

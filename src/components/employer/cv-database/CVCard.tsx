@@ -114,7 +114,7 @@ export const CVCard: React.FC<CVCardProps> = ({
                 )}
                 
                 <Button variant="outline" size="sm" asChild>
-                  <a href={`/profile/${cv.full_name?.toLowerCase().replace(/\s+/g, '')}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`/user/${cv.id}`} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>
