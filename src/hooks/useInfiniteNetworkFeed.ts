@@ -115,7 +115,7 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
           console.log('Fetching profiles for user IDs:', allUserIds);
           const { data: profilesData, error: profileError } = await supabase
             .from('profiles')
-            .select('id, full_name, profile_picture_url, title, location')
+            .select('id, full_name, profile_picture_url, avatar_url, title, location')
             .in('id', allUserIds);
           
           if (profileError) {

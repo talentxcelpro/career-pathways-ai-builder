@@ -115,7 +115,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
     user_id: post.user_id,
     author: {
       name: post.profiles?.full_name || 'Unknown User',
-      avatar: post.profiles?.profile_picture_url,
+      avatar: post.profiles?.profile_picture_url || post.profiles?.avatar_url,
       title: post.profiles?.title
     },
     timeAgo: formatTimeAgo(post.created_at),
@@ -331,7 +331,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
           <div className="p-4 border-b bg-card">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.user_metadata?.picture} />
+                <AvatarImage src={user?.user_metadata?.avatar_url || user?.user_metadata?.picture} />
                 <AvatarFallback>
                   {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
                 </AvatarFallback>
