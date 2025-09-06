@@ -32,7 +32,11 @@ const BacklinkDashboard: React.FC = () => {
   const startProspecting = async () => {
     setActionLoading('prospecting');
     try {
-      const { data, error } = await supabase.functions.invoke('backlink-prospecting', {
+      let data: any | null = null;
+      let error: any | null = null;
+
+      // First try via supabase.functions.invoke
+      const res = await supabase.functions.invoke('backlink-prospecting', {
         body: {
           keywords: ['career development blogs', 'job search resources', 'professional networking sites'],
           limit: 10,
@@ -40,7 +44,35 @@ const BacklinkDashboard: React.FC = () => {
         }
       });
 
-      if (error) throw error;
+      data = res.data;
+      error = res.error;
+
+      // Fallback: direct fetch (handles rare CORS/invoke transport issues)
+      if (error || !data) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/backlink-prospecting`;
+        const dfRes = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
+            ...(sessionData?.session?.access_token ? { Authorization: `Bearer ${sessionData.session.access_token}` } : {})
+          },
+          body: JSON.stringify({
+            keywords: ['career development blogs', 'job search resources', 'professional networking sites'],
+            limit: 10,
+            language: 'en'
+          })
+        });
+
+        if (dfRes.ok) {
+          data = await dfRes.json();
+          error = null;
+        } else {
+          const text = await dfRes.text();
+          throw new Error(text || 'Direct function call failed');
+        }
+      }
 
       if (data?.success) {
         toast.success(`Discovered ${data.targets_discovered} new targets`);
