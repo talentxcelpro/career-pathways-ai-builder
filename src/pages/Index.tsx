@@ -10,6 +10,7 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [disableOneTap, setDisableOneTap] = useState(false);
+  const [showAutoLoginMessage, setShowAutoLoginMessage] = useState(false);
   const enableTestSend = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('send_emails') === '1';
 
   // Immediate auth check - no loading states for instant page load
@@ -20,6 +21,12 @@ const Index = () => {
       const isIOS = /iP(hone|od|ad)/.test(ua);
       const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
       setDisableOneTap(isIOS && isSafari);
+      
+      // Show auto-login message for better UX
+      if (!isIOS || !isSafari) {
+        setShowAutoLoginMessage(true);
+        setTimeout(() => setShowAutoLoginMessage(false), 5000);
+      }
     } catch {
       setDisableOneTap(false);
     }
@@ -64,6 +71,17 @@ const Index = () => {
   return (
     <>
       {enableTestSend && <TestEmailSender />}
+      
+      {/* Auto-login indicator */}
+      {showAutoLoginMessage && !disableOneTap && (
+        <div className="fixed top-4 right-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            Looking for your Google account...
+          </div>
+        </div>
+      )}
+      
       {!disableOneTap && <GoogleOneTapLogin autoSelect />}
       <FastIndex />
     </>
