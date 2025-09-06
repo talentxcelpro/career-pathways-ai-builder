@@ -32,9 +32,7 @@ if (typeof window !== 'undefined') {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <PerformanceMonitor>
-      <AppWrapper />
-      <SpeedInsights />
-    </PerformanceMonitor>
+    <AppWrapper />
+    <SpeedInsights />
   </React.StrictMode>
 );
