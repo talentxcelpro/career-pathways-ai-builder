@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home,
   Play,
   Briefcase,
   CreditCard,
   Bell
 } from 'lucide-react';
+import { NetworkIcon } from './NetworkIcon';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface NavItem {
   to: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string }> | 'NetworkIcon';
   label: string;
   badge?: boolean;
 }
@@ -42,7 +42,7 @@ export const MobileBottomNav = () => {
   });
 
   const navItems: NavItem[] = [
-    { to: '/mobile/network', icon: Home, label: 'Network' },
+    { to: '/mobile/network', icon: 'NetworkIcon', label: 'Network' },
     { to: '/mobile/reels', icon: Play, label: 'JobTok' },
     { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs & Passport' },
     { to: '/passport', icon: CreditCard, label: 'Passport' },
@@ -61,7 +61,6 @@ export const MobileBottomNav = () => {
       <div className="flex items-center justify-around px-1 py-2">
         {navItems.map((item, index) => {
           const isActive = isCurrentPath(item.to);
-          const Icon = item.icon;
           
           return (
             <Link
@@ -75,10 +74,19 @@ export const MobileBottomNav = () => {
               )}
             >
               <div className="relative">
-                <Icon className={cn(
-                  "transition-all duration-200",
-                  isActive ? "h-6 w-6 text-blue-600" : "h-6 w-6 text-gray-600"
-                )} />
+                {item.icon === 'NetworkIcon' ? (
+                  <NetworkIcon isActive={isActive} />
+                ) : (
+                  (() => {
+                    const Icon = item.icon as React.ComponentType<{ className?: string }>;
+                    return (
+                      <Icon className={cn(
+                        "transition-all duration-200",
+                        isActive ? "h-6 w-6 text-blue-600" : "h-6 w-6 text-gray-600"
+                      )} />
+                    );
+                  })()
+                )}
                 {item.badge && item.to === '/mobile/notifications' && unreadMessages > 0 && (
                   <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white border border-white rounded-full flex items-center justify-center">
                     <span className="text-[10px] font-bold">
