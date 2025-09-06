@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw, Plus } from 'lucide-react';
 import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
 import { PostActions } from '@/components/posts/PostActions';
 import LinkPreview from '@/components/shared/LinkPreview';
@@ -241,9 +241,9 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
       onSwipeLeft={() => handleSwipeLeft(post.id)}
       onSwipeRight={() => handleSwipeRight(post.id)}
       onDoubleTap={() => handleLike(post.id)}
-      className="mb-3"
+      className=""
     >
-      <Card className="bg-card border-border/50 shadow-sm">
+      <div className="bg-background border-0">
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.location.href = `/user/${post.author_id}`}>
@@ -388,48 +388,13 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
             <span className="text-xs">Save</span>
           </Button>
         </div>
-      </Card>
+      </div>
     </EnhancedSwipeableCard>
     );
   };
 
   return (
     <div className={`${className}`}>
-      {/* Feed Filters */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 mb-4">
-        <div className="flex items-center space-x-2 p-4">
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('all')}
-            className="text-xs"
-          >
-            All
-          </Button>
-          <Button
-            variant={filter === 'connections' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('connections')}
-            className="text-xs"
-          >
-            Connections
-          </Button>
-          <Button
-            variant={filter === 'trending' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter('trending')}
-            className="text-xs"
-          >
-            Trending
-          </Button>
-          {!isOnline && (
-            <div className="ml-auto flex items-center space-x-1 text-xs text-muted-foreground">
-              <div className="w-2 h-2 bg-orange-500 rounded-full" />
-              <span>Offline</span>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Posts Feed */}
       {isLoading && posts.length === 0 ? (
@@ -456,25 +421,25 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
           </Button>
         </div>
       ) : (
-        <div className="px-4 pb-6 space-y-4">
+        <div className="space-y-0">
           {sortedContent.map((item, index) => {
             if (item.contentType === 'post') {
-              return <PostCard key={`post-${item.id}`} post={item as NetworkPost} />;
+              return (
+                <div key={`post-${item.id}`} className="border-b border-border/10 bg-background p-4">
+                  <PostCard post={item as NetworkPost} />
+                </div>
+              );
             } else if (item.contentType === 'video') {
               return (
-                <VideoContent
-                  key={`video-${item.id}`}
-                  {...item}
-                  className="mb-3"
-                />
+                <div key={`video-${item.id}`} className="border-b border-border/10 bg-background p-4">
+                  <VideoContent {...item} className="" />
+                </div>
               );
             } else if (item.contentType === 'news') {
               return (
-                <NewsCard
-                  key={`news-${item.id}`}
-                  {...item}
-                  className="mb-3"
-                />
+                <div key={`news-${item.id}`} className="border-b border-border/10 bg-background p-4">
+                  <NewsCard {...item} className="" />
+                </div>
               );
             }
             return null;
