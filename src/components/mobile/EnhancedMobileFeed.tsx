@@ -181,7 +181,6 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
         .delete()
         .eq('post_id', postId)
         .eq('user_id', session.user.id);
-      toast.success('Removed from bookmarks');
     } else {
       // Add bookmark
       await supabase

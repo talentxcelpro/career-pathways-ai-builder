@@ -174,10 +174,6 @@ export const NetworkPost: React.FC<NetworkPostProps> = ({ post }) => {
     }
     
     setIsBookmarked(!isBookmarked);
-    toast({
-      title: isBookmarked ? "Removed from bookmarks" : "Bookmarked",
-      description: isBookmarked ? "Post removed from your bookmarks." : "Post saved to your bookmarks.",
-    });
   };
 
   const handleApplyNow = async () => {

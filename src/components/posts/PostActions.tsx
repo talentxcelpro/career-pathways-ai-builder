@@ -106,7 +106,6 @@ export const PostActions: React.FC<PostActionsProps> = ({
       }
       
       setIsSaved(false);
-      toast.success('Removed from bookmarks');
     } else {
       // Add to saved posts
       const { error } = await supabase

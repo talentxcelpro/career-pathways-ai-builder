@@ -118,10 +118,6 @@ export const useSocialInteractions = (postId: string) => {
     },
     onSuccess: (action) => {
       queryClient.invalidateQueries({ queryKey: ['post-interactions', postId] });
-      toast({
-        title: action === 'bookmarked' ? "Post Saved" : "Post Unsaved",
-        description: action === 'bookmarked' ? "Post saved to your bookmarks!" : "Post removed from bookmarks.",
-      });
     },
     onError: (error) => {
       console.error('Bookmark error:', error);
