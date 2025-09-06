@@ -24,6 +24,9 @@ import {
   Camera,
   MoreHorizontal
 } from 'lucide-react';
+import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
+import LinkPreview from '@/components/shared/LinkPreview';
 
 interface MobileNetworkPost {
   id: string;
@@ -261,7 +264,11 @@ export const RealTimeMobileNetwork: React.FC = () => {
                 ))}
               </div>
             ) : (
-              mobilePosts.map((post) => (
+              mobilePosts.map((post) => {
+                const PostWithFeatures = () => {
+                  const { detectedUrls } = useUrlDetection(post.content);
+                  
+                  return (
                 <Card key={post.id} className="rounded-none border-x-0 border-t-0 border-b">
                   <div className="p-4 space-y-3">
                     {/* Post Header */}
@@ -281,14 +288,32 @@ export const RealTimeMobileNetwork: React.FC = () => {
                           <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <EnhancedPostMenu
+                        postId={post.id}
+                        authorId={post.author.name}
+                        currentUserId={post.author.name}
+                        postContent={post.content}
+                        isOwnPost={true}
+                      />
                     </div>
 
                     {/* Post Content */}
                     <div className="space-y-3">
                       <p className="text-sm leading-relaxed">{post.content}</p>
+                      
+                      {/* Link Previews */}
+                      {detectedUrls.length > 0 && (
+                        <div className="space-y-2">
+                          {detectedUrls.slice(0, 1).map((urlData, index) => (
+                            <LinkPreview 
+                              key={`${urlData.url}-${index}`}
+                              url={urlData.url}
+                              className="border rounded-lg"
+                              compact={true}
+                            />
+                          ))}
+                        </div>
+                      )}
                       
                       {/* Media if present */}
                       {post.media && post.media.length > 0 && (
@@ -342,7 +367,11 @@ export const RealTimeMobileNetwork: React.FC = () => {
                     </div>
                   </div>
                 </Card>
-              ))
+                  );
+                };
+                
+                return <PostWithFeatures key={post.id} />;
+              })
             )}
 
             {/* Load More */}

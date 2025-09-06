@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileCreatePost } from './MobileCreatePost';
+import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
+import { useUrlDetection } from '@/hooks/useUrlDetection';
+import LinkPreview from '@/components/shared/LinkPreview';
 
 interface LinkedInPost {
   id: string;
@@ -76,6 +79,9 @@ const LinkedInPostCard: React.FC<{
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
   const [showFullCaption, setShowFullCaption] = useState(false);
+  
+  // URL detection for link previews
+  const { detectedUrls } = useUrlDetection(post.caption || '');
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -142,9 +148,13 @@ const LinkedInPostCard: React.FC<{
                 Connect
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-gray-100 rounded-full">
-              <MoreHorizontal className="w-4 h-4 text-gray-500" />
-            </Button>
+            <EnhancedPostMenu
+              postId={post.id}
+              authorId={post.user.id}
+              currentUserId={post.user.id}
+              postContent={post.caption || ''}
+              isOwnPost={true}
+            />
           </div>
         </div>
       </div>
@@ -163,6 +173,20 @@ const LinkedInPostCard: React.FC<{
               </button>
             )}
           </p>
+          
+          {/* Link Previews */}
+          {detectedUrls.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {detectedUrls.slice(0, 1).map((urlData, index) => (
+                <LinkPreview 
+                  key={`${urlData.url}-${index}`}
+                  url={urlData.url}
+                  className="border rounded-lg"
+                  compact={true}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
