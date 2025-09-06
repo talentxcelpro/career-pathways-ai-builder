@@ -1,12 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  Play,
-  Briefcase,
-  CreditCard,
-  Bell
-} from 'lucide-react';
 import { NetworkIcon } from './NetworkIcon';
+import { JobTokIcon } from './JobTokIcon';
+import { JobsIcon } from './JobsIcon';
+import { PassportIcon } from './PassportIcon';
+import { NotificationsIcon } from './NotificationsIcon';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface NavItem {
   to: string;
-  icon: React.ComponentType<{ className?: string }> | 'NetworkIcon';
+  icon: 'NetworkIcon' | 'JobTokIcon' | 'JobsIcon' | 'PassportIcon' | 'NotificationsIcon';
   label: string;
   badge?: boolean;
 }
@@ -43,10 +41,10 @@ export const MobileBottomNav = () => {
 
   const navItems: NavItem[] = [
     { to: '/mobile/network', icon: 'NetworkIcon', label: 'Network' },
-    { to: '/mobile/reels', icon: Play, label: 'JobTok' },
-    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs & Passport' },
-    { to: '/passport', icon: CreditCard, label: 'Passport' },
-    { to: '/mobile/notifications', icon: Bell, label: 'Notifications', badge: unreadMessages > 0 },
+    { to: '/mobile/reels', icon: 'JobTokIcon', label: 'JobTok' },
+    { to: '/mobile/jobs', icon: 'JobsIcon', label: 'Jobs' },
+    { to: '/passport', icon: 'PassportIcon', label: 'Passport' },
+    { to: '/mobile/notifications', icon: 'NotificationsIcon', label: 'Notifications', badge: unreadMessages > 0 },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -74,19 +72,11 @@ export const MobileBottomNav = () => {
               )}
             >
               <div className="relative">
-                {item.icon === 'NetworkIcon' ? (
-                  <NetworkIcon isActive={isActive} />
-                ) : (
-                  (() => {
-                    const Icon = item.icon as React.ComponentType<{ className?: string }>;
-                    return (
-                      <Icon className={cn(
-                        "transition-all duration-200",
-                        isActive ? "h-6 w-6 text-blue-600" : "h-6 w-6 text-gray-600"
-                      )} />
-                    );
-                  })()
-                )}
+                {item.icon === 'NetworkIcon' && <NetworkIcon isActive={isActive} />}
+                {item.icon === 'JobTokIcon' && <JobTokIcon isActive={isActive} />}
+                {item.icon === 'JobsIcon' && <JobsIcon isActive={isActive} />}
+                {item.icon === 'PassportIcon' && <PassportIcon isActive={isActive} />}
+                {item.icon === 'NotificationsIcon' && <NotificationsIcon isActive={isActive} />}
                 {item.badge && item.to === '/mobile/notifications' && unreadMessages > 0 && (
                   <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white border border-white rounded-full flex items-center justify-center">
                     <span className="text-[10px] font-bold">
