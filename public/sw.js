@@ -39,14 +39,34 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch event
+// Fetch event - DO NOT intercept JS/CSS files to prevent MIME type errors
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request);
-      })
-  );
+  const url = new URL(event.request.url);
+  
+  // Skip caching for JS, CSS, and chunk files to prevent MIME type errors
+  if (url.pathname.endsWith('.js') || 
+      url.pathname.endsWith('.css') || 
+      url.pathname.includes('chunk-') ||
+      url.pathname.includes('node_modules') ||
+      url.pathname.includes('vite') ||
+      url.pathname.includes('/assets/')) {
+    return;
+  }
+  
+  // Only cache navigation requests and specific assets
+  if (event.request.mode === 'navigate' || 
+      event.request.destination === 'document' ||
+      url.pathname.endsWith('.png') ||
+      url.pathname.endsWith('.jpg') ||
+      url.pathname.endsWith('.svg') ||
+      url.pathname.endsWith('.ico')) {
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          return response || fetch(event.request);
+        })
+    );
+  }
 });
 
 // Enhanced Push notification event with proper parsing
