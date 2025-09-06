@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { navItems } from '@/nav-items';
+// import { navItems } from '@/nav-items'; // Removed to prevent circular dependency
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { filterNavigationByPermissions } from '@/utils/navigationFilter';
@@ -19,9 +19,26 @@ export const AccessControlTestPage: React.FC = () => {
     isLoading
   };
 
-  const filteredRoutes = filterNavigationByPermissions(navItems as any[], permissions);
-  const publicRoutes = navItems.filter(item => (item as any).isPublic);
-  const adminOnlyRoutes = navItems.filter(item => (item as any).requiresAdminAccess);
+  // Mock data to avoid circular dependency with nav-items
+  const mockPublicRoutes = [
+    { title: "Resume Builder", to: "/", isPublic: true },
+    { title: "Network", to: "/network", isPublic: true },
+    { title: "Jobs", to: "/jobs", isPublic: true },
+    { title: "Employer", to: "/employer", isPublic: true },
+    { title: "About", to: "/about", isPublic: true },
+  ];
+
+  const mockAdminRoutes = [
+    { title: "Admin Dashboard", to: "/admin", requiresAdminAccess: true },
+    { title: "SEO Admin", to: "/admin/seo", requiresAdminAccess: true },
+    { title: "Tools", to: "/tools", requiresAdminAccess: true },
+    { title: "Learning", to: "/learning", requiresAdminAccess: true },
+  ];
+
+  const accessibleRoutes = [
+    ...mockPublicRoutes,
+    ...(isAdmin ? mockAdminRoutes : [])
+  ];
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -65,7 +82,7 @@ export const AccessControlTestPage: React.FC = () => {
               <Zap className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="font-medium">Access Level</p>
               <p className="text-sm text-muted-foreground">
-                {filteredRoutes.length} routes accessible
+                {accessibleRoutes.length} routes accessible
               </p>
             </div>
           </div>
@@ -79,12 +96,12 @@ export const AccessControlTestPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-600">
               <Eye className="h-5 w-5" />
-              Public Routes ({publicRoutes.length})
+              Public Routes ({mockPublicRoutes.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {publicRoutes.slice(0, 8).map((route, index) => (
+              {mockPublicRoutes.slice(0, 8).map((route, index) => (
                 <div key={index} className="flex items-center justify-between p-2 bg-green-50 rounded">
                   <span className="text-sm">{route.title}</span>
                   <Badge variant="outline" className="text-green-600 border-green-300">
@@ -92,9 +109,9 @@ export const AccessControlTestPage: React.FC = () => {
                   </Badge>
                 </div>
               ))}
-              {publicRoutes.length > 8 && (
+              {mockPublicRoutes.length > 8 && (
                 <p className="text-sm text-muted-foreground">
-                  +{publicRoutes.length - 8} more...
+                  +{mockPublicRoutes.length - 8} more...
                 </p>
               )}
             </div>
@@ -106,12 +123,12 @@ export const AccessControlTestPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-orange-600">
               <EyeOff className="h-5 w-5" />
-              Admin Only ({adminOnlyRoutes.length})
+              Admin Only ({mockAdminRoutes.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {adminOnlyRoutes.slice(0, 8).map((route, index) => (
+              {mockAdminRoutes.slice(0, 8).map((route, index) => (
                 <div key={index} className="flex items-center justify-between p-2 bg-orange-50 rounded">
                   <span className="text-sm">{route.title}</span>
                   <Badge variant="outline" className="text-orange-600 border-orange-300">
@@ -119,9 +136,9 @@ export const AccessControlTestPage: React.FC = () => {
                   </Badge>
                 </div>
               ))}
-              {adminOnlyRoutes.length > 8 && (
+              {mockAdminRoutes.length > 8 && (
                 <p className="text-sm text-muted-foreground">
-                  +{adminOnlyRoutes.length - 8} more...
+                  +{mockAdminRoutes.length - 8} more...
                 </p>
               )}
             </div>
@@ -133,12 +150,12 @@ export const AccessControlTestPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-600">
               <Zap className="h-5 w-5" />
-              Your Access ({filteredRoutes.length})
+              Your Access ({accessibleRoutes.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {filteredRoutes.slice(0, 8).map((route, index) => (
+              {accessibleRoutes.slice(0, 8).map((route, index) => (
                 <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded">
                   <span className="text-sm">{route.title}</span>
                   <Badge variant="outline" className="text-blue-600 border-blue-300">
@@ -146,9 +163,9 @@ export const AccessControlTestPage: React.FC = () => {
                   </Badge>
                 </div>
               ))}
-              {filteredRoutes.length > 8 && (
+              {accessibleRoutes.length > 8 && (
                 <p className="text-sm text-muted-foreground">
-                  +{filteredRoutes.length - 8} more...
+                  +{accessibleRoutes.length - 8} more...
                 </p>
               )}
             </div>
