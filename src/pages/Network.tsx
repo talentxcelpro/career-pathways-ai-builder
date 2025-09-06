@@ -24,7 +24,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { MobileLayout } from "@/components/mobile/MobileLayout";
 import { UserPresence } from "@/components/realtime/UserPresence";
 import { VideoCallButton } from "@/components/network/VideoCallButton";
-import { LiveEventCard } from "@/components/network/LiveEventCard";
 
 
 const Network = () => {
@@ -143,10 +142,6 @@ const Network = () => {
             <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Newspaper className="w-3 h-3" />
               <span className="hidden sm:inline">News</span>
-            </TabsTrigger>
-            <TabsTrigger value="live-events" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
-              <Users className="w-3 h-3" />
-              <span className="hidden sm:inline">Live Events</span>
             </TabsTrigger>
           </TabsList>
 
