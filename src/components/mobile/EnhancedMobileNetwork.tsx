@@ -26,73 +26,88 @@ export const EnhancedMobileNetwork: React.FC = () => {
     );
   }
 
+  // Streamlined navigation - focus on core features
   const tabs = [
-    { id: 'feed', label: 'Feed' },
-    { id: 'stories', label: 'Stories' },
-    { id: 'network', label: 'Network' },
-    { id: 'messages', label: 'Messages' },
-    { id: 'events', label: 'Events' },
-    { id: 'jobs', label: 'Jobs' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'live', label: 'Live' },
-    { id: 'achievements', label: 'Growth' }
+    { id: 'feed', label: 'Feed', primary: true },
+    { id: 'network', label: 'Connect', primary: true },
+    { id: 'jobs', label: 'Jobs', primary: true },
+    { id: 'messages', label: 'Chat', primary: false },
+    { id: 'live', label: 'Live', primary: false }
   ];
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Mobile-First Tab Navigation - LinkedIn Style */}
-      <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border/50 z-30 shadow-sm">
-        <div className="flex overflow-x-auto scrollbar-hide px-4 py-3">
-          {tabs.map((tab, index) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={cn(
-                "flex-none px-5 py-2.5 mx-1 text-sm font-semibold rounded-full transition-all duration-300 whitespace-nowrap",
-                "transform hover:scale-105 active:scale-95 min-h-[44px] min-w-[80px] flex items-center justify-center",
-                activeTab === tab.id
-                  ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/30 scale-105"
-                  : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-muted/60 hover:to-muted/40"
-              )}
-              style={{ 
-                animationDelay: `${index * 0.05}s`,
-                backdropFilter: 'blur(8px)'
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+      {/* Enterprise Navigation - Professional Polish */}
+      <div className="sticky top-0 bg-background/98 backdrop-blur-xl border-b border-border/30 z-30">
+        <div className="safe-area-padding-top">
+          <div className="flex justify-center px-6 py-4">
+            <div className="flex bg-card/80 backdrop-blur-sm rounded-2xl p-1.5 shadow-lg border border-border/50">
+              {tabs.map((tab, index) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={cn(
+                    "relative px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 whitespace-nowrap min-h-[44px] flex items-center justify-center",
+                    "transform hover:scale-105 active:scale-95",
+                    activeTab === tab.id
+                      ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-md scale-105"
+                      : tab.primary 
+                        ? "text-foreground hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                  style={{ 
+                    animationDelay: `${index * 0.05}s`
+                  }}
+                >
+                  {tab.label}
+                  {tab.primary && activeTab !== tab.id && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-brand-green rounded-full" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="flex-1 overflow-hidden pb-[env(safe-area-inset-bottom)] pb-20">
+      {/* Premium Content Area */}
+      <div className="flex-1 overflow-hidden safe-area-padding-bottom bg-gradient-to-b from-background to-muted/20">
         {activeTab === 'feed' && (
-          <>
-            {/* Stories Section */}
-            <StoryBubbles />
+          <div className="space-y-4">
+            {/* Enterprise Stories Section */}
+            <div className="bg-card/50 backdrop-blur-sm border-b border-border/30 shadow-sm">
+              <StoryBubbles />
+            </div>
             
-            {/* Sticky Post Creation Button */}
-            <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/20 px-4 py-3">
-              <button
-                onClick={() => setShowCreatePost(true)}
-                className="w-full h-12 bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-2xl flex items-center px-4 gap-3 hover:scale-[1.02] transition-all duration-300 group"
-              >
-                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <div className="w-4 h-4 bg-primary rounded-full" />
+            {/* Professional CTA Section */}
+            <div className="px-4">
+              <div className="bg-gradient-to-r from-primary/5 via-brand-green/5 to-primary/5 rounded-2xl p-4 border border-primary/10 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="font-semibold text-foreground">Share Your Success</h3>
+                    <p className="text-sm text-muted-foreground">Connect with professionals worldwide</p>
+                  </div>
+                  <div className="bg-brand-green/10 px-3 py-1 rounded-full">
+                    <span className="text-xs font-medium text-brand-green">Free</span>
+                  </div>
                 </div>
-                <span className="text-muted-foreground text-left flex-1">Share your thoughts...</span>
-                <div className="w-6 h-6 border border-primary/30 rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                </div>
-              </button>
+                <button
+                  onClick={() => setShowCreatePost(true)}
+                  className="w-full h-12 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground rounded-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-all duration-300 shadow-md"
+                >
+                  <div className="w-5 h-5 bg-primary-foreground/20 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                  </div>
+                  <span className="font-semibold">Create Post</span>
+                </button>
+              </div>
             </div>
             
             <EnhancedMobileFeed />
             
-            {/* Post Creation Modal */}
+            {/* Enhanced Post Creation Modal */}
             {showCreatePost && (
-              <div className="fixed inset-0 bg-black/60 z-50 flex items-end animate-fade-in">
+              <div className="fixed inset-0 bg-black/70 z-50 flex items-end animate-fade-in backdrop-blur-sm">
                 <div className="w-full animate-slide-in-up">
                   <MobilePostCreation
                     onClose={() => setShowCreatePost(false)}
@@ -101,16 +116,12 @@ export const EnhancedMobileNetwork: React.FC = () => {
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
-        {activeTab === 'stories' && <StoryBubbles />}
         {activeTab === 'network' && <RealTimeMobileNetwork />}
-        {activeTab === 'messages' && <MobileMessaging />}
-        {activeTab === 'events' && <MobileEvents />}
         {activeTab === 'jobs' && <AIJobRecommendations />}
-        {activeTab === 'skills' && <SkillEndorsements />}
+        {activeTab === 'messages' && <MobileMessaging />}
         {activeTab === 'live' && <LiveNetworking />}
-        {activeTab === 'achievements' && <ProfessionalGamification />}
       </div>
     </div>
   );
