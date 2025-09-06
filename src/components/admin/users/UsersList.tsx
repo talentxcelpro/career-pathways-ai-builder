@@ -132,7 +132,7 @@ export const UsersList: React.FC<UsersListProps> = ({
                   />
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-muted/30 p-2 rounded-md transition-colors" onClick={() => window.open(`/user/${user.username || user.id}`, '_blank')}>
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.profile_picture_url} />
                       <AvatarFallback>

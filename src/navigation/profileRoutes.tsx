@@ -14,8 +14,18 @@ import PublicUserProfile from "../pages/network/PublicUserProfile";
 import UsernameProfile from "../pages/profile/UsernameProfile";
 import TalentXcelProfile from "../pages/TalentXcelProfile";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
+import UserProfile from "../pages/UserProfile";
 
 export const profileRoutes = [
+  {
+    title: "User Profile",
+    to: "/user/:username",
+    icon: "user",
+    page: <UserProfile />,
+    description: "View user profile",
+    isPublic: true,
+    requiresAuth: false
+  },
   {
     title: "TalentXcel Profile",
     to: "/profile/talentxcel",

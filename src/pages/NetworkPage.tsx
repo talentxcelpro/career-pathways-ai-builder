@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,7 @@ interface Connection {
 }
 
 const NetworkPage = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('discover');
   const [searchQuery, setSearchQuery] = useState('');
@@ -255,9 +257,13 @@ const NetworkPage = () => {
     toast.info('Messaging feature coming soon!');
   };
 
+  const handleProfileClick = (profileId: string) => {
+    navigate(`/user/${profileId}`);
+  };
+
   const ProfileCard = ({ profile }: { profile: NetworkProfile }) => (
     <Card className="hover:shadow-lg transition-all duration-200 border-slate-200">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 cursor-pointer" onClick={() => handleProfileClick(profile.id)}>
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
             <div className="relative">

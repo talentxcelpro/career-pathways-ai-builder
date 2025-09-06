@@ -66,6 +66,7 @@ import { CVDatabase } from "@/components/employer/CVDatabase";
 import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
 import { LiveEvent } from "@/components/realtime/LiveEvent";
+import UserProfile from "./pages/UserProfile";
 
 // Create query client optimized for performance and SEO
 const queryClient = new QueryClient({
@@ -110,6 +111,7 @@ const publicRoutes = [
   '/companies/:slug',
   '/:slug', // Company slug route
   '/profile/:username',
+  '/user/:username',
   '/network/people/:id',
   '/mobile/network',
   '/employer', // Employer landing page (shows different content based on auth)
