@@ -25717,6 +25717,10 @@ export type Database = {
         }
         Returns: string
       }
+      decrement_post_likes: {
+        Args: { post_id: string }
+        Returns: undefined
+      }
       detect_salary_frequency_issues: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -26171,6 +26175,10 @@ export type Database = {
       }
       increment_job_views: {
         Args: { job_uuid: string }
+        Returns: undefined
+      }
+      increment_post_likes: {
+        Args: { post_id: string }
         Returns: undefined
       }
       increment_profile_views: {
