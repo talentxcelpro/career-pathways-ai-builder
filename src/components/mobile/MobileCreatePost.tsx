@@ -201,7 +201,7 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
                           {isVideo ? (
                             <video
                               src={preview}
-                              className="w-full aspect-square object-cover rounded-lg border shadow-sm"
+                              className="w-full aspect-square object-cover object-center rounded-lg border shadow-sm"
                               muted
                               playsInline
                             />
@@ -209,7 +209,7 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
                             <img
                               src={preview}
                               alt={`Preview ${index + 1}`}
-                              className="w-full aspect-square object-cover rounded-lg border shadow-sm"
+                              className="w-full aspect-square object-cover object-center rounded-lg border shadow-sm"
                             />
                           )}
                           {!isPosting && (

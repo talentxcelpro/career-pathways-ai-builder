@@ -133,7 +133,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
           
           const itemClass = isVideo
             ? `w-full aspect-video rounded-lg bg-black`
-            : `w-full ${isMessage ? 'h-32' : 'aspect-square'} object-cover object-center rounded-lg cursor-pointer hover:opacity-90 transition-opacity`;
+            : `w-full ${isMessage ? 'h-32' : 'aspect-square'} object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity`;
 
           
           return (
@@ -158,7 +158,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
                     <FastImage
                       src={url}
                       alt={`Media ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                       loading="lazy"
                       quality={95}
                     />

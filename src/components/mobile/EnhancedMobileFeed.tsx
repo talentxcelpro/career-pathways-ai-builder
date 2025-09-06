@@ -16,6 +16,8 @@ import { VirtualizedNetworkFeed } from '@/components/performance/VirtualizedNetw
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { VideoContent } from '@/components/feed/VideoContent';
+import { NewsCard } from '@/components/feed/NewsCard';
 
 interface Post {
   id: string;
@@ -64,6 +66,89 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
 
   // Flatten all pages into a single array
   const posts = data?.pages.flatMap(page => page.data) || [];
+
+  // Mock data for videos and news (in real app, these would come from APIs)
+  const mockVideos = [
+    {
+      id: 'video-1',
+      title: 'Top 10 Interview Tips for Tech Professionals',
+      description: 'Learn essential interview strategies that will help you land your dream tech job',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=500&h=300&fit=crop',
+      videoUrl: 'https://youtube.com/watch?v=example1',
+      duration: '8:45',
+      views: 15420,
+      likes: 892,
+      comments: 156,
+      channel: {
+        name: 'TechCareers Pro',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+        verified: true
+      },
+      category: 'Career Tips',
+      publishedAt: '2024-01-10T10:00:00Z'
+    },
+    {
+      id: 'video-2', 
+      title: 'AI Revolution in Job Market 2024',
+      description: 'How artificial intelligence is transforming the way we work and find jobs',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&h=300&fit=crop',
+      videoUrl: 'https://youtube.com/watch?v=example2',
+      duration: '12:30',
+      views: 23100,
+      likes: 1234,
+      comments: 267,
+      channel: {
+        name: 'Future Work TV',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+        verified: true
+      },
+      category: 'Industry Trends',
+      publishedAt: '2024-01-08T14:30:00Z'
+    }
+  ];
+
+  const mockNews = [
+    {
+      id: 'news-1',
+      title: 'Remote Work Policies: What Companies Are Offering in 2024',
+      summary: 'A comprehensive look at how major tech companies are adapting their remote work policies post-pandemic',
+      imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=500&h=300&fit=crop',
+      source: 'TechNews Daily',
+      author: 'Sarah Johnson',
+      publishedAt: '2024-01-12T09:15:00Z',
+      readTime: '4 min read',
+      category: 'Workplace',
+      trending: true,
+      url: 'https://example.com/remote-work-2024'
+    },
+    {
+      id: 'news-2',
+      title: 'Salary Transparency Laws: Impact on Job Seekers',
+      summary: 'New legislation requiring salary disclosure in job postings is changing the hiring landscape across multiple states',
+      imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=300&fit=crop',
+      source: 'Career Insights',
+      author: 'Michael Chen',
+      publishedAt: '2024-01-11T16:45:00Z',
+      readTime: '6 min read',
+      category: 'Legal & Policy',
+      trending: false,
+      url: 'https://example.com/salary-transparency-2024'
+    }
+  ];
+
+  // Combine and shuffle content for engaging mixed feed
+  const allContent = [
+    ...posts.map(post => ({ ...post, contentType: 'post' })),
+    ...mockVideos.map(video => ({ ...video, contentType: 'video' })),
+    ...mockNews.map(news => ({ ...news, contentType: 'news' }))
+  ];
+
+  // Sort by recency and engagement (in real app, use proper algorithm)
+  const sortedContent = allContent.sort((a, b) => {
+    const aDate = new Date(a.created_at || a.publishedAt);
+    const bDate = new Date(b.created_at || b.publishedAt);
+    return bDate.getTime() - aDate.getTime();
+  });
 
   const handleLike = useCallback(async (postId: string) => {
     triggerHaptic('light');
@@ -224,11 +309,11 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
             <img 
               src={post.media_urls[0]} 
               alt="Post content" 
-              className="w-full aspect-video object-cover bg-muted"
+              className="w-full aspect-square object-cover object-center bg-muted rounded-lg"
               loading="lazy"
             />
             {post.post_type === 'video' && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
                 <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
                   <div className="w-0 h-0 border-l-[8px] border-l-primary border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent ml-1" />
                 </div>
@@ -368,10 +453,29 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
           </Button>
         </div>
       ) : (
-        <div className="px-4 pb-6">
-          {posts.map(post => (
-            <PostCard key={post.id} post={post} />
-          ))}
+        <div className="px-4 pb-6 space-y-4">
+          {sortedContent.map((item, index) => {
+            if (item.contentType === 'post') {
+              return <PostCard key={`post-${item.id}`} post={item as NetworkPost} />;
+            } else if (item.contentType === 'video') {
+              return (
+                <VideoContent
+                  key={`video-${item.id}`}
+                  {...item}
+                  className="mb-3"
+                />
+              );
+            } else if (item.contentType === 'news') {
+              return (
+                <NewsCard
+                  key={`news-${item.id}`}
+                  {...item}
+                  className="mb-3"
+                />
+              );
+            }
+            return null;
+          })}
         </div>
       )}
 
@@ -394,7 +498,7 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
               Load More Posts
             </Button>
           </div>
-        ) : posts.length > 0 ? (
+        ) : sortedContent.length > 0 ? (
           <div className="text-center py-6">
             <p className="text-sm text-muted-foreground">You've reached the end of your feed</p>
           </div>

@@ -121,7 +121,7 @@ export const FastImage: React.FC<FastImageProps> = ({
         crossOrigin="anonymous"
         referrerPolicy="no-referrer"
         className={cn(
-          "w-full h-full object-cover transition-all duration-500 ease-out",
+          "w-full h-full object-cover object-center transition-all duration-500 ease-out",
           loaded ? "opacity-100 scale-100" : "opacity-0 scale-105",
           error && "opacity-50"
         )}
