@@ -17,18 +17,31 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
-import { AddictiveFeed } from "@/components/mobile/AddictiveFeed";
+import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { MobileLayout } from "@/components/mobile/MobileLayout";
 import { UserPresence } from "@/components/realtime/UserPresence";
 import { VideoCallButton } from "@/components/network/VideoCallButton";
+import { LiveEventCard } from "@/components/network/LiveEventCard";
 
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
   const { user } = useAuth();
   
+  const {
+    posts,
+    loading,
+    error,
+    handleLike,
+    handleBookmark,
+    handleShare,
+    handleComment,
+    handleConnect,
+    handleApply
+  } = useLinkedInFeed();
 
   // SEO meta tags and structured data
   React.useEffect(() => {
@@ -75,11 +88,19 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile interface with real AI feed
+  // Mobile LinkedIn-style interface
   if (isMobile && user) {
     return (
       <MobileLayout>
-        <AddictiveFeed />
+        <LinkedInMobileFeed
+          posts={posts}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+          onShare={handleShare}
+          onComment={handleComment}
+          onConnect={handleConnect}
+          onApply={handleApply}
+        />
       </MobileLayout>
     );
   }
@@ -122,6 +143,10 @@ const Network = () => {
             <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
               <Newspaper className="w-3 h-3" />
               <span className="hidden sm:inline">News</span>
+            </TabsTrigger>
+            <TabsTrigger value="live-events" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+              <Users className="w-3 h-3" />
+              <span className="hidden sm:inline">Live Events</span>
             </TabsTrigger>
           </TabsList>
 

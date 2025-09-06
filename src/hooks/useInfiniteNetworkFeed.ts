@@ -46,53 +46,34 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       const limit = 10;
       const offset = pageParam * limit;
 
-      // Get current user once (for filters and isLiked/isSaved computations)
-      const { data: userData } = await supabase.auth.getUser();
-      const userId = userData?.user?.id;
-
-      // Build base query for public published posts
       let query = supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          news_articles (
+            id,
+            title,
+            description,
+            url,
+            source_name,
+            author,
+            published_at,
+            image_url,
+            category,
+            tags,
+            is_trending
+          )
+        `)
         .eq('is_public', true)
-        .eq('status', 'published');
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
 
-      // Apply filter: connections
-      if (filters.type === 'connections' && userId) {
-        const { data: connections, error: connError } = await supabase
-          .from('connections')
-          .select('recipient_id, requester_id, status')
-          .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`)
-          .eq('status', 'accepted');
-
-        if (connError) {
-          console.error('Connections fetch error:', connError);
-        } else {
-          const connectedIds = (connections || []).map((c: any) => c.requester_id === userId ? c.recipient_id : c.requester_id);
-          if (connectedIds.length > 0) {
-            query = query.in('author_id', connectedIds);
-          } else {
-            // No connections yet, return empty page early
-            return {
-              data: [],
-              nextPage: undefined,
-              hasMore: false,
-            };
-          }
-        }
-      }
-
-      // Apply filter: trending (order by likes_count desc then created_at desc)
-      if (filters.type === 'trending') {
-        query = query.order('likes_count', { ascending: false, nullsFirst: false })
-                     .order('created_at', { ascending: false });
-      } else {
-        // Default ordering
-        query = query.order('created_at', { ascending: false });
-      }
-
-      // Pagination
-      query = query.range(offset, offset + limit - 1);
+      // Apply filters (safe: skip DB-specific columns to avoid errors)
+      // if (filters.type === 'trending') {
+      //   // Optionally sort by likes_count if available in your schema
+      //   // query = query.order('likes_count', { ascending: false });
+      // }
 
       const { data, error } = await query;
 
@@ -101,7 +82,10 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         throw error;
       }
 
-      // Prepare to fetch profiles for authors
+      // Fetch current user once
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+
       // Fetch profiles for all posts using both author_id and user_id
       let profilesMap = new Map<string, any>();
       try {
@@ -115,7 +99,7 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
           console.log('Fetching profiles for user IDs:', allUserIds);
           const { data: profilesData, error: profileError } = await supabase
             .from('profiles')
-            .select('id, full_name, profile_picture_url, avatar_url, title, location')
+            .select('id, full_name, profile_picture_url, title, location')
             .in('id', allUserIds);
           
           if (profileError) {

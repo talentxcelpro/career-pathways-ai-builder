@@ -40,6 +40,16 @@ export const CommunityManagement: React.FC = () => {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <Calendar className="h-8 w-8 text-purple-600 mb-2" />
+            <CardTitle>Live Events</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-sm text-muted-foreground">Scheduled events</p>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

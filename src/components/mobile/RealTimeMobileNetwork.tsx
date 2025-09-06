@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserAvatar } from '@/components/common/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
@@ -11,7 +10,6 @@ import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { MobilePullToRefresh } from '@/components/mobile/MobilePullToRefresh';
-import { MobileUserProfileModal } from '@/components/mobile/MobileUserProfileModal';
 import { formatTimeAgo } from '@/utils/formatTime';
 import { 
   Plus, 
@@ -30,8 +28,6 @@ import {
 interface MobileNetworkPost {
   id: string;
   content: string;
-  author_id?: string;
-  user_id?: string;
   author: {
     name: string;
     avatar?: string;
@@ -45,13 +41,7 @@ interface MobileNetworkPost {
   media?: string[];
 }
 
-interface RealTimeMobileNetworkProps {
-  activeFilter?: 'all' | 'connections' | 'trending';
-}
-
-export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({ 
-  activeFilter = 'all' 
-}) => {
+export const RealTimeMobileNetwork: React.FC = () => {
   const { user } = useAuth();
   const { triggerHaptic } = useHapticFeedback();
   const { isOnline, sync, lastSync, pendingOperations } = useRealtimeSync();
@@ -68,74 +58,27 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
     hasNextPage,
     isFetchingNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ type: activeFilter });
-
-  // Real-time subscription for posts
-  useEffect(() => {
-    const channel = supabase
-      .channel('posts_realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'posts'
-        },
-        () => {
-          // Refetch when new posts are created
-          refetch();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'posts'
-        },
-        () => {
-          // Refetch when posts are updated (likes, etc.)
-          refetch();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [refetch]);
+  } = useInfiniteNetworkFeed({ type: 'all' });
 
   // Flatten all pages into a single array
   const posts = data?.pages.flatMap(page => page.data) || [];
 
-  // Transform posts for mobile display with diagnostics
-  const mobilePosts: MobileNetworkPost[] = posts.map(post => {
-    console.log('🔍 Post transform:', { 
-      postId: post.id, 
-      authorId: post.author_id, 
-      userId: post.user_id,
-      profiles: post.profiles,
-      fullName: post.profiles?.full_name
-    });
-    
-    return {
-      id: post.id,
-      content: post.content || '',
-      author_id: post.author_id,
-      user_id: post.user_id,
-      author: {
-        name: post.profiles?.full_name || 'Unknown User',
-        avatar: post.profiles?.profile_picture_url || post.profiles?.avatar_url,
-        title: post.profiles?.title
-      },
-      timeAgo: formatTimeAgo(post.created_at),
-      likes: post.likes_count || 0,
-      comments: post.comments_count || 0,
-      shares: post.shares_count || 0,
-      isLiked: post.isLiked || false,
-      media: post.media_urls
-    };
-  });
+  // Transform posts for mobile display
+  const mobilePosts: MobileNetworkPost[] = posts.map(post => ({
+    id: post.id,
+    content: post.content || '',
+    author: {
+      name: post.profiles?.full_name || 'Unknown User',
+      avatar: post.profiles?.profile_picture_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
+      title: post.profiles?.title || 'Professional'
+    },
+    timeAgo: formatTimeAgo(post.created_at),
+    likes: post.likes_count || 0,
+    comments: post.comments_count || 0,
+    shares: post.shares_count || 0,
+    isLiked: false, // TODO: Check if user has liked
+    media: post.media_urls
+  }));
 
   const handleRefresh = async () => {
     triggerHaptic('light');
@@ -216,77 +159,21 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
   };
 
   const handleLike = async (postId: string) => {
-    try {
-      triggerHaptic('success');
-      if (!user?.id) throw new Error('Please sign in to like posts');
-
-      // Check if like exists
-      const { data: existingLike } = await supabase
-        .from('post_likes')
-        .select('id')
-        .eq('post_id', postId)
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existingLike) {
-        // Unlike
-        const { error: delErr } = await supabase
-          .from('post_likes')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
-        if (delErr) throw delErr;
-        // Decrement counter via RPC if available
-        await supabase.rpc('decrement_post_likes', { post_id: postId });
-      } else {
-        // Like
-        const { error: insErr } = await supabase
-          .from('post_likes')
-          .insert({ post_id: postId, user_id: user.id });
-        if (insErr) throw insErr;
-        // Increment counter via RPC if available
-        await supabase.rpc('increment_post_likes', { post_id: postId });
-      }
-
-      await refetch();
-    } catch (e) {
-      console.error('Like error:', e);
-    }
+    triggerHaptic('success');
+    await sync('posts', { action: 'like', postId });
+    await refetch(); // Refresh to show updated like count
   };
 
-  const handleComment = async (postId: string) => {
-    try {
-      triggerHaptic('light');
-      if (!user?.id) throw new Error('Please sign in to comment');
-      const content = window.prompt('Write a comment');
-      if (!content || !content.trim()) return;
-      const { error: cErr } = await supabase
-        .from('post_comments')
-        .insert({ post_id: postId, user_id: user.id, content: content.trim() });
-      if (cErr) throw cErr;
-      await refetch();
-    } catch (e) {
-      console.error('Comment error:', e);
-    }
+  const handleComment = (postId: string) => {
+    triggerHaptic('light');
+    // TODO: Open comment modal or navigate to post detail
+    console.log('Comment on post:', postId);
   };
 
   const handleShare = (postId: string) => {
-    try {
-      triggerHaptic('light');
-      const shareUrl = `${window.location.origin}/post/${postId}`;
-      const text = 'Check out this post on Career Network';
-      if (navigator.share) {
-        navigator.share({ title: 'Career Network', text, url: shareUrl });
-      } else {
-        // Fallback to LinkedIn/Twitter
-        const linkedIn = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-        const twitter = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
-        window.open(linkedIn, '_blank');
-        setTimeout(() => window.open(twitter, '_blank'), 300);
-      }
-    } catch (e) {
-      console.error('Share error:', e);
-    }
+    triggerHaptic('light');
+    // TODO: Implement share functionality
+    console.log('Share post:', postId);
   };
 
   if (isError) {
@@ -316,11 +203,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
           <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b">
             <div className="flex items-center justify-between p-4">
               <div>
-                <h1 className="text-xl font-bold">
-                  {activeFilter === 'all' ? 'All Posts' : 
-                   activeFilter === 'connections' ? 'My Network' : 
-                   'Trending Now'}
-                </h1>
+                <h1 className="text-xl font-bold">Network</h1>
                 <p className="text-sm text-muted-foreground">
                   {mobilePosts.length} professional updates
                 </p>
@@ -342,7 +225,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
           <div className="p-4 border-b bg-card">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.user_metadata?.avatar_url || user?.user_metadata?.picture} />
+                <AvatarImage src={user?.user_metadata?.picture} />
                 <AvatarFallback>
                   {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
                 </AvatarFallback>
@@ -381,51 +264,30 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
               mobilePosts.map((post) => (
                 <Card key={post.id} className="rounded-none border-x-0 border-t-0 border-b">
                   <div className="p-4 space-y-3">
-                     {/* Post Header */}
-                     <div className="flex items-start justify-between">
-                       <MobileUserProfileModal 
-                         userId={post.author_id || post.user_id || ''}
-                         trigger={
-                           <div className="flex items-start gap-3 flex-1 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.98] transition-all">
-                              {/* Use reusable avatar component with robust fallbacks */}
-                              <UserAvatar 
-                                src={post.author.avatar || undefined}
-                                userName={post.author.name}
-                                size="md"
-                                className="ring-2 ring-primary/10"
-                              />
-                             <div>
-                               <h3 className="font-semibold text-sm hover:text-primary transition-colors">
-                                 {post.author.name}
-                               </h3>
-                               {post.author.title && (
-                                 <p className="text-xs text-muted-foreground">{post.author.title}</p>
-                               )}
-                               <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
-                             </div>
-                           </div>
-                         }
-                         onConnectionChange={() => refetch()}
-                       />
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 hover:bg-muted active:scale-95 transition-transform"
-                        onClick={() => triggerHaptic('light')}
-                      >
+                    {/* Post Header */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={post.author.avatar} />
+                          <AvatarFallback>
+                            {post.author.name.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-semibold text-sm">{post.author.name}</h3>
+                          {post.author.title && (
+                            <p className="text-xs text-muted-foreground">{post.author.title}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </div>
 
                     {/* Post Content */}
-                    <div 
-                      className="space-y-3 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.99] transition-all"
-                      onClick={() => {
-                        triggerHaptic('light');
-                        // Navigate to post detail
-                        console.log('View post detail:', post.id);
-                      }}
-                    >
+                    <div className="space-y-3">
                       <p className="text-sm leading-relaxed">{post.content}</p>
                       
                       {/* Media if present */}
@@ -434,7 +296,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                           <img 
                             src={post.media[0]} 
                             alt="Post media" 
-                            className="w-full h-48 object-cover hover:scale-105 transition-transform"
+                            className="w-full h-48 object-cover"
                           />
                         </div>
                       )}
@@ -443,21 +305,8 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                     {/* Engagement Stats */}
                     {(post.likes > 0 || post.comments > 0) && (
                       <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
-                        <button 
-                          className="hover:text-primary transition-colors active:scale-95"
-                          onClick={() => {
-                            triggerHaptic('light');
-                            console.log('View likes for post:', post.id);
-                          }}
-                        >
-                          {post.likes} {post.likes === 1 ? 'like' : 'likes'}
-                        </button>
-                        <button 
-                          className="hover:text-primary transition-colors active:scale-95"
-                          onClick={() => handleComment(post.id)}
-                        >
-                          {post.comments} {post.comments === 1 ? 'comment' : 'comments'}
-                        </button>
+                        <span>{post.likes} likes</span>
+                        <span>{post.comments} comments</span>
                       </div>
                     )}
 
@@ -466,9 +315,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className={`flex-1 gap-2 hover:bg-red-50 hover:text-red-600 active:scale-95 transition-all ${
-                          post.isLiked ? 'text-red-500 bg-red-50' : 'hover:bg-muted'
-                        }`}
+                        className={`flex-1 gap-2 ${post.isLiked ? 'text-red-500' : ''}`}
                         onClick={() => handleLike(post.id)}
                       >
                         <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-current' : ''}`} />
@@ -477,7 +324,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-1 gap-2 hover:bg-blue-50 hover:text-blue-600 active:scale-95 transition-all"
+                        className="flex-1 gap-2"
                         onClick={() => handleComment(post.id)}
                       >
                         <MessageCircle className="h-4 w-4" />
@@ -486,7 +333,7 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-1 gap-2 hover:bg-green-50 hover:text-green-600 active:scale-95 transition-all"
+                        className="flex-1 gap-2"
                         onClick={() => handleShare(post.id)}
                       >
                         <Share2 className="h-4 w-4" />

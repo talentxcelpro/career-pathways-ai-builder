@@ -49,56 +49,6 @@
   transform: translateY(0);
 }
 
-/* Addictive UI Utilities */
-.hover-scale {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-.hover-scale:active {
-  transform: scale(0.95);
-}
-
-.gesture-feedback {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.gesture-feedback:active {
-  transform: scale(0.95);
-  filter: brightness(0.95);
-}
-
-/* Double-tap prevention */
-.no-select {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Smooth haptic-style feedback */
-.haptic-light {
-  transition: all 0.1s ease-out;
-}
-
-.haptic-light:active {
-  transform: scale(0.98);
-  opacity: 0.8;
-}
-
-/* Real-time counters */
-.counter-animate {
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.counter-animate.bump {
-  animation: like-bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
 .page-exit {
   opacity: 1;
   transform: translateY(0);
