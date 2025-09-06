@@ -22,7 +22,7 @@ const FastPassportRedirect = () => {
 
         if (profile?.username) {
           // Use window.location.replace for instant redirect without history entry
-          window.location.replace(`/profile/${profile.username}`);
+          window.location.replace(`/user/${profile.username}`);
         } else {
           window.location.replace('/404');
         }

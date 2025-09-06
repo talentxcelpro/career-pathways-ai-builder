@@ -41,7 +41,7 @@ const PassportUrlRedirect = () => {
           navigate(`/passport/user/${id}`, { replace: true });
         } else if (profile?.username) {
           // Redirect to SEO-friendly profile URL
-          navigate(`/profile/${profile.username}`, { replace: true });
+          navigate(`/user/${profile.username}`, { replace: true });
         } else {
           // Fallback to legacy UUID route if no username
           navigate(`/passport/user/${id}`, { replace: true });

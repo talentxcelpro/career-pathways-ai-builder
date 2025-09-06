@@ -46,7 +46,7 @@ const PassportRouteHandler: React.FC = () => {
 
         if (profile?.username) {
           // Redirect to SEO-friendly profile URL
-          navigate(`/profile/${profile.username}`, { replace: true });
+          navigate(`/user/${profile.username}`, { replace: true });
         } else {
           // Fallback to legacy UUID route
           navigate(`/passport/user/${param}`, { replace: true });
