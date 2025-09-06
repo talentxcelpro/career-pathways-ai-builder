@@ -28,8 +28,29 @@ export const PostActions: React.FC<PostActionsProps> = ({
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isCheckingSaved, setIsCheckingSaved] = useState(true);
   const queryClient = useQueryClient();
   const { createPostShareData } = useShareContent();
+
+  // Check if post is already saved on mount
+  React.useEffect(() => {
+    const checkSavedStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data } = await supabase
+          .from('saved_posts')
+          .select('id')
+          .eq('post_id', postId)
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setIsSaved(!!data);
+      }
+      setIsCheckingSaved(false);
+    };
+
+    checkSavedStatus();
+  }, [postId]);
 
   // Like mutation
   const likeMutation = useMutation({
@@ -168,7 +189,8 @@ export const PostActions: React.FC<PostActionsProps> = ({
         variant="ghost"
         size="sm"
         onClick={handleSave}
-        className={`${isSaved ? 'text-blue-500' : 'text-gray-500'}`}
+        disabled={isCheckingSaved}
+        className={`${isSaved ? 'text-blue-500' : 'text-gray-500'} transition-all hover:scale-105`}
       >
         <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
       </Button>
