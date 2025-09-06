@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Bell, 
   BellOff, 
@@ -17,6 +18,7 @@ import {
 import { useEnhancedNotifications } from '@/hooks/useEnhancedNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NotificationSettings {
   jobAlerts: boolean;
@@ -70,6 +72,23 @@ export const LinkedInStyleNotificationCenter: React.FC = () => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  const getAvatarSrc = (n: any) => n?.data?.image || n?.data?.avatar || n?.image || '';
+  const getTargetUrl = (n: any) => n?.data?.url || (n as any).link || (n as any).action_url || '';
+  const { user } = useAuth();
+  const openNotification = async (n: any) => {
+    try {
+      if (user?.id) {
+        await markAsRead(n.id);
+      }
+    } catch (e) {
+      console.warn('markAsRead failed (non-blocking):', e);
+    }
+    const url = getTargetUrl(n);
+    if (url) {
+      window.location.href = url;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -91,7 +110,7 @@ export const LinkedInStyleNotificationCenter: React.FC = () => {
               className="text-primary hover:text-primary/80"
               onClick={() => markAllAsRead()}
             >
-              Enable
+              Mark all read
             </Button>
           </div>
         </div>
@@ -156,12 +175,17 @@ export const LinkedInStyleNotificationCenter: React.FC = () => {
                     "border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer",
                     !notification.is_read && "bg-blue-50/50 border-l-4 border-l-blue-500"
                   )}
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => openNotification(notification)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 mt-1">
-                        {getNotificationIcon(notification.type)}
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src={getAvatarSrc(notification)} alt="notification" />
+                          <AvatarFallback className="text-xs bg-muted">
+                            {notification.title?.[0]?.toUpperCase() || 'N'}
+                          </AvatarFallback>
+                        </Avatar>
                       </div>
                       
                       <div className="flex-1 min-w-0">

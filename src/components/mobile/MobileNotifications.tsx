@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useEnhancedNotifications } from '@/hooks/useEnhancedNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -58,6 +59,20 @@ export const MobileNotifications = () => {
 
   const updateSetting = (key: keyof NotificationSettings, value: boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const getAvatarSrc = (n: any) => n?.data?.image || n?.data?.avatar || n?.image || '';
+  const getTargetUrl = (n: any) => n?.data?.url || (n as any).link || (n as any).action_url || '';
+  const openNotification = async (n: any) => {
+    try {
+      await markAsRead(n.id); // store handles auth errors internally
+    } catch (e) {
+      console.warn('markAsRead failed (non-blocking):', e);
+    }
+    const url = getTargetUrl(n);
+    if (url) {
+      window.location.href = url;
+    }
   };
 
   return (
@@ -144,7 +159,7 @@ export const MobileNotifications = () => {
                   "border-0 shadow-sm cursor-pointer transition-all",
                   !notification.is_read && "bg-blue-50/50 border-l-4 border-l-blue-500"
                 )}
-                onClick={() => markAsRead(notification.id)}
+                onClick={() => openNotification(notification)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
