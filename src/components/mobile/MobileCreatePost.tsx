@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { getCustomStorageUrl } from '@/utils/storage';
 import { Camera, Image, MapPin, Send, X, Smile, Link2, FileText, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -104,7 +105,8 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
             }
 
             const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
-            mediaUrls.push(publicUrl);
+            const customUrl = getCustomStorageUrl(publicUrl);
+            mediaUrls.push(customUrl);
           } catch (uploadError) {
             console.error('Upload error:', uploadError);
             toast.error(`Failed to upload ${file.name}`);

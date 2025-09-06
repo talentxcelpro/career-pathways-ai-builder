@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { getCustomStorageUrl } from '@/utils/storage';
 import { supabase } from '@/integrations/supabase/client';
 import { ImageOptimizer } from '@/utils/imageOptimization';
 import { FastImage } from '@/components/common/FastImage';
@@ -78,7 +79,8 @@ export const EnhancedMediaUpload: React.FC<EnhancedMediaUploadProps> = ({
 
             if (error) throw error;
 
-            const videoUrl = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/post-media/${data.path}`;
+            const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
+            const videoUrl = getCustomStorageUrl(publicUrl);
             
             const finalItem: MediaItem = {
               id: itemId,

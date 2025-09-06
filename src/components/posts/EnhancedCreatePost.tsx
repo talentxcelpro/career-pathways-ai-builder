@@ -1,5 +1,6 @@
 
 import React, { useState, useRef } from 'react';
+import { getCustomStorageUrl } from '@/utils/storage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -168,7 +169,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         }
 
         const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
-        const url = publicUrl;
+        const url = getCustomStorageUrl(publicUrl);
         newFiles.push({
           id: randomId,
           url: url,

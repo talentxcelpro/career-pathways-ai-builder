@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { getCustomStorageUrl } from '@/utils/storage';
 import VideoPlayer from './VideoPlayer';
 import { FastImage } from '@/components/common/FastImage';
 import { ImageOptimizer } from '@/utils/imageOptimization';
@@ -53,8 +54,9 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
   // Use URL detection hook to find URLs in content
   const { detectedUrls } = useUrlDetection(content);
   
-  // Combine media URLs with URLs found in content
-  const allMediaUrls = [...mediaUrls, ...detectedUrls.map(u => u.url)];
+  // Convert storage URLs to custom domain and combine with URLs found in content
+  const customMediaUrls = mediaUrls.map(url => getCustomStorageUrl(url));
+  const allMediaUrls = [...customMediaUrls, ...detectedUrls.map(u => u.url)];
   
   // Separate URLs into media URLs and preview URLs
   const mediaItems = allMediaUrls.filter(url => {

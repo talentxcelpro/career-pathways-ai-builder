@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ImageOptimizer } from '@/utils/imageOptimization';
+import { getCustomStorageUrl } from '@/utils/storage';
 
 interface FastImageProps {
   src: string;
@@ -40,8 +41,11 @@ export const FastImage: React.FC<FastImageProps> = ({
       return;
     }
 
+    // Convert to custom domain first, then optimize
+    const customSrc = getCustomStorageUrl(src);
+    
     // Get optimized URL based on props  
-    const optimized = ImageOptimizer.getOptimizedUrl(src, { 
+    const optimized = ImageOptimizer.getOptimizedUrl(customSrc, {
       width: thumbnail ? 400 : width, 
       height: thumbnail ? 400 : height, 
       quality: thumbnail ? 80 : quality,
