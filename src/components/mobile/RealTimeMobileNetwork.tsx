@@ -69,6 +69,41 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
     refetch
   } = useInfiniteNetworkFeed({ type: activeFilter });
 
+  // Real-time subscription for posts
+  useEffect(() => {
+    const channel = supabase
+      .channel('posts_realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'posts'
+        },
+        () => {
+          // Refetch when new posts are created
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'posts'
+        },
+        () => {
+          // Refetch when posts are updated (likes, etc.)
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
+
   // Flatten all pages into a single array
   const posts = data?.pages.flatMap(page => page.data) || [];
 
@@ -76,16 +111,18 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
   const mobilePosts: MobileNetworkPost[] = posts.map(post => ({
     id: post.id,
     content: post.content || '',
+    author_id: post.author_id,
+    user_id: post.user_id,
     author: {
       name: post.profiles?.full_name || 'Unknown User',
-      avatar: post.profiles?.profile_picture_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
-      title: post.profiles?.title || 'Professional'
+      avatar: post.profiles?.profile_picture_url,
+      title: post.profiles?.title
     },
     timeAgo: formatTimeAgo(post.created_at),
     likes: post.likes_count || 0,
     comments: post.comments_count || 0,
     shares: post.shares_count || 0,
-    isLiked: false, // TODO: Check if user has liked
+    isLiked: post.isLiked || false,
     media: post.media_urls
   }));
 
@@ -336,13 +373,13 @@ export const RealTimeMobileNetwork: React.FC<RealTimeMobileNetworkProps> = ({
                      {/* Post Header */}
                      <div className="flex items-start justify-between">
                        <MobileUserProfileModal 
-                         userId={post.author_id || post.user_id}
+                         userId={post.author_id || post.user_id || ''}
                          trigger={
                            <div className="flex items-start gap-3 flex-1 cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 active:scale-[0.98] transition-all">
                              <Avatar className="h-10 w-10 ring-2 ring-primary/10">
-                               <AvatarImage src={post.author.avatar} />
+                               <AvatarImage src={post.author.avatar || undefined} />
                                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                                 {post.author.name.split(' ').map(n => n[0]).join('')}
+                                 {post.author.name ? post.author.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                                </AvatarFallback>
                              </Avatar>
                              <div>
