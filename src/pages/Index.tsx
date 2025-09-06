@@ -28,19 +28,21 @@ const Index = () => {
       setDisableOneTap(false);
     }
   }, []);
-  // Check authentication status in background
+  // Fast auth check - optimized for instant loading
   useEffect(() => {
+    // Set up auth listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      setAuthChecked(true);
+    });
+
+    // Then check existing session
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
       setAuthChecked(true);
     };
     checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-      setAuthChecked(true);
-    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -64,6 +66,11 @@ const Index = () => {
         </div>
       }>
         {enableTestSend && <TestEmailSender />}
+        {!disableOneTap && !authChecked && (
+          <div className="fixed top-4 right-4 z-50 bg-background/80 backdrop-blur-sm border rounded-lg px-3 py-2 text-sm text-muted-foreground">
+            Looking for your Google account...
+          </div>
+        )}
         {!disableOneTap && <GoogleOneTapLogin autoSelect />}
         <LandingPage />
       </Suspense>

@@ -69,6 +69,8 @@ export const useGoogleOneTap = ({
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
         use_fedcm_for_prompt: true,
+        ux_mode: 'popup',
+        state_cookie_domain: window.location.hostname,
       });
 
       // Show the One Tap prompt
