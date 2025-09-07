@@ -48,17 +48,18 @@ export const linkifyText = (text: string): React.ReactNode[] => {
     const matchedText = match[0];
     
     if (matchedText.startsWith('http')) {
-      // Check if it's a video URL
+      // Check if it's a video URL - render inline thumbnail
       if (isVideoUrl(matchedText)) {
-        // Create video thumbnail component
+        // Create interactive video thumbnail component
         parts.push(
           React.createElement('div', {
             key: `video-${match.index}`,
-            className: 'my-3 max-w-md'
+            className: 'my-3 max-w-full'
           }, 
             React.createElement(VideoThumbnail, {
               url: matchedText,
-              className: 'w-full'
+              className: 'w-full max-w-md mx-auto',
+              showTitle: true
             })
           )
         );

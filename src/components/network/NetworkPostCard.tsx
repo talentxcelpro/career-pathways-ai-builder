@@ -180,13 +180,13 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
         )}
 
-        {/* Post Content - Make clickable to navigate to detail page */}
-        <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-muted/30 -mx-2 px-2 py-2 rounded transition-colors">
+        {/* Post Content */}
+        <div className="mb-4">
           <div className="text-foreground leading-relaxed mb-3">
             {renderContentWithLinks(post.content)}
           </div>
 
-          {/* Media Preview */}
+          {/* Media Preview - Now fully interactive */}
           {post.media_urls && post.media_urls.length > 0 && (
             <MediaPreview 
               content={post.content} 
@@ -194,7 +194,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
             />
           )}
 
-          {/* Link Previews */}
+          {/* Link Previews - Now fully clickable */}
           {post.link_previews && post.link_previews.length > 0 && (
             <div className="space-y-3 mt-3">
               {post.link_previews.map((linkData, index) => (
@@ -217,7 +217,17 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
               ))}
             </div>
           )}
-        </Link>
+
+          {/* View Details Link */}
+          <div className="mt-3 pt-2 border-t border-border/30">
+            <Link 
+              to={`/network/posts/${post.id}`} 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+            >
+              View full post details →
+            </Link>
+          </div>
+        </div>
 
         {/* Real-time Engagement Actions */}
         <EngagementActions
