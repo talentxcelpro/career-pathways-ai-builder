@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ImageOptimizer } from '@/utils/imageOptimization';
-import { getCustomStorageUrl } from '@/utils/storage';
+import { getCustomStorageUrl, getOriginalStorageUrl } from '@/utils/storage';
 
 interface FastImageProps {
   src: string;
@@ -34,12 +34,17 @@ export const FastImage: React.FC<FastImageProps> = ({
   const [loaded, setLoaded] = useState(false);
   const [optimizedSrc, setOptimizedSrc] = useState('');
   const [blurPlaceholder, setBlurPlaceholder] = useState('');
-
+  const [disableSrcSet, setDisableSrcSet] = useState(false);
   useEffect(() => {
     if (!src) {
       setError(true);
       return;
     }
+
+    // Reset state on source change
+    setError(false);
+    setLoaded(false);
+    setDisableSrcSet(false);
 
     // Convert to custom domain first, then optimize
     const customSrc = getCustomStorageUrl(src);
@@ -85,11 +90,13 @@ export const FastImage: React.FC<FastImageProps> = ({
   const handleError = () => {
     console.warn('FastImage: Failed to load:', optimizedSrc);
     
-    // If we're using a proxied URL and it fails, try the original Supabase URL
-    if (optimizedSrc && optimizedSrc.includes('.functions.supabase.co/storage-proxy/')) {
-      console.log('Retrying with original Supabase URL');
-      const originalUrl = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/${optimizedSrc.split('storage-proxy/')[1]}`;
+    // If current URL is proxied/custom, fall back to original Supabase URL and disable srcSet
+    const originalUrl = getOriginalStorageUrl(optimizedSrc);
+    if (originalUrl && originalUrl !== optimizedSrc) {
+      console.log('Retrying image load with original Supabase URL');
+      setDisableSrcSet(true);
       setOptimizedSrc(originalUrl);
+      setLoaded(false);
       return;
     }
     
@@ -142,7 +149,7 @@ export const FastImage: React.FC<FastImageProps> = ({
         onLoad={handleLoad}
         onError={handleError}
         // Mobile-first responsive srcSet
-        srcSet={!thumbnail && !error ? `
+        srcSet={!thumbnail && !error && !disableSrcSet ? `
           ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 320, quality: 80, format: 'webp' })} 320w,
           ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 640, quality: 85, format: 'webp' })} 640w,
           ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 768, quality: 85, format: 'webp' })} 768w,
