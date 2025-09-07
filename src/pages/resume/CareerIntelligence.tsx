@@ -297,7 +297,7 @@ const CareerIntelligence = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="year" />
                         <YAxis />
-                        <Tooltip formatter={(value) => [`₹${(value / 100000).toFixed(1)}L`, 'Salary']} />
+                        <Tooltip formatter={(value) => [`₹${(Number(value) / 100000).toFixed(1)}L`, 'Salary']} />
                         <Line type="monotone" dataKey="salary" stroke="#8884d8" strokeWidth={3} />
                       </LineChart>
                     </ResponsiveContainer>
@@ -315,7 +315,7 @@ const CareerIntelligence = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="location" />
                         <YAxis />
-                        <Tooltip formatter={(value) => [`₹${(value / 100000).toFixed(1)}L`, 'Avg Salary']} />
+                        <Tooltip formatter={(value) => [`₹${(Number(value) / 100000).toFixed(1)}L`, 'Avg Salary']} />
                         <Bar dataKey="avgSalary" fill="#8884d8" />
                       </BarChart>
                     </ResponsiveContainer>
