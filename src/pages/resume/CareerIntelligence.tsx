@@ -28,58 +28,87 @@ interface SkillTrend {
 const mockMarketData: MarketData[] = [
   {
     role: 'Software Engineer',
-    avgSalary: 95000,
-    growth: 22,
+    avgSalary: 850000, // ₹8.5 LPA
+    growth: 25,
     demand: 'High',
-    locations: ['San Francisco', 'New York', 'Seattle', 'Austin'],
+    locations: ['Bangalore', 'Mumbai', 'Hyderabad', 'Pune'],
     skills: ['JavaScript', 'React', 'Python', 'AWS'],
     companies: 1250
   },
   {
     role: 'Data Scientist',
-    avgSalary: 120000,
-    growth: 35,
+    avgSalary: 1200000, // ₹12 LPA
+    growth: 40,
     demand: 'High',
-    locations: ['San Francisco', 'Boston', 'New York', 'Chicago'],
+    locations: ['Bangalore', 'Mumbai', 'Delhi NCR', 'Chennai'],
     skills: ['Python', 'SQL', 'Machine Learning', 'R'],
     companies: 890
   },
   {
     role: 'Product Manager',
-    avgSalary: 130000,
-    growth: 28,
+    avgSalary: 1500000, // ₹15 LPA
+    growth: 32,
     demand: 'High',
-    locations: ['San Francisco', 'New York', 'Los Angeles', 'Seattle'],
+    locations: ['Bangalore', 'Mumbai', 'Delhi NCR', 'Hyderabad'],
     skills: ['Strategy', 'Analytics', 'Leadership', 'Agile'],
     companies: 670
+  },
+  {
+    role: 'DevOps Engineer',
+    avgSalary: 950000, // ₹9.5 LPA
+    growth: 35,
+    demand: 'High',
+    locations: ['Bangalore', 'Pune', 'Chennai', 'Hyderabad'],
+    skills: ['Docker', 'Kubernetes', 'AWS', 'Jenkins'],
+    companies: 520
+  },
+  {
+    role: 'Full Stack Developer',
+    avgSalary: 750000, // ₹7.5 LPA
+    growth: 28,
+    demand: 'High',
+    locations: ['Bangalore', 'Mumbai', 'Pune', 'Noida'],
+    skills: ['React', 'Node.js', 'MongoDB', 'Express'],
+    companies: 980
   }
 ];
 
 const salaryTrends = [
-  { year: '2020', salary: 85000 },
-  { year: '2021', salary: 90000 },
-  { year: '2022', salary: 95000 },
-  { year: '2023', salary: 100000 },
-  { year: '2024', salary: 110000 },
+  { year: '2020', salary: 650000 }, // ₹6.5 LPA
+  { year: '2021', salary: 720000 }, // ₹7.2 LPA
+  { year: '2022', salary: 800000 }, // ₹8 LPA
+  { year: '2023', salary: 850000 }, // ₹8.5 LPA
+  { year: '2024', salary: 920000 }, // ₹9.2 LPA
 ];
 
 const skillsTrends: SkillTrend[] = [
-  { skill: 'AI/ML', demand: 95, growth: 45, avgSalary: 140000 },
-  { skill: 'React', demand: 88, growth: 25, avgSalary: 95000 },
-  { skill: 'Python', demand: 92, growth: 35, avgSalary: 105000 },
-  { skill: 'AWS', demand: 85, growth: 30, avgSalary: 110000 },
-  { skill: 'TypeScript', demand: 78, growth: 40, avgSalary: 100000 },
-  { skill: 'Docker', demand: 75, growth: 28, avgSalary: 98000 },
-  { skill: 'GraphQL', demand: 65, growth: 50, avgSalary: 105000 },
-  { skill: 'Next.js', demand: 70, growth: 55, avgSalary: 100000 }
+  { skill: 'AI/ML', demand: 95, growth: 45, avgSalary: 1400000 }, // ₹14 LPA
+  { skill: 'React', demand: 88, growth: 25, avgSalary: 850000 }, // ₹8.5 LPA
+  { skill: 'Python', demand: 92, growth: 35, avgSalary: 950000 }, // ₹9.5 LPA
+  { skill: 'AWS', demand: 85, growth: 30, avgSalary: 1100000 }, // ₹11 LPA
+  { skill: 'TypeScript', demand: 78, growth: 40, avgSalary: 900000 }, // ₹9 LPA
+  { skill: 'Docker', demand: 75, growth: 28, avgSalary: 880000 }, // ₹8.8 LPA
+  { skill: 'GraphQL', demand: 65, growth: 50, avgSalary: 950000 }, // ₹9.5 LPA
+  { skill: 'Next.js', demand: 70, growth: 55, avgSalary: 900000 }, // ₹9 LPA
+  { skill: 'Kubernetes', demand: 72, growth: 42, avgSalary: 1050000 }, // ₹10.5 LPA
+  { skill: 'Flutter', demand: 68, growth: 48, avgSalary: 820000 }, // ₹8.2 LPA
+  { skill: 'Go', demand: 63, growth: 38, avgSalary: 1100000 }, // ₹11 LPA
+  { skill: 'Blockchain', demand: 58, growth: 60, avgSalary: 1250000 } // ₹12.5 LPA
 ];
 
 const locationData = [
-  { location: 'San Francisco', avgSalary: 145000, costOfLiving: 180, jobs: 2500 },
-  { location: 'New York', avgSalary: 125000, costOfLiving: 160, jobs: 3200 },
-  { location: 'Seattle', avgSalary: 115000, costOfLiving: 140, jobs: 1800 },
-  { location: 'Austin', avgSalary: 95000, costOfLiving: 110, jobs: 1200 },
-  { location: 'Remote', avgSalary: 105000, costOfLiving: 100, jobs: 4500 }
+  { location: 'Bangalore', avgSalary: 950000, costOfLiving: 130, jobs: 4500 }, // ₹9.5 LPA
+  { location: 'Mumbai', avgSalary: 920000, costOfLiving: 180, jobs: 3200 }, // ₹9.2 LPA
+  { location: 'Delhi NCR', avgSalary: 880000, costOfLiving: 140, jobs: 2800 }, // ₹8.8 LPA
+  { location: 'Hyderabad', avgSalary: 850000, costOfLiving: 110, jobs: 2200 }, // ₹8.5 LPA
+  { location: 'Pune', avgSalary: 820000, costOfLiving: 120, jobs: 1800 }, // ₹8.2 LPA
+  { location: 'Chennai', avgSalary: 800000, costOfLiving: 115, jobs: 1600 }, // ₹8 LPA
+  { location: 'Kolkata', avgSalary: 750000, costOfLiving: 105, jobs: 800 }, // ₹7.5 LPA
+  { location: 'Ahmedabad', avgSalary: 720000, costOfLiving: 100, jobs: 600 }, // ₹7.2 LPA
+  { location: 'Kochi', avgSalary: 680000, costOfLiving: 95, jobs: 450 }, // ₹6.8 LPA
+  { location: 'Chandigarh', avgSalary: 700000, costOfLiving: 108, jobs: 400 }, // ₹7 LPA
+  { location: 'Jaipur', avgSalary: 650000, costOfLiving: 90, jobs: 350 }, // ₹6.5 LPA
+  { location: 'Remote', avgSalary: 850000, costOfLiving: 100, jobs: 5500 } // ₹8.5 LPA
 ];
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
@@ -126,25 +155,25 @@ const CareerIntelligence = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <Card>
                 <CardContent className="pt-6">
-                  <div className="text-2xl font-bold text-primary">$110K</div>
+                  <div className="text-2xl font-bold text-primary">₹9.2L</div>
                   <p className="text-xs text-muted-foreground">Avg Tech Salary</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <div className="text-2xl font-bold text-primary">28%</div>
+                  <div className="text-2xl font-bold text-primary">32%</div>
                   <p className="text-xs text-muted-foreground">Job Growth</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <div className="text-2xl font-bold text-primary">45K+</div>
+                  <div className="text-2xl font-bold text-primary">65K+</div>
                   <p className="text-xs text-muted-foreground">Open Roles</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <div className="text-2xl font-bold text-primary">1.2M</div>
+                  <div className="text-2xl font-bold text-primary">2.1M</div>
                   <p className="text-xs text-muted-foreground">Data Points</p>
                 </CardContent>
               </Card>
@@ -186,7 +215,7 @@ const CareerIntelligence = () => {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-primary mb-1">
-                        ${currentRoleData.avgSalary.toLocaleString()}
+                        ₹{(currentRoleData.avgSalary / 100000).toFixed(1)}L
                       </div>
                       <p className="text-sm text-muted-foreground">Average Salary</p>
                     </div>
@@ -268,7 +297,7 @@ const CareerIntelligence = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="year" />
                         <YAxis />
-                        <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Salary']} />
+                        <Tooltip formatter={(value) => [`₹${(value / 100000).toFixed(1)}L`, 'Salary']} />
                         <Line type="monotone" dataKey="salary" stroke="#8884d8" strokeWidth={3} />
                       </LineChart>
                     </ResponsiveContainer>
@@ -286,7 +315,7 @@ const CareerIntelligence = () => {
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="location" />
                         <YAxis />
-                        <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Avg Salary']} />
+                        <Tooltip formatter={(value) => [`₹${(value / 100000).toFixed(1)}L`, 'Avg Salary']} />
                         <Bar dataKey="avgSalary" fill="#8884d8" />
                       </BarChart>
                     </ResponsiveContainer>
@@ -302,23 +331,23 @@ const CareerIntelligence = () => {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <div className="text-center">
-                      <div className="text-lg font-bold">$65K</div>
+                      <div className="text-lg font-bold">₹5.5L</div>
                       <div className="text-xs text-muted-foreground">10th percentile</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold">$85K</div>
+                      <div className="text-lg font-bold">₹7L</div>
                       <div className="text-xs text-muted-foreground">25th percentile</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-primary">$110K</div>
+                      <div className="text-lg font-bold text-primary">₹9.2L</div>
                       <div className="text-xs text-muted-foreground">Median</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold">$140K</div>
+                      <div className="text-lg font-bold">₹12L</div>
                       <div className="text-xs text-muted-foreground">75th percentile</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold">$180K</div>
+                      <div className="text-lg font-bold">₹16L</div>
                       <div className="text-xs text-muted-foreground">90th percentile</div>
                     </div>
                   </div>
@@ -341,7 +370,7 @@ const CareerIntelligence = () => {
                             <span className="font-medium">{skill.skill}</span>
                             <div className="text-right">
                               <div className="text-sm font-medium">
-                                ${skill.avgSalary.toLocaleString()}
+                                ₹{(skill.avgSalary / 100000).toFixed(1)}L
                               </div>
                               <div className="text-xs text-green-600">
                                 +{skill.growth}% growth
@@ -458,7 +487,7 @@ const CareerIntelligence = () => {
                             </div>
                             <div className="text-right">
                               <div className="font-semibold">
-                                ${location.avgSalary.toLocaleString()}
+                                ₹{(location.avgSalary / 100000).toFixed(1)}L
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 avg salary
@@ -525,7 +554,7 @@ const CareerIntelligence = () => {
                             <span className="font-medium text-green-800">High Confidence</span>
                           </div>
                           <p className="text-sm text-green-700">
-                            AI/ML roles will see 40%+ salary increase
+                            AI/ML roles will see 40%+ salary increase in India
                           </p>
                         </div>
                         
@@ -535,7 +564,7 @@ const CareerIntelligence = () => {
                             <span className="font-medium text-blue-800">Medium Confidence</span>
                           </div>
                           <p className="text-sm text-blue-700">
-                            Remote work will stabilize at 60% of tech roles
+                            Remote work will stabilize at 50% of Indian tech roles
                           </p>
                         </div>
                       </div>
