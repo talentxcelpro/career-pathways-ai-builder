@@ -5,7 +5,7 @@ const CUSTOM_CDN_HOST = 'cdn.talentxcel.in';
 const SUPABASE_PROJECT_REF = 'dthlgsnakhoftinssokm';
 const FUNCTION_PROXY_BASE = `https://${SUPABASE_PROJECT_REF}.functions.supabase.co/storage-proxy/`;
 const IMAGE_PROXY_BASE = `https://${SUPABASE_PROJECT_REF}.functions.supabase.co/image-proxy/`;
-const CUSTOM_IMAGE_BASE = `https://images.talentxcel.in/`;
+const CUSTOM_IMAGE_BASE = `https://images.talentxcel.in/image-proxy/`;
 
 /**
  * Converts a Supabase storage URL to use custom domain
@@ -18,8 +18,8 @@ export const getCustomStorageUrl = (originalUrl: string): string => {
   if (publicBaseRegex.test(originalUrl)) {
     const path = originalUrl.replace(publicBaseRegex, '');
     
-    // Use custom domain for SEO-friendly URLs
-    return `${CUSTOM_IMAGE_BASE}${path}`;
+    // Use edge function image proxy for reliability; can switch to custom domain when ready
+    return `${IMAGE_PROXY_BASE}${path}`;
   }
   return originalUrl;
 };
