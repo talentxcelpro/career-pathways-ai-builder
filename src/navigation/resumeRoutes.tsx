@@ -13,6 +13,9 @@ import CoverLetterStudio from "@/pages/resume/CoverLetterStudio";
 import InterviewPrepSuite from "@/pages/resume/InterviewPrepSuite";
 import PortfolioBuilder from "@/pages/resume/PortfolioBuilder";
 import CareerIntelligence from "@/pages/resume/CareerIntelligence";
+import Dashboard from "@/pages/Dashboard";
+import CompanyDashboard from "@/pages/companies/CompanyDashboard";
+import { AnalyticsDashboard } from "@/components/resume/AnalyticsDashboard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const resumeRoutes = [
@@ -85,6 +88,30 @@ export const resumeRoutes = [
     to: "/resume/ats-check",
     icon: <Target className="h-4 w-4" />,
     page: <ATSOptimizer />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Resume Dashboard",
+    to: "/resume/dashboard",
+    icon: <Target className="h-4 w-4" />,
+    page: <Dashboard />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Company Tools",
+    to: "/resume/company-tools",
+    icon: <Target className="h-4 w-4" />,
+    page: <CompanyDashboard />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Resume Analytics",
+    to: "/resume/analytics",
+    icon: <Target className="h-4 w-4" />,
+    page: <AnalyticsDashboard resumeId="current" />,
     requiresAuth: false,
     isPublic: true,
   },
