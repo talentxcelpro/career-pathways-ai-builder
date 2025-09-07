@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import ProBadge from "@/components/network/ProBadge";
 import { RecentActivity } from "@/components/activity/RecentActivity";
+import { ContactInformation } from "@/components/jobs/ContactInformation";
 
 interface UserProfileProps {
   profileIdOverride?: string;
@@ -316,35 +317,29 @@ const UserProfile: React.FC<UserProfileProps> = ({
                   </p>
                 )}
 
-                {/* Contact Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
-                  {profile.location && (
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {profile.location}
-                    </div>
-                  )}
-                  {profile.current_company && (
-                    <div className="flex items-center">
-                      <Building className="h-4 w-4 mr-2" />
-                      {profile.current_company}
-                    </div>
-                  )}
-                  {profile.email && (
-                    <div className="flex items-center">
-                      <Mail className="h-4 w-4 mr-2" />
-                      {profile.email}
-                    </div>
-                  )}
-                  {profile.website && (
-                    <div className="flex items-center">
-                      <Globe className="h-4 w-4 mr-2" />
-                      <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                        {profile.website}
-                      </a>
-                    </div>
-                  )}
-                </div>
+                 {/* Basic Info */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
+                   {profile.location && (
+                     <div className="flex items-center">
+                       <MapPin className="h-4 w-4 mr-2" />
+                       {profile.location}
+                     </div>
+                   )}
+                   {profile.current_company && (
+                     <div className="flex items-center">
+                       <Building className="h-4 w-4 mr-2" />
+                       {profile.current_company}
+                     </div>
+                   )}
+                   {profile.website && (
+                     <div className="flex items-center">
+                       <Globe className="h-4 w-4 mr-2" />
+                       <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                         {profile.website}
+                       </a>
+                     </div>
+                   )}
+                 </div>
 
                 {/* Skills */}
                 {profile.skills && profile.skills.length > 0 && (
@@ -426,6 +421,8 @@ const UserProfile: React.FC<UserProfileProps> = ({
                 </div>
               </CardContent>
             </Card>
+            
+            <ContactInformation profile={profile} hideByDefault={true} />
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-6">
