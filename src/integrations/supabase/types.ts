@@ -1696,6 +1696,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_processing_logs: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          error_message: string | null
+          extraction_quality: number | null
+          file_name: string
+          file_size: number
+          id: string
+          metadata: Json | null
+          processing_method: string
+          processing_time_ms: number | null
+          success: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          extraction_quality?: number | null
+          file_name: string
+          file_size: number
+          id?: string
+          metadata?: Json | null
+          processing_method?: string
+          processing_time_ms?: number | null
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          extraction_quality?: number | null
+          file_name?: string
+          file_size?: number
+          id?: string
+          metadata?: Json | null
+          processing_method?: string
+          processing_time_ms?: number | null
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_prompt_cache: {
         Row: {
           access_count: number | null
@@ -24296,6 +24341,78 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          is_verified: boolean | null
+          job_title: string | null
+          linkedin_url: string | null
+          location: string | null
+          onboarding_completed: boolean | null
+          phone_number: string | null
+          portfolio_url: string | null
+          preferences: Json | null
+          profile_picture_url: string | null
+          skills: string[] | null
+          subscription_expires_at: string | null
+          subscription_tier: string | null
+          updated_at: string | null
+          user_id: string
+          user_type: Database["public"]["Enums"]["user_type"] | null
+          years_experience: number | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_verified?: boolean | null
+          job_title?: string | null
+          linkedin_url?: string | null
+          location?: string | null
+          onboarding_completed?: boolean | null
+          phone_number?: string | null
+          portfolio_url?: string | null
+          preferences?: Json | null
+          profile_picture_url?: string | null
+          skills?: string[] | null
+          subscription_expires_at?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id: string
+          user_type?: Database["public"]["Enums"]["user_type"] | null
+          years_experience?: number | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_verified?: boolean | null
+          job_title?: string | null
+          linkedin_url?: string | null
+          location?: string | null
+          onboarding_completed?: boolean | null
+          phone_number?: string | null
+          portfolio_url?: string | null
+          preferences?: Json | null
+          profile_picture_url?: string | null
+          skills?: string[] | null
+          subscription_expires_at?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string
+          user_type?: Database["public"]["Enums"]["user_type"] | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           communities_joined: number | null
@@ -26201,6 +26318,10 @@ export type Database = {
         Args: { p_token: string }
         Returns: boolean
       }
+      is_admin: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
       is_app_admin: {
         Args: { _user_id: string }
         Returns: boolean
@@ -26221,8 +26342,16 @@ export type Database = {
         Args: { domain_to_check: string }
         Returns: boolean
       }
+      is_employer: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
       is_ip_blocked: {
         Args: { p_ip_address: unknown }
+        Returns: boolean
+      }
+      is_premium_user: {
+        Args: { user_uuid: string }
         Returns: boolean
       }
       is_pro_user: {
@@ -26713,6 +26842,12 @@ export type Database = {
         | "deadletter"
       team_role: "admin" | "recruiter" | "hr_manager" | "viewer" | "owner"
       user_role: "job_seeker" | "employer" | "admin" | "candidate"
+      user_type:
+        | "job_seeker"
+        | "employer"
+        | "career_coach"
+        | "premium_user"
+        | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -26893,6 +27028,13 @@ export const Constants = {
       ],
       team_role: ["admin", "recruiter", "hr_manager", "viewer", "owner"],
       user_role: ["job_seeker", "employer", "admin", "candidate"],
+      user_type: [
+        "job_seeker",
+        "employer",
+        "career_coach",
+        "premium_user",
+        "admin",
+      ],
     },
   },
 } as const
