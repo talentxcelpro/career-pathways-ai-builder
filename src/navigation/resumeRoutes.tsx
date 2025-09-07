@@ -18,7 +18,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 export const resumeRoutes = [
   {
     title: "Resume Hub",
-    to: "/new",
+    to: "/resume/new",
     icon: <Sparkles className="h-4 w-4" />,
     page: <ResumeHub />,
     requiresAuth: false,
@@ -26,7 +26,7 @@ export const resumeRoutes = [
   },
   {
     title: "Resume Templates",
-    to: "/templates",
+    to: "/resume/templates",
     icon: <FileText className="h-4 w-4" />,
     page: <TemplateGallery />,
     requiresAuth: false,
@@ -34,7 +34,7 @@ export const resumeRoutes = [
   },
   {
     title: "Upload Resume",
-    to: "/upload",
+    to: "/resume/upload",
     icon: <Upload className="h-4 w-4" />,
     page: <UploadParser />,
     requiresAuth: false,
@@ -42,7 +42,7 @@ export const resumeRoutes = [
   },
   {
     title: "AI Resume Builder", 
-    to: "/builder",
+    to: "/resume/builder",
     icon: <Sparkles className="h-4 w-4" />,
     page: <AIResumeBuilder />,
     requiresAuth: false,
@@ -50,7 +50,7 @@ export const resumeRoutes = [
   },
   {
     title: "Cover Letter Studio",
-    to: "/cover-letter",
+    to: "/resume/cover-letter",
     icon: <PenTool className="h-4 w-4" />,
     page: <CoverLetterStudio />,
     requiresAuth: false,
@@ -58,7 +58,7 @@ export const resumeRoutes = [
   },
   {
     title: "Interview Prep",
-    to: "/interview-prep", 
+    to: "/resume/interview-prep", 
     icon: <Video className="h-4 w-4" />,
     page: <InterviewPrepSuite />,
     requiresAuth: false,
@@ -66,7 +66,7 @@ export const resumeRoutes = [
   },
   {
     title: "Portfolio Builder",
-    to: "/portfolio",
+    to: "/resume/portfolio",
     icon: <Globe className="h-4 w-4" />,
     page: <PortfolioBuilder />,
     requiresAuth: false,
@@ -74,7 +74,7 @@ export const resumeRoutes = [
   },
   {
     title: "Career Intelligence",
-    to: "/insights",
+    to: "/resume/career-intelligence",
     icon: <TrendingUp className="h-4 w-4" />,
     page: <CareerIntelligence />,
     requiresAuth: false,
@@ -82,7 +82,7 @@ export const resumeRoutes = [
   },
   {
     title: "ATS Checker",
-    to: "/ats-check",
+    to: "/resume/ats-check",
     icon: <Target className="h-4 w-4" />,
     page: <ATSOptimizer />,
     requiresAuth: false,
