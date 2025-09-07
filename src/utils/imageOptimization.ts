@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getCustomStorageUrl } from '@/utils/storage';
 
 interface ImageConfig {
   width?: number;
@@ -24,50 +25,33 @@ export class ImageOptimizer {
     config: ImageConfig = {}
   ): string {
     if (!originalUrl) return '/placeholder.svg';
-    
-    // If it's already a full URL, check if it's Supabase
+
+    // Always normalize through our custom/proxy storage URL when possible
+    let base = originalUrl;
     if (originalUrl.startsWith('http')) {
-      if (!originalUrl.includes('supabase.co')) {
-        return originalUrl; // External URL, return as-is
-      }
-      
-      // It's a Supabase URL, apply transformations
-      const url = new URL(originalUrl);
-      const params = new URLSearchParams();
-      
-      if (config.width) params.set('width', config.width.toString());
-      if (config.height) params.set('height', config.height.toString());
-      if (config.quality) params.set('quality', config.quality.toString());
-      if (config.format) params.set('format', config.format);
-      if (config.fit) params.set('resize', config.fit);
-      
-      // Add cache busting for mobile browsers
-      params.set('t', Date.now().toString().slice(-6));
-      
-      url.search = params.toString();
-      return url.toString();
+      base = getCustomStorageUrl(originalUrl);
     }
-    
-    // Relative path - convert to full Supabase URL
-    const cleanPath = originalUrl.startsWith('/') ? originalUrl.slice(1) : originalUrl;
-    const baseUrl = `${this.SUPABASE_URL}/storage/v1/object/public/${this.BUCKET}/${cleanPath}`;
-    
-    const url = new URL(baseUrl);
+
+    // Build URL with query params safely (works for both absolute and relative URLs)
     const params = new URLSearchParams();
-    
-    if (config.width) params.set('width', config.width.toString());
-    if (config.height) params.set('height', config.height.toString());
-    if (config.quality) params.set('quality', config.quality.toString());
-    if (config.format) params.set('format', config.format);
-    if (config.fit) params.set('resize', config.fit);
-    
-    // Mobile optimization
-    params.set('t', Date.now().toString().slice(-6));
-    
-    url.search = params.toString();
-    return url.toString();
+    if (config.width) params.set('w', String(config.width));
+    if (config.height) params.set('h', String(config.height));
+    if (config.quality) params.set('q', String(config.quality));
+    if (config.format) params.set('f', config.format);
+    if (config.fit) params.set('fit', config.fit);
+
+    try {
+      const urlObj = new URL(base, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+      // Preserve existing params but override with our optimization ones
+      params.forEach((value, key) => urlObj.searchParams.set(key, value));
+      return urlObj.toString();
+    } catch {
+      // Fallback for cases where base isn't a valid URL in this context
+      const separator = base.includes('?') ? '&' : '?';
+      const query = params.toString();
+      return query ? `${base}${separator}${query}` : base;
+    }
   }
-  
   /**
    * Generate thumbnail URL (like Instagram feed previews)
    */

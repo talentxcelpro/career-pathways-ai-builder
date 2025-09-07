@@ -65,7 +65,8 @@ export const FastImage: React.FC<FastImageProps> = ({
   const generateBlurPlaceholder = async (imageUrl: string) => {
     try {
       // Create a tiny version for blur effect
-      const tinyUrl = ImageOptimizer.getOptimizedUrl(imageUrl, {
+      const sourceForBlur = getCustomStorageUrl(imageUrl);
+      const tinyUrl = ImageOptimizer.getOptimizedUrl(sourceForBlur, {
         width: 32,
         height: 32,
         quality: 10,
@@ -83,6 +84,17 @@ export const FastImage: React.FC<FastImageProps> = ({
 
   const handleError = () => {
     console.warn('FastImage: Failed to load:', optimizedSrc);
+    // Retry once using the original (non-proxied) URL
+    if (optimizedSrc && optimizedSrc.includes('.functions.supabase.co/storage-proxy/')) {
+      const fallbackUrl = ImageOptimizer.getOptimizedUrl(src, {
+        width: thumbnail ? 400 : width,
+        height: thumbnail ? 400 : height,
+        quality: thumbnail ? 80 : quality,
+        format: 'webp'
+      });
+      setOptimizedSrc(fallbackUrl);
+      return;
+    }
     setError(true);
     setLoaded(true);
   };
@@ -133,11 +145,11 @@ export const FastImage: React.FC<FastImageProps> = ({
         onError={handleError}
         // Mobile-first responsive srcSet
         srcSet={!thumbnail && !error ? `
-          ${ImageOptimizer.getOptimizedUrl(src, { width: 320, quality: 80, format: 'webp' })} 320w,
-          ${ImageOptimizer.getOptimizedUrl(src, { width: 640, quality: 85, format: 'webp' })} 640w,
-          ${ImageOptimizer.getOptimizedUrl(src, { width: 768, quality: 85, format: 'webp' })} 768w,
-          ${ImageOptimizer.getOptimizedUrl(src, { width: 1024, quality: 90, format: 'webp' })} 1024w,
-          ${ImageOptimizer.getOptimizedUrl(src, { width: 1280, quality: 90, format: 'webp' })} 1280w
+          ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 320, quality: 80, format: 'webp' })} 320w,
+          ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 640, quality: 85, format: 'webp' })} 640w,
+          ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 768, quality: 85, format: 'webp' })} 768w,
+          ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 1024, quality: 90, format: 'webp' })} 1024w,
+          ${ImageOptimizer.getOptimizedUrl(getCustomStorageUrl(src), { width: 1280, quality: 90, format: 'webp' })} 1280w
         ` : undefined}
         sizes={!thumbnail ? `
           (max-width: 320px) 100vw,
