@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { X, Download, Palette, Maximize, Minimize } from 'lucide-react';
 import { sampleResumeData, colorSchemes } from '@/data/sampleResumeData';
 import { enhancedTemplateData } from '@/data/enhancedTemplateData';
+import { resumeTemplates } from '@/data/resumeTemplates';
 
 interface TemplatePreviewModalProps {
   isOpen: boolean;
@@ -23,7 +24,8 @@ export const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
   const [selectedColorScheme, setSelectedColorScheme] = useState('professional-blue');
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const template = enhancedTemplateData.find(t => t.id === templateId);
+  const template = enhancedTemplateData.find(t => t.id === templateId) ||
+                    resumeTemplates.find(t => t.id === templateId);
   const currentColorScheme = colorSchemes[selectedColorScheme as keyof typeof colorSchemes];
 
   if (!template) return null;
