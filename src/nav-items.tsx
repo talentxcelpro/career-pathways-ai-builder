@@ -29,6 +29,7 @@ import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
 import MobileSearch from "./pages/mobile/MobileSearch";
 import NotificationsPage from "./pages/NotificationsPage";
+import TalentXcelServices from "./pages/TalentXcelServices";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -78,6 +79,19 @@ export const notificationRoutes = [
   }
 ];
 
+// TalentXcel Services route
+export const servicesRoutes = [
+  {
+    title: "TalentXcel Services",
+    to: "/talentxcelservices",
+    icon: "briefcase",
+    page: <TalentXcelServices />,
+    description: "Strategic Talent Solutions for the Future of Work",
+    isPublic: true,
+    requiresAuth: false
+  }
+];
+
 export const navItems = [
   ...publicRoutes,
   ...coreRoutes,
@@ -102,6 +116,7 @@ export const navItems = [
   ...mobileRoutes,
   ...mobileSearchRoutes,
   ...notificationRoutes,
+  ...servicesRoutes,
   ...analyticsRoutes,
   ...growthRoutes,
   ...aiAgentRoutes,
