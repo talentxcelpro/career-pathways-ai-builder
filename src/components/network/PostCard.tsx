@@ -125,8 +125,8 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         </div>
 
-        {/* Post Content - Make clickable to navigate to detail page */}
-        <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors">
+        {/* Post Content */}
+        <div className="mb-4">
           <MediaPreview 
             content={post.content} 
             mediaUrls={post.media_urls || []} 
@@ -142,7 +142,17 @@ export const PostCard: React.FC<PostCardProps> = ({
               ))}
             </div>
           )}
-        </Link>
+
+          {/* View Details Link */}
+          <div className="mt-3 pt-2 border-t border-border/30">
+            <Link 
+              to={`/network/posts/${post.id}`} 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+            >
+              View full post details →
+            </Link>
+          </div>
+        </div>
 
         {/* Post Actions */}
         <PostActions

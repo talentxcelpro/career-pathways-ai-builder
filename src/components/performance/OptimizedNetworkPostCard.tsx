@@ -180,7 +180,7 @@ const OptimizedNetworkPostCardComponent: React.FC<OptimizedNetworkPostCardProps>
 
         {/* Post Content with Real-time Reactions */}
         <div className="relative">
-          <Link to={`/network/posts/${post.id}`} className="block mb-4 hover:bg-muted/30 -mx-2 px-2 py-2 rounded transition-colors">
+          <div className="block mb-4 -mx-2 px-2 py-2 rounded">
             <div className="text-foreground leading-relaxed mb-3">
               {renderContentWithLinks(post.content)}
             </div>
@@ -203,7 +203,17 @@ const OptimizedNetworkPostCardComponent: React.FC<OptimizedNetworkPostCardProps>
                 ))}
               </div>
             )}
-          </Link>
+          </div>
+
+          {/* View Details Link */}
+          <div className="mt-2">
+            <Link 
+              to={`/network/posts/${post.id}`} 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+            >
+              View full post details →
+            </Link>
+          </div>
 
           {/* Real-time Post Reactions Overlay */}
           <RealtimePostReactions postId={post.id} />

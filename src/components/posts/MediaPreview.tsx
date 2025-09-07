@@ -65,7 +65,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
     }
     
     const lowercaseUrl = url.toLowerCase();
-    const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
+    const isYouTube = /(?:youtube\.com\/(watch\?v=|shorts\/|live\/)|youtu\.be\/)/.test(lowercaseUrl);
     const isValidImage = ImageOptimizer.isValidImageUrl(url);
     const isValidVideo = ImageOptimizer.isValidVideoUrl(url);
     
@@ -76,7 +76,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
   const linkPreviewUrls = detectedUrls.filter(detectedUrl => {
     const url = detectedUrl.url;
     const lowercaseUrl = url.toLowerCase();
-    const isYouTube = lowercaseUrl.includes('youtube.com/watch') || lowercaseUrl.includes('youtu.be/');
+    const isYouTube = /(?:youtube\.com\/(watch\?v=|shorts\/|live\/)|youtu\.be\/)/.test(lowercaseUrl);
     const isValidImage = ImageOptimizer.isValidImageUrl(url);
     const isValidVideo = ImageOptimizer.isValidVideoUrl(url);
     

@@ -52,6 +52,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   const [title, setTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const loadThumbnail = async () => {
@@ -123,25 +124,32 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
     }
   }, [url, showTitle]);
 
+  const buildYouTubeEmbedUrl = (videoId: string) => {
+    const params = new URLSearchParams({
+      rel: '0',
+      modestbranding: '1',
+      playsinline: '1',
+      autoplay: '1'
+    });
+    return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+  };
+
   const handleClick = () => {
     if (onClick) {
       onClick();
     } else {
-      // Default behavior: open YouTube in new tab, play other videos inline
-      const youtubeId = getYouTubeVideoId(url);
-      if (youtubeId) {
-        window.open(url, '_blank', 'noopener,noreferrer');
-      }
+      // Play inline by default
+      setIsPlaying(true);
     }
   };
 
   if (isLoading) {
     return (
       <div className={cn(
-        "relative bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden aspect-video flex items-center justify-center",
+        "relative rounded-lg overflow-hidden aspect-video flex items-center justify-center bg-muted",
         className
       )}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-muted-foreground"></div>
       </div>
     );
   }
@@ -149,14 +157,14 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   if (hasError || !thumbnailUrl) {
     return (
       <div className={cn(
-        "relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-lg overflow-hidden aspect-video flex flex-col items-center justify-center cursor-pointer group hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200",
+        "relative rounded-lg overflow-hidden aspect-video flex flex-col items-center justify-center cursor-pointer group bg-muted",
         className
       )} onClick={handleClick}>
-        <Play className="h-12 w-12 text-gray-400 mb-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center px-4">
+        <Play className="h-12 w-12 text-muted-foreground mb-2 group-hover:text-foreground transition-colors" />
+        <p className="text-sm text-muted-foreground text-center px-4">
           Video Preview
         </p>
-        <ExternalLink className="h-4 w-4 text-gray-400 mt-1" />
+        <ExternalLink className="h-4 w-4 text-muted-foreground mt-1" />
       </div>
     );
   }
