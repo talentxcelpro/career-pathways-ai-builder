@@ -455,6 +455,7 @@ const People = () => {
                         boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
                         animationDelay: `${index * 100}ms`
                       }}
+                      onClick={!isLoading ? () => handleProfileView(person) : undefined}
                     >
                       <CardContent className="p-0">
                         {isLoading ? (
@@ -490,7 +491,10 @@ const People = () => {
                                 <div className="relative">
                                   <Avatar 
                                     className="w-16 h-16 ring-4 ring-white shadow-lg cursor-pointer hover:ring-blue-300 transition-all duration-300 hover:scale-110"
-                                    onClick={() => handleProfileView(person)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleProfileView(person);
+                                    }}
                                   >
                                     <AvatarImage src={person.profile_photo_url} />
                                     <AvatarFallback className="bg-gradient-to-br from-blue-100 to-purple-100 text-lg font-bold">
@@ -505,13 +509,17 @@ const People = () => {
                                     size="sm"
                                     variant="outline"
                                     className="h-8 w-8 p-0 border-gray-200 hover:border-red-300 hover:bg-red-50 group transition-all duration-200 hover:scale-110"
+                                    onClick={(e) => e.stopPropagation()}
                                   >
                                     <Heart className="h-4 w-4 text-gray-400 group-hover:text-red-500 transition-colors duration-200" />
                                   </Button>
                                   <Button
                                     size="sm"
                                     className="h-8 px-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                                    onClick={() => handleConnect(person.id, person.full_name)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleConnect(person.id, person.full_name);
+                                    }}
                                   >
                                     <UserPlus className="h-3 w-3 mr-1" />
                                     Connect
@@ -523,7 +531,10 @@ const People = () => {
                               <div className="mb-4">
                                 <h3 
                                   className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-all duration-200 cursor-pointer hover:scale-105 transform-gpu"
-                                  onClick={() => handleProfileView(person)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleProfileView(person);
+                                  }}
                                 >
                                   {formatDisplayName(person)}
                                 </h3>
@@ -563,15 +574,24 @@ const People = () => {
                               {/* Social Actions */}
                               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                 <div className="flex gap-4">
-                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-all duration-200 hover:scale-110">
+                                  <button 
+                                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-all duration-200 hover:scale-110"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
                                     <Eye className="h-3 w-3" />
                                     {Math.floor(Math.random() * 500) + 100}
                                   </button>
-                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-all duration-200 hover:scale-110">
+                                  <button 
+                                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-all duration-200 hover:scale-110"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
                                     <Heart className="h-3 w-3" />
                                     {Math.floor(Math.random() * 50) + 10}
                                   </button>
-                                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-all duration-200 hover:scale-110">
+                                  <button 
+                                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-all duration-200 hover:scale-110"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
                                     <Share2 className="h-3 w-3" />
                                     Share
                                   </button>
@@ -580,7 +600,10 @@ const People = () => {
                                   variant="ghost"
                                   size="sm"
                                   className="h-8 w-8 p-0 hover:bg-blue-50 hover:scale-110 transition-all duration-200"
-                                  onClick={() => handleMessage(person)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMessage(person);
+                                  }}
                                 >
                                   <Send className="h-4 w-4 text-blue-600" />
                                 </Button>
