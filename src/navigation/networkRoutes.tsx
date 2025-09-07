@@ -31,14 +31,20 @@ import Discover from "../pages/network/Discover";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
 import { EnhancedMobileNetwork } from "../components/mobile/EnhancedMobileNetwork";
-import { AdaptiveNetworkMain } from "../components/network/AdaptiveNetworkMain";
 
 export const networkRoutes = [
   {
     title: "Network",
     to: "/network",
     icon: <Users className="h-4 w-4" />,
-    page: <AdaptiveNetworkMain />,
+    page: <NetworkMain />,
+    isPublic: true,
+    requiresAuth: true,
+  },
+  {
+    title: "Mobile Network",
+    to: "/mobile/network",
+    page: <EnhancedMobileNetwork />,
     isPublic: true,
     requiresAuth: true,
   },

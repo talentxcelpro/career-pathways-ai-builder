@@ -92,28 +92,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
     enabled: !!id
   });
 
-  // Check connection status between current user and profile user
-  const { data: connectionStatus, isLoading: connectionLoading } = useQuery({
-    queryKey: ['connection-status', currentUser?.id, id],
-    queryFn: async () => {
-      if (!currentUser?.id || !id || currentUser.id === id) return null;
-
-      const { data, error } = await supabase
-        .from('connections')
-        .select('status, id')
-        .or(`and(requester_id.eq.${currentUser.id},recipient_id.eq.${id}),and(requester_id.eq.${id},recipient_id.eq.${currentUser.id})`)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error checking connection status:', error);
-        return null;
-      }
-
-      return data;
-    },
-    enabled: !!currentUser?.id && !!id && currentUser.id !== id
-  });
-
   const handleConnect = async () => {
     try {
       if (!currentUser) {
@@ -123,18 +101,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
       }
 
       if (!id) return;
-
-      // If already connected, show message
-      if (connectionStatus?.status === 'accepted') {
-        toast.info('You are already connected with this user');
-        return;
-      }
-
-      // If request is pending, show message
-      if (connectionStatus?.status === 'pending') {
-        toast.info('Connection request is already pending');
-        return;
-      }
 
       const { error } = await supabase
         .from('connections')
@@ -260,23 +226,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
 
   const isOwnProfile = currentUser?.id === id;
   const showAuthenticatedActions = currentUser && !isOwnProfile;
-  
-  // Determine button state
-  const getConnectButtonState = () => {
-    if (connectionLoading) return { text: 'Loading...', disabled: true, variant: 'outline' as const };
-    if (!connectionStatus) return { text: 'Connect', disabled: false, variant: 'default' as const };
-    
-    switch (connectionStatus.status) {
-      case 'accepted':
-        return { text: 'Connected', disabled: false, variant: 'outline' as const };
-      case 'pending':
-        return { text: 'Pending', disabled: true, variant: 'outline' as const };
-      default:
-        return { text: 'Connect', disabled: false, variant: 'default' as const };
-    }
-  };
-
-  const connectButtonState = getConnectButtonState();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -301,13 +250,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
             </Button>
             {showAuthenticatedActions && (
               <>
-                <Button 
-                  onClick={handleConnect} 
-                  variant={connectButtonState.variant}
-                  disabled={connectButtonState.disabled}
-                >
+                <Button onClick={handleConnect}>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  {connectButtonState.text}
+                  Connect
                 </Button>
                 <Button variant="outline" onClick={handleMessage}>
                   <MessageCircle className="h-4 w-4 mr-2" />
