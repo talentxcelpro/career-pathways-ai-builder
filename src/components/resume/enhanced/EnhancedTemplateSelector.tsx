@@ -47,8 +47,8 @@ export const EnhancedTemplateSelector: React.FC<EnhancedTemplateSelectorProps> =
   }, [selectedTemplate, onTemplateSelect]);
 
   const handlePreview = (templateId: string) => {
-    console.log('Previewing template:', templateId);
-    // Implement preview logic
+    // Preview functionality is now handled within TemplateLibrary component
+    console.log('Template preview triggered for:', templateId);
   };
 
   const handleCustomizationPreview = () => {

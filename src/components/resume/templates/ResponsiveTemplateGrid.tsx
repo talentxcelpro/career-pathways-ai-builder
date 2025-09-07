@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MobileTemplateCard } from './MobileTemplateCard';
 import { TemplatePreview } from '../enhanced/three-pane/TemplatePreview';
+import { MobileTemplatePreviewModal } from './MobileTemplatePreviewModal';
+import { TemplatePreviewModal } from './TemplatePreviewModal';
 import { resumeTemplates, getTemplatesByCategory } from '@/data/resumeTemplates';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -23,6 +25,16 @@ export const ResponsiveTemplateGrid: React.FC<ResponsiveTemplateGridProps> = ({
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'mobile' | 'desktop'>('mobile');
   const [isMobile, setIsMobile] = useState(false);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
+
+  const handlePreview = (templateId: string) => {
+    setPreviewTemplateId(templateId);
+    onPreview(templateId);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewTemplateId(null);
+  };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -133,7 +145,7 @@ export const ResponsiveTemplateGrid: React.FC<ResponsiveTemplateGridProps> = ({
                       template={template}
                       isSelected={selectedTemplate === template.id}
                       onSelect={onTemplateSelect}
-                      onPreview={onPreview}
+                      onPreview={handlePreview}
                     />
                   ) : (
                     <TemplatePreview
@@ -141,7 +153,7 @@ export const ResponsiveTemplateGrid: React.FC<ResponsiveTemplateGridProps> = ({
                       template={template}
                       isSelected={selectedTemplate === template.id}
                       onSelect={onTemplateSelect}
-                      onPreview={onPreview}
+                      onPreview={handlePreview}
                     />
                   )
                 ))}
@@ -166,7 +178,7 @@ export const ResponsiveTemplateGrid: React.FC<ResponsiveTemplateGridProps> = ({
                     template={template}
                     isSelected={selectedTemplate === template.id}
                     onSelect={onTemplateSelect}
-                    onPreview={onPreview}
+                    onPreview={handlePreview}
                   />
                 ) : (
                   <TemplatePreview
@@ -174,7 +186,7 @@ export const ResponsiveTemplateGrid: React.FC<ResponsiveTemplateGridProps> = ({
                     template={template}
                     isSelected={selectedTemplate === template.id}
                     onSelect={onTemplateSelect}
-                    onPreview={onPreview}
+                    onPreview={handlePreview}
                   />
                 )
               ))}
@@ -188,6 +200,27 @@ export const ResponsiveTemplateGrid: React.FC<ResponsiveTemplateGridProps> = ({
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Preview Modals */}
+      {previewTemplateId && (
+        <>
+          {isMobile || viewMode === 'mobile' ? (
+            <MobileTemplatePreviewModal
+              isOpen={!!previewTemplateId}
+              onClose={handleClosePreview}
+              templateId={previewTemplateId}
+              onSelect={onTemplateSelect}
+            />
+          ) : (
+            <TemplatePreviewModal
+              isOpen={!!previewTemplateId}
+              onClose={handleClosePreview}
+              templateId={previewTemplateId}
+              onSelect={onTemplateSelect}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };
