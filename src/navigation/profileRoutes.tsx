@@ -28,11 +28,11 @@ export const profileRoutes = [
     requiresAuth: false
   },
   {
-    title: "User Profile",
+    title: "User Profile (Redirect)",
     to: "/user/:username",
     icon: "user",
-    page: <UserProfile />,
-    description: "View user profile",
+    page: <ProfileUrlRedirect />, // Redirects to /:username or /:slug
+    description: "Legacy user route - redirects to username",
     isPublic: true,
     requiresAuth: false
   },

@@ -8,21 +8,31 @@ import { Loader2 } from 'lucide-react';
  * This helps with SEO migration from /network/people/:id to /profile/:username
  */
 const ProfileUrlRedirect = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, username } = useParams<{ id?: string; username?: string }>();
   const navigate = useNavigate();
+  const param = id ?? username ?? null;
 
   useEffect(() => {
     const redirectToUsernameUrl = async () => {
-      if (!id) {
+      if (!param) {
         navigate('/404');
         return;
       }
 
       try {
+        // If the param isn't a UUID, treat it as username/slug and redirect directly
+        const value = String(param);
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+        if (!isUUID) {
+          const clean = value.startsWith('@') ? value.slice(1) : value;
+          navigate(`/${clean}`, { replace: true });
+          return;
+        }
+
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('slug')
-          .eq('id', id)
+          .eq('id', value)
           .maybeSingle();
 
         if (error) {
@@ -41,7 +51,7 @@ const ProfileUrlRedirect = () => {
     };
 
     redirectToUsernameUrl();
-  }, [id, navigate]);
+  }, [param, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

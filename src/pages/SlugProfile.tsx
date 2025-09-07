@@ -12,8 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
 const SlugProfile = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const { data: profile, isLoading, error } = useSlugProfile(slug);
+  const { username } = useParams<{ username: string }>();
+  const { data: profile, isLoading, error } = useSlugProfile(username);
   const { data: stats } = useProfileStats(profile?.id);
   const { trackProfileView } = useProfileViews();
 
@@ -33,7 +33,7 @@ const SlugProfile = () => {
     keywords: profile 
       ? [profile.full_name, profile.slug, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
       : ['professional profile', 'TalentXcel'],
-    canonical: `https://talentxcel.in/@${slug}`
+    canonical: `https://talentxcel.in/${username}`
   });
 
   if (isLoading) {
@@ -59,7 +59,7 @@ const SlugProfile = () => {
     '@type': 'Person',
     name: profile.full_name,
     jobTitle: profile.title,
-    url: `https://talentxcel.in/@${profile.slug}`,
+    url: `https://talentxcel.in/${profile.slug}`,
     sameAs: [profile.website, profile.linkedin_url, profile.github_url].filter(Boolean),
     email: profile.email,
     telephone: profile.phone,
