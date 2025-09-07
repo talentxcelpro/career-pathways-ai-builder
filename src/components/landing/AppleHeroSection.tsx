@@ -20,20 +20,15 @@ export const AppleHeroSection = () => {
           {/* Left Side - Text Content */}
           <div className="space-y-8 text-center lg:text-left">
             <div className="space-y-6">
-              {/* Resume Builder Badge */}
-              <div className="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full text-sm text-blue-700 font-medium">
-                ⚡ AI-Powered Resume Builder
-              </div>
-              
               <h1 className="text-5xl lg:text-7xl font-light tracking-tight text-slate-900 leading-[1.1]">
-                Build Your Perfect
+                Powering Global
                 <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Resume
+                  Career Growth
                 </span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-slate-600 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                From AI-powered resume building to interview prep and career intelligence. Everything you need to land your dream job in one platform.
+                Your all-in-one platform for networking, skill-building, and discovering career opportunities tailored to your unique journey.
               </p>
             </div>
 
@@ -44,24 +39,16 @@ export const AppleHeroSection = () => {
                   size="lg" 
                   className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
-                  ⚙️ Start with AI Builder
+                  Get Started Free
                   <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </AuthDialog>
-              <Button 
-                variant="outline"
-                size="lg" 
-                className="border-slate-300 text-slate-700 hover:bg-slate-50 rounded-full px-8 py-6 text-lg font-semibold transition-all duration-300"
-                onClick={() => window.location.href = '/resume-templates'}
-              >
-                📄 Browse Templates
-              </Button>
             </div>
 
             {/* Social Proof */}
             <div className="pt-8 border-t border-slate-200">
               <p className="text-sm text-slate-500 mb-4 font-medium">
-                Join thousands of professionals building better resumes
+                Join thousands of professionals accelerating their careers with TalentXcel
               </p>
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-sm">
                 <div className="text-center">
