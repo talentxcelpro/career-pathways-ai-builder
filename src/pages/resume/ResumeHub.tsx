@@ -169,37 +169,28 @@ const ResumeHub = () => {
         <link rel="canonical" href="https://talentxcel.in/resume/new" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20"></div>
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-20 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-        
+      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/5 to-primary/5">
         {/* Hero Section */}
-        <section className="relative pt-20 pb-16 px-4">
+        <section className="pt-20 pb-16 px-4">
           <div className="max-w-7xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-sm text-cyan-300 px-6 py-3 rounded-full text-sm font-medium mb-8 border border-cyan-500/30">
-              <Zap className="h-4 w-4 text-cyan-400" />
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-semibold">TalentXcel</span>
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <Zap className="h-4 w-4" />
               AI-Powered Career Platform
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-2xl">
-              Build Your Perfect
-              <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Resume with AI
-              </span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Build Your Perfect Resume
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               From AI-powered resume building to interview prep and career intelligence. 
-              <span className="text-cyan-300 font-semibold">Everything you need to land your dream job</span> in one powerful platform.
+              Everything you need to land your dream job in one platform.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button 
                 size="lg" 
-                className="text-lg px-8 py-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-xl shadow-cyan-500/25 border-0 transform hover:scale-105 transition-all duration-300"
+                className="text-lg px-8 py-6"
                 onClick={() => handleFeatureClick('/resume/builder')}
               >
                 <Brain className="h-5 w-5 mr-2" />
@@ -208,7 +199,7 @@ const ResumeHub = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="text-lg px-8 py-6 border-2 border-cyan-400/50 text-cyan-300 hover:bg-cyan-400/10 hover:border-cyan-400 backdrop-blur-sm transform hover:scale-105 transition-all duration-300"
+                className="text-lg px-8 py-6"
                 onClick={() => handleFeatureClick('/resume/templates')}
               >
                 <FileText className="h-5 w-5 mr-2" />
@@ -219,14 +210,12 @@ const ResumeHub = () => {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center backdrop-blur-sm bg-white/10 rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                  <div className="flex items-center justify-center mb-3">
-                    <div className="p-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg shadow-lg">
-                      <stat.icon className="h-6 w-6 text-white" />
-                    </div>
+                <div key={index} className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <stat.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{stat.value}</div>
-                  <div className="text-sm text-cyan-200">{stat.label}</div>
+                  <div className="text-3xl font-bold text-foreground mb-1">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -234,15 +223,12 @@ const ResumeHub = () => {
         </section>
 
         {/* Features Grid */}
-        <section className="py-16 px-4 bg-gradient-to-b from-gray-50 to-white relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50"></div>
-          <div className="max-w-7xl mx-auto relative">
+        <section className="py-16 px-4">
+          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-                Complete <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">TalentXcel</span> Career Toolkit
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Everything you need to build, optimize, and land your next role with AI
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Complete Career Toolkit</h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Everything you need to build, optimize, and land your next role
               </p>
             </div>
 
@@ -250,40 +236,40 @@ const ResumeHub = () => {
               {features.map((feature) => (
                 <Card 
                   key={feature.id}
-                  className={`group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:-translate-y-2 bg-white/80 backdrop-blur-sm border-0 shadow-lg ${
-                    feature.isPopular ? 'ring-2 ring-gradient-to-r from-cyan-500 to-blue-500 shadow-cyan-500/25' : ''
+                  className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${
+                    feature.isPopular ? 'ring-2 ring-primary/20' : ''
                   }`}
                   onClick={() => handleFeatureClick(feature.path)}
                 >
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300">
-                          <feature.icon className="h-6 w-6 text-white" />
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <feature.icon className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg text-gray-800 group-hover:text-gray-900">{feature.title}</CardTitle>
+                          <CardTitle className="text-lg">{feature.title}</CardTitle>
                           {feature.isPopular && (
-                            <Badge className="mt-1 text-xs bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg">
-                              🔥 Most Popular
+                            <Badge variant="secondary" className="mt-1 text-xs">
+                              Most Popular
                             </Badge>
                           )}
                           {feature.isNew && (
-                            <Badge className="mt-1 text-xs bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg">
-                              ✨ New
+                            <Badge className="mt-1 text-xs bg-gradient-to-r from-green-500 to-emerald-600">
+                              New
                             </Badge>
                           )}
                         </div>
                       </div>
-                      <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-cyan-500 transition-colors duration-300" />
+                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-sm leading-relaxed mb-3 text-gray-600">
+                    <CardDescription className="text-sm leading-relaxed mb-3">
                       {feature.description}
                     </CardDescription>
                     {feature.badge && (
-                      <Badge variant="outline" className="text-xs border-cyan-200 text-cyan-700 bg-cyan-50">
+                      <Badge variant="outline" className="text-xs">
                         {feature.badge}
                       </Badge>
                     )}
@@ -295,41 +281,37 @@ const ResumeHub = () => {
         </section>
 
         {/* Success Stories */}
-        <section className="py-16 px-4 bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-indigo-500/10"></div>
-          <div className="absolute top-0 left-0 w-full h-full opacity-20" style={{backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM5QzkyQUMiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxIi8+PC9nPjwvZz48L3N2Zz4=')"}}></div>
-          <div className="max-w-7xl mx-auto relative">
+        <section className="py-16 px-4 bg-muted/30">
+          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white drop-shadow-lg">
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">TalentXcel</span> Success Stories
-              </h2>
-              <p className="text-xl text-purple-200">
-                Join thousands who landed their dream jobs with our AI-powered platform
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Success Stories</h2>
+              <p className="text-xl text-muted-foreground">
+                Join thousands who landed their dream jobs
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {successStories.map((story, index) => (
-                <Card key={index} className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                <Card key={index} className="bg-background">
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-1 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400 drop-shadow-lg" />
+                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <blockquote className="text-sm leading-relaxed mb-4 italic text-white/90">
+                    <blockquote className="text-sm leading-relaxed mb-4 italic">
                       "{story.quote}"
                     </blockquote>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-xl">
+                      <div className="w-10 h-10 bg-gradient-to-r from-primary to-purple-600 rounded-full flex items-center justify-center">
                         <span className="text-white font-semibold text-sm">
                           {story.name.split(' ').map(n => n[0]).join('')}
                         </span>
                       </div>
                       <div>
-                        <div className="font-semibold text-sm text-white">{story.name}</div>
-                        <div className="text-xs text-cyan-200">
-                          {story.role} at <span className="font-semibold text-cyan-300">{story.company}</span>
+                        <div className="font-semibold text-sm">{story.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {story.role} at {story.company}
                         </div>
                       </div>
                     </div>
@@ -417,35 +399,32 @@ const ResumeHub = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 px-4 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="absolute top-0 left-1/3 w-96 h-96 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse delay-1000"></div>
-          
-          <div className="max-w-4xl mx-auto text-center text-white relative">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 drop-shadow-2xl">
+        <section className="py-16 px-4 bg-gradient-to-r from-primary via-purple-600 to-blue-600">
+          <div className="max-w-4xl mx-auto text-center text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to Land Your Dream Job?
             </h2>
-            <p className="text-xl md:text-2xl opacity-95 mb-10 leading-relaxed">
-              Join over <span className="font-bold text-cyan-300">2 million professionals</span> who transformed their careers with <span className="bg-gradient-to-r from-cyan-300 to-white bg-clip-text text-transparent font-bold">TalentXcel</span>
+            <p className="text-xl opacity-90 mb-8">
+              Join over 2 million professionals who transformed their careers with TalentXcel
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className="text-lg px-10 py-7 bg-white text-cyan-600 hover:bg-gray-100 shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold"
+                variant="secondary"
+                className="text-lg px-8 py-6"
                 onClick={() => handleFeatureClick('/resume/builder')}
               >
                 <Brain className="h-5 w-5 mr-2" />
-                Start Building Now - FREE
+                Start Building Now
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg px-10 py-7 border-2 border-white/80 text-white hover:bg-white/10 backdrop-blur-sm shadow-xl transform hover:scale-105 transition-all duration-300 font-semibold"
+                className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-primary"
                 onClick={() => handleFeatureClick('/resume/templates')}
               >
                 <Eye className="h-5 w-5 mr-2" />
-                View 50+ Templates
+                View Templates
               </Button>
             </div>
           </div>
