@@ -13,14 +13,6 @@ const CUSTOM_IMAGE_BASE = `https://images.talentxcel.in/image-proxy/`;
 export const getCustomStorageUrl = (originalUrl: string): string => {
   if (!originalUrl) return originalUrl;
   
-  // Normalize existing proxy URLs to custom domain
-  if (originalUrl.startsWith(IMAGE_PROXY_BASE)) {
-    return originalUrl.replace(IMAGE_PROXY_BASE, CUSTOM_IMAGE_BASE);
-  }
-  if (originalUrl.startsWith(CUSTOM_IMAGE_BASE)) {
-    return originalUrl;
-  }
-  
   // If it's a Supabase public storage URL, convert to our image proxy for SEO
   const publicBaseRegex = /https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//i;
   if (publicBaseRegex.test(originalUrl)) {
