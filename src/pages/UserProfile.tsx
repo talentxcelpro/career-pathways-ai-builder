@@ -86,7 +86,7 @@ const UserProfile = () => {
 
       // If legacy UUID URL is used, redirect to slug-based URL for SEO
       if (isUUID && (data as any)?.slug) {
-        navigate(`/@${(data as any).slug}`, { replace: true });
+        navigate(`/${(data as any).slug}`, { replace: true });
         return;
       }
 

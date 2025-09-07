@@ -19,11 +19,11 @@ import SlugProfile from "../pages/SlugProfile";
 
 export const profileRoutes = [
   {
-    title: "Slug Profile",
-    to: "/@:slug",
+    title: "Profile by Username",
+    to: "/:username",
     icon: "user",
     page: <SlugProfile />,
-    description: "View user profile by slug",
+    description: "View user profile by username",
     isPublic: true,
     requiresAuth: false
   },

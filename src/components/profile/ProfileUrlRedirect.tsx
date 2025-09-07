@@ -30,7 +30,7 @@ const ProfileUrlRedirect = () => {
           navigate('/404');
         } else if (profile?.slug) {
           // Redirect to slug-based profile route
-          navigate(`/@${profile.slug}`, { replace: true });
+          navigate(`/${profile.slug}`, { replace: true });
         } else {
           navigate('/404');
         }
