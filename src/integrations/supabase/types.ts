@@ -16727,6 +16727,7 @@ export type Database = {
           provider: string | null
           resume_url: string | null
           skills: string[] | null
+          slug: string | null
           social_links: Json | null
           talentxcel_id: string | null
           testimonials_count: number | null
@@ -16822,6 +16823,7 @@ export type Database = {
           provider?: string | null
           resume_url?: string | null
           skills?: string[] | null
+          slug?: string | null
           social_links?: Json | null
           talentxcel_id?: string | null
           testimonials_count?: number | null
@@ -16917,6 +16919,7 @@ export type Database = {
           provider?: string | null
           resume_url?: string | null
           skills?: string[] | null
+          slug?: string | null
           social_links?: Json | null
           talentxcel_id?: string | null
           testimonials_count?: number | null
@@ -26564,6 +26567,10 @@ export type Database = {
           processed_count: number
           simulated_events: number
         }[]
+      }
+      slugify: {
+        Args: { "": string }
+        Returns: string
       }
       suspend_user_account: {
         Args: { p_duration_hours?: number; p_reason: string; p_user_id: string }

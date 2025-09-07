@@ -15,8 +15,18 @@ import UsernameProfile from "../pages/profile/UsernameProfile";
 import TalentXcelProfile from "../pages/TalentXcelProfile";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import UserProfile from "../pages/UserProfile";
+import SlugProfile from "../pages/SlugProfile";
 
 export const profileRoutes = [
+  {
+    title: "Slug Profile",
+    to: "/@:slug",
+    icon: "user",
+    page: <SlugProfile />,
+    description: "View user profile by slug",
+    isPublic: true,
+    requiresAuth: false
+  },
   {
     title: "User Profile",
     to: "/user/:username",
