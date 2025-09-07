@@ -4,6 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 const CUSTOM_CDN_HOST = 'cdn.talentxcel.in';
 const SUPABASE_PROJECT_REF = 'dthlgsnakhoftinssokm';
 const FUNCTION_PROXY_BASE = `https://${SUPABASE_PROJECT_REF}.functions.supabase.co/storage-proxy/`;
+const IMAGE_PROXY_BASE = `https://${SUPABASE_PROJECT_REF}.functions.supabase.co/image-proxy/`;
+const CUSTOM_IMAGE_BASE = `https://talentxcel.in/api/images/`; // For future custom domain
 
 /**
  * Converts a Supabase storage URL to use custom domain
@@ -11,16 +13,13 @@ const FUNCTION_PROXY_BASE = `https://${SUPABASE_PROJECT_REF}.functions.supabase.
 export const getCustomStorageUrl = (originalUrl: string): string => {
   if (!originalUrl) return originalUrl;
   
-  // If it's a Supabase public storage URL, convert to our proxy edge function (reliable)
+  // If it's a Supabase public storage URL, convert to our image proxy for SEO
   const publicBaseRegex = /https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//i;
   if (publicBaseRegex.test(originalUrl)) {
     const path = originalUrl.replace(publicBaseRegex, '');
-    // For desktop, prefer direct Supabase URLs to avoid proxy issues
-    if (typeof window !== 'undefined' && window.innerWidth > 768) {
-      return originalUrl; // Use original URL on desktop
-    }
-    // Use proxy for mobile
-    return `${FUNCTION_PROXY_BASE}${path}`;
+    
+    // Use image proxy for SEO-friendly URLs served from talentxcel.in infrastructure
+    return `${IMAGE_PROXY_BASE}${path}`;
   }
   return originalUrl;
 };
@@ -78,6 +77,12 @@ export const getOriginalStorageUrl = (customUrl: string): string => {
   }
   if (customUrl.startsWith(FUNCTION_PROXY_BASE)) {
     return customUrl.replace(FUNCTION_PROXY_BASE, publicBase);
+  }
+  if (customUrl.startsWith(IMAGE_PROXY_BASE)) {
+    return customUrl.replace(IMAGE_PROXY_BASE, publicBase);
+  }
+  if (customUrl.startsWith(CUSTOM_IMAGE_BASE)) {
+    return customUrl.replace(CUSTOM_IMAGE_BASE, publicBase);
   }
   return customUrl;
 };
