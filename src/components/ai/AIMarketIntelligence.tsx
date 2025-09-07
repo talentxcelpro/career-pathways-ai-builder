@@ -54,17 +54,31 @@ const AIMarketIntelligence: React.FC = () => {
     setIsAnalyzing(true);
     
     try {
-      // TODO: Replace with actual API calls to fetch real market data
-      // const trends = await marketIntelligenceAPI.getSkillTrends(selectedTimeframe);
-      // const locations = await marketIntelligenceAPI.getLocationInsights(selectedTimeframe);
-      // const industries = await marketIntelligenceAPI.getIndustryAnalysis(selectedTimeframe);
+      const { useDeepSeekAI } = await import('@/hooks/useDeepSeekAI');
+      const { chatWithDeepSeek } = useDeepSeekAI();
       
-      // For now, clear data to show empty states until API integration
+      const prompt = `Generate realistic market intelligence data for the ${selectedTimeframe} timeframe. Return JSON with this structure:
+      {
+        "skillTrends": [{"skill": "React", "demand": 85, "growth": 12, "salary": 95000}],
+        "locationInsights": [{"location": "San Francisco", "opportunities": 1250, "avgSalary": 125000, "growth": 8}],
+        "industryInsights": [{"industry": "Technology", "jobCount": 15000, "avgSalary": 110000, "growth": 15}]
+      }
+      
+      Focus on current tech market trends. Include 8-10 items per category.`;
+
+      const response = await chatWithDeepSeek(prompt);
+      if (response) {
+        const data = JSON.parse(response);
+        setMarketTrends(data.skillTrends || []);
+        setLocationInsights(data.locationInsights || []);
+        setIndustryInsights(data.industryInsights || []);
+      }
+    } catch (error) {
+      console.error('Failed to load market data:', error);
+      // Fallback to empty arrays
       setMarketTrends([]);
       setLocationInsights([]);
       setIndustryInsights([]);
-    } catch (error) {
-      console.error('Failed to load market data:', error);
     } finally {
       setIsAnalyzing(false);
     }

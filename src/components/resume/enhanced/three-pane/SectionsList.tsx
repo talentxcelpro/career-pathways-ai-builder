@@ -6,7 +6,7 @@ import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Plus } from 'lucide-react';
+import { GripVertical, Plus, Trophy, BookOpen, Heart, Globe, GraduationCap } from 'lucide-react';
 import { SectionType, SectionInfo } from '../ThreePaneResumeBuilder';
 
 interface SectionsListProps {
@@ -110,8 +110,22 @@ export const SectionsList: React.FC<SectionsListProps> = ({
   };
 
   const handleAddSection = () => {
-    // TODO: Implement add section functionality
-    console.log('Add new section');
+    const availableSections = [
+      { id: 'awards' as SectionType, name: 'Awards & Achievements', icon: <Trophy className="h-4 w-4" /> },
+      { id: 'publications' as SectionType, name: 'Publications', icon: <BookOpen className="h-4 w-4" /> },
+      { id: 'volunteerWork' as SectionType, name: 'Volunteer Work', icon: <Heart className="h-4 w-4" /> },
+      { id: 'languages' as SectionType, name: 'Languages', icon: <Globe className="h-4 w-4" /> },
+      { id: 'trainings' as SectionType, name: 'Training & Workshops', icon: <GraduationCap className="h-4 w-4" /> }
+    ];
+    
+    const currentSectionIds = sections.map(s => s.id);
+    const newSections = availableSections.filter(s => !currentSectionIds.includes(s.id));
+    
+    if (newSections.length > 0) {
+      // Add the first available section
+      const newSection = newSections[0];
+      onSectionSelect(newSection.id);
+    }
   };
 
   return (

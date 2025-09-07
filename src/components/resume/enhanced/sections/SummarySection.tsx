@@ -13,9 +13,34 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   data,
   onChange
 }) => {
-  const handleImprove = () => {
-    // TODO: Implement AI improvement
-    console.log('Improving summary...');
+  const handleImprove = async () => {
+    if (!data.trim()) {
+      return;
+    }
+    
+    try {
+      const { useDeepSeekAI } = await import('@/hooks/useDeepSeekAI');
+      const { chatWithDeepSeek } = useDeepSeekAI();
+      
+      const prompt = `Improve this professional summary to be more compelling and ATS-friendly while maintaining the original meaning:
+
+"${data}"
+
+Please make it:
+- More impactful and professional
+- Include action verbs and quantifiable achievements where possible
+- Optimized for ATS systems
+- Concise yet comprehensive (2-4 sentences)
+
+Return only the improved summary, no explanations.`;
+
+      const improvedSummary = await chatWithDeepSeek(prompt);
+      if (improvedSummary) {
+        onChange(improvedSummary);
+      }
+    } catch (error) {
+      console.error('Failed to improve summary:', error);
+    }
   };
 
   return (

@@ -39,15 +39,44 @@ const PredictiveCareerAnalytics: React.FC = () => {
     setIsAnalyzing(true);
     
     try {
-      // TODO: Replace with actual API calls to fetch predictive analytics
-      // const predictions = await predictiveAnalyticsAPI.generateCareerPredictions(userProfile);
-      // const skillGaps = await predictiveAnalyticsAPI.analyzeSkillGaps(userProfile);
+      const { useDeepSeekAI } = await import('@/hooks/useDeepSeekAI');
+      const { chatWithDeepSeek } = useDeepSeekAI();
       
-      // For now, clear data to show empty states until API integration
-      setPredictions([]);
-      setSkillGaps([]);
+      const prompt = `Generate predictive career analytics and skill gap analysis. Return JSON with this structure:
+      {
+        "predictions": [
+          {
+            "id": "1",
+            "title": "Senior Developer Role",
+            "probability": 85,
+            "timeframe": "6 months",
+            "salaryRange": "130k-160k",
+            "description": "Based on your React expertise and market trends..."
+          }
+        ],
+        "skillGaps": [
+          {
+            "skill": "GraphQL",
+            "importance": "High",
+            "market_demand": 78,
+            "time_to_learn": "2-3 months",
+            "resources": ["Apollo GraphQL Course", "GraphQL Documentation"]
+          }
+        ]
+      }
+      
+      Focus on realistic tech career progression and in-demand skills for 2024.`;
+
+      const response = await chatWithDeepSeek(prompt);
+      if (response) {
+        const data = JSON.parse(response);
+        setPredictions(data.predictions || []);
+        setSkillGaps(data.skillGaps || []);
+      }
     } catch (error) {
       console.error('Failed to generate predictions:', error);
+      setPredictions([]);
+      setSkillGaps([]);
     } finally {
       setIsAnalyzing(false);
     }

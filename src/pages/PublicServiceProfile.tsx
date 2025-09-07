@@ -116,14 +116,45 @@ const PublicServiceProfile = () => {
     return 'Price on request';
   };
 
-  const handleBookService = (serviceId: string) => {
-    // TODO: Implement booking functionality
-    toast({ title: 'Booking', description: 'Booking functionality will be implemented soon.' });
+  const handleBookService = async (serviceId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: 'Sign In Required', description: 'Please sign in to book services.' });
+        return;
+      }
+
+      // Create booking request
+      const { error } = await supabase
+        .from('service_bookings')
+        .insert({
+          service_id: serviceId,
+          client_id: user.id,
+          status: 'pending',
+          booking_date: new Date().toISOString(),
+          message: 'Service booking request'
+        });
+
+      if (error) throw error;
+
+      toast({ 
+        title: 'Booking Submitted', 
+        description: 'Your booking request has been sent to the service provider.' 
+      });
+    } catch (error) {
+      console.error('Booking failed:', error);
+      toast({ title: 'Error', description: 'Failed to submit booking request.' });
+    }
   };
 
   const handleContactProvider = () => {
-    // TODO: Implement contact functionality
-    toast({ title: 'Contact', description: 'Contact functionality will be implemented soon.' });
+    if (profile?.contact_email) {
+      const subject = encodeURIComponent(`Inquiry about ${profile.business_name || 'your'} services`);
+      const body = encodeURIComponent(`Hi,\n\nI'm interested in your services. Please let me know your availability.\n\nBest regards`);
+      window.open(`mailto:${profile.contact_email}?subject=${subject}&body=${body}`);
+    } else {
+      toast({ title: 'Contact Info', description: 'Contact information not available.' });
+    }
   };
 
   if (loading) {

@@ -52,8 +52,18 @@ export const useResumeBuilder = (initialData?: EnhancedResumeData) => {
     if (!resumeData) return;
 
     try {
-      // TODO: Implement export functionality
-      console.log('Exporting resume in format:', format);
+      const filename = `${resumeData.personalInfo.fullName || 'resume'}.${format.toLowerCase()}`;
+      
+      if (format.toLowerCase() === 'docx') {
+        const { exportToDOCX } = await import('@/utils/exportResume');
+        await exportToDOCX(resumeData, filename);
+      } else if (format.toLowerCase() === 'pdf') {
+        const { exportToPDF } = await import('@/utils/exportResume');
+        await exportToPDF('resume-preview', filename);
+      } else {
+        throw new Error(`Export format ${format} not supported`);
+      }
+      
       toast.success(`Resume exported as ${format.toUpperCase()}`);
     } catch (error) {
       console.error('Failed to export resume:', error);
