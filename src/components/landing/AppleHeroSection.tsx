@@ -20,9 +20,9 @@ export const AppleHeroSection = () => {
           {/* Left Side - Text Content */}
           <div className="space-y-8 text-center lg:text-left">
             <div className="space-y-6">
-              {/* TalentXcel Badge */}
+              {/* Resume Builder Badge */}
               <div className="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-full text-sm text-blue-700 font-medium">
-                ⚡ AI-Powered Career Platform
+                ⚡ AI-Powered Resume Builder
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-light tracking-tight text-slate-900 leading-[1.1]">
@@ -61,7 +61,7 @@ export const AppleHeroSection = () => {
             {/* Social Proof */}
             <div className="pt-8 border-t border-slate-200">
               <p className="text-sm text-slate-500 mb-4 font-medium">
-                Join thousands of professionals accelerating their careers with TalentXcel
+                Join thousands of professionals building better resumes
               </p>
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-sm">
                 <div className="text-center">
