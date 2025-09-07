@@ -158,12 +158,13 @@ export const Navbar = () => {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
                 className="h-8 w-8 rounded-sm"
               />
+              <span className="text-xl font-bold text-slate-900">TalentXcel</span>
             </Link>
           </div>
 

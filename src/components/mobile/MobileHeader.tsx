@@ -90,13 +90,13 @@ export const MobileHeader = () => {
           </Button>
 
           {/* Center - TalentXcel Logo */}
-          <div className="flex-1 flex justify-center animate-scale-in">
+          <div className="flex-1 flex justify-center items-center space-x-2 animate-scale-in">
             <img 
-              src="/lovable-uploads/92d46ee5-0b5a-4272-905d-72a40b1c8bdc.png" 
+              src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
               alt="TalentXcel" 
-              className="h-8 w-auto transition-transform duration-300 hover:scale-105"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/lovable-uploads/1a30569a-4f31-4bd4-abe8-79d630d989f9.png'; }}
+              className="h-6 w-6 rounded-sm transition-transform duration-300 hover:scale-105"
             />
+            <span className="text-lg font-bold text-slate-900">TalentXcel</span>
           </div>
 
           {/* Right - Actions */}
