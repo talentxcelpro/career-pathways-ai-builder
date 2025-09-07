@@ -27,6 +27,10 @@ import { MobileSocialNetwork } from "../components/mobile/MobileSocialNetwork";
 import PublicServiceProfile from "../pages/PublicServiceProfile";
 import MyApplications from "../pages/MyApplications";
 import { AccessControlTestPage } from "../components/admin/AccessControlTestPage";
+import Careers from "../pages/Careers";
+import Security from "../pages/Security"; 
+import Api from "../pages/Api";
+import ResumeTemplates from "../pages/ResumeTemplates";
 
 export const coreRoutes = [
   {
@@ -90,6 +94,34 @@ export const coreRoutes = [
     title: "Blog",
     to: "/blog",
     page: <Blog />,
+  },
+  {
+    title: "Careers",
+    to: "/careers",
+    page: <Careers />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Security",
+    to: "/security", 
+    page: <Security />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "API",
+    to: "/api",
+    page: <Api />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Resume Templates",
+    to: "/resume-templates",
+    page: <ResumeTemplates />,
+    isPublic: true,
+    requiresAuth: false,
   },
   {
     title: "SEO Admin",

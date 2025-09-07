@@ -48,8 +48,8 @@ export const marketplaceRoutes = [
     title: "Post Service",
     to: "/marketplace/post-service",
     page: <PostService />,
-    isPublic: false,
-    requiresAdminAccess: true,
+    isPublic: true,
+    requiresAuth: true,
   },
   {
     title: "Learning Hub",
