@@ -37,13 +37,6 @@ export const networkRoutes = [
     title: "Network",
     to: "/network",
     icon: <Users className="h-4 w-4" />,
-    page: <NetworkMain />,
-    isPublic: true,
-    requiresAuth: true,
-  },
-  {
-    title: "Mobile Network",
-    to: "/mobile/network",
     page: <EnhancedMobileNetwork />,
     isPublic: true,
     requiresAuth: true,

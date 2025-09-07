@@ -13,7 +13,7 @@ import { MobilePassport } from "../pages/mobile/MobilePassport";
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Jobs", to: "/mobile/jobs", page: <MobileJobs /> },
   { title: "Mobile Reels", to: "/mobile/reels", page: <MobileReels /> },
-  { title: "Mobile Network", to: "/mobile/network", page: <EnhancedMobileNetwork /> },
+  
   { title: "Mobile Profile", to: "/mobile/profile", page: <MobileProfile /> },
   { title: "Mobile Notifications", to: "/mobile/notifications", page: <MobileNotifications /> },
   { title: "Pending Connections", to: "/mobile/pending-connections", page: <MobilePendingConnections /> },
