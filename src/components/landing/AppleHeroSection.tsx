@@ -22,8 +22,15 @@ export const AppleHeroSection = () => {
             <div className="space-y-6">
               {/* Globe Icon */}
               <div className="flex justify-center lg:justify-start mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">🌍</span>
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-400 via-blue-500 to-green-500 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">
+                  {/* Globe pattern overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/80 via-blue-500/60 to-green-500/80 rounded-full"></div>
+                  <div className="absolute top-2 left-2 w-3 h-4 bg-green-400 rounded-full opacity-80"></div>
+                  <div className="absolute top-4 right-3 w-2 h-3 bg-green-400 rounded-full opacity-60"></div>
+                  <div className="absolute bottom-3 left-4 w-4 h-2 bg-green-400 rounded-full opacity-70"></div>
+                  <div className="absolute bottom-2 right-2 w-2 h-2 bg-green-400 rounded-full opacity-50"></div>
+                  {/* Shine effect */}
+                  <div className="absolute top-1 left-2 w-4 h-4 bg-white/30 rounded-full blur-sm"></div>
                 </div>
               </div>
               
