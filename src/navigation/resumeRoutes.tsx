@@ -4,6 +4,7 @@ import ResumeNew from "@/pages/resume/ResumeNew";
 import EditResume from "@/pages/resume/EditResume";
 import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
 import ResumeEditorV1 from "@/pages/resume/ResumeEditorV1";
+import ResumeHub from "@/pages/resume/ResumeHub";
 import TemplateGallery from "@/pages/resume/TemplateGallery";
 import UploadParser from "@/pages/resume/UploadParser";
 import AIResumeBuilder from "@/pages/resume/AIResumeBuilder";
@@ -15,6 +16,14 @@ import CareerIntelligence from "@/pages/resume/CareerIntelligence";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const resumeRoutes = [
+  {
+    title: "Resume Hub",
+    to: "/new",
+    icon: <Sparkles className="h-4 w-4" />,
+    page: <ResumeHub />,
+    requiresAuth: false,
+    isPublic: true,
+  },
   {
     title: "Resume Templates",
     to: "/templates",
