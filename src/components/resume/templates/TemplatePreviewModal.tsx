@@ -26,7 +26,11 @@ export const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
 
   const template = enhancedTemplateData.find(t => t.id === templateId) ||
                     resumeTemplates.find(t => t.id === templateId);
-  const currentColorScheme = colorSchemes[selectedColorScheme as keyof typeof colorSchemes];
+  const availableSchemes = Object.values(colorSchemes);
+  const currentColorScheme =
+    availableSchemes.find((s: any) => s.id === selectedColorScheme) ||
+    availableSchemes.find((s: any) => s.isDefault) ||
+    availableSchemes[0];
 
   if (!template) return null;
 

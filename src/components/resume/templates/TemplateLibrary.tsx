@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ResponsiveTemplateGrid } from './ResponsiveTemplateGrid';
-import { TemplatePreviewModal } from './TemplatePreviewModal';
+// import { TemplatePreviewModal } from './TemplatePreviewModal';
 
 interface TemplateLibraryProps {
   selectedTemplate: string;
@@ -13,33 +13,17 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   onTemplateSelect,
   onPreview
 }) => {
-  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
-
-  const handlePreview = (templateId: string) => {
-    setPreviewTemplateId(templateId);
-    onPreview?.(templateId);
-  };
-
-  const handleClosePreview = () => {
-    setPreviewTemplateId(null);
-  };
+  // Preview state handled inside ResponsiveTemplateGrid
 
   return (
     <div className="space-y-6">
       <ResponsiveTemplateGrid
         selectedTemplate={selectedTemplate}
         onTemplateSelect={onTemplateSelect}
-        onPreview={handlePreview}
+        onPreview={onPreview ?? ((_: string) => {})}
       />
       
-      {previewTemplateId && (
-        <TemplatePreviewModal
-          isOpen={!!previewTemplateId}
-          onClose={handleClosePreview}
-          templateId={previewTemplateId}
-          onSelect={onTemplateSelect}
-        />
-      )}
+      {/* Preview modal removed - handled by ResponsiveTemplateGrid */}
     </div>
   );
 };
