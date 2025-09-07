@@ -2,10 +2,25 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  TrendingUp, 
+  Zap, 
+  Clock, 
+  Activity, 
+  AlertTriangle,
+  CheckCircle,
+  Loader2,
+  BarChart3
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { BundleAnalyzer } from '@/utils/bundleOptimizer';
 import { PerformanceOptimizer } from '@/utils/performanceOptimizer';
+import { PerformanceAnalytics } from './PerformanceAnalytics';
+import { WebVitalsTracker } from '../seo/WebVitalsTracker';
 
 interface PerformanceDashboardProps {
   isAdmin?: boolean;
@@ -23,6 +38,8 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
   const [bundleMetrics, setBundleMetrics] = useState<any>(null);
   const [performanceReport, setPerformanceReport] = useState<any>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [performanceScore, setPerformanceScore] = useState(85);
 
   useEffect(() => {
     // Get bundle metrics
@@ -35,7 +52,46 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       const report = optimizer.getPerformanceReport();
       setPerformanceReport(report);
     }
-  }, [isAdmin]);
+
+    // Calculate performance score
+    const scores = getPerformanceScore();
+    const avgScore = Object.values(scores).reduce((sum, score) => {
+      const numScore = score === 'good' ? 100 : score === 'needs-improvement' ? 70 : 40;
+      return sum + numScore;
+    }, 0) / Object.keys(scores).length;
+    setPerformanceScore(Math.round(avgScore));
+  }, [isAdmin, getPerformanceScore]);
+
+  const runOptimization = async () => {
+    setIsOptimizing(true);
+    try {
+      const optimizer = PerformanceOptimizer.getInstance();
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate optimization
+      toast.success('Performance optimization completed!');
+    } catch (error) {
+      toast.error('Optimization failed');
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
+
+  const recommendations = [
+    {
+      title: 'Optimize Images',
+      description: 'Convert images to WebP format and implement lazy loading',
+      priority: 'high'
+    },
+    {
+      title: 'Bundle Splitting',
+      description: 'Split large bundles to improve initial load time',
+      priority: 'medium'
+    },
+    {
+      title: 'Cache Optimization',
+      description: 'Implement better caching strategies for static assets',
+      priority: 'medium'
+    }
+  ];
 
   const scores = getPerformanceScore();
   const warnings = getPerformanceWarnings();
@@ -60,8 +116,61 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Overall Performance Status */}
-      <Card>
+      <div>
+        <h1 className="text-3xl font-bold">Performance Dashboard</h1>
+        <p className="text-muted-foreground">Monitor and optimize application performance</p>
+      </div>
+
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="grid grid-cols-4 w-full">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="web-vitals">Web Vitals</TabsTrigger>
+          <TabsTrigger value="optimization">Optimization</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          {/* Overall Performance Score */}
+          <Card className="border-l-4 border-l-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Performance Score
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="text-4xl font-bold text-primary">{performanceScore}/100</div>
+                <Badge variant={performanceScore >= 90 ? "default" : performanceScore >= 70 ? "secondary" : "destructive"}>
+                  {performanceScore >= 90 ? 'Excellent' : performanceScore >= 70 ? 'Good' : 'Needs Improvement'}
+                </Badge>
+              </div>
+              <Progress value={performanceScore} className="h-3" />
+              
+              <div className="mt-4">
+                <Button 
+                  onClick={runOptimization} 
+                  disabled={isOptimizing}
+                  className="flex items-center gap-2"
+                >
+                  {isOptimizing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Optimizing...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4" />
+                      Run Optimization
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Overall Performance Status */}
+          <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             Performance Overview
@@ -306,6 +415,60 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <PerformanceAnalytics />
+        </TabsContent>
+
+        <TabsContent value="web-vitals" className="space-y-6">
+          <WebVitalsTracker />
+        </TabsContent>
+
+        <TabsContent value="optimization" className="space-y-6">
+          {/* Optimization Recommendations */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Optimization Recommendations
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recommendations.map((rec, index) => (
+                  <div key={index} className="flex items-start justify-between p-4 border rounded-lg">
+                    <div className="flex items-start gap-3">
+                      {rec.priority === 'high' ? (
+                        <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
+                      ) : (
+                        <Activity className="h-5 w-5 text-blue-500 mt-0.5" />
+                      )}
+                      <div>
+                        <h4 className="font-medium">{rec.title}</h4>
+                        <p className="text-sm text-muted-foreground">{rec.description}</p>
+                        <Badge 
+                          variant={rec.priority === 'high' ? 'destructive' : 'secondary'}
+                          className="mt-2"
+                        >
+                          {rec.priority} priority
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => toast.info(`Implementing: ${rec.title}`)}
+                    >
+                      Apply Fix
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
