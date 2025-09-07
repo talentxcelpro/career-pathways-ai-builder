@@ -49,6 +49,80 @@
   transform: translateY(0);
 }
 
+/* Adaptive Design Utilities */
+.touch-optimized {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.touch-optimized * {
+  min-height: 44px; /* Apple's recommended touch target size */
+  min-width: 44px;
+}
+
+.hover-enabled:hover {
+  cursor: pointer;
+}
+
+.hover-disabled {
+  cursor: default;
+}
+
+.portrait-layout {
+  flex-direction: column;
+}
+
+.landscape-layout {
+  flex-direction: row;
+}
+
+.tablet-portrait-network {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.tablet-landscape-network {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.tablet-touch {
+  touch-action: manipulation;
+}
+
+.tablet-cursor {
+  cursor: auto;
+}
+
+.desktop-touch * {
+  min-height: 32px; /* Smaller touch targets for desktop with touch */
+}
+
+.desktop-cursor {
+  cursor: auto;
+}
+
+.desktop-network-layout {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
 .page-exit {
   opacity: 1;
   transform: translateY(0);
