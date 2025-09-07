@@ -188,9 +188,10 @@ const App = () => {
                          );
                         })}
                        
-                       {/* Legacy UUID-based profile redirects */}
-                       <Route path="/profile/:id" element={<ProfileUrlRedirect />} />
-                       <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
+                        {/* Legacy UUID-based profile redirects */}
+                        <Route path="/profile/:id" element={<ProfileUrlRedirect />} />
+                        <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
+                        <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />

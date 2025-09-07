@@ -21,16 +21,16 @@ const ProfileUrlRedirect = () => {
       try {
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('username')
+          .select('slug')
           .eq('id', id)
           .maybeSingle();
 
         if (error) {
           console.error('Error fetching profile:', error);
           navigate('/404');
-        } else if (profile?.username) {
-          // Redirect to unified profile route
-          navigate(`/user/${profile.username}`, { replace: true });
+        } else if (profile?.slug) {
+          // Redirect to slug-based profile route
+          navigate(`/@${profile.slug}`, { replace: true });
         } else {
           navigate('/404');
         }
