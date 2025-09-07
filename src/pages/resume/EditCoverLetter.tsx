@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save, Download, Eye } from "lucide-react";
 import { useNavigate, useParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const EditCoverLetter = () => {
   const navigate = useNavigate();
@@ -14,9 +16,31 @@ const EditCoverLetter = () => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    // TODO: Implement save functionality
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSaving(false);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to save your cover letter');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('ai_cover_letters_enhanced')
+        .upsert({
+          id: id,
+          user_id: user.id,
+          content: content,
+          title: 'Cover Letter',
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      toast.success('Cover letter saved successfully!');
+    } catch (error) {
+      console.error('Error saving cover letter:', error);
+      toast.error('Failed to save cover letter');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

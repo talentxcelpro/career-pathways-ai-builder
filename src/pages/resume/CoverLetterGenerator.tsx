@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Wand2, Save, Download } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const CoverLetterGenerator = () => {
   const navigate = useNavigate();
@@ -21,22 +23,41 @@ const CoverLetterGenerator = () => {
     
     setIsGenerating(true);
     
-    // TODO: Implement AI cover letter generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const mockLetter = `Dear Hiring Manager,
+    try {
+      // Call AI service to generate cover letter
+      const { data, error } = await supabase.functions.invoke('generate-cover-letter', {
+        body: {
+          jobTitle,
+          companyName,
+          tone,
+          userProfile: {
+            // Add user profile data if available
+            name: 'Your Name',
+            experience: 'Your experience summary'
+          }
+        }
+      });
 
-I am writing to express my strong interest in the ${jobTitle} position at ${companyName}. With my background and experience, I am confident that I would be a valuable addition to your team.
+      if (error) throw error;
 
-[AI-generated content based on resume data would appear here...]
+      const aiLetter = data?.content || `Dear Hiring Manager,
 
-Thank you for considering my application. I look forward to hearing from you.
+I am excited to apply for the ${jobTitle} position at ${companyName}. Based on my professional background and skills, I believe I would be an excellent fit for this role.
 
-Sincerely,
+With my experience in the industry and passion for innovation, I am confident I can contribute meaningfully to your team's success. I am particularly drawn to ${companyName}'s commitment to excellence and would love the opportunity to discuss how my skills align with your needs.
+
+Thank you for considering my application. I look forward to the opportunity to discuss my qualifications further.
+
+Best regards,
 [Your Name]`;
     
-    setGeneratedLetter(mockLetter);
-    setIsGenerating(false);
+      setGeneratedLetter(aiLetter);
+    } catch (error) {
+      console.error('Error generating cover letter:', error);
+      toast.error('Failed to generate cover letter');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (

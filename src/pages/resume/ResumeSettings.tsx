@@ -6,6 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const ResumeSettings = () => {
   const navigate = useNavigate();
@@ -22,9 +24,30 @@ const ResumeSettings = () => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    // TODO: Implement save settings functionality
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSaving(false);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to save settings');
+        return;
+      }
+
+      // Store settings in user preferences or create a new table for settings
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          resume_settings: settings,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      toast.success('Settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

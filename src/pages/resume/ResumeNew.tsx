@@ -2,6 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ThreePaneResumeBuilder } from '@/components/resume/enhanced/ThreePaneResumeBuilder';
 import { createEmptyEditorResume } from '@/types/editor-resume';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const ResumeNew: React.FC = () => {
   const [data, setData] = React.useState(() => {
@@ -20,8 +22,34 @@ const ResumeNew: React.FC = () => {
   });
 
   const handleSave = async (resumeData: any) => {
-    console.log('Saving resume data:', resumeData);
-    // TODO: Save to Supabase
+    try {
+      console.log('Saving resume data:', resumeData);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to save your resume');
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('ai_resumes')
+        .upsert({
+          user_id: user.id,
+          content: resumeData,
+          title: resumeData.personalInfo?.fullName || 'Resume',
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success('Resume saved successfully!');
+      console.log('Resume saved:', data);
+    } catch (error) {
+      console.error('Error saving resume:', error);
+      toast.error('Failed to save resume');
+    }
   };
 
   return (

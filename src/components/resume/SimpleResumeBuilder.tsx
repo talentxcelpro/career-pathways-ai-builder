@@ -603,8 +603,16 @@ export const SimpleResumeBuilder = () => {
     toast.info('PDF export feature coming soon!');
   };
 
-  const exportToDOCX = () => {
-    toast.info('DOCX export feature coming soon!');
+  const exportToDOCX = async () => {
+    try {
+      toast.loading('Generating DOCX...', { id: 'docx-export' });
+      const { exportToDOCX } = await import('@/utils/exportResume');
+      await exportToDOCX(resumeData, `${resumeData.personalInfo.fullName || 'resume'}.docx`);
+      toast.success('DOCX downloaded!', { id: 'docx-export' });
+    } catch (error) {
+      console.error('DOCX export failed:', error);
+      toast.error('Failed to generate DOCX', { id: 'docx-export' });
+    }
   };
 
   return (
