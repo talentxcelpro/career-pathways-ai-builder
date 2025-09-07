@@ -1,5 +1,5 @@
 
-import { FileText, Sparkles, Upload, Zap, Search, Target } from "lucide-react";
+import { FileText, Sparkles, Upload, Zap, Search, Target, PenTool, Video, Globe, TrendingUp } from "lucide-react";
 import ResumeNew from "@/pages/resume/ResumeNew";
 import EditResume from "@/pages/resume/EditResume";
 import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
@@ -8,6 +8,10 @@ import TemplateGallery from "@/pages/resume/TemplateGallery";
 import UploadParser from "@/pages/resume/UploadParser";
 import AIResumeBuilder from "@/pages/resume/AIResumeBuilder";
 import ATSOptimizer from "@/pages/resume/ATSOptimizer";
+import CoverLetterStudio from "@/pages/resume/CoverLetterStudio";
+import InterviewPrepSuite from "@/pages/resume/InterviewPrepSuite";
+import PortfolioBuilder from "@/pages/resume/PortfolioBuilder";
+import CareerIntelligence from "@/pages/resume/CareerIntelligence";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const resumeRoutes = [
@@ -32,6 +36,38 @@ export const resumeRoutes = [
     to: "/builder",
     icon: <Sparkles className="h-4 w-4" />,
     page: <AIResumeBuilder />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Cover Letter Studio",
+    to: "/cover-letter",
+    icon: <PenTool className="h-4 w-4" />,
+    page: <CoverLetterStudio />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Interview Prep",
+    to: "/interview-prep", 
+    icon: <Video className="h-4 w-4" />,
+    page: <InterviewPrepSuite />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Portfolio Builder",
+    to: "/portfolio",
+    icon: <Globe className="h-4 w-4" />,
+    page: <PortfolioBuilder />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Career Intelligence",
+    to: "/insights",
+    icon: <TrendingUp className="h-4 w-4" />,
+    page: <CareerIntelligence />,
     requiresAuth: false,
     isPublic: true,
   },
