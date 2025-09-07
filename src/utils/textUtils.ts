@@ -1,7 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import VideoThumbnail from '@/components/media/VideoThumbnail';
 
-// Enhanced utility function to detect and convert URLs, mentions, and hashtags to clickable links
+// Helper function to detect video URLs
+const isVideoUrl = (url: string): boolean => {
+  return (
+    url.includes('youtube.com') ||
+    url.includes('youtu.be') ||
+    url.includes('vimeo.com') ||
+    /\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)(\?|#|$)/i.test(url) ||
+    url.includes('post-media') // Supabase storage videos
+  );
+};
+
+// Enhanced utility function to detect and convert URLs, mentions, and hashtags to clickable links with video thumbnails
 export const linkifyText = (text: string): React.ReactNode[] => {
   if (!text) return [text];
 
@@ -36,17 +48,33 @@ export const linkifyText = (text: string): React.ReactNode[] => {
     const matchedText = match[0];
     
     if (matchedText.startsWith('http')) {
-      // It's a URL
-      parts.push(
-        React.createElement('a', {
-          key: `url-${match.index}`,
-          href: matchedText,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-          className: 'text-blue-600 hover:text-blue-800 underline font-medium transition-colors hover:bg-blue-50 px-1 py-0.5 rounded-sm',
-          title: `Open ${matchedText}`
-        }, matchedText)
-      );
+      // Check if it's a video URL
+      if (isVideoUrl(matchedText)) {
+        // Create video thumbnail component
+        parts.push(
+          React.createElement('div', {
+            key: `video-${match.index}`,
+            className: 'my-3 max-w-md'
+          }, 
+            React.createElement(VideoThumbnail, {
+              url: matchedText,
+              className: 'w-full'
+            })
+          )
+        );
+      } else {
+        // Regular URL link
+        parts.push(
+          React.createElement('a', {
+            key: `url-${match.index}`,
+            href: matchedText,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            className: 'text-blue-600 hover:text-blue-800 underline font-medium transition-colors hover:bg-blue-50 px-1 py-0.5 rounded-sm',
+            title: `Open ${matchedText}`
+          }, matchedText)
+        );
+      }
     } else if (matchedText.startsWith('@')) {
       // It's a mention
       const username = matchedText.slice(1); // Remove the @ symbol
