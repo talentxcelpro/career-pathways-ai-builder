@@ -35,8 +35,8 @@ export function useSlugProfile(slug?: string) {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('slug', cleanSlug)
-        .single();
+        .or(`slug.eq.${cleanSlug},username.eq.${cleanSlug}`)
+        .maybeSingle();
 
       if (error) throw error;
       return data as SlugProfile;

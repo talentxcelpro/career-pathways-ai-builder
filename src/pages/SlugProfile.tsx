@@ -26,12 +26,12 @@ const SlugProfile = () => {
 
   // Set up SEO
   useSEO({
-    title: profile ? `${profile.full_name} (@${profile.slug}) - TalentXcel` : 'Profile - TalentXcel',
+    title: profile ? `${profile.full_name} (@${(profile as any).username || profile.slug}) - TalentXcel` : 'Profile - TalentXcel',
     description: profile 
       ? `${profile.full_name}'s professional profile on TalentXcel. ${profile.title ? `${profile.title}. ` : ''}${profile.about ? profile.about.substring(0, 150) + '...' : 'Connect and explore their career journey.'}`
       : 'View professional profile on TalentXcel.',
     keywords: profile 
-      ? [profile.full_name, profile.slug, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
+      ? [profile.full_name, (profile as any).username || (profile as any).slug, 'professional profile', 'TalentXcel', profile.title, profile.location].filter(Boolean)
       : ['professional profile', 'TalentXcel'],
     canonical: `https://talentxcel.in/${username}`
   });
@@ -59,7 +59,7 @@ const SlugProfile = () => {
     '@type': 'Person',
     name: profile.full_name,
     jobTitle: profile.title,
-    url: `https://talentxcel.in/${profile.slug}`,
+    url: `https://talentxcel.in/${(profile as any).username || profile.slug}`,
     sameAs: [profile.website, profile.linkedin_url, profile.github_url].filter(Boolean),
     email: profile.email,
     telephone: profile.phone,
