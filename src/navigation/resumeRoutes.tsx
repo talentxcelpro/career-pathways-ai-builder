@@ -16,6 +16,7 @@ import CareerIntelligence from "@/pages/resume/CareerIntelligence";
 import Dashboard from "@/pages/Dashboard";
 import CompanyDashboard from "@/pages/companies/CompanyDashboard";
 import { AnalyticsDashboard } from "@/components/resume/AnalyticsDashboard";
+import LearningHub from "@/pages/LearningHub";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const resumeRoutes = [
@@ -112,6 +113,14 @@ export const resumeRoutes = [
     to: "/resume/analytics",
     icon: <Target className="h-4 w-4" />,
     page: <AnalyticsDashboard resumeId="current" />,
+    requiresAuth: false,
+    isPublic: true,
+  },
+  {
+    title: "Learning Hub",
+    to: "/resume/learning-hub",
+    icon: <Target className="h-4 w-4" />,
+    page: <LearningHub />,
     requiresAuth: false,
     isPublic: true,
   },
