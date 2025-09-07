@@ -27,13 +27,13 @@ export const FeaturesSection = () => {
       icon: Target,
       title: "Personalized Career Paths",
       description: "AI-driven recommendations tailored to your goals and skills",
-      link: "/career-paths"
+      link: "https://talentxcel.in/career-map"
     },
     {
       icon: GraduationCap,
       title: "AI-Powered Learning Hub",
       description: "Upskill with courses designed for your career trajectory",
-      link: "/learning"
+      link: "https://talentxcel.in/learning"
     },
     {
       icon: Briefcase,
@@ -45,7 +45,7 @@ export const FeaturesSection = () => {
       icon: BarChart3,
       title: "Career Analytics",
       description: "Track your progress with detailed insights and metrics",
-      link: "/analytics"
+      link: "https://talentxcel.in/tools"
     },
     {
       icon: Shield,
@@ -76,7 +76,7 @@ export const FeaturesSection = () => {
             return (
               <div 
                 key={index}
-                onClick={() => navigate(feature.link)}
+                onClick={() => feature.link.startsWith('http') ? window.open(feature.link, '_blank') : navigate(feature.link)}
                 className="group p-8 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
               >
                 <div className="flex items-center mb-4">
