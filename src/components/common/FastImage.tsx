@@ -84,17 +84,15 @@ export const FastImage: React.FC<FastImageProps> = ({
 
   const handleError = () => {
     console.warn('FastImage: Failed to load:', optimizedSrc);
-    // Retry once using the original (non-proxied) URL
+    
+    // If we're using a proxied URL and it fails, try the original Supabase URL
     if (optimizedSrc && optimizedSrc.includes('.functions.supabase.co/storage-proxy/')) {
-      const fallbackUrl = ImageOptimizer.getOptimizedUrl(src, {
-        width: thumbnail ? 400 : width,
-        height: thumbnail ? 400 : height,
-        quality: thumbnail ? 80 : quality,
-        format: 'webp'
-      });
-      setOptimizedSrc(fallbackUrl);
+      console.log('Retrying with original Supabase URL');
+      const originalUrl = `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/public/${optimizedSrc.split('storage-proxy/')[1]}`;
+      setOptimizedSrc(originalUrl);
       return;
     }
+    
     setError(true);
     setLoaded(true);
   };

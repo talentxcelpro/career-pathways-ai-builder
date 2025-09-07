@@ -15,9 +15,12 @@ export const getCustomStorageUrl = (originalUrl: string): string => {
   const publicBaseRegex = /https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//i;
   if (publicBaseRegex.test(originalUrl)) {
     const path = originalUrl.replace(publicBaseRegex, '');
-    // Prefer edge function proxy to avoid 404s while CDN is not configured
+    // For desktop, prefer direct Supabase URLs to avoid proxy issues
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      return originalUrl; // Use original URL on desktop
+    }
+    // Use proxy for mobile
     return `${FUNCTION_PROXY_BASE}${path}`;
-    // To switch to CDN later, replace with: `https://${CUSTOM_CDN_HOST}/${path}`
   }
   return originalUrl;
 };
