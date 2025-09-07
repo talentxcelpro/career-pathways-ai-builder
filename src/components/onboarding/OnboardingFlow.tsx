@@ -36,9 +36,9 @@ export const OnboardingFlow: React.FC = () => {
     },
     {
       id: 'resume',
-      title: 'Build Your Resume',
-      description: 'Create a professional resume with our AI-powered builder',
-      action: 'Build Resume',
+      title: 'Build Your Resume with TalentXcel',
+      description: 'Create a professional resume with our TalentXcel AI-powered builder',
+      action: 'Build Resume with TalentXcel',
       route: '/resume-builder',
       completed: false,
       tier: 'free'

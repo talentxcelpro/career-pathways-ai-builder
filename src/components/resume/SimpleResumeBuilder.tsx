@@ -621,8 +621,8 @@ export const SimpleResumeBuilder = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Resume Builder</h1>
-            <p className="text-muted-foreground">Upload, edit, and optimize your resume with AI</p>
+            <h1 className="text-3xl font-bold">TalentXcel Resume Builder</h1>
+            <p className="text-muted-foreground">Upload, edit, and optimize your resume with TalentXcel AI</p>
           </div>
           <div className="flex items-center space-x-2">
             {lastSaved && (

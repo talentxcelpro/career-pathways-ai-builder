@@ -107,10 +107,10 @@ export const MobileResumeBuilder = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <Card className="p-8 w-full max-w-md text-center">
-          <h2 className="text-2xl font-bold mb-4">Mobile Resume Builder</h2>
+          <h2 className="text-2xl font-bold mb-4">TalentXcel Mobile Resume Builder</h2>
           <p className="text-gray-600">
-            This mobile-optimized resume builder is designed for mobile devices. 
-            Please switch to mobile for the best experience.
+            This TalentXcel mobile-optimized resume builder is designed for seamless mobile experience. 
+            Create professional resumes on-the-go with AI assistance.
           </p>
         </Card>
       </div>
@@ -264,7 +264,7 @@ export const MobileResumeBuilder = () => {
       {/* Header */}
       <div className="bg-white border-b px-4 py-3 sticky top-0 z-10">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">Resume Builder</h1>
+          <h1 className="text-lg font-semibold">TalentXcel Resume Builder</h1>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">{completionScore}%</span>
             <div className="w-16 h-2 bg-gray-200 rounded-full">

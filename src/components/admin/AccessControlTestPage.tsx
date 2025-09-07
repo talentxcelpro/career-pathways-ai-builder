@@ -21,7 +21,7 @@ export const AccessControlTestPage: React.FC = () => {
 
   // Mock data to avoid circular dependency with nav-items
   const mockPublicRoutes = [
-    { title: "Resume Builder", to: "/", isPublic: true },
+    { title: "TalentXcel Resume Builder", to: "/", isPublic: true },
     { title: "Network", to: "/network", isPublic: true },
     { title: "Jobs", to: "/jobs", isPublic: true },
     { title: "Employer", to: "/employer", isPublic: true },

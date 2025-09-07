@@ -45,7 +45,7 @@ export const ResumeHeader: React.FC<ResumeHeaderProps> = ({
           <div className="flex items-center gap-4">
             <div>
               <h1 className="text-xl font-semibold">
-                {mode === 'edit' ? 'Edit Resume' : 'Create Resume'}
+                {mode === 'edit' ? 'TalentXcel Resume Editor' : 'TalentXcel Resume Builder'}
               </h1>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 {isSaving && (

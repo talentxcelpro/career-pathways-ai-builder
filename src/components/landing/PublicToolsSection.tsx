@@ -8,7 +8,7 @@ export const PublicToolsSection: React.FC = () => {
   const publicTools = [
     {
       icon: <FileText className="h-8 w-8" />,
-      title: "Free Resume Builder",
+      title: "TalentXcel Free Resume Builder",
       description: "Create professional resumes instantly",
       link: "/public/resume-builder"
     },

@@ -116,7 +116,7 @@ export const TalentXcelAgentDashboard: React.FC = () => {
     { id: 'Network', icon: Users, name: 'Network', color: 'text-blue-600' },
     { id: 'Jobs', icon: Briefcase, name: 'Jobs', color: 'text-green-600' },
     { id: 'Employer', icon: Building, name: 'Employer & Companies', color: 'text-purple-600' },
-    { id: 'Resume', icon: FileText, name: 'Resume Builder', color: 'text-orange-600' },
+    { id: 'Resume', icon: FileText, name: 'TalentXcel Resume Builder', color: 'text-orange-600' },
     { id: 'Tools', icon: Wrench, name: 'Tools & Services', color: 'text-red-600' },
     { id: 'Learning', icon: GraduationCap, name: 'Learning & Colleges', color: 'text-indigo-600' },
     { id: 'Career', icon: Map, name: 'Career Map & Passport', color: 'text-teal-600' },

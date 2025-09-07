@@ -206,10 +206,10 @@ export const AppleInspiredResumeBuilder = () => {
                   <FileText className="h-10 w-10 text-white" />
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent">
-                  AI Resume Builder
+                  TalentXcel AI Resume Builder
                 </h1>
                 <p className="text-xl text-gray-600 max-w-lg mx-auto">
-                  Transform your career with our intelligent resume builder. Upload your existing resume or start fresh.
+                  Transform your career with TalentXcel's intelligent resume builder. Upload your existing resume or start fresh with AI assistance.
                 </p>
               </div>
               

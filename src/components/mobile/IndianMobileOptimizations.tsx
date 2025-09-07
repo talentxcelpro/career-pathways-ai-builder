@@ -267,7 +267,7 @@ export const IndianMobileOptimizations = () => {
         <CardContent>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span>Resume Builder</span>
+              <span>TalentXcel Resume Builder</span>
               <Badge variant="secondary" className="text-xs">Ready</Badge>
             </div>
             <div className="flex items-center justify-between text-sm">
