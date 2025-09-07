@@ -20,6 +20,13 @@ export const AppleHeroSection = () => {
           {/* Left Side - Text Content */}
           <div className="space-y-8 text-center lg:text-left">
             <div className="space-y-6">
+              {/* Globe Icon */}
+              <div className="flex justify-center lg:justify-start mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-2xl">🌍</span>
+                </div>
+              </div>
+              
               <h1 className="text-5xl lg:text-7xl font-light tracking-tight text-slate-900 leading-[1.1]">
                 Powering Global
                 <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
