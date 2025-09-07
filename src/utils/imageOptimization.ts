@@ -34,11 +34,11 @@ export class ImageOptimizer {
 
     // Build URL with query params safely (works for both absolute and relative URLs)
     const params = new URLSearchParams();
-    if (config.width) params.set('w', String(config.width));
-    if (config.height) params.set('h', String(config.height));
-    if (config.quality) params.set('q', String(config.quality));
-    if (config.format) params.set('f', config.format);
-    if (config.fit) params.set('fit', config.fit);
+    if (config.width) params.set('width', String(config.width));
+    if (config.height) params.set('height', String(config.height));
+    if (config.quality) params.set('quality', String(config.quality));
+    if (config.format) params.set('format', config.format);
+    if (config.fit) params.set('resize', config.fit);
 
     try {
       const urlObj = new URL(base, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
