@@ -1,58 +1,82 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Briefcase, GraduationCap, FileText } from "lucide-react";
+import { FileText, Users, Target, GraduationCap, Briefcase, BarChart3, Shield } from 'lucide-react';
 
 export const FeaturesSection = () => {
   const features = [
     {
-      icon: Users,
-      title: "Professional Profile",
-      description: "Create a compelling professional presence that stands out to employers and connections.",
-      gradient: "from-blue-500 to-blue-600"
+      icon: FileText,
+      title: "Resume Builder",
+      description: "Create professional resumes with AI-powered suggestions and templates"
     },
     {
-      icon: Briefcase,
-      title: "Smart Job Search",
-      description: "Discover opportunities that match your skills and career goals with AI-powered recommendations.",
-      gradient: "from-green-500 to-green-600"
+      icon: Users,
+      title: "Professional Network",
+      description: "Connect with industry leaders, mentors, and peers worldwide"
+    },
+    {
+      icon: Target,
+      title: "Personalized Career Paths",
+      description: "AI-driven recommendations tailored to your goals and skills"
     },
     {
       icon: GraduationCap,
-      title: "Skill Development",
-      description: "Access courses and learning paths tailored to your career aspirations and industry trends.",
-      gradient: "from-purple-500 to-purple-600"
+      title: "AI-Powered Learning Hub",
+      description: "Upskill with courses designed for your career trajectory"
     },
     {
-      icon: FileText,
-      title: "AI Career Tools",
-      description: "Generate professional resumes, cover letters, and get personalized career guidance.",
-      gradient: "from-orange-500 to-orange-600"
+      icon: Briefcase,
+      title: "Verified Job & Internship Listings",
+      description: "Access exclusive opportunities from top companies"
+    },
+    {
+      icon: BarChart3,
+      title: "Career Analytics",
+      description: "Track your progress with detailed insights and metrics"
+    },
+    {
+      icon: Shield,
+      title: "Trusted Platform",
+      description: "Secure, professional environment with verified profiles"
     }
   ];
 
   return (
-    <section className="py-24 bg-white/70 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">Everything You Need to Excel</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive tools powered by AI to transform your career journey</p>
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl lg:text-5xl font-light text-slate-900 mb-4">
+            Everything You Need to
+            <span className="block font-medium bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Accelerate Your Career
+            </span>
+          </h2>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            From networking to skill-building, discover all the tools and opportunities to reach your professional goals
+          </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 bg-white/90 backdrop-blur-sm group">
-              <CardHeader className="text-center pb-4">
-                <div className={`w-20 h-20 bg-gradient-to-r ${feature.gradient} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="h-10 w-10 text-white" />
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <div 
+                key={index}
+                className="group p-8 bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="h-6 w-6 text-white" />
+                  </div>
                 </div>
-                <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-center leading-relaxed">{feature.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
