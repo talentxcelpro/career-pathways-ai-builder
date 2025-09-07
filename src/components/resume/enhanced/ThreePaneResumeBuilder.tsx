@@ -405,23 +405,58 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      <TopToolbar
-        selectedTemplate={selectedTemplate}
-        onTemplateChange={handleTemplateChange}
-        onATSCheck={handleATSCheck}
-        onImproveSection={handleImproveSection}
-        onExport={handleExport}
-        onUploadResume={handleUploadResume}
-        saveStatus={saveStatus}
-        lastSaved={lastSaved}
-        onToggleVoice={() => setShowVoiceInput(!showVoiceInput)}
-        onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
-        onToggleCollaboration={() => setShowCollaboration(!showCollaboration)}
-        showVoice={showVoiceInput}
-        showAnalytics={showAnalytics}
-        showCollaboration={showCollaboration}
-      />
+    <div className="h-screen flex flex-col bg-background mobile-optimized">
+      {/* Mobile Header */}
+      <div className="md:hidden safe-top bg-white border-b shadow-sm p-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold">TalentXcel Resume Builder</h1>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <span>ATS Score</span>
+              <span className="text-primary font-semibold">0%</span>
+            </div>
+            <button className="text-xs bg-muted px-2 py-1 rounded">Save</button>
+          </div>
+        </div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          Real-time ATS optimization • Smart suggestions • Multiple templates
+        </div>
+      </div>
+
+      {/* Desktop Top Toolbar */}
+      <div className="hidden md:block">
+        <TopToolbar
+          selectedTemplate={selectedTemplate}
+          onTemplateChange={handleTemplateChange}
+          onATSCheck={handleATSCheck}
+          onImproveSection={handleImproveSection}
+          onExport={handleExport}
+          onUploadResume={handleUploadResume}
+          saveStatus={saveStatus}
+          lastSaved={lastSaved}
+          onToggleVoice={() => setShowVoiceInput(!showVoiceInput)}
+          onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
+          onToggleCollaboration={() => setShowCollaboration(!showCollaboration)}
+          showVoice={showVoiceInput}
+          showAnalytics={showAnalytics}
+          showCollaboration={showCollaboration}
+        />
+      </div>
+
+      {/* Mobile Navigation Tabs */}
+      <div className="md:hidden bg-white border-b">
+        <div className="flex">
+          <button className="flex-1 py-3 px-4 text-sm font-medium text-center border-b-2 border-primary">
+            Guided
+          </button>
+          <button className="flex-1 py-3 px-4 text-sm font-medium text-center text-muted-foreground">
+            Freestyle
+          </button>
+          <button className="flex-1 py-3 px-4 text-sm font-medium text-center text-muted-foreground">
+            AI Chat
+          </button>
+        </div>
+      </div>
       
       {/* Voice Input Panel */}
       {showVoiceInput && (
@@ -452,31 +487,119 @@ export const ThreePaneResumeBuilder: React.FC<ThreePaneResumeBuilderProps> = ({
         </div>
       )}
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex-1 flex overflow-hidden">
-          <SortableContext items={paneOrder} strategy={horizontalListSortingStrategy}>
-            {paneOrder.map(paneId => renderPane(paneId))}
-          </SortableContext>
+      {/* Mobile Layout */}
+      <div className="md:hidden flex-1 flex flex-col overflow-hidden">
+        {/* Template Selection */}
+        <div className="p-4 border-b bg-card">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium">Template:</span>
+            <span className="text-xs text-muted-foreground">4 suggestions available</span>
+          </div>
+          <select className="w-full p-2 border rounded-md text-sm bg-background">
+            <option>Select a template...</option>
+            <option>Modern Professional</option>
+            <option>Classic Executive</option>
+            <option>Creative Designer</option>
+          </select>
         </div>
 
-        <DragOverlay>
-          {activeId ? (
-            <div className="opacity-90 scale-105 shadow-2xl border-2 border-primary/50 rounded-lg overflow-hidden">
-              <div className="bg-background p-4 text-center font-medium">
-                {activeId === 'templates' && '📄 Templates'}
-                {activeId === 'sections' && '📝 Resume Sections'}
-                {activeId === 'editor' && '✏️ Editor'}
-                {activeId === 'preview' && '👁️ Live Preview'}
+        {/* Upload Resume Section */}
+        <div className="p-4 border-b bg-card">
+          <button 
+            onClick={handleUploadResume}
+            className="w-full py-3 px-4 border-2 border-dashed border-primary/30 rounded-lg text-sm text-primary font-medium hover:bg-primary/5 transition-colors"
+          >
+            📄 Upload Resume (0/3)
+          </button>
+        </div>
+
+        {/* ATS Insights */}
+        <div className="p-4 bg-card">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-medium">⚡ ATS Insights</span>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Keyword Density</span>
+              <span className="text-xs">0%</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Formatting</span>
+              <div className="flex items-center gap-2">
+                <div className="w-16 h-1 bg-primary rounded-full"></div>
+                <span className="text-xs">100%</span>
               </div>
             </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Section Structure</span>
+              <div className="flex items-center gap-2">
+                <div className="w-12 h-1 bg-primary rounded-full"></div>
+                <span className="text-xs">80%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Template Search */}
+        <div className="flex-1 p-4 overflow-y-auto">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-medium mb-2">Template Search</h3>
+              <input 
+                type="text" 
+                placeholder="Search templates..."
+                className="w-full p-2 border rounded-md text-sm"
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <button className="px-3 py-1 bg-primary text-primary-foreground rounded-full text-xs">All</button>
+              <button className="px-3 py-1 border rounded-full text-xs">Modern</button>
+              <button className="px-3 py-1 border rounded-full text-xs">Classic</button>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2">Recommended</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="aspect-[3/4] bg-muted rounded-lg"></div>
+                <div className="aspect-[3/4] bg-muted rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden md:block flex-1 overflow-hidden">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex h-full overflow-hidden">
+            <SortableContext items={paneOrder} strategy={horizontalListSortingStrategy}>
+              {paneOrder.map(paneId => renderPane(paneId))}
+            </SortableContext>
+          </div>
+
+          <DragOverlay>
+            {activeId ? (
+              <div className="opacity-90 scale-105 shadow-2xl border-2 border-primary/50 rounded-lg overflow-hidden">
+                <div className="bg-background p-4 text-center font-medium">
+                  {activeId === 'templates' && '📄 Templates'}
+                  {activeId === 'sections' && '📝 Resume Sections'}
+                  {activeId === 'editor' && '✏️ Editor'}
+                  {activeId === 'preview' && '👁️ Live Preview'}
+                </div>
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
 
       {/* Upload Resume Dialog */}
       <UploadResumeDialog
