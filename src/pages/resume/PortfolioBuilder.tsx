@@ -190,7 +190,7 @@ const PortfolioBuilder = () => {
               </CardContent>
             </Card>
           </div>
-        </div>
+        </section>
 
         <div className="max-w-7xl mx-auto px-4 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -533,7 +533,7 @@ const PortfolioBuilder = () => {
               </Tabs>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </>
   );
