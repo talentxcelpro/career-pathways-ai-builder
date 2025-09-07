@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSEO } from '@/hooks/useSEO';
 import { MapPin, ExternalLink, Users, Eye, Phone, Mail, UserPlus, FileUser } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { WorkWithMeDialog } from '@/components/contact/WorkWithMeDialog';
+import { downloadVCard } from '@/utils/vcard';
 
 const TalentXcelServices = () => {
   // Set up SEO
@@ -23,6 +25,8 @@ const TalentXcelServices = () => {
     ],
     canonical: 'https://talentxcel.in/talentxcelservices'
   });
+
+  const [workOpen, setWorkOpen] = useState(false);
 
   const profileData = {
     name: 'TalentXcel SERVICES',
