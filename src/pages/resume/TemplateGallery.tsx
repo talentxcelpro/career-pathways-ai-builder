@@ -133,7 +133,12 @@ const TemplateGallery = () => {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {sortedTemplates.map((template) => (
-                <Card key={template.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                <Card key={template.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer"
+                  onClick={() => setPreviewTemplateId(template.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Preview ${template.name} template`}
+                >
                   <div className="relative">
                     <img
                       src={template.preview}
@@ -141,15 +146,20 @@ const TemplateGallery = () => {
                       className="w-full h-48 object-cover"
                       loading="lazy"
                       decoding="async"
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        img.src = '/placeholder.svg';
+                        img.onerror = null;
+                      }}
                     />
 
                     {/* Overlay on hover */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-                      <Button size="sm" variant="secondary" className="gap-2" onClick={() => setPreviewTemplateId(template.id)}>
+                      <Button size="sm" variant="secondary" className="gap-2" onClick={(ev) => { ev.stopPropagation(); setPreviewTemplateId(template.id); }}>
                         <Eye className="h-4 w-4" />
                         Preview
                       </Button>
-                      <Link to={`/resume/builder?template=${template.id}`} className="inline-flex">
+                      <Link to={`/resume/builder?template=${template.id}`} className="inline-flex" onClick={(ev) => ev.stopPropagation()}>
                         <Button size="sm" className="gap-2">
                           Use Template
                         </Button>
@@ -198,12 +208,12 @@ const TemplateGallery = () => {
 
                     {/* Action Buttons */}
                     <div className="space-y-2">
-                      <Link to={`/resume/builder?template=${template.id}`} className="w-full">
+                      <Link to={`/resume/builder?template=${template.id}`} className="w-full" onClick={(ev) => ev.stopPropagation()}>
                         <Button className="w-full">
                           Use This Template
                         </Button>
                       </Link>
-                      <Button variant="outline" size="sm" className="w-full" onClick={() => setPreviewTemplateId(template.id)}>
+                      <Button variant="outline" size="sm" className="w-full" onClick={(ev) => { ev.stopPropagation(); setPreviewTemplateId(template.id); }}>
                         Preview
                       </Button>
                     </div>

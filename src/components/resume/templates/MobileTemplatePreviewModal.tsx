@@ -106,7 +106,7 @@ export const MobileTemplatePreviewModal: React.FC<MobileTemplatePreviewModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg h-[90vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-lg h-[90vh] p-0 overflow-hidden z-50">
         {/* Header */}
         <DialogHeader className="p-4 border-b bg-white">
           <div className="flex items-center justify-between">
