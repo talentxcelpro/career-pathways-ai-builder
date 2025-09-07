@@ -25,7 +25,11 @@ import { formatDistanceToNow } from 'date-fns';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface CollaborationPanelProps {
-  resumeId: string;
+  resumeId?: string;
+  currentUserId?: string;
+  onInvite?: (email: string, role: string) => void;
+  onComment?: (content: string, section?: string) => void;
+  onShare?: () => void;
 }
 
 const PermissionBadge = ({ permission }: { permission: CollaborationPermission }) => {
@@ -178,7 +182,13 @@ const CommentCard = ({
   );
 };
 
-export const CollaborationPanel = ({ resumeId }: CollaborationPanelProps) => {
+export const CollaborationPanel = ({ 
+  resumeId = "default", 
+  currentUserId = "current-user",
+  onInvite,
+  onComment,
+  onShare
+}: CollaborationPanelProps) => {
   const [inviteEmail, setInviteEmail] = useState('');
   const [invitePermission, setInvitePermission] = useState<CollaborationPermission>('view');
   const [newComment, setNewComment] = useState('');

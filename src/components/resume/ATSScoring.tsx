@@ -398,7 +398,7 @@ export const ATSScoring = ({ resumeText, jobDescription, onOptimize }: ATSScorin
                 </Card>
               </TabsContent>
             </Tabs>
-          )}
+          ) : null}
         </CardContent>
       </Card>
     </div>

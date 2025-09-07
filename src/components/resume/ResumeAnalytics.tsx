@@ -22,12 +22,14 @@ interface AnalyticsData {
 }
 
 interface ResumeAnalyticsProps {
-  resumeId: string;
+  resumeId?: string;
+  isLive?: boolean;
   className?: string;
 }
 
 export const ResumeAnalytics: React.FC<ResumeAnalyticsProps> = ({
   resumeId,
+  isLive = false,
   className
 }) => {
   const [analytics, setAnalytics] = useState<AnalyticsData>({
