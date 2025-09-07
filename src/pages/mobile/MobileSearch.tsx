@@ -241,7 +241,14 @@ export const MobileSearch: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-3">Jobs ({counts.jobs})</h3>
                     {jobs.map((job) => (
-                      <Card key={job.id} className="mb-3">
+                      <Card 
+                        key={job.id} 
+                        className="mb-3 cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => {
+                          // Navigate to job details - you can customize this URL pattern
+                          window.open(`/jobs/${job.id}`, '_blank');
+                        }}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-start space-x-3">
                             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -283,7 +290,14 @@ export const MobileSearch: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-3">People ({counts.people})</h3>
                     {people.map((person) => (
-                      <Card key={person.id} className="mb-3">
+                      <Card 
+                        key={person.id} 
+                        className="mb-3 cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => {
+                          // Navigate to person profile - you can customize this URL pattern
+                          window.open(`/profile/${person.id}`, '_blank');
+                        }}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center overflow-hidden">
@@ -309,7 +323,15 @@ export const MobileSearch: React.FC = () => {
                                 </div>
                               )}
                             </div>
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Handle connect action
+                                console.log('Connect clicked for:', person.full_name);
+                              }}
+                            >
                               Connect
                             </Button>
                           </div>
@@ -323,7 +345,14 @@ export const MobileSearch: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-3">Companies ({counts.companies})</h3>
                     {companies.map((company) => (
-                      <Card key={company.id} className="mb-3">
+                      <Card 
+                        key={company.id} 
+                        className="mb-3 cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => {
+                          // Navigate to company profile - you can customize this URL pattern
+                          window.open(`/companies/${company.id}`, '_blank');
+                        }}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
@@ -346,7 +375,15 @@ export const MobileSearch: React.FC = () => {
                                 </p>
                               )}
                             </div>
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Handle follow action
+                                console.log('Follow clicked for:', company.name);
+                              }}
+                            >
                               Follow
                             </Button>
                           </div>

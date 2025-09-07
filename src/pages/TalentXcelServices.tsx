@@ -111,11 +111,22 @@ const TalentXcelServices = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Button 
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      onClick={() => {
+                        // Simple connect action - could be enhanced with actual connection logic
+                        window.location.href = `mailto:${profileData.email}?subject=Let's Connect&body=Hi, I'd like to connect with you on TalentXcel.`;
+                      }}
+                    >
                       <UserPlus className="h-4 w-4 mr-2" />
                       Connect
                     </Button>
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        window.location.href = `mailto:${profileData.email}?subject=Message from TalentXcel&body=Hi, I have a message for you.`;
+                      }}
+                    >
                       Message
                     </Button>
                     <Button variant="outline" asChild>
@@ -221,11 +232,26 @@ const TalentXcelServices = () => {
               {/* CTA Section */}
               <Card>
                 <CardContent className="p-6 text-center space-y-4">
-                  <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button 
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={() => setWorkOpen(true)}
+                  >
                     <Users className="h-4 w-4 mr-2" />
                     Work With Me
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => downloadVCard({
+                      fullName: profileData.name,
+                      title: profileData.title,
+                      organization: 'TalentXcel Services',
+                      email: profileData.email,
+                      website: profileData.website,
+                      location: profileData.location,
+                      note: profileData.headline
+                    }, 'TalentXcel-Services.vcf')}
+                  >
                     <FileUser className="h-4 w-4 mr-2" />
                     Download vCard
                   </Button>
@@ -240,6 +266,14 @@ const TalentXcelServices = () => {
           </div>
         </div>
       </main>
+
+      <WorkWithMeDialog 
+        open={workOpen} 
+        onOpenChange={setWorkOpen}
+        toEmail={profileData.email}
+        subject="Work With Me - TalentXcel Services"
+        defaultMessage="Hi, I'm interested in working with TalentXcel Services. Please let me know about your availability and services."
+      />
     </>
   );
 };
