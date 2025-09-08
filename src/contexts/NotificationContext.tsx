@@ -154,8 +154,29 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return;
     }
 
+    // In Lovable preview/sandbox environments, disable SW to avoid stale caches
+    const host = location.hostname;
+    const isPreview = host.includes('lovable.app') || host.includes('sandbox.lovable.dev') || host.includes('id-preview');
+    if (isPreview) {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        console.log('Service Worker disabled in preview. Unregistered and cleared caches.');
+      } catch (e) {
+        console.warn('Error while disabling SW in preview:', e);
+      }
+      // Keep state consistent
+      setPermission(Notification.permission);
+      setIsSubscribed(false);
+      return;
+    }
+
     try {
-      // Register service worker
+      // Register service worker (production only)
       const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('Service Worker registered:', registration);
 
@@ -168,7 +189,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       // Listen for messages from service worker
       navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data.type === 'PUSH_NOTIFICATION_RECEIVED') {
+        if (event.data?.type === 'PUSH_NOTIFICATION_RECEIVED') {
           handleNewNotification(event.data.data);
         }
       });
