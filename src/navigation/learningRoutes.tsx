@@ -19,7 +19,7 @@ export const learningRoutes = [
     icon: <BookOpen className="h-4 w-4" />,
     page: <LearningHub />,
     isPublic: false,
-    requiresAdminAccess: true,
+    requiresAdminAccess: false,
   },
   {
     title: "All Courses",
