@@ -23,7 +23,7 @@ import AIEnhancement from "@/pages/resume/AIEnhancement";
 export const resumeRoutes = [
   {
     title: "Resume Hub",
-    to: "/resume/new",
+    to: "/resume/hub",
     icon: <Sparkles className="h-4 w-4" />,
     page: <ResumeHub />,
     requiresAuth: false,
@@ -139,8 +139,7 @@ export const resumeRoutes = [
     icon: <FileText className="h-4 w-4" />,
     page: <ErrorBoundary><ResumeNew /></ErrorBoundary>,
     requiresAuth: false,
-    requiresAdminAccess: true,
-    isPublic: false,
+    isPublic: true,
   },
   {
     title: "TalentXcel Resume Builder",
