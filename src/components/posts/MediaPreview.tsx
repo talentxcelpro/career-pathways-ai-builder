@@ -130,7 +130,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
             } else if (url.includes('youtu.be/')) {
               videoId = url.split('youtu.be/')[1].split('?')[0];
             }
-            return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1` : url;
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
           };
           
           const itemClass = isVideo
@@ -141,16 +141,14 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({ content, mediaUrls = [], is
           return (
             <div key={index} className="relative">
               {isYouTube ? (
-              <iframe
-                src={getYouTubeEmbedUrl(url)}
-                className={`w-full ${isMessage ? 'h-32' : 'h-64'} rounded-lg`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                title={`YouTube Video ${index + 1}`}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
+                <iframe
+                  src={getYouTubeEmbedUrl(url)}
+                  className={`w-full ${isMessage ? 'h-32' : 'h-64'} rounded-lg`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`YouTube Video ${index + 1}`}
+                />
               ) : (
                 isVideo ? (
                   <VideoPlayer url={url} className={itemClass} fit="cover" />

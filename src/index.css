@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import './styles/mobile-optimizations.css';
-
 /* Shimmer animation for skeleton loaders */
 @keyframes shimmer {
   0% {

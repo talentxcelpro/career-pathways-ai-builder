@@ -24,20 +24,9 @@ const getYouTubeVideoId = (url: string): string | null => {
   return null;
 };
 
-const getYouTubeThumbnail = (
-  videoId: string,
-  quality: 'default' | 'mq' | 'hq' | 'sd' | 'maxres' = 'hq'
-): string => {
-  const suffixMap = {
-    default: 'default',
-    mq: 'mqdefault',
-    hq: 'hqdefault',
-    sd: 'sddefault',
-    maxres: 'maxresdefault',
-  } as const;
-  const suffix = suffixMap[quality] || 'hqdefault';
-  // Use i.ytimg.com (recommended) and a valid filename pattern
-  return `https://i.ytimg.com/vi/${videoId}/${suffix}.jpg`;
+// Helper function to get YouTube thumbnail URL
+const getYouTubeThumbnail = (videoId: string, quality: 'default' | 'medium' | 'high' | 'maxres' = 'high'): string => {
+  return `https://img.youtube.com/vi/${videoId}/${quality}default.jpg`;
 };
 
 // Helper function to extract video title from YouTube (simplified)
@@ -63,12 +52,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   const [title, setTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const [isPlaying, setIsPlaying] = useState<boolean>(() => {
-    const yt = getYouTubeVideoId(url) !== null;
-    return !(yt && isMobile);
-  });
-  const [embedError, setEmbedError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const loadThumbnail = async () => {
@@ -79,7 +63,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
         // Check if it's a YouTube URL
         const youtubeId = getYouTubeVideoId(url);
         if (youtubeId) {
-          const thumbnail = getYouTubeThumbnail(youtubeId, 'hq');
+          const thumbnail = getYouTubeThumbnail(youtubeId, 'high');
           setThumbnailUrl(thumbnail);
           if (showTitle) {
             const videoTitle = await getVideoTitle(url);
@@ -140,38 +124,23 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
     }
   }, [url, showTitle]);
 
-const buildYouTubeEmbedUrl = (videoId: string) => {
-  const params = new URLSearchParams({
-    rel: '0',
-    modestbranding: '1',
-    playsinline: '1',
-    autoplay: '1',
-    mute: '1',
-    enablejsapi: '1',
-    controls: '1',
-    fs: '1',
-    iv_load_policy: '3',
-    cc_load_policy: '0',
-    disablekb: '0'
-  });
-  if (typeof window !== 'undefined') {
-    params.set('origin', window.location.origin);
-  }
-  return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
-};
+  const buildYouTubeEmbedUrl = (videoId: string) => {
+    const params = new URLSearchParams({
+      rel: '0',
+      modestbranding: '1',
+      playsinline: '1',
+      autoplay: '1'
+    });
+    return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+  };
 
   const handleClick = () => {
     if (onClick) {
       onClick();
-      return;
+    } else {
+      // Play inline by default
+      setIsPlaying(true);
     }
-    const yt = getYouTubeVideoId(url) !== null;
-    if (yt && isMobile) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    // Play inline otherwise
-    setIsPlaying(true);
   };
 
   if (isLoading) {
@@ -201,132 +170,7 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
   }
 
   const isYoutube = getYouTubeVideoId(url) !== null;
-  const youtubeId = getYouTubeVideoId(url);
 
-  // Auto-play inline videos
-  if (isPlaying) {
-    if (youtubeId && !embedError) {
-      return (
-        <div className={cn(
-          "relative rounded-lg overflow-hidden aspect-video mobile-video",
-          className
-        )}>
-          <iframe
-            src={buildYouTubeEmbedUrl(youtubeId)}
-            className="w-full h-full"
-            title="YouTube video player"
-            allow="autoplay; encrypted-media; picture-in-picture; web-share; accelerometer; gyroscope"
-            allowFullScreen
-            loading="eager"
-            referrerPolicy="strict-origin-when-cross-origin"
-            style={{ 
-              border: 'none',
-              width: '100%',
-              height: '100%',
-              minHeight: '200px'
-            }}
-            onError={() => {
-              console.log('YouTube embed error, falling back');
-              setEmbedError(true);
-            }}
-            onLoad={(e) => {
-              const iframe = e.target as HTMLIFrameElement;
-              // Add timeout to check if iframe is actually working
-              const delay = isMobile ? 600 : 2000;
-              setTimeout(() => {
-                try {
-                  if (iframe.contentDocument === null) {
-                    // Iframe is blocked
-                    setEmbedError(true);
-                  }
-                } catch (error) {
-                  // Cross-origin error means iframe loaded but can't access content (normal)
-                  // If we get a different error, it might be blocked
-                  if (error.toString().includes('blocked')) {
-                    setEmbedError(true);
-                  }
-                }
-              }, delay);
-            }}
-          />
-          {embedError && (
-            <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center text-white p-4 z-20">
-              <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-medium flex items-center gap-1 mb-3">
-                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                </svg>
-                YouTube
-              </div>
-              <p className="text-sm mb-3 text-center">Video blocked by network</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.open(url, '_blank')}
-                className="text-white border-white hover:bg-white hover:text-black"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open in YouTube
-              </Button>
-            </div>
-          )}
-        </div>
-      );
-    }
-    
-    // Fallback for YouTube when blocked or direct video files
-    if (youtubeId && embedError) {
-      return (
-        <div className={cn(
-          "relative rounded-lg overflow-hidden aspect-video bg-black flex flex-col items-center justify-center",
-          className
-        )}>
-          {thumbnailUrl && (
-            <img
-              src={thumbnailUrl}
-              alt={title || 'Video thumbnail'}
-              className="w-full h-full object-cover absolute inset-0"
-            />
-          )}
-          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-4 z-10">
-            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-medium flex items-center gap-1 mb-3">
-              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
-              YouTube
-            </div>
-            <p className="text-sm mb-3 text-center">Video cannot be embedded</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.open(url, '_blank')}
-              className="text-white border-white hover:bg-white hover:text-black"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Watch on YouTube
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <video
-        src={url}
-        className={cn(
-          "relative rounded-lg overflow-hidden aspect-video w-full h-full mobile-video",
-          className
-        )}
-        controls
-        autoPlay
-        playsInline
-        preload="metadata"
-        muted
-        style={{ maxHeight: '400px' }}
-      />
-    );
-  }
-
-  // Fallback to thumbnail view only if loading or not auto-playing
   return (
     <div className={cn(
       "relative rounded-lg overflow-hidden aspect-video cursor-pointer group",

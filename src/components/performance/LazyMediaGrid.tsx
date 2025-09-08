@@ -4,7 +4,6 @@ import { FastImage } from '@/components/common/FastImage';
 import VideoPlayer from '@/components/posts/VideoPlayer';
 import { ImageOptimizer } from '@/utils/imageOptimization';
 import { cn } from '@/lib/utils';
-import { VideoThumbnail } from '@/components/media/VideoThumbnail';
 
 interface MediaItem {
   url: string;
@@ -52,7 +51,7 @@ export const LazyMediaGrid: React.FC<LazyMediaGridProps> = ({
     } else if (url.includes('youtu.be/')) {
       videoId = url.split('youtu.be/')[1].split('?')[0];
     }
-    return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1` : url;
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
   };
 
   if (!isIntersecting) {
@@ -84,9 +83,14 @@ export const LazyMediaGrid: React.FC<LazyMediaGridProps> = ({
         return (
           <div key={item.id || index} className="relative">
             {item.type === 'youtube' ? (
-              <VideoThumbnail 
-                url={item.url}
+              <iframe
+                src={getYouTubeEmbedUrl(item.url)}
                 className="w-full h-64 rounded-lg"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title={`YouTube Video ${index + 1}`}
+                loading="lazy"
               />
             ) : item.type === 'video' ? (
               <VideoPlayer 
