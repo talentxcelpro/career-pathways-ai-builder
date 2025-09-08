@@ -91,8 +91,8 @@ export const AIContentSuggester: React.FC<AIContentSuggesterProps> = ({
       const result = await enhanceResume(
         mockResumeData,
         { 
-          sectionType: sectionType as 'summary' | 'experience' | 'skills' | 'education' | 'all', 
-          enhancementType: 'professional' as 'professional' | 'ats' | 'creative' | 'technical' as 'professional' | 'achievements' | 'ats' | 'creative' | 'technical'
+          sections: [sectionType],
+          enhancementType: 'professional'
         }
       );
 
