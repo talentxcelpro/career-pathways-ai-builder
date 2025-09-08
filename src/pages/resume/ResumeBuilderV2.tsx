@@ -15,12 +15,20 @@ import {
   Smartphone, 
   Monitor,
   Palette,
-  Zap
+  Zap,
+  Users,
+  BarChart3,
+  Brain,
+  Link2
 } from 'lucide-react';
 import { ResumeEditor } from '@/components/resume/editor/ResumeEditor';
 import { ResumePreview } from '@/components/resume/preview/ResumePreview';
 import { AIEnhancer } from '@/components/resume/ai/AIEnhancer';
 import { ExportOptions } from '@/components/resume/export/ExportOptions';
+import { CollaborationPanel } from '@/components/resume/collaboration/CollaborationPanel';
+import { AnalyticsDashboard } from '@/components/resume/analytics/AnalyticsDashboard';
+import { CareerIntelligence } from '@/components/resume/career/CareerIntelligence';
+import { IntegrationHub } from '@/components/resume/integrations/IntegrationHub';
 import type { ResumeData } from '@/components/resume/preview/ResumePreview';
 
 const defaultResumeData: ResumeData = {
@@ -50,6 +58,10 @@ const ResumeBuilderV2: React.FC = () => {
   const [previewMode, setPreviewMode] = useState<'split' | 'preview-only'>('split');
   const [activePanel, setActivePanel] = useState<'editor' | 'ai' | 'export'>('editor');
   const [savedResumeId, setSavedResumeId] = useState<string | null>(null);
+  const [collaborationOpen, setCollaborationOpen] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
+  const [careerOpen, setCareerOpen] = useState(false);
+  const [integrationsOpen, setIntegrationsOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -244,14 +256,48 @@ const ResumeBuilderV2: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <Button
-                onClick={handleSave}
-                disabled={isSaving || !user}
-                className="flex items-center gap-2"
-              >
-                <Save className="h-4 w-4" />
-                {isSaving ? 'Saving...' : 'Save'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving || !user}
+                  className="flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? 'Saving...' : 'Save'}
+                </Button>
+                
+                <Button 
+                  onClick={() => setCollaborationOpen(true)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Users className="h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  onClick={() => setAnalyticsOpen(true)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  onClick={() => setCareerOpen(true)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Brain className="h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  onClick={() => setIntegrationsOpen(true)}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Link2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -433,6 +479,30 @@ const ResumeBuilderV2: React.FC = () => {
           </Card>
         </div>
       </div>
+
+      {/* Phase 3 Modals */}
+      <CollaborationPanel
+        resumeId={savedResumeId || 'new'}
+        isOpen={collaborationOpen}
+        onClose={() => setCollaborationOpen(false)}
+      />
+
+      <AnalyticsDashboard
+        resumeId={savedResumeId || 'new'}
+        isOpen={analyticsOpen}
+        onClose={() => setAnalyticsOpen(false)}
+      />
+
+      <CareerIntelligence
+        resumeData={resumeData}
+        isOpen={careerOpen}
+        onClose={() => setCareerOpen(false)}
+      />
+
+      <IntegrationHub
+        isOpen={integrationsOpen}
+        onClose={() => setIntegrationsOpen(false)}
+      />
     </div>
   );
 };
