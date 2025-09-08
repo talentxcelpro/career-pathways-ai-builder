@@ -41,10 +41,10 @@ export const MobileBottomNav = () => {
   });
 
   const navItems: NavItem[] = [
-    { to: '/mobile/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
+    { to: '/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
     { to: '/mobile/reels', icon: Play, label: 'Reels' },
-    { to: '/mobile/jobs', icon: Briefcase, label: 'Jobs' },
-    { to: '/mobile/passport', icon: CreditCard, label: 'Passport' },
+    { to: '/jobs', icon: Briefcase, label: 'Jobs' },
+    { to: '/passport', icon: CreditCard, label: 'Passport' },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -86,10 +86,10 @@ export const MobileBottomNav = () => {
                     isActive ? "h-6 w-6 text-white animate-bounce-in" : "h-5 w-5 group-hover:scale-110"
                   )} />
                 </div>
-                {item.badge && (item.to === '/mobile/network' ? unreadMessages > 0 : false) && (
+                {item.badge && (item.to === '/network' ? unreadMessages > 0 : false) && (
                   <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
                     <span className="text-[10px] font-bold min-w-[20px] text-center">
-                      {(item.to === '/mobile/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/mobile/network' ? unreadMessages : 0)}
+                      {(item.to === '/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/network' ? unreadMessages : 0)}
                     </span>
                   </div>
                 )}
