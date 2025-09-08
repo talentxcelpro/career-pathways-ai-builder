@@ -9,6 +9,7 @@ import NetworkingIntelligence from '@/components/ai/NetworkingIntelligence';
 import AICareerCoach from '@/components/ai/AICareerCoach';
 import VoiceCareerCoach from '@/components/ai/VoiceCareerCoach';
 import WebRTCVoiceCoach from '@/components/ai/WebRTCVoiceCoach';
+import AIInterviewSimulator from '@/components/ai/AIInterviewSimulator';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const AdvancedAIHub: React.FC = () => {
@@ -76,7 +77,7 @@ const AdvancedAIHub: React.FC = () => {
 
         {/* AI Tools Tabs */}
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               <span className="hidden md:inline">Analytics</span>
@@ -101,6 +102,11 @@ const AdvancedAIHub: React.FC = () => {
               <MessageSquare className="h-4 w-4" />
               <span className="hidden md:inline">WebRTC</span>
               <span className="md:hidden">📞</span>
+            </TabsTrigger>
+            <TabsTrigger value="interview" className="flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              <span className="hidden md:inline">Interview</span>
+              <span className="md:hidden">🎭</span>
             </TabsTrigger>
             <TabsTrigger value="intelligence" className="flex items-center gap-2">
               <Globe className="h-4 w-4" />
@@ -127,6 +133,10 @@ const AdvancedAIHub: React.FC = () => {
           
           <TabsContent value="webrtc" className="mt-6">
             <WebRTCVoiceCoach />
+          </TabsContent>
+          
+          <TabsContent value="interview" className="mt-6">
+            <AIInterviewSimulator />
           </TabsContent>
           
           <TabsContent value="intelligence" className="mt-6">
