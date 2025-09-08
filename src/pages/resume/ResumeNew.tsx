@@ -1,120 +1,119 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
-import { Search, Upload, FileText, Zap } from 'lucide-react';
-import { AuthDialog } from '@/components/auth/AuthDialog';
+import { Badge } from '@/components/ui/badge';
+import { Download, Zap, Plane } from 'lucide-react';
+import resumePreview from '@/assets/resume-preview-ai.png';
 
 const ResumeNew: React.FC = () => {
-  const templates = [
-    { id: 1, name: 'Professional', category: 'Popular', color: 'bg-blue-50 border-blue-200' },
-    { id: 2, name: 'Modern', category: 'Trending', color: 'bg-purple-50 border-purple-200' },
-    { id: 3, name: 'Creative', category: 'Popular', color: 'bg-green-50 border-green-200' },
-    { id: 4, name: 'Executive', category: 'Premium', color: 'bg-orange-50 border-orange-200' },
-  ];
-
-  const categories = ['Popular', 'Modern', 'Creative', 'Executive'];
-
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Helmet>
-        <title>Create Resume | TalentXcel</title>
-        <meta name="description" content="Create professional resumes with AI-powered suggestions and modern templates." />
+        <title>AI Resume Builder | TalentXcel</title>
+        <meta name="description" content="Create ATS-friendly resumes, get instant resume scores, and apply with confidence using TalentXcel's AI Resume Builder." />
         <link rel="canonical" href="https://talentxcel.in/resume/new" />
       </Helmet>
       
-      {/* Hero Section */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Search className="h-6 w-6 text-slate-600" />
-              <h1 className="text-2xl font-semibold text-slate-900">Resume Builder</h1>
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* Hero Section */}
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left Side - Content */}
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
+                TalentXcel's AI Resume Builder helps you land your dream job faster
+              </h1>
+              
+              <p className="text-xl text-slate-600 leading-relaxed">
+                Create ATS-friendly resumes, get instant resume scores, and apply with confidence.
+              </p>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button 
-                variant="outline" 
-                size="sm" 
-                className="bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200"
+                size="lg"
+                className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = '/resume/builder'}
               >
-                <Zap className="h-4 w-4 mr-2" />
-                AI
+                Build Your Resume
+              </Button>
+              
+              <Button 
+                variant="outline"
+                size="lg"
+                className="border-slate-300 text-slate-700 hover:bg-white px-8 py-6 text-lg font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                Get Your Resume
               </Button>
             </div>
           </div>
 
-          {/* Categories */}
-          <div className="flex gap-3 mb-8">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant="outline"
-                size="sm"
-                className="bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 rounded-full"
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-4 mb-8">
-            <Button 
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium rounded-lg"
-              onClick={() => window.location.href = '/resume/builder'}
-            >
-              <FileText className="h-5 w-5 mr-2" />
-              Start from Scratch
-            </Button>
-            
-            <Button 
-              variant="outline"
-              size="lg"
-              className="border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-3 text-lg font-medium rounded-lg"
-            >
-              <Upload className="h-5 w-5 mr-2" />
-              Upload Resume
-            </Button>
-          </div>
-
-          {/* Templates Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {templates.map((template) => (
-              <div 
-                key={template.id}
-                className={`${template.color} rounded-xl p-6 border cursor-pointer hover:shadow-md transition-all duration-300 group`}
-              >
-                <div className="aspect-[3/4] bg-white rounded-lg shadow-sm mb-4 flex items-center justify-center">
-                  <div className="text-6xl font-light text-slate-300">T</div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-slate-900">{template.name}</h3>
-                  <p className="text-sm text-slate-600">{template.category}</p>
-                  
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    className="w-full border-slate-300 text-slate-700 hover:bg-white group-hover:bg-slate-50"
-                    onClick={() => window.location.href = '/resume/builder'}
-                  >
-                    Use Template
-                  </Button>
-                </div>
+          {/* Right Side - Resume Preview */}
+          <div className="relative">
+            <div className="relative max-w-md mx-auto">
+              <img
+                src={resumePreview}
+                alt="Professional resume preview showing Alex Johnson's resume with ATS optimization"
+                className="w-full h-auto rounded-lg shadow-2xl"
+              />
+              
+              {/* Floating Badges */}
+              <div className="absolute -left-4 top-1/4 transform -translate-y-1/2">
+                <Badge className="bg-green-500 text-white px-4 py-2 text-sm font-semibold rounded-full shadow-lg">
+                  ATS Optimized
+                </Badge>
               </div>
-            ))}
+              
+              <div className="absolute -right-4 top-1/3 transform -translate-y-1/2">
+                <Badge className="bg-blue-500 text-white px-4 py-2 text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  AI-Power
+                </Badge>
+              </div>
+              
+              <div className="absolute -right-4 bottom-1/4 transform translate-y-1/2">
+                <Badge className="bg-green-600 text-white px-4 py-2 text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
+                  Hired at Top
+                  <Plane className="h-4 w-4" />
+                </Badge>
+              </div>
+            </div>
           </div>
+        </div>
 
-          {/* Bottom Section */}
-          <div className="mt-12 text-center">
-            <h2 className="text-xl font-semibold text-slate-900 mb-3">
-              Build Your Professional Resume with TalentXcel
-            </h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">
-              Choose from professional templates or upload your existing resume to get started. 
-              Our AI-powered builder helps you create a standout resume in minutes.
-            </p>
+        {/* Process Steps */}
+        <div className="mt-24">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-slate-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto">
+                1
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Enter your details</h3>
+                <p className="text-slate-600">(education, experience, skills)</p>
+              </div>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-slate-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto">
+                2
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Get AI suggestions</h3>
+                <p className="text-slate-600">& improvements</p>
+              </div>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-slate-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto">
+                3
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Download</h3>
+                <p className="text-slate-600">& apply with confidence</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
