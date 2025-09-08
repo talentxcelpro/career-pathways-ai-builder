@@ -1,5 +1,5 @@
 
-import { Compass } from "lucide-react";
+import { Compass, TrendingUp, Users, Shield, Target } from "lucide-react";
 import CareerMap from "../pages/CareerMap";
 import Generate from "../pages/career-map/Generate";
 import SkillsGap from "../pages/career-map/SkillsGap";
@@ -9,6 +9,10 @@ import AIRoadmapBuilder from "../pages/career-map/AIRoadmapBuilder";
 import MyRoadmaps from "../pages/career-map/MyRoadmaps";
 import RoadmapDetail from "../pages/career-map/RoadmapDetail";
 import CareerSwitch from "../pages/career-map/CareerSwitch";
+import EnhancedCareerAnalytics from "../components/ai/EnhancedCareerAnalytics";
+import IndustryBenchmarking from "../components/ai/IndustryBenchmarking";
+import CareerCredibilityScore from "../components/ai/CareerCredibilityScore";
+import NetworkingIntelligence from "../components/ai/NetworkingIntelligence";
 
 export const careerMapRoutes = [
   {
@@ -72,6 +76,38 @@ export const careerMapRoutes = [
     title: "Career Switch Evaluator",
     to: "/career-map/switch",
     page: <CareerSwitch />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Enhanced Career Analytics",
+    to: "/career-map/enhanced-analytics",
+    icon: <TrendingUp className="h-4 w-4" />,
+    page: <EnhancedCareerAnalytics />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Industry Benchmarking",
+    to: "/career-map/industry-benchmarking",
+    icon: <Target className="h-4 w-4" />,
+    page: <IndustryBenchmarking />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Career Credibility Score",
+    to: "/career-map/credibility-score",
+    icon: <Shield className="h-4 w-4" />,
+    page: <CareerCredibilityScore />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Networking Intelligence",
+    to: "/career-map/networking",
+    icon: <Users className="h-4 w-4" />,
+    page: <NetworkingIntelligence />,
     isPublic: false,
     requiresAdminAccess: true,
   },
