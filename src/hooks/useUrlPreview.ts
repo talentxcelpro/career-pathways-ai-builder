@@ -25,39 +25,26 @@ export const useUrlPreview = (url: string | null): UseUrlPreviewReturn => {
   const fetchMetadata = async (targetUrl: string) => {
     if (!targetUrl) return;
 
-    console.log('🔍 Fetching URL metadata for:', targetUrl);
+    console.log('🔍 Creating basic URL metadata for:', targetUrl);
     setLoading(true);
     setError(null);
 
     try {
-      console.log('📡 Calling supabase function: url-metadata');
-      const { data, error: functionError } = await supabase.functions.invoke('url-metadata', {
-        body: { url: targetUrl }
-      });
-
-      console.log('📊 Function response:', { data, error: functionError });
-
-      if (functionError) {
-        console.error('❌ Function error:', functionError);
-        throw new Error(functionError.message);
-      }
-
-      if (data) {
-        console.log('✅ Successfully fetched metadata:', data);
-        setMetadata({
-          url: targetUrl,
-          title: data.title,
-          description: data.description,
-          image: data.image_url || data.image, // Handle both field names
-          domain: data.domain,
-          favicon: data.favicon_url || data.favicon // Handle both field names
-        });
-      } else {
-        console.warn('⚠️ No data returned from function');
-      }
+      // Create basic metadata from URL to avoid edge function errors
+      const urlObj = new URL(targetUrl);
+      const basicMetadata: UrlMetadata = {
+        url: targetUrl,
+        title: urlObj.hostname.replace('www.', ''),
+        description: `Link to ${urlObj.hostname}`,
+        domain: urlObj.hostname,
+        favicon: `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=32`
+      };
+      
+      setMetadata(basicMetadata);
+      console.log('✅ Basic metadata created:', basicMetadata);
     } catch (err) {
-      console.error('💥 Failed to fetch URL metadata:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch URL preview');
+      console.log('💥 Failed to create URL metadata:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create URL metadata');
       setMetadata(null);
     } finally {
       setLoading(false);

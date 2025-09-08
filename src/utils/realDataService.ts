@@ -110,4 +110,64 @@ export const realDataService = {
       return [];
     }
   },
+
+  // Job-focused learning services
+  getJobFocusedCourses: async (filters?: { industry?: string; skill?: string }) => {
+    try {
+      let query = supabase
+        .from('job_focused_courses')
+        .select('*')
+        .order('job_relevance_score', { ascending: false });
+
+      if (filters?.industry) {
+        query = query.contains('industry_alignment', [filters.industry]);
+      }
+
+      if (filters?.skill) {
+        query = query.contains('skills_taught', [filters.skill]);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching job-focused courses:', error);
+      return [];
+    }
+  },
+
+  getSkillDemandTrends: async (location = 'India') => {
+    try {
+      const { data, error } = await supabase
+        .from('skill_demand_trends')
+        .select('*')
+        .eq('location', location)
+        .order('growth_rate', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching skill demand trends:', error);
+      return [];
+    }
+  },
+
+  getUserCourseProgress: async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('user_course_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching user course progress:', error);
+      return [];
+    }
+  }
 };

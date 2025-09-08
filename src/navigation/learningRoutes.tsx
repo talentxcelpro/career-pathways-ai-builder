@@ -6,6 +6,7 @@ import MyCourses from "../pages/learning/MyCourses";
 import LearningPaths from "../pages/learning/LearningPaths";
 import LearningPathDetail from "../pages/learning/LearningPathDetail";
 import Certificates from "../pages/learning/Certificates";
+import { LearningEmploymentBridge } from "../components/learning/LearningEmploymentBridge";
 
 export const learningRoutes = [
   {
@@ -48,6 +49,13 @@ export const learningRoutes = [
     title: "Certificates",
     to: "/learning/certificates",
     page: <Certificates />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Learning-Employment Bridge",
+    to: "/learning/employment-bridge",
+    page: <LearningEmploymentBridge />,
     isPublic: false,
     requiresAdminAccess: true,
   },
