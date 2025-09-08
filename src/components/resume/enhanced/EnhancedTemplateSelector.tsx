@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { getRecommendedTemplates, resumeTemplates } from '@/data/resumeTemplates';
+import { templateEngine } from '@/services/template-engine';
+import { coreToLegacy } from '@/utils/template-adapters';
 
 interface EnhancedTemplateSelectorProps {
   selectedTemplate: string;
@@ -35,12 +36,12 @@ export const EnhancedTemplateSelector: React.FC<EnhancedTemplateSelectorProps> =
   // Auto-select a recommended modern ATS template and move to Customize when user asks to proceed
   useEffect(() => {
     if (!selectedTemplate) {
-      const rec = getRecommendedTemplates();
-      const modern = rec.find(t => t.category === 'Modern');
-      const fallback = rec[0] || [...resumeTemplates].sort((a, b) => b.atsScore - a.atsScore)[0];
+      const recommended = templateEngine.getRecommendedTemplates();
+      const modern = recommended.find(t => t.metadata.category === 'modern');
+      const fallback = recommended[0] || templateEngine.getAllTemplates().sort((a, b) => b.metadata.atsScore - a.metadata.atsScore)[0];
       const toSelect = modern || fallback;
       if (toSelect) {
-        onTemplateSelect(toSelect.id);
+        onTemplateSelect(toSelect.metadata.id);
         setActiveTab('customize');
       }
     }
