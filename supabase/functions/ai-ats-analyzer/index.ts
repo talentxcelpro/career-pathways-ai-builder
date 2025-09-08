@@ -1,6 +1,40 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
+// Helper functions inlined for edge function compatibility
+
+function createResumeText(resumeData: any): string {
+  let text = '';
+  if (resumeData.personalInfo) {
+    text += `Name: ${resumeData.personalInfo.fullName || 'N/A'}\n`;
+    text += `Email: ${resumeData.personalInfo.email || 'N/A'}\n`;
+    if (resumeData.personalInfo.summary) text += `Summary: ${resumeData.personalInfo.summary}\n\n`;
+  }
+  if (resumeData.experience?.length > 0) {
+    text += 'EXPERIENCE:\n';
+    resumeData.experience.forEach((exp: any) => {
+      text += `${exp.position || 'Position'} at ${exp.company || 'Company'} (${exp.startDate || ''} - ${exp.endDate || 'Present'})\n${exp.description || ''}\n\n`;
+    });
+  }
+  if (resumeData.skills?.length > 0) {
+    text += 'SKILLS:\n' + resumeData.skills.join(', ') + '\n\n';
+  }
+  return text;
+}
+
+function createFallbackAnalysis(resumeData: any) {
+  const hasPersonalInfo = resumeData.personalInfo?.fullName && resumeData.personalInfo?.email;
+  const hasExperience = resumeData.experience?.length > 0;
+  const hasSkills = resumeData.skills?.length > 0;
+  const sectionsScore = [hasPersonalInfo, hasExperience, hasSkills].filter(Boolean).length * 30;
+  return {
+    score: Math.max(50, sectionsScore),
+    breakdown: { keywords: 70, formatting: 80, sections: sectionsScore, length: 75 },
+    suggestions: ['Add more relevant keywords', 'Include measurable achievements'],
+    strengths: hasPersonalInfo ? ['Complete contact info'] : [],
+    weaknesses: !hasSkills ? ['Missing skills section'] : []
+  };
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,14 +47,17 @@ serve(async (req) => {
   }
 
   try {
-    const { resumeContent, jobDescription, targetRole, industry } = await req.json();
+    const { resumeData } = await req.json();
 
-    if (!resumeContent) {
-      return new Response(JSON.stringify({ error: 'Resume content is required' }), {
+    if (!resumeData) {
+      return new Response(JSON.stringify({ error: 'Resume data is required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Convert resume data to text for analysis
+    const resumeContent = createResumeText(resumeData);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -53,54 +90,38 @@ serve(async (req) => {
     }
 
     // Build comprehensive ATS analysis prompt
-    const analysisPrompt = `As an expert ATS (Applicant Tracking System) analyzer, perform a comprehensive analysis of the following resume.
-
-TARGET ROLE: ${targetRole || 'General'}
-INDUSTRY: ${industry || 'Technology'}
-${jobDescription ? `JOB DESCRIPTION: ${jobDescription}` : ''}
+    const analysisPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Analyze the following resume and provide a comprehensive ATS compatibility score.
 
 RESUME CONTENT:
 ${resumeContent}
 
-Please provide a detailed analysis in the following JSON format:
+Analyze the resume based on these criteria:
+1. Keywords (25%): Presence of relevant industry keywords and skills
+2. Formatting (25%): ATS-friendly formatting, proper section headers
+3. Sections (25%): Essential sections present (contact, experience, education, skills)
+4. Length (25%): Appropriate length (1-2 pages)
+
+Provide your analysis in the following JSON format:
 {
-  "overallScore": 85,
-  "sections": {
-    "formatting": { "score": 90, "feedback": "Clean, ATS-friendly format" },
-    "keywords": { "score": 75, "feedback": "Missing key industry terms" },
-    "experience": { "score": 88, "feedback": "Strong relevant experience" },
-    "skills": { "score": 80, "feedback": "Good technical skills mix" },
-    "achievements": { "score": 70, "feedback": "Need more quantified results" }
+  "score": [overall score 0-100],
+  "breakdown": {
+    "keywords": [score 0-100],
+    "formatting": [score 0-100], 
+    "sections": [score 0-100],
+    "length": [score 0-100]
   },
-  "strengths": [
-    "Clear professional summary",
-    "Relevant technical skills",
-    "Good career progression"
-  ],
-  "issues": [
-    "Missing important keywords: cloud computing, data analysis",
-    "Weak achievement quantification",
-    "Skills section could be more comprehensive"
-  ],
   "suggestions": [
-    "Add specific metrics to achievements (% improvement, $ saved, etc.)",
-    "Include more industry-relevant keywords",
-    "Optimize section headers for ATS parsing",
-    "Add relevant certifications if available"
+    "List of specific improvement suggestions"
   ],
-  "keywordAnalysis": {
-    "found": ["JavaScript", "React", "Node.js", "API"],
-    "missing": ["TypeScript", "Docker", "AWS", "CI/CD"],
-    "suggestions": ["Add cloud platform experience", "Include testing frameworks"]
-  },
-  "atsCompatibility": {
-    "score": 85,
-    "issues": ["Complex formatting may cause parsing errors"],
-    "recommendations": ["Use standard section headers", "Avoid tables and complex layouts"]
-  }
+  "strengths": [
+    "List of resume strengths"
+  ],
+  "weaknesses": [
+    "List of areas needing improvement"
+  ]
 }
 
-Provide actionable, specific feedback that will help improve ATS score and job matching.`;
+Be specific and actionable in your suggestions. Focus on ATS compatibility issues.`;
 
     // Call OpenAI API
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -110,12 +131,13 @@ Provide actionable, specific feedback that will help improve ATS score and job m
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
+        model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are an expert ATS and resume optimization specialist. Provide detailed, actionable analysis in valid JSON format.' },
+          { role: 'system', content: 'You are an expert ATS (Applicant Tracking System) analyzer. Provide detailed, actionable feedback for resume optimization.' },
           { role: 'user', content: analysisPrompt }
         ],
-        max_completion_tokens: 2000,
+        temperature: 0.3,
+        max_tokens: 2000,
       }),
     });
 
@@ -134,30 +156,8 @@ Provide actionable, specific feedback that will help improve ATS score and job m
       analysisResult = JSON.parse(responseText);
     } catch (parseError) {
       console.error('Failed to parse AI response as JSON:', parseError);
-      // Fallback to structured response
-      analysisResult = {
-        overallScore: 75,
-        sections: {
-          formatting: { score: 80, feedback: "Analysis completed" },
-          keywords: { score: 70, feedback: "Analysis completed" },
-          experience: { score: 75, feedback: "Analysis completed" },
-          skills: { score: 75, feedback: "Analysis completed" },
-          achievements: { score: 70, feedback: "Analysis completed" }
-        },
-        strengths: ["Professional format", "Relevant experience"],
-        issues: ["Needs optimization"],
-        suggestions: ["Improve keyword usage", "Quantify achievements"],
-        keywordAnalysis: {
-          found: ["Professional skills listed"],
-          missing: ["Industry-specific keywords"],
-          suggestions: ["Add relevant technical terms"]
-        },
-        atsCompatibility: {
-          score: 75,
-          issues: ["Standard formatting recommended"],
-          recommendations: ["Use ATS-friendly format"]
-        }
-      };
+      // Provide fallback analysis
+      analysisResult = createFallbackAnalysis(resumeData);
     }
 
     // Store analysis result in database (only if user is authenticated)
@@ -170,9 +170,7 @@ Provide actionable, specific feedback that will help improve ATS score and job m
             operation_type: 'ats_scan',
             input_data: { 
               resumeContent: resumeContent.substring(0, 1000) + '...', // Truncate for storage
-              jobDescription: jobDescription?.substring(0, 500),
-              targetRole,
-              industry
+              resumeData: resumeData
             },
             output_data: analysisResult,
             status: 'completed',

@@ -73,6 +73,7 @@ import AICareerIntelligence from "./pages/AICareerIntelligence";
 import SkillsGap from "./pages/career-map/SkillsGap";
 import CareerRoadmapGenerator from "./components/career/CareerRoadmapGenerator";
 import CareerGoals from "./pages/CareerGoals";
+import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
