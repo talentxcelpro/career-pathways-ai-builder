@@ -84,7 +84,7 @@ export const useGlobalSearch = ({
               ? `/${username}`
               : slug
               ? `/${slug}`
-              : `/user/${user.id}`; // Fallback to legacy redirect route by ID
+              : `/p/${user.id}`; // Fallback to public profile by ID
             return {
               type: 'user' as const,
               id: user.id,

@@ -248,7 +248,7 @@ export const AdvancedSearch: React.FC = () => {
 
   const getResultLink = (result: SearchResult) => {
     switch (result.type) {
-      case 'person': return `/network/people/${result.id}`;
+      case 'person': return `/p/${result.id}`;
       case 'job': return `/jobs/${result.id}`;
       case 'post': return `/social/posts/${result.id}`;
       case 'course': return `/learning/courses/${result.id}`;

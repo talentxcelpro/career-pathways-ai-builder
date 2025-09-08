@@ -29,6 +29,8 @@ interface Person {
   title?: string;
   location?: string;
   profile_picture_url?: string;
+  username?: string | null;
+  slug?: string | null;
 }
 
 interface Company {
@@ -111,7 +113,7 @@ export const MobileSearch: React.FC = () => {
       // Search people
       const { data: peopleData, error: peopleError } = await supabase
         .from('profiles')
-        .select('id, full_name, title, location, profile_picture_url')
+        .select('id, full_name, title, location, profile_picture_url, username, slug')
         .or(`full_name.ilike.%${query}%, title.ilike.%${query}%`)
         .limit(20);
 
@@ -293,9 +295,12 @@ export const MobileSearch: React.FC = () => {
                       <Card 
                         key={person.id} 
                         className="mb-3 cursor-pointer hover:shadow-md transition-shadow"
-                        onClick={() => {
-                          // Navigate to person profile - you can customize this URL pattern
-                          window.open(`/profile/${person.id}`, '_blank');
+onClick={() => {
+                          const clean = (v?: string | null) => (v && v.startsWith('@') ? v.slice(1) : v);
+                          const username = clean(person.username || null);
+                          const slug = clean(person.slug || null);
+                          const profilePath = username ? `/${username}` : slug ? `/${slug}` : `/p/${person.id}`;
+                          window.open(profilePath, '_blank');
                         }}
                       >
                         <CardContent className="p-4">
