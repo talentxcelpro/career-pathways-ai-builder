@@ -51,7 +51,7 @@ export const LazyMediaGrid: React.FC<LazyMediaGridProps> = ({
     } else if (url.includes('youtu.be/')) {
       videoId = url.split('youtu.be/')[1].split('?')[0];
     }
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1` : url;
   };
 
   if (!isIntersecting) {
@@ -87,10 +87,11 @@ export const LazyMediaGrid: React.FC<LazyMediaGridProps> = ({
                 src={getYouTubeEmbedUrl(item.url)}
                 className="w-full h-64 rounded-lg"
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 title={`YouTube Video ${index + 1}`}
                 loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
               />
             ) : item.type === 'video' ? (
               <VideoPlayer 

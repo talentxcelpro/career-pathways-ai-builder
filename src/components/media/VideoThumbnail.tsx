@@ -170,6 +170,43 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   }
 
   const isYoutube = getYouTubeVideoId(url) !== null;
+  const youtubeId = getYouTubeVideoId(url);
+
+  // If user clicked, play inline
+  if (isPlaying) {
+    if (youtubeId) {
+      return (
+        <div className={cn(
+          "relative rounded-lg overflow-hidden aspect-video",
+          className
+        )}>
+          <iframe
+            src={buildYouTubeEmbedUrl(youtubeId)}
+            className="w-full h-full"
+            title="YouTube video player"
+            allow="autoplay; encrypted-media; picture-in-picture; web-share"
+            allowFullScreen
+            loading="eager"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <video
+        src={url}
+        className={cn(
+          "relative rounded-lg overflow-hidden aspect-video w-full h-full",
+          className
+        )}
+        controls
+        autoPlay
+        playsInline
+        preload="metadata"
+      />
+    );
+  }
 
   return (
     <div className={cn(
