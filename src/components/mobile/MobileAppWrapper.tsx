@@ -20,8 +20,11 @@ export const MobileAppWrapper: React.FC<MobileAppWrapperProps> = ({ children }) 
     console.log('Auth context not available:', error.message);
   }
 
-  // If it's mobile and user is authenticated, use the mobile app layout
-  if (isMobile && user) {
+  // Check if we're on the network route
+  const isNetworkRoute = typeof window !== 'undefined' && window.location.pathname === '/network';
+
+  // If it's mobile and (user is authenticated OR on network route), use the mobile app layout
+  if (isMobile && (user || isNetworkRoute)) {
     return (
       <MobileLayout showBottomNav={true} fullHeight={true}>
         {children}

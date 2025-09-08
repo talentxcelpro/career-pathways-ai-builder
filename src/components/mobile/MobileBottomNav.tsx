@@ -51,7 +51,9 @@ export const MobileBottomNav = () => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  if (!user) return null;
+  // Show bottom nav on network route even without user, or when user is authenticated
+  const isNetworkRoute = location.pathname === '/network';
+  if (!user && !isNetworkRoute) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
