@@ -21,6 +21,9 @@ import {
   Play
 } from "lucide-react";
 
+// Debug: identify which LearningHub renders
+console.info('[LearningHub ROOT] Component file: src/pages/LearningHub.tsx mounted');
+
 export default function LearningHub() {
   React.useEffect(() => {
     updateMetaTags({
