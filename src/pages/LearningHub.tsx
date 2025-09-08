@@ -182,21 +182,21 @@ export default function LearningHub() {
             </div>
             
             {/* Streak Section */}
-            <div className="space-y-3 pt-6">
-              <div className="flex items-center gap-2">
-                <Flame className="h-5 w-5 text-orange-500" />
-                <span className="text-sm text-muted-foreground">You're on a 0-0-day streak</span>
-              </div>
-              <Progress value={0} className="h-2" />
-              <p className="text-sm text-muted-foreground">
-                Complete today's lesson to grow your streak!
-              </p>
-            </div>
+            <Card className="mt-4 bg-muted/30 border-border">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Flame className="h-5 w-5 text-primary" />
+                  <span className="text-sm text-muted-foreground">You're on a 0-0-day streak</span>
+                </div>
+                <Progress value={0} className="h-2" />
+                <p className="text-sm text-muted-foreground">Complete today's lesson to grow your streak!</p>
+              </CardContent>
+            </Card>
           </div>
           
           {/* Illustration image */}
           <div className="flex justify-center">
-            <div className="w-full max-w-md rounded-2xl overflow-hidden border border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/20 dark:to-indigo-950/20">
+            <div className="w-full max-w-md rounded-2xl overflow-hidden border border-border bg-muted">
               <img
                 src="/lovable-uploads/d97f4973-604b-4716-b6eb-374c3ee6effb.png"
                 alt="TalentXcel learning hero illustration"
@@ -212,9 +212,9 @@ export default function LearningHub() {
           <Link to="/learning/my-courses">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-6 text-center">
-                <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-semibold mb-1">My Courses</h3>
-                <p className="text-sm text-muted-foreground">Resume</p>
+              <BookOpen className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-3">My Courses</h3>
+              <Button size="sm" variant="outline">Resume</Button>
               </CardContent>
             </Card>
           </Link>
@@ -222,9 +222,9 @@ export default function LearningHub() {
           <Link to="/learning/paths">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-6 text-center">
-                <Target className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-semibold mb-1">Learning Paths</h3>
-                <p className="text-sm text-muted-foreground">Browse</p>
+              <Target className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-3">Learning Paths</h3>
+              <Button size="sm" variant="outline">Browse</Button>
               </CardContent>
             </Card>
           </Link>
@@ -232,26 +232,15 @@ export default function LearningHub() {
           <Link to="/learning/certificates">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-6 text-center">
-                <Award className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-semibold mb-1">Certificates</h3>
-                <p className="text-sm text-muted-foreground">View</p>
+              <Award className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-3">Certificates</h3>
+              <Button size="sm" variant="outline">View</Button>
               </CardContent>
             </Card>
           </Link>
         </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
-                <h3 className="font-semibold mb-1">{stat.title}</h3>
-                <p className="text-sm text-muted-foreground">{stat.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+{/* Stats Section removed to match provided design */}
 
         {/* Career Paths Section */}
         <div className="mb-16">
@@ -280,84 +269,9 @@ export default function LearningHub() {
           </div>
         </div>
 
-        {/* Explore Learning Features */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2">Explore Learning Features</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {learningFeatures.map((feature, index) => {
-              const IconComponent = feature.icon;
-              return (
-                <Link key={index} to={feature.link}>
-                  <Card className={`hover:shadow-lg transition-shadow cursor-pointer h-full ${feature.color}`}>
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4 mb-4">
-                        <IconComponent className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                        <div className="flex-1">
-                          <h3 className="font-semibold mb-1">{feature.title}</h3>
-                          <p className="text-sm font-medium text-muted-foreground mb-2">{feature.subtitle}</p>
-                          <p className="text-sm text-muted-foreground">{feature.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex justify-end">
-                        <Button variant="outline" size="sm">
-                          Explore
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+{/* Explore Learning Features removed to match the exact landing design */}
 
-        {/* Popular Courses */}
-        <div className="mb-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold">Popular Courses</h2>
-            <Link to="/learning/courses">
-              <Button variant="outline">View All Courses</Button>
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {popularCourses.map((course, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <Badge variant="secondary">{course.level}</Badge>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-sm">{course.rating}</span>
-                    </div>
-                  </div>
-                  
-                  <h3 className="font-semibold mb-3 line-clamp-2">{course.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{course.description}</p>
-                  
-                  <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      {course.students}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {course.duration}
-                    </div>
-                  </div>
-                  
-                  <Button className="w-full">
-                    <Play className="h-4 w-4 mr-2" />
-                    View Course
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+{/* Popular Courses section removed to match design */}
 
         {/* Why Learn Section */}
         <div className="mb-16">
@@ -391,7 +305,7 @@ export default function LearningHub() {
         </div>
 
         {/* CTA Section */}
-        <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <Card className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Your career transformation starts today.</h2>
             <div className="flex justify-center gap-4">
