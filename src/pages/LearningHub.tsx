@@ -194,15 +194,15 @@ export default function LearningHub() {
             </div>
           </div>
           
-          {/* Illustration placeholder */}
+          {/* Illustration image */}
           <div className="flex justify-center">
-            <div className="w-full max-w-md h-80 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl flex items-center justify-center border border-blue-200 dark:border-blue-800">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <Lightbulb className="h-8 w-8 text-white" />
-                </div>
-                <p className="text-blue-700 dark:text-blue-300 font-medium">Learning Illustration</p>
-              </div>
+            <div className="w-full max-w-md rounded-2xl overflow-hidden border border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/20 dark:to-indigo-950/20">
+              <img
+                src="/lovable-uploads/d97f4973-604b-4716-b6eb-374c3ee6effb.png"
+                alt="TalentXcel learning hero illustration"
+                loading="lazy"
+                className="w-full h-80 object-contain p-4"
+              />
             </div>
           </div>
         </div>
