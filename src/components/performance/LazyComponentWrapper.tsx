@@ -26,15 +26,41 @@ export const LazyComponentWrapper: React.FC<LazyComponentWrapperProps> = ({
 
   if (enableIntersection && !isIntersecting) {
     return (
-      <div ref={ref} className="min-h-[200px] flex items-center justify-center">
+      <div 
+        ref={ref} 
+        className="min-h-[200px] flex items-center justify-center"
+        style={{ 
+          contain: 'layout style paint',
+          contentVisibility: 'auto',
+          containIntrinsicSize: '100% 200px'
+        }}
+      >
         {fallback}
       </div>
     );
   }
 
   return (
-    <Suspense fallback={fallback}>
-      <div ref={ref}>{children}</div>
+    <Suspense fallback={
+      <div style={{ 
+        contain: 'layout style paint',
+        minHeight: '200px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {fallback}
+      </div>
+    }>
+      <div 
+        ref={ref}
+        style={{ 
+          contain: 'layout style paint',
+          contentVisibility: 'auto'
+        }}
+      >
+        {children}
+      </div>
     </Suspense>
   );
 };
@@ -47,8 +73,21 @@ export function createLazyComponent<P extends object>(
   const LazyComponent = lazy(importFn);
   
   return React.forwardRef<any, P>((props, ref) => (
-    <Suspense fallback={fallback || <SkeletonCard />}>
-      <LazyComponent {...props} ref={ref} />
+    <Suspense fallback={
+      <div style={{ 
+        contain: 'layout style paint',
+        minHeight: '300px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        containIntrinsicSize: '100% 300px'
+      }}>
+        {fallback || <SkeletonCard />}
+      </div>
+    }>
+      <div style={{ contain: 'layout style paint' }}>
+        <LazyComponent {...props} ref={ref} />
+      </div>
     </Suspense>
   ));
 }

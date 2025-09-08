@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -67,6 +67,8 @@ import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
 import { LiveEvent } from "@/components/realtime/LiveEvent";
 import UserProfile from "./pages/UserProfile";
+import { StableContainer } from "@/utils/layoutOptimizer";
+import "@/utils/flickerFix";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -194,7 +196,18 @@ const App = () => {
                         <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                         <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
-                         <Route path="/career-platform" element={<CareerPlatformShowcasePage />} />
+                         <Route path="/career-platform" element={
+                           <Suspense fallback={
+                             <StableContainer minHeight="100vh" className="flex items-center justify-center">
+                               <div className="text-center space-y-4">
+                                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                                 <p className="text-muted-foreground">Loading Career Platform...</p>
+                               </div>
+                             </StableContainer>
+                           }>
+                             <CareerPlatformShowcasePage />
+                           </Suspense>
+                         } />
                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                           <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />

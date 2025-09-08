@@ -73,7 +73,15 @@ export const shimmerKeyframes = `
 
 // Pre-built skeleton patterns
 export const SkeletonCard: React.FC<{ lines?: number }> = ({ lines = 3 }) => (
-  <div className="space-y-3 p-4">
+  <div 
+    className="space-y-3 p-4" 
+    style={{ 
+      contain: 'layout style paint',
+      minHeight: `${lines * 24 + 32}px`,
+      backgroundColor: 'hsl(var(--muted) / 0.3)',
+      borderRadius: '8px'
+    }}
+  >
     <Skeleton className="h-4 w-full" />
     {Array.from({ length: lines - 1 }).map((_, i) => (
       <Skeleton key={i} className="h-4 w-full" />

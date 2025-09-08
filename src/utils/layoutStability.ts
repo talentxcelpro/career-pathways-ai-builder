@@ -73,30 +73,36 @@ export class LayoutStabilityManager {
     if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
 
     try {
+      let cumulativeScore = 0;
       const observer = new PerformanceObserver((list) => {
-        let cumulativeScore = 0;
-        
         for (const entry of list.getEntries()) {
           if (entry.entryType === 'layout-shift') {
             const layoutShift = entry as any;
             if (!layoutShift.hadRecentInput) {
               cumulativeScore += layoutShift.value;
+              
+              // Immediate action for high single shifts
+              if (layoutShift.value > 0.1) {
+                console.warn(`Major layout shift detected: ${layoutShift.value.toFixed(4)}`);
+                
+                // Try to identify the shifting elements
+                if (layoutShift.sources) {
+                  layoutShift.sources.forEach((source: any) => {
+                    if (source.node) {
+                      const element = source.node as HTMLElement;
+                      element.style.contain = 'layout style paint';
+                      element.style.contentVisibility = 'auto';
+                    }
+                  });
+                }
+              }
             }
           }
         }
 
-        // Report if CLS is above threshold
-        if (cumulativeScore > 0.1) {
-          console.warn(`High CLS detected: ${cumulativeScore.toFixed(4)}`);
-          
-          // Send to analytics if available
-          if (typeof window !== 'undefined' && 'gtag' in window) {
-            const gtag = (window as any).gtag;
-            gtag('event', 'cls_high', {
-              value: Math.round(cumulativeScore * 10000),
-              custom_map: { metric_value: cumulativeScore }
-            });
-          }
+        // Report cumulative score
+        if (cumulativeScore > 0.05) {
+          console.warn(`CLS threshold exceeded: ${cumulativeScore.toFixed(4)}`);
         }
       });
 
