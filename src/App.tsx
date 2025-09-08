@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -197,7 +197,7 @@ const App = () => {
                         <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
                          <Route path="/career-platform" element={
-                           <Suspense fallback={
+                           <React.Suspense fallback={
                              <StableContainer minHeight="100vh" className="flex items-center justify-center">
                                <div className="text-center space-y-4">
                                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
@@ -206,7 +206,7 @@ const App = () => {
                              </StableContainer>
                            }>
                              <CareerPlatformShowcasePage />
-                           </Suspense>
+                           </React.Suspense>
                          } />
                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
