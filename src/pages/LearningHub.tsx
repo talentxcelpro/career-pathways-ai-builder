@@ -1,8 +1,10 @@
+import React from 'react';
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { updateMetaTags } from "@/utils/metaTags";
 import { 
   BookOpen, 
   Target, 
@@ -20,6 +22,12 @@ import {
 } from "lucide-react";
 
 export default function LearningHub() {
+  React.useEffect(() => {
+    updateMetaTags({
+      title: 'Learning Hub | TalentXcel',
+      description: 'Discover courses, paths and analytics. Start learning with TalentXcel.'
+    });
+  }, []);
   const stats = [
     {
       title: "Available Courses",

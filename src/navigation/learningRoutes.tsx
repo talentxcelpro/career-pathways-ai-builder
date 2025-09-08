@@ -1,7 +1,7 @@
 
 import { BookOpen } from "lucide-react";
 import Learning from "../pages/Learning";
-import LearningHub from "../pages/learning/LearningHub";
+import LearningHub from "../pages/LearningHub";
 import AllCourses from "../pages/learning/AllCourses";
 import CourseDetail from "../pages/learning/CourseDetail";
 import MyCoursesPage from "../pages/learning/MyCoursesPage";
