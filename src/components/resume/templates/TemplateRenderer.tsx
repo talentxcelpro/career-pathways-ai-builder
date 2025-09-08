@@ -1,368 +1,523 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { MapPin, Mail, Phone, Globe, Linkedin, Github } from 'lucide-react';
-import { createSafeHtml } from '@/utils/sanitize';
+import { cn } from '@/lib/utils';
 
-interface TemplateRendererProps {
-  template: any;
-  resumeData: any;
-  customization: any;
-  className?: string;
-  sectionOrder?: string[];
+interface ResumeData {
+  personalInfo: {
+    fullName: string;
+    email: string;
+    phone: string;
+    location: string;
+    summary: string;
+  };
+  experience: Array<{
+    title: string;
+    company: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    achievements: string[];
+  }>;
+  education: Array<{
+    degree: string;
+    institution: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+  }>;
+  skills: string[];
+  projects?: Array<{
+    name: string;
+    description: string;
+    technologies: string[];
+  }>;
 }
 
-export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
-  template,
-  resumeData,
-  customization,
-  className = '',
-  sectionOrder,
-}) => {
-  const { colors = {}, typography = {}, layout = {}, sections = {} } = customization ?? {};
-  
-  const getStylesFromCustomization = () => {
-    
-    return {
-      container: {
-        backgroundColor: colors?.background || '#FFFFFF',
-        color: colors?.text || '#2C3E50',
-        fontFamily: `${typography?.bodyFont || 'inter'}, sans-serif`,
-        fontSize: `${typography?.fontSize || 12}px`,
-        lineHeight: typography?.lineHeight || 1.5,
-        padding: layout?.margins === 'narrow' ? '0.5rem' : layout?.margins === 'wide' ? '2rem' : '1rem'
-      },
-      header: {
-        borderBottom: `2px solid ${colors?.primary || '#3498DB'}`,
-        paddingBottom: '1rem',
-        marginBottom: layout?.spacing === 'compact' ? '0.5rem' : layout?.spacing === 'spacious' ? '2rem' : '1rem'
-      },
-      sectionTitle: {
-        color: colors?.primary || '#3498DB',
-        fontFamily: `${typography?.headingFont || 'inter'}, sans-serif`,
-        fontSize: `${(typography?.fontSize || 12) + 2}px`,
-        fontWeight: 'bold',
-        marginBottom: '0.5rem',
-        letterSpacing: '0.5px'
-      },
-      section: {
-        marginBottom: layout?.spacing === 'compact' ? '1rem' : layout?.spacing === 'spacious' ? '2rem' : '1.5rem'
-      },
-      accent: {
-        color: colors?.accent || '#E74C3C'
-      },
-      secondary: {
-        color: colors?.secondary || '#2980B9'
-      }
+interface Template {
+  id: string;
+  name: string;
+  design_config?: {
+    colors?: {
+      primary: string;
+      text: string;
+    };
+    fonts?: {
+      header: string;
+      body: string;
     };
   };
+}
 
-  const styles = getStylesFromCustomization();
+interface TemplateRendererProps {
+  resumeData: ResumeData;
+  template: Template;
+  className?: string;
+  customization?: any; // For backward compatibility
+}
 
-  const renderPersonalInfo = () => {
-    const { personalInfo } = resumeData;
-    if (!personalInfo) return null;
-
-    return (
-      <div style={styles.header}>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold mb-2" style={{ color: styles.container.color }}>
-              {personalInfo.fullName}
-            </h1>
-            {(personalInfo.professionalTitle || personalInfo.title) && (
-              <h2 className="text-lg mb-3 text-muted-foreground">
-                {personalInfo.professionalTitle || personalInfo.title}
-              </h2>
-            )}
-            
-            <div className="flex flex-wrap gap-4 text-sm">
-              {personalInfo.email && (
-                <div className="flex items-center gap-1">
-                  <Mail className="w-4 h-4" style={styles.accent} />
-                  <span>{personalInfo.email}</span>
-                </div>
-              )}
-              {personalInfo.phone && (
-                <div className="flex items-center gap-1">
-                  <Phone className="w-4 h-4" style={styles.accent} />
-                  <span>{personalInfo.phone}</span>
-                </div>
-              )}
-              {personalInfo.location && (
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" style={styles.accent} />
-                  <span>{personalInfo.location}</span>
-                </div>
-              )}
-              {personalInfo.linkedin && (
-                <div className="flex items-center gap-1">
-                  <Linkedin className="w-4 h-4" style={styles.accent} />
-                  <span>{personalInfo.linkedin}</span>
-                </div>
-              )}
-              {personalInfo.github && (
-                <div className="flex items-center gap-1">
-                  <Github className="w-4 h-4" style={styles.accent} />
-                  <span>{personalInfo.github}</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {sections?.showPhoto && personalInfo.photo && (
-            <div className="ml-4">
-              <img
-                src={personalInfo.photo}
-                alt="Profile"
-                className="w-24 h-24 rounded-full border-2 object-cover"
-                style={{ borderColor: styles.sectionTitle.color }}
-              />
-            </div>
-          )}
-        </div>
+const ModernTemplate: React.FC<{ resumeData: ResumeData; colors: any; fonts: any }> = ({
+  resumeData,
+  colors,
+  fonts
+}) => (
+  <div className="bg-white p-8 max-w-4xl mx-auto shadow-lg">
+    {/* Header */}
+    <div className="text-center mb-8 border-b-2 pb-6" style={{ borderColor: colors.primary }}>
+      <h1 
+        className="text-4xl font-bold mb-2" 
+        style={{ color: colors.primary, fontFamily: fonts.header }}
+      >
+        {resumeData.personalInfo.fullName}
+      </h1>
+      <div className="flex justify-center gap-6 text-sm" style={{ color: colors.text }}>
+        <span>📧 {resumeData.personalInfo.email}</span>
+        <span>📱 {resumeData.personalInfo.phone}</span>
+        <span>📍 {resumeData.personalInfo.location}</span>
       </div>
-    );
-  };
+    </div>
 
-  const renderSummary = () => {
-    const { personalInfo } = resumeData;
-    if (!personalInfo?.summary || !sections?.showSummary) return null;
-
-    return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Professional Summary</h3>
-        <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={createSafeHtml(String(personalInfo.summary), { FORBID_ATTR: ['style'] })} />
+    {/* Summary */}
+    {resumeData.personalInfo.summary && (
+      <div className="mb-6">
+        <h2 
+          className="text-xl font-semibold mb-3 uppercase tracking-wide border-b pb-1"
+          style={{ color: colors.primary, fontFamily: fonts.header, borderColor: colors.primary }}
+        >
+          Professional Summary
+        </h2>
+        <p className="text-sm leading-relaxed" style={{ color: colors.text }}>
+          {resumeData.personalInfo.summary}
+        </p>
       </div>
-    );
-  };
+    )}
 
-  const renderExperience = () => {
-    const { experience } = resumeData;
-    if (!experience || experience.length === 0) return null;
-
-    return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Experience</h3>
-        <div className="space-y-4">
-          {experience.map((exp: any, index: number) => (
-            <div key={index}>
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h4 className="font-semibold">{exp.title}</h4>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {exp.company}
-                  </p>
-                  {exp.location && (
-                    <p className="text-xs text-muted-foreground">{exp.location}</p>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">
-                    {exp.startDate} - {exp.endDate || 'Present'}
-                  </p>
-                </div>
+    {/* Experience */}
+    {resumeData.experience?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-xl font-semibold mb-3 uppercase tracking-wide border-b pb-1"
+          style={{ color: colors.primary, fontFamily: fonts.header, borderColor: colors.primary }}
+        >
+          Professional Experience
+        </h2>
+        {resumeData.experience.map((exp, index) => (
+          <div key={index} className="mb-4">
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <h3 className="font-semibold" style={{ color: colors.primary }}>
+                  {exp.title}
+                </h3>
+                <p className="font-medium text-sm" style={{ color: colors.text }}>
+                  {exp.company}
+                </p>
               </div>
-              
-              {exp.description && (
-                <div className="text-sm mb-2" dangerouslySetInnerHTML={createSafeHtml(String(exp.description), { FORBID_ATTR: ['style'] })} />
-              )}
-              
-              {exp.achievements && exp.achievements.length > 0 && (
-                <ul className="text-sm space-y-1">
-                {exp.achievements.map((achievement: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-primary">•</span>
-                    <span dangerouslySetInnerHTML={createSafeHtml(String(achievement), { FORBID_ATTR: ['style'] })} />
+              <div className="text-right text-sm text-gray-500 italic">
+                <div>{exp.startDate} - {exp.endDate || 'Present'}</div>
+                <div>{exp.location}</div>
+              </div>
+            </div>
+            {exp.description && (
+              <p className="text-sm mb-2" style={{ color: colors.text }}>
+                {exp.description}
+              </p>
+            )}
+            {exp.achievements?.length > 0 && (
+              <ul className="list-none text-sm space-y-1">
+                {exp.achievements.map((achievement, i) => (
+                  <li key={i} className="relative pl-4" style={{ color: colors.text }}>
+                    <span 
+                      className="absolute left-0 font-bold"
+                      style={{ color: colors.primary }}
+                    >
+                      ▸
+                    </span>
+                    {achievement}
                   </li>
                 ))}
-                </ul>
-              )}
-              
-              {exp.technologies && exp.technologies.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {exp.technologies.map((tech: string, idx: number) => (
-                    <Badge key={idx} variant="outline" className="text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </ul>
+            )}
+          </div>
+        ))}
       </div>
-    );
-  };
+    )}
 
-  const renderEducation = () => {
-    const { education } = resumeData;
-    if (!education || education.length === 0) return null;
-
-    return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Education</h3>
-        <div className="space-y-3">
-          {education.map((edu: any, index: number) => (
-            <div key={index}>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-semibold">{edu.degree}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {edu.school}
-                  </p>
-                  {edu.location && (
-                    <p className="text-xs text-muted-foreground">{edu.location}</p>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">
-                    {edu.endDate}
-                  </p>
-                  {edu.gpa && (
-                    <p className="text-xs text-muted-foreground">GPA: {edu.gpa}</p>
-                  )}
-                </div>
-              </div>
-              {edu.honors && (
-                <p className="text-sm text-muted-foreground mt-1">{edu.honors}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSkills = () => {
-    const rawSkills = (resumeData as any)?.skills;
-    if (!rawSkills) return null;
-
-    // Normalize skills to { technical: string[]; soft?: string[] }
-    const normalized = Array.isArray(rawSkills)
-      ? { technical: rawSkills }
-      : rawSkills;
-
-    const technical: any[] = normalized.technical || [];
-    const soft: any[] = normalized.soft || [];
-    if (technical.length === 0 && soft.length === 0) return null;
-
-    return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Skills</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {technical.length > 0 && (
-            <div>
-              <h4 className="font-medium mb-2">Technical Skills</h4>
-              <div className="flex flex-wrap gap-1">
-                {technical.map((skill: any, index: number) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {typeof skill === 'string' ? skill : skill?.name || skill?.skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          {soft.length > 0 && (
-            <div>
-              <h4 className="font-medium mb-2">Soft Skills</h4>
-              <div className="flex flex-wrap gap-1">
-                {soft.map((skill: any, index: number) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {typeof skill === 'string' ? skill : skill?.name || skill?.skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderProjects = () => {
-    const { projects } = resumeData;
-    if (!projects || projects.length === 0) return null;
-
-    return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Projects</h3>
-        <div className="space-y-3">
-          {projects.map((project: any, index: number) => (
-            <div key={index}>
-              <h4 className="font-semibold">{project.title}</h4>
-              <div className="text-sm mb-2" dangerouslySetInnerHTML={createSafeHtml(String(project.description), { FORBID_ATTR: ['style'] })} />
-              
-              {project.technologies && project.technologies.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {project.technologies.map((tech: string, idx: number) => (
-                    <Badge key={idx} variant="outline" className="text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              
-              {project.achievements && project.achievements.length > 0 && (
-                <ul className="text-sm space-y-1">
-                  {project.achievements.map((achievement: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-primary">•</span>
-                      <span dangerouslySetInnerHTML={createSafeHtml(String(achievement), { FORBID_ATTR: ['style'] })} />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const renderCertifications = () => {
-    const { certifications } = resumeData;
-    if (!certifications || certifications.length === 0) return null;
-
-    return (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Certifications</h3>
-        <div className="space-y-2">
-          {certifications.map((cert: any, index: number) => (
-            <div key={index} className="flex justify-between items-start">
+    {/* Education */}
+    {resumeData.education?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-xl font-semibold mb-3 uppercase tracking-wide border-b pb-1"
+          style={{ color: colors.primary, fontFamily: fonts.header, borderColor: colors.primary }}
+        >
+          Education
+        </h2>
+        {resumeData.education.map((edu, index) => (
+          <div key={index} className="mb-3">
+            <div className="flex justify-between items-start">
               <div>
-                <h4 className="font-semibold text-sm">{cert.name}</h4>
-                <p className="text-xs text-muted-foreground">{cert.issuer}</p>
+                <h3 className="font-semibold" style={{ color: colors.primary }}>
+                  {edu.degree}
+                </h3>
+                <p className="font-medium text-sm" style={{ color: colors.text }}>
+                  {edu.institution}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {cert.date}
-              </p>
+              <div className="text-right text-sm text-gray-500 italic">
+                <div>{edu.startDate} - {edu.endDate}</div>
+                <div>{edu.location}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Skills */}
+    {resumeData.skills?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-xl font-semibold mb-3 uppercase tracking-wide border-b pb-1"
+          style={{ color: colors.primary, fontFamily: fonts.header, borderColor: colors.primary }}
+        >
+          Technical Skills
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {resumeData.skills.map((skill, index) => (
+            <div 
+              key={index} 
+              className="bg-gray-50 px-3 py-2 rounded border-l-2 text-sm"
+              style={{ borderColor: colors.primary }}
+            >
+              {skill}
             </div>
           ))}
         </div>
       </div>
-    );
-  };
+    )}
 
-  const defaultOrder = ['header','summary','experience','education','skills','projects','certifications'];
-  const mapRender: Record<string, JSX.Element | null> = {
-    header: renderPersonalInfo(),
-    summary: renderSummary(),
-    experience: renderExperience(),
-    education: renderEducation(),
-    skills: renderSkills(),
-    projects: renderProjects(),
-    certifications: renderCertifications(),
-  };
+    {/* Projects */}
+    {resumeData.projects?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-xl font-semibold mb-3 uppercase tracking-wide border-b pb-1"
+          style={{ color: colors.primary, fontFamily: fonts.header, borderColor: colors.primary }}
+        >
+          Projects
+        </h2>
+        {resumeData.projects.map((project, index) => (
+          <div key={index} className="mb-3">
+            <h3 className="font-semibold mb-1" style={{ color: colors.primary }}>
+              {project.name}
+            </h3>
+            <p className="text-sm mb-1" style={{ color: colors.text }}>
+              {project.description}
+            </p>
+            {project.technologies?.length > 0 && (
+              <p className="text-xs text-gray-500 italic">
+                Technologies: {project.technologies.join(', ')}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
 
-  const orderToUse = (sectionOrder && sectionOrder.length > 0) ? sectionOrder : defaultOrder;
+const ClassicTemplate: React.FC<{ resumeData: ResumeData; colors: any; fonts: any }> = ({
+  resumeData,
+  colors,
+  fonts
+}) => (
+  <div className="bg-white p-8 max-w-4xl mx-auto shadow-lg" style={{ fontFamily: fonts.body }}>
+    {/* Header - Centered */}
+    <div className="text-center mb-8">
+      <h1 
+        className="text-3xl font-bold mb-2" 
+        style={{ color: colors.text, fontFamily: fonts.header }}
+      >
+        {resumeData.personalInfo.fullName}
+      </h1>
+      <div className="text-sm" style={{ color: colors.text }}>
+        {resumeData.personalInfo.email} • {resumeData.personalInfo.phone} • {resumeData.personalInfo.location}
+      </div>
+    </div>
+
+    {/* Traditional sections with clear separation */}
+    {resumeData.personalInfo.summary && (
+      <div className="mb-6">
+        <h2 
+          className="text-lg font-bold mb-2 border-b"
+          style={{ color: colors.primary, fontFamily: fonts.header }}
+        >
+          OBJECTIVE
+        </h2>
+        <p className="text-sm" style={{ color: colors.text }}>
+          {resumeData.personalInfo.summary}
+        </p>
+      </div>
+    )}
+
+    {/* Experience with traditional layout */}
+    {resumeData.experience?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-lg font-bold mb-2 border-b"
+          style={{ color: colors.primary, fontFamily: fonts.header }}
+        >
+          EXPERIENCE
+        </h2>
+        {resumeData.experience.map((exp, index) => (
+          <div key={index} className="mb-4">
+            <div className="flex justify-between items-start mb-1">
+              <h3 className="font-bold" style={{ color: colors.text }}>
+                {exp.title}
+              </h3>
+              <span className="text-sm" style={{ color: colors.text }}>
+                {exp.startDate} - {exp.endDate || 'Present'}
+              </span>
+            </div>
+            <div className="flex justify-between items-start mb-2">
+              <p className="italic" style={{ color: colors.text }}>
+                {exp.company}
+              </p>
+              <span className="text-sm" style={{ color: colors.text }}>
+                {exp.location}
+              </span>
+            </div>
+            {exp.description && (
+              <p className="text-sm mb-2" style={{ color: colors.text }}>
+                {exp.description}
+              </p>
+            )}
+            {exp.achievements?.length > 0 && (
+              <ul className="list-disc list-inside text-sm space-y-1 ml-4">
+                {exp.achievements.map((achievement, i) => (
+                  <li key={i} style={{ color: colors.text }}>
+                    {achievement}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Education */}
+    {resumeData.education?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-lg font-bold mb-2 border-b"
+          style={{ color: colors.primary, fontFamily: fonts.header }}
+        >
+          EDUCATION
+        </h2>
+        {resumeData.education.map((edu, index) => (
+          <div key={index} className="mb-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-bold" style={{ color: colors.text }}>
+                  {edu.degree}
+                </h3>
+                <p className="italic" style={{ color: colors.text }}>
+                  {edu.institution}, {edu.location}
+                </p>
+              </div>
+              <span className="text-sm" style={{ color: colors.text }}>
+                {edu.startDate} - {edu.endDate}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Skills */}
+    {resumeData.skills?.length > 0 && (
+      <div className="mb-6">
+        <h2 
+          className="text-lg font-bold mb-2 border-b"
+          style={{ color: colors.primary, fontFamily: fonts.header }}
+        >
+          SKILLS
+        </h2>
+        <p className="text-sm" style={{ color: colors.text }}>
+          {resumeData.skills.join(' • ')}
+        </p>
+      </div>
+    )}
+  </div>
+);
+
+const CreativeTemplate: React.FC<{ resumeData: ResumeData; colors: any; fonts: any }> = ({
+  resumeData,
+  colors,
+  fonts
+}) => (
+  <div className="bg-gradient-to-br from-white to-gray-50 p-8 max-w-4xl mx-auto shadow-xl rounded-lg">
+    {/* Creative header with accent */}
+    <div className="relative mb-8">
+      <div 
+        className="absolute -left-8 -top-8 w-32 h-32 rounded-full opacity-10"
+        style={{ backgroundColor: colors.primary }}
+      ></div>
+      <div className="relative z-10">
+        <h1 
+          className="text-4xl font-bold mb-2" 
+          style={{ color: colors.primary, fontFamily: fonts.header }}
+        >
+          {resumeData.personalInfo.fullName}
+        </h1>
+        <div className="flex flex-wrap gap-4 text-sm" style={{ color: colors.text }}>
+          <span className="bg-white px-3 py-1 rounded-full shadow">📧 {resumeData.personalInfo.email}</span>
+          <span className="bg-white px-3 py-1 rounded-full shadow">📱 {resumeData.personalInfo.phone}</span>
+          <span className="bg-white px-3 py-1 rounded-full shadow">📍 {resumeData.personalInfo.location}</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Creative sections */}
+    {resumeData.personalInfo.summary && (
+      <div className="mb-8">
+        <div className="flex items-center mb-3">
+          <div 
+            className="w-4 h-4 rounded-full mr-3"
+            style={{ backgroundColor: colors.primary }}
+          ></div>
+          <h2 
+            className="text-xl font-bold"
+            style={{ color: colors.primary, fontFamily: fonts.header }}
+          >
+            About Me
+          </h2>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow-sm border-l-4" style={{ borderColor: colors.primary }}>
+          <p className="text-sm leading-relaxed" style={{ color: colors.text }}>
+            {resumeData.personalInfo.summary}
+          </p>
+        </div>
+      </div>
+    )}
+
+    {/* Experience with creative cards */}
+    {resumeData.experience?.length > 0 && (
+      <div className="mb-8">
+        <div className="flex items-center mb-4">
+          <div 
+            className="w-4 h-4 rounded-full mr-3"
+            style={{ backgroundColor: colors.primary }}
+          ></div>
+          <h2 
+            className="text-xl font-bold"
+            style={{ color: colors.primary, fontFamily: fonts.header }}
+          >
+            Experience
+          </h2>
+        </div>
+        <div className="space-y-4">
+          {resumeData.experience.map((exp, index) => (
+            <div key={index} className="bg-white p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="font-bold text-lg" style={{ color: colors.primary }}>
+                    {exp.title}
+                  </h3>
+                  <p className="font-medium" style={{ color: colors.text }}>
+                    {exp.company}
+                  </p>
+                </div>
+                <div className="text-right text-sm">
+                  <div 
+                    className="bg-gray-100 px-3 py-1 rounded-full"
+                    style={{ color: colors.text }}
+                  >
+                    {exp.startDate} - {exp.endDate || 'Present'}
+                  </div>
+                  <div className="mt-1 text-gray-500">{exp.location}</div>
+                </div>
+              </div>
+              {exp.description && (
+                <p className="text-sm mb-3" style={{ color: colors.text }}>
+                  {exp.description}
+                </p>
+              )}
+              {exp.achievements?.length > 0 && (
+                <div className="space-y-2">
+                  {exp.achievements.map((achievement, i) => (
+                    <div key={i} className="flex items-start">
+                      <div 
+                        className="w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"
+                        style={{ backgroundColor: colors.primary }}
+                      ></div>
+                      <p className="text-sm" style={{ color: colors.text }}>
+                        {achievement}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Skills with creative layout */}
+    {resumeData.skills?.length > 0 && (
+      <div className="mb-8">
+        <div className="flex items-center mb-4">
+          <div 
+            className="w-4 h-4 rounded-full mr-3"
+            style={{ backgroundColor: colors.primary }}
+          ></div>
+          <h2 
+            className="text-xl font-bold"
+            style={{ color: colors.primary, fontFamily: fonts.header }}
+          >
+            Skills
+          </h2>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {resumeData.skills.map((skill, index) => (
+            <span 
+              key={index} 
+              className="px-4 py-2 rounded-full text-sm font-medium text-white shadow-sm"
+              style={{ backgroundColor: colors.primary }}
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
+  resumeData,
+  template,
+  className
+}) => {
+  const colors = template.design_config?.colors || { primary: '#2563eb', text: '#374151' };
+  const fonts = template.design_config?.fonts || { header: 'Inter', body: 'Inter' };
+
+  const renderTemplate = () => {
+    switch (template.id) {
+      case 'classic':
+        return <ClassicTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
+      case 'creative':
+        return <CreativeTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
+      case 'technical':
+      case 'executive':
+      case 'modern':
+      default:
+        return <ModernTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
+    }
+  };
 
   return (
-    <div className={`bg-white shadow-lg ${className}`} style={styles.container}>
-      <div className="max-w-4xl mx-auto">
-        {orderToUse.map((key) => mapRender[key]).filter(Boolean)}
-      </div>
+    <div className={cn("w-full", className)} id="resume-preview">
+      {renderTemplate()}
     </div>
   );
 };
