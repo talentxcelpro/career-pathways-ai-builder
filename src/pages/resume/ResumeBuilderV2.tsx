@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { ResumeEditor } from '@/components/resume/editor/ResumeEditor';
 import { ResumePreview } from '@/components/resume/preview/ResumePreview';
+import { AIEnhancer } from '@/components/resume/ai/AIEnhancer';
+import { ExportOptions } from '@/components/resume/export/ExportOptions';
 import type { ResumeData } from '@/components/resume/preview/ResumePreview';
 
 const defaultResumeData: ResumeData = {
@@ -46,6 +48,8 @@ const ResumeBuilderV2: React.FC = () => {
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [isSaving, setIsSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState<'split' | 'preview-only'>('split');
+  const [activePanel, setActivePanel] = useState<'editor' | 'ai' | 'export'>('editor');
+  const [savedResumeId, setSavedResumeId] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -90,7 +94,7 @@ const ResumeBuilderV2: React.FC = () => {
         ? `${resumeData.profile.name}'s Resume`
         : 'My Resume';
 
-      const { error } = await supabase
+      const { data: savedResume, error } = await supabase
         .from('ai_resumes')
         .insert({
           user_id: user.id,
@@ -99,10 +103,13 @@ const ResumeBuilderV2: React.FC = () => {
           template_id: selectedTemplate,
           is_primary: false,
           ats_score: 85 // Default score, can be calculated later
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
+      setSavedResumeId(savedResume.id);
       toast({
         title: "Resume Saved",
         description: "Your resume has been saved successfully.",
@@ -207,6 +214,35 @@ const ResumeBuilderV2: React.FC = () => {
                 {previewMode === 'split' ? 'Preview Only' : 'Split View'}
               </Button>
 
+              {/* Panel Selector */}
+              <div className="flex border rounded">
+                <Button
+                  variant={activePanel === 'editor' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setActivePanel('editor')}
+                  className="rounded-r-none text-xs"
+                >
+                  Editor
+                </Button>
+                <Button
+                  variant={activePanel === 'ai' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setActivePanel('ai')}
+                  className="rounded-none text-xs"
+                >
+                  <Zap className="h-3 w-3 mr-1" />
+                  AI
+                </Button>
+                <Button
+                  variant={activePanel === 'export' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setActivePanel('export')}
+                  className="rounded-l-none text-xs"
+                >
+                  Export
+                </Button>
+              </div>
+
               {/* Action Buttons */}
               <Button
                 onClick={handleSave}
@@ -215,15 +251,6 @@ const ResumeBuilderV2: React.FC = () => {
               >
                 <Save className="h-4 w-4" />
                 {isSaving ? 'Saving...' : 'Save'}
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={handleDownload}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Download
               </Button>
             </div>
           </div>
@@ -261,24 +288,50 @@ const ResumeBuilderV2: React.FC = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Editor Panel */}
+          {/* Editor/AI/Export Panel */}
           {previewMode === 'split' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Resume Editor</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {activePanel === 'editor' && 'Resume Editor'}
+                  {activePanel === 'ai' && 'AI Enhancement'}
+                  {activePanel === 'export' && 'Export Options'}
+                </h2>
                 <Badge variant="secondary" className="text-xs">
-                  Auto-saves every second
+                  {activePanel === 'editor' && 'Auto-saves every second'}
+                  {activePanel === 'ai' && 'AI-powered optimization'}
+                  {activePanel === 'export' && 'Multiple formats available'}
                 </Badge>
               </div>
               
               <Card className="h-[800px] overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="h-full overflow-y-auto">
-                    <ResumeEditor
-                      data={resumeData}
-                      onChange={handleDataChange}
-                      className="p-6"
-                    />
+                    {activePanel === 'editor' && (
+                      <ResumeEditor
+                        data={resumeData}
+                        onChange={handleDataChange}
+                        className="p-6"
+                      />
+                    )}
+                    {activePanel === 'ai' && (
+                      <div className="p-6">
+                        <AIEnhancer
+                          resumeData={resumeData}
+                          onDataChange={handleDataChange}
+                          resumeId={savedResumeId}
+                        />
+                      </div>
+                    )}
+                    {activePanel === 'export' && (
+                      <div className="p-6">
+                        <ExportOptions
+                          resumeData={resumeData}
+                          selectedTemplate={selectedTemplate}
+                          resumeId={savedResumeId}
+                        />
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

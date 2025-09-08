@@ -122,6 +122,59 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
     updateData({ projects: newProjects });
   }, [data.projects, updateData]);
 
+  // Certification, Language, and Award handlers
+  const addCertification = useCallback(() => {
+    const newCertifications = [...(data.certifications || []), { name: '', issuer: '', date: '' }];
+    updateData({ certifications: newCertifications });
+  }, [data.certifications, updateData]);
+
+  const updateCertification = useCallback((index: number, field: string, value: string) => {
+    const newCertifications = [...(data.certifications || [])];
+    newCertifications[index] = { ...newCertifications[index], [field]: value };
+    updateData({ certifications: newCertifications });
+  }, [data.certifications, updateData]);
+
+  const removeCertification = useCallback((index: number) => {
+    const newCertifications = [...(data.certifications || [])];
+    newCertifications.splice(index, 1);
+    updateData({ certifications: newCertifications });
+  }, [data.certifications, updateData]);
+
+  const addLanguage = useCallback(() => {
+    const newLanguages = [...(data.languages || []), { language: '', proficiency: '' }];
+    updateData({ languages: newLanguages });
+  }, [data.languages, updateData]);
+
+  const updateLanguage = useCallback((index: number, field: string, value: string) => {
+    const newLanguages = [...(data.languages || [])];
+    newLanguages[index] = { ...newLanguages[index], [field]: value };
+    updateData({ languages: newLanguages });
+  }, [data.languages, updateData]);
+
+  const removeLanguage = useCallback((index: number) => {
+    const newLanguages = [...(data.languages || [])];
+    newLanguages.splice(index, 1);
+    updateData({ languages: newLanguages });
+  }, [data.languages, updateData]);
+
+  const addAward = useCallback(() => {
+    const newAwards = [...(data.awards || []), { title: '', organization: '', date: '' }];
+    updateData({ awards: newAwards });
+  }, [data.awards, updateData]);
+
+  const updateAward = useCallback((index: number, field: string, value: string) => {
+    const newAwards = [...(data.awards || [])];
+    newAwards[index] = { ...newAwards[index], [field]: value };
+    updateData({ awards: newAwards });
+  }, [data.awards, updateData]);
+
+  const removeAward = useCallback((index: number) => {
+    const newAwards = [...(data.awards || [])];
+    newAwards.splice(index, 1);
+    updateData({ awards: newAwards });
+  }, [data.awards, updateData]);
+
+
   const DatePicker = ({ date, onDateChange, placeholder }: { 
     date: string; 
     onDateChange: (date: string) => void; 
@@ -165,29 +218,37 @@ export const ResumeEditor: React.FC<ResumeEditorProps> = ({
   return (
     <div className={`space-y-6 ${className}`}>
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-8 text-xs">
           <TabsTrigger value="profile" className="flex items-center gap-1">
-            <User className="h-4 w-4" />
+            <User className="h-3 w-3" />
             Profile
           </TabsTrigger>
           <TabsTrigger value="experience" className="flex items-center gap-1">
-            <Briefcase className="h-4 w-4" />
+            <Briefcase className="h-3 w-3" />
             Experience
           </TabsTrigger>
           <TabsTrigger value="education" className="flex items-center gap-1">
-            <GraduationCap className="h-4 w-4" />
+            <GraduationCap className="h-3 w-3" />
             Education
           </TabsTrigger>
           <TabsTrigger value="projects" className="flex items-center gap-1">
-            <Code className="h-4 w-4" />
+            <Code className="h-3 w-3" />
             Projects
           </TabsTrigger>
           <TabsTrigger value="skills" className="flex items-center gap-1">
-            <Target className="h-4 w-4" />
+            <Target className="h-3 w-3" />
             Skills
           </TabsTrigger>
+          <TabsTrigger value="certifications" className="flex items-center gap-1">
+            <Award className="h-3 w-3" />
+            Certs
+          </TabsTrigger>
+          <TabsTrigger value="languages" className="flex items-center gap-1">
+            <Globe className="h-3 w-3" />
+            Languages
+          </TabsTrigger>
           <TabsTrigger value="additional" className="flex items-center gap-1">
-            <Award className="h-4 w-4" />
+            <Award className="h-3 w-3" />
             More
           </TabsTrigger>
         </TabsList>
