@@ -27,7 +27,8 @@ import {
   TrendingUp,
   Star,
   Eye,
-  Newspaper
+  Newspaper,
+  Rocket
 } from 'lucide-react';
 import {
   Sidebar,
@@ -136,6 +137,12 @@ const adminMenuItems = [
     url: '/admin/home',
     icon: Home,
     description: 'Homepage management'
+  },
+  {
+    title: 'Career Platform',
+    url: '/career-platform',
+    icon: Rocket,
+    description: 'Complete AI career platform overview'
   },
   {
     title: 'Analytics',
