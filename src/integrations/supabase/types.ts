@@ -11297,6 +11297,115 @@ export type Database = {
         }
         Relationships: []
       }
+      industries: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          parent_industry_id: string | null
+          slug: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          parent_industry_id?: string | null
+          slug: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          parent_industry_id?: string | null
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "industries_parent_industry_id_fkey"
+            columns: ["parent_industry_id"]
+            isOneToOne: false
+            referencedRelation: "industries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      industry_learning_paths: {
+        Row: {
+          career_outcomes: string[] | null
+          created_at: string | null
+          description: string | null
+          difficulty_level: string | null
+          duration_weeks: number | null
+          id: string
+          industry_id: string
+          is_active: boolean | null
+          is_featured: boolean | null
+          prerequisites: string[] | null
+          salary_potential_max: number | null
+          salary_potential_min: number | null
+          skills_gained: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          career_outcomes?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_weeks?: number | null
+          id?: string
+          industry_id: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          prerequisites?: string[] | null
+          salary_potential_max?: number | null
+          salary_potential_min?: number | null
+          skills_gained?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          career_outcomes?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_weeks?: number | null
+          id?: string
+          industry_id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          prerequisites?: string[] | null
+          salary_potential_max?: number | null
+          salary_potential_min?: number | null
+          skills_gained?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "industry_learning_paths_industry_id_fkey"
+            columns: ["industry_id"]
+            isOneToOne: false
+            referencedRelation: "industries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       industry_skills_library: {
         Row: {
           created_at: string | null
@@ -12180,6 +12289,68 @@ export type Database = {
           },
         ]
       }
+      job_focused_courses: {
+        Row: {
+          average_salary_increase: number | null
+          course_id: string | null
+          created_at: string
+          employment_outcome_rate: number | null
+          hiring_partners: string[] | null
+          id: string
+          interview_prep_included: boolean | null
+          job_guarantee: boolean | null
+          job_readiness_score: number | null
+          portfolio_projects_count: number | null
+          real_world_projects: Json | null
+          required_skills: string[]
+          skill_level_mapping: Json | null
+          target_job_titles: string[]
+          updated_at: string
+        }
+        Insert: {
+          average_salary_increase?: number | null
+          course_id?: string | null
+          created_at?: string
+          employment_outcome_rate?: number | null
+          hiring_partners?: string[] | null
+          id?: string
+          interview_prep_included?: boolean | null
+          job_guarantee?: boolean | null
+          job_readiness_score?: number | null
+          portfolio_projects_count?: number | null
+          real_world_projects?: Json | null
+          required_skills?: string[]
+          skill_level_mapping?: Json | null
+          target_job_titles?: string[]
+          updated_at?: string
+        }
+        Update: {
+          average_salary_increase?: number | null
+          course_id?: string | null
+          created_at?: string
+          employment_outcome_rate?: number | null
+          hiring_partners?: string[] | null
+          id?: string
+          interview_prep_included?: boolean | null
+          job_guarantee?: boolean | null
+          job_readiness_score?: number | null
+          portfolio_projects_count?: number | null
+          real_world_projects?: Json | null
+          required_skills?: string[]
+          skill_level_mapping?: Json | null
+          target_job_titles?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_focused_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_locations_india: {
         Row: {
           city: string
@@ -12231,6 +12402,66 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           region?: string
+        }
+        Relationships: []
+      }
+      job_market_analysis: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          education_level: string | null
+          experience_level: string | null
+          id: string
+          industry: string | null
+          is_active: boolean | null
+          job_posting_source: string
+          job_title: string
+          location: string | null
+          raw_data: Json | null
+          salary_range_max: number | null
+          salary_range_min: number | null
+          scraped_at: string
+          skill_frequency: number | null
+          skills_required: string[]
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          education_level?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          job_posting_source: string
+          job_title: string
+          location?: string | null
+          raw_data?: Json | null
+          salary_range_max?: number | null
+          salary_range_min?: number | null
+          scraped_at?: string
+          skill_frequency?: number | null
+          skills_required?: string[]
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          education_level?: string | null
+          experience_level?: string | null
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          job_posting_source?: string
+          job_title?: string
+          location?: string | null
+          raw_data?: Json | null
+          salary_range_max?: number | null
+          salary_range_min?: number | null
+          scraped_at?: string
+          skill_frequency?: number | null
+          skills_required?: string[]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -13224,6 +13455,122 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_analytics: {
+        Row: {
+          additional_data: Json | null
+          course_id: string | null
+          created_at: string
+          id: string
+          metric_date: string
+          metric_type: string
+          metric_value: number
+          skill_name: string | null
+          user_id: string
+        }
+        Insert: {
+          additional_data?: Json | null
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          metric_date?: string
+          metric_type: string
+          metric_value: number
+          skill_name?: string | null
+          user_id: string
+        }
+        Update: {
+          additional_data?: Json | null
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          metric_date?: string
+          metric_type?: string
+          metric_value?: number
+          skill_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_job_applications: {
+        Row: {
+          application_id: string | null
+          application_outcome: string | null
+          created_at: string
+          id: string
+          job_id: string | null
+          learning_match_score: number | null
+          outcome_date: string | null
+          portfolio_projects_used: string[] | null
+          recommended_learning: Json | null
+          relevant_courses: string[] | null
+          skill_gap_analysis: Json | null
+          skills_demonstrated: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_id?: string | null
+          application_outcome?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          learning_match_score?: number | null
+          outcome_date?: string | null
+          portfolio_projects_used?: string[] | null
+          recommended_learning?: Json | null
+          relevant_courses?: string[] | null
+          skill_gap_analysis?: Json | null
+          skills_demonstrated?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_id?: string | null
+          application_outcome?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          learning_match_score?: number | null
+          outcome_date?: string | null
+          portfolio_projects_used?: string[] | null
+          recommended_learning?: Json | null
+          relevant_courses?: string[] | null
+          skill_gap_analysis?: Json | null
+          skills_demonstrated?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_job_applications_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "learning_job_applications_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database_secure"
+            referencedColumns: ["application_id"]
+          },
+          {
+            foreignKeyName: "learning_job_applications_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "job_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
             referencedColumns: ["id"]
           },
         ]
@@ -21835,6 +22182,54 @@ export type Database = {
           },
         ]
       }
+      skill_demand_trends: {
+        Row: {
+          average_salary: number | null
+          created_at: string
+          demand_score: number
+          growth_rate: number | null
+          id: string
+          industry_breakdown: Json | null
+          job_count: number | null
+          location_breakdown: Json | null
+          period_end: string
+          period_start: string
+          skill_name: string
+          trend_period: string
+          updated_at: string
+        }
+        Insert: {
+          average_salary?: number | null
+          created_at?: string
+          demand_score?: number
+          growth_rate?: number | null
+          id?: string
+          industry_breakdown?: Json | null
+          job_count?: number | null
+          location_breakdown?: Json | null
+          period_end: string
+          period_start: string
+          skill_name: string
+          trend_period: string
+          updated_at?: string
+        }
+        Update: {
+          average_salary?: number | null
+          created_at?: string
+          demand_score?: number
+          growth_rate?: number | null
+          id?: string
+          industry_breakdown?: Json | null
+          job_count?: number | null
+          location_breakdown?: Json | null
+          period_end?: string
+          period_start?: string
+          skill_name?: string
+          trend_period?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skill_recommendations: {
         Row: {
           based_on_data: Json
@@ -21916,6 +22311,60 @@ export type Database = {
           salary_max?: number | null
           salary_min?: number | null
           skills?: Json
+        }
+        Relationships: []
+      }
+      skill_verifications: {
+        Row: {
+          created_at: string
+          employer_verified: boolean | null
+          expiry_date: string | null
+          id: string
+          portfolio_evidence: Json | null
+          proficiency_level: string
+          public_verification: boolean | null
+          skill_name: string
+          updated_at: string
+          user_id: string
+          verification_date: string
+          verification_method: string
+          verification_score: number | null
+          verification_source: string | null
+          verification_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          employer_verified?: boolean | null
+          expiry_date?: string | null
+          id?: string
+          portfolio_evidence?: Json | null
+          proficiency_level: string
+          public_verification?: boolean | null
+          skill_name: string
+          updated_at?: string
+          user_id: string
+          verification_date?: string
+          verification_method: string
+          verification_score?: number | null
+          verification_source?: string | null
+          verification_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          employer_verified?: boolean | null
+          expiry_date?: string | null
+          id?: string
+          portfolio_evidence?: Json | null
+          proficiency_level?: string
+          public_verification?: boolean | null
+          skill_name?: string
+          updated_at?: string
+          user_id?: string
+          verification_date?: string
+          verification_method?: string
+          verification_score?: number | null
+          verification_source?: string | null
+          verification_url?: string | null
         }
         Relationships: []
       }
@@ -24248,6 +24697,131 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_learning_profiles: {
+        Row: {
+          career_stage: string | null
+          certifications: string[] | null
+          created_at: string | null
+          experience_level: string | null
+          id: string
+          learning_budget_monthly: number | null
+          learning_goals: string[] | null
+          preferred_learning_style: string | null
+          preferred_work_type: string | null
+          primary_industry_id: string | null
+          salary_expectation_max: number | null
+          salary_expectation_min: number | null
+          secondary_industries: string[] | null
+          soft_skills: Json | null
+          technical_skills: Json | null
+          time_availability: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          career_stage?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          experience_level?: string | null
+          id?: string
+          learning_budget_monthly?: number | null
+          learning_goals?: string[] | null
+          preferred_learning_style?: string | null
+          preferred_work_type?: string | null
+          primary_industry_id?: string | null
+          salary_expectation_max?: number | null
+          salary_expectation_min?: number | null
+          secondary_industries?: string[] | null
+          soft_skills?: Json | null
+          technical_skills?: Json | null
+          time_availability?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          career_stage?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          experience_level?: string | null
+          id?: string
+          learning_budget_monthly?: number | null
+          learning_goals?: string[] | null
+          preferred_learning_style?: string | null
+          preferred_work_type?: string | null
+          primary_industry_id?: string | null
+          salary_expectation_max?: number | null
+          salary_expectation_min?: number | null
+          secondary_industries?: string[] | null
+          soft_skills?: Json | null
+          technical_skills?: Json | null
+          time_availability?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_learning_profiles_primary_industry_id_fkey"
+            columns: ["primary_industry_id"]
+            isOneToOne: false
+            referencedRelation: "industries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_learning_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          expires_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          is_viewed: boolean | null
+          priority: number | null
+          reason: string | null
+          recommendation_type: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          priority?: number | null
+          reason?: string | null
+          recommendation_type: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          priority?: number | null
+          reason?: string | null
+          recommendation_type?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_lesson_progress: {
         Row: {
