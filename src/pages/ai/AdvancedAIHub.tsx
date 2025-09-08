@@ -2,10 +2,10 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Brain, TrendingUp, Target, MessageSquare, Globe, Zap } from 'lucide-react';
-import PredictiveCareerAnalytics from '@/components/ai/PredictiveCareerAnalytics';
-import AdvancedAIJobMatching from '@/components/ai/AdvancedAIJobMatching';
-import IntelligentCareerCoach from '@/components/ai/IntelligentCareerCoach';
-import AIMarketIntelligence from '@/components/ai/AIMarketIntelligence';
+import EnhancedCareerAnalytics from '@/components/ai/EnhancedCareerAnalytics';
+import IndustryBenchmarking from '@/components/ai/IndustryBenchmarking';
+import CareerCredibilityScore from '@/components/ai/CareerCredibilityScore';
+import NetworkingIntelligence from '@/components/ai/NetworkingIntelligence';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const AdvancedAIHub: React.FC = () => {
