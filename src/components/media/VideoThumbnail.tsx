@@ -63,7 +63,11 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   const [title, setTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(true); // Auto-play by default
+  const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const [isPlaying, setIsPlaying] = useState<boolean>(() => {
+    const yt = getYouTubeVideoId(url) !== null;
+    return !(yt && isMobile);
+  });
   const [embedError, setEmbedError] = useState(false);
 
   useEffect(() => {
@@ -223,6 +227,7 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
             onLoad={(e) => {
               const iframe = e.target as HTMLIFrameElement;
               // Add timeout to check if iframe is actually working
+              const delay = isMobile ? 600 : 2000;
               setTimeout(() => {
                 try {
                   if (iframe.contentDocument === null) {
@@ -236,7 +241,7 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
                     setEmbedError(true);
                   }
                 }
-              }, 2000);
+              }, delay);
             }}
           />
           {embedError && (
