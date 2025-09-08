@@ -158,7 +158,21 @@ const Preview = ({ data, templateId, variant = 'sidebar', sectionOrder }: { data
     : 'flex-1 px-6 py-6 overflow-auto';
 
   const buildRendererData = useCallback((source: any) => {
-    if (!source) return {};
+    if (!source) {
+      return {
+        personalInfo: {
+          fullName: '',
+          email: '',
+          phone: '',
+          location: '',
+          summary: '',
+        },
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+      };
+    }
 
     const personal = source.personalInfo || source.profile || {};
     const experience = Array.isArray(source.experience) ? source.experience.map((it: any) => ({
@@ -197,17 +211,12 @@ const Preview = ({ data, templateId, variant = 'sidebar', sectionOrder }: { data
         email: personal.email || '',
         phone: personal.phone || '',
         location: personal.location || '',
-        linkedin: personal.linkedin || '',
-        github: personal.github || '',
-        website: personal.website || personal.portfolio || '',
-        professionalTitle: personal.professionalTitle || personal.title || '',
         summary: source.summary || personal.summary || '',
       },
       experience,
       education,
-      skills,
+      skills: Array.isArray(rawSkills) ? rawSkills : [],
       projects: Array.isArray(source.projects) ? source.projects : [],
-      certifications,
     };
   }, []);
 

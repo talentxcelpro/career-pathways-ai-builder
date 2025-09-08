@@ -50,9 +50,10 @@ interface Template {
 
 interface TemplateRendererProps {
   resumeData: ResumeData;
-  template: Template;
+  template: Template | string;
   className?: string;
   customization?: any; // For backward compatibility
+  sectionOrder?: string[];
 }
 
 const ModernTemplate: React.FC<{ resumeData: ResumeData; colors: any; fonts: any }> = ({
@@ -498,11 +499,16 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   template,
   className
 }) => {
-  const colors = template.design_config?.colors || { primary: '#2563eb', text: '#374151' };
-  const fonts = template.design_config?.fonts || { header: 'Inter', body: 'Inter' };
+  // Handle both string and Template object types
+  const templateObj = typeof template === 'string' 
+    ? { id: template, name: template, design_config: undefined }
+    : template;
+    
+  const colors = templateObj.design_config?.colors || { primary: '#2563eb', text: '#374151' };
+  const fonts = templateObj.design_config?.fonts || { header: 'Inter', body: 'Inter' };
 
   const renderTemplate = () => {
-    switch (template.id) {
+    switch (templateObj.id) {
       case 'classic':
         return <ClassicTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
       case 'creative':
