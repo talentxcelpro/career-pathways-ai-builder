@@ -137,10 +137,21 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else {
-      // Play inline by default
-      setIsPlaying(true);
+      return;
     }
+    const youtubeId = getYouTubeVideoId(url);
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (youtubeId) {
+      if (isMobile) {
+        // Open externally on mobile for best compatibility
+        window.open(`https://www.youtube.com/watch?v=${youtubeId}`, '_blank', 'noopener,noreferrer');
+        return;
+      }
+      setIsPlaying(true);
+      return;
+    }
+    // Non-YouTube: keep thumbnail behavior
+    setIsPlaying(true);
   };
 
   if (isLoading) {
@@ -169,7 +180,28 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
     );
   }
 
-  const isYoutube = getYouTubeVideoId(url) !== null;
+  const youtubeId = getYouTubeVideoId(url);
+  const isYoutube = youtubeId !== null;
+
+  // If playing a YouTube video on desktop, render the embed
+  if (isPlaying && youtubeId) {
+    const embedUrl = buildYouTubeEmbedUrl(youtubeId);
+    return (
+      <div className={cn(
+        "relative rounded-lg overflow-hidden aspect-video",
+        className
+      )}>
+        <iframe
+          src={embedUrl}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          sandbox="allow-scripts allow-same-origin allow-presentation"
+          title="YouTube player"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={cn(
