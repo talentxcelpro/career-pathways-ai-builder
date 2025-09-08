@@ -4,16 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, TrendingUp, Briefcase, Users, Camera, Link as LinkIcon, MoreHorizontal } from "lucide-react";
+import { Heart, MessageCircle, Share2, TrendingUp, Briefcase, Users, Camera, Link as LinkIcon, MoreHorizontal, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { VideoThumbnail } from "@/components/media/VideoThumbnail";
 
 interface Post {
   id: string;
   author_id: string;
   content: string;
   media_url?: string;
-  post_type: 'text' | 'image' | 'poll' | 'achievement' | 'job_update';
+  video_url?: string;
+  post_type: 'text' | 'image' | 'video' | 'poll' | 'achievement' | 'job_update';
   likes_count: number;
   comments_count: number;
   shares_count: number;
@@ -29,13 +31,15 @@ interface Post {
 
 interface CreatePostData {
   content: string;
-  post_type: 'text' | 'image' | 'poll' | 'achievement' | 'job_update';
+  post_type: 'text' | 'image' | 'video' | 'poll' | 'achievement' | 'job_update';
   media_url?: string;
+  video_url?: string;
 }
 
 export function ProfessionalFeed() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [postType, setPostType] = useState<CreatePostData['post_type']>('text');
   const [isLoading, setIsLoading] = useState(true);
   const [isPosting, setIsPosting] = useState(false);
@@ -55,6 +59,7 @@ export function ProfessionalFeed() {
           author_id,
           content,
           media_urls,
+          video_url,
           post_type,
           likes_count,
           comments_count,
@@ -90,7 +95,8 @@ export function ProfessionalFeed() {
         author_id: post.author_id,
         content: post.content,
         media_url: post.media_urls?.[0] || undefined,
-        post_type: post.post_type as 'text' | 'image' | 'poll' | 'achievement' | 'job_update',
+        video_url: post.video_url || undefined,
+        post_type: post.post_type as 'text' | 'image' | 'video' | 'poll' | 'achievement' | 'job_update',
         likes_count: post.likes_count || 0,
         comments_count: post.comments_count || 0,
         shares_count: post.shares_count || 0,
@@ -125,17 +131,24 @@ export function ProfessionalFeed() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      const postData: any = {
+        author_id: user.id,
+        content: newPost,
+        post_type: postType
+      };
+
+      if (postType === 'video' && videoUrl.trim()) {
+        postData.video_url = videoUrl.trim();
+      }
+
       const { error } = await supabase
         .from('posts')
-        .insert({
-          author_id: user.id,
-          content: newPost,
-          post_type: postType
-        });
+        .insert(postData);
 
       if (error) throw error;
 
       setNewPost("");
+      setVideoUrl("");
       setPostType('text');
       await fetchPosts();
       
@@ -186,6 +199,7 @@ export function ProfessionalFeed() {
     switch (type) {
       case 'achievement': return <TrendingUp className="w-4 h-4" />;
       case 'job_update': return <Briefcase className="w-4 h-4" />;
+      case 'video': return <Video className="w-4 h-4" />;
       case 'poll': return <Users className="w-4 h-4" />;
       default: return null;
     }
@@ -195,6 +209,7 @@ export function ProfessionalFeed() {
     switch (type) {
       case 'achievement': return 'bg-success/10 text-success';
       case 'job_update': return 'bg-primary/10 text-primary';
+      case 'video': return 'bg-red-500/10 text-red-500';
       case 'poll': return 'bg-accent/10 text-accent';
       default: return 'bg-muted/10 text-muted-foreground';
     }
@@ -231,6 +246,7 @@ export function ProfessionalFeed() {
           <div className="flex gap-2 mb-4">
             {[
               { type: 'text', label: 'Text', icon: MessageCircle },
+              { type: 'video', label: 'Video', icon: Video },
               { type: 'achievement', label: 'Achievement', icon: TrendingUp },
               { type: 'job_update', label: 'Job Update', icon: Briefcase },
               { type: 'poll', label: 'Poll', icon: Users },
@@ -254,6 +270,24 @@ export function ProfessionalFeed() {
             className="min-h-[100px]"
           />
           
+          {postType === 'video' && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Video URL</label>
+              <input
+                type="url"
+                placeholder="Paste YouTube, Vimeo, or video URL here..."
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              {videoUrl && (
+                <div className="mt-2">
+                  <VideoThumbnail url={videoUrl} className="max-w-sm" />
+                </div>
+              )}
+            </div>
+          )}
+          
           <div className="flex justify-between items-center">
             <div className="flex gap-2">
               <Button variant="ghost" size="sm">
@@ -268,7 +302,7 @@ export function ProfessionalFeed() {
             
             <Button 
               onClick={createPost} 
-              disabled={!newPost.trim() || isPosting}
+              disabled={!newPost.trim() || isPosting || (postType === 'video' && !videoUrl.trim())}
             >
               {isPosting ? "Posting..." : "Post"}
             </Button>
@@ -321,6 +355,16 @@ export function ProfessionalFeed() {
                       alt="Post media" 
                       className="rounded-lg max-w-full h-auto"
                     />
+                  )}
+                  
+                  {post.video_url && (
+                    <div className="mt-3">
+                      <VideoThumbnail 
+                        url={post.video_url} 
+                        className="max-w-full"
+                        onClick={() => window.open(post.video_url, '_blank')}
+                      />
+                    </div>
                   )}
                   
                   <div className="flex items-center justify-between pt-3 border-t">
