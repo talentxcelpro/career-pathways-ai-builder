@@ -35,11 +35,21 @@ export const AIContentSuggester: React.FC<AIContentSuggesterProps> = ({
   const generateSuggestions = async (enhancementType = 'general') => {
     setIsGenerating(true);
     try {
+      const mockResumeData = {
+        personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
+        experience: [],
+        education: [],
+        skills: [],
+        settings: { templateId: 'modern', colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' as const, sectionOrder: [] },
+        metadata: { title: 'Test Resume', version: 1 },
+        [sectionType]: currentContent
+      };
+      
       const result = await enhanceResume(
-        { [sectionType]: currentContent },
+        mockResumeData,
         { 
-          sectionType: sectionType as 'summary' | 'experience' | 'skills' | 'education' | 'all', 
-          enhancementType: enhancementType as 'professional' | 'achievements' | 'ats' | 'general'
+          sections: [sectionType],
+          enhancementType: enhancementType === 'general' || enhancementType === 'achievements' ? 'professional' : enhancementType as 'professional' | 'ats' | 'creative' | 'technical'
         }
       );
 
@@ -68,11 +78,21 @@ export const AIContentSuggester: React.FC<AIContentSuggesterProps> = ({
 
     setIsGenerating(true);
     try {
+      const mockResumeData = {
+        personalInfo: { fullName: '', email: '', phone: '', location: '', summary: '' },
+        experience: [],
+        education: [],
+        skills: [],
+        settings: { templateId: 'modern', colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' as const, sectionOrder: [] },
+        metadata: { title: 'Test Resume', version: 1 },
+        [sectionType]: currentContent
+      };
+      
       const result = await enhanceResume(
-        { [sectionType]: currentContent, customPrompt },
+        mockResumeData,
         { 
           sectionType: sectionType as 'summary' | 'experience' | 'skills' | 'education' | 'all', 
-          enhancementType: 'general' as 'professional' | 'achievements' | 'ats' | 'general'
+          enhancementType: 'professional' as 'professional' | 'ats' | 'creative' | 'technical' as 'professional' | 'achievements' | 'ats' | 'creative' | 'technical'
         }
       );
 

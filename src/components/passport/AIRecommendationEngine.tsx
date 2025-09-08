@@ -130,7 +130,7 @@ export function AIRecommendationEngine({
           {
             recommendation_type: 'skill_development',
             title: 'Skill Development Opportunity',
-            description: aiData.recommendations?.[0] || 'Focus on developing high-demand skills in your field',
+            description: (aiData as any).recommendations?.[0] || 'Focus on developing high-demand skills in your field',
             confidence_score: 0.85,
             priority: 1,
             metadata: { analysis: aiData }
@@ -138,7 +138,7 @@ export function AIRecommendationEngine({
           {
             recommendation_type: 'career_path',
             title: 'Career Path Guidance',
-            description: aiData.next_steps?.[0] || 'Consider advancing to the next level in your career',
+            description: (aiData as any).next_steps?.[0] || 'Consider advancing to the next level in your career',
             confidence_score: 0.8,
             priority: 2,
             metadata: { analysis: aiData }

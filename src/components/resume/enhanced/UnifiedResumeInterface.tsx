@@ -38,6 +38,7 @@ import { exportResumeToDocx } from '@/utils/docxExport';
 import type { ResumeJSON } from '@/hooks/useResumeParser';
 import { RazorpayScript } from '@/components/RazorpayScript';
 import { editorToEnhanced, enhancedToEditor } from '@/utils/resumeAdapters';
+import { enhancedToCore } from '@/utils/resume-adapters';
 
 interface UnifiedResumeInterfaceProps {
   mode: 'edit' | 'create';
@@ -107,8 +108,10 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
   const handleAIEnhancement = async (sectionType?: string) => {
     try {
       setIsOptimizing(true);
-      const result = await enhanceResume(enhancedData, {
-        sectionType: sectionType as any,
+      const enhancedData = editorToEnhanced(editorData);
+      const coreData = enhancedToCore(enhancedData);
+      const result = await enhanceResume(coreData, {
+        sections: sectionType ? [sectionType] : undefined,
         enhancementType: 'professional'
       });
 

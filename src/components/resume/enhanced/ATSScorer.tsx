@@ -32,10 +32,11 @@ export const ATSScorer: React.FC<ATSScorerProps> = ({ resumeContent, onScoreUpda
       const result = await optimizeForATS(resumeContent, jobDescription);
       
       if (result.success && result.data) {
-        const { score, feedback: analysisFeedback } = result.data;
-        setAtsScore(score || 0);
+        const score = result.data.ats_score?.current || 0;
+        const analysisFeedback = result.data.ats_score;
+        setAtsScore(score);
         setFeedback(analysisFeedback);
-        onScoreUpdate?.(score || 0, analysisFeedback);
+        onScoreUpdate?.(score, analysisFeedback);
         toast.success('ATS analysis completed!');
       } else {
         toast.error('Failed to analyze resume');

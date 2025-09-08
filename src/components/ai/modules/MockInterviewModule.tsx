@@ -56,9 +56,15 @@ export const MockInterviewModule: React.FC<MockInterviewModuleProps> = ({ onResu
     }
 
     try {
+      const mockResumeData = {
+        personalInfo: { fullName: 'Mock User', email: 'mock@test.com', phone: '123-456-7890', location: 'Test City', summary: 'Mock user for interview prep' },
+        experience: [], education: [], skills: [],
+        settings: { templateId: 'modern', colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' as const, sectionOrder: [] },
+        metadata: { title: 'Mock Resume', version: 1 }
+      };
       const interviewData = await prepareForInterview(
-        { title: role, description: `${role} position with ${experience} experience level` },
-        userProfile || { name: 'User', skills: [] }
+        mockResumeData,
+        { title: role, company: 'Test Company', description: `${role} position with ${experience} experience level` }
       );
 
       if (interviewData.success) {

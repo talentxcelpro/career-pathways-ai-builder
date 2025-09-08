@@ -106,16 +106,22 @@ const AISystemTester: React.FC = () => {
       switch (toolType) {
         case 'enhance':
           result = await enhanceResume({
-            summary: 'Software developer with 3 years experience',
-            experience: 'Built web applications using modern frameworks',
-            skills: 'JavaScript, React, Node.js, MongoDB',
-            education: 'Bachelor of Science in Computer Science'
+            personalInfo: { fullName: 'Test User', email: 'test@test.com', phone: '123-456-7890', location: 'Test City', summary: 'Software developer with 3 years experience' },
+            experience: [{ id: '1', title: 'Developer', company: 'Test Co', location: 'Test City', startDate: '2021-01', endDate: '', current: true, description: 'Built web applications using modern frameworks', achievements: [], technologies: ['JavaScript', 'React'] }],
+            skills: [{ id: '1', name: 'JavaScript', level: 'advanced' as const, category: 'technical' as const }, { id: '2', name: 'React', level: 'advanced' as const, category: 'technical' as const }],
+            education: [{ id: '1', degree: 'Bachelor of Science in Computer Science', institution: 'Test University', location: 'Test City', startDate: '2017-09', endDate: '2021-05' }],
+            settings: { templateId: 'modern', colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' as const, sectionOrder: [] },
+            metadata: { title: 'Test Resume', version: 1 }
           });
           break;
         case 'optimize':
           result = await optimizeForATS({
-            summary: 'Software developer',
-            skills: 'JavaScript, React'
+            personalInfo: { fullName: 'Test User', email: 'test@test.com', phone: '123-456-7890', location: 'Test City', summary: 'Software developer' },
+            experience: [],
+            education: [],
+            skills: [{ id: '1', name: 'JavaScript', level: 'advanced' as const, category: 'technical' as const }, { id: '2', name: 'React', level: 'advanced' as const, category: 'technical' as const }],
+            settings: { templateId: 'modern', colorScheme: 'blue', fontFamily: 'Inter', fontSize: 14, spacing: 'normal' as const, sectionOrder: [] },
+            metadata: { title: 'Test Resume', version: 1 }
           }, 'Looking for React developer with strong JavaScript skills');
           break;
         case 'career':
