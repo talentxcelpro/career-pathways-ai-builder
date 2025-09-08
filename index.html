@@ -103,9 +103,19 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration (disabled in Lovable preview to avoid stale cache) -->
     <script>
-      if ('serviceWorker' in navigator) {
+      (function(){
+        if (!('serviceWorker' in navigator)) return;
+        const host = location.hostname;
+        const isPreview = host.includes('lovable.app') || host.includes('sandbox.lovable.dev') || host.includes('id-preview');
+        if (isPreview) {
+          // Ensure any existing SW is unregistered to prevent stale assets
+          navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+          if ('caches' in window) caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+          console.log('SW disabled in preview');
+          return;
+        }
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
@@ -115,7 +125,7 @@
               console.log('SW registration failed: ', registrationError);
             });
         });
-      }
+      })();
     </script>
   </body>
 </html>
