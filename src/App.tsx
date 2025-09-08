@@ -48,6 +48,7 @@ import PublicJobSearch from './pages/tools/PublicJobSearch';
 import PublicMarketInsights from './pages/tools/PublicMarketInsights';
 import PublicInterviewPrep from './pages/tools/PublicInterviewPrep';
 import { ResumeEditorPage as ResumeEdit } from './pages/resume/ResumeEditorPage';
+import ResumeBuilderV2 from './pages/resume/ResumeBuilderV2';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import MobileReelsPage from './pages/MobileReelsPage';
 import { MobilePassport } from './pages/mobile/MobilePassport';
@@ -229,9 +230,10 @@ const App = () => {
                          <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                           <Route path="/mobile/reels" element={<ProtectedRoute><MobileReelsPage /></ProtectedRoute>} />
                            <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />
-                      <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
-                      <Route path="/resume/new" element={<ResumeNew />} />
-                      <Route path="/resume/edit/:id" element={<ResumeEdit />} />
+                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                       <Route path="/resume/new" element={<ResumeNew />} />
+                       <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
+                       <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
                        <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />

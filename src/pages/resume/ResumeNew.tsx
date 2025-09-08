@@ -59,15 +59,14 @@ const ResumeNew: React.FC = () => {
 
           {/* Action Buttons */}
           <div className="flex gap-4 mb-8">
-            <AuthDialog>
-              <Button 
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium rounded-lg"
-              >
-                <FileText className="h-5 w-5 mr-2" />
-                Start from Scratch
-              </Button>
-            </AuthDialog>
+            <Button 
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium rounded-lg"
+              onClick={() => window.location.href = '/resume/builder'}
+            >
+              <FileText className="h-5 w-5 mr-2" />
+              Start from Scratch
+            </Button>
             
             <Button 
               variant="outline"
@@ -94,15 +93,14 @@ const ResumeNew: React.FC = () => {
                   <h3 className="font-semibold text-slate-900">{template.name}</h3>
                   <p className="text-sm text-slate-600">{template.category}</p>
                   
-                  <AuthDialog>
-                    <Button 
-                      variant="outline"
-                      size="sm"
-                      className="w-full border-slate-300 text-slate-700 hover:bg-white group-hover:bg-slate-50"
-                    >
-                      Use Template
-                    </Button>
-                  </AuthDialog>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-slate-300 text-slate-700 hover:bg-white group-hover:bg-slate-50"
+                    onClick={() => window.location.href = '/resume/builder'}
+                  >
+                    Use Template
+                  </Button>
                 </div>
               </div>
             ))}
