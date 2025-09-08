@@ -97,19 +97,19 @@ const AdvancedAIHub: React.FC = () => {
           </TabsList>
           
           <TabsContent value="analytics" className="mt-6">
-            <PredictiveCareerAnalytics />
+            <EnhancedCareerAnalytics />
           </TabsContent>
           
           <TabsContent value="matching" className="mt-6">
-            <AdvancedAIJobMatching />
+            <IndustryBenchmarking />
           </TabsContent>
           
           <TabsContent value="coach" className="mt-6">
-            <IntelligentCareerCoach />
+            <CareerCredibilityScore />
           </TabsContent>
           
           <TabsContent value="intelligence" className="mt-6">
-            <AIMarketIntelligence />
+            <NetworkingIntelligence />
           </TabsContent>
         </Tabs>
 
