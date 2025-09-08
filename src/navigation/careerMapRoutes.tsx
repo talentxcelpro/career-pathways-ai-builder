@@ -13,8 +13,17 @@ import EnhancedCareerAnalytics from "../components/ai/EnhancedCareerAnalytics";
 import IndustryBenchmarking from "../components/ai/IndustryBenchmarking";
 import CareerCredibilityScore from "../components/ai/CareerCredibilityScore";
 import NetworkingIntelligence from "../components/ai/NetworkingIntelligence";
+import ComprehensiveCareerIntelligence from "../pages/ComprehensiveCareerIntelligence";
 
 export const careerMapRoutes = [
+  {
+    title: "Comprehensive Career Intelligence",
+    to: "/career-map/comprehensive-intelligence",
+    icon: <Compass className="h-4 w-4" />,
+    page: <ComprehensiveCareerIntelligence />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
   {
     title: "Career Map",
     to: "/career-map",
