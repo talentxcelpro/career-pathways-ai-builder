@@ -7,6 +7,7 @@ import IndustryBenchmarking from '@/components/ai/IndustryBenchmarking';
 import CareerCredibilityScore from '@/components/ai/CareerCredibilityScore';
 import NetworkingIntelligence from '@/components/ai/NetworkingIntelligence';
 import AICareerCoach from '@/components/ai/AICareerCoach';
+import VoiceCareerCoach from '@/components/ai/VoiceCareerCoach';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const AdvancedAIHub: React.FC = () => {
@@ -74,26 +75,31 @@ const AdvancedAIHub: React.FC = () => {
 
         {/* AI Tools Tabs */}
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              <span className="hidden md:inline">Predictive Analytics</span>
-              <span className="md:hidden">Analytics</span>
+              <span className="hidden md:inline">Analytics</span>
+              <span className="md:hidden">📊</span>
             </TabsTrigger>
             <TabsTrigger value="matching" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
-              <span className="hidden md:inline">Job Matching</span>
-              <span className="md:hidden">Matching</span>
+              <span className="hidden md:inline">Matching</span>
+              <span className="md:hidden">🎯</span>
             </TabsTrigger>
             <TabsTrigger value="coach" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
-              <span className="hidden md:inline">AI Coach</span>
-              <span className="md:hidden">Coach</span>
+              <span className="hidden md:inline">Text Chat</span>
+              <span className="md:hidden">💬</span>
+            </TabsTrigger>
+            <TabsTrigger value="voice" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden md:inline">Voice Chat</span>
+              <span className="md:hidden">🎤</span>
             </TabsTrigger>
             <TabsTrigger value="intelligence" className="flex items-center gap-2">
               <Globe className="h-4 w-4" />
-              <span className="hidden md:inline">Market Intel</span>
-              <span className="md:hidden">Intel</span>
+              <span className="hidden md:inline">Intel</span>
+              <span className="md:hidden">🌐</span>
             </TabsTrigger>
           </TabsList>
           
@@ -107,6 +113,10 @@ const AdvancedAIHub: React.FC = () => {
           
           <TabsContent value="coach" className="mt-6">
             <AICareerCoach />
+          </TabsContent>
+          
+          <TabsContent value="voice" className="mt-6">
+            <VoiceCareerCoach />
           </TabsContent>
           
           <TabsContent value="intelligence" className="mt-6">
