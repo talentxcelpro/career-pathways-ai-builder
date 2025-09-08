@@ -2,7 +2,7 @@
 import Marketplace from "../pages/Marketplace";
 import ServiceDetail from "../pages/marketplace/ServiceDetail";
 import PostService from "../pages/marketplace/PostService";
-import LearningHub from "../pages/LearningHub";
+import LearningHub from "../pages/learning/LearningHub";
 import ServicesMarketplace from "../pages/marketplace/ServicesMarketplace";
 import ServicesIntegration from "../pages/marketplace/ServicesIntegration";
 import TestingOptimization from "../pages/marketplace/TestingOptimization";
@@ -55,8 +55,8 @@ export const marketplaceRoutes = [
     title: "Learning Hub",
     to: "/learning",
     page: <LearningHub />,
-    isPublic: false,
-    requiresAdminAccess: true,
+    isPublic: true,
+    requiresAdminAccess: false,
   },
   {
     title: "Services Integration",
