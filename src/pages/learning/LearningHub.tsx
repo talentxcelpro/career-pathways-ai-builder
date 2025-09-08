@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// Debug: identify which LearningHub renders
+console.info('[LearningHub V2] Component file: src/pages/learning/LearningHub.tsx mounted');
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
