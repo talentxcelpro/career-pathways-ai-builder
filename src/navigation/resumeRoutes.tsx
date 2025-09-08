@@ -18,6 +18,7 @@ import CompanyDashboard from "@/pages/companies/CompanyDashboard";
 import { AnalyticsDashboard } from "@/components/resume/AnalyticsDashboard";
 import LearningHub from "@/pages/LearningHub";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import AIEnhancement from "@/pages/resume/AIEnhancement";
 
 export const resumeRoutes = [
   {
@@ -83,6 +84,14 @@ export const resumeRoutes = [
     page: <CareerIntelligence />,
     requiresAuth: false,
     isPublic: true,
+  },
+  {
+    title: "AI Enhancement",
+    to: "/resume/ai-enhancement",
+    icon: <Sparkles className="h-4 w-4" />,
+    page: <AIEnhancement />,
+    requiresAuth: true,
+    isPublic: false,
   },
   {
     title: "ATS Checker",

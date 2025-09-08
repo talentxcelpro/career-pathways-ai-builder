@@ -234,7 +234,8 @@ const App = () => {
                        <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                        <Route path="/resume/new" element={<ResumeNew />} />
                        <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
-                       <Route path="/resume/edit/:id" element={<ResumeEdit />} />
+                        <Route path="/resume/edit/:id" element={<ResumeEdit />} />
+                        <Route path="/resume/ai-enhancement" element={<ProtectedRoute><AIEnhancement /></ProtectedRoute>} />
                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
                        <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
