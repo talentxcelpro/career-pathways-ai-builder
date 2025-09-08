@@ -1,252 +1,407 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   BookOpen, 
   Target, 
   Award, 
+  Flame, 
   TrendingUp, 
-  Users, 
-  Brain,
-  Briefcase,
-  BarChart3,
+  BarChart3, 
+  Lightbulb,
+  Users,
+  CheckCircle,
   Clock,
   Star,
   ArrowRight,
-  Play,
-  Zap
-} from 'lucide-react';
-import { LearningHeader } from '@/components/learning/LearningHeader';
-import { useLearningData } from '@/hooks/useLearningData';
-import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
+  Play
+} from "lucide-react";
 import { updateMetaTags } from '@/utils/metaTags';
 
-const LearningHub = () => {
-  const { courses, learningPaths, isLoading } = useLearningData();
-  const { displayName, streakDays } = useCurrentUserProfile();
-
+export default function LearningHub() {
   React.useEffect(() => {
     updateMetaTags({
       title: 'Learning Hub | TalentXcel',
-      description: 'Your comprehensive learning platform with courses, paths, and employment bridge features.'
+      description: 'Discover courses, paths and analytics. Start learning with TalentXcel.'
     });
   }, []);
 
-  const quickStats = [
-    { label: 'Available Courses', value: courses?.length || 0, icon: BookOpen, color: 'text-blue-600' },
-    { label: 'Learning Paths', value: learningPaths?.length || 0, icon: Target, color: 'text-green-600' },
-    { label: 'Your Streak', value: `${streakDays} days`, icon: Clock, color: 'text-orange-600' },
-    { label: 'Skills Available', value: '150+', icon: Star, color: 'text-purple-600' },
-  ];
-
-  const mainFeatures = [
+  const stats = [
     {
-      title: 'Browse All Courses',
-      description: 'Explore our comprehensive course catalog with advanced filtering and search',
-      icon: BookOpen,
-      color: 'bg-blue-50 text-blue-600',
-      href: '/learning/courses',
-      badge: `${courses?.length || 0} courses`
+      title: "Available Courses",
+      value: "10",
+      description: "Expert-designed courses"
     },
     {
-      title: 'Learning Paths',
-      description: 'Structured learning journeys for specific career goals and skills',
-      icon: Target,
-      color: 'bg-green-50 text-green-600',
-      href: '/learning/paths',
-      badge: `${learningPaths?.length || 0} paths`
+      title: "Learning Paths",
+      value: "0",
+      description: "Structured journeys"
     },
     {
-      title: 'My Learning',
-      description: 'Track your progress, continue courses, and view achievements',
-      icon: Award,
-      color: 'bg-purple-50 text-purple-600',
-      href: '/learning/my-courses',
-      badge: 'Your progress'
+      title: "Your Streak",
+      value: "0 days",
+      description: "Keep learning daily"
     },
     {
-      title: 'Employment Bridge',
-      description: 'Job-focused courses and market trends to boost your career prospects',
-      icon: Briefcase,
-      color: 'bg-orange-50 text-orange-600',
-      href: '/learning/employment-bridge',
-      badge: 'Career focused'
-    },
-    {
-      title: 'Quick Learning',
-      description: 'Bite-sized lessons, quizzes, and flashcards for learning on the go',
-      icon: Zap,
-      color: 'bg-yellow-50 text-yellow-600',
-      href: '/learning/quick-learn',
-      badge: 'Microlearning'
-    },
-    {
-      title: 'Learning Analytics',
-      description: 'Detailed insights into your learning progress and skill development',
-      icon: BarChart3,
-      color: 'bg-indigo-50 text-indigo-600',
-      href: '/learning/analytics',
-      badge: 'Data insights'
+      title: "Skills Available",
+      value: "150+",
+      description: "Master new abilities"
     }
   ];
 
-  const popularCourses = courses?.slice(0, 3) || [];
+  const learningFeatures = [
+    {
+      icon: BookOpen,
+      title: "10 courses",
+      subtitle: "Browse All Courses",
+      description: "Explore our comprehensive course catalog with advanced filtering and search",
+      link: "/learning/courses",
+      color: "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800/50"
+    },
+    {
+      icon: Target,
+      title: "0 paths",
+      subtitle: "Learning Paths",
+      description: "Structured learning journeys for specific career goals and skills",
+      link: "/learning/paths",
+      color: "bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800/50"
+    },
+    {
+      icon: TrendingUp,
+      title: "Your progress",
+      subtitle: "My Learning",
+      description: "Track your progress, continue courses, and view achievements",
+      link: "/learning/my-courses",
+      color: "bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800/50"
+    },
+    {
+      icon: Award,
+      title: "Career focused",
+      subtitle: "Employment Bridge",
+      description: "Job-focused courses and market trends to boost your career prospects",
+      link: "/learning/employment-bridge",
+      color: "bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800/50"
+    },
+    {
+      icon: Lightbulb,
+      title: "Microlearning",
+      subtitle: "Quick Learning",
+      description: "Bite-sized lessons, quizzes, and flashcards for learning on the go",
+      link: "/learning/quick-learn",
+      color: "bg-yellow-50 border-yellow-200 dark:bg-yellow-950/20 dark:border-yellow-800/50"
+    },
+    {
+      icon: BarChart3,
+      title: "Data insights",
+      subtitle: "Learning Analytics",
+      description: "Detailed insights into your learning progress and skill development",
+      link: "/learning/analytics",
+      color: "bg-indigo-50 border-indigo-200 dark:bg-indigo-950/20 dark:border-indigo-800/50"
+    }
+  ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary"></div>
-      </div>
-    );
-  }
+  const careerPaths = [
+    {
+      icon: BarChart3,
+      title: "Data Science Career Path",
+      description: "Master data analysis, visualization, and machine learning",
+      color: "text-blue-600"
+    },
+    {
+      icon: Lightbulb,
+      title: "AI & Machine Learning",
+      description: "Deep dive into artificial intelligence and ML algorithms",
+      color: "text-purple-600"
+    },
+    {
+      icon: Users,
+      title: "Business & Leadership",
+      description: "Develop leadership skills and business acumen",
+      color: "text-green-600"
+    }
+  ];
+
+  const popularCourses = [
+    {
+      title: "Full Stack Web Development with React & Node.js",
+      description: "Master modern web development with React, Node.js, Express, and MongoDB. Build real-world projects and deploy them to production.",
+      level: "intermediate",
+      students: 1247,
+      duration: "120h",
+      rating: 4.8
+    },
+    {
+      title: "Data Science & Machine Learning with Python",
+      description: "Comprehensive course covering data analysis, visualization, machine learning algorithms, and AI implementation using Python.",
+      level: "intermediate",
+      students: 892,
+      duration: "100h",
+      rating: 4.7
+    },
+    {
+      title: "Digital Marketing Mastery",
+      description: "Complete digital marketing course covering SEO, social media, content marketing, PPC, email marketing, and analytics.",
+      level: "beginner",
+      students: 1563,
+      duration: "80h",
+      rating: 4.9
+    }
+  ];
+
+  const benefits = [
+    "AI-powered career matching",
+    "Earn industry-recognized certificates",
+    "Learn at your own pace",
+    "Job-ready skills for the future"
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LearningHeader />
-        
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to Your Learning Journey
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover courses, master new skills, and advance your career with our comprehensive learning platform
-          </p>
+      {/* Hero Section */}
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+          <div className="space-y-6">
+            <h1 className="text-4xl lg:text-5xl font-bold text-foreground">
+              Welcome back,<br />TalentXcel Pro!
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Continue your journey to master new skills and advance your career.
+            </p>
+            <div className="flex gap-4">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Start Learning Now
+              </Button>
+              <Link to="/learning/courses">
+                <Button variant="outline" size="lg">
+                  Explore All Courses
+                </Button>
+              </Link>
+            </div>
+            
+            {/* Streak Section */}
+            <div className="space-y-3 pt-6">
+              <div className="flex items-center gap-2">
+                <Flame className="h-5 w-5 text-orange-500" />
+                <span className="text-sm text-muted-foreground">You're on a 0-0-day streak</span>
+              </div>
+              <Progress value={0} className="h-2" />
+              <p className="text-sm text-muted-foreground">
+                Complete today's lesson to grow your streak!
+              </p>
+            </div>
+          </div>
+          
+          {/* Illustration placeholder */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-md h-80 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-2xl flex items-center justify-center border border-blue-200 dark:border-blue-800">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <Lightbulb className="h-8 w-8 text-white" />
+                </div>
+                <p className="text-blue-700 dark:text-blue-300 font-medium">Learning Illustration</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {quickStats.map((stat, index) => {
-            const IconComponent = stat.icon;
-            return (
-              <Card key={index} className="text-center">
-                <CardContent className="pt-6">
-                  <IconComponent className={`h-8 w-8 mx-auto mb-2 ${stat.color}`} />
-                  <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <Link to="/learning/my-courses">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">My Courses</h3>
+                <p className="text-sm text-muted-foreground">Resume</p>
+              </CardContent>
+            </Card>
+          </Link>
+          
+          <Link to="/learning/paths">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Target className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">Learning Paths</h3>
+                <p className="text-sm text-muted-foreground">Browse</p>
+              </CardContent>
+            </Card>
+          </Link>
+          
+          <Link to="/learning/certificates">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Award className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-semibold mb-1">Certificates</h3>
+                <p className="text-sm text-muted-foreground">View</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
-        {/* Main Features Grid */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Explore Learning Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mainFeatures.map((feature, index) => {
-              const IconComponent = feature.icon;
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {stats.map((stat, index) => (
+            <Card key={index}>
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
+                <h3 className="font-semibold mb-1">{stat.title}</h3>
+                <p className="text-sm text-muted-foreground">{stat.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Career Paths Section */}
+        <div className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Choose a path. Advance your future.</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {careerPaths.map((path, index) => {
+              const IconComponent = path.icon;
               return (
-                <Card key={index} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                  <Link to={feature.href}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className={`p-3 rounded-lg ${feature.color}`}>
-                          <IconComponent className="h-6 w-6" />
-                        </div>
-                        <Badge variant="secondary">{feature.badge}</Badge>
-                      </div>
-                      <CardTitle className="group-hover:text-blue-600 transition-colors">
-                        {feature.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 mb-4">{feature.description}</p>
-                      <div className="flex items-center text-blue-600 font-medium">
-                        <span>Explore</span>
-                        <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </CardContent>
-                  </Link>
+                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                  <CardContent className="p-8">
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-lg mx-auto mb-6 flex items-center justify-center">
+                      <IconComponent className={`h-8 w-8 ${path.color}`} />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">{path.title}</h3>
+                    <p className="text-muted-foreground mb-6">{path.description}</p>
+                    <Button className="w-full">
+                      {index === 1 ? "Browse" : "Start Path"}
+                    </Button>
+                  </CardContent>
                 </Card>
               );
             })}
           </div>
         </div>
 
-        {/* Popular Courses Preview */}
-        {popularCourses.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Popular Courses</h2>
-              <Link to="/learning/courses">
-                <Button variant="outline">
-                  View All Courses
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {popularCourses.map((course) => (
-                <Card key={course.id} className="group hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="secondary">{course.difficulty_level}</Badge>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Users className="h-4 w-4 mr-1" />
-                        {course.enrolled_count}
-                      </div>
-                    </div>
-                    <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">
-                      {course.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {course.duration_hours}h
-                      </div>
-                      <Link to={`/learning/courses/${course.id}`}>
-                        <Button size="sm">
-                          <Play className="h-4 w-4 mr-1" />
-                          View Course
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+        {/* Explore Learning Features */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold mb-2">Explore Learning Features</h2>
           </div>
-        )}
-
-        {/* Quick Actions */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Start Learning?</h2>
-          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Choose your learning style and begin your journey towards mastering new skills and advancing your career.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/learning/courses">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                <BookOpen className="h-5 w-5 mr-2" />
-                Browse Courses
-              </Button>
-            </Link>
-            <Link to="/learning/paths">
-              <Button size="lg" variant="outline">
-                <Target className="h-5 w-5 mr-2" />
-                Explore Paths
-              </Button>
-            </Link>
-            <Link to="/learning/employment-bridge">
-              <Button size="lg" variant="outline">
-                <Briefcase className="h-5 w-5 mr-2" />
-                Career Focus
-              </Button>
-            </Link>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {learningFeatures.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <Link key={index} to={feature.link}>
+                  <Card className={`hover:shadow-lg transition-shadow cursor-pointer h-full ${feature.color}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <IconComponent className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                        <div className="flex-1">
+                          <h3 className="font-semibold mb-1">{feature.title}</h3>
+                          <p className="text-sm font-medium text-muted-foreground mb-2">{feature.subtitle}</p>
+                          <p className="text-sm text-muted-foreground">{feature.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button variant="outline" size="sm">
+                          Explore
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </div>
+
+        {/* Popular Courses */}
+        <div className="mb-16">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold">Popular Courses</h2>
+            <Link to="/learning/courses">
+              <Button variant="outline">View All Courses</Button>
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {popularCourses.map((course, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <Badge variant="secondary">{course.level}</Badge>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      <span className="text-sm">{course.rating}</span>
+                    </div>
+                  </div>
+                  
+                  <h3 className="font-semibold mb-3 line-clamp-2">{course.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{course.description}</p>
+                  
+                  <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      {course.students}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {course.duration}
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full">
+                    <Play className="h-4 w-4 mr-2" />
+                    View Course
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Why Learn Section */}
+        <div className="mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl font-bold mb-6">Why learn with TalentXcel?</h2>
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                    <span>{benefit}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
+              <CardContent className="p-8">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-semibold">A</span>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-2">"TalentXcel helped me land my dream job in 3 months!"</p>
+                    <p className="text-sm text-muted-foreground">Ananya, Data Analyst</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">Your career transformation starts today.</h2>
+            <div className="flex justify-center gap-4">
+              <Button variant="secondary" size="lg">
+                Start Learning for Free
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-};
-
-export default LearningHub;
+}
