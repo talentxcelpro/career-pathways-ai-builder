@@ -24,9 +24,20 @@ const getYouTubeVideoId = (url: string): string | null => {
   return null;
 };
 
-// Helper function to get YouTube thumbnail URL
-const getYouTubeThumbnail = (videoId: string, quality: 'default' | 'medium' | 'high' | 'maxres' = 'high'): string => {
-  return `https://img.youtube.com/vi/${videoId}/${quality}default.jpg`;
+const getYouTubeThumbnail = (
+  videoId: string,
+  quality: 'default' | 'mq' | 'hq' | 'sd' | 'maxres' = 'hq'
+): string => {
+  const suffixMap = {
+    default: 'default',
+    mq: 'mqdefault',
+    hq: 'hqdefault',
+    sd: 'sddefault',
+    maxres: 'maxresdefault',
+  } as const;
+  const suffix = suffixMap[quality] || 'hqdefault';
+  // Use i.ytimg.com (recommended) and a valid filename pattern
+  return `https://i.ytimg.com/vi/${videoId}/${suffix}.jpg`;
 };
 
 // Helper function to extract video title from YouTube (simplified)
@@ -63,7 +74,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
         // Check if it's a YouTube URL
         const youtubeId = getYouTubeVideoId(url);
         if (youtubeId) {
-          const thumbnail = getYouTubeThumbnail(youtubeId, 'high');
+          const thumbnail = getYouTubeThumbnail(youtubeId, 'hq');
           setThumbnailUrl(thumbnail);
           if (showTitle) {
             const videoTitle = await getVideoTitle(url);
@@ -124,15 +135,20 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
     }
   }, [url, showTitle]);
 
-  const buildYouTubeEmbedUrl = (videoId: string) => {
-    const params = new URLSearchParams({
-      rel: '0',
-      modestbranding: '1',
-      playsinline: '1',
-      autoplay: '1'
-    });
-    return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
-  };
+const buildYouTubeEmbedUrl = (videoId: string) => {
+  const params = new URLSearchParams({
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1',
+    autoplay: '1',
+    mute: '1',
+    enablejsapi: '1',
+  });
+  if (typeof window !== 'undefined') {
+    params.set('origin', window.location.origin);
+  }
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+};
 
   const handleClick = () => {
     if (onClick) {
