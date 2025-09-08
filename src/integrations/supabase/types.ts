@@ -10805,6 +10805,45 @@ export type Database = {
           },
         ]
       }
+      export_preferences: {
+        Row: {
+          auto_optimize: boolean | null
+          created_at: string
+          custom_watermark: string | null
+          default_format: string | null
+          default_template: string | null
+          export_quality: string | null
+          id: string
+          include_watermark: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_optimize?: boolean | null
+          created_at?: string
+          custom_watermark?: string | null
+          default_format?: string | null
+          default_template?: string | null
+          export_quality?: string | null
+          id?: string
+          include_watermark?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_optimize?: boolean | null
+          created_at?: string
+          custom_watermark?: string | null
+          default_format?: string | null
+          default_template?: string | null
+          export_quality?: string | null
+          id?: string
+          include_watermark?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       external_job_redirects: {
         Row: {
           created_at: string | null
@@ -18687,6 +18726,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resume_shares: {
+        Row: {
+          access_level: string
+          access_password: string | null
+          allowed_emails: string[] | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          last_accessed_at: string | null
+          resume_id: string | null
+          share_token: string
+          share_type: string
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          access_level?: string
+          access_password?: string | null
+          allowed_emails?: string[] | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          resume_id?: string | null
+          share_token: string
+          share_type: string
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          access_level?: string
+          access_password?: string | null
+          allowed_emails?: string[] | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          resume_id?: string | null
+          share_token?: string
+          share_type?: string
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
       }
       resume_skills: {
         Row: {
