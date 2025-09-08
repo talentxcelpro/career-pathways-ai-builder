@@ -14,11 +14,17 @@ import { SearchFilters } from '@/services/aiSearchService';
 const Learning = () => {
   React.useEffect(() => {
     updateMetaTags({
-      title: 'Learning Dashboard | TalentXcel',
-      description: 'Personalized courses, learning paths, progress, and community.'
+      title: 'Learning Hub | TalentXcel',
+      description: 'Your comprehensive learning platform with courses, paths, and employment bridge features.'
     });
   }, []);
-  return <LearningDashboard />;
+  
+  // Redirect to the new learning hub
+  React.useEffect(() => {
+    window.location.href = '/learning';
+  }, []);
+
+  return null;
 };
 
 export default Learning;
