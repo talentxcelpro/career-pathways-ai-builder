@@ -70,20 +70,32 @@ export const useGlobalSearch = ({
       // Search users
       const { data: users } = await supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url, username')
+        .select('id, full_name, title, profile_picture_url, username, slug')
         .or(`full_name.ilike.%${debouncedSearchTerm}%,title.ilike.%${debouncedSearchTerm}%,username.ilike.%${debouncedSearchTerm}%`)
         .limit(5);
 
       if (users) {
-        results.push(...users.map(user => ({
-          type: 'user' as const,
-          id: user.id,
-          title: user.full_name || 'Unknown User',
-          subtitle: user.title || 'Professional',
-          avatar: user.profile_picture_url,
-          url: `/profile/${user.username || user.id}`,
-          relevance: 1
-        })));
+        results.push(
+          ...users.map((user: any) => {
+            const clean = (v?: string | null) => (v && v.startsWith('@') ? v.slice(1) : v);
+            const username = clean(user.username);
+            const slug = clean(user.slug);
+            const profilePath = username
+              ? `/${username}`
+              : slug
+              ? `/${slug}`
+              : `/user/${user.id}`; // Fallback to legacy redirect route by ID
+            return {
+              type: 'user' as const,
+              id: user.id,
+              title: user.full_name || 'Unknown User',
+              subtitle: user.title || 'Professional',
+              avatar: user.profile_picture_url,
+              url: profilePath,
+              relevance: 1,
+            } as SearchResult;
+          })
+        );
       }
 
       // Search hashtags if term starts with #
