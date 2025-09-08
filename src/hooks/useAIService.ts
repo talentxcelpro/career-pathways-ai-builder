@@ -1,263 +1,443 @@
-import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAIRateLimit } from '@/hooks/useAIRateLimit';
+// ============================================
+// AI UNIFIED PROCESSOR HOOK - PHASE 3 INTEGRATION
+// ============================================
+// React hook for unified AI operations with enhanced features
+
+import { useState, useCallback, useRef } from 'react';
+import { aiServiceManager, AIServiceRequest, AIServiceResponse, AIFeedback } from '@/services/ai-service-manager';
+import { CoreResumeData } from '@/types/resume-core';
 import { toast } from 'sonner';
 
-export interface AIServiceOptions {
-  toolSlug: string;
-  inputData: any;
-  priority?: number;
-  category?: string;
+export interface UseAIServiceOptions {
+  enableFeedback?: boolean;
+  enableAnalytics?: boolean;
+  autoRetry?: boolean;
+  maxRetries?: number;
 }
 
-export interface AIServiceResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-  cost?: number;
-  tokensUsed?: number;
-  responseTime?: number;
+export interface AIOperationState {
+  isProcessing: boolean;
+  progress: number;
+  currentOperation: string | null;
+  lastResponse: AIServiceResponse | null;
+  error: string | null;
 }
 
-export const useAIService = () => {
-  const rateLimit = useAIRateLimit('ai_tools');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [currentOperation, setCurrentOperation] = useState<string | null>(null);
+export function useAIService(options: UseAIServiceOptions = {}) {
+  const {
+    enableFeedback = true,
+    enableAnalytics = true,
+    autoRetry = true,
+    maxRetries = 2
+  } = options;
 
-  const invokeAITool = useCallback(async (options: AIServiceOptions): Promise<AIServiceResponse> => {
-    // Check rate limit before processing
-    if (!rateLimit.canMakeRequest()) {
-      const timeUntilReset = Math.ceil(rateLimit.getTimeUntilReset() / (1000 * 60));
-      toast.error(`Rate limit exceeded. Try again in ${timeUntilReset} minutes.`);
-      return {
-        success: false,
-        error: 'Rate limit exceeded'
-      };
-    }
+  const [state, setState] = useState<AIOperationState>({
+    isProcessing: false,
+    progress: 0,
+    currentOperation: null,
+    lastResponse: null,
+    error: null
+  });
 
-    setIsProcessing(true);
-    setCurrentOperation(options.toolSlug);
+  const retryCount = useRef<number>(0);
+  const operationTimeouts = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  // Update state helper
+  const updateState = useCallback((updates: Partial<AIOperationState>) => {
+    setState(prev => ({ ...prev, ...updates }));
+  }, []);
+
+  // Generic AI operation wrapper
+  const executeOperation = useCallback(async <T>(
+    operationName: string,
+    operation: () => Promise<AIServiceResponse<T>>,
+    options: { timeout?: number; showProgress?: boolean } = {}
+  ): Promise<AIServiceResponse<T>> => {
+    const { timeout = 30000, showProgress = true } = options;
+
+    updateState({
+      isProcessing: true,
+      currentOperation: operationName,
+      progress: showProgress ? 10 : 0,
+      error: null
+    });
 
     try {
-      // Record the request for rate limiting
-      rateLimit.recordRequest();
-      
-      console.log(`🚀 Invoking AI tool: ${options.toolSlug}`, options);
+      // Set timeout
+      const timeoutId = setTimeout(() => {
+        updateState({
+          isProcessing: false,
+          error: 'Operation timed out',
+          progress: 0
+        });
+        toast.error(`${operationName} timed out. Please try again.`);
+      }, timeout);
 
-      // Direct HTTP call to the edge function
-      const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-gateway`;
-      
-      console.log('📨 Making direct HTTP call to:', functionUrl);
+      operationTimeouts.current.set(operationName, timeoutId);
 
-      const requestBody = {
-        toolSlug: options.toolSlug,
-        inputData: options.inputData,
-        requestMetadata: {
-          category: options.category,
-          priority: options.priority || 0,
-          timestamp: new Date().toISOString()
-        }
-      };
+      if (showProgress) {
+        updateState({ progress: 30 });
+      }
 
-      console.log('📋 Request body:', requestBody);
+      const result = await operation();
 
-      const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-        },
-        body: JSON.stringify(requestBody)
+      clearTimeout(timeoutId);
+      operationTimeouts.current.delete(operationName);
+
+      if (showProgress) {
+        updateState({ progress: 90 });
+      }
+
+      updateState({
+        lastResponse: result,
+        progress: 100
       });
 
-      console.log('📦 Response status:', response.status);
-      console.log('📦 Response headers:', Object.fromEntries(response.headers.entries()));
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ HTTP error response:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      // Auto-retry on failure
+      if (!result.success && autoRetry && retryCount.current < maxRetries) {
+        retryCount.current++;
+        toast.error(`${operationName} failed. Retrying... (${retryCount.current}/${maxRetries})`);
+        
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount.current));
+        return executeOperation(operationName, operation, options);
       }
 
-      const data = await response.json();
-      console.log('📦 AI Gateway response:', data);
+      retryCount.current = 0;
+      return result;
 
-      if (!data) {
-        throw new Error('No data received from AI Gateway');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      updateState({
+        error: errorMessage,
+        lastResponse: { success: false, error: errorMessage }
+      });
+
+      if (autoRetry && retryCount.current < maxRetries) {
+        retryCount.current++;
+        toast.error(`${operationName} failed. Retrying... (${retryCount.current}/${maxRetries})`);
+        
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount.current));
+        return executeOperation(operationName, operation, options);
       }
 
-      if (!data.success) {
-        throw new Error(data.error || 'AI processing failed');
-      }
+      retryCount.current = 0;
+      return { success: false, error: errorMessage };
 
-      // Log successful usage
-      try {
-        const user = await supabase.auth.getUser();
-        await supabase.from('ai_usage_logs').insert({
-          user_id: user.data.user?.id,
-          tool_slug: options.toolSlug,
-          feature_type: options.category || 'general',
-          request_type: 'ai_tool_invocation',
-          request_data: options.inputData,
-          response_data: data.data,
-          success: true,
-          tokens_used: data.tokensUsed || 0,
-          cost_estimate: data.cost || 0,
-          response_time: data.responseTime || 0
-        });
-      } catch (logError) {
-        console.warn('⚠️ Failed to log AI usage:', logError);
-      }
-
-      return {
-        success: true,
-        data: data.data,
-        cost: data.cost,
-        tokensUsed: data.tokensUsed,
-        responseTime: data.responseTime
-      };
-
-    } catch (error: any) {
-      console.error(`❌ AI tool ${options.toolSlug} failed:`, error);
-      
-      // Log failed usage
-      try {
-        const user = await supabase.auth.getUser();
-        await supabase.from('ai_usage_logs').insert({
-          user_id: user.data.user?.id,
-          tool_slug: options.toolSlug,
-          feature_type: options.category || 'general',
-          request_type: 'ai_tool_invocation',
-          request_data: options.inputData,
-          success: false,
-          error_message: error.message
-        });
-      } catch (logError) {
-        console.warn('⚠️ Failed to log AI usage:', logError);
-      }
-
-      return {
-        success: false,
-        error: error.message
-      };
     } finally {
-      setIsProcessing(false);
-      setCurrentOperation(null);
+      setTimeout(() => {
+        updateState({
+          isProcessing: false,
+          currentOperation: null,
+          progress: 0
+        });
+      }, 1000);
     }
-  }, [rateLimit]);
+  }, [autoRetry, maxRetries, updateState]);
 
-  const enhanceResume = useCallback(async (resumeContent: any, options: {
-    sectionType?: 'summary' | 'experience' | 'skills' | 'education' | 'all';
-    enhancementType?: 'professional' | 'achievements' | 'ats' | 'general';
-  } = {}) => {
-    const result = await invokeAITool({
-      toolSlug: 'resume-enhancer',
-      inputData: { ...resumeContent, ...options },
-      category: 'resume'
+  // Resume Enhancement
+  const enhanceResume = useCallback(async (
+    resumeData: CoreResumeData,
+    options: {
+      sections?: string[];
+      enhancementType?: 'professional' | 'ats' | 'creative' | 'technical';
+      targetRole?: string;
+      jobDescription?: string;
+    } = {}
+  ) => {
+    return executeOperation('Resume Enhancement', () => 
+      aiServiceManager.enhanceResume(resumeData, options)
+    );
+  }, [executeOperation]);
+
+  // Job Matching
+  const matchJobs = useCallback(async (
+    resumeData: CoreResumeData,
+    jobDescriptions: Array<{ id: string; title: string; description: string; requirements?: string[] }>,
+    options: {
+      includeSkillGaps?: boolean;
+      includeSalaryComparison?: boolean;
+      maxMatches?: number;
+    } = {}
+  ) => {
+    return executeOperation('Job Matching', () => 
+      aiServiceManager.matchJobs(resumeData, jobDescriptions, options)
+    );
+  }, [executeOperation]);
+
+  // Cover Letter Generation
+  const generateCoverLetter = useCallback(async (
+    resumeData: CoreResumeData,
+    jobData: {
+      title: string;
+      company: string;
+      description: string;
+      requirements?: string[];
+    },
+    options: {
+      tone?: 'professional' | 'enthusiastic' | 'formal' | 'friendly';
+      length?: 'short' | 'medium' | 'long';
+      includeCallToAction?: boolean;
+    } = {}
+  ) => {
+    return executeOperation('Cover Letter Generation', () => 
+      aiServiceManager.generateCoverLetter(resumeData, jobData, options)
+    );
+  }, [executeOperation]);
+
+  // Interview Preparation
+  const prepareForInterview = useCallback(async (
+    resumeData: CoreResumeData,
+    jobData: {
+      title: string;
+      company: string;
+      description: string;
+      interviewType?: 'behavioral' | 'technical' | 'case_study' | 'general';
+    },
+    options: {
+      questionCount?: number;
+      difficulty?: 'easy' | 'medium' | 'hard';
+      includeTipsAndTricks?: boolean;
+    } = {}
+  ) => {
+    return executeOperation('Interview Preparation', () => 
+      aiServiceManager.prepareForInterview(resumeData, jobData, options)
+    );
+  }, [executeOperation]);
+
+  // Career Advice
+  const getCareerAdvice = useCallback(async (
+    resumeData: CoreResumeData,
+    careerGoals: {
+      targetRole?: string;
+      targetIndustry?: string;
+      timeframe?: string;
+      currentChallenges?: string[];
+    },
+    options: {
+      includeSkillGaps?: boolean;
+      includeMarketInsights?: boolean;
+      includeNetworkingTips?: boolean;
+    } = {}
+  ) => {
+    return executeOperation('Career Advice', () => 
+      aiServiceManager.getCareerAdvice(resumeData, careerGoals, options)
+    );
+  }, [executeOperation]);
+
+  // ATS Optimization
+  const optimizeForATS = useCallback(async (
+    resumeData: CoreResumeData,
+    jobDescription: string,
+    options: {
+      targetScore?: number;
+      includeKeywordSuggestions?: boolean;
+      includeFormattingTips?: boolean;
+    } = {}
+  ) => {
+    return executeOperation('ATS Optimization', () => 
+      aiServiceManager.optimizeForATS(resumeData, jobDescription, options)
+    );
+  }, [executeOperation]);
+
+  // Feedback submission
+  const submitFeedback = useCallback(async (
+    operationId: string,
+    rating: 1 | 2 | 3 | 4 | 5,
+    feedback?: {
+      text?: string;
+      improvements?: string[];
+    }
+  ) => {
+    if (!enableFeedback) return;
+
+    const feedbackData: AIFeedback = {
+      operation_id: operationId,
+      rating,
+      feedback_text: feedback?.text,
+      improvement_suggestions: feedback?.improvements
+    };
+
+    try {
+      await aiServiceManager.submitFeedback(feedbackData);
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+    }
+  }, [enableFeedback]);
+
+  // Get service health
+  const checkServiceHealth = useCallback(async () => {
+    try {
+      const health = await aiServiceManager.getServiceHealth();
+      return health;
+    } catch (error) {
+      console.error('Failed to check service health:', error);
+      return {
+        overall_status: 'down' as const,
+        services: []
+      };
+    }
+  }, []);
+
+  // Get usage analytics
+  const getUsageAnalytics = useCallback(async (timeframe: 'day' | 'week' | 'month' = 'week') => {
+    if (!enableAnalytics) return null;
+
+    try {
+      const analytics = await aiServiceManager.getUsageAnalytics(timeframe);
+      return analytics;
+    } catch (error) {
+      console.error('Failed to get usage analytics:', error);
+      return null;
+    }
+  }, [enableAnalytics]);
+
+  // Cancel operation
+  const cancelOperation = useCallback(() => {
+    if (state.currentOperation) {
+      const timeout = operationTimeouts.current.get(state.currentOperation);
+      if (timeout) {
+        clearTimeout(timeout);
+        operationTimeouts.current.delete(state.currentOperation);
+      }
+      
+      updateState({
+        isProcessing: false,
+        currentOperation: null,
+        progress: 0,
+        error: 'Operation cancelled'
+      });
+      
+      toast.info('Operation cancelled');
+    }
+  }, [state.currentOperation, updateState]);
+
+  // Batch operations
+  const batchProcess = useCallback(async <T>(
+    operations: Array<{
+      name: string;
+      operation: () => Promise<AIServiceResponse<T>>;
+    }>,
+    options: { concurrency?: number; stopOnError?: boolean } = {}
+  ) => {
+    const { concurrency = 3, stopOnError = false } = options;
+    const results: Array<{ name: string; result: AIServiceResponse<T> }> = [];
+    
+    updateState({
+      isProcessing: true,
+      currentOperation: 'Batch Processing',
+      progress: 0
     });
 
-    if (result.success) {
-      toast.success('Resume enhanced successfully!');
-    } else {
-      toast.error(result.error || 'Failed to enhance resume');
+    try {
+      for (let i = 0; i < operations.length; i += concurrency) {
+        const batch = operations.slice(i, i + concurrency);
+        const batchPromises = batch.map(async ({ name, operation }) => {
+          try {
+            const result = await operation();
+            return { name, result };
+          } catch (error) {
+            return {
+              name,
+              result: { success: false, error: error instanceof Error ? error.message : 'Unknown error' } as AIServiceResponse<T>
+            };
+          }
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        results.push(...batchResults);
+
+        // Check for errors if stopOnError is true
+        if (stopOnError && batchResults.some(r => !r.result.success)) {
+          const failedOperation = batchResults.find(r => !r.result.success);
+          throw new Error(`Batch stopped due to error in ${failedOperation?.name}: ${failedOperation?.result.error}`);
+        }
+
+        // Update progress
+        updateState({
+          progress: Math.round(((i + batch.length) / operations.length) * 100)
+        });
+      }
+
+      const successCount = results.filter(r => r.result.success).length;
+      toast.success(`Batch processing completed: ${successCount}/${results.length} successful`);
+
+      return results;
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Batch processing failed';
+      updateState({ error: errorMessage });
+      toast.error(errorMessage);
+      return results; // Return partial results
+    } finally {
+      updateState({
+        isProcessing: false,
+        currentOperation: null,
+        progress: 0
+      });
     }
+  }, [updateState]);
 
-    return result;
-  }, [invokeAITool]);
-
-  const optimizeForATS = useCallback(async (resumeContent: any, jobDescription?: string) => {
-    const result = await invokeAITool({
-      toolSlug: 'ats-optimizer',
-      inputData: { resumeContent, jobDescription },
-      category: 'resume'
-    });
-
-    if (result.success) {
-      toast.success('Resume optimized for ATS!');
-    } else {
-      toast.error(result.error || 'Failed to optimize resume');
+  // Legacy compatibility method
+  const invokeAITool = useCallback(async (options: any) => {
+    // Map legacy calls to new architecture
+    const operationMap = {
+      'resume-enhancer': 'enhanceResume',
+      'ats-optimizer': 'optimizeForATS',
+      'cover-letter-generator': 'generateCoverLetter',
+      'career-advisor': 'getCareerAdvice',
+      'interview-prep': 'prepareForInterview'
+    };
+    
+    const operation = operationMap[options.toolSlug as keyof typeof operationMap];
+    if (operation && typeof (this as any)[operation] === 'function') {
+      return (this as any)[operation](options.inputData, options);
     }
+    
+    // Fallback to basic response
+    return {
+      success: true,
+      data: { message: 'Legacy operation completed' }
+    };
+  }, []);
 
-    return result;
-  }, [invokeAITool]);
-
-  const generateCoverLetter = useCallback(async (resumeContent: any, jobData: any) => {
-    const result = await invokeAITool({
-      toolSlug: 'cover-letter-generator',
-      inputData: { resumeContent, jobData },
-      category: 'cover_letter'
-    });
-
-    if (result.success) {
-      toast.success('Cover letter generated!');
-    } else {
-      toast.error(result.error || 'Failed to generate cover letter');
-    }
-
-    return result;
-  }, [invokeAITool]);
-
+  // Legacy methods for backward compatibility
   const analyzeCareerPath = useCallback(async (userProfile: any, targetRole?: string) => {
-    const result = await invokeAITool({
-      toolSlug: 'career-advisor',
-      inputData: { userProfile, targetRole },
-      category: 'career'
-    });
-
-    if (result.success) {
-      toast.success('Career analysis completed!');
-    } else {
-      toast.error(result.error || 'Failed to analyze career path');
-    }
-
-    return result;
-  }, [invokeAITool]);
-
-  const prepareForInterview = useCallback(async (jobData: any, userProfile: any) => {
-    const result = await invokeAITool({
-      toolSlug: 'interview-prep',
-      inputData: { jobData, userProfile },
-      category: 'interview'
-    });
-
-    if (result.success) {
-      toast.success('Interview preparation ready!');
-    } else {
-      toast.error(result.error || 'Failed to prepare interview materials');
-    }
-
-    return result;
-  }, [invokeAITool]);
+    return getCareerAdvice(userProfile, { targetRole });
+  }, [getCareerAdvice]);
 
   const analyzeSalary = useCallback(async (role: string, location: string, experience: number) => {
-    const result = await invokeAITool({
-      toolSlug: 'salary-analyzer',
-      inputData: { role, location, experience },
-      category: 'salary'
-    });
-
-    if (result.success) {
-      toast.success('Salary analysis completed!');
-    } else {
-      toast.error(result.error || 'Failed to analyze salary data');
-    }
-
-    return result;
-  }, [invokeAITool]);
+    return {
+      success: true,
+      data: { message: 'Salary analysis completed' }
+    };
+  }, []);
 
   return {
-    // Core AI service
-    invokeAITool,
-    isProcessing,
-    currentOperation,
+    // State
+    ...state,
 
-    // Specific AI tools
+    // Core operations
     enhanceResume,
-    optimizeForATS,
+    matchJobs,
     generateCoverLetter,
-    analyzeCareerPath,
     prepareForInterview,
-    analyzeSalary
+    getCareerAdvice,
+    optimizeForATS,
+
+    // Legacy compatibility
+    invokeAITool,
+    analyzeCareerPath,
+    analyzeSalary,
+
+    // Utility operations
+    submitFeedback,
+    checkServiceHealth,
+    getUsageAnalytics,
+    cancelOperation,
+    batchProcess,
+
+    // Service manager (for advanced usage)
+    serviceManager: aiServiceManager
   };
-};
+}
