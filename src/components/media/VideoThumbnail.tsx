@@ -144,6 +144,11 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
     autoplay: '1',
     mute: '1',
     enablejsapi: '1',
+    controls: '1',
+    fs: '1',
+    iv_load_policy: '3',
+    cc_load_policy: '0',
+    disablekb: '0'
   });
   if (typeof window !== 'undefined') {
     params.set('origin', window.location.origin);
@@ -194,32 +199,55 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
     if (youtubeId && !embedError) {
       return (
         <div className={cn(
-          "relative rounded-lg overflow-hidden aspect-video",
+          "relative rounded-lg overflow-hidden aspect-video mobile-video",
           className
         )}>
           <iframe
             src={buildYouTubeEmbedUrl(youtubeId)}
             className="w-full h-full"
             title="YouTube video player"
-            allow="autoplay; encrypted-media; picture-in-picture; web-share"
+            allow="autoplay; encrypted-media; picture-in-picture; web-share; accelerometer; gyroscope"
             allowFullScreen
             loading="eager"
             referrerPolicy="strict-origin-when-cross-origin"
-            onError={() => setEmbedError(true)}
+            style={{ 
+              border: 'none',
+              width: '100%',
+              height: '100%',
+              minHeight: '200px'
+            }}
+            onError={() => {
+              console.log('YouTube embed error, falling back');
+              setEmbedError(true);
+            }}
             onLoad={(e) => {
-              // Check if iframe loaded successfully
               const iframe = e.target as HTMLIFrameElement;
-              try {
-                // This will throw an error if blocked
-                iframe.contentWindow;
-              } catch {
-                setEmbedError(true);
-              }
+              // Add timeout to check if iframe is actually working
+              setTimeout(() => {
+                try {
+                  if (iframe.contentDocument === null) {
+                    // Iframe is blocked
+                    setEmbedError(true);
+                  }
+                } catch (error) {
+                  // Cross-origin error means iframe loaded but can't access content (normal)
+                  // If we get a different error, it might be blocked
+                  if (error.toString().includes('blocked')) {
+                    setEmbedError(true);
+                  }
+                }
+              }, 2000);
             }}
           />
           {embedError && (
-            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-white p-4">
-              <p className="text-sm mb-2">YouTube blocked</p>
+            <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center text-white p-4 z-20">
+              <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-medium flex items-center gap-1 mb-3">
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                YouTube
+              </div>
+              <p className="text-sm mb-3 text-center">Video blocked by network</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -275,13 +303,15 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
       <video
         src={url}
         className={cn(
-          "relative rounded-lg overflow-hidden aspect-video w-full h-full",
+          "relative rounded-lg overflow-hidden aspect-video w-full h-full mobile-video",
           className
         )}
         controls
         autoPlay
         playsInline
         preload="metadata"
+        muted
+        style={{ maxHeight: '400px' }}
       />
     );
   }
