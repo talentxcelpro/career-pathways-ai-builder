@@ -91,7 +91,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-slate-500",
       stat: "Centralized",
       icon: <BarChart3 className="h-6 w-6" />,
-      href: "/resume/dashboard"
+      href: "/dashboard"
     },
     {
       title: "Company Tools",
@@ -100,7 +100,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-pink-500",
       stat: "For HR",
       icon: <Users className="h-6 w-6" />,
-      href: "/resume/company-tools"
+      href: "/employer"
     },
     {
       title: "Learning Hub",
@@ -109,7 +109,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-yellow-500",
       stat: "Skill Growth",
       icon: <BookOpen className="h-6 w-6" />,
-      href: "/resume/learning-hub"
+      href: "/learning"
     },
     {
       title: "Success Analytics",
