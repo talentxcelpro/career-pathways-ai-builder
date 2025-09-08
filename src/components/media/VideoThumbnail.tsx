@@ -63,7 +63,8 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
   const [title, setTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true); // Auto-play by default
+  const [embedError, setEmbedError] = useState(false);
 
   useEffect(() => {
     const loadThumbnail = async () => {
@@ -188,9 +189,9 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
   const isYoutube = getYouTubeVideoId(url) !== null;
   const youtubeId = getYouTubeVideoId(url);
 
-  // If user clicked, play inline
+  // Auto-play inline videos
   if (isPlaying) {
-    if (youtubeId) {
+    if (youtubeId && !embedError) {
       return (
         <div className={cn(
           "relative rounded-lg overflow-hidden aspect-video",
@@ -204,7 +205,68 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
             allowFullScreen
             loading="eager"
             referrerPolicy="strict-origin-when-cross-origin"
+            onError={() => setEmbedError(true)}
+            onLoad={(e) => {
+              // Check if iframe loaded successfully
+              const iframe = e.target as HTMLIFrameElement;
+              try {
+                // This will throw an error if blocked
+                iframe.contentWindow;
+              } catch {
+                setEmbedError(true);
+              }
+            }}
           />
+          {embedError && (
+            <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-white p-4">
+              <p className="text-sm mb-2">YouTube blocked</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(url, '_blank')}
+                className="text-white border-white hover:bg-white hover:text-black"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Open in YouTube
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+    
+    // Fallback for YouTube when blocked or direct video files
+    if (youtubeId && embedError) {
+      return (
+        <div className={cn(
+          "relative rounded-lg overflow-hidden aspect-video bg-black flex flex-col items-center justify-center",
+          className
+        )}>
+          {thumbnailUrl && (
+            <img
+              src={thumbnailUrl}
+              alt={title || 'Video thumbnail'}
+              className="w-full h-full object-cover absolute inset-0"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-4 z-10">
+            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded font-medium flex items-center gap-1 mb-3">
+              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+              YouTube
+            </div>
+            <p className="text-sm mb-3 text-center">Video cannot be embedded</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(url, '_blank')}
+              className="text-white border-white hover:bg-white hover:text-black"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Watch on YouTube
+            </Button>
+          </div>
         </div>
       );
     }
@@ -224,6 +286,7 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
     );
   }
 
+  // Fallback to thumbnail view only if loading or not auto-playing
   return (
     <div className={cn(
       "relative rounded-lg overflow-hidden aspect-video cursor-pointer group",
