@@ -1,52 +1,88 @@
 
 import { useState, useCallback } from 'react';
-import { EnhancedResumeData } from '@/types/enhanced-resume';
+import { CoreResumeData, createEmptyResumeData, validateResumeData } from '@/types/resume-core';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { enhancedToEditor } from '@/utils/resumeAdapters';
+import { coreToEditor } from '@/utils/resume-adapters';
 
-export const useResumeBuilder = (initialData?: EnhancedResumeData) => {
+export const useResumeBuilder = (initialData?: CoreResumeData) => {
   const { user } = useAuth();
-  const [resumeData, setResumeData] = useState<EnhancedResumeData | null>(initialData || null);
+  const [resumeData, setResumeData] = useState<CoreResumeData | null>(
+    initialData || (user ? createEmptyResumeData(user.id) : null)
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const updateResumeData = useCallback((updates: Partial<EnhancedResumeData>) => {
+  const updateResumeData = useCallback((updates: Partial<CoreResumeData>) => {
     setResumeData(prev => {
       if (!prev) return null;
-      const updated = { ...prev, ...updates };
+      
+      // Validate the updates
+      const updated = {
+        ...prev,
+        ...updates,
+        personalInfo: { ...prev.personalInfo, ...updates.personalInfo },
+        settings: { ...prev.settings, ...updates.settings },
+        metadata: { 
+          ...prev.metadata, 
+          ...updates.metadata, 
+          updatedAt: new Date().toISOString() 
+        },
+      };
+      
       setHasChanges(true);
       return updated;
     });
   }, []);
 
   const saveResume = useCallback(async () => {
-    if (!resumeData || !user) return;
+    if (!resumeData || !user) {
+      toast.error('Cannot save: Missing resume data or user');
+      return;
+    }
+
+    // Validate resume data before saving
+    const validation = validateResumeData(resumeData);
+    if (!validation.valid) {
+      toast.error(`Cannot save: ${validation.errors.join(', ')}`);
+      return;
+    }
 
     setIsSaving(true);
     try {
+      const resumeToSave = {
+        id: resumeData.metadata.id,
+        user_id: user.id,
+        title: resumeData.metadata.title || resumeData.personalInfo.fullName || 'Untitled Resume',
+        content: coreToEditor(resumeData) as any,
+        ats_score: resumeData.metadata.atsScore || 0,
+        updated_at: new Date().toISOString()
+      };
+
       const { error } = await supabase
         .from('ai_resumes')
-        .upsert({
-          user_id: user.id,
-          title: resumeData.personalInfo.fullName || 'Untitled Resume',
-          content: enhancedToEditor(resumeData as EnhancedResumeData) as any,
-          ats_score: 0, // Will be calculated by the system
-          updated_at: new Date().toISOString()
-        });
+        .upsert(resumeToSave);
 
       if (error) throw error;
+
+      // Update local metadata
+      updateResumeData({
+        metadata: {
+          ...resumeData.metadata,
+          updatedAt: new Date().toISOString()
+        }
+      });
 
       setHasChanges(false);
       toast.success('Resume saved successfully!');
     } catch (error) {
       console.error('Failed to save resume:', error);
-      toast.error('Failed to save resume');
+      toast.error('Failed to save resume. Please try again.');
     } finally {
       setIsSaving(false);
     }
-  }, [resumeData, user]);
+  }, [resumeData, user, updateResumeData]);
 
   const exportResume = useCallback(async (format: string) => {
     if (!resumeData) return;
