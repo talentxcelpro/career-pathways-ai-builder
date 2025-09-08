@@ -6,6 +6,7 @@ import EnhancedCareerAnalytics from '@/components/ai/EnhancedCareerAnalytics';
 import IndustryBenchmarking from '@/components/ai/IndustryBenchmarking';
 import CareerCredibilityScore from '@/components/ai/CareerCredibilityScore';
 import NetworkingIntelligence from '@/components/ai/NetworkingIntelligence';
+import AICareerCoach from '@/components/ai/AICareerCoach';
 import { updateMetaTags } from '@/utils/metaTags';
 
 const AdvancedAIHub: React.FC = () => {
@@ -105,7 +106,7 @@ const AdvancedAIHub: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="coach" className="mt-6">
-            <CareerCredibilityScore />
+            <AICareerCoach />
           </TabsContent>
           
           <TabsContent value="intelligence" className="mt-6">
