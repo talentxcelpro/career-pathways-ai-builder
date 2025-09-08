@@ -67,6 +67,11 @@ import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
 import { LiveEvent } from "@/components/realtime/LiveEvent";
 import UserProfile from "./pages/UserProfile";
+import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
+import AICareerIntelligence from "./pages/AICareerIntelligence";
+import SkillsGap from "./pages/career-map/SkillsGap";
+import CareerRoadmapGenerator from "./components/career/CareerRoadmapGenerator";
+import CareerGoals from "./pages/CareerGoals";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
@@ -196,19 +201,25 @@ const App = () => {
                         <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                         <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
-                         <Route path="/career-platform" element={
-                           <React.Suspense fallback={
-                             <StableContainer minHeight="100vh" className="flex items-center justify-center">
-                               <div className="text-center space-y-4">
-                                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                                 <p className="text-muted-foreground">Loading Career Platform...</p>
-                               </div>
-                             </StableContainer>
-                           }>
-                             <CareerPlatformShowcasePage />
-                           </React.Suspense>
-                         } />
-                         <Route path="/debug" element={<DebugPage />} />
+                          <Route path="/career-platform" element={
+                            <React.Suspense fallback={
+                              <StableContainer minHeight="100vh" className="flex items-center justify-center">
+                                <div className="text-center space-y-4">
+                                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                                  <p className="text-muted-foreground">Loading Career Platform...</p>
+                                </div>
+                              </StableContainer>
+                            }>
+                              <CareerPlatformShowcasePage />
+                            </React.Suspense>
+                          } />
+                          {/* Career Platform feature routes */}
+                          <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
+                          <Route path="/career-intelligence" element={<AICareerIntelligence />} />
+                          <Route path="/skills-assessment" element={<SkillsGap />} />
+                          <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
+                          <Route path="/career-goals" element={<CareerGoals />} />
+                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                           <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
                             {/* Legacy UUID-based passport redirect - instant redirect */}
