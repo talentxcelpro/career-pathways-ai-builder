@@ -193,6 +193,7 @@ const App = () => {
                         <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                         <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
+                         <Route path="/career-platform" element={<CareerPlatformShowcase />} />
                          <Route path="/debug" element={<DebugPage />} />
                           <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                           <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
