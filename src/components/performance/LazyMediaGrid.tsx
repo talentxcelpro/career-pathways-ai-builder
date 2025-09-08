@@ -4,6 +4,7 @@ import { FastImage } from '@/components/common/FastImage';
 import VideoPlayer from '@/components/posts/VideoPlayer';
 import { ImageOptimizer } from '@/utils/imageOptimization';
 import { cn } from '@/lib/utils';
+import { VideoThumbnail } from '@/components/media/VideoThumbnail';
 
 interface MediaItem {
   url: string;
@@ -83,15 +84,9 @@ export const LazyMediaGrid: React.FC<LazyMediaGridProps> = ({
         return (
           <div key={item.id || index} className="relative">
             {item.type === 'youtube' ? (
-              <iframe
-                src={getYouTubeEmbedUrl(item.url)}
+              <VideoThumbnail 
+                url={item.url}
                 className="w-full h-64 rounded-lg"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                title={`YouTube Video ${index + 1}`}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
               />
             ) : item.type === 'video' ? (
               <VideoPlayer 

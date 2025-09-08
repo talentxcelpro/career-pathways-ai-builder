@@ -163,10 +163,15 @@ const buildYouTubeEmbedUrl = (videoId: string) => {
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else {
-      // Play inline by default
-      setIsPlaying(true);
+      return;
     }
+    const yt = getYouTubeVideoId(url) !== null;
+    if (yt && isMobile) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    // Play inline otherwise
+    setIsPlaying(true);
   };
 
   if (isLoading) {
