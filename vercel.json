@@ -80,6 +80,36 @@
       ],
       "destination": "/employer/:path*"
     },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "colleges.talentxcel.in"
+        }
+      ],
+      "destination": "/colleges/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "learning.talentxcel.in"
+        }
+      ],
+      "destination": "/learning/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
+      "destination": "/jobs/:path*"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
