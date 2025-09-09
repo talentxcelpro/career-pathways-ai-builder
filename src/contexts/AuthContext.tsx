@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               if (currentPath.startsWith('/auth')) {
                 navigate('/onboarding?flow=resume&type=candidate', { replace: true });
               } else if (currentPath === '/') {
-                navigate('/network', { replace: true });
+                navigate('/employer', { replace: true });
               }
             }
           }, 100); // Slightly longer delay to ensure navigation works
@@ -136,8 +136,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (currentPath === '/') {
               setTimeout(() => {
                 if (mounted) {
-                  console.log('Auto-redirecting to network');
-                  navigate('/network', { replace: true });
+                  console.log('Auto-redirecting to employer');
+                  navigate('/employer', { replace: true });
                 }
               }, 100);
             }

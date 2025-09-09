@@ -19,8 +19,8 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const isDisabled = disabled || !!user;
 
   const handleSuccess = () => {
-    // Redirect to network page after successful login
-    navigate('/network', { replace: true });
+    // Redirect to employer page after successful login
+    navigate('/employer', { replace: true });
   };
 
   const handleError = (error: string) => {

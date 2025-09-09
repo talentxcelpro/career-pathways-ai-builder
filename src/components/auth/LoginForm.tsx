@@ -31,7 +31,7 @@ const LoginForm = () => {
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          navigate('/network');
+          navigate('/employer');
         }
       }
     };
@@ -71,11 +71,11 @@ const LoginForm = () => {
       if (data.user) {
         // Login successful - no toast message
         
-        // Redirect to return URL or network
+        // Redirect to return URL or employer
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          navigate('/network');
+          navigate('/employer');
         }
       }
     } catch (error: any) {

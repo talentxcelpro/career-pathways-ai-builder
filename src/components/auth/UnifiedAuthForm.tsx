@@ -67,7 +67,7 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         if (data.user) {
           // Login successful - no toast message
           onSuccess?.();
-          navigate('/network');
+          navigate('/employer');
         }
       } else {
         // Sign Up
@@ -90,7 +90,7 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         if (data.user) {
           toast.success('Account created successfully! 🎉');
           onSuccess?.();
-          navigate('/network');
+          navigate('/employer');
         }
       }
     } catch (error: any) {
