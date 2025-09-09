@@ -164,7 +164,7 @@ export const Navbar = () => {
                 alt="TalentXcel" 
                 className="h-8 w-8 rounded-sm"
               />
-              <span className="text-xl font-bold text-slate-900">TalentXcel</span>
+              <span className="text-xl font-bold text-slate-900 md:hidden">TalentXcel</span>
             </Link>
           </div>
 
