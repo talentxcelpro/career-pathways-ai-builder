@@ -61,6 +61,16 @@
       "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap"
     },
     {
+      "source": "/login",
+      "has": [
+        {
+          "type": "host",
+          "value": "employer.talentxcel.in"
+        }
+      ],
+      "destination": "https://talentxcel.in/employer"
+    },
+    {
       "source": "/(.*)",
       "has": [
         {
