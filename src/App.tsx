@@ -74,6 +74,7 @@ import AICareerIntelligence from "./pages/AICareerIntelligence";
 import SkillsGap from "./pages/career-map/SkillsGap";
 import CareerRoadmapGenerator from "./components/career/CareerRoadmapGenerator";
 import CareerGoals from "./pages/CareerGoals";
+import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
@@ -241,6 +242,7 @@ const App = () => {
                         <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                         <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
                         <Route path="/admin/prd" element={<ProtectedRoute><AdminLayout><ProductRequirementDocument /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/seo-suite" element={<ProtectedRoute><SEOSuite /></ProtectedRoute>} />
                         <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
                         <Route path="/employer/cv-database" element={<CVDatabase />} />
                         {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
