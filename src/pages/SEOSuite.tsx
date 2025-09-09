@@ -30,6 +30,10 @@ import { SEORankTracker } from '@/components/seo/SEORankTracker';
 import { SEOBacklinkAnalyzer } from '@/components/seo/SEOBacklinkAnalyzer';
 import { SEOCompetitorAnalysis } from '@/components/seo/SEOCompetitorAnalysis';
 import { SEOReporting } from '@/components/seo/SEOReporting';
+import { AIContentGenerator } from '@/components/seo/advanced/AIContentGenerator';
+import { RealTimeSEOAnalyzer } from '@/components/seo/advanced/RealTimeSEOAnalyzer';
+import { PredictiveSEOInsights } from '@/components/seo/advanced/PredictiveSEOInsights';
+import { SEOAutomationWorkflows } from '@/components/seo/advanced/SEOAutomationWorkflows';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
@@ -142,7 +146,7 @@ const SEOSuite = () => {
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8 bg-muted/50">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-12 bg-muted/50">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="keywords">Keywords</TabsTrigger>
           <TabsTrigger value="audit">Site Audit</TabsTrigger>
@@ -151,6 +155,10 @@ const SEOSuite = () => {
           <TabsTrigger value="backlinks">Backlinks</TabsTrigger>
           <TabsTrigger value="competitors">Competitors</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="ai-content">AI Content</TabsTrigger>
+          <TabsTrigger value="realtime">Real-time</TabsTrigger>
+          <TabsTrigger value="predictive">Predictive</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -291,6 +299,22 @@ const SEOSuite = () => {
 
         <TabsContent value="reports">
           <SEOReporting />
+        </TabsContent>
+
+        <TabsContent value="ai-content">
+          <AIContentGenerator />
+        </TabsContent>
+
+        <TabsContent value="realtime">
+          <RealTimeSEOAnalyzer />
+        </TabsContent>
+
+        <TabsContent value="predictive">
+          <PredictiveSEOInsights />
+        </TabsContent>
+
+        <TabsContent value="automation">
+          <SEOAutomationWorkflows />
         </TabsContent>
       </Tabs>
     </div>
