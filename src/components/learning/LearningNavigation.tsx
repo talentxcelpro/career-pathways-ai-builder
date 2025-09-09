@@ -24,7 +24,7 @@ interface NavigationItem {
 
 export const LearningNavigation: React.FC = () => {
   const location = useLocation();
-
+  
   const navigationItems: NavigationItem[] = [
     {
       title: 'Learning Hub',

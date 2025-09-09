@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LearningHeader } from '@/components/learning/LearningHeader';
+import { LearningLayout } from '@/components/learning/LearningLayout';
 import { EnhancedCourseCard } from '@/components/learning/EnhancedCourseCard';
 import { useLearningData } from '@/hooks/useLearningData';
 import { updateMetaTags } from '@/utils/metaTags';
@@ -40,9 +40,7 @@ const AllCourses = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <LearningHeader />
+      <LearningLayout>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
@@ -60,15 +58,12 @@ const AllCourses = () => {
               </Card>
             ))}
           </div>
-        </div>
-      </div>
+      </LearningLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LearningHeader />
+    <LearningLayout>
         
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
@@ -159,8 +154,7 @@ const AllCourses = () => {
             </p>
           </div>
         )}
-      </div>
-    </div>
+    </LearningLayout>
   );
 };
 
