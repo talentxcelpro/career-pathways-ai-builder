@@ -21,8 +21,11 @@ import {
   AlertTriangle,
   Users,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Settings,
+  ExternalLink
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { SEOKeywordResearch } from '@/components/seo/SEOKeywordResearch';
 import { SEOSiteAudit } from '@/components/seo/SEOSiteAudit';
 import { SEOContentOptimizer } from '@/components/seo/SEOContentOptimizer';
@@ -41,16 +44,38 @@ const SEOSuite = () => {
   const [seoScore, setSeoScore] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [websiteUrl, setWebsiteUrl] = useState('');
+  const [seoMetrics, setSeoMetrics] = useState({
+    totalJobs: 0,
+    totalCompanies: 0,
+    totalPosts: 0,
+    totalProfiles: 0
+  });
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
-  // Simulate SEO score calculation
+  // Fetch real data from Supabase
   useEffect(() => {
-    if (seoScore < 85) {
-      const timer = setInterval(() => {
-        setSeoScore(prev => Math.min(prev + 1, 85));
-      }, 50);
-      return () => clearInterval(timer);
-    }
-  }, [seoScore]);
+    const fetchSEOMetrics = async () => {
+      try {
+        const [jobsResult, companiesResult, postsResult, profilesResult] = await Promise.all([
+          supabase.from('jobs').select('id', { count: 'exact', head: true }),
+          supabase.from('companies').select('id', { count: 'exact', head: true }),
+          supabase.from('posts').select('id', { count: 'exact', head: true }),
+          supabase.from('profiles').select('id', { count: 'exact', head: true })
+        ]);
+
+        setSeoMetrics({
+          totalJobs: jobsResult.count || 0,
+          totalCompanies: companiesResult.count || 0,
+          totalPosts: postsResult.count || 0,
+          totalProfiles: profilesResult.count || 0
+        });
+      } catch (error) {
+        console.error('Error fetching SEO metrics:', error);
+      }
+    };
+
+    fetchSEOMetrics();
+  }, []);
 
   const handleQuickAnalysis = async () => {
     if (!websiteUrl) {
@@ -59,18 +84,64 @@ const SEOSuite = () => {
     }
     
     setIsAnalyzing(true);
-    // Simulate analysis
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    setSeoScore(Math.floor(Math.random() * 40) + 60); // Random score between 60-100
-    setIsAnalyzing(false);
-    toast.success('SEO analysis completed!');
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('url-metadata', {
+        body: { url: websiteUrl }
+      });
+
+      if (error) throw error;
+
+      // Calculate SEO score based on metadata
+      let score = 30; // Base score
+      if (data.title && data.title.length > 0) score += 20;
+      if (data.description && data.description.length > 0) score += 20;
+      if (data.image_url) score += 15;
+      if (data.title && data.title.length <= 60) score += 10;
+      if (data.description && data.description.length <= 160) score += 5;
+
+      setSeoScore(Math.min(score, 100));
+      setAnalysisResult(data);
+      toast.success('SEO analysis completed!');
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast.error('Failed to analyze website. Please check the URL and try again.');
+      setSeoScore(0);
+      setAnalysisResult(null);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
-  const seoMetrics = [
-    { label: 'Organic Traffic', value: '2.4M', change: '+12%', positive: true },
-    { label: 'Keywords Ranking', value: '1,847', change: '+8%', positive: true },
-    { label: 'Backlinks', value: '12.5K', change: '+23%', positive: true },
-    { label: 'Domain Authority', value: '72', change: '-2', positive: false },
+  const platformMetrics = [
+    { 
+      label: 'Total Jobs', 
+      value: seoMetrics.totalJobs.toLocaleString(), 
+      change: 'Active', 
+      positive: true,
+      icon: FileText
+    },
+    { 
+      label: 'Companies', 
+      value: seoMetrics.totalCompanies.toLocaleString(), 
+      change: 'Verified', 
+      positive: true,
+      icon: Users
+    },
+    { 
+      label: 'Content Posts', 
+      value: seoMetrics.totalPosts.toLocaleString(), 
+      change: 'Published', 
+      positive: true,
+      icon: BarChart3
+    },
+    { 
+      label: 'User Profiles', 
+      value: seoMetrics.totalProfiles.toLocaleString(), 
+      change: 'Indexed', 
+      positive: true,
+      icon: Target
+    },
   ];
 
   const quickActions = [
@@ -128,17 +199,77 @@ const SEOSuite = () => {
               {isAnalyzing ? 'Analyzing...' : 'Analyze'}
             </Button>
           </div>
-          {seoScore > 0 && (
-            <div className="mt-6 p-4 bg-white/50 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold">SEO Health Score</span>
-                <span className="text-2xl font-bold text-primary">{seoScore}/100</span>
+          {seoScore > 0 && analysisResult && (
+            <div className="mt-6 space-y-4">
+              <div className="p-4 bg-white/50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold">SEO Health Score</span>
+                  <span className="text-2xl font-bold text-primary">{seoScore}/100</span>
+                </div>
+                <Progress value={seoScore} className="h-2" />
+                <div className="mt-2 text-sm text-muted-foreground">
+                  {seoScore >= 80 ? 'Excellent SEO performance' : 
+                   seoScore >= 60 ? 'Good with room for improvement' : 
+                   'Needs significant optimization'}
+                </div>
               </div>
-              <Progress value={seoScore} className="h-2" />
-              <div className="mt-2 text-sm text-muted-foreground">
-                {seoScore >= 80 ? 'Excellent SEO performance' : 
-                 seoScore >= 60 ? 'Good with room for improvement' : 
-                 'Needs significant optimization'}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Page Analysis</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Title Tag</span>
+                      <Badge variant={analysisResult.title ? "default" : "destructive"}>
+                        {analysisResult.title ? "✓" : "Missing"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Meta Description</span>
+                      <Badge variant={analysisResult.description ? "default" : "destructive"}>
+                        {analysisResult.description ? "✓" : "Missing"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Open Graph Image</span>
+                      <Badge variant={analysisResult.image_url ? "default" : "secondary"}>
+                        {analysisResult.image_url ? "✓" : "None"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Favicon</span>
+                      <Badge variant={analysisResult.favicon_url ? "default" : "secondary"}>
+                        {analysisResult.favicon_url ? "✓" : "None"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Page Details</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {analysisResult.title && (
+                      <div>
+                        <div className="text-xs text-muted-foreground">Title ({analysisResult.title.length} chars)</div>
+                        <div className="text-sm font-medium truncate">{analysisResult.title}</div>
+                      </div>
+                    )}
+                    {analysisResult.description && (
+                      <div>
+                        <div className="text-xs text-muted-foreground">Description ({analysisResult.description.length} chars)</div>
+                        <div className="text-sm truncate">{analysisResult.description}</div>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 pt-2">
+                      <ExternalLink className="h-3 w-3" />
+                      <span className="text-xs text-muted-foreground truncate">{analysisResult.domain}</span>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           )}
@@ -162,9 +293,9 @@ const SEOSuite = () => {
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          {/* SEO Metrics Overview */}
+          {/* Platform Content Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {seoMetrics.map((metric, index) => (
+            {platformMetrics.map((metric, index) => (
               <Card key={index}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -172,9 +303,12 @@ const SEOSuite = () => {
                       <p className="text-sm text-muted-foreground">{metric.label}</p>
                       <p className="text-2xl font-bold">{metric.value}</p>
                     </div>
-                    <Badge variant={metric.positive ? "default" : "destructive"}>
-                      {metric.change}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <metric.icon className="h-4 w-4 text-muted-foreground" />
+                      <Badge variant="secondary">
+                        {metric.change}
+                      </Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -274,7 +408,12 @@ const SEOSuite = () => {
         </TabsContent>
 
         <TabsContent value="keywords">
-          <SEOKeywordResearch />
+          <ConnectProviderCard 
+            title="Keyword Research & Tracking"
+            description="Connect Google Search Console to access real keyword data and rankings"
+            providerName="Google Search Console"
+            onConnect={() => toast.info('Google Search Console integration coming soon!')}
+          />
         </TabsContent>
 
         <TabsContent value="audit">
@@ -286,15 +425,30 @@ const SEOSuite = () => {
         </TabsContent>
 
         <TabsContent value="tracking">
-          <SEORankTracker />
+          <ConnectProviderCard 
+            title="Rank Tracking"
+            description="Monitor your keyword positions across search engines"
+            providerName="Rank Tracking API"
+            onConnect={() => toast.info('Rank tracking integration coming soon!')}
+          />
         </TabsContent>
 
         <TabsContent value="backlinks">
-          <SEOBacklinkAnalyzer />
+          <ConnectProviderCard 
+            title="Backlink Analysis"
+            description="Connect Ahrefs or SEMrush for comprehensive backlink data"
+            providerName="Ahrefs / SEMrush"
+            onConnect={() => toast.info('Backlink analysis integration coming soon!')}
+          />
         </TabsContent>
 
         <TabsContent value="competitors">
-          <SEOCompetitorAnalysis />
+          <ConnectProviderCard 
+            title="Competitor Analysis"
+            description="Analyze competitor SEO strategies and performance"
+            providerName="SEO Analysis Tools"
+            onConnect={() => toast.info('Competitor analysis integration coming soon!')}
+          />
         </TabsContent>
 
         <TabsContent value="reports">
@@ -320,5 +474,37 @@ const SEOSuite = () => {
     </div>
   );
 };
+
+// Connect Provider Component
+const ConnectProviderCard = ({ 
+  title, 
+  description, 
+  providerName, 
+  onConnect 
+}: {
+  title: string;
+  description: string;
+  providerName: string;
+  onConnect: () => void;
+}) => (
+  <Card className="max-w-md mx-auto">
+    <CardHeader className="text-center">
+      <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+        <Settings className="h-8 w-8 text-muted-foreground" />
+      </div>
+      <CardTitle>{title}</CardTitle>
+      <CardDescription>{description}</CardDescription>
+    </CardHeader>
+    <CardContent className="text-center">
+      <Button onClick={onConnect} className="w-full">
+        <Link className="h-4 w-4 mr-2" />
+        Connect {providerName}
+      </Button>
+      <p className="text-xs text-muted-foreground mt-4">
+        Configure your API keys to access real-time data
+      </p>
+    </CardContent>
+  </Card>
+);
 
 export default SEOSuite;
