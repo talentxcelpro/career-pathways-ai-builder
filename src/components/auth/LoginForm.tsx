@@ -31,7 +31,8 @@ const LoginForm = () => {
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          navigate('/employer');
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          navigate(redirectPath);
         }
       }
     };
@@ -71,11 +72,12 @@ const LoginForm = () => {
       if (data.user) {
         // Login successful - no toast message
         
-        // Redirect to return URL or employer
+        // Redirect to return URL or appropriate dashboard
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          navigate('/employer');
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          navigate(redirectPath);
         }
       }
     } catch (error: any) {

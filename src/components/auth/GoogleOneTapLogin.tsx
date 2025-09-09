@@ -19,8 +19,9 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const isDisabled = disabled || !!user;
 
   const handleSuccess = () => {
-    // Redirect to employer page after successful login
-    navigate('/employer', { replace: true });
+    // Redirect based on domain
+    const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+    navigate(redirectPath, { replace: true });
   };
 
   const handleError = (error: string) => {

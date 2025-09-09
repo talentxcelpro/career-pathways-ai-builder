@@ -67,7 +67,8 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         if (data.user) {
           // Login successful - no toast message
           onSuccess?.();
-          navigate('/employer');
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          navigate(redirectPath);
         }
       } else {
         // Sign Up
@@ -90,7 +91,8 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
         if (data.user) {
           toast.success('Account created successfully! 🎉');
           onSuccess?.();
-          navigate('/employer');
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          navigate(redirectPath);
         }
       }
     } catch (error: any) {
