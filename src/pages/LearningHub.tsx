@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { updateMetaTags } from "@/utils/metaTags";
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 
@@ -24,127 +23,125 @@ export default function LearningHub() {
   }, [displayName]);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      {/* Header */}
-      <header className="flex justify-between items-center px-8 py-4 shadow-sm">
-        <h1 className="text-xl font-bold text-blue-600">TalentXcel</h1>
-        <nav className="space-x-6 hidden md:block">
-          <Link to="/" className="hover:text-blue-600">Home</Link>
-          <Link to="/learning/courses" className="hover:text-blue-600">Courses</Link>
-          <Link to="/learning/paths" className="hover:text-blue-600">Learning Paths</Link>
-          <Link to="/learning/certificates" className="hover:text-blue-600">Certificates</Link>
-          <a href="#" className="hover:text-blue-600">Community</a>
-        </nav>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-          Profile
-        </button>
-      </header>
-
-      {/* Hero Section */}
-      <section className="px-8 py-16 text-center">
-        <h2 className="text-3xl font-bold">Welcome back, {friendlyName}!</h2>
-        <p className="mt-4 text-gray-600">
+    <div className="min-h-screen bg-white text-gray-900 font-sans">
+      {/* Header / Hero Section */}
+      <section className="text-center py-10 px-4">
+        <h1 className="text-3xl font-bold">Welcome back, {friendlyName}!</h1>
+        <p className="mt-2 text-gray-600">
           Continue your journey to master new skills and advance your career.
         </p>
-        <div className="mt-6 space-x-4">
+        <div className="mt-6 flex justify-center gap-4">
           <Link to="/learning/courses">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">
+            <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
               Start Learning Now
             </button>
           </Link>
           <Link to="/learning/courses">
-            <button className="border border-gray-300 px-6 py-3 rounded-md hover:border-blue-600">
+            <button className="border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-100">
               Explore All Courses
             </button>
           </Link>
         </div>
+        <div className="mt-6 flex justify-center">
+          <img 
+            src="https://cdn-icons-png.flaticon.com/512/201/201818.png" 
+            alt="Learning Illustration" 
+            className="w-40 h-40" 
+          />
+        </div>
       </section>
 
-      {/* Streak Section */}
-      <section className="px-8 py-6 bg-gray-50 text-center">
-        <p className="text-gray-600">🔥 You're on a <b>{streakDays}-day streak</b></p>
-        <p className="text-sm text-gray-500">Complete today's lesson to grow your streak!</p>
-        <div className="w-full bg-gray-200 h-2 rounded mt-3">
-          <div className="bg-blue-600 h-2 rounded" style={{ width: `${Math.min((streakDays / 30) * 100, 100)}%` }}></div>
+      {/* Progress / Streak Section */}
+      <section className="max-w-3xl mx-auto bg-gray-50 p-6 rounded-lg shadow-sm">
+        <p className="text-orange-500 mb-2">🔥 You're on a {streakDays}-day streak</p>
+        <div className="w-full bg-gray-200 h-2 rounded-full">
+          <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${Math.min((streakDays / 30) * 100, 20)}%` }}></div>
         </div>
+        <p className="text-sm text-gray-600 mt-2">
+          Complete today's lesson to grow your streak!
+        </p>
       </section>
 
       {/* Quick Access */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-8 py-12 text-center">
-        <div className="p-6 border rounded-lg shadow hover:shadow-md">
-          <h3 className="text-lg font-semibold">📚 My Courses</h3>
+      <section className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">📚</div>
+          <h3 className="font-semibold">My Courses</h3>
           <Link to="/learning/my-courses">
-            <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Resume</button>
+            <button className="mt-3 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200">Resume</button>
           </Link>
         </div>
-        <div className="p-6 border rounded-lg shadow hover:shadow-md">
-          <h3 className="text-lg font-semibold">🛤️ Learning Paths</h3>
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">🛤️</div>
+          <h3 className="font-semibold">Learning Paths</h3>
           <Link to="/learning/paths">
-            <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Browse</button>
+            <button className="mt-3 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200">Browse</button>
           </Link>
         </div>
-        <div className="p-6 border rounded-lg shadow hover:shadow-md">
-          <h3 className="text-lg font-semibold">🎓 Certificates</h3>
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">🎓</div>
+          <h3 className="font-semibold">Certificates</h3>
           <Link to="/learning/certificates">
-            <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">View</button>
+            <button className="mt-3 bg-gray-100 px-4 py-2 rounded hover:bg-gray-200">View</button>
           </Link>
         </div>
       </section>
 
       {/* Learning Paths */}
-      <section className="px-8 py-12 bg-gray-50 text-center">
+      <section className="max-w-5xl mx-auto mt-14 text-center">
         <h2 className="text-2xl font-bold">Choose a path. Advance your future.</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div className="p-6 border rounded-lg shadow hover:shadow-md">
-            <h3 className="font-semibold">📊 Data Science Career Path</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <div className="border rounded-lg p-6 shadow-sm hover:shadow-md">
+            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" className="w-16 mx-auto mb-3" />
+            <h3 className="font-semibold">Data Science Career Path</h3>
             <Link to="/learning/paths">
-              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Start Path</button>
+              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Start Path</button>
             </Link>
           </div>
-          <div className="p-6 border rounded-lg shadow hover:shadow-md">
-            <h3 className="font-semibold">🤖 AI & Machine Learning</h3>
+          <div className="border rounded-lg p-6 shadow-sm hover:shadow-md">
+            <img src="https://cdn-icons-png.flaticon.com/512/1048/1048948.png" className="w-16 mx-auto mb-3" />
+            <h3 className="font-semibold">AI & Machine Learning</h3>
             <Link to="/learning/paths">
-              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Browse</button>
+              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Browse</button>
             </Link>
           </div>
-          <div className="p-6 border rounded-lg shadow hover:shadow-md">
-            <h3 className="font-semibold">📈 Business & Leadership</h3>
+          <div className="border rounded-lg p-6 shadow-sm hover:shadow-md">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" className="w-16 mx-auto mb-3" />
+            <h3 className="font-semibold">Business & Leadership</h3>
             <Link to="/learning/paths">
-              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Start Path</button>
+              <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Start Path</button>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Why TalentXcel */}
-      <section className="px-8 py-12 text-center">
-        <h2 className="text-2xl font-bold">Why learn with TalentXcel?</h2>
-        <ul className="mt-6 space-y-3 text-gray-600">
+      <section className="max-w-4xl mx-auto mt-16">
+        <h2 className="text-2xl font-bold text-center">Why learn with TalentXcel?</h2>
+        <ul className="mt-6 space-y-3 text-gray-700">
           <li>✅ AI-powered career matching</li>
           <li>✅ Earn industry-recognized certificates</li>
           <li>✅ Learn at your own pace</li>
           <li>✅ Job-ready skills for the future</li>
         </ul>
-        <div className="mt-6 p-4 border rounded-md bg-gray-50 max-w-lg mx-auto">
-          <p className="italic">"TalentXcel helped me land my dream job in 3 months!"</p>
-          <p className="mt-2 font-semibold">— Ananya, Data Analyst</p>
+        <div className="mt-6 bg-gray-50 p-4 rounded-lg shadow-sm flex items-center gap-3">
+          <img src="https://cdn-icons-png.flaticon.com/512/219/219986.png" className="w-12 h-12 rounded-full" />
+          <p>
+            <span className="italic">"TalentXcel helped me land my dream job in 3 months!"</span><br />
+            <span className="text-sm text-gray-500">– Ananya, Data Analyst</span>
+          </p>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-8 py-12 text-center bg-blue-600 text-white">
+      {/* CTA Bottom */}
+      <section className="mt-12 text-center bg-blue-600 text-white py-10">
         <h2 className="text-2xl font-bold">Your career transformation starts today.</h2>
         <Link to="/learning/courses">
-          <button className="mt-6 bg-white text-blue-600 px-6 py-3 rounded-md hover:bg-gray-100">
+          <button className="mt-6 bg-white text-blue-600 px-6 py-2 rounded-md hover:bg-gray-100">
             Start Learning for Free
           </button>
         </Link>
       </section>
-
-      {/* Footer */}
-      <footer className="px-8 py-6 text-center text-gray-500 text-sm border-t mt-8">
-        © 2025 TalentXcel · About · Careers · Help · Terms · Privacy
-      </footer>
     </div>
   );
 }
