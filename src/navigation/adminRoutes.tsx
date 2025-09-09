@@ -45,6 +45,7 @@ import { JobDataManager } from "../components/admin/JobDataManager";
 import LinkBuildingDashboard from "../pages/admin/LinkBuildingDashboard";
 import AgentOperationsPage from "../pages/admin/AgentOperations";
 import NewsAutomationPage from "../pages/admin/NewsAutomationPage";
+import ProductRequirementDocument from "../pages/admin/ProductRequirementDocument";
 
 export const adminRoutes = [
   {
@@ -367,6 +368,13 @@ export const adminRoutes = [
     to: "/admin/news-automation",
     icon: <Newspaper className="h-4 w-4" />,
     page: <NewsAutomationPage />,
+    requiresAuth: true,
+  },
+  {
+    title: "Product Requirements (PRD)",
+    to: "/admin/prd", 
+    icon: <FileText className="h-4 w-4" />,
+    page: <ProductRequirementDocument />,
     requiresAuth: true,
   }
 ];

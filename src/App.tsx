@@ -55,6 +55,7 @@ import { MobilePassport } from './pages/mobile/MobilePassport';
 import UserManagement from "@/pages/admin/UserManagement";
 import TalentDatabase from "@/pages/admin/TalentDatabase";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
+import ProductRequirementDocument from "@/pages/admin/ProductRequirementDocument";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
@@ -236,10 +237,11 @@ const App = () => {
                        <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
                         <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                         <Route path="/resume/ai-enhancement" element={<ProtectedRoute><AIEnhancement /></ProtectedRoute>} />
-                       <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
-                       <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
-                       <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
-                       <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/admin/prd" element={<ProtectedRoute><AdminLayout><ProductRequirementDocument /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
                         <Route path="/employer/cv-database" element={<CVDatabase />} />
                         {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                         
