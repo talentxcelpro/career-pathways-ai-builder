@@ -98,18 +98,28 @@ Provide a JSON response with:
   "riskFactors": ["potential ranking risks"]
 }`;
 
-    // Use AI fallback for rank prediction
-    const aiResult = await generateJSONWithFallback(
-      systemPrompt,
-      analysisPrompt,
-      {
-        model: 'o3-2025-04-16', // Using reasoning model for complex analysis
-        maxTokens: 2000,
-        temperature: 0.3
-      }
-    );
+    // Use AI fallback for rank prediction with resilient error handling
+    let prediction;
+    let aiProvider = 'Fallback';
+    let tokensUsed = 0;
 
-    const prediction = aiResult.data;
+    try {
+      const aiResult = await generateJSONWithFallback(
+        systemPrompt,
+        analysisPrompt,
+        {
+          model: 'o3-2025-04-16', // Using reasoning model for complex analysis
+          maxTokens: 2000,
+          temperature: 0.3
+        }
+      );
+      prediction = aiResult.data;
+      aiProvider = aiResult.provider;
+      tokensUsed = aiResult.tokensUsed || 0;
+    } catch (error) {
+      console.warn(`⚠️ AI services unavailable, using deterministic prediction: ${error.message}`);
+      prediction = generateFallbackPrediction(url, targetKeyword, currentRank, contentLength, backlinks, domainAge, competitorData);
+    }
 
     // Enhanced prediction with additional ML-style calculations
     const enhancedPrediction = {
@@ -129,11 +139,12 @@ Provide a JSON response with:
       // Add algorithm risk assessment
       algorithmRisk: assessAlgorithmRisk(url, prediction.factors),
       // Track AI provider used
-      aiProvider: aiResult.provider,
-      generatedAt: new Date().toISOString()
+      aiProvider: aiProvider,
+      generatedAt: new Date().toISOString(),
+      fallbackMode: aiProvider === 'Fallback'
     };
 
-    console.log(`✅ Rank prediction completed using ${aiResult.provider}. Predicted rank: ${prediction.predictedRank}`);
+    console.log(`✅ Rank prediction completed using ${aiProvider}. Predicted rank: ${prediction.predictedRank}`);
 
     const result: MLPredictionResult = {
       success: true,
@@ -191,4 +202,60 @@ function assessAlgorithmRisk(url: string, factors: any): string {
   if (totalScore >= 80) return 'Low - Well-optimized for algorithm updates';
   if (totalScore >= 60) return 'Medium - Monitor for algorithm changes';
   return 'High - Vulnerable to algorithm updates';
+}
+
+function generateFallbackPrediction(url: string, keyword: string, currentRank: number, contentLength: number, backlinks: number, domainAge: number, competitors: any[]) {
+  // Deterministic prediction based on ranking factors
+  let predictedRank = currentRank;
+  
+  // Content length factor
+  if (contentLength > 1500) predictedRank -= 5;
+  else if (contentLength < 500) predictedRank += 3;
+  
+  // Backlinks factor
+  if (backlinks > 50) predictedRank -= 8;
+  else if (backlinks < 10) predictedRank += 5;
+  
+  // Domain age factor
+  if (domainAge > 2) predictedRank -= 3;
+  else if (domainAge < 1) predictedRank += 2;
+  
+  // Competition factor
+  const avgCompetitorRank = competitors.length > 0 
+    ? competitors.reduce((sum, comp) => sum + comp.rank, 0) / competitors.length 
+    : 30;
+  
+  if (currentRank > avgCompetitorRank) predictedRank -= 5;
+  else predictedRank += 3;
+  
+  // Ensure rank is within bounds
+  predictedRank = Math.max(1, Math.min(100, Math.round(predictedRank)));
+  
+  const confidence = Math.max(60, 95 - Math.abs(currentRank - predictedRank) * 2);
+  
+  return {
+    predictedRank,
+    confidence: Math.round(confidence),
+    timeframe: '3-6 months',
+    factors: {
+      contentQuality: contentLength > 1000 ? 85 : 65,
+      technicalSEO: Math.min(90, 60 + domainAge * 10),
+      backlinks: Math.min(95, 40 + backlinks * 2),
+      userExperience: 75,
+      competition: competitors.length > 5 ? 60 : 80
+    },
+    recommendations: [
+      contentLength < 1000 ? 'Increase content length to 1000+ words' : 'Content length is optimal',
+      backlinks < 20 ? 'Build more high-quality backlinks' : 'Continue building authority',
+      domainAge < 1 ? 'Focus on building domain authority over time' : 'Leverage domain maturity',
+      'Optimize for Core Web Vitals and user experience',
+      'Monitor competitor strategies and adapt accordingly'
+    ].filter(rec => !rec.includes('is optimal')),
+    riskFactors: [
+      currentRank > 20 ? 'Current ranking position needs improvement' : null,
+      competitors.length > 10 ? 'High competition in target keyword' : null,
+      backlinks < 10 ? 'Low backlink count increases vulnerability' : null,
+      domainAge < 1 ? 'New domain may face trust challenges' : null
+    ].filter(risk => risk !== null)
+  };
 }

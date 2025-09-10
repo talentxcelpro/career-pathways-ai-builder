@@ -98,38 +98,49 @@ Return JSON format:
   "seoScore": 92
 }`;
 
-    // Use AI fallback for content generation
-    const aiResult = await generateJSONWithFallback(
-      systemPrompt,
-      userPrompt,
-      {
-        model: 'gpt-5-2025-08-07',
-        maxTokens: 3000,
-        temperature: 0.7
-      }
-    );
+    // Use AI fallback for content generation with resilient error handling
+    let generatedContent;
+    let aiProvider = 'Fallback';
+    let tokensUsed = 0;
 
-    const generatedContent = aiResult.data;
+    try {
+      const aiResult = await generateJSONWithFallback(
+        systemPrompt,
+        userPrompt,
+        {
+          model: 'gpt-5-2025-08-07',
+          maxTokens: 3000,
+          temperature: 0.7
+        }
+      );
+      generatedContent = aiResult.data;
+      aiProvider = aiResult.provider;
+      tokensUsed = aiResult.tokensUsed || 0;
+    } catch (error) {
+      console.warn(`⚠️ AI services unavailable, using fallback content: ${error.message}`);
+      generatedContent = generateFallbackContent(contentType, topic, targetKeywords, tone, wordCount);
+    }
 
-    console.log(`✅ Content generated successfully using ${aiResult.provider}. Tokens used: ${aiResult.tokensUsed || 'N/A'}`);
+    console.log(`✅ Content generated successfully using ${aiProvider}. Tokens used: ${tokensUsed || 'N/A'}`);
 
     // Enhanced content analysis
     const enhancedContent = {
       ...generatedContent,
       readabilityScore: Math.floor(Math.random() * 15) + 80, // Simulated readability
       seoScore: Math.floor(Math.random() * 20) + 75, // Simulated SEO score
-      wordCount: generatedContent.body.split(' ').length,
-      keywordDensity: calculateKeywordDensity(generatedContent.body, targetKeywords),
+      wordCount: generatedContent.body ? generatedContent.body.split(' ').length : wordCount,
+      keywordDensity: calculateKeywordDensity(generatedContent.body || '', targetKeywords),
       generatedAt: new Date().toISOString(),
       contentType,
       industry,
-      aiProvider: aiResult.provider // Track which AI was used
+      aiProvider: aiProvider, // Track which AI was used
+      fallbackMode: aiProvider === 'Fallback'
     };
 
     const result: AIContentResponse = {
       success: true,
       content: enhancedContent,
-      tokensUsed: aiResult.tokensUsed
+      tokensUsed: tokensUsed
     };
 
     return new Response(JSON.stringify(result), {
@@ -152,6 +163,8 @@ Return JSON format:
 });
 
 function calculateKeywordDensity(text: string, keywords: string[]): { [key: string]: number } {
+  if (!text) return {};
+  
   const wordCount = text.toLowerCase().split(' ').length;
   const density: { [key: string]: number } = {};
   
@@ -161,4 +174,52 @@ function calculateKeywordDensity(text: string, keywords: string[]): { [key: stri
   });
   
   return density;
+}
+
+function generateFallbackContent(contentType: string, topic: string, keywords: string[], tone: string, wordCount: number) {
+  const keywordList = keywords.join(', ');
+  
+  const fallbackContent = {
+    title: `${topic}: A Comprehensive Guide to ${keywords[0] || 'Success'}`,
+    body: `<h1>${topic}: Your Complete Guide</h1>
+
+<p>Welcome to this comprehensive guide about ${topic}. In today's competitive landscape, understanding ${keywords[0] || 'the key concepts'} is essential for success.</p>
+
+<h2>Key Insights About ${keywords[0] || 'This Topic'}</h2>
+<p>When exploring ${topic}, it's important to consider several factors that can impact your success. ${keywords.slice(0, 3).join(', ')} are fundamental elements that professionals should master.</p>
+
+<h2>Best Practices and Strategies</h2>
+<p>To excel in ${topic}, consider implementing these proven strategies:</p>
+<ul>
+  <li>Focus on ${keywords[0] || 'core principles'} for maximum impact</li>
+  <li>Stay updated with latest trends in ${keywords[1] || 'the industry'}</li>
+  <li>Build expertise through continuous learning and practice</li>
+  <li>Network with professionals who excel in ${keywords[2] || 'related areas'}</li>
+</ul>
+
+<h2>Getting Started</h2>
+<p>Whether you're new to ${topic} or looking to enhance your skills, taking a systematic approach is key. Focus on understanding ${keywordList} and how they interconnect.</p>
+
+<h2>Conclusion</h2>
+<p>Success in ${topic} requires dedication, proper understanding of ${keywords[0] || 'key concepts'}, and consistent effort. Start your journey today and unlock new opportunities.</p>
+
+<p><em>This content was generated to ensure service availability. For the most current insights, please check back when our AI services are restored.</em></p>`,
+    metaTitle: `${topic} Guide: Master ${keywords[0] || 'Success'} in ${new Date().getFullYear()}`,
+    metaDescription: `Complete guide to ${topic}. Learn ${keywordList} with expert strategies and proven techniques. Start your journey to success today.`,
+    keywords: keywords.length > 0 ? keywords : ['guide', 'tips', 'success', 'strategy'],
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": `${topic}: A Comprehensive Guide`,
+      "description": `Complete guide covering ${keywordList}`,
+      "author": {
+        "@type": "Organization",
+        "name": "Content Generation Service"
+      }
+    },
+    readabilityScore: 85,
+    seoScore: 78
+  };
+
+  return fallbackContent;
 }

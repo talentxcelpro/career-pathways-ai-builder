@@ -118,22 +118,26 @@ serve(async (req) => {
         break;
     }
 
-    // Use AI fallback for automation analysis
-    const aiResult = await generateJSONWithFallback(
-      systemMessage,
-      automationPrompt,
-      {
-        model: 'gpt-5-2025-08-07',
-        maxTokens: 3000
-      }
-    );
-
+    // Use AI fallback for automation analysis with resilient error handling
     let automationResults;
-    if (aiResult.success) {
+    let aiProvider = 'Fallback';
+    let tokensUsed = 0;
+
+    try {
+      const aiResult = await generateJSONWithFallback(
+        systemMessage,
+        automationPrompt,
+        {
+          model: 'gpt-5-2025-08-07',
+          maxTokens: 3000
+        }
+      );
       automationResults = aiResult.data;
-      console.log(`✅ AI automation analysis using ${aiResult.provider}`);
-    } else {
-      console.warn(`⚠️ AI unavailable, using fallback automation results`);
+      aiProvider = aiResult.provider;
+      tokensUsed = aiResult.tokensUsed || 0;
+      console.log(`✅ AI automation analysis using ${aiProvider}`);
+    } catch (error) {
+      console.warn(`⚠️ AI services unavailable, using deterministic automation results: ${error.message}`);
       automationResults = generateFallbackAutomationResults(automationType, url);
     }
 
@@ -141,8 +145,8 @@ serve(async (req) => {
     const enhancedResults = {
       ...automationResults,
       automationType,
-      aiProvider: aiResult.success ? aiResult.provider : 'Fallback',
-      tokensUsed: aiResult.tokensUsed || 0,
+      aiProvider: aiProvider,
+      tokensUsed: tokensUsed,
       generatedAt: new Date().toISOString(),
       executedAt: new Date().toISOString(),
       url,
@@ -150,7 +154,8 @@ serve(async (req) => {
       automationScore: calculateAutomationScore(automationResults),
       estimatedImpact: estimateImpact(automationType, automationResults),
       implementationTime: estimateImplementationTime(automationType, automationResults),
-      generationMode: aiResult.success ? 'AI' : 'Fallback'
+      generationMode: aiProvider === 'Fallback' ? 'Fallback' : 'AI',
+      fallbackMode: aiProvider === 'Fallback'
     };
 
     console.log(`✅ SEO automation completed: ${automationType}`);

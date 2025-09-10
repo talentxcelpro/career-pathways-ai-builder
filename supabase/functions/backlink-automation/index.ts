@@ -120,21 +120,34 @@ P.S. We're offering exclusive early-access benefits for the first 10 university 
     outreachCampaigns.push(personalizedEmail);
   }
 
-  // Store outreach campaigns
-  const { error } = await supabase
-    .from('backlink_outreach_campaigns')
-    .insert({
-      campaign_name: 'University Career Centers Partnership',
-      campaign_type: 'university_outreach',
-      target_count: universities.length,
-      campaigns: outreachCampaigns,
-      status: 'ready',
-      created_at: new Date().toISOString(),
-      expected_response_rate: 0.2,
-      potential_backlinks: Math.round(universities.length * 0.2)
-    });
+  // Store outreach campaigns with best-effort DB write
+  let stored = false;
+  let dbError = null;
+  
+  try {
+    const { error } = await supabase
+      .from('backlink_outreach_campaigns')
+      .insert({
+        campaign_name: 'University Career Centers Partnership',
+        campaign_type: 'university_outreach',
+        target_count: universities.length,
+        campaigns: outreachCampaigns,
+        status: 'ready',
+        created_at: new Date().toISOString(),
+        expected_response_rate: 0.2,
+        potential_backlinks: Math.round(universities.length * 0.2)
+      });
 
-  if (error) throw error;
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed, continuing with campaign generation:', error.message);
+      dbError = error.message;
+    }
+  } catch (error) {
+    console.warn('⚠️ DB connection failed, continuing with campaign generation:', error.message);
+    dbError = error.message;
+  }
 
   return new Response(JSON.stringify({
     success: true,
@@ -142,7 +155,10 @@ P.S. We're offering exclusive early-access benefits for the first 10 university 
     target_universities: universities.length,
     expected_responses: Math.round(universities.length * 0.2),
     potential_backlinks: Math.round(universities.length * 0.2),
-    next_step: 'Review and approve email campaigns in dashboard'
+    next_step: 'Review and approve email campaigns in dashboard',
+    stored: stored,
+    dbError: dbError,
+    campaigns: outreachCampaigns // Include campaigns in response for resilience
   }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
@@ -240,20 +256,33 @@ async function startupDirectorySubmission(supabase: any, data: any) {
     submissions.push(submission);
   }
 
-  // Store submission plan
-  const { error } = await supabase
-    .from('backlink_directory_submissions')
-    .insert({
-      submission_batch: 'startup_directories_batch_1',
-      total_directories: directories.length,
-      submissions: submissions,
-      company_profile: talentxcelProfile,
-      status: 'ready_for_submission',
-      created_at: new Date().toISOString(),
-      expected_backlinks: directories.length * 0.8 // 80% approval rate
-    });
+  // Store submission plan with best-effort DB write
+  let stored = false;
+  let dbError = null;
+  
+  try {
+    const { error } = await supabase
+      .from('backlink_directory_submissions')
+      .insert({
+        submission_batch: 'startup_directories_batch_1',
+        total_directories: directories.length,
+        submissions: submissions,
+        company_profile: talentxcelProfile,
+        status: 'ready_for_submission',
+        created_at: new Date().toISOString(),
+        expected_backlinks: directories.length * 0.8 // 80% approval rate
+      });
 
-  if (error) throw error;
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed, continuing with submission plan:', error.message);
+      dbError = error.message;
+    }
+  } catch (error) {
+    console.warn('⚠️ DB connection failed, continuing with submission plan:', error.message);
+    dbError = error.message;
+  }
 
   return new Response(JSON.stringify({
     success: true,
@@ -261,7 +290,10 @@ async function startupDirectorySubmission(supabase: any, data: any) {
     expected_approvals: Math.round(directories.length * 0.8),
     high_authority_sites: directories.filter(d => d.domain_authority > 70).length,
     estimated_link_value: directories.reduce((sum, d) => sum + d.domain_authority, 0),
-    next_step: 'Begin automated submissions'
+    next_step: 'Begin automated submissions',
+    stored: stored,
+    dbError: dbError,
+    submissions: submissions // Include submissions in response for resilience
   }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
@@ -360,21 +392,34 @@ async function findGuestPostOpportunities(supabase: any, data: any) {
     }
   ];
 
-  // Store guest post strategy
-  const { error } = await supabase
-    .from('guest_post_opportunities')
-    .insert({
-      strategy_name: 'HR Tech Guest Posting Campaign',
-      target_publications: targetPublications,
-      content_calendar: contentIdeas,
-      total_opportunities: targetPublications.length,
-      expected_acceptance_rate: 0.3,
-      potential_backlinks: contentIdeas.reduce((sum, idea) => sum + idea.backlink_opportunities, 0),
-      created_at: new Date().toISOString(),
-      status: 'strategy_ready'
-    });
+  // Store guest post strategy with best-effort DB write
+  let stored = false;
+  let dbError = null;
+  
+  try {
+    const { error } = await supabase
+      .from('guest_post_opportunities')
+      .insert({
+        strategy_name: 'HR Tech Guest Posting Campaign',
+        target_publications: targetPublications,
+        content_calendar: contentIdeas,
+        total_opportunities: targetPublications.length,
+        expected_acceptance_rate: 0.3,
+        potential_backlinks: contentIdeas.reduce((sum, idea) => sum + idea.backlink_opportunities, 0),
+        created_at: new Date().toISOString(),
+        status: 'strategy_ready'
+      });
 
-  if (error) throw error;
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed, continuing with strategy generation:', error.message);
+      dbError = error.message;
+    }
+  } catch (error) {
+    console.warn('⚠️ DB connection failed, continuing with strategy generation:', error.message);
+    dbError = error.message;
+  }
 
   return new Response(JSON.stringify({
     success: true,
@@ -383,7 +428,11 @@ async function findGuestPostOpportunities(supabase: any, data: any) {
     expected_acceptances: Math.round(targetPublications.length * 0.3),
     potential_backlinks: contentIdeas.reduce((sum, idea) => sum + idea.backlink_opportunities, 0),
     average_domain_authority: Math.round(targetPublications.reduce((sum, pub) => sum + pub.domain_authority, 0) / targetPublications.length),
-    next_step: 'Begin content creation and outreach'
+    next_step: 'Begin content creation and outreach',
+    stored: stored,
+    dbError: dbError,
+    target_publications: targetPublications,
+    content_calendar: contentIdeas
   }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
@@ -467,20 +516,33 @@ async function createContentAssets(supabase: any, data: any) {
     }
   ];
 
-  // Store content creation plan
-  const { error } = await supabase
-    .from('linkable_content_assets')
-    .insert({
-      content_strategy: 'High-Value Backlink Attraction',
-      planned_assets: contentAssets,
-      total_assets: contentAssets.length,
-      estimated_total_backlinks: contentAssets.reduce((sum, asset) => sum + asset.estimated_backlinks, 0),
-      production_timeline: '6-8 weeks',
-      status: 'planning_complete',
-      created_at: new Date().toISOString()
-    });
+  // Store content creation plan with best-effort DB write
+  let stored = false;
+  let dbError = null;
+  
+  try {
+    const { error } = await supabase
+      .from('linkable_content_assets')
+      .insert({
+        content_strategy: 'High-Value Backlink Attraction',
+        planned_assets: contentAssets,
+        total_assets: contentAssets.length,
+        estimated_total_backlinks: contentAssets.reduce((sum, asset) => sum + asset.estimated_backlinks, 0),
+        production_timeline: '6-8 weeks',
+        status: 'planning_complete',
+        created_at: new Date().toISOString()
+      });
 
-  if (error) throw error;
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed, continuing with content plan:', error.message);
+      dbError = error.message;
+    }
+  } catch (error) {
+    console.warn('⚠️ DB connection failed, continuing with content plan:', error.message);
+    dbError = error.message;
+  }
 
   return new Response(JSON.stringify({
     success: true,
@@ -524,18 +586,31 @@ async function monitorBacklinks(supabase: any, data: any) {
     ]
   };
 
-  // Store monitoring configuration
-  const { error } = await supabase
-    .from('backlink_monitoring_config')
-    .upsert({
-      domain: 'talentxcel.in',
-      config: monitoringSetup,
-      status: 'active',
-      last_updated: new Date().toISOString(),
-      next_check: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-    });
+  // Store monitoring configuration with best-effort DB write
+  let stored = false;
+  let dbError = null;
+  
+  try {
+    const { error } = await supabase
+      .from('backlink_monitoring_config')
+      .upsert({
+        domain: 'talentxcel.in',
+        config: monitoringSetup,
+        status: 'active',
+        last_updated: new Date().toISOString(),
+        next_check: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      });
 
-  if (error) throw error;
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed, continuing with monitoring setup:', error.message);
+      dbError = error.message;
+    }
+  } catch (error) {
+    console.warn('⚠️ DB connection failed, continuing with monitoring setup:', error.message);
+    dbError = error.message;
+  }
 
   return new Response(JSON.stringify({
     success: true,
