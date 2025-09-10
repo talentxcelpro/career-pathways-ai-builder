@@ -408,12 +408,7 @@ const SEOSuite = () => {
         </TabsContent>
 
         <TabsContent value="keywords">
-          <ConnectProviderCard 
-            title="Keyword Research & Tracking"
-            description="Connect Google Search Console to access real keyword data and rankings"
-            providerName="Google Search Console"
-            onConnect={() => toast.info('Google Search Console integration coming soon!')}
-          />
+          <SEOKeywordResearch />
         </TabsContent>
 
         <TabsContent value="audit">
@@ -425,21 +420,11 @@ const SEOSuite = () => {
         </TabsContent>
 
         <TabsContent value="tracking">
-          <ConnectProviderCard 
-            title="Rank Tracking"
-            description="Monitor your keyword positions across search engines"
-            providerName="Rank Tracking API"
-            onConnect={() => toast.info('Rank tracking integration coming soon!')}
-          />
+          <SEORankTracker />
         </TabsContent>
 
         <TabsContent value="backlinks">
-          <ConnectProviderCard 
-            title="Backlink Analysis"
-            description="Connect Ahrefs or SEMrush for comprehensive backlink data"
-            providerName="Ahrefs / SEMrush"
-            onConnect={() => toast.info('Backlink analysis integration coming soon!')}
-          />
+          <SEOBacklinkAnalyzer />
         </TabsContent>
 
         <TabsContent value="competitors">
