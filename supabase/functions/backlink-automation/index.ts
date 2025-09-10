@@ -651,28 +651,41 @@ async function analyzeCompetitorBacklinks(supabase: any, data: any) {
     }
   ];
 
-  // Store competitor analysis
-  const { error } = await supabase
-    .from('competitor_backlink_analysis')
-    .insert({
-      analysis_date: new Date().toISOString(),
-      competitors_analyzed: competitorAnalysis,
-      key_insights: [
-        'Educational partnerships are underutilized by TalentXcel',
-        'Industry reports generate the most high-quality backlinks',
-        'Government collaboration opportunities exist',
-        'News publication relationships need development'
-      ],
-      actionable_opportunities: [
-        'Launch university partnership program',
-        'Create annual industry reports',
-        'Develop government skill initiative partnerships',
-        'Build media relations strategy'
-      ],
-      status: 'analysis_complete'
-    });
+  // Store competitor analysis with best-effort DB write
+  let stored = false;
+  let dbError = null;
 
-  if (error) throw error;
+  try {
+    const { error } = await supabase
+      .from('competitor_backlink_analysis')
+      .insert({
+        analysis_date: new Date().toISOString(),
+        competitors_analyzed: competitorAnalysis,
+        key_insights: [
+          'Educational partnerships are underutilized by TalentXcel',
+          'Industry reports generate the most high-quality backlinks',
+          'Government collaboration opportunities exist',
+          'News publication relationships need development'
+        ],
+        actionable_opportunities: [
+          'Launch university partnership program',
+          'Create annual industry reports',
+          'Develop government skill initiative partnerships',
+          'Build media relations strategy'
+        ],
+        status: 'analysis_complete'
+      });
+
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed, continuing with analysis:', error.message);
+      dbError = error.message;
+    }
+  } catch (error: any) {
+    console.warn('⚠️ DB connection failed, continuing with analysis:', error.message);
+    dbError = error.message;
+  }
 
   return new Response(JSON.stringify({
     success: true,
