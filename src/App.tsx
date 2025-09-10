@@ -148,12 +148,13 @@ const App = () => {
                   {/* <ContentSecurityPolicy /> */}
                 <Toaster
                   duration={10000}
-                  position="top-center"
+                  position="top-right"
                   toastOptions={{
                     style: {
                       background: 'hsl(var(--background))',
                       color: 'hsl(var(--foreground))',
                       border: '1px solid hsl(var(--border))',
+                      marginTop: '80px', // Avoid navbar overlap
                     },
                   }}
                 />
