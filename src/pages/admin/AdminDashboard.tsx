@@ -65,6 +65,11 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* Job Generator for SEO - High Priority */}
+        <div className="mt-8">
+          <JobGenerator />
+        </div>
+
         {/* Email System Test Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <EmailSystemTest />
@@ -74,11 +79,6 @@ const AdminDashboard = () => {
         
         <div className="mt-6">
           <ProfileReminderEmailSender />
-        </div>
-        
-        {/* Job Generator for SEO */}
-        <div className="mt-8">
-          <JobGenerator />
         </div>
         
         {/* System Health Monitoring */}
