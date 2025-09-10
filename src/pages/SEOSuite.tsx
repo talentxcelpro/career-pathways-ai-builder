@@ -318,26 +318,6 @@ const SEOSuite = () => {
         <TabsContent value="dashboard" className="space-y-6">
           <SEODashboard />
         </TabsContent>
-                    { issue: 'Missing alt text', pages: 45, severity: 'low' },
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-                      <div>
-                        <div className="font-medium">{item.issue}</div>
-                        <div className="text-sm text-muted-foreground">{item.pages} pages affected</div>
-                      </div>
-                      <Badge variant={
-                        item.severity === 'high' ? 'destructive' : 
-                        item.severity === 'medium' ? 'secondary' : 'outline'
-                      }>
-                        {item.severity}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
 
         <TabsContent value="keywords">
           <SEOKeywordResearch />

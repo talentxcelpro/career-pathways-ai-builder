@@ -1,6 +1,6 @@
 
 import React from 'react';
-import SEODashboard from '@/components/seo/SEODashboard';
+import { SEODashboard } from '@/components/seo/SEODashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, TrendingUp, Globe, Users } from 'lucide-react';
