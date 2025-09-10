@@ -76,12 +76,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               const currentPath = window.location.pathname;
               console.log('Current path after signin:', currentPath);
               
+              // Get the intended subdomain path from localStorage or URL params
+              const subdomainPath = localStorage.getItem('subdomain_redirect') || 
+                                   new URLSearchParams(window.location.search).get('redirect') ||
+                                   '';
+              
               // If on auth pages, redirect to onboarding first, then dashboard
               if (currentPath.startsWith('/auth')) {
-                navigate('/onboarding?flow=resume&type=candidate', { replace: true });
+                const onboardingUrl = subdomainPath 
+                  ? `/onboarding?flow=resume&type=candidate&redirect=${encodeURIComponent(subdomainPath)}`
+                  : '/onboarding?flow=resume&type=candidate';
+                navigate(onboardingUrl, { replace: true });
               } else if (currentPath === '/') {
-                const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+                // Use subdomain path if available, otherwise default logic
+                const redirectPath = subdomainPath || 
+                  (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
                 navigate(redirectPath, { replace: true });
+                
+                // Clear the stored redirect
+                localStorage.removeItem('subdomain_redirect');
               }
             }
           }, 100); // Slightly longer delay to ensure navigation works
@@ -137,9 +150,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (currentPath === '/') {
               setTimeout(() => {
                 if (mounted) {
-                  const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+                  // Check for stored subdomain redirect
+                  const subdomainPath = localStorage.getItem('subdomain_redirect');
+                  const redirectPath = subdomainPath || 
+                    (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
                   console.log('Auto-redirecting to', redirectPath);
                   navigate(redirectPath, { replace: true });
+                  
+                  // Clear the stored redirect
+                  if (subdomainPath) {
+                    localStorage.removeItem('subdomain_redirect');
+                  }
                 }
               }, 100);
             }

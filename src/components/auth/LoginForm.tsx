@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight, AlertTriangle } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { getSubdomainRedirect } from '@/utils/subdomainRedirect';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -31,7 +32,9 @@ const LoginForm = () => {
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const subdomainPath = getSubdomainRedirect();
+          const redirectPath = subdomainPath || 
+            (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
           navigate(redirectPath);
         }
       }
@@ -72,11 +75,13 @@ const LoginForm = () => {
       if (data.user) {
         // Login successful - no toast message
         
-        // Redirect to return URL or appropriate dashboard
+        // Redirect to return URL, subdomain path, or appropriate dashboard
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
         } else {
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          const subdomainPath = getSubdomainRedirect();
+          const redirectPath = subdomainPath || 
+            (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
           navigate(redirectPath);
         }
       }
