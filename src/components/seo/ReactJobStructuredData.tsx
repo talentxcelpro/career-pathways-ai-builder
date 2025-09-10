@@ -8,6 +8,7 @@ interface ReactJobStructuredDataProps {
     description: string;
     company_name?: string;
     employment_type?: string;
+    experience_level?: string;
     location: string;
     salary_min?: number;
     salary_max?: number;
@@ -24,6 +25,8 @@ interface ReactJobStructuredDataProps {
       industry?: string;
     };
     requirements?: string;
+    education_requirements?: string;
+    experience_requirements?: string;
     skills_required?: string[];
     benefits?: string[];
     is_remote?: boolean;
@@ -93,7 +96,7 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
   const seoTitle = `${job.title} at ${companyName} | TalentXcel`;
   const seoDescription = job.description.slice(0, 160);
 
-  // Build comprehensive structured data exactly like Next.js example
+  // Build comprehensive structured data for Google Jobs compliance
   const structuredData = {
     "@context": "https://schema.org/",
     "@type": "JobPosting",
@@ -111,16 +114,30 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
       "@type": "Organization",
       name: companyName,
       sameAs: companyWebsite,
-      logo: companyLogo,
+      logo: {
+        "@type": "ImageObject",
+        url: companyLogo
+      }
     },
-    jobLocation: job.is_remote ? {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: country,
+    jobLocation: job.is_remote ? [
+      {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressCountry: country,
+        },
       },
-    } : {
-      "@type": "Place",
+      {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          "addressLocality": city,
+          addressRegion: state,
+          addressCountry: country,
+        },
+      }
+    ] : {
+      "@type": "Place", 
       address: {
         "@type": "PostalAddress",
         streetAddress: job.street_address || "",
@@ -130,20 +147,57 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
         addressCountry: country,
       },
     },
+    // Enhanced salary information for Google Jobs
     baseSalary: (job.salary_min || job.salary_value) ? {
       "@type": "MonetaryAmount",
       currency: currency,
       value: {
         "@type": "QuantitativeValue",
         value: job.salary_value || job.salary_min,
+        minValue: job.salary_min,
+        maxValue: job.salary_max || job.salary_min,
         unitText: job.salary_unit || "YEAR",
       },
     } : undefined,
+    // Google Jobs requirements
     applicantLocationRequirements: {
       "@type": "Country",
       name: countryName,
     },
+    jobLocationType: job.is_remote ? "TELECOMMUTE" : undefined,
+    // Additional Google Jobs fields
+    url: `https://talentxcel.in/jobs/${job.seo_slug || job.id}`,
+    applicationContact: {
+      "@type": "ContactPoint",
+      url: `https://talentxcel.in/jobs/${job.seo_slug || job.id}`,
+      contactType: "application"
+    },
+    // Industry and benefits for better matching
+    industry: job.companies?.industry || "Technology",
+    benefits: job.benefits?.length ? job.benefits : [
+      "Health Insurance",
+      "Flexible Work Hours", 
+      "Career Development"
+    ],
+    // Work hours for Google Jobs
+    workHours: job.employment_type?.toLowerCase().includes('part') ? 
+      "Part-time" : "Full-time",
+    // Education and experience requirements
+    educationRequirements: job.education_requirements || 
+      "Bachelor's degree or equivalent experience",
+    experienceRequirements: job.experience_requirements ||
+      `${job.experience_level || 'Mid-level'} experience required`,
+    // Skills and qualifications
+    skills: job.skills_required?.join(', ') || undefined,
+    qualifications: job.requirements || undefined,
+    // Direct apply capability
     directApply: true,
+    // Posting organization details
+    sourceOrganization: {
+      "@type": "Organization", 
+      name: "TalentXcel",
+      url: "https://talentxcel.in"
+    }
   };
 
   // Remove undefined fields for cleaner JSON
