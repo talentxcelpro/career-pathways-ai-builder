@@ -46,28 +46,7 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/:path*",
-      "destination": "https://talentxcel.in/employer/:path*",
-      "has": [{ "type": "host", "value": "employer.talentxcel.in" }]
-    },
-    {
-      "source": "/:path*",
-      "destination": "https://talentxcel.in/jobs/:path*",
-      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }]
-    },
-    {
-      "source": "/:path*",
-      "destination": "https://talentxcel.in/learning/:path*",
-      "has": [{ "type": "host", "value": "learning.talentxcel.in" }]
-    },
-    {
-      "source": "/:path*",
-      "destination": "https://talentxcel.in/colleges/:path*",
-      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }]
-    }
-  ],
+  "redirects": [],
   "rewrites": [
     {
       "source": "/api/optimized-sitemap-index",
