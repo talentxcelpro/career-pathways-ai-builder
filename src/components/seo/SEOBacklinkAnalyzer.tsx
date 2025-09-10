@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { BacklinkSubcategories } from '@/components/seo/subcategories/BacklinkSubcategories';
 
 interface BacklinkData {
   domain: string;
@@ -90,6 +91,10 @@ export const SEOBacklinkAnalyzer = () => {
 
   return (
     <div className="space-y-6">
+      {/* Enhanced Subcategory Navigation */}
+      <BacklinkSubcategories />
+      
+      {/* Legacy Backlink Analysis Tool */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

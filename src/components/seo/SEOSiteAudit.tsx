@@ -21,6 +21,7 @@ import {
   Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { SiteAuditSubcategories } from '@/components/seo/subcategories/SiteAuditSubcategories';
 
 export const SEOSiteAudit = () => {
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -111,7 +112,10 @@ export const SEOSiteAudit = () => {
 
   return (
     <div className="space-y-6">
-      {/* Audit Input */}
+      {/* Enhanced Subcategory Navigation */}
+      <SiteAuditSubcategories />
+      
+      {/* Quick Site Audit Tool */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

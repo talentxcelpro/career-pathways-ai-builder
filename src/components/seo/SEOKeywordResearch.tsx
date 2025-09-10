@@ -19,6 +19,7 @@ import {
   Filter
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { KeywordSubcategories } from '@/components/seo/subcategories/KeywordSubcategories';
 
 export const SEOKeywordResearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -136,7 +137,10 @@ export const SEOKeywordResearch = () => {
 
   return (
     <div className="space-y-6">
-      {/* Search Header */}
+      {/* Enhanced Subcategory Navigation */}
+      <KeywordSubcategories />
+      
+      {/* Legacy Keyword Research - Moved to Detailed Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
