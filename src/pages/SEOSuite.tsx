@@ -37,6 +37,7 @@ import { AIContentGenerator } from '@/components/seo/advanced/AIContentGenerator
 import { RealTimeSEOAnalyzer } from '@/components/seo/advanced/RealTimeSEOAnalyzer';
 import { PredictiveSEOInsights } from '@/components/seo/advanced/PredictiveSEOInsights';
 import { SEOAutomationWorkflows } from '@/components/seo/advanced/SEOAutomationWorkflows';
+import { AdvancedCompetitorIntelligence } from '@/components/seo/enhanced/AdvancedCompetitorIntelligence';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
