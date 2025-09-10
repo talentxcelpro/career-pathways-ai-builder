@@ -22,6 +22,7 @@ const LoginForm = () => {
 
   // Get return URL from query params
   const returnUrl = searchParams.get('returnUrl');
+  const redirectParam = searchParams.get('redirect');
 
   useEffect(() => {
     // Check if user is already logged in
@@ -31,16 +32,17 @@ const LoginForm = () => {
         // User is already logged in, redirect appropriately
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
+        } else if (redirectParam) {
+          navigate(redirectParam);
         } else {
           const subdomainPath = getSubdomainRedirect();
-          const redirectPath = subdomainPath || 
-            (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
+          const redirectPath = subdomainPath || '/network';
           navigate(redirectPath);
         }
       }
     };
     checkUser();
-  }, [navigate, returnUrl]);
+  }, [navigate, returnUrl, redirectParam]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,10 +80,11 @@ const LoginForm = () => {
         // Redirect to return URL, subdomain path, or appropriate dashboard
         if (returnUrl) {
           navigate(decodeURIComponent(returnUrl));
+        } else if (redirectParam) {
+          navigate(redirectParam);
         } else {
           const subdomainPath = getSubdomainRedirect();
-          const redirectPath = subdomainPath || 
-            (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
+          const redirectPath = subdomainPath || '/network';
           navigate(redirectPath);
         }
       }

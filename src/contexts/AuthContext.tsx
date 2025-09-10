@@ -88,9 +88,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   : '/onboarding?flow=resume&type=candidate';
                 navigate(onboardingUrl, { replace: true });
               } else if (currentPath === '/') {
-                // Use subdomain path if available, otherwise default logic
-                const redirectPath = subdomainPath || 
-                  (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
+                // Use subdomain path if available, otherwise default to network
+                const redirectPath = subdomainPath || '/network';
                 navigate(redirectPath, { replace: true });
                 
                 // Clear the stored redirect
@@ -152,8 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 if (mounted) {
                   // Check for stored subdomain redirect
                   const subdomainPath = localStorage.getItem('subdomain_redirect');
-                  const redirectPath = subdomainPath || 
-                    (window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network');
+                  const redirectPath = subdomainPath || '/network';
                   console.log('Auto-redirecting to', redirectPath);
                   navigate(redirectPath, { replace: true });
                   

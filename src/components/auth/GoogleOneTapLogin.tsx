@@ -19,8 +19,11 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const isDisabled = disabled || !!user;
 
   const handleSuccess = () => {
-    // Redirect based on domain
-    const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+    // Get redirect path from URL params or stored context
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectParam = urlParams.get('redirect');
+    const storedRedirect = localStorage.getItem('subdomain_redirect');
+    const redirectPath = redirectParam || storedRedirect || '/network';
     navigate(redirectPath, { replace: true });
   };
 

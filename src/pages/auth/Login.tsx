@@ -2,14 +2,15 @@
 import React, { useEffect } from 'react';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import LoginForm from '@/components/auth/LoginForm';
-import { extractSubdomainContext, setSubdomainRedirect } from '@/utils/subdomainRedirect';
+import { setSubdomainRedirect } from '@/utils/subdomainRedirect';
 
 const Login = () => {
-  // Store subdomain context on component mount
+  // Store subdomain context from URL params
   useEffect(() => {
-    const subdomainPath = extractSubdomainContext();
-    if (subdomainPath) {
-      setSubdomainRedirect(subdomainPath);
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectParam = urlParams.get('redirect');
+    if (redirectParam) {
+      setSubdomainRedirect(redirectParam);
     }
   }, []);
 

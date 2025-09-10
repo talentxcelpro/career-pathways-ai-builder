@@ -134,113 +134,17 @@ const publicRoutes = [
 ];
 
 const App = () => {
-  // Check if this is a subdomain
+  // Check if this is a subdomain - simplified as fallback only
   const hostname = window.location.hostname;
   const isSubdomain = hostname.includes('.talentxcel.in') && hostname !== 'talentxcel.in';
   
+  // Subdomain handling as safety fallback (should be redirected by Vercel)
   if (isSubdomain) {
-    // Show subdomain-specific login gateway
-    if (hostname.includes('employer.talentxcel.in')) {
-      return (
-        <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <TooltipProvider>
-                <AnalyticsProvider>
-                  <AuthErrorBoundary>
-                    <AuthProvider>
-                      <NotificationProvider>
-                        <SubdomainGateway 
-                          subdomain="employer" 
-                          title="Employer Portal" 
-                          description="Access your employer dashboard and hiring tools" 
-                        />
-                        <Toaster />
-                      </NotificationProvider>
-                    </AuthProvider>
-                  </AuthErrorBoundary>
-                </AnalyticsProvider>
-              </TooltipProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
-        </ErrorBoundary>
-      );
-    } else if (hostname.includes('jobs.talentxcel.in')) {
-      return (
-        <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <TooltipProvider>
-                <AnalyticsProvider>
-                  <AuthErrorBoundary>
-                    <AuthProvider>
-                      <NotificationProvider>
-                        <SubdomainGateway 
-                          subdomain="jobs" 
-                          title="Job Portal" 
-                          description="Find your perfect job opportunity" 
-                        />
-                        <Toaster />
-                      </NotificationProvider>
-                    </AuthProvider>
-                  </AuthErrorBoundary>
-                </AnalyticsProvider>
-              </TooltipProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
-        </ErrorBoundary>
-      );
-    } else if (hostname.includes('learning.talentxcel.in')) {
-      return (
-        <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <TooltipProvider>
-                <AnalyticsProvider>
-                  <AuthErrorBoundary>
-                    <AuthProvider>
-                      <NotificationProvider>
-                        <SubdomainGateway 
-                          subdomain="learning" 
-                          title="Learning Portal" 
-                          description="Advance your skills and career" 
-                        />
-                        <Toaster />
-                      </NotificationProvider>
-                    </AuthProvider>
-                  </AuthErrorBoundary>
-                </AnalyticsProvider>
-              </TooltipProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
-        </ErrorBoundary>
-      );
-    } else if (hostname.includes('colleges.talentxcel.in')) {
-      return (
-        <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <TooltipProvider>
-                <AnalyticsProvider>
-                  <AuthErrorBoundary>
-                    <AuthProvider>
-                      <NotificationProvider>
-                        <SubdomainGateway 
-                          subdomain="colleges" 
-                          title="College Portal" 
-                          description="Discover top colleges and universities" 
-                        />
-                        <Toaster />
-                      </NotificationProvider>
-                    </AuthProvider>
-                  </AuthErrorBoundary>
-                </AnalyticsProvider>
-              </TooltipProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
-        </ErrorBoundary>
-      );
-    }
+    console.warn('Subdomain accessed directly - should be redirected by Vercel');
+    // Redirect to main domain with proper query params
+    const subdomainType = hostname.split('.')[0];
+    window.location.href = `https://talentxcel.in/auth/login?redirect=%2F${subdomainType}`;
+    return null;
   }
 
   return (

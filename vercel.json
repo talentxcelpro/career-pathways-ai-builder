@@ -46,7 +46,52 @@
       ]
     }
   ],
-  "redirects": [],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "employer.talentxcel.in"
+        }
+      ],
+      "destination": "https://talentxcel.in/auth/login?redirect=%2Femployer",
+      "permanent": false
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
+      "destination": "https://talentxcel.in/auth/login?redirect=%2Fjobs",
+      "permanent": false
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "learning.talentxcel.in"
+        }
+      ],
+      "destination": "https://talentxcel.in/auth/login?redirect=%2Flearning",
+      "permanent": false
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "colleges.talentxcel.in"
+        }
+      ],
+      "destination": "https://talentxcel.in/auth/login?redirect=%2Fcolleges",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/optimized-sitemap-index",
