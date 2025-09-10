@@ -33,11 +33,16 @@ import { SEORankTracker } from '@/components/seo/SEORankTracker';
 import { SEOBacklinkAnalyzer } from '@/components/seo/SEOBacklinkAnalyzer';
 import { SEOCompetitorAnalysis } from '@/components/seo/SEOCompetitorAnalysis';
 import { SEOReporting } from '@/components/seo/SEOReporting';
-import { AIContentGenerator } from '@/components/seo/advanced/AIContentGenerator';
+
 import { RealTimeSEOAnalyzer } from '@/components/seo/advanced/RealTimeSEOAnalyzer';
 import { PredictiveSEOInsights } from '@/components/seo/advanced/PredictiveSEOInsights';
 import { SEOAutomationWorkflows } from '@/components/seo/advanced/SEOAutomationWorkflows';
 import { AdvancedCompetitorIntelligence } from '@/components/seo/enhanced/AdvancedCompetitorIntelligence';
+import { LocalSEOTracker } from '@/components/seo/enhanced/LocalSEOTracker';
+import { AIContentGenerator } from '@/components/seo/phase3/AIContentGenerator';
+import { MLRankPredictor } from '@/components/seo/phase3/MLRankPredictor';
+import { SEOAutomationEngine } from '@/components/seo/phase3/SEOAutomationEngine';
+import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
@@ -278,19 +283,19 @@ const SEOSuite = () => {
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-12 bg-muted/50">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="keywords">Keywords</TabsTrigger>
-          <TabsTrigger value="audit">Site Audit</TabsTrigger>
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="tracking">Tracking</TabsTrigger>
-          <TabsTrigger value="backlinks">Backlinks</TabsTrigger>
-          <TabsTrigger value="competitors">Competitors</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="ai-content">AI Content</TabsTrigger>
-          <TabsTrigger value="realtime">Real-time</TabsTrigger>
-          <TabsTrigger value="predictive">Predictive</TabsTrigger>
-          <TabsTrigger value="automation">Automation</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-muted/50">
+          <TabsTrigger value="dashboard" className="text-xs">Dashboard</TabsTrigger>
+          <TabsTrigger value="keywords" className="text-xs">Keywords</TabsTrigger>
+          <TabsTrigger value="audit" className="text-xs">Site Audit</TabsTrigger>
+          <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
+          <TabsTrigger value="tracking" className="text-xs">Tracking</TabsTrigger>
+          <TabsTrigger value="backlinks" className="text-xs">Backlinks</TabsTrigger>
+          <TabsTrigger value="competitors" className="text-xs">Competitors</TabsTrigger>
+          <TabsTrigger value="reports" className="text-xs">Reports</TabsTrigger>
+          <TabsTrigger value="ai-content" className="text-xs">AI Content</TabsTrigger>
+          <TabsTrigger value="ml-predict" className="text-xs">ML Predict</TabsTrigger>
+          <TabsTrigger value="automation" className="text-xs">Automation</TabsTrigger>
+          <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -445,16 +450,16 @@ const SEOSuite = () => {
           <AIContentGenerator />
         </TabsContent>
 
-        <TabsContent value="realtime">
-          <RealTimeSEOAnalyzer />
-        </TabsContent>
-
-        <TabsContent value="predictive">
-          <PredictiveSEOInsights />
+        <TabsContent value="ml-predict">
+          <MLRankPredictor />
         </TabsContent>
 
         <TabsContent value="automation">
-          <SEOAutomationWorkflows />
+          <SEOAutomationEngine />
+        </TabsContent>
+
+        <TabsContent value="white-label">
+          <WhiteLabelReports />
         </TabsContent>
       </Tabs>
     </div>

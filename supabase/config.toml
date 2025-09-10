@@ -120,4 +120,17 @@ verify_jwt = false
 [functions.storage-proxy]
 verify_jwt = false
 
+# Phase 3: Advanced AI SEO Functions
+[functions.ai-seo-content-generator]
+verify_jwt = false
+
+[functions.seo-rank-predictor]
+verify_jwt = false
+
+[functions.seo-automation-engine]
+verify_jwt = false
+
+[functions.white-label-reports]
+verify_jwt = false
+
 
