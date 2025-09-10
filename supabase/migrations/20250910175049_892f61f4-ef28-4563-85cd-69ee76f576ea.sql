@@ -1,0 +1,405 @@
+-- Content Seeding: Add 100+ realistic job listings with proper SEO optimization
+-- This migration seeds the jobs table with diverse, realistic job postings
+
+INSERT INTO public.jobs (
+  title, company, location, description, requirements, skills, 
+  experience_level, salary_min, salary_max, job_type, remote_option,
+  seo_slug, posted_at, application_deadline, industry, department
+) VALUES 
+
+-- Technology Jobs - Mumbai
+('Senior Software Engineer - Full Stack', 'TechCorp India', 'Mumbai', 
+'Join our innovative team to build scalable web applications using React, Node.js, and cloud technologies. Lead technical decisions and mentor junior developers.',
+'5+ years experience in full-stack development, proficiency in React, Node.js, AWS/Azure, strong problem-solving skills',
+'{"React", "Node.js", "JavaScript", "AWS", "MongoDB", "REST APIs"}',
+'Senior', 800000, 1500000, 'Full-time', true,
+'senior-software-engineer-full-stack-mumbai-tech', NOW() - INTERVAL '2 days', NOW() + INTERVAL '25 days',
+'Technology', 'Engineering'),
+
+('Data Scientist - Machine Learning', 'DataFlow Solutions', 'Mumbai',
+'Work with large datasets to build ML models for predictive analytics. Collaborate with product teams to deploy AI solutions.',
+'3+ years in data science, Python, machine learning frameworks, statistical analysis experience',
+'{"Python", "Machine Learning", "TensorFlow", "Pandas", "SQL", "Statistics"}',
+'Mid-level', 600000, 1200000, 'Full-time', false,
+'data-scientist-machine-learning-mumbai-dataflow', NOW() - INTERVAL '1 day', NOW() + INTERVAL '28 days',
+'Technology', 'Data Science'),
+
+('Frontend Developer - React Specialist', 'WebCraft Studios', 'Mumbai',
+'Create beautiful, responsive user interfaces using React and modern CSS frameworks. Work closely with designers and backend teams.',
+'2+ years React experience, strong CSS skills, experience with component libraries',
+'{"React", "JavaScript", "CSS", "HTML", "Git", "Figma"}',
+'Mid-level', 400000, 800000, 'Full-time', true,
+'frontend-developer-react-specialist-mumbai-webcraft', NOW() - INTERVAL '3 days', NOW() + INTERVAL '22 days',
+'Technology', 'Engineering'),
+
+-- Technology Jobs - Bangalore
+('DevOps Engineer - Cloud Infrastructure', 'CloudScale Systems', 'Bangalore',
+'Design and maintain scalable cloud infrastructure. Implement CI/CD pipelines and monitor system performance.',
+'3+ years DevOps experience, AWS/Azure expertise, Docker, Kubernetes, scripting skills',
+'{"AWS", "Docker", "Kubernetes", "Jenkins", "Python", "Terraform"}',
+'Mid-level', 700000, 1300000, 'Full-time', false,
+'devops-engineer-cloud-infrastructure-bangalore-cloudscale', NOW() - INTERVAL '1 day', NOW() + INTERVAL '30 days',
+'Technology', 'Infrastructure'),
+
+('Product Manager - Tech Products', 'InnovateTech', 'Bangalore',
+'Lead product strategy and roadmap for B2B SaaS products. Work with engineering, design, and sales teams.',
+'4+ years product management experience, technical background preferred, strong analytical skills',
+'{"Product Management", "Analytics", "SQL", "Agile", "User Research", "Strategy"}',
+'Senior', 900000, 1800000, 'Full-time', true,
+'product-manager-tech-products-bangalore-innovatetech', NOW() - INTERVAL '4 days', NOW() + INTERVAL '20 days',
+'Technology', 'Product'),
+
+('UI/UX Designer - Mobile Apps', 'AppDesign Pro', 'Bangalore',
+'Design intuitive mobile applications for iOS and Android. Create wireframes, prototypes, and conduct user research.',
+'3+ years UI/UX design experience, mobile design expertise, proficiency in design tools',
+'{"UI Design", "UX Design", "Figma", "Sketch", "Prototyping", "User Research"}',
+'Mid-level', 500000, 1000000, 'Full-time', true,
+'ui-ux-designer-mobile-apps-bangalore-appdesign', NOW() - INTERVAL '2 days', NOW() + INTERVAL '25 days',
+'Technology', 'Design'),
+
+-- Technology Jobs - Delhi
+('Backend Developer - Java Spring', 'Enterprise Solutions Ltd', 'Delhi',
+'Develop robust backend services using Java Spring framework. Work on microservices architecture and API development.',
+'3+ years Java development, Spring framework expertise, database design experience',
+'{"Java", "Spring Boot", "Microservices", "REST APIs", "MySQL", "Redis"}',
+'Mid-level', 550000, 1100000, 'Full-time', false,
+'backend-developer-java-spring-delhi-enterprise', NOW() - INTERVAL '1 day', NOW() + INTERVAL '27 days',
+'Technology', 'Engineering'),
+
+('Cybersecurity Analyst', 'SecureNet India', 'Delhi',
+'Monitor and protect organizational systems from cyber threats. Conduct security assessments and incident response.',
+'2+ years cybersecurity experience, knowledge of security frameworks, incident response skills',
+'{"Cybersecurity", "Network Security", "SIEM", "Penetration Testing", "Risk Assessment", "Compliance"}',
+'Mid-level', 600000, 1200000, 'Full-time', false,
+'cybersecurity-analyst-delhi-securenet', NOW() - INTERVAL '3 days', NOW() + INTERVAL '23 days',
+'Technology', 'Security'),
+
+-- Technology Jobs - Hyderabad
+('QA Automation Engineer', 'TestPro Solutions', 'Hyderabad',
+'Design and implement automated testing frameworks for web and mobile applications. Ensure quality delivery.',
+'3+ years QA automation experience, Selenium, API testing, programming knowledge',
+'{"Selenium", "API Testing", "Java", "TestNG", "Automation", "Manual Testing"}',
+'Mid-level', 450000, 900000, 'Full-time', true,
+'qa-automation-engineer-hyderabad-testpro', NOW() - INTERVAL '2 days', NOW() + INTERVAL '26 days',
+'Technology', 'Quality Assurance'),
+
+('Mobile App Developer - React Native', 'MobileFirst Tech', 'Hyderabad',
+'Build cross-platform mobile applications using React Native. Collaborate with design and backend teams.',
+'2+ years React Native experience, mobile development knowledge, app store deployment experience',
+'{"React Native", "JavaScript", "Mobile Development", "Redux", "API Integration", "Git"}',
+'Mid-level', 500000, 1000000, 'Full-time', true,
+'mobile-app-developer-react-native-hyderabad-mobilefirst', NOW() - INTERVAL '1 day', NOW() + INTERVAL '29 days',
+'Technology', 'Mobile Development'),
+
+-- Finance Jobs
+('Financial Analyst', 'FinanceCorner Advisory', 'Mumbai',
+'Analyze financial data, prepare reports, and support investment decisions. Work with senior management on strategic planning.',
+'2+ years financial analysis experience, strong Excel skills, knowledge of financial modeling',
+'{"Financial Analysis", "Excel", "Financial Modeling", "Investment Analysis", "Reporting", "SQL"}',
+'Mid-level', 400000, 800000, 'Full-time', false,
+'financial-analyst-mumbai-financecorner', NOW() - INTERVAL '2 days', NOW() + INTERVAL '24 days',
+'Finance', 'Analysis'),
+
+('Investment Banking Associate', 'Capital Growth Partners', 'Mumbai',
+'Support M&A transactions, prepare pitch materials, conduct financial due diligence and valuation analysis.',
+'3+ years investment banking experience, MBA preferred, strong analytical and presentation skills',
+'{"Investment Banking", "Financial Modeling", "M&A", "Valuation", "Due Diligence", "PowerPoint"}',
+'Senior', 1200000, 2500000, 'Full-time', false,
+'investment-banking-associate-mumbai-capitalgrowth', NOW() - INTERVAL '1 day', NOW() + INTERVAL '21 days',
+'Finance', 'Investment Banking'),
+
+('Risk Management Specialist', 'RiskShield Financial', 'Bangalore',
+'Assess and mitigate financial risks, develop risk models, and ensure regulatory compliance.',
+'3+ years risk management experience, knowledge of regulatory frameworks, strong analytical skills',
+'{"Risk Management", "Compliance", "Financial Risk", "Regulatory", "Analytics", "Reporting"}',
+'Mid-level', 600000, 1200000, 'Full-time', false,
+'risk-management-specialist-bangalore-riskshield', NOW() - INTERVAL '3 days', NOW() + INTERVAL '22 days',
+'Finance', 'Risk Management'),
+
+-- Marketing Jobs
+('Digital Marketing Manager', 'GrowthHack Marketing', 'Delhi',
+'Lead digital marketing campaigns across multiple channels. Manage SEO, SEM, social media, and content marketing.',
+'4+ years digital marketing experience, Google Ads certified, strong analytical skills',
+'{"Digital Marketing", "SEO", "Google Ads", "Social Media", "Content Marketing", "Analytics"}',
+'Senior', 500000, 1000000, 'Full-time', true,
+'digital-marketing-manager-delhi-growthhack', NOW() - INTERVAL '2 days', NOW() + INTERVAL '25 days',
+'Marketing', 'Digital Marketing'),
+
+('Content Marketing Specialist', 'ContentCraft Agency', 'Bangalore',
+'Create engaging content for blogs, social media, and marketing campaigns. Develop content strategy and measure performance.',
+'2+ years content marketing experience, excellent writing skills, SEO knowledge',
+'{"Content Marketing", "Content Writing", "SEO", "Social Media", "Blog Writing", "Analytics"}',
+'Mid-level', 350000, 700000, 'Full-time', true,
+'content-marketing-specialist-bangalore-contentcraft', NOW() - INTERVAL '1 day', NOW() + INTERVAL '28 days',
+'Marketing', 'Content Marketing'),
+
+('Performance Marketing Lead', 'AdBoost Digital', 'Mumbai',
+'Manage paid advertising campaigns across Google, Facebook, and other platforms. Optimize for ROI and performance.',
+'3+ years performance marketing experience, platform certifications, data-driven approach',
+'{"Performance Marketing", "Google Ads", "Facebook Ads", "ROI Optimization", "Analytics", "A/B Testing"}',
+'Senior', 600000, 1200000, 'Full-time', false,
+'performance-marketing-lead-mumbai-adboost', NOW() - INTERVAL '2 days', NOW() + INTERVAL '26 days',
+'Marketing', 'Performance Marketing'),
+
+-- Sales Jobs
+('Sales Executive - B2B', 'SalesForce India', 'Delhi',
+'Generate leads and close deals for B2B software solutions. Build relationships with enterprise clients.',
+'2+ years B2B sales experience, strong communication skills, target-driven approach',
+'{"B2B Sales", "Lead Generation", "CRM", "Negotiation", "Client Relationship", "Presentation"}',
+'Mid-level', 300000, 600000, 'Full-time', false,
+'sales-executive-b2b-delhi-salesforce', NOW() - INTERVAL '1 day', NOW() + INTERVAL '30 days',
+'Sales', 'B2B Sales'),
+
+('Business Development Manager', 'GrowthPartners Ltd', 'Bangalore',
+'Identify new business opportunities, develop partnerships, and drive revenue growth.',
+'3+ years business development experience, strong networking skills, strategic thinking',
+'{"Business Development", "Partnership", "Strategy", "Networking", "Revenue Growth", "Negotiation"}',
+'Senior', 700000, 1400000, 'Full-time', true,
+'business-development-manager-bangalore-growthpartners', NOW() - INTERVAL '3 days', NOW() + INTERVAL '23 days',
+'Sales', 'Business Development'),
+
+('Account Manager - Enterprise', 'ClientSuccess Pro', 'Mumbai',
+'Manage relationships with enterprise clients, ensure customer satisfaction, and drive account growth.',
+'3+ years account management experience, enterprise client handling, strong relationship skills',
+'{"Account Management", "Client Relationship", "Customer Success", "Enterprise Sales", "Communication", "CRM"}',
+'Senior', 600000, 1200000, 'Full-time', false,
+'account-manager-enterprise-mumbai-clientsuccess', NOW() - INTERVAL '2 days', NOW() + INTERVAL '24 days',
+'Sales', 'Account Management'),
+
+-- HR Jobs
+('HR Business Partner', 'PeopleFirst HR', 'Bangalore',
+'Partner with business leaders on HR strategy, talent management, and organizational development.',
+'4+ years HR experience, business partnering experience, strong interpersonal skills',
+'{"HR Strategy", "Talent Management", "Employee Relations", "Performance Management", "Recruitment", "Training"}',
+'Senior', 600000, 1200000, 'Full-time', false,
+'hr-business-partner-bangalore-peoplefirst', NOW() - INTERVAL '1 day', NOW() + INTERVAL '27 days',
+'Human Resources', 'HR Business Partnering'),
+
+('Talent Acquisition Specialist', 'TalentHunt Solutions', 'Delhi',
+'Source and recruit top talent across various roles. Manage the complete recruitment lifecycle.',
+'2+ years recruitment experience, sourcing skills, knowledge of recruitment tools',
+'{"Recruitment", "Talent Sourcing", "Interviewing", "ATS", "LinkedIn Recruiting", "Candidate Assessment"}',
+'Mid-level', 350000, 700000, 'Full-time', true,
+'talent-acquisition-specialist-delhi-talenthunt', NOW() - INTERVAL '2 days', NOW() + INTERVAL '25 days',
+'Human Resources', 'Talent Acquisition'),
+
+-- Operations Jobs
+('Operations Manager', 'EfficiencyPro Operations', 'Mumbai',
+'Oversee daily operations, implement process improvements, and ensure operational excellence.',
+'4+ years operations experience, process improvement knowledge, leadership skills',
+'{"Operations Management", "Process Improvement", "Team Leadership", "Project Management", "Analytics", "Quality Control"}',
+'Senior', 700000, 1300000, 'Full-time', false,
+'operations-manager-mumbai-efficiencypro', NOW() - INTERVAL '1 day', NOW() + INTERVAL '28 days',
+'Operations', 'Operations Management'),
+
+('Supply Chain Analyst', 'LogisticsMaster Inc', 'Chennai',
+'Analyze supply chain data, optimize inventory levels, and improve procurement processes.',
+'2+ years supply chain experience, strong analytical skills, knowledge of SCM tools',
+'{"Supply Chain", "Inventory Management", "Procurement", "Data Analysis", "Excel", "ERP Systems"}',
+'Mid-level', 400000, 800000, 'Full-time', false,
+'supply-chain-analyst-chennai-logisticsmaster', NOW() - INTERVAL '3 days', NOW() + INTERVAL '22 days',
+'Operations', 'Supply Chain'),
+
+-- Healthcare Jobs
+('Medical Representative', 'HealthCare Solutions Ltd', 'Delhi',
+'Promote pharmaceutical products to healthcare professionals, build relationships with doctors and hospitals.',
+'1+ years pharma sales experience, life sciences background preferred, strong communication skills',
+'{"Pharmaceutical Sales", "Medical Knowledge", "Relationship Building", "Presentation", "Territory Management", "CRM"}',
+'Entry-level', 250000, 500000, 'Full-time', false,
+'medical-representative-delhi-healthcare', NOW() - INTERVAL '2 days', NOW() + INTERVAL '26 days',
+'Healthcare', 'Pharmaceutical Sales'),
+
+('Clinical Research Coordinator', 'MedResearch Institute', 'Bangalore',
+'Coordinate clinical trials, ensure compliance with protocols, and manage patient recruitment.',
+'2+ years clinical research experience, knowledge of GCP guidelines, attention to detail',
+'{"Clinical Research", "GCP", "Protocol Management", "Patient Recruitment", "Data Management", "Compliance"}',
+'Mid-level', 400000, 800000, 'Full-time', false,
+'clinical-research-coordinator-bangalore-medresearch', NOW() - INTERVAL '1 day', NOW() + INTERVAL '29 days',
+'Healthcare', 'Clinical Research'),
+
+-- Education Jobs
+('Academic Content Developer', 'EduTech Learning', 'Pune',
+'Develop educational content for online courses, create assessments, and ensure content quality.',
+'2+ years content development experience, subject matter expertise, instructional design knowledge',
+'{"Content Development", "Instructional Design", "Curriculum Development", "Educational Technology", "Assessment Design", "Subject Expertise"}',
+'Mid-level', 350000, 700000, 'Full-time', true,
+'academic-content-developer-pune-edutech', NOW() - INTERVAL '2 days', NOW() + INTERVAL '25 days',
+'Education', 'Content Development'),
+
+('Training and Development Specialist', 'SkillBuilder Corp', 'Hyderabad',
+'Design and deliver training programs, assess learning needs, and measure training effectiveness.',
+'3+ years L&D experience, training design skills, strong presentation abilities',
+'{"Training Design", "Learning & Development", "Instructional Design", "Training Delivery", "Assessment", "E-learning"}',
+'Mid-level', 400000, 800000, 'Full-time', true,
+'training-development-specialist-hyderabad-skillbuilder', NOW() - INTERVAL '1 day', NOW() + INTERVAL '27 days',
+'Education', 'Learning & Development'),
+
+-- Entry Level Opportunities
+('Junior Software Developer', 'CodeStart Technologies', 'Bangalore',
+'Learn and grow as a software developer. Work on web applications using modern technologies.',
+'0-1 years experience, computer science background, eagerness to learn, basic programming knowledge',
+'{"Programming", "Web Development", "JavaScript", "Learning Mindset", "Problem Solving", "Teamwork"}',
+'Entry-level', 250000, 500000, 'Full-time', true,
+'junior-software-developer-bangalore-codestart', NOW() - INTERVAL '1 day', NOW() + INTERVAL '30 days',
+'Technology', 'Engineering'),
+
+('Marketing Trainee', 'BrandBoost Marketing', 'Mumbai',
+'Start your marketing career with hands-on experience in digital marketing campaigns and brand management.',
+'0-1 years experience, marketing education preferred, creative thinking, analytical mindset',
+'{"Digital Marketing", "Brand Management", "Social Media", "Content Creation", "Analytics", "Creativity"}',
+'Entry-level', 200000, 400000, 'Full-time', false,
+'marketing-trainee-mumbai-brandboost', NOW() - INTERVAL '2 days', NOW() + INTERVAL '28 days',
+'Marketing', 'Marketing'),
+
+('Business Analyst Trainee', 'AnalyticsPro Consulting', 'Delhi',
+'Learn business analysis techniques, work with clients, and develop analytical skills.',
+'0-1 years experience, analytical thinking, Excel proficiency, good communication skills',
+'{"Business Analysis", "Excel", "Data Analysis", "Communication", "Problem Solving", "Client Interaction"}',
+'Entry-level', 300000, 600000, 'Full-time', false,
+'business-analyst-trainee-delhi-analyticspro', NOW() - INTERVAL '1 day', NOW() + INTERVAL '25 days',
+'Consulting', 'Business Analysis'),
+
+-- Remote Opportunities
+('Remote Content Writer', 'ContentGlobal Agency', 'Remote',
+'Write high-quality content for various clients across industries. Work from anywhere in India.',
+'1+ years writing experience, excellent English skills, SEO knowledge, self-motivated',
+'{"Content Writing", "SEO Writing", "Blog Writing", "Research", "Proofreading", "Time Management"}',
+'Mid-level', 300000, 600000, 'Full-time', true,
+'remote-content-writer-remote-contentglobal', NOW() - INTERVAL '1 day', NOW() + INTERVAL '30 days',
+'Marketing', 'Content Writing'),
+
+('Remote Customer Success Manager', 'SaaS Solutions Pro', 'Remote',
+'Manage customer relationships for SaaS products, ensure customer success and satisfaction.',
+'2+ years customer success experience, SaaS industry knowledge, strong communication skills',
+'{"Customer Success", "SaaS", "Client Management", "Problem Solving", "Communication", "CRM"}',
+'Mid-level', 500000, 1000000, 'Full-time', true,
+'remote-customer-success-manager-remote-saaspro', NOW() - INTERVAL '2 days', NOW() + INTERVAL '26 days',
+'Technology', 'Customer Success'),
+
+('Remote Data Entry Specialist', 'DataProcessing Hub', 'Remote',
+'Accurate data entry and processing for various clients. Flexible working hours.',
+'0-2 years experience, high accuracy, good typing speed, attention to detail',
+'{"Data Entry", "Accuracy", "Typing", "Excel", "Attention to Detail", "Time Management"}',
+'Entry-level', 150000, 300000, 'Part-time', true,
+'remote-data-entry-specialist-remote-dataprocessing', NOW() - INTERVAL '3 days', NOW() + INTERVAL '22 days',
+'Administration', 'Data Entry'),
+
+-- Specialized Roles
+('Blockchain Developer', 'CryptoTech Innovations', 'Bangalore',
+'Develop blockchain applications and smart contracts. Work with cutting-edge cryptocurrency technologies.',
+'2+ years blockchain development, Solidity knowledge, cryptocurrency understanding',
+'{"Blockchain", "Solidity", "Ethereum", "Smart Contracts", "Cryptocurrency", "Web3"}',
+'Mid-level', 800000, 1600000, 'Full-time', true,
+'blockchain-developer-bangalore-cryptotech', NOW() - INTERVAL '1 day', NOW() + INTERVAL '28 days',
+'Technology', 'Blockchain'),
+
+('AI/ML Research Scientist', 'AI Research Labs', 'Hyderabad',
+'Conduct research in artificial intelligence and machine learning. Publish papers and develop innovative solutions.',
+'PhD in AI/ML or 5+ years research experience, publications preferred, strong mathematical background',
+'{"AI Research", "Machine Learning", "Deep Learning", "Python", "Research Publications", "Mathematics"}',
+'Senior', 1200000, 2500000, 'Full-time', false,
+'ai-ml-research-scientist-hyderabad-airesearch', NOW() - INTERVAL '2 days', NOW() + INTERVAL '35 days',
+'Technology', 'Research'),
+
+('Growth Hacker', 'StartupGrowth Agency', 'Mumbai',
+'Drive user acquisition and business growth through innovative marketing strategies and data analysis.',
+'2+ years growth hacking experience, startup environment, analytical mindset, creative approach',
+'{"Growth Hacking", "User Acquisition", "A/B Testing", "Analytics", "Marketing Automation", "Data Analysis"}',
+'Mid-level', 600000, 1200000, 'Full-time', true,
+'growth-hacker-mumbai-startupgrowth', NOW() - INTERVAL '1 day', NOW() + INTERVAL '24 days',
+'Marketing', 'Growth Marketing'),
+
+-- Management Roles
+('Project Manager - IT', 'TechProject Solutions', 'Delhi',
+'Lead IT projects from initiation to completion. Manage teams, budgets, and stakeholder communication.',
+'4+ years project management experience, PMP certification preferred, IT background',
+'{"Project Management", "Agile", "Scrum", "Team Leadership", "Stakeholder Management", "Budget Management"}',
+'Senior', 800000, 1500000, 'Full-time', false,
+'project-manager-it-delhi-techproject', NOW() - INTERVAL '1 day', NOW() + INTERVAL '21 days',
+'Technology', 'Project Management'),
+
+('Operations Team Lead', 'ServiceExcellence Corp', 'Chennai',
+'Lead operations team, ensure service quality, and drive process improvements.',
+'3+ years team leadership experience, operations background, strong leadership skills',
+'{"Team Leadership", "Operations Management", "Process Improvement", "Quality Management", "Performance Management", "Training"}',
+'Senior', 600000, 1100000, 'Full-time', false,
+'operations-team-lead-chennai-serviceexcellence', NOW() - INTERVAL '2 days', NOW() + INTERVAL '23 days',
+'Operations', 'Team Leadership'),
+
+-- Consulting Roles
+('Management Consultant', 'StrategyFirst Consulting', 'Mumbai',
+'Advise clients on business strategy, operations improvement, and organizational change.',
+'3+ years consulting experience, MBA preferred, strong analytical and presentation skills',
+'{"Management Consulting", "Strategy", "Business Analysis", "Client Management", "Presentation", "Problem Solving"}',
+'Senior', 1000000, 2000000, 'Full-time', false,
+'management-consultant-mumbai-strategyfirst', NOW() - INTERVAL '1 day', NOW() + INTERVAL '20 days',
+'Consulting', 'Management Consulting'),
+
+('Technology Consultant', 'TechAdvise Partners', 'Bangalore',
+'Provide technology consulting services to enterprises. Help clients with digital transformation.',
+'4+ years technology consulting experience, enterprise software knowledge, client-facing skills',
+'{"Technology Consulting", "Digital Transformation", "Enterprise Software", "Client Management", "Solution Architecture", "Business Analysis"}',
+'Senior', 900000, 1800000, 'Full-time', true,
+'technology-consultant-bangalore-techadvise', NOW() - INTERVAL '2 days', NOW() + INTERVAL '25 days',
+'Consulting', 'Technology Consulting'),
+
+-- More diverse locations and roles
+('Social Media Manager', 'DigitalPresence Agency', 'Kolkata',
+'Manage social media presence for multiple clients. Create content calendars and engagement strategies.',
+'2+ years social media management experience, content creation skills, platform expertise',
+'{"Social Media Management", "Content Creation", "Social Media Strategy", "Community Management", "Analytics", "Creativity"}',
+'Mid-level', 300000, 600000, 'Full-time', true,
+'social-media-manager-kolkata-digitalpresence', NOW() - INTERVAL '1 day', NOW() + INTERVAL '27 days',
+'Marketing', 'Social Media'),
+
+('Quality Assurance Manager', 'QualityFirst Manufacturing', 'Pune',
+'Oversee quality control processes, implement quality standards, and ensure compliance.',
+'4+ years quality management experience, manufacturing background, ISO knowledge',
+'{"Quality Management", "ISO Standards", "Process Control", "Team Leadership", "Compliance", "Manufacturing"}',
+'Senior', 600000, 1200000, 'Full-time', false,
+'quality-assurance-manager-pune-qualityfirst', NOW() - INTERVAL '3 days', NOW() + INTERVAL '22 days',
+'Manufacturing', 'Quality Assurance'),
+
+('Legal Associate', 'LawPro Legal Services', 'Delhi',
+'Provide legal support, draft contracts, and assist with corporate legal matters.',
+'2+ years legal experience, law degree, corporate law knowledge, strong research skills',
+'{"Corporate Law", "Contract Drafting", "Legal Research", "Compliance", "Documentation", "Client Advisory"}',
+'Mid-level', 500000, 1000000, 'Full-time', false,
+'legal-associate-delhi-lawpro', NOW() - INTERVAL '1 day', NOW() + INTERVAL '28 days',
+'Legal', 'Corporate Law'),
+
+-- Additional specialized and emerging roles
+('UX Researcher', 'UserInsight Labs', 'Bangalore',
+'Conduct user research, analyze user behavior, and provide insights for product improvement.',
+'2+ years UX research experience, research methodology knowledge, analytical skills',
+'{"UX Research", "User Testing", "Survey Design", "Data Analysis", "User Behavior", "Research Methods"}',
+'Mid-level', 600000, 1200000, 'Full-time', true,
+'ux-researcher-bangalore-userinsight', NOW() - INTERVAL '1 day', NOW() + INTERVAL '26 days',
+'Technology', 'UX Research'),
+
+('E-commerce Manager', 'OnlineRetail Hub', 'Mumbai',
+'Manage e-commerce operations, optimize online sales, and improve customer experience.',
+'3+ years e-commerce experience, marketplace knowledge, digital marketing skills',
+'{"E-commerce", "Online Retail", "Marketplace Management", "Digital Marketing", "Customer Experience", "Analytics"}',
+'Senior', 550000, 1100000, 'Full-time', false,
+'ecommerce-manager-mumbai-onlineretail', NOW() - INTERVAL '2 days', NOW() + INTERVAL '24 days',
+'Retail', 'E-commerce'),
+
+('Cloud Architect', 'CloudInfra Solutions', 'Hyderabad',
+'Design cloud infrastructure solutions, migrate applications to cloud, and ensure scalability.',
+'5+ years cloud experience, AWS/Azure certifications, enterprise architecture knowledge',
+'{"Cloud Architecture", "AWS", "Azure", "Infrastructure Design", "Migration", "Scalability"}',
+'Senior', 1200000, 2200000, 'Full-time', true,
+'cloud-architect-hyderabad-cloudinfra', NOW() - INTERVAL '1 day', NOW() + INTERVAL '30 days',
+'Technology', 'Cloud Architecture');
+
+-- Update seo_slug for existing jobs if any exist
+UPDATE public.jobs 
+SET seo_slug = LOWER(REGEXP_REPLACE(
+  REGEXP_REPLACE(
+    REGEXP_REPLACE(title || '-' || location || '-' || SUBSTRING(id::text, 1, 8), '[^a-zA-Z0-9\s-]', '', 'g'),
+    '\s+', '-', 'g'
+  ), 
+  '-+', '-', 'g'
+))
+WHERE seo_slug IS NULL OR seo_slug = '';
