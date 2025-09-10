@@ -1,39 +1,195 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { generateJSONWithFallback } from "../_shared/ai-fallback.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
-interface ContentGenerationRequest {
-  contentType: 'blog_post' | 'landing_page' | 'meta_tags' | 'product_description' | 'article';
-  topic: string;
-  targetKeywords: string[];
-  audience?: string;
-  tone?: 'professional' | 'casual' | 'technical' | 'friendly';
-  wordCount?: number;
+interface ContentRequest {
+  type: 'job_description' | 'meta_tags' | 'blog_post' | 'landing_page' | 'company_description';
+  keywords: string[];
+  targetCity?: string;
   industry?: string;
-  includeSchema?: boolean;
-  competitorUrls?: string[];
+  jobTitle?: string;
+  companyName?: string;
+  tone?: 'professional' | 'casual' | 'technical';
+  length?: 'short' | 'medium' | 'long';
 }
 
-interface AIContentResponse {
-  success: boolean;
-  content?: {
-    title: string;
-    body: string;
-    metaTitle: string;
-    metaDescription: string;
-    keywords: string[];
-    structuredData?: any;
-    readabilityScore?: number;
-    seoScore?: number;
-  };
-  error?: string;
-  tokensUsed?: number;
+interface GeneratedContent {
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords: string[];
+  readabilityScore: number;
+  seoScore: number;
+  suggestions: string[];
+}
+
+async function generateSEOContent(request: ContentRequest): Promise<GeneratedContent> {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  if (!openAIApiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
+  console.log(`Generating ${request.type} content with keywords:`, request.keywords);
+
+  try {
+    let prompt = '';
+    let systemPrompt = 'You are an expert SEO content writer specializing in job portals and career-related content for the Indian market.';
+
+    switch (request.type) {
+      case 'job_description':
+        prompt = `Create an SEO-optimized job description for a ${request.jobTitle} position at ${request.companyName} in ${request.targetCity}. 
+        Target keywords: ${request.keywords.join(', ')}
+        
+        Include:
+        - Engaging job title and overview
+        - Key responsibilities (5-7 points)
+        - Required qualifications
+        - Preferred skills
+        - Benefits and company culture
+        - Clear call-to-action
+        
+        Make it appealing to job seekers while optimizing for search engines. Use Indian English and include location-specific benefits.`;
+        break;
+
+      case 'meta_tags':
+        prompt = `Generate SEO-optimized meta tags for a ${request.jobTitle} job page in ${request.targetCity}.
+        Target keywords: ${request.keywords.join(', ')}
+        
+        Provide:
+        1. Meta title (under 60 characters)
+        2. Meta description (under 160 characters)
+        3. H1 tag
+        4. Additional keyword suggestions
+        
+        Focus on click-through rate optimization while maintaining keyword relevance.`;
+        break;
+
+      case 'blog_post':
+        prompt = `Write an SEO-optimized blog post about career opportunities in ${request.industry} in ${request.targetCity}.
+        Target keywords: ${request.keywords.join(', ')}
+        
+        Structure:
+        - Compelling headline
+        - Introduction with key statistics
+        - Main sections with H2/H3 tags
+        - Career growth insights
+        - Salary expectations
+        - Top companies hiring
+        - Actionable tips for job seekers
+        - Conclusion with call-to-action
+        
+        Length: ${request.length === 'long' ? '1500-2000' : request.length === 'medium' ? '800-1200' : '400-600'} words`;
+        break;
+
+      case 'landing_page':
+        prompt = `Create SEO-optimized landing page content for ${request.jobTitle} jobs in ${request.targetCity}.
+        Target keywords: ${request.keywords.join(', ')}
+        
+        Include:
+        - Hero section with compelling headline
+        - Benefits of finding jobs through TalentXcel
+        - Job market overview for the role/city
+        - Success stories snippet
+        - Featured companies
+        - Call-to-action sections
+        - FAQ section
+        
+        Make it conversion-focused while maintaining SEO best practices.`;
+        break;
+
+      case 'company_description':
+        prompt = `Write an SEO-optimized company description for ${request.companyName} in the ${request.industry} industry.
+        Target keywords: ${request.keywords.join(', ')}
+        
+        Include:
+        - Company overview and mission
+        - Industry expertise and services
+        - Work culture and values
+        - Career opportunities
+        - Employee benefits
+        - Recent achievements or news
+        - Why talent should join
+        
+        Keep it professional yet engaging for potential employees.`;
+        break;
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4.1-2025-04-14',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: request.length === 'long' ? 2500 : request.length === 'medium' ? 1500 : 800,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const generatedContent = data.choices[0].message.content;
+
+    // Extract meta tags if it's a meta_tags request
+    let metaTitle = '';
+    let metaDescription = '';
+    
+    if (request.type === 'meta_tags') {
+      const lines = generatedContent.split('\n');
+      metaTitle = lines.find(line => line.toLowerCase().includes('meta title') || line.toLowerCase().includes('title:'))?.replace(/.*?:/, '').trim() || '';
+      metaDescription = lines.find(line => line.toLowerCase().includes('meta description') || line.toLowerCase().includes('description:'))?.replace(/.*?:/, '').trim() || '';
+    }
+
+    // Calculate readability and SEO scores (simplified)
+    const wordCount = generatedContent.split(' ').length;
+    const sentenceCount = generatedContent.split(/[.!?]+/).length;
+    const avgWordsPerSentence = wordCount / sentenceCount;
+    
+    const readabilityScore = Math.max(0, Math.min(100, 100 - (avgWordsPerSentence - 15) * 2));
+    
+    // SEO score based on keyword usage and content structure
+    const keywordDensity = request.keywords.reduce((total, keyword) => {
+      const regex = new RegExp(keyword, 'gi');
+      return total + (generatedContent.match(regex) || []).length;
+    }, 0) / wordCount * 100;
+    
+    const seoScore = Math.min(100, (keywordDensity * 20) + 60);
+
+    // Generate suggestions
+    const suggestions = [
+      keywordDensity < 1 ? 'Consider adding more target keywords naturally throughout the content' : '',
+      avgWordsPerSentence > 20 ? 'Break down long sentences for better readability' : '',
+      wordCount < 300 ? 'Consider expanding the content for better SEO performance' : '',
+      !generatedContent.includes('TalentXcel') ? 'Include brand name naturally in the content' : '',
+    ].filter(Boolean);
+
+    return {
+      content: generatedContent,
+      metaTitle: metaTitle || undefined,
+      metaDescription: metaDescription || undefined,
+      keywords: request.keywords,
+      readabilityScore: Math.round(readabilityScore),
+      seoScore: Math.round(seoScore),
+      suggestions,
+    };
+
+  } catch (error) {
+    console.error('Error generating content:', error);
+    throw error;
+  }
 }
 
 serve(async (req) => {
@@ -42,207 +198,35 @@ serve(async (req) => {
   }
 
   try {
-    // Safely parse request body with defaults
-    let payload: Partial<ContentGenerationRequest> = {};
-    try {
-      payload = await req.json();
-    } catch (_) {
-      console.warn('No/invalid JSON body; using safe defaults');
-    }
-
-    const {
-      contentType = 'article',
-      topic = 'Sample Content',
-      targetKeywords = [],
-      audience = 'general',
-      tone = 'professional',
-      wordCount = 800,
-      industry = 'technology',
-      includeSchema = true,
-      competitorUrls = []
-    } = (payload || {}) as ContentGenerationRequest;
-
-    console.log(`🤖 Generating ${contentType} content for: ${topic}`);
-
-    // Advanced AI prompt for content generation
-    const systemPrompt = `You are an expert SEO content writer and strategist. Create high-quality, SEO-optimized content that:
-- Follows E-A-T (Expertise, Authoritativeness, Trustworthiness) principles
-- Incorporates target keywords naturally (keyword density 1-3%)
-- Uses semantic keywords and LSI terms
-- Includes proper heading structure (H1, H2, H3)
-- Optimizes for featured snippets and voice search
-- Maintains ${tone} tone for ${audience} audience
-- Industry: ${industry}
-
-Response must be valid JSON with ALL required fields.`;
-
-    const userPrompt = `Create ${contentType} content about: "${topic}"
-
-Target Keywords: ${targetKeywords.join(', ')}
-Word Count: ~${wordCount} words
-Tone: ${tone}
-Audience: ${audience}
-Industry: ${industry}
-
-${competitorUrls.length > 0 ? `Competitor Analysis: ${competitorUrls.join(', ')}` : ''}
-
-Requirements:
-1. SEO-optimized title (50-60 characters)
-2. Meta description (150-160 characters)
-3. Main content with proper H2/H3 structure
-4. Natural keyword integration
-5. Call-to-action if appropriate
-${includeSchema ? '6. JSON-LD structured data' : ''}
-
-Return JSON format:
-{
-  "title": "SEO optimized title",
-  "body": "Full content with HTML structure",
-  "metaTitle": "Meta title",
-  "metaDescription": "Meta description",
-  "keywords": ["primary", "secondary", "keywords"],
-  "structuredData": ${includeSchema ? '{json-ld object}' : 'null'},
-  "readabilityScore": 85,
-  "seoScore": 92
-}`;
-
-    // Use AI fallback for content generation with resilient error handling
-    let generatedContent;
-    let aiProvider = 'Fallback';
-    let tokensUsed = 0;
-
-    try {
-      const aiResult = await generateJSONWithFallback(
-        systemPrompt,
-        userPrompt,
-        {
-          model: 'gpt-5-2025-08-07',
-          maxTokens: 3000,
-          temperature: 0.7
-        }
+    const request: ContentRequest = await req.json();
+    
+    if (!request.type || !request.keywords || request.keywords.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Content type and keywords are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
-      generatedContent = aiResult.data;
-      aiProvider = aiResult.provider;
-      tokensUsed = aiResult.tokensUsed || 0;
-    } catch (error) {
-      console.warn(`⚠️ AI services unavailable, using fallback content: ${error.message}`);
-      generatedContent = generateFallbackContent(contentType, topic, targetKeywords, tone, wordCount);
     }
 
-    console.log(`✅ Content generated successfully using ${aiProvider}. Tokens used: ${tokensUsed || 'N/A'}`);
+    console.log(`Content generation requested: ${request.type}`);
+    
+    const result = await generateSEOContent(request);
+    
+    return new Response(
+      JSON.stringify(result),
+      { 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
 
-    // Enhanced content analysis
-    const enhancedContent = {
-      ...generatedContent,
-      readabilityScore: Math.floor(Math.random() * 15) + 80, // Simulated readability
-      seoScore: Math.floor(Math.random() * 20) + 75, // Simulated SEO score
-      wordCount: generatedContent.body ? generatedContent.body.split(' ').length : wordCount,
-      keywordDensity: calculateKeywordDensity(generatedContent.body || '', targetKeywords),
-      generatedAt: new Date().toISOString(),
-      contentType,
-      industry,
-      aiProvider: aiProvider, // Track which AI was used
-      fallbackMode: aiProvider === 'Fallback'
-    };
-
-    const result: AIContentResponse = {
-      success: true,
-      content: enhancedContent,
-      tokensUsed: tokensUsed
-    };
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
-  } catch (error: any) {
-    console.error('AI SEO Content Generator error:', error);
-
-    // Always return a graceful fallback with HTTP 200
-    const fallback = generateFallbackContent('article', 'Sample Content', [], 'professional', 800);
-    const enhancedFallback = {
-      ...fallback,
-      readabilityScore: fallback.readabilityScore ?? 85,
-      seoScore: fallback.seoScore ?? 78,
-      wordCount: fallback.body ? fallback.body.split(' ').length : 800,
-      keywordDensity: calculateKeywordDensity(fallback.body || '', []),
-      generatedAt: new Date().toISOString(),
-      contentType: 'article',
-      industry: 'general',
-      aiProvider: 'Fallback',
-      fallbackMode: true
-    };
-
-    const result: AIContentResponse = {
-      success: true,
-      content: enhancedFallback,
-      tokensUsed: 0
-    };
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  } catch (error) {
+    console.error('Error in AI SEO content generator:', error);
+    return new Response(
+      JSON.stringify({ error: 'Failed to generate content' }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
 });
-
-function calculateKeywordDensity(text: string, keywords: string[]): { [key: string]: number } {
-  if (!text) return {};
-  
-  const wordCount = text.toLowerCase().split(' ').length;
-  const density: { [key: string]: number } = {};
-  
-  keywords.forEach(keyword => {
-    const keywordCount = (text.toLowerCase().match(new RegExp(keyword.toLowerCase(), 'g')) || []).length;
-    density[keyword] = Math.round((keywordCount / wordCount) * 10000) / 100;
-  });
-  
-  return density;
-}
-
-function generateFallbackContent(contentType: string, topic: string, keywords: string[], tone: string, wordCount: number) {
-  const keywordList = keywords.join(', ');
-  
-  const fallbackContent = {
-    title: `${topic}: A Comprehensive Guide to ${keywords[0] || 'Success'}`,
-    body: `<h1>${topic}: Your Complete Guide</h1>
-
-<p>Welcome to this comprehensive guide about ${topic}. In today's competitive landscape, understanding ${keywords[0] || 'the key concepts'} is essential for success.</p>
-
-<h2>Key Insights About ${keywords[0] || 'This Topic'}</h2>
-<p>When exploring ${topic}, it's important to consider several factors that can impact your success. ${keywords.slice(0, 3).join(', ')} are fundamental elements that professionals should master.</p>
-
-<h2>Best Practices and Strategies</h2>
-<p>To excel in ${topic}, consider implementing these proven strategies:</p>
-<ul>
-  <li>Focus on ${keywords[0] || 'core principles'} for maximum impact</li>
-  <li>Stay updated with latest trends in ${keywords[1] || 'the industry'}</li>
-  <li>Build expertise through continuous learning and practice</li>
-  <li>Network with professionals who excel in ${keywords[2] || 'related areas'}</li>
-</ul>
-
-<h2>Getting Started</h2>
-<p>Whether you're new to ${topic} or looking to enhance your skills, taking a systematic approach is key. Focus on understanding ${keywordList} and how they interconnect.</p>
-
-<h2>Conclusion</h2>
-<p>Success in ${topic} requires dedication, proper understanding of ${keywords[0] || 'key concepts'}, and consistent effort. Start your journey today and unlock new opportunities.</p>
-
-<p><em>This content was generated to ensure service availability. For the most current insights, please check back when our AI services are restored.</em></p>`,
-    metaTitle: `${topic} Guide: Master ${keywords[0] || 'Success'} in ${new Date().getFullYear()}`,
-    metaDescription: `Complete guide to ${topic}. Learn ${keywordList} with expert strategies and proven techniques. Start your journey to success today.`,
-    keywords: keywords.length > 0 ? keywords : ['guide', 'tips', 'success', 'strategy'],
-    structuredData: {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": `${topic}: A Comprehensive Guide`,
-      "description": `Complete guide covering ${keywordList}`,
-      "author": {
-        "@type": "Organization",
-        "name": "Content Generation Service"
-      }
-    },
-    readabilityScore: 85,
-    seoScore: 78
-  };
-
-  return fallbackContent;
-}

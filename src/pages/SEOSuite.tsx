@@ -33,6 +33,7 @@ import { SEORankTracker } from '@/components/seo/SEORankTracker';
 import { SEOBacklinkAnalyzer } from '@/components/seo/SEOBacklinkAnalyzer';
 import { SEOCompetitorAnalysis } from '@/components/seo/SEOCompetitorAnalysis';
 import { SEOReporting } from '@/components/seo/SEOReporting';
+import { SEODashboard } from '@/components/seo/SEODashboard';
 
 import { RealTimeSEOAnalyzer } from '@/components/seo/advanced/RealTimeSEOAnalyzer';
 import { PredictiveSEOInsights } from '@/components/seo/advanced/PredictiveSEOInsights';
@@ -315,99 +316,8 @@ const SEOSuite = () => {
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          {/* Platform Content Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {platformMetrics.map((metric, index) => (
-              <Card key={index}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">{metric.label}</p>
-                      <p className="text-2xl font-bold">{metric.value}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <metric.icon className="h-4 w-4 text-muted-foreground" />
-                      <Badge variant="secondary">
-                        {metric.change}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Jump into key SEO tasks</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {quickActions.map((action, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="h-auto p-4 flex flex-col items-center gap-2"
-                    onClick={() => setActiveTab(action.tab)}
-                  >
-                    <action.icon className="h-8 w-8 text-primary" />
-                    <div className="text-center">
-                      <div className="font-semibold">{action.label}</div>
-                      <div className="text-xs text-muted-foreground">{action.desc}</div>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Top Performing Keywords
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {[
-                    { keyword: 'ai resume builder', position: 3, traffic: '12.5K' },
-                    { keyword: 'job search platform', position: 7, traffic: '8.9K' },
-                    { keyword: 'career guidance', position: 12, traffic: '5.2K' },
-                    { keyword: 'remote jobs', position: 18, traffic: '3.1K' },
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-                      <div>
-                        <div className="font-medium">{item.keyword}</div>
-                        <div className="text-sm text-muted-foreground">Position #{item.position}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{item.traffic}</div>
-                        <div className="text-sm text-muted-foreground">monthly traffic</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5" />
-                  SEO Issues to Fix
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {[
-                    { issue: 'Missing meta descriptions', pages: 23, severity: 'medium' },
-                    { issue: 'Slow page load times', pages: 8, severity: 'high' },
-                    { issue: 'Broken internal links', pages: 12, severity: 'medium' },
+          <SEODashboard />
+        </TabsContent>
                     { issue: 'Missing alt text', pages: 45, severity: 'low' },
                   ].map((item, index) => (
                     <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
