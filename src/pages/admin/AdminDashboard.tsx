@@ -17,6 +17,7 @@ import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
 import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
+import { JobGenerator } from '@/components/admin/JobGenerator';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -73,6 +74,11 @@ const AdminDashboard = () => {
         
         <div className="mt-6">
           <ProfileReminderEmailSender />
+        </div>
+        
+        {/* Job Generator for SEO */}
+        <div className="mt-8">
+          <JobGenerator />
         </div>
         
         {/* System Health Monitoring */}
