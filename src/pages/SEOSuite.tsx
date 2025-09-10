@@ -33,7 +33,7 @@ import { SEORankTracker } from '@/components/seo/SEORankTracker';
 import { SEOBacklinkAnalyzer } from '@/components/seo/SEOBacklinkAnalyzer';
 import { SEOCompetitorAnalysis } from '@/components/seo/SEOCompetitorAnalysis';
 import { SEOReporting } from '@/components/seo/SEOReporting';
-import { SEODashboard } from '@/components/seo/SEODashboard';
+import { SEOIssueManager } from '@/components/seo/SEOIssueManager';
 
 import { RealTimeSEOAnalyzer } from '@/components/seo/advanced/RealTimeSEOAnalyzer';
 import { PredictiveSEOInsights } from '@/components/seo/advanced/PredictiveSEOInsights';
@@ -361,7 +361,7 @@ const SEOSuite = () => {
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          <SEODashboard />
+          <SEOIssueManager />
         </TabsContent>
 
         <TabsContent value="keywords">

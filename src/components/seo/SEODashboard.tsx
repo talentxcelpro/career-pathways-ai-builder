@@ -22,6 +22,12 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+interface SEODashboardProps {
+  onIssueClick?: (issue: any) => void;
+  onOpportunityClick?: (opportunity: any) => void;
+  resolvedIssues?: string[];
+}
+
 interface DashboardMetrics {
   overview: {
     totalKeywords: number;
@@ -57,7 +63,11 @@ interface DashboardMetrics {
   }>;
 }
 
-export const SEODashboard: React.FC = () => {
+export const SEODashboard: React.FC<SEODashboardProps> = ({ 
+  onIssueClick, 
+  onOpportunityClick, 
+  resolvedIssues = [] 
+}) => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -463,7 +473,11 @@ export const SEODashboard: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {metrics.issues.map((issue, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg border">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-3 rounded-lg border cursor-pointer hover:bg-muted/30 transition-colors"
+                  onClick={() => onIssueClick?.(issue)}
+                >
                   <div className="flex items-center gap-3">
                     {issue.type === 'error' ? (
                       <AlertCircle className="h-4 w-4 text-red-500" />
