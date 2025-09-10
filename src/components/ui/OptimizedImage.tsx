@@ -1,147 +1,158 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
-interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'alt'> {
   src: string;
-  alt: string;
-  width?: number;
-  height?: number;
+  alt: string; // Make alt required for SEO
+  fallbackSrc?: string;
   priority?: boolean;
-  quality?: number;
   sizes?: string;
+  quality?: number;
+  placeholder?: 'blur' | 'empty';
   className?: string;
-  fallback?: string;
-  onLoad?: () => void;
-  onError?: () => void;
 }
 
+/**
+ * SEO-optimized image component with lazy loading, error handling, and required alt text
+ */
 export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   src,
   alt,
-  width,
-  height,
+  fallbackSrc = '/placeholder.svg',
   priority = false,
-  quality = 75,
   sizes,
+  quality = 85,
+  placeholder = 'empty',
   className,
-  fallback = '/placeholder-image.svg',
   onLoad,
   onError,
   ...props
 }) => {
+  const [imageSrc, setImageSrc] = useState(src);
+  const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [isInView, setIsInView] = useState(priority);
-  const imgRef = useRef<HTMLImageElement>(null);
 
-  // Intersection Observer for lazy loading
-  useEffect(() => {
-    if (priority || isInView) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      {
-        rootMargin: '50px',
-        threshold: 0.1,
-      }
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [priority, isInView]);
-
-  // Generate optimized src and srcSet
-  const getOptimizedSrc = (originalSrc: string, width?: number, quality = 75) => {
-    // For external URLs or already optimized images, return as-is
-    if (originalSrc.startsWith('http') || originalSrc.includes('supabase')) {
-      return originalSrc;
-    }
-    
-    // For local images, we could implement WebP conversion here
-    // For now, return the original src
-    return originalSrc;
-  };
-
-  const generateSrcSet = (src: string) => {
-    if (!width) return undefined;
-    
-    const widths = [width * 0.5, width, width * 1.5, width * 2];
-    return widths
-      .map(w => `${getOptimizedSrc(src, w, quality)} ${w}w`)
-      .join(', ');
-  };
-
-  const handleLoad = () => {
+  const handleLoad = useCallback((event: React.SyntheticEvent<HTMLImageElement>) => {
     setIsLoaded(true);
-    onLoad?.();
-  };
+    setImageError(false);
+    onLoad?.(event);
+  }, [onLoad]);
 
-  const handleError = () => {
-    setHasError(true);
-    onError?.();
-  };
+  const handleError = useCallback((event: React.SyntheticEvent<HTMLImageElement>) => {
+    if (!imageError && fallbackSrc && imageSrc !== fallbackSrc) {
+      setImageSrc(fallbackSrc);
+      setImageError(true);
+    }
+    onError?.(event);
+  }, [imageError, fallbackSrc, imageSrc, onError]);
 
-  const imageSrc = hasError ? fallback : getOptimizedSrc(src, width, quality);
-  const srcSet = hasError ? undefined : generateSrcSet(src);
+  // Validate alt text for SEO compliance
+  const validatedAlt = alt.trim() || 'Image';
+  
+  if (validatedAlt.length < 3) {
+    console.warn(`SEO Warning: Alt text too short for image ${src}. Consider providing more descriptive text.`);
+  }
 
   return (
-    <div 
-      ref={imgRef} 
+    <img
+      src={imageSrc}
+      alt={validatedAlt}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'low'}
+      decoding="async"
+      sizes={sizes}
       className={cn(
-        'relative overflow-hidden bg-muted',
-        !isLoaded && 'animate-pulse',
+        'transition-opacity duration-300',
+        {
+          'opacity-0': !isLoaded && placeholder === 'blur',
+          'opacity-100': isLoaded || placeholder === 'empty',
+        },
         className
       )}
-      style={{ width, height }}
-    >
-      {isInView && (
-        <>
-          {/* Blur placeholder */}
-          {!isLoaded && !hasError && (
-            <div 
-              className="absolute inset-0 bg-gradient-to-r from-muted-foreground/10 to-muted-foreground/5 animate-pulse"
-              aria-hidden="true"
-            />
-          )}
-          
-          <img
-            src={imageSrc}
-            srcSet={srcSet}
-            sizes={sizes || (width ? `${width}px` : '100vw')}
-            alt={alt}
-            width={width}
-            height={height}
-            loading={priority ? 'eager' : 'lazy'}
-            decoding={priority ? 'sync' : 'async'}
-            onLoad={handleLoad}
-            onError={handleError}
-            className={cn(
-              'transition-opacity duration-300',
-              isLoaded ? 'opacity-100' : 'opacity-0',
-              'w-full h-full object-cover'
-            )}
-            {...props}
-          />
-        </>
+      onLoad={handleLoad}
+      onError={handleError}
+      {...props}
+    />
+  );
+};
+
+/**
+ * Company logo component with optimized defaults
+ */
+export const CompanyLogo: React.FC<{
+  src?: string;
+  companyName: string;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}> = ({ src, companyName, size = 'md', className }) => {
+  const sizeClasses = {
+    sm: 'h-8 w-8',
+    md: 'h-12 w-12',
+    lg: 'h-16 w-16'
+  };
+
+  const alt = `${companyName} company logo`;
+
+  return (
+    <OptimizedImage
+      src={src || '/placeholder.svg'}
+      alt={alt}
+      className={cn(
+        'rounded-lg object-contain bg-gray-100',
+        sizeClasses[size],
+        className
       )}
-      
-      {/* Loading state for non-priority images */}
-      {!isInView && !priority && (
-        <div 
-          className="w-full h-full bg-muted flex items-center justify-center"
-          style={{ width, height }}
-        >
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
+      sizes="(max-width: 768px) 32px, 48px"
+    />
+  );
+};
+
+/**
+ * User avatar component with optimized defaults
+ */
+export const UserAvatar: React.FC<{
+  src?: string;
+  userName: string;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}> = ({ src, userName, size = 'md', className }) => {
+  const sizeClasses = {
+    sm: 'h-8 w-8',
+    md: 'h-10 w-10',
+    lg: 'h-12 w-12'
+  };
+
+  const alt = `${userName} profile picture`;
+
+  return (
+    <OptimizedImage
+      src={src || '/placeholder.svg'}
+      alt={alt}
+      className={cn(
+        'rounded-full object-cover bg-gray-100',
+        sizeClasses[size],
+        className
       )}
-    </div>
+      sizes="(max-width: 768px) 32px, 40px"
+    />
+  );
+};
+
+/**
+ * Hero image component with high priority loading
+ */
+export const HeroImage: React.FC<{
+  src: string;
+  alt: string;
+  className?: string;
+}> = ({ src, alt, className }) => {
+  return (
+    <OptimizedImage
+      src={src}
+      alt={alt}
+      priority={true}
+      className={cn('w-full h-auto', className)}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    />
   );
 };

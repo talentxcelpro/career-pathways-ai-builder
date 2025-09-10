@@ -8,6 +8,7 @@ import {
 } from '@/utils/seoOptimization';
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
+import { generateMetaDescription, validateMetaTags } from '@/utils/seoValidator';
 
 interface SEOConfig {
   title?: string;
@@ -31,7 +32,7 @@ export const useSEO = (config: SEOConfig = {}) => {
   useEffect(() => {
     const {
       title = 'TalentXcel - AI-Powered Career Platform',
-      description = 'Find your dream job, grow your skills, and advance your career with AI-powered tools.',
+      description,
       keywords = [],
       image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
       structuredData,
@@ -40,26 +41,28 @@ export const useSEO = (config: SEOConfig = {}) => {
       canonical
     } = config;
 
+    // Generate fallback description if not provided
+    const pageType = location.pathname.split('/')[1] || 'home';
+    const finalDescription = description || generateMetaDescription(pageType);
+
+    // Validate SEO elements
+    const validation = validateMetaTags(title, finalDescription, keywords);
+    if (!validation.isValid) {
+      console.warn('SEO Validation Issues:', validation.issues);
+    }
+
     // Update page title and meta tags
     document.title = title;
     updateMetaTags({
       title,
-      description,
+      description: finalDescription,
       image: image.startsWith('http') ? image : `https://talentxcel.in${image}`,
       url: `https://talentxcel.in${location.pathname}`,
-      type: 'website'
+      type: 'website',
+      keywords
     });
 
-    // Update keywords
-    if (keywords.length > 0) {
-      let keywordsMeta = document.querySelector('meta[name="keywords"]') as HTMLMetaElement;
-      if (!keywordsMeta) {
-        keywordsMeta = document.createElement('meta');
-        keywordsMeta.name = 'keywords';
-        document.head.appendChild(keywordsMeta);
-      }
-      keywordsMeta.content = keywords.join(', ');
-    }
+    // Keywords are now handled in updateMetaTags
 
     // Update canonical URL
     let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
@@ -122,9 +125,15 @@ export const usePageSEO = (pageType: string, data?: any) => {
 
       case 'jobs':
         return {
-          title: 'Latest Job Openings in India | TalentXcel Jobs',
-          description: 'Discover thousands of job opportunities across India. Latest openings in IT, Finance, Marketing, Healthcare, and more. Apply with one click and get hired faster.',
-          keywords: ['jobs in india', 'job openings', 'career opportunities', 'hiring', 'employment', 'job search', 'recruitment'],
+          title: data?.location 
+            ? `Jobs in ${data.location} | Latest ${data.location} Job Openings | TalentXcel`
+            : 'Latest Job Openings in India | TalentXcel Jobs',
+          description: data?.location
+            ? `Find the best job opportunities in ${data.location}. Latest openings in IT, Finance, Marketing, Healthcare, and more. Apply now and get hired faster.`
+            : 'Discover thousands of job opportunities across India. Latest openings in IT, Finance, Marketing, Healthcare, and more. Apply with one click and get hired faster.',
+          keywords: data?.location 
+            ? [`jobs in ${data.location.toLowerCase()}`, `${data.location.toLowerCase()} jobs`, 'job openings', 'career opportunities', 'hiring', 'employment']
+            : ['jobs in india', 'job openings', 'career opportunities', 'hiring', 'employment', 'job search', 'recruitment'],
           breadcrumbs: [
             { name: 'Home', url: '/' },
             { name: 'Jobs', url: '/jobs' }
