@@ -47,6 +47,12 @@ import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
 import { EnterpriseAnalyticsDashboard } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
 import { AIProviderStatus } from '@/components/seo/phase4/AIProviderStatus';
 import { TestSEOSuite } from '@/components/seo/TestSEOSuite';
+import { LiveRankTracker } from '@/components/seo/real-time/LiveRankTracker';
+import { RealTimeCompetitorAnalysis } from '@/components/seo/real-time/RealTimeCompetitorAnalysis';
+import { LiveSearchVolumeTracker } from '@/components/seo/real-time/LiveSearchVolumeTracker';
+import { ABTestingSEO } from '@/components/seo/advanced-features/ABTestingSEO';
+import { HreflangManager } from '@/components/seo/advanced-features/HreflangManager';
+import { GoogleSearchConsoleIntegration } from '@/components/seo/enterprise/GoogleSearchConsoleIntegration';
 import { DeploymentDiagnostics } from '@/components/admin/DeploymentDiagnostics';
 import { toast } from 'sonner';
 
@@ -345,6 +351,12 @@ const SEOSuite = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-muted/50">
           <TabsTrigger value="dashboard" className="text-xs">Dashboard</TabsTrigger>
+          <TabsTrigger value="live-rank" className="text-xs">Live Rank</TabsTrigger>
+          <TabsTrigger value="live-volume" className="text-xs">Live Volume</TabsTrigger>
+          <TabsTrigger value="real-competitor" className="text-xs">Live Competitor</TabsTrigger>
+          <TabsTrigger value="ab-testing" className="text-xs">A/B Testing</TabsTrigger>
+          <TabsTrigger value="hreflang" className="text-xs">Hreflang</TabsTrigger>
+          <TabsTrigger value="gsc" className="text-xs">GSC Integration</TabsTrigger>
           <TabsTrigger value="keywords" className="text-xs">Keywords</TabsTrigger>
           <TabsTrigger value="audit" className="text-xs">Site Audit</TabsTrigger>
           <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
@@ -364,6 +376,30 @@ const SEOSuite = () => {
 
         <TabsContent value="dashboard" className="space-y-6">
           <SEOIssueManager />
+        </TabsContent>
+
+        <TabsContent value="live-rank">
+          <LiveRankTracker />
+        </TabsContent>
+
+        <TabsContent value="live-volume">
+          <LiveSearchVolumeTracker />
+        </TabsContent>
+
+        <TabsContent value="real-competitor">
+          <RealTimeCompetitorAnalysis />
+        </TabsContent>
+
+        <TabsContent value="ab-testing">
+          <ABTestingSEO />
+        </TabsContent>
+
+        <TabsContent value="hreflang">
+          <HreflangManager />
+        </TabsContent>
+
+        <TabsContent value="gsc">
+          <GoogleSearchConsoleIntegration />
         </TabsContent>
 
         <TabsContent value="keywords">
