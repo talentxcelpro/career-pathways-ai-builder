@@ -43,6 +43,7 @@ import { AIContentGenerator } from '@/components/seo/phase3/AIContentGenerator';
 import { MLRankPredictor } from '@/components/seo/phase3/MLRankPredictor';
 import { SEOAutomationEngine } from '@/components/seo/phase3/SEOAutomationEngine';
 import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
+import { EnterpriseAnalyticsDashboard } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {

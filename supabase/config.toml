@@ -133,4 +133,20 @@ verify_jwt = false
 [functions.white-label-reports]
 verify_jwt = false
 
+# Phase 4: Enterprise Integration & Analytics
+[functions.google-analytics-integration]
+verify_jwt = false
+
+[functions.seo-automation-scheduler]
+verify_jwt = false
+
+[functions.webhook-notifications]
+verify_jwt = false
+
+[functions.enterprise-reporting]
+verify_jwt = false
+
+[functions.international-seo-manager]
+verify_jwt = false
+
 
