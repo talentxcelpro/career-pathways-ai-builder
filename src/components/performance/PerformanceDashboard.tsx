@@ -42,30 +42,39 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   const [performanceScore, setPerformanceScore] = useState(85);
 
   useEffect(() => {
-    // Get bundle metrics
-    const bundle = BundleAnalyzer.measureBundleSize();
-    setBundleMetrics(bundle);
+    const initializeMetrics = async () => {
+      // Get bundle metrics
+      const bundle = BundleAnalyzer.measureBundleSize();
+      setBundleMetrics(bundle);
 
-    // Get performance report (admin only)
-    if (isAdmin) {
-      const optimizer = PerformanceOptimizer.getInstance();
-      const report = optimizer.getPerformanceReport();
-      setPerformanceReport(report);
-    }
+      // Get performance report (admin only)
+      if (isAdmin) {
+        try {
+          const result = await getPerformanceScore();
+          setPerformanceScore(result.score);
+        } catch (error) {
+          console.error('Performance measurement failed:', error);
+        }
+      }
 
-    // Calculate performance score
-    const scores = getPerformanceScore();
-    const avgScore = Object.values(scores).reduce((sum, score) => {
-      const numScore = score === 'good' ? 100 : score === 'needs-improvement' ? 70 : 40;
-      return sum + numScore;
-    }, 0) / Object.keys(scores).length;
-    setPerformanceScore(Math.round(avgScore));
-  }, [isAdmin, getPerformanceScore]);
+      // Calculate performance score
+      const scores = getPerformanceScore();
+      if (typeof scores === 'object') {
+        const avgScore = Object.values(scores).reduce((sum, score) => {
+          const numScore = score === 'good' ? 100 : score === 'needs-improvement' ? 70 : 40;
+          return sum + numScore;
+        }, 0) / Object.keys(scores).length;
+        setPerformanceScore(Math.round(avgScore));
+      }
+    };
+
+    initializeMetrics();
+  }, [isAdmin]);
 
   const runOptimization = async () => {
     setIsOptimizing(true);
     try {
-      const optimizer = PerformanceOptimizer.getInstance();
+      initializePerformanceOptimizations();
       await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate optimization
       toast.success('Performance optimization completed!');
     } catch (error) {

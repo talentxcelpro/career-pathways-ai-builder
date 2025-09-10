@@ -355,8 +355,9 @@ const App = () => {
       </QueryClientProvider>
     </ErrorBoundary>
   );
+};
 
-// Initialize performance optimizations  
+// Initialize performance optimizations
 const AppWrapper = () => {
   React.useEffect(() => {
     // Apply color scheme from localStorage
