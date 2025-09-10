@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPABASE_CONFIG } from '@/utils/secureApiKeys';
 import { toast } from 'sonner';
 import { 
   CheckCircle2, 
@@ -28,6 +29,11 @@ export const TestSEOSuite: React.FC = () => {
 
   const seoFunctions = [
     {
+      name: 'Connectivity (Health Check)',
+      function: 'health-check',
+      payload: {}
+    },
+    {
       name: 'AI SEO Content Generator',
       function: 'ai-seo-content-generator',
       payload: {
@@ -41,15 +47,17 @@ export const TestSEOSuite: React.FC = () => {
       name: 'Backlink Analyzer',
       function: 'backlink-automation',
       payload: {
-        action: 'analyze',
-        url: 'https://talentxcel.in'
+        action: 'competitor_analysis',
+        data: {
+          domain: 'talentxcel.in',
+          competitors: ['naukri.com', 'indeed.com']
+        }
       }
     },
     {
       name: 'Competitor Intelligence',
       function: 'competitor-intelligence',
       payload: {
-        action: 'analyze',
         domain: 'talentxcel.in',
         competitors: ['naukri.com', 'indeed.com']
       }
@@ -67,8 +75,9 @@ export const TestSEOSuite: React.FC = () => {
       name: 'SEO Automation Engine',
       function: 'seo-automation-engine',
       payload: {
-        action: 'analyze',
-        url: 'https://talentxcel.in'
+        automationType: 'technical_audit',
+        url: 'https://talentxcel.in',
+        targetKeywords: ['talentxcel', 'career platform']
       }
     },
     {
@@ -98,12 +107,53 @@ export const TestSEOSuite: React.FC = () => {
   ];
 
   const testFunction = async (func: typeof seoFunctions[0]): Promise<TestResult> => {
+    const invoke = async () =>
+      supabase.functions.invoke(func.function, { body: func.payload });
+
     try {
       console.log(`Testing ${func.name}...`);
-      
-      const { data, error } = await supabase.functions.invoke(func.function, {
-        body: func.payload
-      });
+
+      let { data, error } = await invoke();
+
+      // Special case: Enhanced Sitemap may return XML which supabase-js can't parse as JSON
+      if (error && func.function === 'enhanced-sitemap') {
+        try {
+          const res = await fetch(`${SUPABASE_CONFIG.url}/functions/v1/${func.function}` , {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_CONFIG.anonKey,
+            },
+            body: JSON.stringify(func.payload || {}),
+          });
+          const text = await res.text();
+          if (res.ok) {
+            return {
+              name: func.name,
+              status: 'success',
+              message: 'Sitemap generated (XML)',
+              details: { status: res.status, length: text.length }
+            };
+          }
+          return {
+            name: func.name,
+            status: 'error',
+            message: `HTTP ${res.status}: Failed to fetch sitemap`,
+            details: text
+          };
+        } catch (e: any) {
+          // fall through to retry
+          console.warn('Enhanced Sitemap direct fetch failed:', e?.message);
+        }
+      }
+
+      // Retry once on connectivity error
+      if (error) {
+        await new Promise(r => setTimeout(r, 800));
+        const retry = await invoke();
+        data = retry.data;
+        error = retry.error as any;
+      }
 
       if (error) {
         return {
