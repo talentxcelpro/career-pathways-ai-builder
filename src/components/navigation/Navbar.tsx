@@ -248,28 +248,58 @@ export const Navbar = () => {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                    <DropdownMenuItem 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate('/profile');
+                      }}
+                    >
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
                     {hasCompanyAccess && (
-                      <DropdownMenuItem onClick={() => navigate('/company/dashboard')}>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate('/company/dashboard');
+                        }}
+                      >
                         <Building2 className="mr-2 h-4 w-4" />
                         <span>Company Dashboard</span>
                       </DropdownMenuItem>
                      )}
                      {hasEmployerAccess ? (
-                       <DropdownMenuItem onClick={() => navigate('/pro/services')}>
+                       <DropdownMenuItem 
+                         onClick={(e) => {
+                           e.preventDefault();
+                           e.stopPropagation();
+                           navigate('/pro/services');
+                         }}
+                       >
                          <Settings className="mr-2 h-4 w-4" />
                          <span>Set Up Services</span>
                        </DropdownMenuItem>
                      ) : (
-                       <DropdownMenuItem onClick={() => navigate('/pro/subscription')}>
+                       <DropdownMenuItem 
+                         onClick={(e) => {
+                           e.preventDefault();
+                           e.stopPropagation();
+                           navigate('/pro/subscription');
+                         }}
+                       >
                          <Settings className="mr-2 h-4 w-4" />
                          <span>Set Up Services</span>
                        </DropdownMenuItem>
                      )}
-                     <DropdownMenuItem onClick={() => navigate('/profile/settings')}>
+                     <DropdownMenuItem 
+                       onClick={(e) => {
+                         e.preventDefault();
+                         e.stopPropagation();
+                         navigate('/profile/settings');
+                       }}
+                     >
                        <Settings className="mr-2 h-4 w-4" />
                        <span>Settings</span>
                      </DropdownMenuItem>

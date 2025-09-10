@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
+import { initializePerformanceOptimizations } from "@/utils/performanceOptimizer";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
 import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
@@ -354,6 +355,21 @@ const App = () => {
       </QueryClientProvider>
     </ErrorBoundary>
   );
+
+// Initialize performance optimizations  
+const AppWrapper = () => {
+  React.useEffect(() => {
+    // Apply color scheme from localStorage
+    const savedColorScheme = localStorage.getItem('colorScheme');
+    if (savedColorScheme) {
+      document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+    }
+    
+    // Initialize performance optimizations for better Core Web Vitals
+    initializePerformanceOptimizations();
+  }, []);
+
+  return <App />;
 };
 
-export default App;
+export default AppWrapper;

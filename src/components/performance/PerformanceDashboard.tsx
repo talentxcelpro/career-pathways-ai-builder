@@ -18,7 +18,7 @@ import {
 import { toast } from 'sonner';
 import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { BundleAnalyzer } from '@/utils/bundleOptimizer';
-import { PerformanceOptimizer } from '@/utils/performanceOptimizer';
+import { getPerformanceScore, initializePerformanceOptimizations } from '@/utils/performanceOptimizer';
 import { PerformanceAnalytics } from './PerformanceAnalytics';
 import { WebVitalsTracker } from '../seo/WebVitalsTracker';
 

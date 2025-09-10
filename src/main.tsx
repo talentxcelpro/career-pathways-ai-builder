@@ -20,11 +20,11 @@ if (typeof window !== 'undefined') {
     import('./utils/bundleOptimizer'),
     import('./utils/lazyLoading')
   ]).then(([
-    { initializePerformanceOptimization },
+    { initializePerformanceOptimizations },
     { initializeBundleOptimization },
     { initializeLazyLoading }
   ]) => {
-    initializePerformanceOptimization();
+    initializePerformanceOptimizations();
     initializeBundleOptimization();
     initializeLazyLoading();
   });

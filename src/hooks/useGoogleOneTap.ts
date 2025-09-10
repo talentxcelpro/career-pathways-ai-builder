@@ -61,13 +61,13 @@ export const useGoogleOneTap = ({
   const initializeGoogleOneTap = useCallback(() => {
     if (!window.google || disabled) return;
 
-    // Only enable One Tap on production domains to avoid GSI origin errors
-    const origin = window.location.origin;
+    // Enable One Tap for production domain and localhost for testing
     const hostname = window.location.hostname;
     const isProduction = hostname === 'talentxcel.in' || hostname === 'www.talentxcel.in';
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
     
-    if (!isProduction) {
-      console.warn('Google One Tap disabled on non-production origin:', origin);
+    if (!isProduction && !isLocalhost) {
+      console.warn('Google One Tap disabled on this origin:', origin);
       return;
     }
 
