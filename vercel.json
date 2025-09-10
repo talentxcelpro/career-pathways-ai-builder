@@ -71,44 +71,24 @@
       "destination": "https://talentxcel.in/employer"
     },
     {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "employer.talentxcel.in"
-        }
-      ],
-      "destination": "/employer/:path*"
+      "source": "/:path*",
+      "destination": "/jobs/:path*",
+      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }]
     },
     {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "colleges.talentxcel.in"
-        }
-      ],
-      "destination": "/colleges/:path*"
+      "source": "/:path*",
+      "destination": "/employer/:path*",
+      "has": [{ "type": "host", "value": "employer.talentxcel.in" }]
     },
     {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "learning.talentxcel.in"
-        }
-      ],
-      "destination": "/learning/:path*"
+      "source": "/:path*",
+      "destination": "/learning/:path*",
+      "has": [{ "type": "host", "value": "learning.talentxcel.in" }]
     },
     {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "jobs.talentxcel.in"
-        }
-      ],
-      "destination": "/jobs/:path*"
+      "source": "/:path*",
+      "destination": "/colleges/:path*",
+      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }]
     },
     { "source": "/(.*)", "destination": "/" }
   ]
