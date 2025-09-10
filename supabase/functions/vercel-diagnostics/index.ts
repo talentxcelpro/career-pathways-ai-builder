@@ -44,6 +44,19 @@ serve(async (req) => {
     
     const vercelToken = Deno.env.get('VERCEL_TOKEN');
     const deployHookUrl = Deno.env.get('VERCEL_DEPLOY_HOOK_URL');
+    const teamId = Deno.env.get('VERCEL_TEAM_ID');
+
+    // Config check does not require a valid token to respond
+    if (action === 'config-check') {
+      return new Response(JSON.stringify({
+        success: true,
+        hasToken: !!vercelToken,
+        hasHook: !!deployHookUrl,
+        hasTeamId: !!teamId
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     if (!vercelToken) {
       return new Response(JSON.stringify({
@@ -59,7 +72,8 @@ serve(async (req) => {
     if (action === 'list-deployments') {
       console.log('Fetching deployments from Vercel API...');
       
-      const response = await fetch('https://api.vercel.com/v6/deployments?limit=5', {
+      const deploymentsUrl = `https://api.vercel.com/v6/deployments?limit=5${teamId ? `&teamId=${teamId}` : ''}`;
+      const response = await fetch(deploymentsUrl, {
         headers: {
           'Authorization': `Bearer ${vercelToken}`,
           'Content-Type': 'application/json',
@@ -67,8 +81,17 @@ serve(async (req) => {
       });
 
       if (!response.ok) {
-        console.error('Vercel API error:', response.status, await response.text());
-        throw new Error(`Vercel API error: ${response.status}`);
+        const details = await response.text();
+        console.error('Vercel API error:', response.status, details);
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Failed to fetch deployments from Vercel',
+          status: response.status,
+          details
+        }), {
+          status: response.status === 401 ? 401 : 502,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
 
       const data = await response.json();
@@ -100,7 +123,8 @@ serve(async (req) => {
     if (action === 'get-deployment-errors' && deploymentId) {
       console.log(`Fetching build events for deployment: ${deploymentId}`);
       
-      const response = await fetch(`https://api.vercel.com/v3/deployments/${deploymentId}/events`, {
+      const eventsUrl = `https://api.vercel.com/v3/deployments/${deploymentId}/events${teamId ? `?teamId=${teamId}` : ''}`;
+      const response = await fetch(eventsUrl, {
         headers: {
           'Authorization': `Bearer ${vercelToken}`,
           'Content-Type': 'application/json',
@@ -163,8 +187,17 @@ serve(async (req) => {
       });
 
       if (!response.ok) {
-        console.error('Deploy hook error:', response.status, await response.text());
-        throw new Error(`Deploy hook failed: ${response.status}`);
+        const details = await response.text();
+        console.error('Deploy hook error:', response.status, details);
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Deploy hook failed',
+          status: response.status,
+          details
+        }), {
+          status: 502,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
 
       const result = await response.json();
