@@ -41,8 +41,10 @@ serve(async (req) => {
 
   try {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    const deepSeekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+    
+    if (!openAIApiKey && !deepSeekApiKey) {
+      throw new Error('Neither OpenAI nor DeepSeek API keys are configured');
     }
 
     const {
@@ -101,33 +103,107 @@ Return JSON format:
   "seoScore": 92
 }`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        max_completion_tokens: 3000,
-        response_format: { type: "json_object" }
-      }),
-    });
+    let response;
+    let data;
+    let aiProvider = 'OpenAI';
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+    // Try OpenAI first
+    if (openAIApiKey) {
+      try {
+        console.log(`🔄 Attempting with OpenAI...`);
+        response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-5-2025-08-07',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            max_completion_tokens: 3000,
+            response_format: { type: "json_object" }
+          }),
+        });
+
+        if (response.ok) {
+          data = await response.json();
+          console.log(`✅ OpenAI successful. Tokens used: ${data.usage?.total_tokens}`);
+        } else {
+          throw new Error(`OpenAI API error: ${response.status}`);
+        }
+      } catch (openAIError) {
+        console.warn(`⚠️ OpenAI failed: ${openAIError.message}. Falling back to DeepSeek...`);
+        
+        // Fallback to DeepSeek
+        if (deepSeekApiKey) {
+          aiProvider = 'DeepSeek';
+          response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${deepSeekApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'deepseek-chat',
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+              ],
+              max_tokens: 3000,
+              temperature: 0.7,
+              response_format: { type: "json_object" }
+            }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('DeepSeek API error:', errorText);
+            throw new Error(`Both OpenAI and DeepSeek failed. DeepSeek error: ${response.status}`);
+          }
+
+          data = await response.json();
+          console.log(`✅ DeepSeek fallback successful. Model: deepseek-chat`);
+        } else {
+          throw openAIError;
+        }
+      }
+    } else if (deepSeekApiKey) {
+      // Use DeepSeek directly if OpenAI key not available
+      aiProvider = 'DeepSeek';
+      console.log(`🔄 Using DeepSeek directly...`);
+      response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${deepSeekApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          max_tokens: 3000,
+          temperature: 0.7,
+          response_format: { type: "json_object" }
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('DeepSeek API error:', errorText);
+        throw new Error(`DeepSeek API error: ${response.status}`);
+      }
+
+      data = await response.json();
+      console.log(`✅ DeepSeek successful. Model: deepseek-chat`);
     }
-
-    const data = await response.json();
     const generatedContent = JSON.parse(data.choices[0].message.content);
 
-    console.log(`✅ Content generated successfully. Tokens used: ${data.usage?.total_tokens}`);
+    console.log(`✅ Content generated successfully using ${aiProvider}. ${data.usage ? `Tokens used: ${data.usage.total_tokens}` : ''}`);
 
     // Enhanced content analysis
     const enhancedContent = {
@@ -138,7 +214,8 @@ Return JSON format:
       keywordDensity: calculateKeywordDensity(generatedContent.body, targetKeywords),
       generatedAt: new Date().toISOString(),
       contentType,
-      industry
+      industry,
+      aiProvider // Track which AI was used
     };
 
     const result: AIContentResponse = {

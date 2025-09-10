@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { generateJSONWithFallback } from "../_shared/ai-fallback.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -56,10 +57,7 @@ serve(async (req) => {
   }
 
   try {
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
-    }
+    console.log(`🤖 SEO Automation Engine: ${automationType} for ${url}`);
 
     const {
       automationType,
@@ -101,36 +99,26 @@ serve(async (req) => {
         break;
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    // Use AI fallback for automation analysis
+    const result = await generateJSONWithFallback(
+      systemMessage,
+      automationPrompt,
+      {
         model: 'gpt-5-2025-08-07',
-        messages: [
-          { role: 'system', content: systemMessage },
-          { role: 'user', content: automationPrompt }
-        ],
-        max_completion_tokens: 3000,
-        response_format: { type: "json_object" }
-      }),
-    });
+        maxTokens: 3000,
+        temperature: 0.7
+      }
+    );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const automationResults = JSON.parse(data.choices[0].message.content);
+    const automationResults = result.data;
 
     // Enhanced results with automation metadata
     const enhancedResults = {
       ...automationResults,
       automationType,
+      aiProvider: result.provider,
+      tokensUsed: result.tokensUsed,
+      generatedAt: new Date().toISOString(),
       executedAt: new Date().toISOString(),
       url,
       industry,

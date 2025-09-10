@@ -46,8 +46,10 @@ serve(async (req) => {
 
   try {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+    const deepSeekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+    
+    if (!openAIApiKey && !deepSeekApiKey) {
+      throw new Error('Neither OpenAI nor DeepSeek API keys are configured');
     }
 
     const {
@@ -99,33 +101,113 @@ Provide a JSON response with:
   "riskFactors": ["potential ranking risks"]
 }`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'o3-2025-04-16', // Using reasoning model for complex analysis
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert SEO analyst with deep knowledge of ranking factors and algorithm patterns. Provide data-driven predictions based on comprehensive SEO analysis.'
+    let response;
+    let data;
+    let aiProvider = 'OpenAI';
+
+    // Try OpenAI first
+    if (openAIApiKey) {
+      try {
+        console.log(`🔄 Attempting rank prediction with OpenAI...`);
+        response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
           },
-          { role: 'user', content: analysisPrompt }
-        ],
-        max_completion_tokens: 2000,
-        response_format: { type: "json_object" }
-      }),
-    });
+          body: JSON.stringify({
+            model: 'o3-2025-04-16', // Using reasoning model for complex analysis
+            messages: [
+              {
+                role: 'system',
+                content: 'You are an expert SEO analyst with deep knowledge of ranking factors and algorithm patterns. Provide data-driven predictions based on comprehensive SEO analysis.'
+              },
+              { role: 'user', content: analysisPrompt }
+            ],
+            max_completion_tokens: 2000,
+            response_format: { type: "json_object" }
+          }),
+        });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+        if (response.ok) {
+          data = await response.json();
+          console.log(`✅ OpenAI successful for rank prediction`);
+        } else {
+          throw new Error(`OpenAI API error: ${response.status}`);
+        }
+      } catch (openAIError) {
+        console.warn(`⚠️ OpenAI failed: ${openAIError.message}. Falling back to DeepSeek...`);
+        
+        // Fallback to DeepSeek
+        if (deepSeekApiKey) {
+          aiProvider = 'DeepSeek';
+          response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${deepSeekApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'deepseek-chat',
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are an expert SEO analyst with deep knowledge of ranking factors and algorithm patterns. Provide data-driven predictions based on comprehensive SEO analysis.'
+                },
+                { role: 'user', content: analysisPrompt }
+              ],
+              max_tokens: 2000,
+              temperature: 0.3,
+              response_format: { type: "json_object" }
+            }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('DeepSeek API error:', errorText);
+            throw new Error(`Both OpenAI and DeepSeek failed. DeepSeek error: ${response.status}`);
+          }
+
+          data = await response.json();
+          console.log(`✅ DeepSeek fallback successful for rank prediction`);
+        } else {
+          throw openAIError;
+        }
+      }
+    } else if (deepSeekApiKey) {
+      // Use DeepSeek directly if OpenAI key not available
+      aiProvider = 'DeepSeek';
+      console.log(`🔄 Using DeepSeek directly for rank prediction...`);
+      response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${deepSeekApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are an expert SEO analyst with deep knowledge of ranking factors and algorithm patterns. Provide data-driven predictions based on comprehensive SEO analysis.'
+            },
+            { role: 'user', content: analysisPrompt }
+          ],
+          max_tokens: 2000,
+          temperature: 0.3,
+          response_format: { type: "json_object" }
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('DeepSeek API error:', errorText);
+        throw new Error(`DeepSeek API error: ${response.status}`);
+      }
+
+      data = await response.json();
+      console.log(`✅ DeepSeek successful for rank prediction`);
     }
-
-    const data = await response.json();
     const prediction = JSON.parse(data.choices[0].message.content);
 
     // Enhanced prediction with additional ML-style calculations
@@ -144,10 +226,13 @@ Provide a JSON response with:
       // Add seasonal trends
       seasonalTrends: generateSeasonalInsights(targetKeyword),
       // Add algorithm risk assessment
-      algorithmRisk: assessAlgorithmRisk(url, prediction.factors)
+      algorithmRisk: assessAlgorithmRisk(url, prediction.factors),
+      // Track AI provider used
+      aiProvider,
+      generatedAt: new Date().toISOString()
     };
 
-    console.log(`✅ Rank prediction completed. Predicted rank: ${prediction.predictedRank}`);
+    console.log(`✅ Rank prediction completed using ${aiProvider}. Predicted rank: ${prediction.predictedRank}`);
 
     const result: MLPredictionResult = {
       success: true,

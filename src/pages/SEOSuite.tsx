@@ -44,6 +44,7 @@ import { MLRankPredictor } from '@/components/seo/phase3/MLRankPredictor';
 import { SEOAutomationEngine } from '@/components/seo/phase3/SEOAutomationEngine';
 import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
 import { EnterpriseAnalyticsDashboard } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
+import { AIProviderStatus } from '@/components/seo/phase4/AIProviderStatus';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
@@ -297,6 +298,8 @@ const SEOSuite = () => {
           <TabsTrigger value="ml-predict" className="text-xs">ML Predict</TabsTrigger>
           <TabsTrigger value="automation" className="text-xs">Automation</TabsTrigger>
           <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
+          <TabsTrigger value="ai-status" className="text-xs">AI Status</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -461,6 +464,14 @@ const SEOSuite = () => {
 
         <TabsContent value="white-label">
           <WhiteLabelReports />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <EnterpriseAnalyticsDashboard />
+        </TabsContent>
+
+        <TabsContent value="ai-status">
+          <AIProviderStatus />
         </TabsContent>
       </Tabs>
     </div>
