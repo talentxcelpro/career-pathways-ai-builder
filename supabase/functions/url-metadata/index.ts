@@ -37,24 +37,39 @@ serve(async (req) => {
 
     console.log('Fetching metadata for:', url);
 
-    // Initialize Supabase client
+    // Initialize Supabase client (gracefully handle missing service role key)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Check if we have cached metadata
-    const { data: cached } = await supabase
-      .from('url_previews')
-      .select('*')
-      .eq('url', url)
-      .single();
-
-    // Return cached if valid and not expired
-    if (cached && cached.is_valid && (!cached.expires_at || new Date(cached.expires_at) > new Date())) {
-      console.log('Returning cached metadata');
-      return new Response(JSON.stringify(cached), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    
+    let cached = null;
+    
+    // Only attempt caching if we have the service role key
+    if (supabaseServiceKey) {
+      try {
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        
+        // Check if we have cached metadata
+        const { data } = await supabase
+          .from('url_previews')
+          .select('*')
+          .eq('url', url)
+          .single();
+        
+        cached = data;
+        
+        // Return cached if valid and not expired
+        if (cached && cached.is_valid && (!cached.expires_at || new Date(cached.expires_at) > new Date())) {
+          console.log('Returning cached metadata');
+          return new Response(JSON.stringify(cached), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+      } catch (error) {
+        console.log('Cache check failed, proceeding without cache:', error.message);
+      }
+    } else {
+      console.log('No service role key found, skipping cache check');
     }
 
     // Extract domain
@@ -141,20 +156,31 @@ serve(async (req) => {
 
     console.log('Extracted metadata:', metadata);
 
-    // Cache the metadata (expires in 7 days)
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    // Cache the metadata (expires in 7 days) - only if service role key is available
+    if (supabaseServiceKey) {
+      try {
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
 
-    const { error: insertError } = await supabase
-      .from('url_previews')
-      .upsert({
-        ...metadata,
-        expires_at: expiresAt.toISOString(),
-        is_valid: true
-      });
+        const { error: insertError } = await supabase
+          .from('url_previews')
+          .upsert({
+            ...metadata,
+            expires_at: expiresAt.toISOString(),
+            is_valid: true
+          });
 
-    if (insertError) {
-      console.error('Error caching metadata:', insertError);
+        if (insertError) {
+          console.error('Error caching metadata:', insertError);
+        } else {
+          console.log('Metadata cached successfully');
+        }
+      } catch (error) {
+        console.error('Failed to cache metadata:', error.message);
+      }
+    } else {
+      console.log('Skipping cache save - no service role key');
     }
 
     return new Response(JSON.stringify(metadata), {

@@ -41,15 +41,16 @@ export const TestSEOSuite: React.FC = () => {
       name: 'Backlink Analyzer',
       function: 'backlink-automation',
       payload: {
-        url: 'https://talentxcel.in',
-        analysisType: 'comprehensive'
+        action: 'analyze',
+        url: 'https://talentxcel.in'
       }
     },
     {
       name: 'Competitor Intelligence',
       function: 'competitor-intelligence',
       payload: {
-        targetDomain: 'talentxcel.in',
+        action: 'analyze',
+        domain: 'talentxcel.in',
         competitors: ['naukri.com', 'indeed.com']
       }
     },
@@ -66,8 +67,8 @@ export const TestSEOSuite: React.FC = () => {
       name: 'SEO Automation Engine',
       function: 'seo-automation-engine',
       payload: {
-        action: 'status_check',
-        domain: 'talentxcel.in'
+        action: 'analyze',
+        url: 'https://talentxcel.in'
       }
     },
     {

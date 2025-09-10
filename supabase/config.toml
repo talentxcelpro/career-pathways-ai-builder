@@ -133,6 +133,18 @@ verify_jwt = false
 [functions.white-label-reports]
 verify_jwt = false
 
+[functions.enhanced-sitemap]
+verify_jwt = false
+
+[functions.backlink-automation]
+verify_jwt = false
+
+[functions.competitor-intelligence]
+verify_jwt = false
+
+[functions.url-metadata]
+verify_jwt = false
+
 # Phase 4: Enterprise Integration & Analytics
 [functions.google-analytics-integration]
 verify_jwt = false
