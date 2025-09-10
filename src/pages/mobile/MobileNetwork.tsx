@@ -3,9 +3,12 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
+import { useToast } from '@/hooks/use-toast';
 import { StoryBubbles } from '@/components/mobile/StoryBubbles';
 import { NetworkPost } from '@/components/mobile/NetworkPost';
 import { PeopleYouMayKnow } from '@/components/mobile/PeopleYouMayKnow';
+import { ConnectionSuggestions } from '@/components/mobile/ConnectionSuggestions';
+import { MobileNetworkingStats } from '@/components/mobile/MobileNetworkingStats';
 import { MobilePostCreation } from '@/components/mobile/MobilePostCreation';
 import { TrendingCarousel } from '@/components/network/TrendingCarousel';
 import { JobWorldDigest } from '@/components/network/JobWorldDigest';
@@ -18,7 +21,9 @@ import { Plus, RefreshCw } from 'lucide-react';
 
 export const MobileNetwork = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Enhanced infinite query for better performance
   const {
@@ -128,6 +133,26 @@ export const MobileNetwork = () => {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  // Pull to refresh functionality
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+      toast({
+        title: "Feed refreshed",
+        description: "Your network feed has been updated with the latest content."
+      });
+    } catch (error) {
+      toast({
+        title: "Refresh failed",
+        description: "Unable to refresh feed. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <MobileLayout>
@@ -177,6 +202,12 @@ export const MobileNetwork = () => {
         
         <ScrollArea className="h-[calc(100vh-180px)]" onScrollCapture={handleScroll}>
           <div className="pb-20">
+            {/* Networking Stats */}
+            <MobileNetworkingStats />
+            
+            {/* Connection Suggestions */}
+            <ConnectionSuggestions />
+            
             {/* Job World Digest */}
             <JobWorldDigest />
             
@@ -206,10 +237,11 @@ export const MobileNetwork = () => {
                 <Button 
                   variant="outline" 
                   className="mt-4"
-                  onClick={() => refetch()}
+                  onClick={handleRefresh}
+                  disabled={refreshing}
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh Feed
+                  <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                  {refreshing ? 'Refreshing...' : 'Refresh Feed'}
                 </Button>
               </div>
             )}

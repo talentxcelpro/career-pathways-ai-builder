@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { UserPlus, MessageCircle, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 interface ConnectionActionsProps {
   userId: string;
@@ -19,6 +19,7 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({
   size = 'sm'
 }) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
   const [connectionStatus, setConnectionStatus] = React.useState(isConnected ? 'connected' : 'none');
 
@@ -38,13 +39,24 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({
       if (error) throw error;
 
       setConnectionStatus('pending');
-      toast.success('Connection request sent!');
+      toast({
+        title: "Connection request sent",
+        description: "Your connection request has been sent successfully."
+      });
     } catch (error: any) {
       console.error('Error sending connection request:', error);
       if (error.message?.includes('duplicate')) {
-        toast.error('Connection request already sent');
+        toast({
+          title: "Already sent",
+          description: "Connection request already sent to this user.",
+          variant: "destructive"
+        });
       } else {
-        toast.error('Failed to send connection request');
+        toast({
+          title: "Failed to connect",
+          description: "Unable to send connection request. Please try again.",
+          variant: "destructive"
+        });
       }
     } finally {
       setIsLoading(false);
