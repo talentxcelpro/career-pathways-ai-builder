@@ -89,7 +89,7 @@ export const useCachedSEO = ({
       // Otherwise, generate new content via edge function
       console.log('Generating new SEO content');
       const { data: generatedData, error: generateError } = await supabase.functions.invoke(
-        'seo-content-generator',
+        'ai-seo-content-generator',
         {
           body: {
             pageType,
@@ -127,7 +127,7 @@ export const useCachedSEO = ({
   const regenerateContent = async () => {
     console.log('Force regenerating SEO content');
     const { data: generatedData, error } = await supabase.functions.invoke(
-      'seo-content-generator',
+      'ai-seo-content-generator',
       {
         body: {
           pageType,
@@ -201,7 +201,7 @@ export const useBulkSEO = () => {
   const generateBulkContent = async (requests: SEOCacheOptions[]) => {
     const results = await Promise.allSettled(
       requests.map(request => 
-        supabase.functions.invoke('seo-content-generator', {
+        supabase.functions.invoke('ai-seo-content-generator', {
           body: {
             pageType: request.pageType,
             primarySlug: request.primarySlug,

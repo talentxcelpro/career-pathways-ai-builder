@@ -13,7 +13,7 @@ export const SitemapGenerator: React.FC = () => {
     setIsGenerating(true);
     try {
       // Call the sitemap generation edge function
-      const { data, error } = await supabase.functions.invoke('seo-sitemap-generator');
+      const { data, error } = await supabase.functions.invoke('enhanced-sitemap');
       
       if (error) throw error;
       

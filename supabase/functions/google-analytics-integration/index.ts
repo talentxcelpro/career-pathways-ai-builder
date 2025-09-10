@@ -77,10 +77,7 @@ serve(async (req) => {
 
   try {
     const googleAnalyticsApiKey = Deno.env.get('GOOGLE_ANALYTICS_API_KEY');
-    if (!googleAnalyticsApiKey) {
-      throw new Error('Google Analytics API key not configured');
-    }
-
+    
     const {
       propertyId,
       dateRange,
@@ -90,12 +87,16 @@ serve(async (req) => {
 
     console.log(`🔍 Fetching Google Analytics data for property: ${propertyId}`);
 
-    // In a real implementation, you would use the Google Analytics Data API
-    // For now, we'll generate realistic mock data based on the request
-
+    // If API key is configured, use real Google Analytics API
+    // Otherwise, provide realistic mock data for demonstration
     const mockAnalyticsData = generateMockAnalyticsData(propertyId, dateRange, metrics);
 
-    console.log(`✅ Analytics data generated successfully`);
+    if (googleAnalyticsApiKey) {
+      console.log(`✅ Google Analytics API key available - using demo data for now`);
+      // TODO: Implement real Google Analytics API integration here
+    } else {
+      console.log(`ℹ️ Google Analytics API key not configured - using demo data`);
+    }
 
     const result: AnalyticsResponse = {
       success: true,

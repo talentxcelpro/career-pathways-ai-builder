@@ -26,7 +26,7 @@ export const SitemapManager = () => {
       const sitemapTypes = ['main', 'jobs', 'companies', 'courses', 'seo-pages', 'index'];
       
       for (const type of sitemapTypes) {
-        const { data, error } = await supabase.functions.invoke('sitemap-generator', {
+        const { data, error } = await supabase.functions.invoke('enhanced-sitemap', {
           body: { type }
         });
         

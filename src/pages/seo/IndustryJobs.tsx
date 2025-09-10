@@ -31,7 +31,7 @@ const IndustryJobs = () => {
       };
 
       // Fetch AI-generated SEO content
-      const response = await supabase.functions.invoke('seo-content-generator', {
+      const response = await supabase.functions.invoke('ai-seo-content-generator', {
         body: {
           pageType: 'industry',
           primarySlug: industry

@@ -45,6 +45,7 @@ import { SEOAutomationEngine } from '@/components/seo/phase3/SEOAutomationEngine
 import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
 import { EnterpriseAnalyticsDashboard } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
 import { AIProviderStatus } from '@/components/seo/phase4/AIProviderStatus';
+import { TestSEOSuite } from '@/components/seo/TestSEOSuite';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
@@ -94,11 +95,21 @@ const SEOSuite = () => {
     setIsAnalyzing(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('url-metadata', {
+      // Start URL metadata request but don't block the UI
+      const metadataPromise = supabase.functions.invoke('url-metadata', {
         body: { url: websiteUrl }
       });
 
-      if (error) throw error;
+      // Show immediate feedback while processing
+      toast.info('Analyzing website metadata...');
+      
+      const { data, error } = await metadataPromise;
+
+      if (error) {
+        console.warn('URL metadata error:', error);
+        // Don't throw - continue with basic analysis
+        toast.warning('Could not fetch metadata, performing basic analysis');
+      }
 
       // Calculate SEO score based on metadata
       let score = 30; // Base score
@@ -300,6 +311,7 @@ const SEOSuite = () => {
           <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
           <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
           <TabsTrigger value="ai-status" className="text-xs">AI Status</TabsTrigger>
+          <TabsTrigger value="testing" className="text-xs">Testing</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -472,6 +484,10 @@ const SEOSuite = () => {
 
         <TabsContent value="ai-status">
           <AIProviderStatus />
+        </TabsContent>
+
+        <TabsContent value="testing">
+          <TestSEOSuite />
         </TabsContent>
       </Tabs>
     </div>

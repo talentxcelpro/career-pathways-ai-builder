@@ -31,7 +31,7 @@ const SalaryGuidePage = () => {
       }
 
       // Fetch AI-generated SEO content
-      const response = await supabase.functions.invoke('seo-content-generator', {
+      const response = await supabase.functions.invoke('ai-seo-content-generator', {
         body: {
           pageType: 'salary_guide',
           primarySlug: role,

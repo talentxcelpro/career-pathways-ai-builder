@@ -118,7 +118,7 @@ export const JobScraperControl = () => {
 
       // Trigger sitemap generation
       try {
-        await supabase.functions.invoke('sitemap-generator');
+        await supabase.functions.invoke('enhanced-sitemap');
         toast.success('🗺️ Sitemap updated with new jobs');
       } catch (sitemapError) {
         console.warn('Sitemap generation failed:', sitemapError);
