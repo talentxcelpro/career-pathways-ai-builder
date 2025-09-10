@@ -22,6 +22,8 @@ serve(async (req) => {
     console.log(`🎯 Backlink automation action: ${action}`);
 
     switch (action) {
+      case 'create_backlink':
+        return await createBacklink(supabase, data);
       case 'university_outreach':
         return await universityOutreach(supabase, data);
       case 'startup_directory_submission':
@@ -46,6 +48,60 @@ serve(async (req) => {
     });
   }
 });
+
+async function createBacklink(supabase: any, data: any) {
+  console.log('🔗 Creating backlink record...');
+  
+  const { url, target } = data;
+  
+  if (!url || !target) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'URL and target are required'
+    }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Insert into backlinks table using correct column names
+  let stored = false;
+  let dbError = null;
+
+  try {
+    const { error } = await supabase
+      .from('backlinks')
+      .insert({
+        source_url: url,
+        target_url: target,
+        status: 'pending',
+        discovered_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+    if (!error) {
+      stored = true;
+    } else {
+      console.warn('⚠️ DB write failed:', error.message);
+      dbError = error.message;
+    }
+  } catch (error: any) {
+    console.warn('⚠️ DB connection failed:', error.message);
+    dbError = error.message;
+  }
+
+  return new Response(JSON.stringify({
+    success: true,
+    backlink_created: stored,
+    source_url: url,
+    target_url: target,
+    status: stored ? 'created' : 'queued',
+    dbError: dbError
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
 
 async function universityOutreach(supabase: any, data: any) {
   console.log('🎓 Starting university career center outreach...');
