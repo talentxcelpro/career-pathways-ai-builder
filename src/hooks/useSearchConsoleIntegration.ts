@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SearchConsoleData {
   impressions: number;
@@ -33,21 +34,44 @@ export const useSearchConsoleIntegration = () => {
     setError(null);
 
     try {
-      // TODO: Integrate with real Google Search Console API
-      const realData: SearchConsoleData = {
-        impressions: 0,
-        clicks: 0,
-        ctr: 0,
-        position: 0,
-        queries: [],
-        pages: []
+      // Call the real Google Search Console API through edge function
+      const { data: consoleData, error: consoleError } = await supabase.functions.invoke('google-search-console', {
+        body: { 
+          siteUrl: window.location.hostname,
+          dateRange 
+        }
+      });
+
+      if (consoleError) throw consoleError;
+
+      // Transform the data to match our interface
+      const transformedData: SearchConsoleData = {
+        impressions: consoleData.summary.totalImpressions,
+        clicks: consoleData.summary.totalClicks,
+        ctr: consoleData.summary.averageCTR,
+        position: consoleData.summary.averagePosition,
+        queries: consoleData.topQueries.map((q: any) => ({
+          query: q.query,
+          impressions: q.impressions,
+          clicks: q.clicks,
+          ctr: q.ctr,
+          position: q.position
+        })),
+        pages: consoleData.topPages.map((p: any) => ({
+          page: p.page,
+          impressions: p.impressions,
+          clicks: p.clicks,
+          ctr: p.ctr,
+          position: p.position
+        }))
       };
 
-      setData(realData);
+      setData(transformedData);
       toast.success('Search Console data updated successfully');
     } catch (err) {
       setError('Failed to fetch Search Console data');
       toast.error('Failed to fetch Search Console data');
+      console.error('Search Console integration error:', err);
     } finally {
       setLoading(false);
     }
