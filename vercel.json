@@ -1,4 +1,3 @@
-
 {
   "headers": [
     {
@@ -72,22 +71,22 @@
     },
     {
       "source": "/:path*",
-      "destination": "/jobs/:path*",
+      "destination": "/",
       "has": [{ "type": "host", "value": "jobs.talentxcel.in" }]
     },
     {
       "source": "/:path*",
-      "destination": "/employer/:path*",
+      "destination": "/",
       "has": [{ "type": "host", "value": "employer.talentxcel.in" }]
     },
     {
       "source": "/:path*",
-      "destination": "/learning/:path*",
+      "destination": "/",
       "has": [{ "type": "host", "value": "learning.talentxcel.in" }]
     },
     {
       "source": "/:path*",
-      "destination": "/colleges/:path*",
+      "destination": "/",
       "has": [{ "type": "host", "value": "colleges.talentxcel.in" }]
     },
     { "source": "/(.*)", "destination": "/" }
