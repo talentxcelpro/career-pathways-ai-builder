@@ -28,7 +28,8 @@ import {
   Star,
   Eye,
   Newspaper,
-  Rocket
+  Rocket,
+  Search
 } from 'lucide-react';
 import {
   Sidebar,
@@ -245,6 +246,12 @@ const adminMenuItems = [
     url: '/admin/news-automation',
     icon: Newspaper,
     description: 'Test and manage news feed automation'
+  },
+  {
+    title: 'SEO Suite',
+    url: '/seo-suite',
+    icon: Search,
+    description: 'Advanced SEO tools & analytics'
   }
 ];
 
