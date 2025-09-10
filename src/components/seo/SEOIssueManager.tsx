@@ -234,11 +234,7 @@ export const SEOIssueManager: React.FC = () => {
       
       default:
         return (
-          <SEODashboard
-            onIssueClick={handleIssueClick}
-            onOpportunityClick={handleOpportunityClick}
-            resolvedIssues={resolvedIssues}
-          />
+          <SEODashboard />
         );
     }
   };

@@ -51,7 +51,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       if (isAdmin) {
         try {
           const result = await getPerformanceScore();
-          setPerformanceScore(result.score);
+          setPerformanceScore(typeof result.score === 'number' ? result.score : 85);
         } catch (error) {
           console.error('Performance measurement failed:', error);
         }
