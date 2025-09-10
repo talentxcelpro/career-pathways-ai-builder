@@ -47,6 +47,7 @@ import { WhiteLabelReports } from '@/components/seo/phase3/WhiteLabelReports';
 import { EnterpriseAnalyticsDashboard } from '@/components/seo/phase4/EnterpriseAnalyticsDashboard';
 import { AIProviderStatus } from '@/components/seo/phase4/AIProviderStatus';
 import { TestSEOSuite } from '@/components/seo/TestSEOSuite';
+import { DeploymentDiagnostics } from '@/components/admin/DeploymentDiagnostics';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
@@ -357,6 +358,7 @@ const SEOSuite = () => {
           <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
           <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
           <TabsTrigger value="ai-status" className="text-xs">AI Status</TabsTrigger>
+          <TabsTrigger value="deployments" className="text-xs">Deployments</TabsTrigger>
           <TabsTrigger value="testing" className="text-xs">Testing</TabsTrigger>
         </TabsList>
 
@@ -419,6 +421,10 @@ const SEOSuite = () => {
 
         <TabsContent value="ai-status">
           <AIProviderStatus />
+        </TabsContent>
+
+        <TabsContent value="deployments">
+          <DeploymentDiagnostics />
         </TabsContent>
 
         <TabsContent value="testing">
