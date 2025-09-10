@@ -64,8 +64,6 @@ serve(async (req) => {
   }
 
   try {
-    console.log(`📊 Generating ${reportType} white-label report for ${clientName}`);
-
     const {
       reportType,
       clientName,
@@ -171,12 +169,12 @@ Return JSON format:
 
     console.log(`✅ White-label report generated successfully: ${enhancedReport.reportId}`);
 
-    const result: ReportResult = {
+    const reportResult: ReportResult = {
       success: true,
       report: enhancedReport
     };
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(reportResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 

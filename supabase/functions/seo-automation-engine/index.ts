@@ -57,8 +57,6 @@ serve(async (req) => {
   }
 
   try {
-    console.log(`🤖 SEO Automation Engine: ${automationType} for ${url}`);
-
     const {
       automationType,
       url,
@@ -129,12 +127,12 @@ serve(async (req) => {
 
     console.log(`✅ SEO automation completed: ${automationType}`);
 
-    const result: AutomationResult = {
+    const automationResult: AutomationResult = {
       success: true,
       results: enhancedResults
     };
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(automationResult), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
