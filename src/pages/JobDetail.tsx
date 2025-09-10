@@ -31,6 +31,7 @@ import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { updateMetaTags } from '@/utils/metaTags';
+import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 
 const JobDetail = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
@@ -376,8 +377,12 @@ const JobDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <>
+      {/* React Job Structured Data with SEO */}
+      <ReactJobStructuredData job={job} />
+      
+      <div className="min-h-screen bg-background">
+        <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Button
@@ -654,7 +659,8 @@ const JobDetail = () => {
       </div>
       
       <BrandedFooter />
-    </div>
+      </div>
+    </>
   );
 };
 

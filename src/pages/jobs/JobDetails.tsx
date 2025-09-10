@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
 import { PublicJobSaveButton } from '@/components/jobs/PublicJobSaveButton';
 import { updateMetaTags } from '@/utils/metaTags';
+import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 
 const JobDetails = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
@@ -320,7 +321,11 @@ const JobDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <>
+      {/* React Job Structured Data with SEO */}
+      <ReactJobStructuredData job={job} />
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -580,8 +585,9 @@ const JobDetails = () => {
             )}
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -18,6 +18,7 @@ import SubdomainGateway from "@/pages/SubdomainGateway";
 import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
 import { BundleErrorFallback } from "./components/BundleErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
+import { HelmetProvider } from 'react-helmet-async';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
@@ -150,9 +151,10 @@ const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <TooltipProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <TooltipProvider>
             <AnalyticsProvider>
               <AuthErrorBoundary>
                 <AuthProvider>
@@ -353,6 +355,7 @@ const App = () => {
           </TooltipProvider>
         </BrowserRouter>
       </QueryClientProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 };
