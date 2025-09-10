@@ -61,6 +61,14 @@ export const useGoogleOneTap = ({
   const initializeGoogleOneTap = useCallback(() => {
     if (!window.google || disabled) return;
 
+    // Only enable One Tap on allowed origins to avoid GSI origin errors
+    const origin = window.location.origin;
+    const allowedOrigins = ['https://talentxcel.in', 'https://www.talentxcel.in', 'http://localhost:5173', 'http://localhost:3000'];
+    if (!allowedOrigins.includes(origin)) {
+      console.warn('Google One Tap disabled on this origin:', origin);
+      return;
+    }
+
     try {
       window.google.accounts.id.initialize({
         client_id: clientId,
@@ -68,8 +76,7 @@ export const useGoogleOneTap = ({
         context: 'signin',
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
-        use_fedcm_for_prompt: false, // Disable FedCM to avoid errors
-        ux_mode: 'popup',
+        use_fedcm_for_prompt: true, // Opt-in to FedCM per Google migration guide
       });
 
       // Show the One Tap prompt
