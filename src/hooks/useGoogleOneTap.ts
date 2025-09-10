@@ -61,11 +61,13 @@ export const useGoogleOneTap = ({
   const initializeGoogleOneTap = useCallback(() => {
     if (!window.google || disabled) return;
 
-    // Only enable One Tap on allowed origins to avoid GSI origin errors
+    // Only enable One Tap on production domains to avoid GSI origin errors
     const origin = window.location.origin;
-    const allowedOrigins = ['https://talentxcel.in', 'https://www.talentxcel.in', 'http://localhost:5173', 'http://localhost:3000'];
-    if (!allowedOrigins.includes(origin)) {
-      console.warn('Google One Tap disabled on this origin:', origin);
+    const hostname = window.location.hostname;
+    const isProduction = hostname === 'talentxcel.in' || hostname === 'www.talentxcel.in';
+    
+    if (!isProduction) {
+      console.warn('Google One Tap disabled on non-production origin:', origin);
       return;
     }
 
@@ -76,7 +78,8 @@ export const useGoogleOneTap = ({
         context: 'signin',
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
-        use_fedcm_for_prompt: true, // Opt-in to FedCM per Google migration guide
+        use_fedcm_for_prompt: true, // Enable FedCM as required by Google
+        ux_mode: 'popup', // Use popup mode for better reliability
       });
 
       // Show the One Tap prompt

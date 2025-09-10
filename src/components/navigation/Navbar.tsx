@@ -93,7 +93,11 @@ export const Navbar = () => {
   });
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const mainNavItems = [
@@ -244,40 +248,30 @@ export const Navbar = () => {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile" className="flex items-center">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </Link>
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
                     </DropdownMenuItem>
                     {hasCompanyAccess && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/company/dashboard" className="flex items-center">
-                          <Building2 className="mr-2 h-4 w-4" />
-                          <span>Company Dashboard</span>
-                        </Link>
+                      <DropdownMenuItem onClick={() => navigate('/company/dashboard')}>
+                        <Building2 className="mr-2 h-4 w-4" />
+                        <span>Company Dashboard</span>
                       </DropdownMenuItem>
                      )}
                      {hasEmployerAccess ? (
-                       <DropdownMenuItem asChild>
-                         <Link to="/pro/services" className="flex items-center">
-                           <Settings className="mr-2 h-4 w-4" />
-                           <span>Set Up Services</span>
-                         </Link>
+                       <DropdownMenuItem onClick={() => navigate('/pro/services')}>
+                         <Settings className="mr-2 h-4 w-4" />
+                         <span>Set Up Services</span>
                        </DropdownMenuItem>
                      ) : (
-                       <DropdownMenuItem asChild>
-                         <Link to="/pro/subscription" className="flex items-center">
-                           <Settings className="mr-2 h-4 w-4" />
-                           <span>Set Up Services</span>
-                         </Link>
+                       <DropdownMenuItem onClick={() => navigate('/pro/subscription')}>
+                         <Settings className="mr-2 h-4 w-4" />
+                         <span>Set Up Services</span>
                        </DropdownMenuItem>
                      )}
-                     <DropdownMenuItem asChild>
-                       <Link to="/profile/settings" className="flex items-center">
-                         <Settings className="mr-2 h-4 w-4" />
-                         <span>Settings</span>
-                       </Link>
+                     <DropdownMenuItem onClick={() => navigate('/profile/settings')}>
+                       <Settings className="mr-2 h-4 w-4" />
+                       <span>Settings</span>
                      </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
