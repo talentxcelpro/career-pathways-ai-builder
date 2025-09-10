@@ -77,7 +77,7 @@ import CareerGoals from "./pages/CareerGoals";
 import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
-import { SubdomainRouter } from "@/components/SubdomainRouter";
+
 import "@/utils/flickerFix";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
@@ -167,7 +167,6 @@ const App = () => {
                     <OfflineIndicator />
                     <Navbar />
                     <main className="flex-1">
-                      <SubdomainRouter>
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                           <Routes>
                         {navItems.map((item: NavItem) => {
@@ -318,8 +317,7 @@ const App = () => {
                       
        {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                         </Routes>
-                       </React.Suspense>
-                      </SubdomainRouter>
+                        </React.Suspense>
                      </main>
                      <FooterWrapper />
                      <OnboardingFlow />

@@ -46,6 +46,28 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://talentxcel.in/employer/:path*",
+      "has": [{ "type": "host", "value": "employer.talentxcel.in" }]
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://talentxcel.in/jobs/:path*",
+      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }]
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://talentxcel.in/learning/:path*",
+      "has": [{ "type": "host", "value": "learning.talentxcel.in" }]
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://talentxcel.in/colleges/:path*",
+      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }]
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/optimized-sitemap-index",
@@ -58,36 +80,6 @@
     {
       "source": "/api/optimized-sitemap",
       "destination": "https://dthlgsnakhoftinssokm.supabase.co/functions/v1/optimized-sitemap"
-    },
-    {
-      "source": "/login",
-      "has": [
-        {
-          "type": "host",
-          "value": "employer.talentxcel.in"
-        }
-      ],
-      "destination": "https://talentxcel.in/employer"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/",
-      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }]
-    },
-    {
-      "source": "/:path*",
-      "destination": "/",
-      "has": [{ "type": "host", "value": "employer.talentxcel.in" }]
-    },
-    {
-      "source": "/:path*",
-      "destination": "/",
-      "has": [{ "type": "host", "value": "learning.talentxcel.in" }]
-    },
-    {
-      "source": "/:path*",
-      "destination": "/",
-      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }]
     },
     { "source": "/(.*)", "destination": "/" }
   ]
