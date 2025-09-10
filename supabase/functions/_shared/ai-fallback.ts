@@ -52,8 +52,8 @@ export async function callAIWithFallback(request: AIRequest): Promise<AIResponse
       // Handle different parameter names for different model types
       if (model.includes('gpt-5') || model.includes('gpt-4.1') || model.includes('o3') || model.includes('o4')) {
         openAIPayload.max_completion_tokens = maxTokens;
-        // Don't include temperature for newer models that don't support it
-        if (!model.includes('o3') && !model.includes('o4')) {
+        // Don't include temperature for newer models (GPT-5, O3, O4) that don't support it
+        if (!model.includes('gpt-5') && !model.includes('o3') && !model.includes('o4')) {
           openAIPayload.temperature = temperature;
         }
       } else {
@@ -90,12 +90,23 @@ export async function callAIWithFallback(request: AIRequest): Promise<AIResponse
       // Fallback to DeepSeek if available
       if (deepSeekApiKey) {
         console.log(`🔄 Falling back to DeepSeek...`);
-        return await callDeepSeek({
-          messages,
-          maxTokens,
-          temperature,
-          responseFormat
-        }, deepSeekApiKey);
+        try {
+          return await callDeepSeek({
+            messages,
+            maxTokens,
+            temperature,
+            responseFormat
+          }, deepSeekApiKey);
+        } catch (deepSeekError) {
+          console.error(`❌ Both OpenAI and DeepSeek failed`);
+          // Return structured "AI unavailable" response
+          return {
+            success: false,
+            error: `AI services unavailable: OpenAI - ${openAIError.message}, DeepSeek - ${deepSeekError.message}`,
+            provider: 'None',
+            fallbackAvailable: false
+          };
+        }
       } else {
         throw openAIError;
       }
@@ -103,12 +114,22 @@ export async function callAIWithFallback(request: AIRequest): Promise<AIResponse
   } else if (deepSeekApiKey) {
     // Use DeepSeek directly if OpenAI key not available
     console.log(`🔄 Using DeepSeek directly...`);
-    return await callDeepSeek({
-      messages,
-      maxTokens,
-      temperature,
-      responseFormat
-    }, deepSeekApiKey);
+    try {
+      return await callDeepSeek({
+        messages,
+        maxTokens,
+        temperature,
+        responseFormat
+      }, deepSeekApiKey);
+    } catch (deepSeekError) {
+      console.error(`❌ DeepSeek failed: ${deepSeekError.message}`);
+      return {
+        success: false,
+        error: `AI service unavailable: ${deepSeekError.message}`,
+        provider: 'DeepSeek',
+        fallbackAvailable: false
+      };
+    }
   }
 
   throw new Error('No API keys available');

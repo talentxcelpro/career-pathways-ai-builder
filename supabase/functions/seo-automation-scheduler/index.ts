@@ -38,12 +38,41 @@ serve(async (req) => {
   }
 
   try {
+    const requestBody = await req.json();
+    
+    // Validate action field
+    if (!requestBody.action) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Missing required field: action',
+        validActions: ['create_schedule', 'update_schedule', 'delete_schedule', 'get_schedules', 'run_task'],
+        examples: {
+          create_schedule: {
+            action: 'create_schedule',
+            scheduleData: {
+              name: 'Daily Audit',
+              taskType: 'technical_audit',
+              frequency: 'daily',
+              time: '09:00',
+              enabled: true,
+              config: { urls: ['https://example.com'] }
+            }
+          },
+          get_schedules: { action: 'get_schedules' },
+          run_task: { action: 'run_task', taskId: 'sched_123' }
+        }
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const {
       action,
       scheduleData,
       scheduleId,
       taskId
-    }: SchedulerRequest = await req.json();
+    }: SchedulerRequest = requestBody;
 
     console.log(`🤖 SEO Automation Scheduler: ${action}`);
 
@@ -66,7 +95,15 @@ serve(async (req) => {
         result = await runScheduledTask(taskId!);
         break;
       default:
-        throw new Error('Invalid action specified');
+        return new Response(JSON.stringify({
+          success: false,
+          error: `Invalid action: ${action}`,
+          validActions: ['create_schedule', 'update_schedule', 'delete_schedule', 'get_schedules', 'run_task'],
+          providedAction: action
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
     }
 
     console.log(`✅ Scheduler action completed: ${action}`);

@@ -35,12 +35,39 @@ serve(async (req) => {
   }
 
   try {
+    const requestBody = await req.json();
+    
+    // Validate action field
+    if (!requestBody.action) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Missing required field: action',
+        validActions: ['register_webhook', 'delete_webhook', 'list_webhooks', 'send_notification', 'test_webhook'],
+        examples: {
+          register_webhook: {
+            action: 'register_webhook',
+            webhookData: {
+              url: 'https://your-webhook.com/endpoint',
+              events: ['ranking_change', 'technical_issue'],
+              name: 'My Webhook',
+              active: true
+            }
+          },
+          list_webhooks: { action: 'list_webhooks' },
+          test_webhook: { action: 'test_webhook', webhookId: 'webhook_123' }
+        }
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const {
       action,
       webhookData,
       webhookId,
       notificationData
-    }: WebhookRequest = await req.json();
+    }: WebhookRequest = requestBody;
 
     console.log(`🔔 Webhook Notifications: ${action}`);
 
@@ -63,7 +90,15 @@ serve(async (req) => {
         result = await testWebhook(webhookId!);
         break;
       default:
-        throw new Error('Invalid action specified');
+        return new Response(JSON.stringify({
+          success: false,
+          error: `Invalid action: ${action}`,
+          validActions: ['register_webhook', 'delete_webhook', 'list_webhooks', 'send_notification', 'test_webhook'],
+          providedAction: action
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
     }
 
     console.log(`✅ Webhook action completed: ${action}`);
