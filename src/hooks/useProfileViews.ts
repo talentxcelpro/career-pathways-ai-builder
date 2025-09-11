@@ -1,39 +1,94 @@
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export const useProfileViews = () => {
+interface UseProfileViewsReturn {
+  viewCount: number;
+  incrementView: (profileId: string, viewType?: string) => Promise<void>;
+  trackProfileView: (profileUserId: string) => Promise<void>;
+  isLoading: boolean;
+}
+
+export const useProfileViews = (profileId?: string): UseProfileViewsReturn => {
+  const [viewCount, setViewCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
-  const trackProfileView = async (profileUserId: string) => {
-    // Don't track if viewing own profile or not authenticated
-    if (!user || user.id === profileUserId) return;
+  // Fetch current view count
+  useEffect(() => {
+    if (!profileId) return;
+
+    const fetchViewCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('profile_views')
+          .select('*', { count: 'exact', head: true })
+          .eq('profile_id', profileId);
+
+        if (!error && count !== null) {
+          setViewCount(count);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch view count:', error);
+      }
+    };
+
+    fetchViewCount();
+  }, [profileId]);
+
+  // Increment view count with debouncing
+  const incrementView = useCallback(async (targetProfileId: string, viewType: string = 'profile') => {
+    if (isLoading || !targetProfileId) return;
+    
+    // Don't track self-views
+    if (user?.id === targetProfileId) return;
+
+    setIsLoading(true);
 
     try {
-      // Check if we've viewed this profile recently (within 6 hours)
-      const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
+      // Check if user has viewed this profile recently (within last hour)
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       
       const { data: recentView } = await supabase
         .from('profile_views')
         .select('id')
-        .eq('profile_id', profileUserId)
-        .eq('viewer_id', user.id)
-        .gte('viewed_at', sixHoursAgo)
-        .limit(1);
+        .eq('profile_id', targetProfileId)
+        .eq('viewer_id', user?.id || null)
+        .gte('viewed_at', oneHourAgo)
+        .limit(1)
+        .single();
 
-      // If we've viewed recently, don't track again
-      if (recentView && recentView.length > 0) return;
+      // Only increment if no recent view found
+      if (!recentView) {
+        const { error } = await supabase
+          .from('profile_views')
+          .insert({
+            profile_id: targetProfileId,
+            viewer_id: user?.id || null,
+            view_type: viewType as any,
+            viewed_at: new Date().toISOString()
+          });
 
-      // Track the profile view
-      await supabase.rpc('increment_profile_views', {
-        profile_user_id: profileUserId,
-        viewer_ip: null,
-        viewer_agent: navigator.userAgent
-      });
+        if (!error) {
+          setViewCount(prev => prev + 1);
+        }
+      }
     } catch (error) {
-      console.error('Error tracking profile view:', error);
+      console.warn('Failed to increment view:', error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [user?.id, isLoading]);
 
-  return { trackProfileView };
+  // Legacy compatibility function
+  const trackProfileView = useCallback(async (profileUserId: string) => {
+    await incrementView(profileUserId, 'profile');
+  }, [incrementView]);
+
+  return {
+    viewCount,
+    incrementView,
+    trackProfileView,
+    isLoading
+  };
 };

@@ -54,6 +54,15 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   openComments,
   onCommentClick
 }) => {
+  const { viewCount, incrementView } = useProfileViews(post.profiles?.id);
+  
+  // Track profile view when card is viewed
+  useEffect(() => {
+    if (post.profiles?.id) {
+      incrementView(post.profiles.id, 'network_card');
+    }
+  }, [post.profiles?.id, incrementView]);
+
   // Check if this post contains video content
   const hasVideo = post.media_urls?.some(url => 
     url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
