@@ -14477,6 +14477,7 @@ export type Database = {
           shares_count: number | null
           source_name: string
           source_url: string | null
+          summary: string | null
           tags: string[] | null
           title: string
           type: string | null
@@ -14504,6 +14505,7 @@ export type Database = {
           shares_count?: number | null
           source_name: string
           source_url?: string | null
+          summary?: string | null
           tags?: string[] | null
           title: string
           type?: string | null
@@ -14531,6 +14533,7 @@ export type Database = {
           shares_count?: number | null
           source_name?: string
           source_url?: string | null
+          summary?: string | null
           tags?: string[] | null
           title?: string
           type?: string | null
@@ -15991,6 +15994,7 @@ export type Database = {
           metadata: Json | null
           news_article_id: string | null
           origin: string | null
+          original_post_id: string | null
           post_type: string | null
           preview_url: string | null
           reading_time: number | null
@@ -16034,6 +16038,7 @@ export type Database = {
           metadata?: Json | null
           news_article_id?: string | null
           origin?: string | null
+          original_post_id?: string | null
           post_type?: string | null
           preview_url?: string | null
           reading_time?: number | null
@@ -16077,6 +16082,7 @@ export type Database = {
           metadata?: Json | null
           news_article_id?: string | null
           origin?: string | null
+          original_post_id?: string | null
           post_type?: string | null
           preview_url?: string | null
           reading_time?: number | null
@@ -16106,6 +16112,13 @@ export type Database = {
             columns: ["news_article_id"]
             isOneToOne: false
             referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_original_post_id_fkey"
+            columns: ["original_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
           {
