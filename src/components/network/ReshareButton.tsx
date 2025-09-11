@@ -84,13 +84,13 @@ export const ReshareButton: React.FC<ReshareButtonProps> = ({
   };
 
   const handleShareToSocial = (platform: string) => {
-    const text = `Check out this post by ${postAuthor}`;
+    const text = `Check out this post by ${postAuthor} on TalentXcel.in`;
     const url = postUrl || `${window.location.origin}/posts/${postId}`;
     
     const shareUrls = {
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=TalentXcel`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`
     };
 
     if (shareUrls[platform as keyof typeof shareUrls]) {
