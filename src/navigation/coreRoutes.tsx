@@ -109,13 +109,7 @@ export const coreRoutes = [
     isPublic: true,
     requiresAuth: false,
   },
-  {
-    title: "API",
-    to: "/api",
-    page: <Api />,
-    isPublic: true,
-    requiresAuth: false,
-  },
+  // API route removed - admin access only
   {
     title: "Resume Templates",
     to: "/resume-templates",
