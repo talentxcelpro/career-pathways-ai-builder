@@ -62,7 +62,9 @@ import TalentDatabase from "@/pages/admin/TalentDatabase";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import ProductRequirementDocument from "@/pages/admin/ProductRequirementDocument";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
-// Temporarily removed imports - will be re-added after page creation
+import EdgeFunctionsMonitor from "@/pages/admin/EdgeFunctionsMonitor";
+import NewsManagement from "@/pages/admin/NewsManagement";
+import NewsPage from "@/pages/NewsPage";
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
@@ -135,6 +137,8 @@ const publicRoutes = [
   '/mobile/network',
   '/blog',
   '/blog/:slug',
+  '/news',
+  '/news/:slug',
   '/employer', // Employer landing page (shows different content based on auth)
   '/employer/request-access',
   '/employer/team/accept/:token' // Invitation acceptance
@@ -268,7 +272,10 @@ const App = () => {
                         <Route path="/admin/prd" element={<ProtectedRoute><AdminLayout><ProductRequirementDocument /></AdminLayout></ProtectedRoute>} />
                         <Route path="/seo-suite" element={<ProtectedRoute><SEOSuite /></ProtectedRoute>} />
                          <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
-                         {/* Routes will be re-added after page creation */}
+                         <Route path="/admin/edge-functions-monitor" element={<ProtectedRoute><AdminLayout><EdgeFunctionsMonitor /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/admin/news-management" element={<ProtectedRoute><AdminLayout><NewsManagement /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/news" element={<NewsPage />} />
+                         <Route path="/news/:slug" element={<NewsPage />} />
                          <Route path="/employer/cv-database" element={<CVDatabase />} />
                          {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                         
