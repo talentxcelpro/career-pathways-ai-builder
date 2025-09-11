@@ -34,6 +34,8 @@ import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
 import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
+import Blog from "@/pages/Blog";
+import { BlogPost } from "@/pages/BlogPost";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -130,6 +132,8 @@ const publicRoutes = [
   '/user/:username',
   '/network/people/:id',
   '/mobile/network',
+  '/blog',
+  '/blog/:slug',
   '/employer', // Employer landing page (shows different content based on auth)
   '/employer/request-access',
   '/employer/team/accept/:token' // Invitation acceptance
@@ -297,9 +301,13 @@ const App = () => {
                       <Route path="/jobs/skill/:skill" element={<JobsBySkill />} />
                       <Route path="/jobs/:role/:location" element={<SEOJobsRoleLocation />} />
                       <Route path="/companies/location/:location" element={<SEOCompaniesLocation />} />
-                      <Route path="/posts/:id" element={<SEOPosts />} />
-                      
-                      {/* Enhanced Hierarchical SEO Routes for 2M Pages */}
+                       <Route path="/posts/:id" element={<SEOPosts />} />
+                       
+                       {/* Blog Routes */}
+                       <Route path="/blog" element={<Blog />} />
+                       <Route path="/blog/:slug" element={<BlogPost />} />
+                       
+                       {/* Enhanced Hierarchical SEO Routes for 2M Pages */}
                       <Route path="/jobs/:type/:location" element={<JobsByLocation />} />
                       <Route path="/jobs/:type/:location/:role" element={<JobsByRole />} />
                       <Route path="/jobs/remote/:role" element={<JobsByRole />} />
