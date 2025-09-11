@@ -117,6 +117,14 @@ export const monitorPerformance = () => {
           clsValue += entry.value;
         }
       });
+      if (clsValue > 0.1) {
+        console.warn('Major layout shift detected:', clsValue);
+      }
+      if (clsValue > 5) {
+        console.warn('CLS threshold exceeded:', clsValue);
+        // Disable further monitoring to prevent spam
+        clsObserver.disconnect();
+      }
       console.log('CLS:', clsValue);
     });
     clsObserver.observe({ entryTypes: ['layout-shift'] });

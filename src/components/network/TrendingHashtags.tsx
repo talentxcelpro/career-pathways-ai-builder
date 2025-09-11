@@ -24,6 +24,7 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
   const { data: hashtags, isLoading } = useQuery({
     queryKey: ['trendingHashtags', limit],
     queryFn: async (): Promise<TrendingHashtag[]> => {
+      console.log('🔍 Fetching real trending hashtags from posts...');
       // Get real hashtags from posts in the last 7 days
       const { data: posts, error } = await supabase
         .from('posts')
@@ -43,7 +44,7 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
       });
 
       // Convert to array and sort by count
-      return Object.entries(hashtagCounts)
+      const result = Object.entries(hashtagCounts)
         .sort(([,a], [,b]) => b - a)
         .slice(0, limit)
         .map(([hashtag, count]) => ({
@@ -51,6 +52,9 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
           count,
           date: new Date().toISOString().split('T')[0]
         }));
+      
+      console.log('📊 Real trending hashtags found:', result.length, 'hashtags');
+      return result;
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   });

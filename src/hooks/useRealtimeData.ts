@@ -21,47 +21,78 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    // Don't create subscriptions if there are none
+    if (subscriptions.length === 0) return;
+
     // Cleanup existing channels
     channelsRef.current.forEach(channel => {
-      supabase.removeChannel(channel);
+      try {
+        supabase.removeChannel(channel);
+      } catch (error) {
+        console.warn('Error removing channel:', error);
+      }
     });
     channelsRef.current = [];
 
-    // Create new subscriptions
+    // Create new subscriptions with error handling
     subscriptions.forEach((subscription, index) => {
-      const channelName = `realtime-${subscription.table}-${index}`;
-      const channel = supabase.channel(channelName);
+      try {
+        const channelName = `realtime-${subscription.table}-${index}-${Date.now()}`;
+        const channel = supabase.channel(channelName);
 
-      const config: any = {
-        event: subscription.event,
-        schema: subscription.schema || 'public',
-        table: subscription.table,
-      };
+        const config: any = {
+          event: subscription.event,
+          schema: subscription.schema || 'public',
+          table: subscription.table,
+        };
 
-      if (subscription.filter) {
-        config.filter = subscription.filter;
+        if (subscription.filter) {
+          config.filter = subscription.filter;
+        }
+
+        channel
+          .on('postgres_changes', config, (payload) => {
+            try {
+              subscription.callback(payload);
+            } catch (error) {
+              console.warn('Error in realtime callback:', error);
+            }
+          })
+          .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+              console.log(`✅ Subscribed to ${subscription.table}`);
+              setIsConnected(true);
+            } else if (status === 'CHANNEL_ERROR') {
+              console.warn(`❌ Channel error for ${subscription.table}:`, status);
+              setIsConnected(false);
+            } else if (status === 'TIMED_OUT') {
+              console.warn(`⏰ Timeout for ${subscription.table}`);
+              setIsConnected(false);
+            } else if (status === 'CLOSED') {
+              console.log(`🔒 Channel closed for ${subscription.table}`);
+              setIsConnected(false);
+            }
+          });
+
+        channelsRef.current.push(channel);
+      } catch (error) {
+        console.warn('Error creating realtime subscription:', error);
       }
-
-      channel
-        .on('postgres_changes', config, subscription.callback)
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            setIsConnected(true);
-          }
-        });
-
-      channelsRef.current.push(channel);
     });
 
     // Cleanup function
     return () => {
       channelsRef.current.forEach(channel => {
-        supabase.removeChannel(channel);
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          console.warn('Error removing channel in cleanup:', error);
+        }
       });
       channelsRef.current = [];
       setIsConnected(false);
     };
-  }, [subscriptions]);
+  }, []); // Empty dependency array to prevent constant re-subscriptions
 
   return { isConnected };
 }
@@ -230,17 +261,21 @@ export function useTableRealtime<T = any>(
 
 // Auto-refresh hooks for specific use cases
 export function useAutoRefreshPosts(refreshInterval: number = 30000) {
-  const [posts, setPosts] = useState<any[]>([]);
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-  // Real-time subscription for instant updates
-  useNetworkRealtime(
+  // Real-time subscription for instant updates with reduced logging
+  const { isConnected } = useNetworkRealtime(
     (payload) => {
-      console.log('Post updated in real-time:', payload);
+      // Only log important updates, not all events
+      if (payload.eventType === 'INSERT') {
+        console.log('New post added');
+      }
       setLastRefresh(new Date());
     },
     (payload) => {
-      console.log('Connection updated in real-time:', payload);
+      if (payload.eventType === 'INSERT') {
+        console.log('New connection added');
+      }
     }
   );
 
@@ -253,7 +288,7 @@ export function useAutoRefreshPosts(refreshInterval: number = 30000) {
     return () => clearInterval(interval);
   }, [refreshInterval]);
 
-  return { posts, lastRefresh };
+  return { lastRefresh, isConnected };
 }
 
 export function useAutoRefreshJobs(refreshInterval: number = 60000) {

@@ -14,8 +14,7 @@ export const StableContainer: React.FC<StableContainerProps> = ({
 }) => {
   const style: React.CSSProperties = {
     minHeight,
-    contain: 'layout style paint' as any,
-    contentVisibility: 'auto' as any,
+    // Removed problematic contain and contentVisibility properties
   };
 
   return React.createElement(
