@@ -163,6 +163,12 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <QuickShareActions content={shareContent} />
+            <ReshareButton
+              postId={post.id}
+              postContent={post.content}
+              postAuthor={formatDisplayName(post.profiles)}
+              postUrl={`${window.location.origin}/network/posts/${post.id}`}
+            />
             <EnhancedPostMenu
               postId={post.id}
               authorId={post.author_id || ''}
