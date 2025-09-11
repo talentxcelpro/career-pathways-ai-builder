@@ -10,7 +10,7 @@ import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
-import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import SubdomainGateway from "@/pages/SubdomainGateway";
 // import { AIProvider } from "./contexts/AIContext";
@@ -166,7 +166,7 @@ const App = () => {
             <TooltipProvider>
             <AnalyticsProvider>
               <AuthErrorBoundary>
-                <OptimizedAuthProvider>
+                <AuthProvider>
                   <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
@@ -366,7 +366,7 @@ const App = () => {
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
                   </NotificationProvider>
-                </OptimizedAuthProvider>
+                </AuthProvider>
               </AuthErrorBoundary>
             </AnalyticsProvider>
           </TooltipProvider>
