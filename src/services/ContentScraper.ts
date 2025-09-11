@@ -161,6 +161,7 @@ export class ContentScraper {
 
   private static async scrapeGeneric(url: string): Promise<ScrapedContent> {
     try {
+      console.log('🌐 Generic scrape start:', url);
       // Use a CORS proxy for fetching external content
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
       const response = await fetch(proxyUrl);
@@ -170,35 +171,69 @@ export class ContentScraper {
       }
       
       const data = await response.json();
-      const html = data.contents;
+      const html: string = data.contents;
       
       if (!html) {
         throw new Error('No content received');
       }
       
-      // Extract meta tags
-      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-      const descMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
-      const imageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i);
+      // Helpers to extract meta tags
+      const getMeta = (regex: RegExp) => {
+        const m = html.match(regex);
+        return m && m[1] ? m[1].trim() : '';
+      };
       
-      const hostname = new URL(url).hostname;
+      // Try multiple strategies for title/description/image
+      const rawTitle =
+        getMeta(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i) ||
+        getMeta(/<meta[^>]*name=["']twitter:title["'][^>]*content=["']([^"']+)["']/i) ||
+        getMeta(/<title[^>]*>([^<]+)<\/title>/i);
       
-      return {
+      const rawDesc =
+        getMeta(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i) ||
+        getMeta(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) ||
+        getMeta(/<meta[^>]*name=["']twitter:description["'][^>]*content=["']([^"']+)["']/i);
+      
+      const rawImg =
+        getMeta(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
+        getMeta(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
+      
+      const u = new URL(url);
+      const hostname = u.hostname;
+      
+      // Resolve relative image URLs
+      let image = rawImg;
+      try {
+        if (image) {
+          image = new URL(image, u.origin).toString();
+        }
+      } catch {}
+
+      const title = rawTitle || hostname;
+      const description = rawDesc || '';
+      
+      const result: ScrapedContent = {
         type: 'article',
-        title: titleMatch ? titleMatch[1] : hostname,
-        description: descMatch ? descMatch[1] : '',
-        image: imageMatch ? imageMatch[1] : '',
+        title,
+        description,
+        image: image || '',
         source: hostname,
         sourceUrl: url,
-        favicon: `https://${hostname}/favicon.ico`
+        // Use Google s2 favicons for better reliability
+        favicon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`
       };
+
+      console.log('🌐 Generic scrape result:', result);
+      return result;
     } catch (error) {
+      console.warn('🌐 Generic scrape fallback due to error:', error);
       const hostname = new URL(url).hostname;
       return {
         type: 'article',
         title: hostname,
         source: hostname,
-        sourceUrl: url
+        sourceUrl: url,
+        favicon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`
       };
     }
   }
