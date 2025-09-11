@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Users, Database, Search, Settings, File } from 'lucide-react';
+import { Upload, FileText, Users, Database, Search, Settings, File, User } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BulkUploadManager } from '@/components/talent-database/BulkUploadManager';
 import { TalentSearch } from '@/components/talent-database/TalentSearch';
@@ -10,6 +10,7 @@ import { MatchingEngine } from '@/components/talent-database/MatchingEngine';
 import { TalentAnalytics } from '@/components/talent-database/TalentAnalytics';
 import { SetupGuide } from '@/components/talent-database/SetupGuide';
 import { CVFilesManager } from '@/components/talent-database/CVFilesManager';
+import NameFixerTool from '@/components/talent-database/NameFixerTool';
 
 const TalentDatabase = () => {
   const [activeTab, setActiveTab] = useState('setup');
@@ -83,7 +84,7 @@ const TalentDatabase = () => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="setup" className="gap-2">
             <Settings className="h-4 w-4" />
             Setup
@@ -95,6 +96,10 @@ const TalentDatabase = () => {
           <TabsTrigger value="cvfiles" className="gap-2">
             <File className="h-4 w-4" />
             CV Files
+          </TabsTrigger>
+          <TabsTrigger value="namefixer" className="gap-2">
+            <User className="h-4 w-4" />
+            Name Fixer
           </TabsTrigger>
           <TabsTrigger value="search" className="gap-2">
             <Search className="h-4 w-4" />
@@ -144,6 +149,10 @@ const TalentDatabase = () => {
               <CVFilesManager />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="namefixer" className="space-y-6">
+          <NameFixerTool />
         </TabsContent>
 
         <TabsContent value="search" className="space-y-6">

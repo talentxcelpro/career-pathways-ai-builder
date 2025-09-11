@@ -166,9 +166,9 @@ export const useBulkUpload = () => {
       
       console.log('🚀 About to call CV parser with payload:', JSON.stringify(requestPayload, null, 2));
       
-      // Prefer Supabase SDK; fallback to direct fetch if it fails
+      // Call the correct AI resume parser function
       try {
-        const { data, error } = await supabase.functions.invoke('cv-parser', {
+        const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
           body: requestPayload,
         });
         if (error) throw error;
@@ -180,7 +180,7 @@ export const useBulkUpload = () => {
         };
       } catch (invokeErr: any) {
         console.warn('⚠️ invoke() failed, falling back to direct fetch:', invokeErr?.message || invokeErr);
-        const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/cv-parser`;
+        const functionUrl = `https://dthlgsnakhoftinssokm.supabase.co/functions/v1/ai-resume-parser`;
         const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
         const response = await fetch(functionUrl, {
           method: 'POST',

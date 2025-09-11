@@ -46,6 +46,15 @@ serve(async (req) => {
 
     const systemPrompt = `You are a professional resume parsing assistant. Extract all important details from the given resume text and return them in the exact JSON format specified below. Be thorough and accurate.
 
+CRITICAL NAME EXTRACTION RULES:
+- Extract the ACTUAL PERSON'S NAME, never job titles, company names, or descriptive text
+- Look for names at the top of the resume, in headers, or contact sections
+- Names should be 2-4 words and contain only letters, spaces, apostrophes, or hyphens
+- Reject phrases like "International Voice Process Executive", "Summary Experienced Assistant", "Having Experience"
+- If no clear person name is found, leave "name" field empty rather than using incorrect text
+- Examples of VALID names: "John Smith", "Sarah O'Connor", "Maria Garcia-Lopez"
+- Examples of INVALID names: "Experienced Professional", "Software Engineer", "Resume Summary"
+
 Return JSON in this exact structure:
 {
   "name": "",
@@ -116,6 +125,7 @@ Return JSON in this exact structure:
 }
 
 Guidelines:
+- MOST IMPORTANT: Extract the correct person's name, not job titles or descriptions
 - Categorize skills into technical (programming languages), soft (leadership, communication), tools (software), frameworks, databases, and languages
 - Extract detailed work achievements and technologies used in each role
 - Parse education with GPA, coursework, and honors if mentioned
