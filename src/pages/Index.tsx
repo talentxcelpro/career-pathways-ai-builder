@@ -1,15 +1,11 @@
 
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from 'react-error-boundary';
 import TestEmailSender from '@/components/dev/TestEmailSender';
-const LandingPage = lazy(() =>
-  import('@/components/landing/LandingPage').then(m => ({ default: m.LandingPage }))
-);
-const GoogleOneTapLogin = lazy(() =>
-  import('@/components/auth/GoogleOneTapLogin').then(m => ({ default: m.GoogleOneTapLogin }))
-);
+import { LandingPage } from '@/components/landing/LandingPage';
+import { GoogleOneTapLogin } from '@/components/auth/GoogleOneTapLogin';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -60,20 +56,14 @@ const Index = () => {
         </div>
       )}
     >
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      {enableTestSend && <TestEmailSender />}
+      {!disableOneTap && !authChecked && (
+        <div className="fixed top-4 right-4 z-50 bg-background/80 backdrop-blur-sm border rounded-lg px-3 py-2 text-sm text-muted-foreground">
+          Looking for your Google account...
         </div>
-      }>
-        {enableTestSend && <TestEmailSender />}
-        {!disableOneTap && !authChecked && (
-          <div className="fixed top-4 right-4 z-50 bg-background/80 backdrop-blur-sm border rounded-lg px-3 py-2 text-sm text-muted-foreground">
-            Looking for your Google account...
-          </div>
-        )}
-        {!disableOneTap && <GoogleOneTapLogin autoSelect />}
-        <LandingPage />
-      </Suspense>
+      )}
+      {!disableOneTap && <GoogleOneTapLogin autoSelect />}
+      <LandingPage />
     </ErrorBoundary>
   );
 };
