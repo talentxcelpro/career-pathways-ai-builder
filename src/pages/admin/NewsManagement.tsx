@@ -17,7 +17,7 @@ const NewsManagement: React.FC = () => {
     content: '',
     category: 'Press Release',
     image_url: '',
-    status: 'draft',
+    published_status: 'draft',
   });
 
   const { data: articles } = useQuery({
@@ -25,7 +25,7 @@ const NewsManagement: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news_articles')
-        .select('id, title, slug, status, published_at, created_at, category')
+        .select('id, title, url, published_status, published_at, created_at, category')
         .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
@@ -35,24 +35,29 @@ const NewsManagement: React.FC = () => {
 
   const createMutation = useMutation({
     mutationFn: async () => {
+      const slug = form.slug || form.title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 100);
       const payload: any = {
         title: form.title,
-        slug: form.slug || form.title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 100),
-        summary: form.summary,
+        url: slug,
+        description: form.summary,
         content: form.content,
         category: form.category,
         image_url: form.image_url || null,
-        status: form.status,
+        published_status: form.published_status,
+        type: 'news',
+        author: 'Admin',
+        source_name: 'TalentXcel',
+        tags: [form.category.toLowerCase()],
       };
       // If publishing now, set published_at
-      if (payload.status === 'published') payload.published_at = new Date().toISOString();
+      if (payload.published_status === 'published') payload.published_at = new Date().toISOString();
 
       const { error } = await supabase.from('news_articles').insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success('News article created');
-      setForm({ title: '', slug: '', summary: '', content: '', category: 'Press Release', image_url: '', status: 'draft' });
+      setForm({ title: '', slug: '', summary: '', content: '', category: 'Press Release', image_url: '', published_status: 'draft' });
       qc.invalidateQueries({ queryKey: ['admin-news-list'] });
     },
     onError: (e: any) => toast.error(e.message || 'Failed to create article'),
@@ -103,7 +108,7 @@ const NewsManagement: React.FC = () => {
           <Textarea placeholder="Content (HTML/Markdown)" rows={6} value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
           <div className="flex items-center gap-2">
             <Button onClick={() => createMutation.mutate()} disabled={!form.title}>Save Draft</Button>
-            <Button variant="secondary" onClick={() => { setForm({ ...form, status: 'published' }); createMutation.mutate(); }}>Publish</Button>
+            <Button variant="secondary" onClick={() => { setForm({ ...form, published_status: 'published' }); createMutation.mutate(); }}>Publish</Button>
           </div>
         </CardContent>
       </Card>
@@ -119,11 +124,11 @@ const NewsManagement: React.FC = () => {
               <div key={a.id} className="flex items-center justify-between border rounded-lg p-3">
                 <div>
                   <div className="font-medium">{a.title}</div>
-                  <div className="text-xs text-muted-foreground">/{a.slug}</div>
+                  <div className="text-xs text-muted-foreground">/{a.url || 'no-url'}</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={a.status === 'published' ? 'secondary' : 'outline'}>{a.status}</Badge>
-                  <a className="text-sm text-primary hover:underline" href={`/news/${a.slug}`} target="_blank">View</a>
+                  <Badge variant={a.published_status === 'published' ? 'secondary' : 'outline'}>{a.published_status}</Badge>
+                  <a className="text-sm text-primary hover:underline" href={`/news/${a.id}/${a.url || 'view'}`} target="_blank">View</a>
                 </div>
               </div>
             ))}
