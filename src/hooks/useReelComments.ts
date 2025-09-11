@@ -46,7 +46,7 @@ export const useReelComments = (reelId: string) => {
         id: comment.id,
         content: comment.content,
         user_id: comment.user_id,
-        user_name: (comment.profiles as any)?.display_name || 'Unknown User',
+        user_name: (comment.profiles as any)?.full_name || (comment.profiles as any)?.display_name || 'TalentXcel User',
         user_avatar: (comment.profiles as any)?.avatar_url || '',
         created_at: comment.created_at,
         reel_id: comment.reel_id
@@ -158,7 +158,7 @@ export const useReelComments = (reelId: string) => {
             id: data.id,
             content: data.content,
             user_id: data.user_id,
-            user_name: (data.profiles as any)?.display_name || 'Unknown User',
+            user_name: (data.profiles as any)?.full_name || (data.profiles as any)?.display_name || 'TalentXcel User',
             user_avatar: (data.profiles as any)?.avatar_url || '',
             created_at: data.created_at,
             reel_id: reelId

@@ -210,12 +210,19 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
     if (profile?.full_name && profile.full_name.trim()) {
       return profile.full_name;
     }
-    return 'Professional User';
+    if (profile?.display_name && profile.display_name.trim()) {
+      return profile.display_name;
+    }
+    if (profile?.username && profile.username.trim()) {
+      return `@${profile.username}`;
+    }
+    return 'TalentXcel User';
   };
 
   const generateInitials = (profile: any) => {
     const displayName = formatDisplayName(profile);
-    if (displayName === 'Professional User') return 'PU';
+    if (displayName === 'TalentXcel User') return 'TU';
+    if (displayName.startsWith('@')) return displayName.charAt(1).toUpperCase();
     
     const names = displayName.split(' ');
     if (names.length === 1) {

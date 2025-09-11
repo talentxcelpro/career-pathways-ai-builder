@@ -113,7 +113,7 @@ export const ReelsCommentsModal: React.FC<ReelsCommentsModalProps> = ({
         likes_count: comment.likes_count || 0,
         is_liked: false, // TODO: Check if current user liked this comment
         author: {
-          full_name: (comment.profiles as any)?.full_name || 'Anonymous User',
+          full_name: (comment.profiles as any)?.full_name || (comment.profiles as any)?.display_name || 'TalentXcel User',
           profile_picture_url: (comment.profiles as any)?.profile_picture_url
         },
         replies_count: 0 // TODO: Implement replies
