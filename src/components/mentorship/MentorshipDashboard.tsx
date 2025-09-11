@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@supabase/auth-helpers-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { 
   Users, 
@@ -66,7 +66,7 @@ interface MentorshipGoal {
 }
 
 export const MentorshipDashboard: React.FC = () => {
-  const user = useUser();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('find-mentors');
   const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(null);
