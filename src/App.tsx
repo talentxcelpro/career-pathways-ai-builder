@@ -10,7 +10,7 @@ import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
-import { AuthProvider } from "./contexts/AuthContext";
+import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import SubdomainGateway from "@/pages/SubdomainGateway";
 // import { AIProvider } from "./contexts/AIContext";
@@ -85,8 +85,8 @@ import CareerGoals from "./pages/CareerGoals";
 import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
-
 import "@/utils/flickerFix";
+import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -166,7 +166,7 @@ const App = () => {
             <TooltipProvider>
             <AnalyticsProvider>
               <AuthErrorBoundary>
-                <AuthProvider>
+                <OptimizedAuthProvider>
                   <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
@@ -366,7 +366,7 @@ const App = () => {
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
                   </NotificationProvider>
-                </AuthProvider>
+                </OptimizedAuthProvider>
               </AuthErrorBoundary>
             </AnalyticsProvider>
           </TooltipProvider>

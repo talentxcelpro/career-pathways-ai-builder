@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
@@ -15,6 +15,9 @@ import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import LinkPreview from "@/components/shared/LinkPreview";
 import { getCustomStorageUrl } from "@/utils/storage";
+import { ReshareButton } from './ReshareButton';
+import { useProfileViews } from '@/hooks/useProfileViews';
+import { Eye } from 'lucide-react';
 
 interface NetworkPost {
   id: string;

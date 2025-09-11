@@ -19,7 +19,6 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const isDisabled = disabled || !!user;
 
   const handleSuccess = () => {
-    // Get redirect path from URL params or stored context
     const urlParams = new URLSearchParams(window.location.search);
     const redirectParam = urlParams.get('redirect');
     const storedRedirect = localStorage.getItem('subdomain_redirect');
@@ -28,7 +27,9 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   };
 
   const handleError = (error: string) => {
-    console.error('Google One Tap error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Google One Tap:', error);
+    }
   };
 
   useGoogleOneTap({
@@ -39,9 +40,5 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
     disabled: isDisabled,
   });
 
-  // Minimal logging for Google One Tap status
-  console.log('🔐 Google One Tap:', isDisabled ? 'disabled' : 'active');
-
-  // This component doesn't render any UI - it just manages the One Tap functionality
   return null;
 };

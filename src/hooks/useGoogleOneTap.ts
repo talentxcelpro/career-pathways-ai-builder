@@ -33,26 +33,28 @@ export const useGoogleOneTap = ({
 }: GoogleOneTapConfig) => {
   const handleCredentialResponse = useCallback(async (response: any) => {
     try {
-      console.log('Google One Tap credential received');
-      
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: response.credential,
       });
 
       if (error) {
-        console.error('Google One Tap sign-in error:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Google One Tap sign-in error:', error);
+        }
         toast.error('Failed to sign in with Google. Please try again.');
         onError?.(error.message);
         return;
       }
 
       if (data.session) {
-        console.log('Google One Tap sign-in successful');
+        toast.success('Welcome back!');
         onSuccess?.();
       }
     } catch (error: any) {
-      console.error('Google One Tap error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Google One Tap error:', error);
+      }
       toast.error('Google sign in failed. Please try again.');
       onError?.(error.message);
     }
@@ -61,13 +63,14 @@ export const useGoogleOneTap = ({
   const initializeGoogleOneTap = useCallback(() => {
     if (!window.google || disabled) return;
 
-    // Enable One Tap for production domain and localhost for testing
     const hostname = window.location.hostname;
     const isProduction = hostname === 'talentxcel.in' || hostname === 'www.talentxcel.in';
     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
     
     if (!isProduction && !isLocalhost) {
-      console.warn('Google One Tap disabled on this origin:', hostname);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Google One Tap disabled on origin:', hostname);
+      }
       return;
     }
 
@@ -78,18 +81,20 @@ export const useGoogleOneTap = ({
         context: 'signin',
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
-        use_fedcm_for_prompt: true, // Enable FedCM as required by Google
-        ux_mode: 'popup', // Use popup mode for better reliability
+        use_fedcm_for_prompt: true,
+        ux_mode: 'popup',
       });
 
-      // Show the One Tap prompt
       window.google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        if (process.env.NODE_ENV === 'development' && 
+            (notification.isNotDisplayed() || notification.isSkippedMoment())) {
           console.log('Google One Tap not displayed or skipped');
         }
       });
     } catch (error) {
-      console.error('Failed to initialize Google One Tap:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to initialize Google One Tap:', error);
+      }
     }
   }, [clientId, handleCredentialResponse, autoSelect, disabled]);
 
