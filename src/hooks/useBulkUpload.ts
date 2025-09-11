@@ -54,9 +54,14 @@ export const useBulkUpload = () => {
           type: file.type 
         });
         
-        // Upload file to Supabase Storage
+      // Upload file to Supabase Storage with TalentXcel naming convention
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+      
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const timestamp = Date.now();
+      const fileName = `talentxcel_cv_${user.id}_${timestamp}_${sanitizedFileName}`;
       const filePath = `cv-uploads/${batchId}/${fileName}`;
       
       console.log('📂 Uploading to path:', filePath);

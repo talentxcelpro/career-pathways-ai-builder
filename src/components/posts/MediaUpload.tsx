@@ -44,7 +44,9 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({ onMediaUploaded, exist
           continue;
         }
 
-        const fileName = `${user.id}/${Date.now()}-${file.name}`;
+        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const timestamp = Date.now();
+        const fileName = `${user.id}/talentxcel_media_${user.id}_${timestamp}_${sanitizedFileName}`;
         
         const { error: uploadError } = await supabase.storage
           .from('post-media')
@@ -60,6 +62,7 @@ export const MediaUpload: React.FC<MediaUploadProps> = ({ onMediaUploaded, exist
           .from('post-media')
           .getPublicUrl(fileName);
 
+        console.log('Media uploaded to:', data.publicUrl);
         uploadedUrls.push(data.publicUrl);
       }
 

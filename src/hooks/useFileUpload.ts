@@ -62,34 +62,37 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         // If custom path is provided, ensure it starts with user ID
         fileName = customPath.startsWith(user.id) ? customPath : `${user.id}/${customPath}`;
       } else {
-        // Generate default paths based on bucket type
+        // Generate TalentXcel naming convention for all file types
+        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const timestamp = Date.now();
+        
         switch (bucket) {
           case 'avatars':
-            fileName = `${user.id}/avatar.${fileExt}`;
+            fileName = `${user.id}/talentxcel_avatar_${user.id}_${timestamp}.${fileExt}`;
             break;
           case 'resumes':
-            fileName = `${user.id}/resume-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_resume_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           case 'cover-letters':
-            fileName = `${user.id}/cover-letter-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_coverletter_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           case 'documents':
-            fileName = `${user.id}/document-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_document_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           case 'media':
-            fileName = `${user.id}/media-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_media_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           case 'portfolio':
-            fileName = `${user.id}/portfolio-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_portfolio_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           case 'preferences':
-            fileName = `${user.id}/preferences-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_preferences_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           case 'post-media':
-            fileName = `${user.id}/post-${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_postmedia_${user.id}_${timestamp}_${sanitizedFileName}`;
             break;
           default:
-            fileName = `${user.id}/${Date.now()}.${fileExt}`;
+            fileName = `${user.id}/talentxcel_file_${user.id}_${timestamp}_${sanitizedFileName}`;
         }
       }
 

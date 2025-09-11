@@ -14,6 +14,7 @@ import { VideoNetworkPostCard } from './VideoNetworkPostCard';
 import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import LinkPreview from "@/components/shared/LinkPreview";
+import { getCustomStorageUrl } from "@/utils/storage";
 
 interface NetworkPost {
   id: string;
@@ -125,9 +126,9 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
             <Link to={`/user/${post.author_id}`} className="block">
-              <div className="relative">
+               <div className="relative">
                 <Avatar className="hover:scale-105 transition-transform">
-                  <AvatarImage src={post.profiles?.profile_picture_url} />
+                  <AvatarImage src={post.profiles?.profile_picture_url ? getCustomStorageUrl(post.profiles.profile_picture_url) : undefined} />
                   <AvatarFallback>
                     {generateInitials(post.profiles)}
                   </AvatarFallback>

@@ -70,9 +70,10 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      // Apply search filter if provided
-      if (filters.searchTerm) {
-        query = query.or(`content.ilike.%${filters.searchTerm}%,headline.ilike.%${filters.searchTerm}%`);
+      // Apply search filter if provided - enhanced search across multiple fields
+      if (filters.searchTerm && filters.searchTerm.length >= 2) {
+        const searchPattern = `%${filters.searchTerm}%`;
+        query = query.or(`content.ilike.${searchPattern},headline.ilike.${searchPattern},profiles.full_name.ilike.${searchPattern},profiles.title.ilike.${searchPattern},profiles.current_company.ilike.${searchPattern}`);
       }
 
       // Apply type filters (safe: skip DB-specific columns to avoid errors)

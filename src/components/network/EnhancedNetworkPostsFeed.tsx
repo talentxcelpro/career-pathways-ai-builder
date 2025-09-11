@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { getCustomStorageUrl } from '@/utils/storage';
 
 interface EnhancedNetworkPostsFeedProps {
   feedType: 'all' | 'connections' | 'trending';
