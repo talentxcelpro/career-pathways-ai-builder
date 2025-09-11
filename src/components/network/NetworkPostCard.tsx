@@ -116,12 +116,12 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
             <Link to={`/user/${post.author_id}`} className="block">
-               <div className="relative">
+              <div className="relative">
                 <UserAvatar 
-                  src={post.profiles?.profile_picture_url}
+                  src={post.profiles?.profile_picture_url || null}
                   userName={formatDisplayName(post.profiles)}
                   size="md"
-                  className="hover:scale-105 transition-transform"
+                  className="hover:scale-105 transition-transform ring-2 ring-border/20"
                 />
                 {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
                  post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (

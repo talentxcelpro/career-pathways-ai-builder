@@ -263,23 +263,23 @@ export function useTableRealtime<T = any>(
 export function useAutoRefreshPosts(refreshInterval: number = 30000) {
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-  // Real-time subscription for instant updates with reduced logging
+  // Real-time subscription for instant updates with minimal logging
   const { isConnected } = useNetworkRealtime(
     (payload) => {
-      // Only log important updates, not all events
+      // Only log critical updates to reduce console noise
       if (payload.eventType === 'INSERT') {
-        console.log('New post added');
+        console.log('📄 New post');
       }
       setLastRefresh(new Date());
     },
     (payload) => {
       if (payload.eventType === 'INSERT') {
-        console.log('New connection added');
+        console.log('🤝 New connection');
       }
     }
   );
 
-  // Periodic refresh as fallback
+  // Periodic refresh as fallback with reduced frequency
   useEffect(() => {
     const interval = setInterval(() => {
       setLastRefresh(new Date());

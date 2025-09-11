@@ -24,7 +24,7 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
   const { data: hashtags, isLoading } = useQuery({
     queryKey: ['trendingHashtags', limit],
     queryFn: async (): Promise<TrendingHashtag[]> => {
-      console.log('🔍 Fetching real trending hashtags from posts...');
+      console.log('📊 Loading trending hashtags...');
       // Get real hashtags from posts in the last 7 days
       const { data: posts, error } = await supabase
         .from('posts')
@@ -33,13 +33,18 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
         .not('tags', 'is', null)
         .eq('status', 'published');
 
-      if (error) throw error;
+      if (error) {
+        console.warn('Error fetching hashtags:', error);
+        return [];
+      }
 
       // Count hashtag occurrences
       const hashtagCounts: Record<string, number> = {};
       posts?.forEach(post => {
         post.tags?.forEach((tag: string) => {
-          hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+          if (tag && typeof tag === 'string') {
+            hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+          }
         });
       });
 
@@ -53,10 +58,11 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
           date: new Date().toISOString().split('T')[0]
         }));
       
-      console.log('📊 Real trending hashtags found:', result.length, 'hashtags');
+      console.log(`✅ Found ${result.length} trending hashtags`);
       return result;
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
+    retry: 1,
   });
 
   if (isLoading) {

@@ -55,21 +55,43 @@ const NewsPage: React.FC = () => {
           <h1 className="text-3xl font-semibold">News & Press Releases</h1>
           <p className="text-muted-foreground">Empowering professionals through our latest updates.</p>
         </header>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {list?.map((a: any) => (
-            <Link key={a.id} to={`/news/${a.url}`} className="group border rounded-lg overflow-hidden hover:shadow transition">
-              {a.image_url && (
-                <img src={a.image_url} alt={a.title} className="h-44 w-full object-cover" loading="lazy" />
-              )}
-              <div className="p-4">
-                <div className="text-xs text-muted-foreground">{new Date(a.published_at).toLocaleDateString()} • {a.category}</div>
-                <h2 className="text-lg font-medium mt-1 group-hover:text-primary transition-colors">{a.title}</h2>
-                {a.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>}
-                <div className="text-sm text-primary mt-2">Read more →</div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {list && list.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {list.map((a: any) => (
+              <Link key={a.id} to={`/news/${a.url}`} className="group border rounded-lg overflow-hidden hover:shadow transition">
+                {a.image_url && (
+                  <img 
+                    src={a.image_url} 
+                    alt={a.title} 
+                    className="h-44 w-full object-cover" 
+                    loading="lazy" 
+                    width="400"
+                    height="176"
+                  />
+                )}
+                <div className="p-4">
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(a.published_at).toLocaleDateString()} • {a.category}
+                  </div>
+                  <h2 className="text-lg font-medium mt-1 group-hover:text-primary transition-colors">
+                    {a.title}
+                  </h2>
+                  {a.description && (
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {a.description}
+                    </p>
+                  )}
+                  <div className="text-sm text-primary mt-2">Read more →</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold mb-2">No news articles yet</h2>
+            <p className="text-muted-foreground">Stay tuned for our latest updates and announcements.</p>
+          </div>
+        )}
       </div>
     );
   }

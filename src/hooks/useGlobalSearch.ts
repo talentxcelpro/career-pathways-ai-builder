@@ -39,7 +39,7 @@ export const useGlobalSearch = ({
         return [];
       }
 
-      console.log('🔍 Global search executing for:', debouncedSearchTerm);
+      console.log('🔍 Search:', debouncedSearchTerm);
       const results: SearchResult[] = [];
 
       // Search posts
@@ -174,7 +174,7 @@ export const useGlobalSearch = ({
         })));
       }
 
-      console.log('🔍 Global search results:', results.length, 'total results');
+      console.log(`✅ Search found ${results.length} results`);
       return results;
     },
     enabled: enabled && debouncedSearchTerm.length >= 2,

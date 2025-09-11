@@ -67,7 +67,7 @@ export const useGoogleOneTap = ({
     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
     
     if (!isProduction && !isLocalhost) {
-      console.warn('Google One Tap disabled on this origin:', origin);
+      console.warn('Google One Tap disabled on this origin:', hostname);
       return;
     }
 

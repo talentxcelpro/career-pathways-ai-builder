@@ -11,6 +11,7 @@ import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { GlobalSearch } from '@/components/ui/global-search';
 import { 
   Users, 
   MessageCircle, 
@@ -447,16 +448,10 @@ const NetworkPage = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Search Bar */}
+            {/* Global Search Bar */}
             <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <Input
-                  placeholder="Search professionals..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-64"
-                />
+              <div className="w-64">
+                <GlobalSearch placeholder="Search posts, people, hashtags..." />
               </div>
               <Button variant="outline" size="icon">
                 <Filter className="w-4 h-4" />

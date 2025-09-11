@@ -39,12 +39,8 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
     disabled: isDisabled,
   });
 
-  // Add logging to verify component is working
-  console.log('GoogleOneTapLogin component active:', {
-    disabled: isDisabled,
-    userLoggedIn: !!user,
-    autoSelect
-  });
+  // Minimal logging for Google One Tap status
+  console.log('🔐 Google One Tap:', isDisabled ? 'disabled' : 'active');
 
   // This component doesn't render any UI - it just manages the One Tap functionality
   return null;

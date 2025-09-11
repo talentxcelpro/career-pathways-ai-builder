@@ -87,47 +87,66 @@ export const optimizeCoreWebVitals = () => {
 };
 
 /**
- * Monitor performance metrics
+ * Monitor performance metrics with improved error handling
  */
 export const monitorPerformance = () => {
-  if ('performance' in window) {
-    // Monitor First Contentful Paint
-    const observer = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry) => {
-        if (entry.name === 'first-contentful-paint') {
-          console.log('FCP:', entry.startTime);
+  if ('performance' in window && 'PerformanceObserver' in window) {
+    try {
+      // Monitor First Contentful Paint
+      const observer = new PerformanceObserver((list) => {
+        try {
+          list.getEntries().forEach((entry) => {
+            if (entry.name === 'first-contentful-paint') {
+              console.log('FCP:', entry.startTime);
+            }
+          });
+        } catch (error) {
+          console.warn('Error processing FCP entries:', error);
         }
       });
-    });
-    observer.observe({ entryTypes: ['paint'] });
+      observer.observe({ entryTypes: ['paint'] });
 
-    // Monitor Largest Contentful Paint
-    const lcpObserver = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry) => {
-        console.log('LCP:', entry.startTime);
-      });
-    });
-    lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
-
-    // Monitor Cumulative Layout Shift
-    const clsObserver = new PerformanceObserver((list) => {
-      let clsValue = 0;
-      list.getEntries().forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+      // Monitor Largest Contentful Paint
+      const lcpObserver = new PerformanceObserver((list) => {
+        try {
+          list.getEntries().forEach((entry) => {
+            console.log('LCP:', entry.startTime);
+          });
+        } catch (error) {
+          console.warn('Error processing LCP entries:', error);
         }
       });
-      if (clsValue > 0.1) {
-        console.warn('Major layout shift detected:', clsValue);
-      }
-      if (clsValue > 5) {
-        console.warn('CLS threshold exceeded:', clsValue);
-        // Disable further monitoring to prevent spam
-        clsObserver.disconnect();
-      }
-      console.log('CLS:', clsValue);
-    });
-    clsObserver.observe({ entryTypes: ['layout-shift'] });
+      lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+
+      // Monitor Cumulative Layout Shift with throttling
+      let clsTotal = 0;
+      const clsObserver = new PerformanceObserver((list) => {
+        try {
+          let clsValue = 0;
+          list.getEntries().forEach((entry: any) => {
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value;
+            }
+          });
+          clsTotal += clsValue;
+          
+          // Only log significant shifts and prevent spam
+          if (clsValue > 0.1) {
+            console.warn('Layout shift detected:', clsValue);
+          }
+          if (clsTotal > 2.5) {
+            console.warn('High cumulative layout shift, disabling monitoring');
+            clsObserver.disconnect();
+          }
+        } catch (error) {
+          console.warn('Error processing CLS entries:', error);
+          clsObserver.disconnect();
+        }
+      });
+      clsObserver.observe({ entryTypes: ['layout-shift'] });
+    } catch (error) {
+      console.warn('Performance monitoring setup failed:', error);
+    }
   }
 };
 
