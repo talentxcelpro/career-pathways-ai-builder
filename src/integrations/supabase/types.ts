@@ -3777,6 +3777,63 @@ export type Database = {
           },
         ]
       }
+      blogs: {
+        Row: {
+          author: string
+          category: string
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          is_featured: boolean
+          is_published: boolean
+          published_at: string | null
+          read_time_minutes: number | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number | null
+        }
+        Insert: {
+          author: string
+          category?: string
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          read_time_minutes?: number | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number | null
+        }
+        Update: {
+          author?: string
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_featured?: boolean
+          is_published?: boolean
+          published_at?: string | null
+          read_time_minutes?: number | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
       bot_activity_schedule: {
         Row: {
           bot_id: string | null
@@ -11109,6 +11166,111 @@ export type Database = {
           },
         ]
       }
+      function_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          function_name: string
+          id: string
+          message: string
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          function_name: string
+          id?: string
+          message: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          function_name?: string
+          id?: string
+          message?: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+        }
+        Relationships: []
+      }
+      function_deployments: {
+        Row: {
+          deployed_at: string | null
+          deployed_by: string | null
+          deployment_log: string | null
+          function_name: string
+          id: string
+          status: string
+          version: string
+        }
+        Insert: {
+          deployed_at?: string | null
+          deployed_by?: string | null
+          deployment_log?: string | null
+          function_name: string
+          id?: string
+          status: string
+          version: string
+        }
+        Update: {
+          deployed_at?: string | null
+          deployed_by?: string | null
+          deployment_log?: string | null
+          function_name?: string
+          id?: string
+          status?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      function_health_logs: {
+        Row: {
+          cpu_usage: number | null
+          created_at: string | null
+          error_count: number | null
+          error_message: string | null
+          function_name: string
+          id: string
+          memory_usage: number | null
+          request_count: number | null
+          response_time_ms: number | null
+          status: string
+        }
+        Insert: {
+          cpu_usage?: number | null
+          created_at?: string | null
+          error_count?: number | null
+          error_message?: string | null
+          function_name: string
+          id?: string
+          memory_usage?: number | null
+          request_count?: number | null
+          response_time_ms?: number | null
+          status: string
+        }
+        Update: {
+          cpu_usage?: number | null
+          created_at?: string | null
+          error_count?: number | null
+          error_message?: string | null
+          function_name?: string
+          id?: string
+          memory_usage?: number | null
+          request_count?: number | null
+          response_time_ms?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       goal_communities: {
         Row: {
           cover_image_url: string | null
@@ -14250,6 +14412,50 @@ export type Database = {
         }
         Relationships: []
       }
+      news_analytics: {
+        Row: {
+          article_id: string | null
+          avg_time_on_page: number | null
+          bounce_rate: number | null
+          clicks: number | null
+          created_at: string | null
+          id: string
+          shares: number | null
+          traffic_source: string | null
+          views: number | null
+        }
+        Insert: {
+          article_id?: string | null
+          avg_time_on_page?: number | null
+          bounce_rate?: number | null
+          clicks?: number | null
+          created_at?: string | null
+          id?: string
+          shares?: number | null
+          traffic_source?: string | null
+          views?: number | null
+        }
+        Update: {
+          article_id?: string | null
+          avg_time_on_page?: number | null
+          bounce_rate?: number | null
+          clicks?: number | null
+          created_at?: string | null
+          id?: string
+          shares?: number | null
+          traffic_source?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_analytics_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "news_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       news_articles: {
         Row: {
           author: string | null
@@ -14257,17 +14463,26 @@ export type Database = {
           content: string | null
           created_at: string
           description: string | null
+          distribution_channels: string[] | null
           engagement_score: number | null
+          featured_image_url: string | null
           id: string
           image_url: string | null
           is_trending: boolean | null
+          priority: number | null
           published_at: string
+          published_status: string | null
           sentiment_score: number | null
+          seo_metadata: Json | null
+          shares_count: number | null
           source_name: string
+          source_url: string | null
           tags: string[] | null
           title: string
+          type: string | null
           updated_at: string
           url: string
+          views_count: number | null
         }
         Insert: {
           author?: string | null
@@ -14275,17 +14490,26 @@ export type Database = {
           content?: string | null
           created_at?: string
           description?: string | null
+          distribution_channels?: string[] | null
           engagement_score?: number | null
+          featured_image_url?: string | null
           id?: string
           image_url?: string | null
           is_trending?: boolean | null
+          priority?: number | null
           published_at: string
+          published_status?: string | null
           sentiment_score?: number | null
+          seo_metadata?: Json | null
+          shares_count?: number | null
           source_name: string
+          source_url?: string | null
           tags?: string[] | null
           title: string
+          type?: string | null
           updated_at?: string
           url: string
+          views_count?: number | null
         }
         Update: {
           author?: string | null
@@ -14293,17 +14517,56 @@ export type Database = {
           content?: string | null
           created_at?: string
           description?: string | null
+          distribution_channels?: string[] | null
           engagement_score?: number | null
+          featured_image_url?: string | null
           id?: string
           image_url?: string | null
           is_trending?: boolean | null
+          priority?: number | null
           published_at?: string
+          published_status?: string | null
           sentiment_score?: number | null
+          seo_metadata?: Json | null
+          shares_count?: number | null
           source_name?: string
+          source_url?: string | null
           tags?: string[] | null
           title?: string
+          type?: string | null
           updated_at?: string
           url?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      news_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
         }
         Relationships: []
       }
@@ -27037,6 +27300,10 @@ export type Database = {
         Args: { article_title: string }
         Returns: string
       }
+      generate_blog_slug: {
+        Args: { blog_title: string }
+        Returns: string
+      }
       generate_certificate_number: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -27444,6 +27711,10 @@ export type Database = {
         Args: { job_uuid: string }
         Returns: undefined
       }
+      increment_news_view: {
+        Args: { article_uuid: string }
+        Returns: undefined
+      }
       increment_post_likes: {
         Args: { post_id: string }
         Returns: undefined
@@ -27532,6 +27803,16 @@ export type Database = {
           p_resource_type: string
           p_risk_level?: string
           p_user_id: string
+        }
+        Returns: string
+      }
+      log_function_health: {
+        Args: {
+          p_error_message?: string
+          p_function_name: string
+          p_request_count?: number
+          p_response_time_ms?: number
+          p_status: string
         }
         Returns: string
       }
