@@ -62,6 +62,7 @@ import TalentDatabase from "@/pages/admin/TalentDatabase";
 import SecurityCenter from "@/pages/admin/SecurityCenter";
 import ProductRequirementDocument from "@/pages/admin/ProductRequirementDocument";
 import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobApplications";
+// Temporarily removed imports - will be re-added after page creation
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
@@ -266,9 +267,10 @@ const App = () => {
                         <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
                         <Route path="/admin/prd" element={<ProtectedRoute><AdminLayout><ProductRequirementDocument /></AdminLayout></ProtectedRoute>} />
                         <Route path="/seo-suite" element={<ProtectedRoute><SEOSuite /></ProtectedRoute>} />
-                        <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
-                        <Route path="/employer/cv-database" element={<CVDatabase />} />
-                        {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
+                         <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
+                         {/* Routes will be re-added after page creation */}
+                         <Route path="/employer/cv-database" element={<CVDatabase />} />
+                         {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
                         
                         {/* Real-time Features */}
                         <Route path="/video-call/:roomId" element={<ProtectedRoute><VideoCall /></ProtectedRoute>} />

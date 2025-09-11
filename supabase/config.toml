@@ -161,4 +161,26 @@ verify_jwt = false
 [functions.international-seo-manager]
 verify_jwt = false
 
+# Function Monitoring & News System
+[functions.function-health-monitor]
+verify_jwt = false
+
+[functions.generate-rss-feed]
+verify_jwt = false
+
+[functions.google-news-sitemap]
+verify_jwt = false
+
+[functions.dynamic-sitemap]
+verify_jwt = false
+
+[functions.ping-google-sitemap]
+verify_jwt = false
+
+[functions.sitemap-index]
+verify_jwt = false
+
+[functions.sitemap-module]
+verify_jwt = false
+
 

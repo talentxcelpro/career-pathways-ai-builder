@@ -252,6 +252,18 @@ const adminMenuItems = [
     url: '/seo-suite',
     icon: Search,
     description: 'Advanced SEO tools & analytics'
+  },
+  {
+    title: 'Edge Functions Monitor',
+    url: '/admin/edge-functions-monitor',
+    icon: Eye,
+    description: 'Monitor & debug all edge functions'
+  },
+  {
+    title: 'News Management',
+    url: '/admin/news-management',
+    icon: Newspaper,
+    description: 'Manage news articles & press releases'
   }
 ];
 
