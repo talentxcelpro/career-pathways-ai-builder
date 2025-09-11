@@ -8,6 +8,7 @@ import { Heart, MessageCircle, Share2, TrendingUp, Briefcase, Users, Camera, Lin
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoThumbnail } from "@/components/media/VideoThumbnail";
+import { ReshareButton } from "@/components/network/ReshareButton";
 
 interface Post {
   id: string;
@@ -388,6 +389,13 @@ export function ProfessionalFeed() {
                         <Share2 className="w-4 h-4 mr-2" />
                         {post.shares_count}
                       </Button>
+                      
+                      <ReshareButton
+                        postId={post.id}
+                        postContent={post.content}
+                        postAuthor={post.author?.full_name || 'Unknown'}
+                        postUrl={`${window.location.origin}/posts/${post.id}`}
+                      />
                     </div>
                   </div>
                 </div>
