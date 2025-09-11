@@ -10,10 +10,12 @@ import { Button } from '@/components/ui/button';
 
 interface EnhancedNetworkPostsFeedProps {
   feedType: 'all' | 'connections' | 'trending';
+  searchTerm?: string;
 }
 
 export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> = ({
-  feedType
+  feedType,
+  searchTerm
 }) => {
   const [openComments, setOpenComments] = React.useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -28,7 +30,10 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
     isFetchingNextPage,
     fetchNextPage,
     refetch
-  } = useInfiniteNetworkFeed({ type: feedType === 'connections' ? 'connections' : feedType });
+  } = useInfiniteNetworkFeed({ 
+    type: feedType === 'connections' ? 'connections' : feedType,
+    searchTerm: searchTerm 
+  });
 
   const posts = data?.pages.flatMap(page => page.data) || [];
 

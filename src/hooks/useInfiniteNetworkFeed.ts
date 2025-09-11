@@ -37,6 +37,7 @@ export interface NetworkPost {
 interface FeedFilters {
   type?: 'all' | 'connections' | 'trending';
   category?: string;
+  searchTerm?: string;
 }
 
 export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
@@ -69,7 +70,12 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      // Apply filters (safe: skip DB-specific columns to avoid errors)
+      // Apply search filter if provided
+      if (filters.searchTerm) {
+        query = query.or(`content.ilike.%${filters.searchTerm}%,headline.ilike.%${filters.searchTerm}%`);
+      }
+
+      // Apply type filters (safe: skip DB-specific columns to avoid errors)
       // if (filters.type === 'trending') {
       //   // Optionally sort by likes_count if available in your schema
       //   // query = query.order('likes_count', { ascending: false });

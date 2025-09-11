@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import mammoth from 'mammoth';
-
+import { extractTextFromFile } from '@/utils/resumeTextExtraction';
 interface BulkUploadParams {
   batchName: string;
   totalFiles: number;
@@ -12,75 +11,6 @@ interface ProcessCVParams {
   file: File;
   batchId: string;
 }
-
-// Helper to extract text client-side for better parsing accuracy
-const extractTextFromFile = async (file: File): Promise<string> => {
-  const type = file.type || '';
-  // Lightweight OCR fallback for PDFs when text extraction fails
-  const ocrFromPdfFirstPage = async (): Promise<string> => {
-    try {
-      const pdfjsLib: any = await import('pdfjs-dist');
-      if (pdfjsLib?.GlobalWorkerOptions) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      }
-      const data = await file.arrayBuffer();
-      const loadingTask = (pdfjsLib as any).getDocument({ data });
-      const pdf = await loadingTask.promise;
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      await page.render({ canvasContext: ctx, viewport }).promise;
-
-      const { createWorker } = await import('tesseract.js');
-      const worker = await createWorker('eng');
-      const { data: { text } } = await worker.recognize(canvas);
-      await worker.terminate();
-      return (text || '').trim();
-    } catch (e) {
-      console.warn('OCR fallback failed:', (e as any)?.message || e);
-      return '';
-    }
-  };
-
-  try {
-    if (type.includes('word') || type.includes('doc')) {
-      const arrayBuffer = await file.arrayBuffer();
-      const { value } = await mammoth.extractRawText({ arrayBuffer });
-      return value || '';
-    }
-    if (type.includes('pdf')) {
-      // Lazy import to reduce bundle impact
-      const pdfjsLib: any = await import('pdfjs-dist');
-      if (pdfjsLib?.GlobalWorkerOptions) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      }
-      const data = await file.arrayBuffer();
-      const loadingTask = (pdfjsLib as any).getDocument({ data });
-      const pdf = await loadingTask.promise;
-      let text = '';
-      const maxPages = Math.min(pdf.numPages, 10); // cap for speed
-      for (let i = 1; i <= maxPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const strings = content.items.map((it: any) => it.str).join(' ');
-        text += '\n' + strings;
-      }
-      text = text.trim();
-      if (text.length < 20) {
-        // Attempt OCR on first page as a last resort
-        const ocrText = await ocrFromPdfFirstPage();
-        if (ocrText && ocrText.length > text.length) return ocrText;
-      }
-      return text;
-    }
-  } catch (e) {
-    console.warn('Client text extraction failed:', (e as any)?.message || e);
-  }
-  return '';
-};
 
 export const useBulkUpload = () => {
   const queryClient = useQueryClient();

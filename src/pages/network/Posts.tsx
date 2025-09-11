@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
@@ -48,6 +49,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
   const [activePost, setActivePost] = useState<any>(null);
   const [dismissedBanners, setDismissedBanners] = useState<string[]>([]);
   const [showModernMessenger, setShowModernMessenger] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
 
   // Auto-refresh with realtime updates
@@ -321,9 +323,18 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               />
             )}
 
-            {/* Global Search */}
+            {/* Post Search */}
             <div className="mb-4">
-              <GlobalSearch placeholder="Search posts, people, hashtags..." />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search posts by content..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
 
             {/* Create Post */}
@@ -331,7 +342,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
 
 {/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
             <div className="space-y-6">
-              <EnhancedNetworkPostsFeed feedType={feedFilter} />
+              <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
             </div>
           </div>
 
