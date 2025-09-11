@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SearchResult {
-  type: 'post' | 'user' | 'hashtag';
+  type: 'post' | 'user' | 'hashtag' | 'job' | 'company';
   id: string;
   title: string;
   subtitle?: string;
@@ -98,26 +98,79 @@ export const useGlobalSearch = ({
         );
       }
 
-      // Search hashtags if term starts with #
-      if (debouncedSearchTerm.startsWith('#')) {
-        const hashtag = debouncedSearchTerm.slice(1);
-        const { data: hashtags } = await supabase
-          .from('trending_hashtags')
-          .select('hashtag, count')
-          .ilike('hashtag', `%${hashtag}%`)
-          .order('count', { ascending: false })
-          .limit(3);
+      // Search hashtags
+      if (debouncedSearchTerm.startsWith('#') || debouncedSearchTerm.length >= 2) {
+        const searchTag = debouncedSearchTerm.startsWith('#') ? debouncedSearchTerm.slice(1) : debouncedSearchTerm;
+        
+        // Get hashtags from recent posts
+        const { data: posts } = await supabase
+          .from('posts')
+          .select('tags')
+          .not('tags', 'is', null)
+          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
 
-        if (hashtags) {
-          results.push(...hashtags.map(tag => ({
+        if (posts) {
+          const hashtagCounts: Record<string, number> = {};
+          posts.forEach(post => {
+            post.tags?.forEach((tag: string) => {
+              if (tag.toLowerCase().includes(searchTag.toLowerCase())) {
+                hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+              }
+            });
+          });
+
+          const topHashtags = Object.entries(hashtagCounts)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 3);
+
+          results.push(...topHashtags.map(([hashtag, count]) => ({
             type: 'hashtag' as const,
-            id: tag.hashtag,
-            title: `#${tag.hashtag}`,
-            subtitle: `${tag.count} posts`,
-            url: `/network?hashtag=${tag.hashtag}`,
+            id: hashtag,
+            title: `#${hashtag}`,
+            subtitle: `${count} posts`,
+            url: `/network?hashtag=${hashtag}`,
             relevance: 1
           })));
         }
+      }
+
+      // Search jobs
+      const { data: jobs } = await supabase
+        .from('jobs')
+        .select('id, title, company_name, location, slug')
+        .or(`title.ilike.%${debouncedSearchTerm}%,company_name.ilike.%${debouncedSearchTerm}%,location.ilike.%${debouncedSearchTerm}%`)
+        .eq('status', 'open')
+        .limit(3);
+
+      if (jobs) {
+        results.push(...jobs.map(job => ({
+          type: 'job' as const,
+          id: job.id,
+          title: job.title,
+          subtitle: `${job.company_name} • ${job.location}`,
+          url: job.slug ? `/jobs/${job.slug}` : `/jobs/${job.id}`,
+          relevance: 1
+        })));
+      }
+
+      // Search companies (from profiles)
+      const { data: companies } = await supabase
+        .from('profiles')
+        .select('current_company')
+        .ilike('current_company', `%${debouncedSearchTerm}%`)
+        .not('current_company', 'is', null)
+        .limit(10);
+
+      if (companies) {
+        const uniqueCompanies = [...new Set(companies.map(p => p.current_company).filter(Boolean))];
+        results.push(...uniqueCompanies.slice(0, 3).map(company => ({
+          type: 'company' as const,
+          id: company!,
+          title: company!,
+          subtitle: 'Company',
+          url: `/network?company=${encodeURIComponent(company!)}`,
+          relevance: 1
+        })));
       }
 
       return results;

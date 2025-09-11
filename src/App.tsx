@@ -42,7 +42,7 @@ import { SearchConsoleVerification } from "./components/analytics/SearchConsoleV
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
-import { OnboardingFlow } from "./components/onboarding/OnboardingFlow";
+import { GoogleOneTapLogin } from "./components/auth/GoogleOneTapLogin";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
@@ -186,6 +186,7 @@ const App = () => {
                   }}
                 />
                 <MobileAppInitializer />
+                <GoogleOneTapLogin autoSelect />
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
@@ -354,7 +355,6 @@ const App = () => {
                         </React.Suspense>
                      </main>
                      <FooterWrapper />
-                     <OnboardingFlow />
                      <InstallPrompt />
                      <InstallButton />
                      <IOSInstallPrompt />

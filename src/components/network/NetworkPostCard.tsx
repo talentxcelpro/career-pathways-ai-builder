@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
 import { EnhancedPostMenu } from "@/components/posts/EnhancedPostMenu";
 import { QuickShareActions } from "@/components/shared/QuickShareActions";
@@ -94,16 +94,6 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
     return 'Professional User';
   };
 
-  const generateInitials = (profile: any) => {
-    const displayName = formatDisplayName(profile);
-    if (displayName === 'Professional User') return 'PU';
-    
-    const names = displayName.split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
 
   const shareContent = createPostShareData(post);
 
@@ -127,12 +117,12 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           <div className="flex items-start space-x-3">
             <Link to={`/user/${post.author_id}`} className="block">
                <div className="relative">
-                <Avatar className="hover:scale-105 transition-transform">
-                  <AvatarImage src={post.profiles?.profile_picture_url ? getCustomStorageUrl(post.profiles.profile_picture_url) : undefined} />
-                  <AvatarFallback>
-                    {generateInitials(post.profiles)}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  src={post.profiles?.profile_picture_url}
+                  userName={formatDisplayName(post.profiles)}
+                  size="md"
+                  className="hover:scale-105 transition-transform"
+                />
                 {post.profiles?.pro_plan && post.profiles?.pro_status === 'active' && 
                  post.profiles?.pro_expires_at && new Date(post.profiles.pro_expires_at) > new Date() && (
                   <div className="absolute -top-1 -right-1">

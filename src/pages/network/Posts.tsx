@@ -323,18 +323,12 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               />
             )}
 
-            {/* Post Search - Mobile Optimized */}
+            {/* Global Search */}
             <div className="mb-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search posts, people, companies..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 py-3 text-base md:text-sm md:py-2 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                />
-              </div>
+              <GlobalSearch 
+                placeholder="Search posts, people, companies, jobs, hashtags..."
+                className="w-full"
+              />
             </div>
 
             {/* Create Post */}

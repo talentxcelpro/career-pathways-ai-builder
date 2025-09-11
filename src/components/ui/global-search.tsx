@@ -64,6 +64,10 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         return <User className="h-4 w-4" />;
       case 'hashtag':
         return <Hash className="h-4 w-4" />;
+      case 'job':
+        return <div className="h-4 w-4 text-sm">💼</div>;
+      case 'company':
+        return <div className="h-4 w-4 text-sm">🏢</div>;
       default:
         return <Search className="h-4 w-4" />;
     }

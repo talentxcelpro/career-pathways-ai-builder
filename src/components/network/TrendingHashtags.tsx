@@ -24,17 +24,35 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
   const { data: hashtags, isLoading } = useQuery({
     queryKey: ['trendingHashtags', limit],
     queryFn: async (): Promise<TrendingHashtag[]> => {
-      const { data, error } = await supabase
-        .from('trending_hashtags')
-        .select('hashtag, count, date')
-        .gte('date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-        .order('count', { ascending: false })
-        .limit(limit);
+      // Get real hashtags from posts in the last 7 days
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('tags')
+        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .not('tags', 'is', null)
+        .eq('status', 'published');
 
       if (error) throw error;
-      return data || [];
+
+      // Count hashtag occurrences
+      const hashtagCounts: Record<string, number> = {};
+      posts?.forEach(post => {
+        post.tags?.forEach((tag: string) => {
+          hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+        });
+      });
+
+      // Convert to array and sort by count
+      return Object.entries(hashtagCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, limit)
+        .map(([hashtag, count]) => ({
+          hashtag,
+          count,
+          date: new Date().toISOString().split('T')[0]
+        }));
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
   if (isLoading) {
@@ -102,7 +120,7 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
                   </Badge>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  {hashtag.count} posts
+                  {hashtag.count} post{hashtag.count !== 1 ? 's' : ''}
                 </span>
               </div>
             </Link>
