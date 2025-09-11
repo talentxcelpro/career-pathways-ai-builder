@@ -54,8 +54,8 @@ const FeedEmbeds: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-medium mb-3 text-sm text-muted-foreground">Sample Social Post</h4>
-                  <ContentEmbed url="https://twitter.com/vercel/status/123456789" />
+                  <h4 className="font-medium mb-3 text-sm text-muted-foreground">Sample Facebook Post</h4>
+                  <ContentEmbed url="https://www.facebook.com/share/r/1DCBFuMRLx/?mibextid=wwXIfr" />
                 </div>
               </div>
             </CardContent>
