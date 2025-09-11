@@ -13,18 +13,46 @@ const statusColors: Record<string, { variant: 'default' | 'secondary' | 'destruc
 };
 
 const EdgeFunctionsMonitor: React.FC = () => {
-  const { data, isLoading, error, refetch } = useQuery({
+  // Get all available edge functions from config
+  const allFunctions = [
+    'ai-agent', 'ai-ats-analyzer', 'ai-career-coach', 'ai-resume-parser', 
+    'ai-search-parser', 'backlink-outreach', 'backlink-prospecting',
+    'behavioral-email-engine', 'bulk-download-cvs', 'campaign-automation-engine',
+    'cv-search', 'email-webhook', 'enhanced-sitemap', 'enterprise-reporting',
+    'generate-rss-feed', 'google-news-sitemap', 'health-check',
+    'internal-linking-automation', 'international-seo-manager',
+    'job-expiry-cleanup', 'job-publisher', 'local-seo-analyzer',
+    'notify-employer-request', 'razorpay-verify-oneoff', 'realtime-career-coach',
+    'register-push-token', 'send-application-notification', 'seo-automation-engine',
+    'seo-technical-audit', 'skill-gap-ai', 'url-metadata'
+  ];
+
+  const { data: healthLogs, isLoading, error, refetch } = useQuery({
     queryKey: ['function-health-logs'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('function_health_logs')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(200);
       if (error) throw error;
       return data || [];
     },
-    staleTime: 60_000,
+    staleTime: 30_000,
+  });
+
+  // Combine all functions with their latest health status
+  const data = allFunctions.map(funcName => {
+    const latestLog = healthLogs?.find(log => log.function_name === funcName);
+    return {
+      id: latestLog?.id || `${funcName}-placeholder`,
+      function_name: funcName,
+      status: latestLog?.status || 'unknown',
+      response_time_ms: latestLog?.response_time_ms,
+      request_count: latestLog?.request_count || 0,
+      created_at: latestLog?.created_at || new Date().toISOString(),
+      error_message: latestLog?.error_message,
+    };
   });
 
   return (

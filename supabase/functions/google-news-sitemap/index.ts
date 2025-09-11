@@ -26,12 +26,12 @@ serve(async (req) => {
       .select(`
         id,
         title,
-        slug,
+        url,
         published_at,
         created_at,
         category
       `)
-      .eq('status', 'published')
+      .eq('published_status', 'published')
       .gte('published_at', twoDaysAgo)
       .order('published_at', { ascending: false })
       .limit(100);
@@ -50,8 +50,15 @@ serve(async (req) => {
     
     const xmlFooter = '</urlset>';
     
-    const xmlUrls = articles?.map(article => `  <url>
-    <loc>${baseUrl}/news/${article.slug}</loc>
+    const xmlUrls = articles?.map(article => {
+      // Generate slug from title if URL doesn't exist
+      const slug = article.url || article.title.toLowerCase()
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .substring(0, 100);
+      
+      return `  <url>
+    <loc>${baseUrl}/news/${article.id}/${slug}</loc>
     <lastmod>${article.published_at || article.created_at}</lastmod>
     <news:news>
       <news:publication>
@@ -62,7 +69,8 @@ serve(async (req) => {
       <news:title><![CDATA[${article.title}]]></news:title>
       <news:keywords>${article.category || 'Career, Technology, Business'}</news:keywords>
     </news:news>
-  </url>`).join('\n') || '';
+  </url>`;
+    }).join('\n') || '';
 
     const sitemap = `${xmlHeader}\n${xmlUrls}\n${xmlFooter}`;
 
