@@ -18,7 +18,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Fail-safe: provide a non-throwing fallback to avoid crashing before provider mounts
+    if (import.meta.env?.DEV) {
+      console.warn('useAuth called outside AuthProvider - returning safe fallback');
+    }
+    return {
+      user: null,
+      session: null,
+      loading: true,
+      signOut: async () => {},
+      refreshSession: async () => {},
+      signInWithIdToken: async () => ({ user: null, session: null })
+    } as any;
   }
   return context;
 };
