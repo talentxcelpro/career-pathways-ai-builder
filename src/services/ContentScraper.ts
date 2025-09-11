@@ -14,24 +14,32 @@ interface ScrapedContent {
 export class ContentScraper {
   static async scrapeUrl(url: string): Promise<ScrapedContent | null> {
     try {
+      console.log('🔍 Scraping URL:', url);
+      
       // Detect platform
       const platform = this.detectPlatform(url);
+      console.log('📱 Detected platform:', platform);
+      
+      let result: ScrapedContent | null = null;
       
       if (platform === 'youtube') {
-        return this.scrapeYouTube(url);
+        result = await this.scrapeYouTube(url);
       } else if (platform === 'facebook') {
-        return this.scrapeFacebook(url);
+        result = await this.scrapeFacebook(url);
       } else if (platform === 'instagram') {
-        return this.scrapeInstagram(url);
+        result = await this.scrapeInstagram(url);
       } else if (platform === 'twitter') {
-        return this.scrapeTwitter(url);
+        result = await this.scrapeTwitter(url);
       } else if (platform === 'linkedin') {
-        return this.scrapeLinkedIn(url);
+        result = await this.scrapeLinkedIn(url);
       } else {
-        return this.scrapeGeneric(url);
+        result = await this.scrapeGeneric(url);
       }
+      
+      console.log('✅ Scraped result:', result);
+      return result;
     } catch (error) {
-      console.error('Error scraping URL:', error);
+      console.error('❌ Error scraping URL:', error);
       return null;
     }
   }
@@ -75,15 +83,20 @@ export class ContentScraper {
   }
 
   private static async scrapeFacebook(url: string): Promise<ScrapedContent> {
+    console.log('🔵 Processing Facebook URL:', url);
+    
     // Facebook blocks scraping, so we provide a generic social embed
-    return {
-      type: 'social',
+    const result = {
+      type: 'social' as const,
       title: 'Facebook Post',
       description: 'Interesting content shared from Facebook community',
       source: 'Facebook',
       sourceUrl: url,
       favicon: 'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico'
     };
+    
+    console.log('🔵 Facebook result:', result);
+    return result;
   }
 
   private static async scrapeInstagram(url: string): Promise<ScrapedContent> {
