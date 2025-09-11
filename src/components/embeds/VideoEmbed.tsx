@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrapedContent } from '@/services/ContentScraper';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
 
 interface VideoEmbedProps {
@@ -21,8 +22,11 @@ export const VideoEmbed: React.FC<VideoEmbedProps> = ({ content }) => {
           <iframe
             src={content.videoUrl}
             className="w-full h-full border-0"
+            title={content.title || 'Embedded video'}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
-            title={content.title}
+            loading="lazy"
           />
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">

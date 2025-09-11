@@ -68,8 +68,8 @@ export class ContentScraper {
     return {
       type: 'video',
       title: 'YouTube Video',
-      videoUrl: `https://www.youtube.com/embed/${videoId}`,
-      embedHtml: `<iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`,
+      videoUrl: `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`,
+      embedHtml: `<iframe width="100%" height="400" src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>`,
       source: 'YouTube',
       sourceUrl: url,
       favicon: 'https://www.youtube.com/favicon.ico'
