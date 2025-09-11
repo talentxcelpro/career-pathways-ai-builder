@@ -16,9 +16,9 @@ const NewsPage: React.FC = () => {
       if (!slug) return null;
       const { data, error } = await supabase
         .from('news_articles')
-        .select('id, title, summary, content, image_url, category, published_at, created_at, slug')
-        .eq('slug', slug)
-        .eq('status', 'published')
+        .select('id, title, description, content, image_url, category, published_at, created_at, url')
+        .eq('url', slug)
+        .eq('published_status', 'published')
         .single();
       if (error) throw error;
       return data;
@@ -32,8 +32,8 @@ const NewsPage: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news_articles')
-        .select('id, title, summary, slug, published_at, category, image_url')
-        .eq('status', 'published')
+        .select('id, title, description, url, published_at, category, image_url')
+        .eq('published_status', 'published')
         .order('published_at', { ascending: false })
         .limit(20);
       if (error) throw error;
@@ -57,14 +57,14 @@ const NewsPage: React.FC = () => {
         </header>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {list?.map((a: any) => (
-            <Link key={a.id} to={`/news/${a.slug}`} className="group border rounded-lg overflow-hidden hover:shadow transition">
+            <Link key={a.id} to={`/news/${a.url}`} className="group border rounded-lg overflow-hidden hover:shadow transition">
               {a.image_url && (
                 <img src={a.image_url} alt={a.title} className="h-44 w-full object-cover" loading="lazy" />
               )}
               <div className="p-4">
                 <div className="text-xs text-muted-foreground">{new Date(a.published_at).toLocaleDateString()} • {a.category}</div>
                 <h2 className="text-lg font-medium mt-1 group-hover:text-primary transition-colors">{a.title}</h2>
-                {a.summary && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.summary}</p>}
+                {a.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>}
                 <div className="text-sm text-primary mt-2">Read more →</div>
               </div>
             </Link>
@@ -79,11 +79,11 @@ const NewsPage: React.FC = () => {
     <div className="max-w-3xl mx-auto px-4 py-10">
       <Helmet>
         <title>{article?.title ? `${article.title} | TalentXcel` : baseTitle}</title>
-        <meta name="description" content={article?.summary || baseDesc} />
+        <meta name="description" content={article?.description || baseDesc} />
         <link rel="canonical" href={`https://talentxcel.in/news/${slug}`} />
         <meta property="og:type" content="article" />
         <meta property="og:title" content={article?.title || 'News'} />
-        <meta property="og:description" content={article?.summary || baseDesc} />
+        <meta property="og:description" content={article?.description || baseDesc} />
         {article?.image_url && <meta property="og:image" content={article.image_url} />}
       </Helmet>
       <nav className="text-sm mb-4">
