@@ -30,6 +30,7 @@ import CampaignManager from "./pages/CampaignManager";
 import MobileSearch from "./pages/mobile/MobileSearch";
 import NotificationsPage from "./pages/NotificationsPage";
 import TalentXcelServices from "./pages/TalentXcelServices";
+import FeedEmbeds from "./pages/FeedEmbeds";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -51,6 +52,18 @@ export const campaignRoutes = [
     page: <CampaignManager />,
     description: "Launch and manage content & outreach campaigns",
     requiresAdminAccess: true
+  }
+];
+
+// Feed Embeds routes
+export const embedRoutes = [
+  {
+    title: "Feed Embeds",
+    to: "/feed-embeds",
+    icon: "link",
+    page: <FeedEmbeds />,
+    description: "Native-looking embeds for external content",
+    isPublic: true
   }
 ];
 
@@ -121,6 +134,7 @@ export const navItems = [
   ...growthRoutes,
   ...aiAgentRoutes,
   ...campaignRoutes,
+  ...embedRoutes,
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,

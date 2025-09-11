@@ -75,32 +75,35 @@ export class ContentScraper {
   }
 
   private static async scrapeFacebook(url: string): Promise<ScrapedContent> {
+    // Facebook blocks scraping, so we provide a generic social embed
     return {
       type: 'social',
       title: 'Facebook Post',
-      description: 'Check out this Facebook content',
+      description: 'Interesting content shared from Facebook community',
       source: 'Facebook',
       sourceUrl: url,
-      favicon: 'https://www.facebook.com/favicon.ico'
+      favicon: 'https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico'
     };
   }
 
   private static async scrapeInstagram(url: string): Promise<ScrapedContent> {
+    // Instagram blocks scraping, so we provide a generic social embed
     return {
       type: 'social',
       title: 'Instagram Post',
-      description: 'Check out this Instagram content',
+      description: 'Visual content shared from Instagram community',
       source: 'Instagram',
       sourceUrl: url,
-      favicon: 'https://www.instagram.com/favicon.ico'
+      favicon: 'https://static.cdninstagram.com/rsrc.php/v3/yz/r/VrKyJon-pE1.ico'
     };
   }
 
   private static async scrapeTwitter(url: string): Promise<ScrapedContent> {
+    // Twitter/X blocks scraping, so we provide a generic social embed
     return {
       type: 'social',
       title: 'X Post',
-      description: 'Check out this X (Twitter) content',
+      description: 'Insights and updates shared from X (formerly Twitter)',
       source: 'X',
       sourceUrl: url,
       favicon: 'https://abs.twimg.com/favicons/twitter.3.ico'
@@ -108,21 +111,33 @@ export class ContentScraper {
   }
 
   private static async scrapeLinkedIn(url: string): Promise<ScrapedContent> {
+    // LinkedIn has strict CORS policies, so we provide a generic embed
     return {
       type: 'social',
       title: 'LinkedIn Post',
-      description: 'Check out this LinkedIn content',
+      description: 'Professional content shared from LinkedIn network',
       source: 'LinkedIn',
       sourceUrl: url,
-      favicon: 'https://www.linkedin.com/favicon.ico'
+      favicon: 'https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca'
     };
   }
 
   private static async scrapeGeneric(url: string): Promise<ScrapedContent> {
     try {
-      const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+      // Use a CORS proxy for fetching external content
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const response = await fetch(proxyUrl);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch content');
+      }
+      
       const data = await response.json();
       const html = data.contents;
+      
+      if (!html) {
+        throw new Error('No content received');
+      }
       
       // Extract meta tags
       const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
