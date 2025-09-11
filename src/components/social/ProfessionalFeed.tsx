@@ -385,16 +385,12 @@ export function ProfessionalFeed() {
                         {post.comments_count}
                       </Button>
                       
-                      <Button variant="ghost" size="sm">
-                        <Share2 className="w-4 h-4 mr-2" />
-                        {post.shares_count}
-                      </Button>
-                      
                       <ReshareButton
                         postId={post.id}
                         postContent={post.content}
                         postAuthor={post.author?.full_name || 'Unknown'}
                         postUrl={`${window.location.origin}/posts/${post.id}`}
+                        size="sm"
                       />
                     </div>
                   </div>
