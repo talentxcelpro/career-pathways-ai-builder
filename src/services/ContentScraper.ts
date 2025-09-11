@@ -64,12 +64,14 @@ export class ContentScraper {
 
   private static async scrapeYouTube(url: string): Promise<ScrapedContent> {
     const videoId = this.extractYouTubeId(url);
+    const origin = typeof window !== 'undefined' ? `&origin=${encodeURIComponent(window.location.origin)}` : '';
+    const embedSrc = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1${origin}`;
     
     return {
       type: 'video',
       title: 'YouTube Video',
-      videoUrl: `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`,
-      embedHtml: `<iframe width="100%" height="400" src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>`,
+      videoUrl: embedSrc,
+      embedHtml: `<iframe width="100%" height="400" src="${embedSrc}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>`,
       source: 'YouTube',
       sourceUrl: url,
       favicon: 'https://www.youtube.com/favicon.ico'
@@ -77,8 +79,30 @@ export class ContentScraper {
   }
 
   private static extractYouTubeId(url: string): string {
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = url.match(regex);
+    try {
+      const u = new URL(url);
+      const host = u.hostname.toLowerCase();
+      // youtu.be/<id>
+      if (host.includes('youtu.be')) {
+        const id = u.pathname.split('/').filter(Boolean)[0];
+        return id ? id.substring(0, 11) : '';
+      }
+      // watch?v=<id>
+      const v = u.searchParams.get('v');
+      if (v && v.length >= 11) return v.substring(0, 11);
+      // /embed/<id>, /v/<id>, /shorts/<id>, /live/<id>
+      const parts = u.pathname.split('/').filter(Boolean);
+      const markerIndex = parts.findIndex(p => ['embed', 'v', 'shorts', 'live'].includes(p));
+      if (markerIndex !== -1 && parts[markerIndex + 1]) {
+        return parts[markerIndex + 1].substring(0, 11);
+      }
+      // fallback: any path segment that looks like an id
+      const candidate = parts.find(p => p.length >= 11);
+      if (candidate) return candidate.substring(0, 11);
+    } catch (e) {
+      // ignore parse errors
+    }
+    const match = url.match(/(?:v=|\/embed\/|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return match ? match[1] : '';
   }
 
