@@ -1,5 +1,8 @@
 project_id = "dthlgsnakhoftinssokm"
 
+[functions.scrape-content]
+verify_jwt = false
+
 [functions.image-proxy]
 verify_jwt = false
 
