@@ -27663,20 +27663,13 @@ export type Database = {
           | { p_employer_id?: string; p_job_id?: string }
         Returns: {
           company_name: string
-          conversion_rate: number
-          created_at: string
-          employer_id: string
           expires_at: string
+          id: string
           is_active: boolean
           is_featured: boolean
           is_government_job: boolean
-          job_id: string
           job_status: string
-          location: string
           title: string
-          total_applications: number
-          total_external_redirects: number
-          total_views: number
         }[]
       }
       get_user_app_role: {
