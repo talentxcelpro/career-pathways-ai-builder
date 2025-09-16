@@ -24,9 +24,15 @@ if (typeof window !== 'undefined') {
     { initializeBundleOptimization },
     { initializeLazyLoading }
   ]) => {
-    initializePerformanceOptimizations();
-    initializeBundleOptimization();
-    initializeLazyLoading();
+    try {
+      initializePerformanceOptimizations();
+      initializeBundleOptimization();
+      initializeLazyLoading();
+    } catch (error) {
+      console.warn('Performance initialization failed:', error);
+    }
+  }).catch(error => {
+    console.warn('Failed to load performance modules:', error);
   });
 }
 

@@ -210,26 +210,30 @@ export const addResourceHints = () => {
 /**
  * Initialize all performance optimizations
  */
-export const initializePerformanceOptimizations = () => {
-  // Run immediately
-  preloadCriticalAssets();
-  addResourceHints();
+export function initializePerformanceOptimizations() {
+  try {
+    // Run immediately
+    preloadCriticalAssets();
+    addResourceHints();
 
-  // Run after DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+    // Run after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        optimizeImages();
+        optimizeCoreWebVitals();
+        optimizeCSS();
+        monitorPerformance();
+      });
+    } else {
       optimizeImages();
       optimizeCoreWebVitals();
       optimizeCSS();
       monitorPerformance();
-    });
-  } else {
-    optimizeImages();
-    optimizeCoreWebVitals();
-    optimizeCSS();
-    monitorPerformance();
+    }
+  } catch (error) {
+    console.warn('Performance optimization initialization failed:', error);
   }
-};
+}
 
 /**
  * Get performance score based on Web Vitals
