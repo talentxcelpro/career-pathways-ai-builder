@@ -57,8 +57,7 @@ export const VerificationBadge: React.FC<VerificationBadgeProps> = ({
   if (!showTooltip) return badge;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
+    <Tooltip>
         <TooltipTrigger asChild>
           {badge}
         </TooltipTrigger>
@@ -66,6 +65,5 @@ export const VerificationBadge: React.FC<VerificationBadgeProps> = ({
           <p>{tooltip}</p>
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
   );
 };

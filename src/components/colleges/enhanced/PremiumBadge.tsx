@@ -59,8 +59,7 @@ export const PremiumBadge: React.FC<PremiumBadgeProps> = ({
   if (!showTooltip) return badge;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
+    <Tooltip>
         <TooltipTrigger asChild>
           {badge}
         </TooltipTrigger>
@@ -68,6 +67,5 @@ export const PremiumBadge: React.FC<PremiumBadgeProps> = ({
           <p>{tooltip}</p>
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>
   );
 };
