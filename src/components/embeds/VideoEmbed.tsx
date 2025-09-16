@@ -45,12 +45,14 @@ export const VideoEmbed: React.FC<VideoEmbedProps> = ({ content }) => {
             variant="secondary" 
             className="text-[10px] px-1.5 py-0.5 bg-black/60 text-white border-0 opacity-70 hover:opacity-100 transition-opacity"
           >
-            <img 
-              src={content.favicon} 
-              alt="" 
-              className="w-3 h-3 mr-1"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
-            />
+            {content.favicon && (
+              <img 
+                src={content.favicon} 
+                alt="" 
+                className="w-3 h-3 mr-1"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            )}
             via {content.source}
           </Badge>
         </div>

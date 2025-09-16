@@ -14,7 +14,7 @@ export const SocialEmbed: React.FC<SocialEmbedProps> = ({ content }) => {
       case 'instagram': return 'bg-gradient-to-r from-purple-500 to-pink-500';
       case 'facebook': return 'bg-blue-600';
       case 'linkedin': return 'bg-blue-700';
-      default: return 'bg-gray-500';
+      default: return 'bg-muted';
     }
   };
 

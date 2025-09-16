@@ -1,5 +1,6 @@
 import React from 'react';
 import { EmbedDemo } from '@/components/feed/EmbedDemo';
+import { EmbedStatusCheck } from '@/components/feed/EmbedStatusCheck';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,12 +20,17 @@ const FeedEmbeds: React.FC = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="demo" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="status" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="status">Status Check</TabsTrigger>
           <TabsTrigger value="demo">Interactive Demo</TabsTrigger>
           <TabsTrigger value="examples">Live Examples</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="status" className="mt-6">
+          <EmbedStatusCheck />
+        </TabsContent>
 
         <TabsContent value="demo" className="mt-6">
           <EmbedDemo />
