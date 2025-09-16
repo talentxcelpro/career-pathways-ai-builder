@@ -36,6 +36,7 @@ import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
+import { EmbedTestPage } from "@/components/embed-test/EmbedTestPage";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -246,8 +247,9 @@ const App = () => {
                               <CareerPlatformShowcasePage />
                             </React.Suspense>
                           } />
-                          {/* Career Platform feature routes */}
-                          <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
+                           {/* Career Platform feature routes */}
+                           <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
+                           <Route path="/embed-test" element={<EmbedTestPage />} />
                           <Route path="/career-intelligence" element={<AICareerIntelligence />} />
                           <Route path="/skills-assessment" element={<SkillsGap />} />
                           <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
