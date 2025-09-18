@@ -72,10 +72,10 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
           .gte('expires_at', new Date().toISOString()); // Filter out expired jobs
 
         // Apply all filters to count query too
-        if (filters.location === 'India') {
-          countQuery = countQuery.ilike('location', '%india%');
-        } else if (filters.location === 'International') {
-          countQuery = countQuery.not('location', 'ilike', '%india%');
+        if (filters.location === 'Remote') {
+          countQuery = countQuery.eq('is_remote', true);
+        } else if (filters.location && filters.location !== 'All') {
+          countQuery = countQuery.ilike('location', `%${filters.location}%`);
         }
 
         if (filters.search) {
@@ -123,10 +123,10 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
           .range(start, end);
 
         // Apply location filter for data
-        if (filters.location === 'India') {
-          dataQuery = dataQuery.ilike('location', '%india%');
-        } else if (filters.location === 'International') {
-          dataQuery = dataQuery.not('location', 'ilike', '%india%');
+        if (filters.location === 'Remote') {
+          dataQuery = dataQuery.eq('is_remote', true);
+        } else if (filters.location && filters.location !== 'All') {
+          dataQuery = dataQuery.ilike('location', `%${filters.location}%`);
         }
 
         // Apply other filters

@@ -45,10 +45,10 @@ export function useCachedJobs(filters: JobFilters = {}) {
     }
 
     if (filters.location) {
-      if (filters.location === 'India') {
-        query = query.ilike('location', '%india%');
-      } else if (filters.location === 'International') {
-        query = query.not('location', 'ilike', '%india%');
+      if (filters.location === 'Remote') {
+        query = query.eq('is_remote', true);
+      } else if (filters.location && filters.location !== 'All') {
+        query = query.ilike('location', `%${filters.location}%`);
       } else {
         query = query.ilike('location', `%${filters.location}%`);
       }

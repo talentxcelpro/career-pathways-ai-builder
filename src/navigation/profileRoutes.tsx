@@ -16,6 +16,7 @@ import TalentXcelProfile from "../pages/TalentXcelProfile";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import UserProfile from "../pages/UserProfile";
 import TXCPricing from "../pages/TXCPricing";
+import TXCMining from "../pages/TXCMining";
 import SlugProfile from "../pages/SlugProfile";
 
 export const profileRoutes = [
@@ -24,6 +25,12 @@ export const profileRoutes = [
     to: "/txc/pricing",
     page: <TXCPricing />,
     requiresAuth: false,
+  },
+  {
+    title: "TXC Mining",
+    to: "/txc/mining",
+    page: <TXCMining />,
+    requiresAuth: true,
   },
   {
     title: "Profile by Username",

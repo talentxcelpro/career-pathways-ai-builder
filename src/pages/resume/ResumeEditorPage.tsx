@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useResumeDownloads } from '@/hooks/useResumeDownloads';
 import { exportResumeToDocx } from '@/utils/docxExport';
 import type { ResumeJSON } from '@/hooks/useResumeParser';
-import { RazorpayScript } from '@/components/RazorpayScript';
+
 
 const defaultResume: ResumeJSON = { profile: {}, summary: '', experience: [], education: [], skills: [] };
 
@@ -145,7 +145,7 @@ export const ResumeEditorPage: React.FC<ResumeEditorPageProps> = ({ initialData:
         <link rel="canonical" href="https://talentxcel.in/resume/new" />
       </Helmet>
       <h1 className="sr-only">Resume Builder and Editor</h1>
-      <RazorpayScript />
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">

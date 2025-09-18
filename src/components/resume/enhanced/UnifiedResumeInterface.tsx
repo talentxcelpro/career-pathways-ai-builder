@@ -36,7 +36,7 @@ import { ATSOptimizationPanel } from '@/components/resume/ATSOptimizationPanel';
 import { useResumeDownloads } from '@/hooks/useResumeDownloads';
 import { exportResumeToDocx } from '@/utils/docxExport';
 import type { ResumeJSON } from '@/hooks/useResumeParser';
-import { RazorpayScript } from '@/components/RazorpayScript';
+
 import { editorToEnhanced, enhancedToEditor } from '@/utils/resumeAdapters';
 import { enhancedToCore } from '@/utils/resume-adapters';
 
@@ -282,7 +282,7 @@ export const UnifiedResumeInterface: React.FC<UnifiedResumeInterfaceProps> = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <RazorpayScript />
+      
       {/* Header */}
       <div className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4">

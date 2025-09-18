@@ -93,7 +93,7 @@ export const useLearningJobIntegration = () => {
   };
 
   // Fetch skill demand trends
-  const fetchSkillTrends = async (location = 'India') => {
+  const fetchSkillTrends = async (location = 'Global') => {
     try {
       setIsLoading(true);
       const { data, error } = await supabase

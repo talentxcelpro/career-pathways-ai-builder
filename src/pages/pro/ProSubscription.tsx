@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { AppleSubscriptionUI } from '@/components/subscription/AppleSubscriptionUI';
-import { RazorpayScript } from '@/components/RazorpayScript';
+
 
 export const ProSubscription: React.FC = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export const ProSubscription: React.FC = () => {
         <meta name="description" content="Upgrade to Pro securely via Razorpay. Access premium career tools and unlimited downloads." />
         <link rel="canonical" href="https://talentxcel.in/pro/subscription" />
       </Helmet>
-      <RazorpayScript />
+      
       <div className="container mx-auto px-4 py-4">
         <h1 className="sr-only">Pro Subscription – Razorpay Payment</h1>
         {/* Compact Header */}
