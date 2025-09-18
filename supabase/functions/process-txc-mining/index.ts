@@ -11,28 +11,33 @@ interface Database {
       token_balances: {
         Row: {
           user_id: string
-          available_balance: number
+          balance: number
           locked_balance: number
-          lifetime_earned: number
-          last_daily_bonus: string | null
+          token_type: string
+          last_updated: string
         }
       }
       token_transactions: {
         Row: {
           id: string
-          user_id: string
+          from_user_id: string | null
+          to_user_id: string | null
           transaction_type: string
           amount: number
+          token_type: string
           description: string
-          source: string | null
+          status: string
           created_at: string
         }
         Insert: {
-          user_id: string
+          from_user_id?: string | null
+          to_user_id?: string | null
           transaction_type: string
           amount: number
+          token_type?: string
           description: string
-          source?: string | null
+          reference_type?: string | null
+          reference_id?: string | null
           metadata?: any
         }
       }
@@ -103,9 +108,9 @@ Deno.serve(async (req) => {
     const { data: recentTransaction, error: cooldownError } = await supabaseClient
       .from('token_transactions')
       .select('created_at')
-      .eq('user_id', userId)
+      .eq('to_user_id', userId)
       .eq('transaction_type', 'mining')
-      .eq('source', action)
+      .eq('reference_type', action)
       .gte('created_at', cooldownTime)
       .limit(1)
       .single()
@@ -129,26 +134,22 @@ Deno.serve(async (req) => {
       .single()
 
     let currentBalance = 0;
-    let currentLifetimeEarned = 0;
 
     if (balance && !balanceError) {
-      currentBalance = balance.available_balance;
-      currentLifetimeEarned = balance.lifetime_earned;
+      currentBalance = balance.balance;
     }
 
     // Calculate new balance
     const newBalance = currentBalance + amount;
-    const newLifetimeEarned = currentLifetimeEarned + amount;
 
     // Update or insert balance
     const { error: updateError } = await supabaseClient
       .from('token_balances')
       .upsert({
         user_id: userId,
-        available_balance: newBalance,
+        balance: newBalance,
         locked_balance: balance?.locked_balance || 0,
-        lifetime_earned: newLifetimeEarned,
-        last_daily_bonus: action === 'daily_login' ? new Date().toISOString() : balance?.last_daily_bonus
+        token_type: 'TXC'
       })
 
     if (updateError) {
@@ -163,11 +164,13 @@ Deno.serve(async (req) => {
     const { error: txError } = await supabaseClient
       .from('token_transactions')
       .insert({
-        user_id: userId,
+        to_user_id: userId,
         transaction_type: 'mining',
         amount: amount,
+        token_type: 'TXC',
         description: description,
-        source: action,
+        reference_type: action,
+        status: 'completed',
         metadata: {
           ...metadata,
           mined_at: new Date().toISOString(),
