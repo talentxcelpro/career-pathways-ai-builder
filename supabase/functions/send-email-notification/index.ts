@@ -45,11 +45,16 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    console.log('Unified email notification started...');
+    console.log('Unified email notification started with template validation...');
     const requestBody = await req.json();
     console.log('Request body:', JSON.stringify(requestBody));
 
     const { event_name, recipients, ...commonData } = requestBody;
+
+    // Template validation middleware - ensure only templates are used
+    if (!event_name) {
+      throw new Error('event_name is required for template-based emails');
+    }
 
     // Validate required fields
     if (!event_name) {
@@ -94,13 +99,18 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Template ${mapping.template_name} not found or disabled`);
     }
 
-    // Validate that template has HTML content
+    // Enhanced template validation - reject plain text templates
     const htmlContent = template.html_template || template.content;
     if (!htmlContent || !htmlContent.includes('<') || !htmlContent.includes('>')) {
-      throw new Error(`Template ${mapping.template_name} must contain valid HTML content. Plain text templates are not allowed.`);
+      throw new Error(`Template ${mapping.template_name} must contain valid HTML content. Plain text templates are strictly prohibited.`);
     }
 
-    console.log('HTML template validated and loaded successfully');
+    // Additional HTML structure validation
+    if (!htmlContent.includes('<html') && !htmlContent.includes('<body') && !htmlContent.includes('<div')) {
+      throw new Error(`Template ${mapping.template_name} must contain proper HTML structure with tags like <html>, <body>, or <div>.`);
+    }
+
+    console.log('HTML template validation passed - template is HTML-compliant');
 
     // Create SMTP transporter
     const transporter = createSMTPTransporter();

@@ -80,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const email of pendingEmails) {
       try {
-        console.log(`Processing email ${email.id} to ${email.recipient_email} (attempt ${(email.attempts || 0) + 1})`);
+        console.log(`Processing email ${email.id} to ${email.recipient_email} via unified service (attempt ${(email.attempts || 0) + 1})`);
 
         // Reset failed emails to pending status for retry
         if (email.status === 'failed') {
@@ -103,149 +103,30 @@ const handler = async (req: Request): Promise<Response> => {
           })
           .eq('id', email.id);
 
-    // Get email template and render it (robust multi-source lookup)
-    let emailSubject = `TalentXcel - ${email.trigger_type.replace('_', ' ').toUpperCase()}`;
-    let emailHtml = `<h1>Hello ${email.recipient_name || 'User'}!</h1><p>This is a ${email.trigger_type} notification from TalentXcel.</p>`;
-
-    try {
-      console.log(`Looking for template for trigger: "${email.trigger_type}"`);
-
-      // 1) Try email_event_definitions (new system)
-      let subjectTemplate: string | null = null;
-      let htmlTemplate: string | null = null;
-
-      const { data: eventDef, error: eventErr } = await supabase
-        .from('email_event_definitions')
-        .select('email_title_template, email_body_html_template, is_enabled')
-        .eq('event_key', email.trigger_type)
-        .eq('is_enabled', true)
-        .maybeSingle();
-
-      if (eventDef && !eventErr) {
-        console.log(`✅ Using email_event_definitions for ${email.trigger_type}`);
-        subjectTemplate = eventDef.email_title_template;
-        htmlTemplate = eventDef.email_body_html_template;
-      }
-
-      // 2) Fallback to email_automation_settings (legacy)
-      if (!htmlTemplate || !subjectTemplate) {
-        const { data: autoSettings, error: autoErr } = await supabase
-          .from('email_automation_settings')
-          .select('subject_template, html_template, is_enabled')
-          .eq('trigger_type', email.trigger_type)
-          .eq('is_enabled', true)
-          .maybeSingle();
-        if (autoSettings && !autoErr) {
-          console.log(`✅ Using email_automation_settings for ${email.trigger_type}`);
-          subjectTemplate = subjectTemplate || autoSettings.subject_template;
-          htmlTemplate = htmlTemplate || autoSettings.html_template;
-        }
-      }
-
-      // 3) Fallback to email_templates (support multiple columns)
-      if (!htmlTemplate || !subjectTemplate) {
-        const { data: tmpl, error: tmplErr } = await supabase
-          .from('email_templates')
-          .select('subject, html_template, is_active')
-          .or(`template_type.eq.${email.trigger_type},name.eq.${email.trigger_type}`)
-          .eq('is_active', true)
-          .limit(1)
-          .maybeSingle();
-        console.log('email_templates lookup:', { found: !!tmpl, err: tmplErr });
-        if (tmpl && !tmplErr) {
-          console.log(`✅ Using email_templates for ${email.trigger_type}`);
-          subjectTemplate = subjectTemplate || tmpl.subject;
-          htmlTemplate = htmlTemplate || tmpl.html_template;
-        }
-      }
-
-      if (htmlTemplate && subjectTemplate) {
-        // Build variables
-        const templateData = email.template_data || {};
-        const defaultData = {
-          candidate_name: email.recipient_name || 'User',
-          user_name: email.recipient_name || 'User',
-          title: emailSubject,
-          subtitle: 'TalentXcel Notification',
-          message: `This is a ${email.trigger_type} notification from TalentXcel.`,
-          footer_note: 'This email was sent automatically by TalentXcel. Please do not reply.',
-          support_email: 'support@talentxcel.in',
+        // Prepare email data for unified service
+        const emailData = {
+          event_name: email.trigger_type, // Use trigger_type as event_name for unified service
+          recipient_email: email.recipient_email,
+          recipient_name: email.recipient_name || 'User',
+          ...email.template_data,
           platform_name: 'TalentXcel',
+          support_email: 'support@talentxcel.in',
           current_year: new Date().getFullYear().toString(),
-          ...templateData,
-        } as Record<string, any>;
+          current_date: new Date().toLocaleDateString()
+        };
 
-        // Render subject with simple placeholder replacement
-        emailSubject = subjectTemplate.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-          return defaultData[key] !== undefined ? String(defaultData[key]) : match;
+        console.log(`Calling unified email service for ${email.trigger_type}`);
+
+        // Call unified email notification service (centralized)
+        const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-email-notification', {
+          body: emailData
         });
 
-        // Render HTML with simple helpers, loops, and conditionals
-        let rendered = htmlTemplate.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-          return defaultData[key] !== undefined ? String(defaultData[key]) : match;
-        });
+        if (emailError) {
+          throw new Error(`Unified email service error: ${emailError.message}`);
+        }
 
-        // Sections {{#key}}...{{/key}}
-        rendered = rendered.replace(/\{\{#(\w+)\}\}([\s\S]*?)\{\{\/(\w+)\}\}/g, (m, openKey, content, closeKey) => {
-          if (openKey !== closeKey) return '';
-          const val = defaultData[openKey];
-          if (Array.isArray(val) && val.length > 0) {
-            return content.replace(/\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (_m2, eachKey, eachContent) => {
-              const arr = defaultData[eachKey];
-              if (!Array.isArray(arr)) return '';
-              return arr.map(item => eachContent.replace(/\{\{this\}\}/g, String(item))).join('');
-            });
-          }
-          if (val) return content;
-          return '';
-        });
-
-        // Conditionals {{#if key}}...{{/if}}
-        rendered = rendered.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_m, key, content) => {
-          return defaultData[key] ? content : '';
-        });
-
-        emailHtml = rendered;
-      } else {
-        console.warn(`⚠️ No active template found for ${email.trigger_type}. Using default plain content.`);
-      }
-
-    } catch (templateError: any) {
-      console.log('Template not found or error, using default:', templateError?.message || templateError);
-    }
-
-    // Send email using direct SMTP with nodemailer
-    console.log('Sending email via direct SMTP...');
-    
-    // Import nodemailer dynamically
-    const { default: nodemailer } = await import("npm:nodemailer@6.9.1");
-
-    // Configure SMTP transporter
-    const transporter = nodemailer.createTransport({
-      host: Deno.env.get('SMTP_HOST') || 'email-smtp.eu-north-1.amazonaws.com',
-      port: parseInt(Deno.env.get('SMTP_PORT') || '465'),
-      secure: true, // true for 465, false for other ports
-      auth: {
-        user: Deno.env.get('SMTP_USER'),
-        pass: Deno.env.get('SMTP_PASS'),
-      },
-    });
-
-    // Validate HTML content before sending
-    if (!emailHtml.includes('<') || !emailHtml.includes('>')) {
-      throw new Error('Email content must be valid HTML. Plain text emails are not allowed.');
-    }
-
-    // Send email using nodemailer (HTML only, no plain text fallback)
-    const mailResult = await transporter.sendMail({
-      from: `TalentXcel <${Deno.env.get('SMTP_FROM_EMAIL') || 'noreply@talentxcel.in'}>`,
-      to: email.recipient_email,
-      subject: emailSubject,
-      html: emailHtml,
-      // Removed text fallback - HTML only
-    });
-
-    console.log('Email sent successfully:', mailResult.messageId);
+        console.log('Email sent successfully via unified service:', emailResult);
 
         console.log(`Email sent successfully to ${email.recipient_email}`);
 
