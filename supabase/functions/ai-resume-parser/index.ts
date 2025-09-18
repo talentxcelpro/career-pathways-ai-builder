@@ -140,24 +140,23 @@ Guidelines:
 - Focus on quantifiable achievements and specific technical details`;
 
     // Use AI fallback for better reliability
-    try {
-      const aiResult = await generateJSONWithFallback(
-        systemPrompt,
-        `Parse this resume text:\n\n${extractedText}`,
-        {
-          model: 'gpt-5-mini-2025-08-07',
-          maxTokens: 2000,
-          temperature: 0.3
-        }
-      );
-
-      console.log(`✅ Resume parsed successfully using ${aiResult.provider}`);
-      const parsedResume = aiResult.data;
-      
-      // Validate parsed resume structure
-      if (!parsedResume || typeof parsedResume !== 'object') {
-        throw new Error('Invalid resume structure returned from AI');
+    const aiResult = await generateJSONWithFallback(
+      systemPrompt,
+      `Parse this resume text:\n\n${extractedText}`,
+      {
+        model: 'gpt-5-mini-2025-08-07',
+        maxTokens: 2000,
+        temperature: 0.3
       }
+    );
+
+    console.log(`✅ Resume parsed successfully using ${aiResult.provider}`);
+    const parsedResume = aiResult.data;
+    
+    // Validate parsed resume structure
+    if (!parsedResume || typeof parsedResume !== 'object') {
+      throw new Error('Invalid resume structure returned from AI');
+    }
 
     // Enhanced confidence scoring and metrics calculation
     const confidenceMetrics = calculateAdvancedConfidence(parsedResume);
