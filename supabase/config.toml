@@ -199,3 +199,10 @@ verify_jwt = false
 
 [functions.seo-analytics-integration]
 verify_jwt = false
+
+# Phase 4: Enterprise SEO Automation
+[functions.ml-rank-predictor]
+verify_jwt = false
+
+[functions.seo-automation-engine]
+verify_jwt = false
