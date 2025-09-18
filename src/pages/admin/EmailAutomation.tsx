@@ -10,7 +10,7 @@ import { EmailAutomationQueueTester } from '@/components/admin/EmailAutomationQu
 import EmailTemplateTest from '@/components/admin/EmailTemplateTest';
 import { BulkEmailCampaign } from '@/components/admin/BulkEmailCampaign';
 import { GrowthCommunicationSystem } from '@/components/admin/GrowthCommunicationSystem';
-import { CommunicationDashboard } from '@/components/admin/CommunicationDashboard';
+import { CommunicationCommandCenter } from '@/components/admin/CommunicationCommandCenter';
 import { EmailSecurityValidator } from '@/components/admin/EmailSecurityValidator';
 import { EmailAutomationFixer } from '@/components/admin/EmailAutomationFixer';
 import { AIEmailAutomationDashboard } from '@/components/admin/AIEmailAutomationDashboard';
@@ -172,7 +172,7 @@ const EmailAutomationPage = () => {
             <div className="lg:col-span-3">
               <div className="border rounded-lg p-6 min-h-[600px]">
                 <TabsContent value="automation" className="space-y-6 mt-0">
-                  <EmailAutomationDashboard />
+                  <CommunicationCommandCenter />
                 </TabsContent>
 
                 <TabsContent value="fixer" className="space-y-6 mt-0">
@@ -206,7 +206,6 @@ const EmailAutomationPage = () => {
                 </TabsContent>
 
                 <TabsContent value="growth-system" className="space-y-6 mt-0">
-                  <CommunicationDashboard />
                   <GrowthCommunicationSystem />
                 </TabsContent>
 
