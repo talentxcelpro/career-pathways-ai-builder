@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -18,7 +19,8 @@ import {
   Globe,
   MessageCircle,
   UserPlus,
-  Clock
+  Clock,
+  Coins
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -45,6 +47,7 @@ const UserProfile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const { availableBalance, isLoading: balanceLoading } = useTokenBalance();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
@@ -241,6 +244,29 @@ const UserProfile = () => {
           </div>
           <Progress value={profileStrength} className="h-2" />
         </div>
+
+        {/* Token Balance - Only show for own profile */}
+        {isOwnProfile && (
+          <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 border border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/20 rounded-lg">
+                  <Coins className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">TXC Balance</h3>
+                  <p className="text-sm text-muted-foreground">TalentXcel Coins</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-primary">
+                  {balanceLoading ? '...' : availableBalance.toLocaleString()}
+                </p>
+                <p className="text-xs text-muted-foreground">Available TXC</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* About Section */}
         {profile.bio && (

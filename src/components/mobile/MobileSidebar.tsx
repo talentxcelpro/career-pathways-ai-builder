@@ -21,6 +21,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { Coins } from 'lucide-react';
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ interface MobileSidebarProps {
 export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { availableBalance, isLoading: balanceLoading } = useTokenBalance();
 
   // Get profile data
   const { data: profile } = useQuery({
@@ -105,6 +108,13 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
                 <p className="text-xs text-muted-foreground truncate max-w-32">
                   {user?.email}
                 </p>
+                {/* Token Balance */}
+                <div className="flex items-center gap-1 mt-1">
+                  <Coins className="h-3 w-3 text-primary" />
+                  <span className="text-xs font-medium text-primary">
+                    {balanceLoading ? '...' : availableBalance.toLocaleString()} TXC
+                  </span>
+                </div>
               </div>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose} className="p-2">

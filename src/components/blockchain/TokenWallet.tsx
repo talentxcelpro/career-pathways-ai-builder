@@ -116,51 +116,19 @@ export const TokenWallet = () => {
     try {
       setClaiming(true);
       
-      // Check if already claimed today
-      const today = new Date().toISOString().split('T')[0];
-      const { data: todayBonus } = await supabase
-        .from('token_transactions')
-        .select('id')
-        .eq('to_user_id', user?.id)
-        .eq('transaction_type', 'reward') // Use 'reward' instead of 'earned'
-        .eq('description', 'Daily login bonus')
-        .gte('created_at', today + 'T00:00:00Z')
-        .single();
+      // Use the edge function for claiming daily bonus
+      const { data, error } = await supabase.functions.invoke('claim-daily-bonus', {
+        body: { userId: user?.id }
+      });
 
-      if (todayBonus) {
-        toast.error('Daily bonus already claimed today!');
-        return;
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(data.message || `Claimed ${data.amount} TXC tokens!`);
+        fetchTokenData(); // Refresh the data
+      } else {
+        toast.error(data.error || 'Failed to claim daily bonus');
       }
-
-      const bonusAmount = 50;
-      
-      // Create transaction
-      const { error: txError } = await supabase
-        .from('token_transactions')
-        .insert({
-          to_user_id: user?.id,
-          transaction_type: 'reward', // Use 'reward' instead of 'earned'
-          amount: bonusAmount,
-          description: 'Daily login bonus',
-          token_type: 'TXC',
-          status: 'completed'
-        });
-
-      if (txError) throw txError;
-
-      // Update balance
-      const { error: balanceError } = await supabase
-        .from('token_balances')
-        .update({
-          balance: (balance?.balance || 0) + bonusAmount
-        })
-        .eq('user_id', user?.id)
-        .eq('token_type', 'TXC');
-
-      if (balanceError) throw balanceError;
-
-      toast.success(`Claimed ${bonusAmount} TXC tokens!`);
-      fetchTokenData();
     } catch (error) {
       console.error('Error claiming bonus:', error);
       toast.error('Failed to claim daily bonus');
