@@ -218,9 +218,21 @@ serve(async (req) => {
       wordCount: rawRequest.wordCount
     };
     
-    if (!request.type || !request.keywords || request.keywords.length === 0) {
+    // Debug logging
+    console.log('Normalized request:', JSON.stringify(request, null, 2));
+    
+    if (!request.type) {
+      console.error('Missing content type');
       return new Response(
-        JSON.stringify({ error: 'Content type and keywords are required' }),
+        JSON.stringify({ error: 'Content type is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!request.keywords || !Array.isArray(request.keywords) || request.keywords.length === 0) {
+      console.error('Missing or invalid keywords:', request.keywords);
+      return new Response(
+        JSON.stringify({ error: 'Keywords array is required and must not be empty' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

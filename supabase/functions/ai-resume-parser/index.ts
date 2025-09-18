@@ -44,6 +44,9 @@ serve(async (req) => {
 
     console.log('Processing resume text for:', fileName);
 
+    // Import AI fallback utility
+    const { generateJSONWithFallback } = await import('../_shared/ai-fallback.ts');
+
     const systemPrompt = `You are a professional resume parsing assistant. Extract all important details from the given resume text and return them in the exact JSON format specified below. Be thorough and accurate.
 
 CRITICAL NAME EXTRACTION RULES:
@@ -136,49 +139,25 @@ Guidelines:
 - Ensure all dates are normalized to readable format
 - Focus on quantifiable achievements and specific technical details`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Parse this resume text:\n\n${extractedText}` }
-        ],
-        max_completion_tokens: 2000
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const aiResult = await response.json();
-    console.log('OpenAI response received');
-
-    let parsedResume;
+    // Use AI fallback for better reliability
     try {
-      const content = aiResult.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('No content in AI response');
-      }
+      const aiResult = await generateJSONWithFallback(
+        systemPrompt,
+        `Parse this resume text:\n\n${extractedText}`,
+        {
+          model: 'gpt-5-mini-2025-08-07',
+          maxTokens: 2000,
+          temperature: 0.3
+        }
+      );
+
+      console.log(`✅ Resume parsed successfully using ${aiResult.provider}`);
+      const parsedResume = aiResult.data;
       
-      // Clean the response to extract JSON
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('No JSON found in AI response');
+      // Validate parsed resume structure
+      if (!parsedResume || typeof parsedResume !== 'object') {
+        throw new Error('Invalid resume structure returned from AI');
       }
-      
-      parsedResume = JSON.parse(jsonMatch[0]);
-    } catch (error) {
-      console.error('Failed to parse AI response:', error);
-      throw new Error('Failed to parse AI response as JSON');
-    }
 
     // Enhanced confidence scoring and metrics calculation
     const confidenceMetrics = calculateAdvancedConfidence(parsedResume);
@@ -215,6 +194,45 @@ Guidelines:
 
   } catch (error) {
     console.error('❌ Function error:', error);
+    
+    // Check if it's an AI service failure
+    const isAIFailure = error.message?.includes('quota') || 
+                       error.message?.includes('unavailable') || 
+                       error.message?.includes('API error');
+    
+    if (isAIFailure) {
+      console.log('🔄 Attempting basic text extraction fallback...');
+      
+      // Basic fallback parsing when AI fails
+      const fallbackResume = createFallbackResume(extractedText, fileName);
+      
+      const result = {
+        success: true,
+        data: {
+          structured_resume: fallbackResume,
+          raw_text: extractedText,
+          field_confidence: [{ field: 'fallback', confidence: 40, note: 'AI services unavailable, basic extraction used' }],
+          ats_compatibility: { score: 50, note: 'Limited analysis - AI services unavailable' },
+          content_quality: { overall_score: 50, note: 'Limited analysis - AI services unavailable' },
+          key_metrics: {
+            years_experience: 0,
+            top_skills_matched: [],
+            confidence_score: 40,
+            completeness_percentage: 30,
+            fallback_mode: true
+          }
+        }
+      };
+      
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+    }
     
     const errorResponse = {
       success: false,
@@ -396,5 +414,57 @@ function calculateContentQuality(resume: any, rawText: string) {
     grammar_score: grammarScore,
     detail_level: Math.round(detailLevel),
     achievement_focus: Math.min(Math.round(achievementFocus), 100)
+  };
+}
+
+function createFallbackResume(text: string, fileName?: string): any {
+  const lines = text.split('\n').filter(line => line.trim());
+  
+  // Try to extract basic info using simple patterns
+  const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
+  const phoneMatch = text.match(/(?:\+91|91)?[-.\s]?[789]\d{9}/);
+  
+  // Simple name extraction - take first non-empty line that looks like a name
+  let name = '';
+  for (const line of lines.slice(0, 5)) {
+    const trimmed = line.trim();
+    if (trimmed.length > 2 && trimmed.length < 50 && 
+        /^[a-zA-Z\s.'-]+$/.test(trimmed) && 
+        !trimmed.toLowerCase().includes('resume') &&
+        !trimmed.toLowerCase().includes('cv')) {
+      name = trimmed;
+      break;
+    }
+  }
+  
+  // If no name found, use filename without extension
+  if (!name && fileName) {
+    name = fileName.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+  }
+
+  return {
+    name: name || '',
+    email: emailMatch ? emailMatch[0] : '',
+    phone: phoneMatch ? phoneMatch[0] : '',
+    location: '',
+    summary: 'Resume processed with basic text extraction due to AI service limitations.',
+    skills: {
+      technical: [],
+      soft: [],
+      languages: [],
+      tools: [],
+      frameworks: [],
+      databases: [],
+      certifications: []
+    },
+    work_experience: [],
+    education: [],
+    certifications: [],
+    projects: [],
+    languages: [],
+    linkedin: '',
+    github: '',
+    portfolio: '',
+    additional_links: []
   };
 }
