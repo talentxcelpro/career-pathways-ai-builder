@@ -161,8 +161,7 @@ const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-      <HelmetProvider>
-        <TooltipProvider>
+      <TooltipProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
               <AnalyticsProvider>
@@ -374,7 +373,6 @@ const App = () => {
           </BrowserRouter>
         </QueryClientProvider>
       </TooltipProvider>
-      </HelmetProvider>
     </ErrorBoundary>
   );
 };
