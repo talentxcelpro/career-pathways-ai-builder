@@ -77,7 +77,8 @@ const handler = async (req: Request): Promise<Response> => {
     const recipientList = recipients ? recipients : [requestBody];
 
     // Validate that we have at least one recipient with email
-    if (!recipientList.length || !recipientList.some(r => r.recipient_email)) {
+    const validRecipients = recipientList.filter(r => r.recipient_email && r.recipient_email.trim() !== '');
+    if (!validRecipients.length) {
       throw new Error('No valid recipients found. At least one recipient_email is required.');
     }
 
@@ -244,8 +245,8 @@ const handler = async (req: Request): Promise<Response> => {
     let errorCount = 0;
     const results = [];
 
-    // Process each recipient
-    for (const recipient of recipientList) {
+    // Process each valid recipient
+    for (const recipient of validRecipients) {
       if (!recipient.recipient_email) {
         console.warn('Skipping recipient without email address');
         errorCount++;
