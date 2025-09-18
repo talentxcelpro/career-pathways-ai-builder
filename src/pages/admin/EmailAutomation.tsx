@@ -62,99 +62,111 @@ const EmailAutomationPage = () => {
           {/* Secondary Navigation for each main section */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <div className="lg:col-span-1">
-              <div className="space-y-2">
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Quick Access</h3>
-                <div className="space-y-1">
-                  <TabsTrigger value="automation" className="w-full justify-start text-left">
-                    <BarChart className="h-4 w-4 mr-2" />
-                    Automation Dashboard
-                  </TabsTrigger>
-                  <TabsTrigger value="delivery-engine" className="w-full justify-start text-left">
-                    <Send className="h-4 w-4 mr-2" />
-                    Delivery Engine
-                  </TabsTrigger>
-                  <TabsTrigger value="real-time-analytics" className="w-full justify-start text-left">
-                    <Activity className="h-4 w-4 mr-2" />
-                    Live Analytics
-                  </TabsTrigger>
-                  <TabsTrigger value="ai-optimizer" className="w-full justify-start text-left">
-                    <Brain className="h-4 w-4 mr-2" />
-                    AI Optimizer
-                  </TabsTrigger>
-                </div>
+              <TabsList className="flex-col h-auto w-full space-y-2 bg-transparent p-0">
+                <div className="space-y-4 w-full">
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Quick Access</h3>
+                    <div className="space-y-1">
+                      <TabsTrigger value="automation" className="w-full justify-start text-left">
+                        <BarChart className="h-4 w-4 mr-2" />
+                        Automation Dashboard
+                      </TabsTrigger>
+                      <TabsTrigger value="delivery-engine" className="w-full justify-start text-left">
+                        <Send className="h-4 w-4 mr-2" />
+                        Delivery Engine
+                      </TabsTrigger>
+                      <TabsTrigger value="real-time-analytics" className="w-full justify-start text-left">
+                        <Activity className="h-4 w-4 mr-2" />
+                        Live Analytics
+                      </TabsTrigger>
+                      <TabsTrigger value="ai-optimizer" className="w-full justify-start text-left">
+                        <Brain className="h-4 w-4 mr-2" />
+                        AI Optimizer
+                      </TabsTrigger>
+                    </div>
+                  </div>
 
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mt-6">Templates</h3>
-                <div className="space-y-1">
-                  <TabsTrigger value="templates" className="w-full justify-start text-left">
-                    <Mail className="h-4 w-4 mr-2" />
-                    Simple Templates
-                  </TabsTrigger>
-                  <TabsTrigger value="html-templates" className="w-full justify-start text-left">
-                    <Mail className="h-4 w-4 mr-2" />
-                    HTML Templates
-                  </TabsTrigger>
-                </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Templates</h3>
+                    <div className="space-y-1">
+                      <TabsTrigger value="templates" className="w-full justify-start text-left">
+                        <Mail className="h-4 w-4 mr-2" />
+                        Simple Templates
+                      </TabsTrigger>
+                      <TabsTrigger value="html-templates" className="w-full justify-start text-left">
+                        <Mail className="h-4 w-4 mr-2" />
+                        HTML Templates
+                      </TabsTrigger>
+                    </div>
+                  </div>
 
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mt-6">Automation</h3>
-                <div className="space-y-1">
-                  <TabsTrigger value="automation-triggers" className="w-full justify-start text-left">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Triggers
-                  </TabsTrigger>
-                  <TabsTrigger value="segmentation" className="w-full justify-start text-left">
-                    <Target className="h-4 w-4 mr-2" />
-                    User Segmentation
-                  </TabsTrigger>
-                  <TabsTrigger value="ab-testing" className="w-full justify-start text-left">
-                    <TestTube className="h-4 w-4 mr-2" />
-                    A/B Testing
-                  </TabsTrigger>
-                </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Automation</h3>
+                    <div className="space-y-1">
+                      <TabsTrigger value="automation-triggers" className="w-full justify-start text-left">
+                        <Zap className="h-4 w-4 mr-2" />
+                        Triggers
+                      </TabsTrigger>
+                      <TabsTrigger value="segmentation" className="w-full justify-start text-left">
+                        <Target className="h-4 w-4 mr-2" />
+                        User Segmentation
+                      </TabsTrigger>
+                      <TabsTrigger value="ab-testing" className="w-full justify-start text-left">
+                        <TestTube className="h-4 w-4 mr-2" />
+                        A/B Testing
+                      </TabsTrigger>
+                    </div>
+                  </div>
 
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mt-6">Campaigns</h3>
-                <div className="space-y-1">
-                  <TabsTrigger value="bulk-campaign" className="w-full justify-start text-left">
-                    <Users className="h-4 w-4 mr-2" />
-                    Bulk Campaigns
-                  </TabsTrigger>
-                  <TabsTrigger value="growth-system" className="w-full justify-start text-left">
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Growth System
-                  </TabsTrigger>
-                </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Campaigns</h3>
+                    <div className="space-y-1">
+                      <TabsTrigger value="bulk-campaign" className="w-full justify-start text-left">
+                        <Users className="h-4 w-4 mr-2" />
+                        Bulk Campaigns
+                      </TabsTrigger>
+                      <TabsTrigger value="growth-system" className="w-full justify-start text-left">
+                        <TrendingUp className="h-4 w-4 mr-2" />
+                        Growth System
+                      </TabsTrigger>
+                    </div>
+                  </div>
 
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mt-6">System</h3>
-                <div className="space-y-1">
-                  <TabsTrigger value="monitoring" className="w-full justify-start text-left">
-                    <Monitor className="h-4 w-4 mr-2" />
-                    Monitoring
-                  </TabsTrigger>
-                  <TabsTrigger value="testing" className="w-full justify-start text-left">
-                    <TestTube className="h-4 w-4 mr-2" />
-                    Testing Tools
-                  </TabsTrigger>
-                  <TabsTrigger value="configuration" className="w-full justify-start text-left">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Configuration
-                  </TabsTrigger>
-                  <TabsTrigger value="integrations" className="w-full justify-start text-left">
-                    <Link2 className="h-4 w-4 mr-2" />
-                    Integrations
-                  </TabsTrigger>
-                  <TabsTrigger value="security" className="w-full justify-start text-left">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Security
-                  </TabsTrigger>
-                  <TabsTrigger value="enterprise-security" className="w-full justify-start text-left">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Enterprise Security
-                  </TabsTrigger>
-                  <TabsTrigger value="fixer" className="w-full justify-start text-left">
-                    <Wrench className="h-4 w-4 mr-2" />
-                    System Fixer
-                  </TabsTrigger>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">System</h3>
+                    <div className="space-y-1">
+                      <TabsTrigger value="monitoring" className="w-full justify-start text-left">
+                        <Monitor className="h-4 w-4 mr-2" />
+                        Monitoring
+                      </TabsTrigger>
+                      <TabsTrigger value="testing" className="w-full justify-start text-left">
+                        <TestTube className="h-4 w-4 mr-2" />
+                        Testing Tools
+                      </TabsTrigger>
+                      <TabsTrigger value="configuration" className="w-full justify-start text-left">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Configuration
+                      </TabsTrigger>
+                      <TabsTrigger value="integrations" className="w-full justify-start text-left">
+                        <Link2 className="h-4 w-4 mr-2" />
+                        Integrations
+                      </TabsTrigger>
+                      <TabsTrigger value="security" className="w-full justify-start text-left">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Security
+                      </TabsTrigger>
+                      <TabsTrigger value="enterprise-security" className="w-full justify-start text-left">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Enterprise Security
+                      </TabsTrigger>
+                      <TabsTrigger value="fixer" className="w-full justify-start text-left">
+                        <Wrench className="h-4 w-4 mr-2" />
+                        System Fixer
+                      </TabsTrigger>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </TabsList>
             </div>
 
             <div className="lg:col-span-3">
