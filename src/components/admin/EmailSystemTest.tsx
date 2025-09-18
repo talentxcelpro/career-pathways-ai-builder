@@ -25,26 +25,18 @@ const EmailSystemTest = () => {
 
     setIsLoading(true);
     try {
-      console.log('🧪 Testing Amazon SES welcome email to:', testEmail);
+      console.log('🧪 Testing deliverable welcome email to:', testEmail);
       
-      const emailPayload = {
-        to: testEmail,
-        subject: 'Welcome to TalentXcel! 🎉',
-        body: `
-          <h2>Welcome to TalentXcel!</h2>
-          <p>Hello Test User,</p>
-          <p>Welcome to TalentXcel platform! We're excited to have you on board.</p>
-          <p>This is a test email sent via AWS SES.</p>
-          <p>Timestamp: ${new Date().toLocaleString()}</p>
-        `
-      };
-      
-      console.log('🧪 Testing Amazon SES welcome email to:', testEmail);
-      console.log('📧 Email payload:', emailPayload);
-      console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
-      
-      const { data, error } = await supabase.functions.invoke('send-email-smtp', {
-        body: emailPayload
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
+        body: {
+          event_name: 'welcome_email',
+          recipients: [
+            { 
+              recipient_email: testEmail, 
+              user_name: 'Test User' 
+            }
+          ]
+        }
       });
       
       console.log('📨 Raw response:', { data, error });
@@ -54,7 +46,7 @@ const EmailSystemTest = () => {
         toast.error('Failed to send welcome email: ' + error.message);
       } else if (data?.success) {
         console.log('✅ Welcome email sent successfully:', data);
-        toast.success(`✅ Welcome email sent via ${data.provider}! Response time: ${data.responseTime}ms`);
+        toast.success(`✅ Welcome email sent! Check Email Delivery Tracker for status.`);
       } else {
         console.error('❌ Email function returned error:', data);
         toast.error('Email test failed: ' + (data?.error || 'Unknown error'));
@@ -75,33 +67,18 @@ const EmailSystemTest = () => {
 
     setIsLoading(true);
     try {
-      console.log('🧪 Testing Amazon SES job match email to:', testEmail);
+      console.log('🧪 Testing deliverable job match email to:', testEmail);
       
-      const emailPayload = {
-        to: testEmail,
-        subject: 'New Job Match for You! 💼',
-        body: `
-          <h2>New Job Match Found!</h2>
-          <p>Hello Test User,</p>
-          <p>We found a great job match for you:</p>
-          <ul>
-            <li><strong>Position:</strong> Senior Software Engineer</li>
-            <li><strong>Company:</strong> TechCorp</li>
-            <li><strong>Location:</strong> Remote</li>
-            <li><strong>Salary:</strong> $80,000 - $120,000</li>
-          </ul>
-          <p><strong>Requirements:</strong> React, TypeScript, 3+ years experience</p>
-          <p>This is a test email sent via AWS SES.</p>
-          <p>Timestamp: ${new Date().toLocaleString()}</p>
-        `
-      };
-      
-      console.log('🧪 Testing Amazon SES job match email to:', testEmail);
-      console.log('📧 Email payload:', emailPayload);
-      console.log('📏 Payload size:', JSON.stringify(emailPayload).length, 'bytes');
-      
-      const { data, error } = await supabase.functions.invoke('send-email-smtp', {
-        body: emailPayload
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
+        body: {
+          event_name: 'job_recommendation',
+          recipients: [
+            { 
+              recipient_email: testEmail, 
+              user_name: 'Test User' 
+            }
+          ]
+        }
       });
       
       console.log('📨 Raw response:', { data, error });
@@ -111,7 +88,7 @@ const EmailSystemTest = () => {
         toast.error('Failed to send job match email: ' + error.message);
       } else if (data?.success) {
         console.log('✅ Job match email sent successfully:', data);
-        toast.success(`✅ Job match email sent via ${data.provider}! Response time: ${data.responseTime}ms`);
+        toast.success(`✅ Job recommendation email sent! Check Email Delivery Tracker for status.`);
       } else {
         console.error('❌ Email function returned error:', data);
         toast.error('Email test failed: ' + (data?.error || 'Unknown error'));
@@ -166,14 +143,14 @@ const EmailSystemTest = () => {
           </Button>
         </div>
 
-        <div className="mt-6 p-4 bg-green-50 rounded-lg">
-          <h4 className="font-semibold text-green-900 mb-2">SMTP Email Testing:</h4>
-          <ul className="text-sm text-green-800 space-y-1">
-            <li>• <strong>Welcome Email</strong> - Test user welcome message</li>
-            <li>• <strong>Job Match Email</strong> - Test job recommendation format</li>
-            <li>• Uses SMTP via AWS SES for reliable email delivery</li>
-            <li>• Check console logs for detailed debugging info</li>
-            <li>• Default test email: talentxcelpro@gmail.com</li>
+        <div className="mt-6 p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+          <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">Deliverable Email Testing:</h4>
+          <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
+            <li>• <strong>Welcome Email</strong> - Test user welcome message with tracking</li>
+            <li>• <strong>Job Recommendation</strong> - Test job match format with tracking</li>
+            <li>• Uses improved SES configuration for better deliverability</li>
+            <li>• Monitor delivery status in Email Delivery Tracker below</li>
+            <li>• Check your inbox AND spam folder for test emails</li>
           </ul>
         </div>
       </CardContent>
