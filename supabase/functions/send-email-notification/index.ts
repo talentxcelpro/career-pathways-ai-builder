@@ -65,9 +65,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { event_name, recipients, ...commonData } = requestBody;
 
-    // Template validation middleware - ensure only templates are used
+    // Handle test requests - provide fallback for missing event_name
+    const finalEventName = event_name || 'test_email';
+    
+    // For test requests without event_name, use a simple test template
     if (!event_name) {
-      throw new Error('event_name is required for template-based emails');
+      console.log('No event_name provided, treating as test request');
     }
 
     // Support both single recipient and bulk recipients
@@ -78,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('No valid recipients found. At least one recipient_email is required.');
     }
 
-    console.log(`Processing ${recipientList.length} recipients for event: ${event_name}`);
+    console.log(`Processing ${recipientList.length} recipients for event: ${finalEventName}`);
 
     // Enhanced template retrieval with fallback hierarchy
     let template;
@@ -89,7 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
       const { data: mapping, error: mappingError } = await supabase
         .from('event_email_mapping')
         .select('template_name')
-        .eq('event_name', event_name)
+        .eq('event_name', finalEventName)
         .eq('is_active', true)
         .single();
 
@@ -116,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
         const { data: directTemplate } = await supabase
           .from('email_templates')
           .select('subject, html_template, content, is_active, name, template_type')
-          .or(`name.eq.${event_name},template_type.eq.${event_name}`)
+          .or(`name.eq.${finalEventName},template_type.eq.${finalEventName}`)
           .eq('is_active', true)
           .limit(1)
           .single();
@@ -133,7 +136,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Fallback 2: Base template for event category
     if (!template) {
       try {
-        const eventCategory = event_name.split('_')[0]; // e.g., 'application' from 'application_notification'
+        const eventCategory = finalEventName.split('_')[0]; // e.g., 'application' from 'application_notification'
         const { data: baseTemplate } = await supabase
           .from('email_templates')
           .select('subject, html_template, content, is_active, name, template_type')
@@ -169,8 +172,36 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
+    // Final fallback for test requests - create a simple template
+    if (!template && !event_name) {
+      template = {
+        name: 'Test Template',
+        subject: 'Test Email - {{platform_name}}',
+        html_template: `
+          <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px;">
+              <div style="max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #333;">Test Email</h1>
+                <p>This is a test email from {{platform_name}}.</p>
+                <p>Recipient: {{recipient_email}}</p>
+                <p>Name: {{name}}</p>
+                <p>Date: {{current_date}}</p>
+                <hr style="margin: 20px 0;">
+                <p style="color: #666; font-size: 12px;">
+                  This is an automated test message. No action required.
+                </p>
+              </div>
+            </body>
+          </html>
+        `,
+        template_type: 'test',
+        is_active: true
+      };
+      fallbackUsed = 'test_template';
+    }
+
     if (!template) {
-      throw new Error(`No template found for event: ${event_name}. All fallbacks failed.`);
+      throw new Error(`No template found for event: ${finalEventName}. All fallbacks failed.`);
     }
 
     console.log(`Using template: ${template.name} (fallback: ${fallbackUsed})`);
