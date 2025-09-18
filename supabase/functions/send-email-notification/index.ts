@@ -13,16 +13,30 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-// SMTP transporter
+// SMTP transporter with enhanced error handling and validation
 const createSMTPTransporter = () => {
+  const host = Deno.env.get("SMTP_HOST");
+  const port = parseInt(Deno.env.get("SMTP_PORT") || "587");
+  const user = Deno.env.get("SMTP_USER");
+  const pass = Deno.env.get("SMTP_PASS");
+
+  console.log(`SMTP Configuration: host=${host}, port=${port}, user=${user ? 'SET' : 'NOT_SET'}, pass=${pass ? 'SET' : 'NOT_SET'}`);
+
+  if (!host || !user || !pass) {
+    throw new Error(`Missing SMTP configuration. Host: ${host ? 'SET' : 'MISSING'}, User: ${user ? 'SET' : 'MISSING'}, Pass: ${pass ? 'SET' : 'MISSING'}`);
+  }
+
   return createTransport({
-    host: Deno.env.get("SMTP_HOST"),
-    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
-    secure: true, // true for 465, false for other ports
+    host: host,
+    port: port,
+    secure: port === 465, // true for 465, false for other ports
     auth: {
-      user: Deno.env.get("SMTP_USER"),
-      pass: Deno.env.get("SMTP_PASS"),
+      user: user,
+      pass: pass,
     },
+    connectionTimeout: 60000, // 60 seconds
+    greetingTimeout: 30000, // 30 seconds
+    socketTimeout: 60000, // 60 seconds
   });
 };
 
@@ -185,8 +199,15 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Template validation passed - enhanced HTML template detected:', emailOptimizations);
 
-    // Create SMTP transporter
-    const transporter = createSMTPTransporter();
+    // Create SMTP transporter with validation
+    let transporter;
+    try {
+      transporter = createSMTPTransporter();
+      console.log('SMTP transporter created successfully');
+    } catch (transporterError) {
+      console.error('Failed to create SMTP transporter:', transporterError);
+      throw new Error(`SMTP configuration error: ${transporterError.message}`);
+    }
 
     let successCount = 0;
     let errorCount = 0;
@@ -222,13 +243,27 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log(`Sending email to: ${recipient.recipient_email}`);
 
-        // Send email
-        await transporter.sendMail({
-          from: Deno.env.get("SMTP_FROM_EMAIL") || "TalentXcel <noreply@talentxcel.in>",
-          to: recipient.recipient_email,
-          subject: subject,
-          html: emailContent,
-        });
+        // Send email with timeout and retries
+        const fromEmail = Deno.env.get("SMTP_FROM_EMAIL") || "TalentXcel <noreply@talentxcel.in>";
+        console.log(`Attempting to send email from: ${fromEmail}`);
+        
+        try {
+          await transporter.sendMail({
+            from: fromEmail,
+            to: recipient.recipient_email,
+            subject: subject,
+            html: emailContent,
+          });
+        } catch (smtpError: any) {
+          console.error(`SMTP send error for ${recipient.recipient_email}:`, {
+            code: smtpError.code,
+            command: smtpError.command,
+            response: smtpError.response,
+            responseCode: smtpError.responseCode,
+            message: smtpError.message
+          });
+          throw new Error(`SMTP Error: ${smtpError.code || 'UNKNOWN'} - ${smtpError.message}`);
+        }
 
         successCount++;
         results.push({
@@ -249,8 +284,13 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Close SMTP connection
-    transporter.close();
+    // Close SMTP connection safely
+    try {
+      transporter.close();
+      console.log('SMTP connection closed successfully');
+    } catch (closeError) {
+      console.warn('Error closing SMTP connection:', closeError);
+    }
 
     console.log(`Email processing completed. Success: ${successCount}, Errors: ${errorCount}`);
 

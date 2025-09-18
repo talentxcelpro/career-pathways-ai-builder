@@ -75,10 +75,10 @@ export const CommunicationCommandCenter: React.FC = () => {
       const today = new Date().toISOString().split('T')[0];
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-      // Get email queue data for the last 30 days
+      // Get email queue data for the last 30 days with proper counts
       const { data: queueData, error: queueError } = await supabase
         .from('email_automation_queue')
-        .select('*')
+        .select('status, created_at, sent_at')
         .gte('created_at', thirtyDaysAgo);
 
       if (queueError) throw queueError;
@@ -86,10 +86,17 @@ export const CommunicationCommandCenter: React.FC = () => {
       // Get today's emails
       const { data: todayData, error: todayError } = await supabase
         .from('email_automation_queue')
-        .select('*')
+        .select('status, created_at, sent_at')
         .gte('created_at', today + 'T00:00:00.000Z');
 
       if (todayError) throw todayError;
+
+      // Get actual totals for accurate dashboard
+      const { count: totalCount, error: totalError } = await supabase
+        .from('email_automation_queue')
+        .select('*', { count: 'exact', head: true });
+
+      if (totalError) throw totalError;
 
       // Get delivery events for metrics calculation
       const { data: eventsData, error: eventsError } = await supabase
@@ -99,9 +106,19 @@ export const CommunicationCommandCenter: React.FC = () => {
 
       if (eventsError) throw eventsError;
 
-      // Calculate metrics
+      // Calculate metrics with real data
       const totalSent = queueData?.filter(q => q.status === 'sent').length || 0;
+      const totalFailed = queueData?.filter(q => q.status === 'failed').length || 0;
+      const totalPending = queueData?.filter(q => q.status === 'pending').length || 0;
       const todaySent = todayData?.filter(q => q.status === 'sent').length || 0;
+      
+      console.log('Email metrics calculated:', {
+        totalSent,
+        totalFailed,
+        totalPending,
+        todaySent,
+        totalEmails: totalCount || 0
+      });
       
       // Group events by recipient for accurate counts
       const eventsByEmail = (eventsData || []).reduce((acc, event) => {
