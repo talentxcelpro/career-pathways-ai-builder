@@ -492,31 +492,47 @@ const NetworkPage = () => {
 
               {discoverLoading ? (
                 <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-slate-600">Loading professionals...</p>
-                </div>
-              ) : (
-                <>
-                  {/* Profiles Grid */}
-                  <div className={`grid gap-4 ${
-                    viewMode === 'grid' 
-                      ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-                      : 'grid-cols-1'
-                  }`}>
-                    {getFilteredProfiles(discoverProfiles).map(profile => (
-                      <ProfileCard key={profile.id} profile={profile} />
-                    ))}
-                  </div>
+                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                   <p className="text-slate-600">Loading professionals...</p>
+                 </div>
+               ) : (
+                 <>
+                   {/* Infinite Scroll Enhanced Feed */}
+                   <div className="space-y-6">
+                     <div className={`grid gap-4 ${
+                       viewMode === 'grid' 
+                         ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+                         : 'grid-cols-1'
+                     }`}>
+                       {getFilteredProfiles(discoverProfiles).map(profile => (
+                         <ProfileCard key={profile.id} profile={profile} />
+                       ))}
+                     </div>
 
-                  {getFilteredProfiles(discoverProfiles).length === 0 && (
-                    <div className="text-center py-12">
-                      <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-slate-900 mb-2">No professionals found</h3>
-                      <p className="text-slate-600">Try adjusting your search criteria or check back later</p>
-                    </div>
-                  )}
-                </>
-              )}
+                     {/* Load More Button with Plus Icon */}
+                     {getFilteredProfiles(discoverProfiles).length > 0 && (
+                       <div className="text-center py-6">
+                         <Button 
+                           variant="outline" 
+                           onClick={() => refetch()}
+                           className="flex items-center gap-2"
+                         >
+                           <UserPlus className="w-4 h-4" />
+                           Load More Professionals
+                         </Button>
+                       </div>
+                     )}
+                   </div>
+
+                   {getFilteredProfiles(discoverProfiles).length === 0 && (
+                     <div className="text-center py-12">
+                       <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                       <h3 className="text-lg font-semibold text-slate-900 mb-2">No professionals found</h3>
+                       <p className="text-slate-600">Try adjusting your search criteria or check back later</p>
+                     </div>
+                   )}
+                 </>
+               )}
             </div>
           </TabsContent>
 
