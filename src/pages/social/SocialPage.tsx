@@ -6,6 +6,7 @@ import { FastStoryBubbles } from '@/components/social/FastStoryBubbles';
 import { QuickCreatePost } from '@/components/social/QuickCreatePost';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, TrendingUp, MessageCircle, Share2, Heart, Rss, UserCheck } from 'lucide-react';
 
@@ -91,6 +92,16 @@ const SocialPage = () => {
             <QuickCreatePost />
           </div>
           <OptimizedSocialFeed feedType="explore" />
+          <div className="flex justify-center mt-8">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="flex items-center gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Load More Posts
+            </Button>
+          </div>
         </TabsContent>
         
         <TabsContent value="following" className="mt-0 space-y-4">
@@ -99,6 +110,16 @@ const SocialPage = () => {
             <QuickCreatePost />
           </div>
           <OptimizedSocialFeed feedType="following" />
+          <div className="flex justify-center mt-8">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="flex items-center gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Load More Posts
+            </Button>
+          </div>
         </TabsContent>
         
         <TabsContent value="connect" className="mt-6">

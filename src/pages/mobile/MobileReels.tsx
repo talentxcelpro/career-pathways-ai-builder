@@ -33,7 +33,7 @@ export const MobileReels = () => {
         </div>
       </div>
 
-      {/* Reels Feed */}
+      {/* Infinite Reels Feed */}
       <InfiniteReelsFeed 
         onUploadClick={() => setShowUploadModal(true)}
       />

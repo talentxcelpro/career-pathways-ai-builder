@@ -645,8 +645,23 @@ const Jobs = () => {
           </div>
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {/* Infinite Scroll Load More */}
+        {hasMore && !isLoading && (
+          <div className="flex justify-center mt-8">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => goToPage(currentPage + 1)}
+              className="flex items-center gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Load More Jobs
+            </Button>
+          </div>
+        )}
+
+        {/* Pagination Fallback */}
+        {totalPages > 1 && !hasMore && (
           <div className="flex justify-center mt-8">
             <SocialPagination
               currentPage={currentPage}
