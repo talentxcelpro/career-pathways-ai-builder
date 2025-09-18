@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Coins, Star, Crown, Shield, Zap, Users, Briefcase, FileText } from 'lucide-react';
+import { Coins, Star, Crown, Shield, Zap, Users, Briefcase, FileText, Pickaxe, ArrowRight } from 'lucide-react';
 import { TXCPricingCard } from '@/components/txc/TXCPricingCard';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { 
@@ -39,15 +40,26 @@ export default function TXCPricing() {
       {/* Header */}
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <Coins className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold">TXC Pricing</h1>
+          <Pickaxe className="h-8 w-8 text-primary animate-bounce" />
+          <h1 className="text-4xl font-bold">TXC Pricing & Mining</h1>
         </div>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Use TalentXcel Coins (TXC) to unlock premium features, upgrade your profile, and access advanced tools
+          Earn TalentXcel Coins (TXC) through activities and engagement. No payments required - just mine your way to premium features!
         </p>
-        <div className="inline-flex items-center gap-2 bg-muted px-4 py-2 rounded-lg">
-          <Coins className="h-5 w-5 text-primary" />
-          <span className="font-medium">Your Balance: {formatTXC(availableBalance)}</span>
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 bg-muted px-4 py-2 rounded-lg">
+            <Coins className="h-5 w-5 text-primary" />
+            <span className="font-medium">Your Balance: {formatTXC(availableBalance)}</span>
+          </div>
+          <div className="inline-block">
+            <Button asChild className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
+              <Link to="/txc-mining" className="flex items-center gap-2">
+                <Pickaxe className="h-4 w-4" />
+                Start Mining TXC
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -140,15 +152,18 @@ export default function TXCPricing() {
         </div>
       </section>
 
-      {/* How to Get TXC */}
+      {/* How to Mine TXC */}
       <section className="space-y-6">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold">How to Earn TXC</h2>
-          <p className="text-muted-foreground">Multiple ways to earn TalentXcel Coins</p>
+          <div className="flex items-center justify-center gap-2">
+            <Pickaxe className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold">How to Mine TXC</h2>
+          </div>
+          <p className="text-muted-foreground">Earn TalentXcel Coins through daily activities and engagement</p>
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
+          <Card className="border-green-200 bg-green-50/50">
             <CardHeader className="text-center">
               <FileText className="h-8 w-8 mx-auto text-green-500" />
               <CardTitle className="text-lg">Daily Login</CardTitle>
@@ -161,66 +176,91 @@ export default function TXCPricing() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-blue-200 bg-blue-50/50">
             <CardHeader className="text-center">
               <Users className="h-8 w-8 mx-auto text-blue-500" />
-              <CardTitle className="text-lg">Profile Completion</CardTitle>
+              <CardTitle className="text-lg">Profile Activities</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-2xl font-bold text-blue-500 mb-2">500 TXC</div>
+              <div className="text-2xl font-bold text-blue-500 mb-2">100-500 TXC</div>
               <p className="text-sm text-muted-foreground">
-                Complete your profile to 100%
+                Complete profile, upload resume, add skills
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-purple-200 bg-purple-50/50">
             <CardHeader className="text-center">
               <Briefcase className="h-8 w-8 mx-auto text-purple-500" />
-              <CardTitle className="text-lg">Job Applications</CardTitle>
+              <CardTitle className="text-lg">Job Activities</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-2xl font-bold text-purple-500 mb-2">100 TXC</div>
+              <div className="text-2xl font-bold text-purple-500 mb-2">100-300 TXC</div>
               <p className="text-sm text-muted-foreground">
-                Per successful job application
+                Apply to jobs, save favorites, get recommendations
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-amber-200 bg-amber-50/50">
             <CardHeader className="text-center">
               <Star className="h-8 w-8 mx-auto text-amber-500" />
-              <CardTitle className="text-lg">Referrals</CardTitle>
+              <CardTitle className="text-lg">Social Activities</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-2xl font-bold text-amber-500 mb-2">1000 TXC</div>
+              <div className="text-2xl font-bold text-amber-500 mb-2">200-1000 TXC</div>
               <p className="text-sm text-muted-foreground">
-                Per successful referral
+                Post updates, connect with others, referrals
               </p>
             </CardContent>
           </Card>
         </div>
+        
+        {/* Mining CTA */}
+        <div className="text-center space-y-4">
+          <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-200 rounded-lg p-6 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Pickaxe className="h-6 w-6 text-green-600" />
+              <h3 className="text-xl font-bold text-green-700">Start Mining Today!</h3>
+            </div>
+            <p className="text-green-600 mb-4">
+              Join thousands of users earning TXC daily through platform engagement
+            </p>
+            <Button asChild size="lg" className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
+              <Link to="/txc-mining" className="flex items-center gap-2">
+                <Pickaxe className="h-5 w-5" />
+                Access Mining Dashboard
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       </section>
 
-      {/* Purchase TXC */}
+      {/* No Purchase Required */}
       <section className="text-center space-y-6">
-        <Card className="max-w-md mx-auto bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+        <Card className="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
           <CardHeader>
-            <CardTitle className="flex items-center justify-center gap-2">
-              <Coins className="h-6 w-6 text-primary" />
-              Need More TXC?
+            <CardTitle className="flex items-center justify-center gap-2 text-blue-700">
+              <Shield className="h-6 w-6" />
+              100% Free to Earn
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Purchase TXC tokens to unlock all premium features immediately
+            <p className="text-sm text-blue-600">
+              No payments required! Earn all the TXC you need through platform activities and engagement.
             </p>
-            <Button className="w-full" size="lg">
-              Purchase TXC Tokens
+            <div className="bg-blue-100 rounded-lg p-3">
+              <p className="text-xs text-blue-600 font-medium">
+                🎯 Complete daily activities to earn up to 1,000+ TXC per day
+              </p>
+            </div>
+            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
+              <Link to="/txc-mining" className="flex items-center gap-2">
+                <Pickaxe className="h-4 w-4" />
+                Start Mining Now
+              </Link>
             </Button>
-            <p className="text-xs text-muted-foreground">
-              Multiple payment options available
-            </p>
           </CardContent>
         </Card>
       </section>

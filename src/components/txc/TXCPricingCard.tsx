@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Coins, Check, Star } from 'lucide-react';
+import { Coins, Check, Star, Pickaxe, ArrowRight } from 'lucide-react';
 import { TXCPricingTier, formatTXC } from '@/types/txc-pricing';
 import { useTXCPurchase } from '@/hooks/useTXCPurchase';
 
@@ -86,7 +87,7 @@ export const TXCPricingCard: React.FC<TXCPricingCardProps> = ({
         ))}
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="space-y-2">
         <Button
           onClick={handlePurchase}
           disabled={!canAfford(tier.cost) || isProcessing}
@@ -101,6 +102,21 @@ export const TXCPricingCard: React.FC<TXCPricingCardProps> = ({
             `Purchase for ${formatTXC(tier.cost)}`
           )}
         </Button>
+        
+        {!canAfford(tier.cost) && (
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="w-full text-green-600 hover:text-green-700 hover:bg-green-50"
+          >
+            <Link to="/txc-mining" className="flex items-center gap-2">
+              <Pickaxe className="h-3 w-3" />
+              Mine More TXC
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
