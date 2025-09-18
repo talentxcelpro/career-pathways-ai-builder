@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTXCPurchase } from '@/hooks/useTXCPurchase';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { 
   Crown, 
   Check, 
@@ -39,6 +41,8 @@ interface AppleSubscriptionUIProps {
 export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compact = false }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { canAfford, purchaseWithTXC } = useTXCPurchase();
+  const { availableBalance } = useTokenBalance();
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [currentTier, setCurrentTier] = useState<string | null>(null);
@@ -61,16 +65,16 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         .order('price');
 
       if (tiersData) {
-        // Map DB tiers and override pricing with confirmed INR values
-        const PRICE_INR: Record<string, number> = {
-          'Pro Starter': 399,
-          'Pro Business': 499,
-          'Pro Elite': 599,
+        // Map DB tiers and override pricing with confirmed TXC values
+        const PRICE_TXC: Record<string, number> = {
+          'Pro Starter': 25000,
+          'Pro Business': 35000,
+          'Pro Elite': 50000,
         };
         const formattedTiers = tiersData.map(tier => ({
           id: tier.id,
           name: tier.name,
-          price_monthly: PRICE_INR[tier.name] ?? tier.price, // override if provided
+          price_monthly: PRICE_TXC[tier.name] ?? tier.price, // override if provided
           features: Array.isArray(tier.features) ? tier.features.map((f: any) => String(f)) : [],
           max_services: 100,
           has_crm: tier.name !== 'Basic',
@@ -129,56 +133,28 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         throw new Error('Selected plan not found');
       }
 
-      console.log('Starting Razorpay payment for:', tierName, 'Amount:', selectedTier.price_monthly);
+      console.log('Starting TXC purchase for:', tierName, 'Cost:', selectedTier.price_monthly);
 
-      // Create Razorpay order
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-
-      if (!token) {
-        throw new Error('No valid session found');
+      // Check if user can afford the subscription
+      if (!canAfford(selectedTier.price_monthly)) {
+        throw new Error(`Insufficient TXC balance. You need ${selectedTier.price_monthly.toLocaleString()} TXC but only have ${availableBalance.toLocaleString()} TXC.`);
       }
 
-      console.log('Invoking razorpay-create-order with:', {
-        amount: selectedTier.price_monthly,
-        currency: 'INR',
-        planId: selectedTier.id,
-        serviceId: `subscription_${Date.now()}`,
-        packageType: tierName
+      // Process TXC purchase
+      const success = await purchaseWithTXC({
+        featureId: selectedTier.id,
+        cost: selectedTier.price_monthly,
+        description: `${tierName} subscription`,
+        metadata: { packageType: tierName }
       });
 
-      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
-        body: {
-          amount: selectedTier.price_monthly,
-          currency: 'INR',
-          planId: selectedTier.id,
-          serviceId: `subscription_${Date.now()}`,
-          packageType: tierName
-        }
-      });
-
-      console.log('Razorpay create order response:', { orderData, orderError });
-
-      if (orderError) {
-        console.error('Order creation error:', orderError);
-        throw new Error(orderError.message || 'Failed to create payment order');
-      }
-
-      if (!orderData) {
-        throw new Error('No order data received from payment service');
-      }
-
-      console.log('Razorpay order created:', orderData.orderId);
-
-      // Check if it's demo mode
-      if (orderData.demo) {
-        console.log('Running in demo mode');
+      if (success) {
         toast({
-          title: "Demo Mode",
-          description: "Payment gateway is in demo mode. Subscription activated for testing.",
+          title: "🎉 Subscription Activated!",
+          description: `Welcome to ${tierName}! Your subscription is now active.`,
         });
         
-        // In demo mode, activate subscription directly
+        // Activate subscription directly
         const subscriptionData = {
           user_id: user.id,
           email: user.email || '',
@@ -190,7 +166,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
           subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           last_payment_date: new Date().toISOString(),
           amount: selectedTier.price_monthly,
-          currency: 'INR',
+          currency: 'TXC',
           updated_at: new Date().toISOString(),
         };
 
@@ -203,84 +179,15 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         setCurrentTier(tierName);
         await loadSubscriptionData();
         setTimeout(() => navigate('/pro'), 1000);
-        return;
+      } else {
+        throw new Error('TXC purchase failed');
       }
-
-      // Initialize Razorpay for live payments
-      const options = {
-        key: orderData.keyId,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: 'TalentXcel',
-        description: `${tierName} Subscription`,
-        order_id: orderData.orderId,
-        handler: async function (response: any) {
-          try {
-            console.log('Payment successful, verifying:', response);
-
-            // Verify payment
-            const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
-              body: {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                planId: selectedTier.id,
-                packageType: tierName
-              }
-            });
-
-            if (verifyError) {
-              throw new Error('Payment verification failed');
-            }
-
-            if (verifyData.success) {
-              toast({
-                title: "🎉 Payment Successful!",
-                description: `Welcome to ${tierName}! Your subscription is now active.`,
-              });
-              
-              setCurrentTier(tierName);
-              await loadSubscriptionData();
-              setTimeout(() => navigate('/pro'), 1000);
-            } else {
-              throw new Error('Payment verification failed');
-            }
-          } catch (error) {
-            console.error('Payment verification error:', error);
-            toast({
-              title: "Payment Verification Failed",
-              description: "Please contact support if your payment was deducted.",
-              variant: "destructive"
-            });
-          }
-        },
-        prefill: {
-          name: user.user_metadata?.full_name || user.email,
-          email: user.email,
-        },
-        theme: {
-          color: '#3B82F6',
-        },
-        modal: {
-          ondismiss: function() {
-            console.log('Payment cancelled by user');
-            toast({
-              title: "Payment Cancelled",
-              description: "You can try again anytime.",
-            });
-          }
-        }
-      };
-
-      // Open Razorpay checkout
-      const razorpay = new (window as any).Razorpay(options);
-      razorpay.open();
 
     } catch (error) {
       console.error('Subscription error:', error);
       toast({
-        title: "Payment Failed", 
-        description: error instanceof Error ? error.message : "There was an error processing your payment. Please try again.",
+        title: "Purchase Failed", 
+        description: error instanceof Error ? error.message : "There was an error processing your purchase. Please try again or earn more TXC tokens.",
         variant: "destructive",
       });
     } finally {
@@ -372,6 +279,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
             }
           </p>
           
+          {/* TXC Balance Display */}
+          <div className="bg-white/80 backdrop-blur-sm border border-blue-200/50 px-6 py-3 rounded-full mb-4 shadow-sm inline-block">
+            <span className="text-sm font-semibold text-blue-600">Your TXC Balance: {availableBalance.toLocaleString()} TXC</span>
+          </div>
+          
           {/* Add some visual elements */}
           <div className="flex justify-center items-center space-x-6 mt-6 opacity-70">
             <div className="flex items-center space-x-2">
@@ -448,14 +360,14 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                   
                   <div className="flex items-baseline justify-center mb-1">
                     {/* Original Price with Strikethrough */}
-                    <span className="text-lg text-gray-400 line-through mr-2">₹{Math.floor(tier.price_monthly / 0.6).toLocaleString()}</span>
+                    <span className="text-lg text-gray-400 line-through mr-2">{Math.floor(tier.price_monthly / 0.6).toLocaleString()} TXC</span>
                     {/* Discounted Price */}
-                    <span className="text-4xl font-bold text-gray-900">₹{tier.price_monthly.toLocaleString()}</span>
+                    <span className="text-4xl font-bold text-gray-900">{tier.price_monthly.toLocaleString()} TXC</span>
                     <span className="text-gray-500 ml-2">/month</span>
                   </div>
                   
                   <div className="flex items-center justify-center mb-1">
-                    <span className="text-sm font-semibold text-green-600">Save ₹{Math.floor(tier.price_monthly / 0.6) - tier.price_monthly}/month</span>
+                    <span className="text-sm font-semibold text-green-600">Save {Math.floor(tier.price_monthly / 0.6) - tier.price_monthly} TXC/month</span>
                   </div>
                   
                   <p className="text-sm text-gray-500">
@@ -505,28 +417,47 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                       Current Plan
                     </Badge>
                   ) : (
-                    <Button 
-                      className={`
-                        w-full py-3 font-semibold transition-all duration-300
-                        bg-gradient-to-r ${getTierGradient(tier.name)} 
-                        hover:shadow-lg hover:scale-105 active:scale-95
-                        border-0 text-white
-                      `}
-                      onClick={() => handleSubscribe(tier.name)}
-                      disabled={subscribing === tier.name}
-                    >
-                      {subscribing === tier.name ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>Activating...</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          <span>{currentTier ? 'Switch Plan' : 'Get Started'}</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </div>
+                    <>
+                      <Button 
+                        className={`
+                          w-full py-3 font-semibold transition-all duration-300
+                          ${canAfford(tier.price_monthly) 
+                            ? `bg-gradient-to-r ${getTierGradient(tier.name)} hover:shadow-lg hover:scale-105 active:scale-95 border-0 text-white`
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }
+                        `}
+                        onClick={() => canAfford(tier.price_monthly) ? handleSubscribe(tier.name) : null}
+                        disabled={subscribing === tier.name || !canAfford(tier.price_monthly)}
+                      >
+                        {subscribing === tier.name ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Activating...</span>
+                          </div>
+                        ) : canAfford(tier.price_monthly) ? (
+                          <div className="flex items-center space-x-2">
+                            <span>{currentTier ? 'Switch Plan' : 'Get Started'}</span>
+                            <ArrowRight className="h-4 w-4" />
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <span>Need {(tier.price_monthly - availableBalance).toLocaleString()} more TXC</span>
+                          </div>
+                        )}
+                      </Button>
+                      
+                      {!canAfford(tier.price_monthly) && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={() => navigate('/txc-mining')}
+                        >
+                          <span>Earn More TXC</span>
+                          <ChevronRight className="h-3 w-3 ml-1" />
+                        </Button>
                       )}
-                    </Button>
+                    </>
                   )}
                   
                   {compact && (
@@ -547,7 +478,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         ))}
       </motion.div>
 
-      {/* Trust Indicators */}
+       {/* Trust Indicators */}
       <motion.div 
         className="mt-12 text-center"
         initial={{ opacity: 0, y: 20 }}
@@ -557,11 +488,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
           <div className="flex items-center space-x-2">
             <Shield className="h-4 w-4" />
-            <span>Secure Payment</span>
+            <span>No Payment Required</span>
           </div>
           <div className="flex items-center space-x-2">
             <Check className="h-4 w-4" />
-            <span>Cancel Anytime</span>
+            <span>Earn TXC Through Activity</span>
           </div>
         </div>
       </motion.div>
