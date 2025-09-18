@@ -451,7 +451,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
                           variant="outline" 
                           size="sm" 
                           className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                          onClick={() => navigate('/txc-mining')}
+                          onClick={() => navigate('/txc/mining')}
                         >
                           <span>Earn More TXC</span>
                           <ChevronRight className="h-3 w-3 ml-1" />

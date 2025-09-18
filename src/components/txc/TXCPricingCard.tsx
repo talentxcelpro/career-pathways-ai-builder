@@ -110,7 +110,7 @@ export const TXCPricingCard: React.FC<TXCPricingCardProps> = ({
             size="sm"
             className="w-full text-green-600 hover:text-green-700 hover:bg-green-50"
           >
-            <Link to="/txc-mining" className="flex items-center gap-2">
+            <Link to="/txc/mining" className="flex items-center gap-2">
               <Pickaxe className="h-3 w-3" />
               Mine More TXC
               <ArrowRight className="h-3 w-3" />

@@ -53,7 +53,7 @@ export default function TXCPricing() {
           </div>
           <div className="inline-block">
             <Button asChild className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
-              <Link to="/txc-mining" className="flex items-center gap-2">
+              <Link to="/txc/mining" className="flex items-center gap-2">
                 <Pickaxe className="h-4 w-4" />
                 Start Mining TXC
                 <ArrowRight className="h-4 w-4" />
@@ -227,7 +227,7 @@ export default function TXCPricing() {
               Join thousands of users earning TXC daily through platform engagement
             </p>
             <Button asChild size="lg" className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600">
-              <Link to="/txc-mining" className="flex items-center gap-2">
+              <Link to="/txc/mining" className="flex items-center gap-2">
                 <Pickaxe className="h-5 w-5" />
                 Access Mining Dashboard
                 <ArrowRight className="h-5 w-5" />
@@ -256,7 +256,7 @@ export default function TXCPricing() {
               </p>
             </div>
             <Button asChild className="w-full bg-blue-600 hover:bg-blue-700" size="lg">
-              <Link to="/txc-mining" className="flex items-center gap-2">
+              <Link to="/txc/mining" className="flex items-center gap-2">
                 <Pickaxe className="h-4 w-4" />
                 Start Mining Now
               </Link>
