@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
 
-    await client.connect();
+    await client.connectTLS();
     console.log('SMTP connection successful ✅');
 
     // Optional: Send a test email
