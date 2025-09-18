@@ -78,6 +78,7 @@ import { VideoCall } from "@/components/realtime/VideoCall";
 import { RealTimeChat } from "@/components/realtime/RealTimeChat";
 import { LiveEvent } from "@/components/realtime/LiveEvent";
 import UserProfile from "./pages/UserProfile";
+import CompanyDetail from "./pages/companies/CompanyDetail";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import AICareerIntelligence from "./pages/AICareerIntelligence";
 import SkillsGap from "./pages/career-map/SkillsGap";
@@ -342,10 +343,13 @@ const App = () => {
                       <Route path="/career-map/progression/:role" element={<JobsByRole />} />
                       <Route path="/companies/:location/:industry" element={<SEOCompaniesLocation />} />
                       <Route path="/companies/size/:size/:location" element={<SEOCompaniesLocation />} />
-                      <Route path="/employer/resources/:topic" element={<JobsByRole />} />
-                      
-                      {/* Enhanced SEO Demo Route */}
-                      <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />
+                       <Route path="/employer/resources/:topic" element={<JobsByRole />} />
+                       
+                       {/* Company Profile Route */}
+                       <Route path="/company/:slug" element={<CompanyDetail />} />
+                       
+                       {/* Enhanced SEO Demo Route */}
+                       <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />
                       
                       {/* Sitemap routes */}
                       <Route path="/sitemap.xml" element={<SitemapRedirect />} />
