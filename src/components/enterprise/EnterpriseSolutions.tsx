@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Building2, 
   Users, 
@@ -20,315 +23,568 @@ import {
   CheckCircle,
   ArrowRight,
   Star,
-  Zap
+  Zap,
+  Settings,
+  Calendar,
+  FileText,
+  Download,
+  Upload,
+  Filter,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Clock,
+  DollarSign,
+  AlertTriangle
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+
+interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  role: string;
+  skills: string[];
+  careerScore: number;
+  lastActivity: string;
+  status: 'active' | 'inactive' | 'on_leave';
+}
+
+interface TrainingProgram {
+  id: string;
+  title: string;
+  provider: string;
+  duration: string;
+  cost: number;
+  participants: number;
+  completionRate: number;
+  status: 'active' | 'planned' | 'completed';
+}
+
+interface TalentMetric {
+  metric: string;
+  current: number;
+  target: number;
+  trend: 'up' | 'down' | 'stable';
+  change: string;
+}
 
 export const EnterpriseSolutions: React.FC = () => {
-  const [selectedSolution, setSelectedSolution] = useState<string>('mobility');
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [trainingPrograms, setTrainingPrograms] = useState<TrainingProgram[]>([]);
+  const [metrics, setMetrics] = useState<TalentMetric[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const solutions = [
-    {
-      id: 'mobility',
-      title: 'AI-Powered Internal Mobility & Career Pathing',
-      icon: <TrendingUp className="h-8 w-8 text-primary" />,
-      description: 'Identify and develop your existing employees with AI-driven career recommendations.',
-      longDescription: 'A comprehensive service for large organizations to analyze employee skills and performance data, recommending internal job openings and learning opportunities that align with career goals and company needs.',
-      benefits: [
-        'Reduce employee turnover by 40%',
-        'Fill open roles 60% faster internally',
-        'Build culture of continuous learning',
-        'Increase employee satisfaction scores',
-        'Optimize talent utilization across departments'
-      ],
-      features: [
-        'AI skill gap analysis',
-        'Personalized career path recommendations',
-        'Internal job matching algorithm',
-        'Learning opportunity suggestions',
-        'Performance-based insights',
-        'Manager dashboard for talent development'
-      ],
-      pricing: {
-        starter: '$5 per employee/month',
-        enterprise: 'Custom pricing',
-        features: ['Up to 500 employees', 'Basic analytics', 'Email support']
-      }
-    },
-    {
-      id: 'training',
-      title: 'Skill Gap Analysis & Corporate Training',
-      icon: <Brain className="h-8 w-8 text-primary" />,
-      description: 'Analyze workforce skills and recommend targeted training programs from curated marketplace.',
-      longDescription: 'Advanced workforce analysis tool that identifies critical skill gaps and facilitates training programs through a curated marketplace of education providers, transforming your organization into a learning powerhouse.',
-      benefits: [
-        'Identify skill gaps with 95% accuracy',
-        'Access 500+ certified training providers',
-        'Reduce training costs by 30%',
-        'Track ROI on training investments',
-        'Future-proof your workforce'
-      ],
-      features: [
-        'AI-powered skill assessment',
-        'Customized training recommendations',
-        'Integrated learning marketplace',
-        'Progress tracking and analytics',
-        'Certification management',
-        'Budget optimization tools'
-      ],
-      pricing: {
-        starter: '$8 per employee/month',
-        enterprise: 'Custom pricing',
-        features: ['Skill assessments', 'Training marketplace', 'Basic reporting']
-      }
-    },
-    {
-      id: 'analytics',
-      title: 'Talent Analytics & Workforce Planning',
-      icon: <BarChart3 className="h-8 w-8 text-primary" />,
-      description: 'Real-time talent insights for C-suite executives and HR leaders with predictive analytics.',
-      longDescription: 'Comprehensive dashboard providing real-time insights into talent acquisition trends, retention rates, diversity metrics, and market intelligence to drive strategic decision-making.',
-      benefits: [
-        'Make data-driven hiring decisions',
-        'Predict future talent needs',
-        'Improve retention by 35%',
-        'Optimize compensation strategies',
-        'Track diversity and inclusion progress'
-      ],
-      features: [
-        'Real-time talent dashboards',
-        'Predictive workforce analytics',
-        'Market intelligence reports',
-        'Diversity and inclusion metrics',
-        'Retention risk analysis',
-        'Compensation benchmarking'
-      ],
-      pricing: {
-        starter: '$12 per employee/month',
-        enterprise: 'Custom pricing',
-        features: ['Advanced analytics', 'Predictive insights', 'Custom reports']
-      }
-    },
-    {
-      id: 'recruitment',
-      title: 'Specialized Recruitment & Freelancer Platform',
-      icon: <UserPlus className="h-8 w-8 text-primary" />,
-      description: 'Curated marketplace for niche skills and freelance talent with verified credentials.',
-      longDescription: 'Dedicated platform for finding specialized talent in high-demand areas like AI, data science, and cybersecurity, plus a comprehensive freelancer marketplace leveraging verified Career Passports.',
-      benefits: [
-        'Access to pre-vetted specialist talent',
-        'Reduce time-to-hire by 50%',
-        'Lower recruitment costs',
-        'Tap into global freelance market',
-        'Verified credentials and portfolios'
-      ],
-      features: [
-        'Specialized talent pools',
-        'AI-powered candidate matching',
-        'Verified Career Passports',
-        'Project-based hiring tools',
-        'Freelancer management system',
-        'Quality assurance protocols'
-      ],
-      pricing: {
-        starter: 'Per hire fee: $2,500',
-        enterprise: 'Custom pricing',
-        features: ['Unlimited searches', 'Dedicated support', 'Custom integrations']
-      }
-    }
-  ];
+  useEffect(() => {
+    // Simulate loading data
+    setTimeout(() => {
+      setEmployees([
+        {
+          id: '1',
+          name: 'Sarah Johnson',
+          email: 'sarah.j@company.com',
+          department: 'Engineering',
+          role: 'Senior Developer',
+          skills: ['React', 'Node.js', 'AWS'],
+          careerScore: 85,
+          lastActivity: '2 hours ago',
+          status: 'active'
+        },
+        {
+          id: '2',
+          name: 'Michael Chen',
+          email: 'michael.c@company.com',
+          department: 'Data Science',
+          role: 'Data Scientist',
+          skills: ['Python', 'ML', 'SQL'],
+          careerScore: 92,
+          lastActivity: '1 day ago',
+          status: 'active'
+        },
+        {
+          id: '3',
+          name: 'Emily Davis',
+          email: 'emily.d@company.com',
+          department: 'Marketing',
+          role: 'Marketing Manager',
+          skills: ['SEO', 'Analytics', 'Content'],
+          careerScore: 78,
+          lastActivity: '3 hours ago',
+          status: 'active'
+        }
+      ]);
 
-  const selectedSol = solutions.find(sol => sol.id === selectedSolution);
+      setTrainingPrograms([
+        {
+          id: '1',
+          title: 'Advanced React Development',
+          provider: 'TechEd Pro',
+          duration: '6 weeks',
+          cost: 1200,
+          participants: 15,
+          completionRate: 87,
+          status: 'active'
+        },
+        {
+          id: '2',
+          title: 'Machine Learning Fundamentals',
+          provider: 'AI Academy',
+          duration: '8 weeks',
+          cost: 1800,
+          participants: 12,
+          completionRate: 73,
+          status: 'active'
+        },
+        {
+          id: '3',
+          title: 'Leadership Excellence',
+          provider: 'Business Leaders Institute',
+          duration: '4 weeks',
+          cost: 950,
+          participants: 8,
+          completionRate: 95,
+          status: 'completed'
+        }
+      ]);
+
+      setMetrics([
+        { metric: 'Employee Retention', current: 94, target: 95, trend: 'up', change: '+2%' },
+        { metric: 'Internal Mobility', current: 23, target: 30, trend: 'up', change: '+15%' },
+        { metric: 'Skill Gap Coverage', current: 78, target: 85, trend: 'up', change: '+8%' },
+        { metric: 'Training ROI', current: 340, target: 300, trend: 'up', change: '+12%' }
+      ]);
+
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  const renderDashboard = () => (
+    <div className="space-y-6">
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,247</div>
+            <p className="text-xs text-green-600 flex items-center gap-1">
+              <TrendingUp className="h-3 w-3" />
+              +5% from last month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Programs</CardTitle>
+            <Brain className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">23</div>
+            <p className="text-xs text-blue-600">
+              Training initiatives
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Skill Gaps Closed</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">187</div>
+            <p className="text-xs text-green-600">
+              This quarter
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cost Savings</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">$234K</div>
+            <p className="text-xs text-green-600">
+              vs external hiring
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Key Metrics */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Performance Metrics</CardTitle>
+          <CardDescription>Track your talent management KPIs</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {metrics.map((metric, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{metric.metric}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">
+                      {metric.current}{metric.metric.includes('ROI') ? '%' : metric.metric.includes('Retention') ? '%' : ''}
+                    </span>
+                    <Badge variant={metric.trend === 'up' ? 'default' : 'secondary'}>
+                      {metric.change}
+                    </Badge>
+                  </div>
+                </div>
+                <Progress value={(metric.current / metric.target) * 100} />
+                <div className="text-xs text-gray-500">
+                  Target: {metric.target}{metric.metric.includes('ROI') ? '%' : metric.metric.includes('Retention') ? '%' : ''}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/enterprise/internal-mobility')}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue-600" />
+              Internal Mobility
+            </CardTitle>
+            <CardDescription>Identify and develop internal talent</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full">
+              Access Tool <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/enterprise/skill-gap')}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-green-600" />
+              Skill Gap Analysis
+            </CardTitle>
+            <CardDescription>Analyze and close skill gaps</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full">
+              Access Tool <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/enterprise/analytics')}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-purple-600" />
+              Talent Analytics
+            </CardTitle>
+            <CardDescription>Real-time workforce insights</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full">
+              Access Tool <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderEmployeeManagement = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Employee Management</h2>
+          <p className="text-gray-600">Manage your workforce and career development</p>
+        </div>
+        <Button className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Add Employee
+        </Button>
+      </div>
+
+      <div className="flex gap-4">
+        <Input placeholder="Search employees..." className="flex-1" />
+        <Button variant="outline">
+          <Filter className="h-4 w-4 mr-2" />
+          Filter
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4">
+        {employees.map((employee) => (
+          <Card key={employee.id}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+                    {employee.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">{employee.name}</h3>
+                    <p className="text-sm text-gray-600">{employee.role} • {employee.department}</p>
+                    <p className="text-xs text-gray-500">{employee.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <div className="text-sm font-medium">Career Score</div>
+                    <div className="text-2xl font-bold text-green-600">{employee.careerScore}%</div>
+                  </div>
+                  <Badge variant={employee.status === 'active' ? 'default' : 'secondary'}>
+                    {employee.status}
+                  </Badge>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-medium">Skills:</span>
+                  <div className="flex gap-1">
+                    {employee.skills.slice(0, 3).map((skill, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                    {employee.skills.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{employee.skills.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Last activity: {employee.lastActivity}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderTrainingHub = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Training Hub</h2>
+          <p className="text-gray-600">Manage training programs and skill development</p>
+        </div>
+        <Button className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          New Program
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {trainingPrograms.map((program) => (
+          <Card key={program.id}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{program.title}</CardTitle>
+                <Badge variant={program.status === 'active' ? 'default' : program.status === 'completed' ? 'secondary' : 'outline'}>
+                  {program.status}
+                </Badge>
+              </div>
+              <CardDescription>{program.provider}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Duration:</span>
+                  <div className="font-medium">{program.duration}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600">Cost:</span>
+                  <div className="font-medium">${program.cost}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600">Participants:</span>
+                  <div className="font-medium">{program.participants}</div>
+                </div>
+                <div>
+                  <span className="text-gray-600">Completion:</span>
+                  <div className="font-medium">{program.completionRate}%</div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm">Progress</span>
+                  <span className="text-sm">{program.completionRate}%</span>
+                </div>
+                <Progress value={program.completionRate} />
+              </div>
+
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="flex-1">
+                  <Eye className="h-4 w-4 mr-2" />
+                  View
+                </Button>
+                <Button size="sm" variant="outline" className="flex-1">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderReports = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Reports & Analytics</h2>
+          <p className="text-gray-600">Generate insights and export data</p>
+        </div>
+        <Button className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          Export Data
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-blue-600" />
+              Workforce Analytics
+            </CardTitle>
+            <CardDescription>Comprehensive workforce insights</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full">
+              Generate Report
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-green-600" />
+              Career Progression
+            </CardTitle>
+            <CardDescription>Internal mobility trends</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full">
+              Generate Report
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-purple-600" />
+              Skill Gap Report
+            </CardTitle>
+            <CardDescription>Skills analysis across teams</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="w-full">
+              Generate Report
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Scheduled Reports</CardTitle>
+          <CardDescription>Automate your reporting workflow</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[
+              { name: 'Weekly Workforce Summary', frequency: 'Weekly', nextRun: 'Monday 9:00 AM' },
+              { name: 'Monthly Skills Assessment', frequency: 'Monthly', nextRun: '1st of next month' },
+              { name: 'Quarterly Performance Review', frequency: 'Quarterly', nextRun: 'Jan 1, 2024' }
+            ].map((report, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">{report.name}</p>
+                  <p className="text-sm text-gray-600">{report.frequency} • Next: {report.nextRun}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Enterprise Solutions...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4 text-primary border-primary">
-            Enterprise Solutions
-          </Badge>
-          <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 font-display">
-            Transform Your Organization with
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"> AI-Powered </span>
-            Talent Solutions
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 font-display">
+            Enterprise Solutions Platform
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Comprehensive B2B services that revolutionize how you manage, develop, and recruit talent. 
-            From internal mobility to workforce analytics, we've got your enterprise covered.
+          <p className="text-lg text-gray-600">
+            Comprehensive talent management and workforce optimization tools
           </p>
         </div>
 
-        {/* Solutions Overview Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {solutions.map((solution) => (
-            <Card 
-              key={solution.id}
-              className={`cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
-                selectedSolution === solution.id ? 'ring-2 ring-primary shadow-xl' : ''
-              }`}
-              onClick={() => setSelectedSolution(solution.id)}
-            >
-              <CardHeader className="text-center">
-                <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-fit">
-                  {solution.icon}
-                </div>
-                <CardTitle className="text-lg font-bold text-gray-900 leading-tight">
-                  {solution.title}
-                </CardTitle>
-                <CardDescription className="text-gray-600">
-                  {solution.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  variant={selectedSolution === solution.id ? "default" : "outline"} 
-                  className="w-full"
-                  size="sm"
-                >
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="employees">Employees</TabsTrigger>
+            <TabsTrigger value="training">Training</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+          </TabsList>
 
-        {/* Detailed Solution View */}
-        {selectedSol && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 bg-blue-100 rounded-full">
-                    {selectedSol.icon}
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900 font-display">
-                    {selectedSol.title}
-                  </h2>
-                </div>
-                
-                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                  {selectedSol.longDescription}
-                </p>
-
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    Key Benefits
-                  </h3>
-                  <ul className="space-y-3">
-                    {selectedSol.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="text-gray-700">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
-                  <h4 className="font-semibold text-gray-900 mb-2">Starting from</h4>
-                  <div className="text-3xl font-bold text-primary mb-2">
-                    {selectedSol.pricing.starter}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {selectedSol.pricing.features.join(' • ')}
-                  </p>
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                    Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-primary" />
-                  Core Features
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  {selectedSol.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Star className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                      <span className="text-gray-700 text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Demo/Preview Area */}
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white">
-                  <h4 className="font-semibold mb-3">See It In Action</h4>
-                  <p className="text-gray-300 text-sm mb-4">
-                    Schedule a personalized demo to see how {selectedSol.title.toLowerCase()} can transform your organization.
-                  </p>
-                  <Button variant="secondary" className="w-full bg-white text-gray-900 hover:bg-gray-100">
-                    Schedule Demo
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Why Choose TalentXcel Enterprise */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4 font-display">
-              Why Choose TalentXcel Enterprise?
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              We're not just another HR tech company. We're your strategic talent partner.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-fit">
-                <Brain className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">AI-First Approach</h3>
-              <p className="text-gray-600">
-                Cutting-edge AI algorithms trained on millions of career data points for unmatched accuracy.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-fit">
-                <Shield className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Enterprise Security</h3>
-              <p className="text-gray-600">
-                Bank-level security with SOC 2 compliance and enterprise-grade data protection.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full w-fit">
-                <Globe className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Global Scale</h3>
-              <p className="text-gray-600">
-                Serving enterprises across 50+ countries with 24/7 support and localized solutions.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 lg:p-12 text-center text-white">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4 font-display">
-            Ready to Transform Your Talent Strategy?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join 500+ enterprises already using TalentXcel to revolutionize their workforce.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-100">
-              Schedule Enterprise Demo
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
-              Download Enterprise Brochure
-            </Button>
-          </div>
-        </div>
+          <TabsContent value="dashboard">{renderDashboard()}</TabsContent>
+          <TabsContent value="employees">{renderEmployeeManagement()}</TabsContent>
+          <TabsContent value="training">{renderTrainingHub()}</TabsContent>
+          <TabsContent value="reports">{renderReports()}</TabsContent>
+        </Tabs>
       </div>
     </div>
   );
