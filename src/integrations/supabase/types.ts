@@ -14044,6 +14044,48 @@ export type Database = {
         }
         Relationships: []
       }
+      linkedin_import_batches: {
+        Row: {
+          batch_name: string
+          created_at: string | null
+          error_log: Json | null
+          failed_records: number
+          file_path: string | null
+          id: string
+          processed_records: number
+          status: string
+          total_records: number
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          batch_name: string
+          created_at?: string | null
+          error_log?: Json | null
+          failed_records?: number
+          file_path?: string | null
+          id?: string
+          processed_records?: number
+          status?: string
+          total_records?: number
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          batch_name?: string
+          created_at?: string | null
+          error_log?: Json | null
+          failed_records?: number
+          file_path?: string | null
+          id?: string
+          processed_records?: number
+          status?: string
+          total_records?: number
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       live_backlinks: {
         Row: {
           anchor_text: string
@@ -17525,6 +17567,7 @@ export type Database = {
           custom_profile_url: string | null
           custom_theme: Json | null
           custom_url_slug: string | null
+          data_source: string | null
           departments: string[] | null
           education_history: Json | null
           email: string | null
@@ -17535,6 +17578,7 @@ export type Database = {
           github_url: string | null
           headline: string | null
           id: string
+          import_batch_id: string | null
           industry: string | null
           is_ai_bot: boolean | null
           is_employer: boolean | null
@@ -17546,6 +17590,8 @@ export type Database = {
           last_login_at: string | null
           last_profile_view: string | null
           last_seen: string | null
+          linkedin_id: string | null
+          linkedin_profile_data: Json | null
           linkedin_url: string | null
           location: string | null
           login_count: number | null
@@ -17621,6 +17667,7 @@ export type Database = {
           custom_profile_url?: string | null
           custom_theme?: Json | null
           custom_url_slug?: string | null
+          data_source?: string | null
           departments?: string[] | null
           education_history?: Json | null
           email?: string | null
@@ -17631,6 +17678,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id: string
+          import_batch_id?: string | null
           industry?: string | null
           is_ai_bot?: boolean | null
           is_employer?: boolean | null
@@ -17642,6 +17690,8 @@ export type Database = {
           last_login_at?: string | null
           last_profile_view?: string | null
           last_seen?: string | null
+          linkedin_id?: string | null
+          linkedin_profile_data?: Json | null
           linkedin_url?: string | null
           location?: string | null
           login_count?: number | null
@@ -17717,6 +17767,7 @@ export type Database = {
           custom_profile_url?: string | null
           custom_theme?: Json | null
           custom_url_slug?: string | null
+          data_source?: string | null
           departments?: string[] | null
           education_history?: Json | null
           email?: string | null
@@ -17727,6 +17778,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string
+          import_batch_id?: string | null
           industry?: string | null
           is_ai_bot?: boolean | null
           is_employer?: boolean | null
@@ -17738,6 +17790,8 @@ export type Database = {
           last_login_at?: string | null
           last_profile_view?: string | null
           last_seen?: string | null
+          linkedin_id?: string | null
+          linkedin_profile_data?: Json | null
           linkedin_url?: string | null
           location?: string | null
           login_count?: number | null
@@ -17793,6 +17847,13 @@ export type Database = {
             columns: ["bot_config_id"]
             isOneToOne: false
             referencedRelation: "ai_bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "linkedin_import_batches"
             referencedColumns: ["id"]
           },
         ]
@@ -24331,6 +24392,161 @@ export type Database = {
           },
         ]
       }
+      token_balances: {
+        Row: {
+          balance: number | null
+          id: string
+          last_updated: string | null
+          locked_balance: number | null
+          token_type: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          id?: string
+          last_updated?: string | null
+          locked_balance?: number | null
+          token_type?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          id?: string
+          last_updated?: string | null
+          locked_balance?: number | null
+          token_type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_balances_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "token_balances_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      token_services: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          service_category: string
+          service_name: string
+          success_rate: number | null
+          token_cost: number
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          service_category: string
+          service_name: string
+          success_rate?: number | null
+          token_cost: number
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          service_category?: string
+          service_name?: string
+          success_rate?: number | null
+          token_cost?: number
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
+      token_transactions: {
+        Row: {
+          amount: number
+          blockchain_tx_hash: string | null
+          created_at: string | null
+          description: string
+          from_user_id: string | null
+          id: string
+          metadata: Json | null
+          reference_id: string | null
+          reference_type: string | null
+          status: string | null
+          to_user_id: string | null
+          token_type: string | null
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          blockchain_tx_hash?: string | null
+          created_at?: string | null
+          description: string
+          from_user_id?: string | null
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string | null
+          to_user_id?: string | null
+          token_type?: string | null
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          blockchain_tx_hash?: string | null
+          created_at?: string | null
+          description?: string
+          from_user_id?: string | null
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string | null
+          to_user_id?: string | null
+          token_type?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_transactions_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "token_transactions_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "token_transactions_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "token_transactions_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_feedback: {
         Row: {
           comments: string | null
@@ -24857,6 +25073,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_activity_summary: {
+        Row: {
+          date: string
+          engagement_score: number | null
+          id: string
+          job_applications: number | null
+          last_activity: string | null
+          login_count: number | null
+          profile_views: number | null
+          tokens_earned: number | null
+          tokens_spent: number | null
+          user_id: string
+        }
+        Insert: {
+          date?: string
+          engagement_score?: number | null
+          id?: string
+          job_applications?: number | null
+          last_activity?: string | null
+          login_count?: number | null
+          profile_views?: number | null
+          tokens_earned?: number | null
+          tokens_spent?: number | null
+          user_id: string
+        }
+        Update: {
+          date?: string
+          engagement_score?: number | null
+          id?: string
+          job_applications?: number | null
+          last_activity?: string | null
+          login_count?: number | null
+          profile_views?: number | null
+          tokens_earned?: number | null
+          tokens_spent?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_summary_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "user_activity_summary_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_analytics: {
         Row: {
@@ -26568,6 +26838,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_wallets: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          private_key_encrypted: string | null
+          updated_at: string | null
+          user_id: string
+          wallet_address: string | null
+          wallet_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          private_key_encrypted?: string | null
+          updated_at?: string | null
+          user_id: string
+          wallet_address?: string | null
+          wallet_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          private_key_encrypted?: string | null
+          updated_at?: string | null
+          user_id?: string
+          wallet_address?: string | null
+          wallet_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_wallets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employer_cv_database"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "user_wallets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users_profile: {
         Row: {
           created_at: string | null
@@ -27015,6 +27333,24 @@ export type Database = {
         }
         Relationships: []
       }
+      email_analytics: {
+        Row: {
+          bounced: number | null
+          click_rate: number | null
+          clicked: number | null
+          complained: number | null
+          date: string | null
+          delivered: number | null
+          delivery_rate: number | null
+          failed: number | null
+          open_rate: number | null
+          opened: number | null
+          pending: number | null
+          total_emails: number | null
+          trigger_type: string | null
+        }
+        Relationships: []
+      }
       employer_cv_database: {
         Row: {
           application_id: string | null
@@ -27187,6 +27523,17 @@ export type Database = {
           p_target_resource: string
         }
         Returns: undefined
+      }
+      award_tokens: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_reference_id?: string
+          p_reference_type?: string
+          p_transaction_type: string
+          p_user_id: string
+        }
+        Returns: string
       }
       backfill_admin_connections: {
         Args: Record<PropertyKey, never>
@@ -28171,6 +28518,16 @@ export type Database = {
       slugify: {
         Args: { "": string }
         Returns: string
+      }
+      spend_tokens: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_reference_id?: string
+          p_reference_type?: string
+          p_user_id: string
+        }
+        Returns: boolean
       }
       suspend_user_account: {
         Args: { p_duration_hours?: number; p_reason: string; p_user_id: string }
