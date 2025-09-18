@@ -262,11 +262,11 @@ const Companies = () => {
                       showFollowersCount={false}
                     />
                      <div className="flex gap-3">
-                       <a href="https://talentxcel.in/404" target="_blank" rel="noopener noreferrer">
+                       <Link to={`/company/${company.slug}`}>
                          <Button variant="outline" size="sm" className="rounded-xl border-gray-200 text-text-secondary hover:bg-gray-50">
                            View Profile
                          </Button>
-                       </a>
+                       </Link>
                       <Link to={`/jobs?company=${company.id}`}>
                         <Button size="sm" className="rounded-xl bg-[#28C76F] hover:bg-[#28C76F]/90 text-white shadow-apple-light">
                           View Jobs
