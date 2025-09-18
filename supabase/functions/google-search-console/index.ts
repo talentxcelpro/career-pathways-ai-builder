@@ -1,229 +1,200 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
-interface SearchConsoleData {
-  summary: {
-    totalImpressions: number;
-    totalClicks: number;
-    averageCTR: number;
-    averagePosition: number;
-  };
-  topQueries: Array<{
-    query: string;
-    impressions: number;
-    clicks: number;
-    ctr: number;
-    position: number;
-  }>;
-  topPages: Array<{
-    page: string;
-    impressions: number;
-    clicks: number;
-    ctr: number;
-    position: number;
-  }>;
-  performanceData: Array<{
-    date: string;
-    impressions: number;
-    clicks: number;
-    ctr: number;
-    position: number;
-  }>;
-}
-
-function generateMockSearchConsoleData(domain: string): SearchConsoleData {
-  // Generate realistic mock data based on domain
-  const baseImpressions = Math.floor(Math.random() * 100000) + 10000;
-  const baseCTR = 0.02 + Math.random() * 0.08; // 2-10% CTR
-  const totalClicks = Math.floor(baseImpressions * baseCTR);
-  const averagePosition = 5 + Math.random() * 20; // Position 5-25
-
-  // Generate top queries
-  const queryTemplates = [
-    'ai resume builder',
-    'job search platform',
-    'career guidance',
-    'resume maker',
-    'job matching',
-    'career counseling',
-    'interview preparation',
-    'skill assessment',
-    'remote jobs',
-    'freelance work',
-    'career development',
-    'professional networking',
-    'talent acquisition',
-    'recruitment platform',
-    'job portal'
-  ];
-
-  const topQueries = queryTemplates.slice(0, 10).map(query => {
-    const impressions = Math.floor(Math.random() * 5000) + 100;
-    const ctr = 0.01 + Math.random() * 0.15;
-    const clicks = Math.floor(impressions * ctr);
-    const position = 1 + Math.random() * 30;
-    
-    return {
-      query,
-      impressions,
-      clicks,
-      ctr: Number((ctr * 100).toFixed(2)),
-      position: Number(position.toFixed(1))
-    };
-  });
-
-  // Generate top pages
-  const pageTemplates = [
-    '/',
-    '/jobs',
-    '/resume-builder',
-    '/career-guidance',
-    '/job-search',
-    '/companies',
-    '/learning',
-    '/networking',
-    '/about',
-    '/pricing'
-  ];
-
-  const topPages = pageTemplates.map(page => {
-    const impressions = Math.floor(Math.random() * 3000) + 50;
-    const ctr = 0.015 + Math.random() * 0.12;
-    const clicks = Math.floor(impressions * ctr);
-    const position = 2 + Math.random() * 25;
-    
-    return {
-      page: `https://${domain}${page}`,
-      impressions,
-      clicks,
-      ctr: Number((ctr * 100).toFixed(2)),
-      position: Number(position.toFixed(1))
-    };
-  });
-
-  // Generate 30 days of performance data
-  const performanceData = [];
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    
-    const dailyImpressions = Math.floor(baseImpressions / 30 * (0.7 + Math.random() * 0.6));
-    const dailyCTR = baseCTR * (0.8 + Math.random() * 0.4);
-    const dailyClicks = Math.floor(dailyImpressions * dailyCTR);
-    const dailyPosition = averagePosition * (0.9 + Math.random() * 0.2);
-    
-    performanceData.push({
-      date: date.toISOString().split('T')[0],
-      impressions: dailyImpressions,
-      clicks: dailyClicks,
-      ctr: Number((dailyCTR * 100).toFixed(2)),
-      position: Number(dailyPosition.toFixed(1))
-    });
-  }
-
-  return {
-    summary: {
-      totalImpressions: baseImpressions,
-      totalClicks,
-      averageCTR: Number((baseCTR * 100).toFixed(2)),
-      averagePosition: Number(averagePosition.toFixed(1))
-    },
-    topQueries,
-    topPages,
-    performanceData
-  };
-}
-
-async function fetchSearchConsoleData(siteUrl: string, accessToken: string): Promise<SearchConsoleData> {
-  const apiKey = Deno.env.get('GOOGLE_SEARCH_CONSOLE_API_KEY');
-  
-  if (!apiKey) {
-    console.warn('Google Search Console API key not configured, using mock data');
-    return generateMockSearchConsoleData(siteUrl);
-  }
-
-  try {
-    // In a real implementation, this would make actual Google Search Console API calls
-    // For now, we return mock data
-    console.log(`Fetching Search Console data for: ${siteUrl}`);
-    
-    // This is where you would implement actual Google Search Console API calls:
-    // 1. Get search analytics data
-    // 2. Get sitemaps data  
-    // 3. Get URL inspection data
-    // 4. Get indexing status
-    
-    return generateMockSearchConsoleData(siteUrl);
-    
-  } catch (error) {
-    console.error('Error fetching Search Console data:', error);
-    return generateMockSearchConsoleData(siteUrl);
-  }
-}
+const GOOGLE_CLIENT_ID = Deno.env.get('GOOGLE_CLIENT_ID');
+const GOOGLE_CLIENT_SECRET = Deno.env.get('GOOGLE_CLIENT_SECRET');
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { siteUrl, accessToken } = await req.json();
+    const { action, siteUrl, dateRange = '30d', accessToken } = await req.json();
     
-    if (!siteUrl) {
-      return new Response(
-        JSON.stringify({ error: 'Site URL is required' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    console.log(`Google Search Console API request: ${action} for ${siteUrl}`);
+
+    switch (action) {
+      case 'authenticate':
+        return handleAuthentication();
+      
+      case 'get_data':
+        if (!accessToken) {
+          throw new Error('Access token required for data retrieval');
         }
-      );
-    }
-
-    // Clean and validate URL
-    let cleanUrl = siteUrl;
-    if (!cleanUrl.startsWith('http')) {
-      cleanUrl = `https://${cleanUrl}`;
-    }
-    
-    try {
-      new URL(cleanUrl);
-    } catch {
-      return new Response(
-        JSON.stringify({ error: 'Invalid URL format' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        return await getSearchConsoleData(siteUrl, dateRange, accessToken);
+      
+      case 'get_sites':
+        if (!accessToken) {
+          throw new Error('Access token required for sites retrieval');
         }
-      );
+        return await getUserSites(accessToken);
+      
+      default:
+        // Fallback: generate realistic demo data
+        return generateDemoData(siteUrl, dateRange);
     }
-
-    console.log(`Starting Search Console data fetch for: ${cleanUrl}`);
-    
-    const data = await fetchSearchConsoleData(cleanUrl, accessToken);
-    
-    console.log(`Search Console data fetch completed. Total impressions: ${data.summary.totalImpressions}`);
-    
-    return new Response(
-      JSON.stringify(data),
-      { 
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
-
   } catch (error) {
-    console.error('Error in Google Search Console function:', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+    console.error('Google Search Console error:', error);
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      fallbackData: generateDemoData('demo-site.com', '30d')
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
+
+function handleAuthentication() {
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${GOOGLE_CLIENT_ID}&` +
+    `redirect_uri=${encodeURIComponent('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/google-search-console')}&` +
+    `scope=${encodeURIComponent('https://www.googleapis.com/auth/webmasters.readonly')}&` +
+    `response_type=code&` +
+    `access_type=offline`;
+
+  return new Response(JSON.stringify({ 
+    authUrl,
+    message: 'Use this URL to authenticate with Google Search Console'
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+async function getSearchConsoleData(siteUrl: string, dateRange: string, accessToken: string) {
+  const endDate = new Date();
+  const startDate = new Date();
+  
+  // Calculate date range
+  const days = parseInt(dateRange.replace('d', '')) || 30;
+  startDate.setDate(endDate.getDate() - days);
+
+  const requestBody = {
+    startDate: startDate.toISOString().split('T')[0],
+    endDate: endDate.toISOString().split('T')[0],
+    dimensions: ['query', 'page'],
+    rowLimit: 100
+  };
+
+  const response = await fetch(
+    `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Google API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  
+  // Process and structure the data
+  const processedData = {
+    summary: {
+      totalClicks: data.rows?.reduce((sum: number, row: any) => sum + row.clicks, 0) || 0,
+      totalImpressions: data.rows?.reduce((sum: number, row: any) => sum + row.impressions, 0) || 0,
+      averageCTR: data.rows?.length ? 
+        (data.rows.reduce((sum: number, row: any) => sum + row.ctr, 0) / data.rows.length * 100).toFixed(2) : 0,
+      averagePosition: data.rows?.length ?
+        (data.rows.reduce((sum: number, row: any) => sum + row.position, 0) / data.rows.length).toFixed(1) : 0
+    },
+    topQueries: data.rows?.slice(0, 20).map((row: any) => ({
+      query: row.keys[0],
+      clicks: row.clicks,
+      impressions: row.impressions,
+      ctr: (row.ctr * 100).toFixed(2),
+      position: row.position.toFixed(1)
+    })) || [],
+    topPages: data.rows?.slice(0, 20).map((row: any) => ({
+      page: row.keys[1] || row.keys[0],
+      clicks: row.clicks,
+      impressions: row.impressions,
+      ctr: (row.ctr * 100).toFixed(2),
+      position: row.position.toFixed(1)
+    })) || []
+  };
+
+  return new Response(JSON.stringify(processedData), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+async function getUserSites(accessToken: string) {
+  const response = await fetch(
+    'https://www.googleapis.com/webmasters/v3/sites',
+    {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Google API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  
+  return new Response(JSON.stringify({
+    sites: data.siteEntry?.map((site: any) => ({
+      siteUrl: site.siteUrl,
+      permissionLevel: site.permissionLevel
+    })) || []
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+function generateDemoData(siteUrl: string, dateRange: string) {
+  const demoQueries = [
+    'jobs in bangalore', 'software engineer careers', 'remote work opportunities',
+    'data scientist jobs', 'product manager roles', 'frontend developer jobs',
+    'ai engineer positions', 'startup careers', 'tech jobs india', 'work from home'
+  ];
+
+  const demoPages = [
+    '/jobs/software-engineer', '/jobs/data-scientist', '/jobs/product-manager',
+    '/jobs/frontend-developer', '/companies/startup', '/remote-jobs',
+    '/career-advice', '/resume-builder', '/jobs/bangalore', '/jobs/mumbai'
+  ];
+
+  const processedData = {
+    summary: {
+      totalClicks: Math.floor(Math.random() * 5000) + 1000,
+      totalImpressions: Math.floor(Math.random() * 50000) + 10000,
+      averageCTR: (Math.random() * 5 + 2).toFixed(2),
+      averagePosition: (Math.random() * 20 + 5).toFixed(1)
+    },
+    topQueries: demoQueries.map(query => ({
+      query,
+      clicks: Math.floor(Math.random() * 500) + 50,
+      impressions: Math.floor(Math.random() * 5000) + 500,
+      ctr: (Math.random() * 8 + 1).toFixed(2),
+      position: (Math.random() * 15 + 3).toFixed(1)
+    })),
+    topPages: demoPages.map(page => ({
+      page,
+      clicks: Math.floor(Math.random() * 300) + 30,
+      impressions: Math.floor(Math.random() * 3000) + 300,
+      ctr: (Math.random() * 6 + 2).toFixed(2),
+      position: (Math.random() * 12 + 4).toFixed(1)
+    }))
+  };
+
+  return new Response(JSON.stringify(processedData), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}

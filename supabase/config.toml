@@ -192,3 +192,10 @@ verify_jwt = false
 
 [functions.seo-content-optimizer]
 verify_jwt = false
+
+# Phase 3: Advanced SEO Integration
+[functions.google-search-console]
+verify_jwt = false
+
+[functions.seo-analytics-integration]
+verify_jwt = false
