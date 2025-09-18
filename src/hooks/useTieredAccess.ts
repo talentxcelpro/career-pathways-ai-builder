@@ -1,100 +1,141 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from './useSubscription';
-import { AccessTier, TierLimits, TIER_LIMITS, PUBLIC_FEATURES } from '@/types/access';
+import { useTokenBalance } from './useTokenBalance';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getTXCPrice, formatTXC } from '@/types/txc-pricing';
+
+export type AccessTier = 'free' | 'basic' | 'pro' | 'enterprise';
 
 export const useTieredAccess = () => {
   const { user } = useAuth();
-  const { subscription, isActive } = useSubscription();
+  const { availableBalance } = useTokenBalance();
   const { toast } = useToast();
   const [currentTier, setCurrentTier] = useState<AccessTier>('free');
+  const [userFeatures, setUserFeatures] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) {
       setCurrentTier('free');
+      setUserFeatures([]);
       return;
     }
 
-    if (isActive() && subscription) {
-      const planName = subscription.subscription_plans.name.toLowerCase();
-      if (planName.includes('enterprise')) {
+    fetchUserFeatures();
+  }, [user]);
+
+  const fetchUserFeatures = async () => {
+    if (!user) return;
+
+    try {
+      const { data: features, error } = await supabase
+        .from('user_features')
+        .select('feature_id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .or('expires_at.is.null,expires_at.gt.now()');
+
+      if (error) {
+        console.error('Error fetching user features:', error);
+        return;
+      }
+
+      const activeFeatures = features?.map(f => f.feature_id) || [];
+      setUserFeatures(activeFeatures);
+
+      // Determine tier based on active features
+      if (activeFeatures.some(f => f.includes('enterprise'))) {
         setCurrentTier('enterprise');
-      } else if (planName.includes('pro')) {
+      } else if (activeFeatures.some(f => f.includes('pro'))) {
         setCurrentTier('pro');
+      } else if (activeFeatures.some(f => f.includes('basic'))) {
+        setCurrentTier('basic');
       } else {
         setCurrentTier('free');
       }
-    } else {
-      setCurrentTier('free');
+    } catch (error) {
+      console.error('Error in fetchUserFeatures:', error);
     }
-  }, [user, subscription, isActive]);
-
-  const getTierLimits = (): TierLimits => {
-    return TIER_LIMITS[currentTier];
   };
 
   const hasFeatureAccess = (feature: string, requiresAuth: boolean = true): boolean => {
-    // Check if feature is publicly accessible
-    const publicFeature = PUBLIC_FEATURES.find(f => f.feature === feature);
-    if (publicFeature && publicFeature.isPublic) {
+    // Free features that don't require payment
+    const freeFeatures = [
+      'basic_profile',
+      'job_search',
+      'basic_applications',
+      'community_access'
+    ];
+
+    if (freeFeatures.includes(feature)) {
+      return requiresAuth ? !!user : true;
+    }
+
+    // Check if user has purchased this specific feature
+    if (userFeatures.includes(feature)) {
       return true;
     }
 
-    // For authenticated features, check if user is logged in
-    if (requiresAuth && !user) {
-      return false;
-    }
-
     // Check tier-based access
-    const limits = getTierLimits();
-    
-    switch (feature) {
-      case 'advanced_analytics':
-        return limits.advancedAnalytics;
-      case 'custom_branding':
-        return limits.customBranding;
-      case 'api_access':
-        return limits.apiAccess;
-      case 'priority_support':
-        return limits.supportLevel === 'priority';
+    switch (currentTier) {
+      case 'enterprise':
+        return true; // Enterprise has access to everything
+      case 'pro':
+        return !feature.includes('enterprise');
+      case 'basic':
+        return !feature.includes('pro') && !feature.includes('enterprise');
       default:
-        return true;
+        return false;
     }
   };
 
-  const checkUsageLimit = (type: keyof TierLimits, currentUsage: number): boolean => {
-    const limits = getTierLimits();
-    const limit = limits[type] as number;
-    
-    if (limit === -1) return true; // Unlimited
-    return currentUsage < limit;
+  const canAffordFeature = (featureId: string): boolean => {
+    const cost = getTXCPrice(featureId);
+    return availableBalance >= cost;
   };
 
-  const showUpgradePrompt = (feature: string, requiredTier: AccessTier) => {
-    toast({
-      title: "Upgrade Required",
-      description: `${feature} requires ${requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1)} tier. Upgrade to unlock this feature.`,
-      variant: "destructive",
-    });
+  const showUpgradePrompt = (feature: string, requiredTier?: AccessTier) => {
+    const cost = getTXCPrice(feature);
+    
+    if (cost > 0) {
+      toast({
+        title: "TXC Purchase Required",
+        description: `This feature requires ${formatTXC(cost)}. ${canAffordFeature(feature) ? 'Click to purchase.' : `You need ${formatTXC(cost - availableBalance)} more TXC.`}`,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Upgrade Required",
+        description: `This feature requires ${requiredTier || 'a higher'} tier. Purchase TXC to unlock premium features.`,
+        variant: "destructive",
+      });
+    }
   };
 
   const getUpgradeMessage = (feature: string): string => {
-    if (currentTier === 'free') {
-      return `Upgrade to Pro to unlock ${feature} and many more features.`;
-    } else if (currentTier === 'pro') {
-      return `Upgrade to Enterprise for unlimited ${feature} and premium support.`;
+    const cost = getTXCPrice(feature);
+    
+    if (cost > 0) {
+      if (canAffordFeature(feature)) {
+        return `Purchase this feature for ${formatTXC(cost)} to unlock it.`;
+      } else {
+        const needed = cost - availableBalance;
+        return `You need ${formatTXC(needed)} more TXC to purchase this feature.`;
+      }
     }
-    return '';
+
+    return 'Upgrade your account with TXC to access premium features.';
   };
 
   return {
     currentTier,
-    tierLimits: getTierLimits(),
+    userFeatures,
     hasFeatureAccess,
-    checkUsageLimit,
+    canAffordFeature,
     showUpgradePrompt,
     getUpgradeMessage,
     isAuthenticated: !!user,
+    availableBalance,
+    refreshFeatures: fetchUserFeatures
   };
 };

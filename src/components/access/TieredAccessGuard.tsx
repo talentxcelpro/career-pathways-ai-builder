@@ -1,10 +1,11 @@
 import React from 'react';
-import { useTieredAccess } from '@/hooks/useTieredAccess';
-import { AccessTier } from '@/types/access';
+import { useTieredAccess, AccessTier } from '@/hooks/useTieredAccess';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lock, Crown, Star } from 'lucide-react';
+import { Coins, Lock, Crown, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getTXCPrice, formatTXC } from '@/types/txc-pricing';
+import { TXCFeaturePurchase } from '@/components/txc/TXCFeaturePurchase';
 
 interface TieredAccessGuardProps {
   children: React.ReactNode;
@@ -12,6 +13,8 @@ interface TieredAccessGuardProps {
   requiredTier?: AccessTier;
   requiresAuth?: boolean;
   fallback?: React.ReactNode;
+  featureId?: string; // For TXC purchases
+  featureName?: string;
 }
 
 export const TieredAccessGuard: React.FC<TieredAccessGuardProps> = ({
@@ -19,9 +22,11 @@ export const TieredAccessGuard: React.FC<TieredAccessGuardProps> = ({
   feature,
   requiredTier = 'free',
   requiresAuth = true,
-  fallback
+  fallback,
+  featureId,
+  featureName
 }) => {
-  const { hasFeatureAccess, currentTier, getUpgradeMessage, isAuthenticated } = useTieredAccess();
+  const { hasFeatureAccess, getUpgradeMessage, isAuthenticated, refreshFeatures } = useTieredAccess();
   const navigate = useNavigate();
 
   // Check authentication first
@@ -50,6 +55,10 @@ export const TieredAccessGuard: React.FC<TieredAccessGuardProps> = ({
       return <>{fallback}</>;
     }
 
+    const purchaseFeatureId = featureId || feature;
+    const cost = getTXCPrice(purchaseFeatureId);
+    const displayName = featureName || feature;
+
     const getTierIcon = (tier: AccessTier) => {
       switch (tier) {
         case 'pro':
@@ -57,7 +66,7 @@ export const TieredAccessGuard: React.FC<TieredAccessGuardProps> = ({
         case 'enterprise':
           return <Star className="h-8 w-8 text-purple-500" />;
         default:
-          return <Lock className="h-8 w-8 text-muted-foreground" />;
+          return <Coins className="h-8 w-8 text-primary" />;
       }
     };
 
@@ -66,28 +75,53 @@ export const TieredAccessGuard: React.FC<TieredAccessGuardProps> = ({
         <CardHeader className="text-center">
           {getTierIcon(requiredTier)}
           <CardTitle className="mt-4">
-            {requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1)} Feature
+            {cost > 0 ? 'TXC Purchase Required' : `${requiredTier.charAt(0).toUpperCase() + requiredTier.slice(1)} Feature`}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">
             {getUpgradeMessage(feature)}
           </p>
-          <div className="space-y-2">
-            <Button 
-              onClick={() => navigate('/pro/subscription')} 
-              className="w-full"
-            >
-              Upgrade Now
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/')} 
-              className="w-full"
-            >
-              Go Back
-            </Button>
-          </div>
+          
+          {cost > 0 ? (
+            <div className="space-y-3">
+              <div className="p-3 bg-muted rounded-lg">
+                <div className="flex items-center justify-center gap-2 text-lg font-semibold">
+                  <Coins className="h-5 w-5 text-primary" />
+                  {formatTXC(cost)}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Purchase to unlock {displayName}
+                </p>
+              </div>
+              
+              <TXCFeaturePurchase
+                featureId={purchaseFeatureId}
+                featureName={displayName}
+                cost={cost}
+                onSuccess={() => {
+                  refreshFeatures();
+                }}
+                className="w-full"
+              />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Button 
+                onClick={() => navigate('/txc/pricing')} 
+                className="w-full"
+              >
+                View TXC Pricing
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/')} 
+                className="w-full"
+              >
+                Go Back
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     );

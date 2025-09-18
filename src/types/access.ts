@@ -1,4 +1,4 @@
-export type AccessTier = 'free' | 'pro' | 'enterprise';
+export type AccessTier = 'free' | 'basic' | 'pro' | 'enterprise';
 
 export interface TierLimits {
   dailyAIRequests: number;
@@ -26,17 +26,29 @@ export const TIER_LIMITS: Record<AccessTier, TierLimits> = {
     advancedAnalytics: false,
     apiAccess: false,
   },
+  basic: {
+    dailyAIRequests: 25,
+    monthlyJobApplications: 50,
+    resumeTemplates: 8,
+    networkConnections: 200,
+    learningCourses: 5,
+    storageGB: 5,
+    supportLevel: 'email',
+    customBranding: false,
+    advancedAnalytics: true,
+    apiAccess: false,
+  },
   pro: {
-    dailyAIRequests: 50,
-    monthlyJobApplications: 100,
-    resumeTemplates: 15,
-    networkConnections: 500,
-    learningCourses: 10,
-    storageGB: 10,
+    dailyAIRequests: 100,
+    monthlyJobApplications: 200,
+    resumeTemplates: 25,
+    networkConnections: 1000,
+    learningCourses: 15,
+    storageGB: 25,
     supportLevel: 'chat',
     customBranding: true,
     advancedAnalytics: true,
-    apiAccess: false,
+    apiAccess: true,
   },
   enterprise: {
     dailyAIRequests: -1, // Unlimited

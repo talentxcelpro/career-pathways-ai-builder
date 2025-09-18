@@ -20,7 +20,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
   currentUsage,
   limit
 }) => {
-  const { currentTier, tierLimits } = useTieredAccess();
+  const { currentTier, availableBalance } = useTieredAccess();
   const navigate = useNavigate();
 
   const getTierFeatures = (tier: AccessTier) => {

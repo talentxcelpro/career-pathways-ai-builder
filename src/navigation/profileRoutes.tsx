@@ -15,9 +15,16 @@ import UsernameProfile from "../pages/profile/UsernameProfile";
 import TalentXcelProfile from "../pages/TalentXcelProfile";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import UserProfile from "../pages/UserProfile";
+import TXCPricing from "../pages/TXCPricing";
 import SlugProfile from "../pages/SlugProfile";
 
 export const profileRoutes = [
+  {
+    title: "TXC Pricing",
+    to: "/txc/pricing",
+    page: <TXCPricing />,
+    requiresAuth: false,
+  },
   {
     title: "Profile by Username",
     to: "/:username",

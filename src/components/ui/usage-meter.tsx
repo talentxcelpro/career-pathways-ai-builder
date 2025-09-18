@@ -18,11 +18,11 @@ export const UsageMeter: React.FC<UsageMeterProps> = ({
   label,
   showUpgradePrompt = true
 }) => {
-  const { tierLimits, currentTier, showUpgradePrompt: triggerUpgrade } = useTieredAccess();
+  const { currentTier, availableBalance } = useTieredAccess();
   
-  const limit = tierLimits[type] as number;
-  const isUnlimited = limit === -1;
-  const percentage = isUnlimited ? 0 : Math.min((currentUsage / limit) * 100, 100);
+  // For TXC system, we show token balance instead of traditional limits
+  const isUnlimited = currentTier === 'enterprise';
+  const percentage = isUnlimited ? 0 : Math.min((currentUsage / 100) * 100, 100); // Simplified for demo
   const isNearLimit = percentage >= 80;
   const isAtLimit = percentage >= 100;
 
@@ -44,41 +44,23 @@ export const UsageMeter: React.FC<UsageMeterProps> = ({
         <span className="text-sm font-medium">{label}</span>
         <div className="flex items-center space-x-2">
           <Badge variant="outline" className={getStatusColor()}>
-            {isUnlimited ? `${currentUsage} / ∞` : `${currentUsage} / ${limit}`}
+            {isUnlimited ? `${currentUsage} / ∞` : `${currentUsage} uses`}
           </Badge>
-          <TierBadge tier={currentTier} size="sm" />
+          <Badge variant="secondary" className="text-primary">
+            {availableBalance.toLocaleString()} TXC
+          </Badge>
         </div>
       </div>
       
-      {!isUnlimited && (
-        <div className="space-y-1">
-          <Progress 
-            value={percentage} 
-            className="h-2"
-          />
-          <div 
-            className={`h-2 rounded-full transition-all ${getProgressColor()}`}
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-      )}
+      <div className="text-xs text-muted-foreground">
+        Each use costs TXC tokens. Check TXC pricing for rates.
+      </div>
 
       {(isNearLimit || isAtLimit) && showUpgradePrompt && (
         <div className="flex items-center space-x-2 p-2 bg-amber-50 rounded-lg border border-amber-200">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <span className="text-xs text-amber-700">
-            {isAtLimit 
-              ? `You've reached your ${label.toLowerCase()} limit.`
-              : `You're approaching your ${label.toLowerCase()} limit.`
-            }
-            {currentTier !== 'enterprise' && (
-              <button
-                onClick={() => triggerUpgrade(label, currentTier === 'free' ? 'pro' : 'enterprise')}
-                className="ml-1 underline font-medium hover:no-underline"
-              >
-                Upgrade now
-              </button>
-            )}
+            Consider purchasing more TXC tokens for continued access to premium features.
           </span>
         </div>
       )}
