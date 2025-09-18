@@ -56,11 +56,6 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('event_name is required for template-based emails');
     }
 
-    // Validate required fields
-    if (!event_name) {
-      throw new Error('Missing required field: event_name');
-    }
-
     // Support both single recipient and bulk recipients
     const recipientList = recipients ? recipients : [requestBody];
 
@@ -223,10 +218,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         // Replace placeholders in subject and content
         const subject = replacePlaceholders(template.subject, placeholderData);
-        const htmlContent = replacePlaceholders(
-          template.html_template || template.content, 
-          placeholderData
-        );
+        const emailContent = replacePlaceholders(htmlContent, placeholderData);
 
         console.log(`Sending email to: ${recipient.recipient_email}`);
 
@@ -235,7 +227,7 @@ const handler = async (req: Request): Promise<Response> => {
           from: Deno.env.get("SMTP_FROM_EMAIL") || "TalentXcel <noreply@talentxcel.in>",
           to: recipient.recipient_email,
           subject: subject,
-          html: htmlContent,
+          html: emailContent,
         });
 
         successCount++;

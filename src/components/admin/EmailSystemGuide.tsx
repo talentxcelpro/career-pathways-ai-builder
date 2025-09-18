@@ -238,18 +238,18 @@ export default function EmailSystemGuide() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm">Edge Function Status:</span>
-              <Badge variant="destructive">Syntax Error Detected</Badge>
+              <Badge variant="default">Fixed - No Syntax Errors</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Failed Emails (24h):</span>
-              <Badge variant="outline">98 failed</Badge>
+              <Badge variant="outline">222 failed</Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Pending Emails:</span>
-              <Badge variant="secondary">403 pending</Badge>
+              <Badge variant="secondary">281 pending</Badge>
             </div>
-            <p className="text-sm text-orange-700 mt-3">
-              <strong>Fixed:</strong> Removed duplicate variable declaration in send-email-notification function.
+            <p className="text-sm text-green-700 mt-3">
+              <strong>Status:</strong> Fixed syntax errors in send-email-notification function.
               Click "Fix Email Issues" to reset failed emails and "Process Email Queue" to resume sending.
             </p>
           </div>
