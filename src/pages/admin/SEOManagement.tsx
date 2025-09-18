@@ -3,6 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SitemapManager } from '@/components/admin/SitemapManager';
 import { SEOCronManager } from '@/components/seo/SEOCronManager';
+import { MegaSEODashboard } from '@/components/admin/MegaSEODashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Globe, Bot, TrendingUp } from 'lucide-react';
 
@@ -58,6 +59,7 @@ const SEOManagement = () => {
       </div>
 
       <div className="space-y-8">
+        <MegaSEODashboard />
         <SEOCronManager />
         <SitemapManager />
       </div>
