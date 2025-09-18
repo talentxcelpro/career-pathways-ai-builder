@@ -7,14 +7,18 @@ const corsHeaders = {
 };
 
 interface ContentRequest {
-  type: 'job_description' | 'meta_tags' | 'blog_post' | 'landing_page' | 'company_description';
-  keywords: string[];
+  type?: 'job_description' | 'meta_tags' | 'blog_post' | 'landing_page' | 'company_description';
+  contentType?: 'job_description' | 'meta_tags' | 'blog_post' | 'landing_page' | 'company_description';
+  keywords?: string[];
+  targetKeywords?: string[];
   targetCity?: string;
   industry?: string;
   jobTitle?: string;
   companyName?: string;
   tone?: 'professional' | 'casual' | 'technical';
   length?: 'short' | 'medium' | 'long';
+  topic?: string;
+  wordCount?: number;
 }
 
 interface GeneratedContent {
@@ -198,7 +202,21 @@ serve(async (req) => {
   }
 
   try {
-    const request: ContentRequest = await req.json();
+    const rawRequest = await req.json();
+    
+    // Normalize the request to handle both formats
+    const request: ContentRequest = {
+      type: rawRequest.type || rawRequest.contentType,
+      keywords: rawRequest.keywords || rawRequest.targetKeywords || [],
+      targetCity: rawRequest.targetCity,
+      industry: rawRequest.industry,
+      jobTitle: rawRequest.jobTitle,
+      companyName: rawRequest.companyName,
+      tone: rawRequest.tone,
+      length: rawRequest.length,
+      topic: rawRequest.topic,
+      wordCount: rawRequest.wordCount
+    };
     
     if (!request.type || !request.keywords || request.keywords.length === 0) {
       return new Response(
