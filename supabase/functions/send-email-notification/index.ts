@@ -71,33 +71,124 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Processing ${recipientList.length} recipients for event: ${event_name}`);
 
-    // Get template mapping for this event
-    const { data: mapping, error: mappingError } = await supabase
-      .from('event_email_mapping')
-      .select('template_name')
-      .eq('event_name', event_name)
-      .eq('is_active', true)
-      .single();
+    // Enhanced template retrieval with fallback hierarchy
+    let template;
+    let fallbackUsed = 'none';
 
-    if (mappingError || !mapping) {
-      console.error('Event mapping error:', mappingError);
-      throw new Error(`No active template mapping found for event: ${event_name}`);
+    try {
+      // Primary: Try event mapping first
+      const { data: mapping, error: mappingError } = await supabase
+        .from('event_email_mapping')
+        .select('template_name')
+        .eq('event_name', event_name)
+        .eq('is_active', true)
+        .single();
+
+      if (mapping && !mappingError) {
+        const { data: primaryTemplate, error: primaryError } = await supabase
+          .from('email_templates')
+          .select('subject, html_template, content, is_active, name, template_type')
+          .eq('name', mapping.template_name)
+          .eq('is_active', true)
+          .single();
+
+        if (primaryTemplate && !primaryError) {
+          template = primaryTemplate;
+          fallbackUsed = 'primary_mapping';
+        }
+      }
+    } catch (error) {
+      console.log('Primary template mapping failed, trying fallbacks...');
     }
 
-    console.log(`Using template: ${mapping.template_name}`);
+    // Fallback 1: Direct template lookup by event name
+    if (!template) {
+      try {
+        const { data: directTemplate } = await supabase
+          .from('email_templates')
+          .select('subject, html_template, content, is_active, name, template_type')
+          .or(`name.eq.${event_name},template_type.eq.${event_name}`)
+          .eq('is_active', true)
+          .limit(1)
+          .single();
 
-    // Get the email template (support both "name" and legacy fields)
-    const { data: template, error: templateError } = await supabase
-      .from('email_templates')
-      .select('subject, html_template, content, is_active, name, template_type')
-      .or(`name.eq.${mapping.template_name},template_type.eq.${mapping.template_name}`)
-      .eq('is_active', true)
-      .maybeSingle();
-
-    if (templateError || !template) {
-      console.error('Template error:', templateError);
-      throw new Error(`Template ${mapping.template_name} not found or disabled`);
+        if (directTemplate) {
+          template = directTemplate;
+          fallbackUsed = 'direct_lookup';
+        }
+      } catch (error) {
+        console.log('Direct template lookup failed, trying base template...');
+      }
     }
+
+    // Fallback 2: Base template for event category
+    if (!template) {
+      try {
+        const eventCategory = event_name.split('_')[0]; // e.g., 'application' from 'application_notification'
+        const { data: baseTemplate } = await supabase
+          .from('email_templates')
+          .select('subject, html_template, content, is_active, name, template_type')
+          .eq('name', `${eventCategory}_base_template`)
+          .eq('is_active', true)
+          .single();
+
+        if (baseTemplate) {
+          template = baseTemplate;
+          fallbackUsed = 'base_template';
+        }
+      } catch (error) {
+        console.log('Base template failed, using system default...');
+      }
+    }
+
+    // Fallback 3: System default template
+    if (!template) {
+      try {
+        const { data: systemTemplate } = await supabase
+          .from('email_templates')
+          .select('subject, html_template, content, is_active, name, template_type')
+          .eq('name', 'System Default Template')
+          .eq('is_active', true)
+          .single();
+
+        if (systemTemplate) {
+          template = systemTemplate;
+          fallbackUsed = 'system_default';
+        }
+      } catch (error) {
+        console.error('All template fallbacks failed:', error);
+      }
+    }
+
+    if (!template) {
+      throw new Error(`No template found for event: ${event_name}. All fallbacks failed.`);
+    }
+
+    console.log(`Using template: ${template.name} (fallback: ${fallbackUsed})`);
+
+    // Enhanced template validation with rich HTML requirements
+    const htmlContent = template.html_template || template.content;
+    if (!htmlContent || !htmlContent.includes('<') || !htmlContent.includes('>')) {
+      throw new Error(`Template ${template.name} must contain valid HTML content. Plain text templates are strictly prohibited.`);
+    }
+
+    // Advanced HTML structure validation for rich templates
+    const requiredElements = ['<html', '<body', '<div', '<table', '<p>', '<span'];
+    const hasRequiredStructure = requiredElements.some(element => htmlContent.includes(element));
+    
+    if (!hasRequiredStructure) {
+      throw new Error(`Template ${template.name} must contain proper HTML structure with elements like html, body, div, table, or paragraph tags.`);
+    }
+
+    // Check for email-optimized features
+    const emailOptimizations = {
+      hasTableLayout: htmlContent.includes('<table'),
+      hasInlineStyles: htmlContent.includes('style='),
+      hasResponsiveFeatures: htmlContent.includes('@media') || htmlContent.includes('max-width'),
+      hasImageOptimization: htmlContent.includes('alt=')
+    };
+
+    console.log('Template validation passed - enhanced HTML template detected:', emailOptimizations);
 
     // Enhanced template validation - reject plain text templates
     const htmlContent = template.html_template || template.content;
