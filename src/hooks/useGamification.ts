@@ -1,228 +1,230 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 export interface Achievement {
   id: string;
-  achievement_type: string;
-  achievement_title: string;
-  achievement_description: string;
-  points_awarded: number;
-  verified: boolean;
-  earned_at: string;
-  is_public: boolean;
-}
-
-export interface UserScore {
   user_id: string;
-  total_points: number;
-  level: number;
-  achievements_count: number;
-  profile_completion: number;
+  achievement_type: string;
+  achievement_name: string;
+  description: string | null;
+  txc_reward: number;
+  earned_at: string;
+  metadata: any;
 }
 
-export interface GamificationStats {
-  profileCompletion: number;
-  totalPoints: number;
-  level: number;
-  achievements: Achievement[];
-  nextLevelPoints: number;
-  currentLevelPoints: number;
-  streaks: {
-    learning: number;
-    applications: number;
-    profile_updates: number;
-  };
+export interface AchievementDefinition {
+  id: string;
+  achievement_type: string;
+  name: string;
+  description: string;
+  icon: string;
+  txc_reward: number;
+  requirement_count: number;
+  is_active: boolean;
+}
+
+export interface UserStreak {
+  id: string;
+  user_id: string;
+  current_login_streak: number;
+  longest_login_streak: number;
+  current_application_streak: number;
+  longest_application_streak: number;
+  last_login_date: string | null;
+  last_application_date: string | null;
+  updated_at: string;
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  user_id: string;
+  leaderboard_type: string;
+  score: number;
+  rank: number | null;
+  period_start: string;
+  period_end: string;
+  metadata: any;
+  created_at: string;
 }
 
 export const useGamification = () => {
-  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [availableAchievements, setAvailableAchievements] = useState<AchievementDefinition[]>([]);
+  const [userStreaks, setUserStreaks] = useState<UserStreak | null>(null);
+  const [leaderboards, setLeaderboards] = useState<LeaderboardEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch user scores and achievements
-  const { data: stats, isLoading, error } = useQuery({
-    queryKey: ['gamification'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  // Fetch user's achievements
+  const fetchAchievements = async () => {
+    if (!user) return;
 
-      // Fetch user scores
-      const { data: userScore } = await supabase
-        .from('user_scores')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      // Fetch achievements
-      const { data: achievements } = await supabase
-        .from('achievements')
+    try {
+      const { data, error } = await supabase
+        .from('user_achievements')
         .select('*')
         .eq('user_id', user.id)
         .order('earned_at', { ascending: false });
 
-      // Calculate level progression
-      const totalPoints = userScore?.total_points || 0;
-      const level = Math.floor(totalPoints / 1000) + 1;
-      const currentLevelPoints = totalPoints % 1000;
-      const nextLevelPoints = 1000;
+      if (error) throw error;
+      setAchievements(data || []);
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
+    }
+  };
 
-      // Fetch profile completion
-      const { data: profile } = await supabase
-        .from('profiles')
+  // Fetch available achievements
+  const fetchAvailableAchievements = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('achievement_definitions')
         .select('*')
-        .eq('id', user.id)
-        .single();
-
-      const profileCompletion = calculateProfileCompletion(profile);
-
-      // Mock streaks for now - would be calculated from user activity
-      const streaks = {
-        learning: 3,
-        applications: 7,
-        profile_updates: 1
-      };
-
-      return {
-        profileCompletion,
-        totalPoints,
-        level,
-        achievements: achievements || [],
-        nextLevelPoints,
-        currentLevelPoints,
-        streaks
-      } as GamificationStats;
-    },
-    retry: 1
-  });
-
-  // Award achievement mutation
-  const awardAchievementMutation = useMutation({
-    mutationFn: async ({ type, title, description, points }: {
-      type: string;
-      title: string;
-      description: string;
-      points: number;
-    }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      // Check if achievement already exists
-      const { data: existing } = await supabase
-        .from('achievements')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('achievement_type', type)
-        .single();
-
-      if (existing) {
-        throw new Error('Achievement already earned');
-      }
-
-      // Award achievement
-      const { data: achievement, error } = await supabase
-        .from('achievements')
-        .insert({
-          user_id: user.id,
-          achievement_type: type,
-          achievement_title: title,
-          achievement_description: description,
-          points_awarded: points,
-          verified: true,
-          is_public: true
-        })
-        .select()
-        .single();
+        .eq('is_active', true)
+        .order('txc_reward', { ascending: false });
 
       if (error) throw error;
-
-      // Update user score
-      const { error: scoreError } = await supabase.rpc('update_user_points', {
-        user_uuid: user.id,
-        points_to_add: points
-      });
-
-      if (scoreError) console.error('Error updating points:', scoreError);
-
-      return achievement;
-    },
-    onSuccess: (achievement) => {
-      queryClient.invalidateQueries({ queryKey: ['gamification'] });
-    },
-    onError: (error: any) => {
-      if (!error.message.includes('already earned')) {
-        toast.error('Failed to award achievement');
-      }
+      setAvailableAchievements(data || []);
+    } catch (error) {
+      console.error('Error fetching available achievements:', error);
     }
-  });
+  };
 
-  // Update profile completion
-  const updateProfileCompletion = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+  // Fetch user streaks
+  const fetchUserStreaks = async () => {
     if (!user) return;
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('user_streaks')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    const completion = calculateProfileCompletion(profile);
-
-    // Award completion milestones
-    if (completion >= 100 && stats?.profileCompletion < 100) {
-      awardAchievementMutation.mutate({
-        type: 'profile_complete',
-        title: 'Profile Master',
-        description: 'Completed 100% of profile information',
-        points: 500
-      });
-    } else if (completion >= 75 && stats?.profileCompletion < 75) {
-      awardAchievementMutation.mutate({
-        type: 'profile_75',
-        title: 'Profile Builder',
-        description: 'Completed 75% of profile information',
-        points: 200
-      });
-    } else if (completion >= 50 && stats?.profileCompletion < 50) {
-      awardAchievementMutation.mutate({
-        type: 'profile_50',
-        title: 'Getting Started',
-        description: 'Completed 50% of profile information',
-        points: 100
-      });
+      if (error) throw error;
+      setUserStreaks(data);
+    } catch (error) {
+      console.error('Error fetching user streaks:', error);
     }
   };
 
-  return {
-    stats,
-    isLoading,
-    error,
-    awardAchievement: awardAchievementMutation.mutate,
-    updateProfileCompletion,
-    isAwarding: awardAchievementMutation.isPending
+  // Fetch leaderboards
+  const fetchLeaderboards = async (type: string = 'txc_earned') => {
+    try {
+      const { data, error } = await supabase
+        .from('leaderboard_entries')
+        .select('*')
+        .eq('leaderboard_type', type)
+        .gte('period_end', new Date().toISOString())
+        .order('rank', { ascending: true })
+        .limit(10);
+
+      if (error) throw error;
+      setLeaderboards(data || []);
+    } catch (error) {
+      console.error('Error fetching leaderboards:', error);
+    }
   };
-};
 
-// Helper function to calculate profile completion
-const calculateProfileCompletion = (profile: any): number => {
-  if (!profile) return 0;
+  // Check and award achievements
+  const checkAchievements = async (activityType: string, count: number = 1) => {
+    if (!user) return;
 
-  const fields = [
-    'full_name',
-    'headline',
-    'about',
-    'location',
-    'profile_photo_url',
-    'cover_photo_url',
-    'linkedin_url',
-    'phone',
-    'website'
-  ];
+    try {
+      // Update streaks first
+      await supabase.rpc('update_user_streaks', {
+        p_user_id: user.id,
+        p_activity_type: activityType
+      });
 
-  const completedFields = fields.filter(field => 
-    profile[field] && 
-    (typeof profile[field] === 'string' ? profile[field].trim() !== '' : true)
-  ).length;
+      // Check for achievements to award
+      const achievementsToCheck = {
+        'login': ['login_streak_7', 'login_streak_30'],
+        'application': ['first_job_application', 'application_streak_5'],
+        'profile_complete': ['profile_complete'],
+        'resume_created': ['resume_created'],
+        'connection_made': ['connections_10', 'connections_50'],
+        'txc_earned': ['txc_earner_1000', 'txc_earner_10000']
+      };
 
-  return Math.round((completedFields / fields.length) * 100);
+      const relevantAchievements = achievementsToCheck[activityType as keyof typeof achievementsToCheck] || [];
+
+      for (const achievementType of relevantAchievements) {
+        await supabase.rpc('award_achievement', {
+          p_user_id: user.id,
+          p_achievement_type: achievementType,
+          p_metadata: { activity_type: activityType, count }
+        });
+      }
+
+      // Refresh data
+      await Promise.all([
+        fetchAchievements(),
+        fetchUserStreaks()
+      ]);
+
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+    }
+  };
+
+  // Calculate completion percentage for achievements
+  const getAchievementProgress = (achievementType: string): number => {
+    const earned = achievements.find(a => a.achievement_type === achievementType);
+    if (earned) return 100;
+
+    const definition = availableAchievements.find(a => a.achievement_type === achievementType);
+    if (!definition) return 0;
+
+    // Calculate progress based on current stats
+    switch (achievementType) {
+      case 'login_streak_7':
+        return Math.min((userStreaks?.current_login_streak || 0) / 7 * 100, 100);
+      case 'login_streak_30':
+        return Math.min((userStreaks?.current_login_streak || 0) / 30 * 100, 100);
+      case 'application_streak_5':
+        return Math.min((userStreaks?.current_application_streak || 0) / 5 * 100, 100);
+      default:
+        return 0;
+    }
+  };
+
+  // Get recent achievements (last 5)
+  const getRecentAchievements = (): Achievement[] => {
+    return achievements.slice(0, 5);
+  };
+
+  // Get total TXC earned from achievements
+  const getTotalTXCFromAchievements = (): number => {
+    return achievements.reduce((total, achievement) => total + achievement.txc_reward, 0);
+  };
+
+  useEffect(() => {
+    if (user) {
+      Promise.all([
+        fetchAchievements(),
+        fetchAvailableAchievements(),
+        fetchUserStreaks(),
+        fetchLeaderboards()
+      ]);
+    }
+  }, [user]);
+
+  return {
+    achievements,
+    availableAchievements,
+    userStreaks,
+    leaderboards,
+    isLoading,
+    fetchAchievements,
+    fetchAvailableAchievements,
+    fetchUserStreaks,
+    fetchLeaderboards,
+    checkAchievements,
+    getAchievementProgress,
+    getRecentAchievements,
+    getTotalTXCFromAchievements
+  };
 };

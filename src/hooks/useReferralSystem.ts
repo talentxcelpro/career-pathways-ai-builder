@@ -1,205 +1,210 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
-export interface ReferralData {
+export interface Referral {
   id: string;
+  referrer_id: string;
+  referee_id: string | null;
   referral_code: string;
-  referral_slug: string;
-  total_referrals: number;
-  successful_referrals: number;
-  current_tier: number;
-  rewards_earned: any;
-  total_rewards_value: number;
-  is_active: boolean;
-}
-
-export interface ReferralEvent {
-  id: string;
-  referee_email?: string;
-  referee_name?: string;
-  status: string;
-  conversion_date?: string;
-  source_platform?: string;
+  status: 'pending' | 'completed' | 'expired';
+  txc_reward: number;
   created_at: string;
-}
-
-export interface ReferralReward {
-  id: string;
-  reward_type: string;
-  reward_description: string;
-  reward_data: any;
-  status: string;
-  granted_at?: string;
-  redeemed_at?: string;
-  expires_at?: string;
-  created_at: string;
+  completed_at: string | null;
+  metadata: any;
 }
 
 export const useReferralSystem = () => {
-  const [referralData, setReferralData] = useState<ReferralData | null>(null);
-  const [referralEvents, setReferralEvents] = useState<ReferralEvent[]>([]);
-  const [referralRewards, setReferralRewards] = useState<ReferralReward[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [myReferralCode, setMyReferralCode] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchReferralData = async () => {
+  // Generate or get user's referral code
+  const generateReferralCode = async (): Promise<string | null> => {
+    if (!user) return null;
+
     try {
-      setLoading(true);
-      
-      // Get or create user referral record
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setError('User not authenticated');
-        return;
-      }
+      setIsLoading(true);
 
-      // Call function to get or create referral record
-      const { data: referralId, error: createError } = await supabase
-        .rpc('get_or_create_user_referral', { user_uuid: user.id });
-
-      if (createError) {
-        console.error('Error creating referral record:', createError);
-        setError(createError.message);
-        return;
-      }
-
-      // Fetch referral data
-      const { data: referral, error: referralError } = await supabase
-        .from('user_referrals')
-        .select('*')
+      // Check if user already has a referral code
+      const { data: existingReferral } = await supabase
+        .from('referrals')
+        .select('referral_code')
         .eq('referrer_id', user.id)
+        .maybeSingle();
+
+      if (existingReferral) {
+        setMyReferralCode(existingReferral.referral_code);
+        return existingReferral.referral_code;
+      }
+
+      // Generate new referral code
+      const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+      const { data, error } = await supabase
+        .from('referrals')
+        .insert({
+          referrer_id: user.id,
+          referral_code: code,
+          status: 'pending'
+        })
+        .select('referral_code')
         .single();
 
-      if (referralError) {
-        console.error('Error fetching referral data:', referralError);
-        setError(referralError.message);
-        return;
+      if (error) throw error;
+
+      setMyReferralCode(data.referral_code);
+      return data.referral_code;
+    } catch (error) {
+      console.error('Error generating referral code:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate referral code",
+        variant: "destructive"
+      });
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Use a referral code (when someone signs up with your code)
+  const useReferralCode = async (referralCode: string): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      setIsLoading(true);
+
+      // Find the referral
+      const { data: referral, error: findError } = await supabase
+        .from('referrals')
+        .select('*')
+        .eq('referral_code', referralCode)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (findError) throw findError;
+      if (!referral) {
+        toast({
+          title: "Invalid Code",
+          description: "Referral code not found or already used",
+          variant: "destructive"
+        });
+        return false;
       }
 
-      setReferralData(referral);
+      // Update referral with referee
+      const { error: updateError } = await supabase
+        .from('referrals')
+        .update({
+          referee_id: user.id,
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', referral.id);
 
-      // Fetch referral events
-      const { data: events, error: eventsError } = await supabase
-        .from('referral_events')
+      if (updateError) throw updateError;
+
+      // Award TXC to referrer
+      await supabase.functions.invoke('process-txc-mining', {
+        body: {
+          userId: referral.referrer_id,
+          action: 'referral_completed',
+          amount: referral.txc_reward,
+          description: `Referral bonus for inviting a new user`,
+          metadata: { referee_id: user.id }
+        }
+      });
+
+      toast({
+        title: "Referral Applied! 🎉",
+        description: `Welcome! Your referrer will receive ${referral.txc_reward} TXC.`,
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error using referral code:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply referral code",
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Get user's referrals
+  const fetchReferrals = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('referrals')
         .select('*')
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (eventsError) {
-        console.error('Error fetching referral events:', eventsError);
-      } else {
-        setReferralEvents(events || []);
+      if (error) throw error;
+      setReferrals(data || []);
+
+      // Set referral code if exists
+      const activeReferral = data?.find(r => r.status === 'pending');
+      if (activeReferral) {
+        setMyReferralCode(activeReferral.referral_code);
       }
-
-      // Fetch referral rewards
-      const { data: rewards, error: rewardsError } = await supabase
-        .from('referral_rewards')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (rewardsError) {
-        console.error('Error fetching referral rewards:', rewardsError);
-      } else {
-        setReferralRewards(rewards || []);
-      }
-
-    } catch (err) {
-      console.error('Error in fetchReferralData:', err);
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching referrals:', error);
     }
   };
 
-  const generateReferralLink = (platform?: string) => {
-    if (!referralData) return '';
-    
-    const baseUrl = 'https://talentxcel.in';
-    const personalizedPath = `/refer/${referralData.referral_slug}`;
-    const queryParams = new URLSearchParams({
-      ref: referralData.referral_code,
-      ...(platform && { utm_source: platform })
-    });
-    
-    return `${baseUrl}${personalizedPath}?${queryParams.toString()}`;
-  };
-
-  const copyReferralLink = async (platform?: string) => {
-    const link = generateReferralLink(platform);
-    try {
-      await navigator.clipboard.writeText(link);
-      toast.success('Referral link copied to clipboard!');
-    } catch (err) {
-      toast.error('Failed to copy link');
+  // Share referral
+  const shareReferral = async (platform: 'whatsapp' | 'twitter' | 'linkedin' | 'copy') => {
+    if (!myReferralCode) {
+      await generateReferralCode();
+      return;
     }
-  };
 
-  const getShareMessage = (platform: string) => {
-    const link = generateReferralLink(platform);
-    const messages = {
-      whatsapp: `🚀 Join me on TalentXcel AI and unlock powerful career tools for free! Use my referral link: ${link}`,
-      linkedin: `I'm using TalentXcel AI for my career growth and you should too! Join using my referral link and get started: ${link}`,
-      twitter: `Accelerate your career with TalentXcel AI! 🚀 Join using my referral link: ${link}`,
-      telegram: `🎯 TalentXcel AI has amazing career tools! Join using my referral link: ${link}`,
-    };
-    return messages[platform as keyof typeof messages] || messages.whatsapp;
-  };
+    const referralUrl = `${window.location.origin}/signup?ref=${myReferralCode}`;
+    const shareText = `Join TalentXcel and earn TXC tokens! Use my referral code: ${myReferralCode} 🚀`;
 
-  const shareOnPlatform = (platform: string) => {
-    const message = getShareMessage(platform);
-    const link = generateReferralLink(platform);
-    
-    const shareUrls = {
-      whatsapp: `https://wa.me/?text=${encodeURIComponent(message)}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`,
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`,
-      telegram: `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(message)}`,
-    };
-    
-    const shareUrl = shareUrls[platform as keyof typeof shareUrls];
-    if (shareUrl) {
-      window.open(shareUrl, '_blank', 'width=600,height=400');
+    switch (platform) {
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + referralUrl)}`);
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(referralUrl)}`);
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`);
+        break;
+      case 'copy':
+        await navigator.clipboard.writeText(`${shareText} ${referralUrl}`);
+        toast({
+          title: "Copied!",
+          description: "Referral link copied to clipboard",
+        });
+        break;
     }
-  };
-
-  const getTierProgress = () => {
-    if (!referralData) return { current: 0, next: 5, progress: 0 };
-    
-    const tiers = [5, 25, 100, 300, 400];
-    const current = referralData.successful_referrals;
-    
-    let nextTier = tiers.find(tier => tier > current) || 400;
-    let currentTierIndex = tiers.findIndex(tier => tier > current);
-    let currentTierMin = currentTierIndex > 0 ? tiers[currentTierIndex - 1] : 0;
-    
-    const progress = currentTierMin === 0 
-      ? (current / nextTier) * 100 
-      : ((current - currentTierMin) / (nextTier - currentTierMin)) * 100;
-    
-    return {
-      current,
-      next: nextTier,
-      progress: Math.min(progress, 100),
-      remaining: Math.max(0, nextTier - current)
-    };
   };
 
   useEffect(() => {
-    fetchReferralData();
-  }, []);
+    if (user) {
+      fetchReferrals();
+    }
+  }, [user]);
 
   return {
-    referralData,
-    referralEvents,
-    referralRewards,
-    loading,
-    error,
-    generateReferralLink,
-    copyReferralLink,
-    shareOnPlatform,
-    getTierProgress,
-    refresh: fetchReferralData
+    referrals,
+    myReferralCode,
+    isLoading,
+    generateReferralCode,
+    useReferralCode,
+    fetchReferrals,
+    shareReferral
   };
 };
