@@ -124,6 +124,34 @@ const Companies = () => {
           </div>
         </div>
 
+        {/* Enterprise Solutions CTA */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-center text-white mb-12">
+          <h2 className="text-2xl lg:text-3xl font-bold mb-4 font-display">
+            Looking for Enterprise Solutions?
+          </h2>
+          <p className="text-lg mb-6 opacity-90">
+            Discover our B2B services for internal mobility, skill gap analysis, talent analytics, and specialized recruitment
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="bg-white text-primary hover:bg-gray-100"
+              onClick={() => window.location.href = '/enterprise/solutions'}
+            >
+              Explore Enterprise Solutions
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white text-white hover:bg-white hover:text-primary"
+              onClick={() => window.location.href = '/enterprise'}
+            >
+              Enterprise Dashboard
+            </Button>
+          </div>
+        </div>
+
         {/* Companies Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
