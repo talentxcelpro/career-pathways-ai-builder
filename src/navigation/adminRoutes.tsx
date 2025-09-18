@@ -1,5 +1,7 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload } from "lucide-react";
+import { LinkedInImportManager } from "../components/admin/LinkedInImportManager";
+import { TokenWallet } from "../components/blockchain/TokenWallet";
 import { BotPostManager } from "../components/admin/BotPostManager";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
@@ -375,6 +377,20 @@ export const adminRoutes = [
     to: "/admin/prd", 
     icon: <FileText className="h-4 w-4" />,
     page: <ProductRequirementDocument />,
+    requiresAuth: true,
+  },
+  {
+    title: "LinkedIn Import Manager",
+    to: "/admin/linkedin-import",
+    icon: <Upload className="h-4 w-4" />,
+    page: <LinkedInImportManager />,
+    requiresAuth: true,
+  },
+  {
+    title: "Token Wallet System",
+    to: "/admin/token-wallet",
+    icon: <Coins className="h-4 w-4" />,
+    page: <TokenWallet />,
     requiresAuth: true,
   }
 ];
