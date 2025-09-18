@@ -105,7 +105,7 @@ Deno.serve(async (req) => {
     const { data: transactions, error: txError } = await supabaseClient
       .from('token_transactions')
       .select('*')
-      .eq('user_id', targetUserId)
+      .or(`from_user_id.eq.${targetUserId},to_user_id.eq.${targetUserId}`)
       .order('created_at', { ascending: false })
       .limit(20)
 

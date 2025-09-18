@@ -43,7 +43,7 @@ export const useTokenBalance = () => {
     isLoading,
     error,
     refreshBalance,
-    totalBalance: balance ? balance.available + balance.locked : 0,
+    totalBalance: balance ? balance.total : 0,
     availableBalance: balance?.available || 0,
     lockedBalance: balance?.locked || 0,
     lifetimeEarned: balance?.lifetime_earned || 0
