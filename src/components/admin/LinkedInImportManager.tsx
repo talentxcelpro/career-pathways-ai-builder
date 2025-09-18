@@ -192,7 +192,7 @@ export const LinkedInImportManager = () => {
             .from('token_transactions')
             .insert({
               to_user_id: user.id,
-              transaction_type: 'earned',
+              transaction_type: 'reward', // Use 'reward' instead of 'earned'
               amount: tokensAwarded,
               description: `LinkedIn import reward: ${successCount} users imported`,
               token_type: 'TXC',

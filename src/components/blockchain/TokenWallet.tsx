@@ -81,7 +81,7 @@ export const TokenWallet = () => {
           // Create welcome transaction
           await supabase.from('token_transactions').insert({
             to_user_id: user?.id,
-            transaction_type: 'earned',
+            transaction_type: 'reward', // Use 'reward' instead of 'earned'
             amount: 100,
             description: 'Welcome bonus - TXC tokens!',
             token_type: 'TXC',
@@ -122,7 +122,7 @@ export const TokenWallet = () => {
         .from('token_transactions')
         .select('id')
         .eq('to_user_id', user?.id)
-        .eq('transaction_type', 'earned')
+        .eq('transaction_type', 'reward') // Use 'reward' instead of 'earned'
         .eq('description', 'Daily login bonus')
         .gte('created_at', today + 'T00:00:00Z')
         .single();
@@ -139,7 +139,7 @@ export const TokenWallet = () => {
         .from('token_transactions')
         .insert({
           to_user_id: user?.id,
-          transaction_type: 'earned',
+          transaction_type: 'reward', // Use 'reward' instead of 'earned'
           amount: bonusAmount,
           description: 'Daily login bonus',
           token_type: 'TXC',
