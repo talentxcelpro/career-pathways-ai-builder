@@ -19,8 +19,11 @@ import { SmartUserSegmentation } from '@/components/admin/SmartUserSegmentation'
 import { EmailDeliveryEngine } from '@/components/admin/EmailDeliveryEngine';
 import { AutomationTriggerEngine } from '@/components/admin/AutomationTriggerEngine';
 import { RealTimeEmailAnalytics } from '@/components/admin/RealTimeEmailAnalytics';
+import { AIEmailOptimizer } from '@/components/admin/AIEmailOptimizer';
+import { AdvancedIntegrations } from '@/components/admin/AdvancedIntegrations';
+import { EnterpriseSecurityCenter } from '@/components/admin/EnterpriseSecurityCenter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield, Wrench, Target, Zap, Activity, Send } from "lucide-react";
+import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield, Wrench, Target, Zap, Activity, Send, Brain, Link2 } from "lucide-react";
 
 const EmailAutomationPage = () => {
   return (
@@ -29,7 +32,7 @@ const EmailAutomationPage = () => {
       description="Configure automated email templates, settings, and monitoring"
     >
       <Tabs defaultValue="automation" className="w-full">
-        <TabsList className="grid w-full grid-cols-12">
+        <TabsList className="grid w-full grid-cols-15">
           <TabsTrigger value="automation" className="flex items-center gap-2">
             <BarChart className="h-4 w-4" />
             Automation
@@ -89,6 +92,18 @@ const EmailAutomationPage = () => {
           <TabsTrigger value="real-time-analytics" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             Live Analytics
+          </TabsTrigger>
+          <TabsTrigger value="ai-optimizer" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            AI Optimizer
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="flex items-center gap-2">
+            <Link2 className="h-4 w-4" />
+            Integrations
+          </TabsTrigger>
+          <TabsTrigger value="enterprise-security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Enterprise Security
           </TabsTrigger>
         </TabsList>
 
@@ -157,6 +172,18 @@ const EmailAutomationPage = () => {
 
         <TabsContent value="real-time-analytics" className="space-y-6">
           <RealTimeEmailAnalytics />
+        </TabsContent>
+
+        <TabsContent value="ai-optimizer" className="space-y-6">
+          <AIEmailOptimizer />
+        </TabsContent>
+
+        <TabsContent value="integrations" className="space-y-6">
+          <AdvancedIntegrations />
+        </TabsContent>
+
+        <TabsContent value="enterprise-security" className="space-y-6">
+          <EnterpriseSecurityCenter />
         </TabsContent>
       </Tabs>
     </UnifiedAdminLayout>
