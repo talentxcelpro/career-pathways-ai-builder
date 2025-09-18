@@ -11,8 +11,12 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
+    react({
+      // Reduce memory usage during development
+      devTarget: mode === 'development' ? 'es2020' : 'esnext'
+    }),
+    // Disable heavy plugins during development builds
+    mode === 'production' && componentTagger(),
     mode === 'production' && visualizer({
       filename: 'dist/bundle-analysis.html',
       open: false,
@@ -29,29 +33,41 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': ['react', 'react-dom'],
-          'ui': [
-            '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', 
-            '@radix-ui/react-popover', '@radix-ui/react-tabs',
-            '@radix-ui/react-avatar', '@radix-ui/react-slot'
-          ],
-          'charts': ['recharts'],
-          'animations': ['framer-motion'],
-          'heavy-tools': [
-            'mammoth', 'pdfjs-dist', 'docx', 'tesseract.js',
-            '@huggingface/transformers'
-          ],
-          'libs': ['@supabase/supabase-js', '@tanstack/react-query', 'react-router-dom'],
-          'utils': ['date-fns', 'clsx', 'class-variance-authority', 'zod']
+        manualChunks: (id) => {
+          // Dynamic chunking to reduce memory usage
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui';
+            }
+            if (id.includes('mammoth') || id.includes('pdfjs-dist') || id.includes('docx')) {
+              return 'pdf-tools';
+            }
+            if (id.includes('tesseract') || id.includes('transformers')) {
+              return 'ai-tools';
+            }
+            if (id.includes('recharts')) {
+              return 'charts';
+            }
+            if (id.includes('framer-motion')) {
+              return 'animations';
+            }
+            if (id.includes('@supabase') || id.includes('@tanstack') || id.includes('react-router')) {
+              return 'libs';
+            }
+            return 'vendor';
+          }
         }
-      }
+      },
+      maxParallelFileOps: 1 // Further reduce parallel operations
     },
-    target: 'esnext',
-    minify: 'terser',
+    target: 'es2020', // Less aggressive target for better compatibility
+    minify: false, // Disable minification for development builds
     sourcemap: false,
-    chunkSizeWarningLimit: 600,
-    assetsInlineLimit: 8192
+    chunkSizeWarningLimit: 2000,
+    assetsInlineLimit: 2048
   },
   optimizeDeps: {
     include: [
@@ -61,6 +77,15 @@ export default defineConfig(({ mode }) => ({
       '@supabase/supabase-js',
       '@tanstack/react-query',
       'lucide-react'
-    ]
-  }
+    ],
+    // Exclude heavy packages from optimization to save memory
+    exclude: mode === 'development' ? [
+      'mammoth', 'pdfjs-dist', 'docx', 'tesseract.js', '@huggingface/transformers'
+    ] : []
+  },
+  // Additional memory optimizations for development
+  esbuild: mode === 'development' ? {
+    target: 'es2020',
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  } : undefined
 }));
