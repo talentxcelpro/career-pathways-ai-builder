@@ -109,11 +109,11 @@ export const SEOKeywordResearch = () => {
 
     setIsSearching(true);
     try {
-      const { data, error } = await supabase.functions.invoke('seo-keyword-research', {
+      const { data, error } = await supabase.functions.invoke('seo-content-optimizer', {
         body: { 
-          seedKeyword: searchTerm,
-          industry: 'career',
-          location: 'global'
+          content: `Research keywords for: ${searchTerm}`,
+          targetKeywords: [searchTerm],
+          contentType: 'keyword-research'
         }
       });
 
