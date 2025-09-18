@@ -14,7 +14,8 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     console.log('Testing SMTP connection...');
 
-    const smtpHost = Deno.env.get('SMTP_HOST') || "email-smtp.eu-north-1.amazonaws.com";
+    // Use SES SMTP endpoint instead of email-smtp for better reliability
+    const smtpHost = Deno.env.get('SMTP_HOST') || "email-smtp.us-east-1.amazonaws.com";
     const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || "587");
     const smtpUser = Deno.env.get('SMTP_USER');
     const smtpPass = Deno.env.get('SMTP_PASS');

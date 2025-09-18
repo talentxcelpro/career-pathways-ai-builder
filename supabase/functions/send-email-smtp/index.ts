@@ -20,8 +20,8 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Missing required fields: to, subject, html');
     }
 
-    // SMTP configuration
-    const smtpHost = Deno.env.get('SMTP_HOST');
+    // SMTP configuration with fallback to more reliable AWS region
+    const smtpHost = Deno.env.get('SMTP_HOST') || 'email-smtp.us-east-1.amazonaws.com';
     const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '587');
     const smtpUser = Deno.env.get('SMTP_USER');
     const smtpPass = Deno.env.get('SMTP_PASS');

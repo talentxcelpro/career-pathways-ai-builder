@@ -136,6 +136,32 @@ const EmailSystemTest: React.FC = () => {
     }
   };
 
+  const fixSMTPDNS = async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      console.log('Fixing SMTP DNS issues...');
+      
+      const { data, error } = await supabase.functions.invoke('fix-smtp-dns', {
+        body: {
+          action: 'fix_all'
+        }
+      });
+      
+      if (error) {
+        console.error('SMTP DNS fix failed:', error);
+        toast.error('SMTP DNS fix failed: ' + error.message);
+      } else {
+        console.log('SMTP DNS fix successful:', data);
+        toast.success(`✅ SMTP DNS issues resolved! Fixed ${data.results?.fixed_failed_emails || 0} failed emails`);
+      }
+    } catch (error: any) {
+      console.error('SMTP DNS fix error:', error);
+      toast.error('SMTP DNS fix failed: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -158,7 +184,7 @@ const EmailSystemTest: React.FC = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button 
             onClick={testDirectSMTP}
             disabled={isLoading || !testEmail}
@@ -175,7 +201,9 @@ const EmailSystemTest: React.FC = () => {
           >
             {isLoading ? 'Testing...' : 'Test Notification'}
           </Button>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button 
             onClick={cleanEmailQueue}
             disabled={isLoading}
@@ -183,6 +211,15 @@ const EmailSystemTest: React.FC = () => {
             className="w-full"
           >
             {isLoading ? 'Cleaning...' : 'Clean Queue'}
+          </Button>
+
+          <Button 
+            onClick={fixSMTPDNS}
+            disabled={isLoading}
+            variant="secondary"
+            className="w-full"
+          >
+            {isLoading ? 'Fixing...' : 'Fix SMTP DNS'}
           </Button>
         </div>
 
@@ -192,6 +229,7 @@ const EmailSystemTest: React.FC = () => {
             <li>• <strong>Direct SMTP</strong> - Tests core SMTP function with AWS SES</li>
             <li>• <strong>Notification</strong> - Tests template-based notification system</li>
             <li>• <strong>Clean Queue</strong> - Removes stuck/invalid emails from queue</li>
+            <li>• <strong>Fix SMTP DNS</strong> - Resolves DNS issues and updates SMTP configuration</li>
             <li>• Check your inbox AND spam folder after testing</li>
             <li>• Monitor AWS SES dashboard for delivery statistics</li>
           </ul>
