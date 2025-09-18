@@ -32,16 +32,13 @@ interface ImportStats {
 
 interface ImportJob {
   id: string;
-  filename: string;
+  batch_name: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   total_records: number;
   processed_records: number;
-  successful_imports: number;
-  failed_imports: number;
-  tokens_awarded: number;
+  failed_records: number;
   created_at: string;
-  completed_at?: string;
-  error_message?: string;
+  error_log?: string;
 }
 
 export const LinkedInImportManager = () => {
@@ -67,25 +64,148 @@ export const LinkedInImportManager = () => {
 
     try {
       setImporting(true);
-      const formData = new FormData();
-      formData.append('file', csvFile);
-      formData.append('tokenRewardPerUser', tokenRewardPerUser.toString());
-
-      const { data, error } = await supabase.functions.invoke('bulk-linkedin-import', {
-        body: formData
-      });
-
-      if (error) throw error;
-
-      if (data?.success) {
-        toast.success('Import started successfully!');
-        fetchImportJobs();
-      } else {
-        toast.error(data?.error || 'Failed to start import');
+      
+      // Read CSV content
+      const csvContent = await csvFile.text();
+      const lines = csvContent.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        toast.error('CSV file appears to be empty or invalid');
+        return;
       }
+
+      // Create import job in existing linkedin_import_batches table
+      const { data: importJob, error: jobError } = await supabase
+        .from('linkedin_import_batches')
+        .insert({
+          batch_name: csvFile.name,
+          status: 'processing',
+          total_records: lines.length - 1, // Subtract header row
+          processed_records: 0,
+          failed_records: 0
+        })
+        .select()
+        .single();
+
+      if (jobError) {
+        console.error('Error creating import job:', jobError);
+        toast.error('Failed to start import process');
+        return;
+      }
+
+      // Process CSV data
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      let successCount = 0;
+      let failCount = 0;
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        if (values.length >= headers.length) {
+          const record: any = {};
+          headers.forEach((header, index) => {
+            record[header] = values[index] || '';
+          });
+          
+          // Map to expected fields
+          const firstName = record['First Name'] || record['firstName'] || '';
+          const lastName = record['Last Name'] || record['lastName'] || '';
+          const email = record['Email'] || record['email'] || '';
+          const linkedInUrl = record['LinkedIn URL'] || record['linkedInUrl'] || '';
+          const jobTitle = record['Job Title'] || record['jobTitle'] || '';
+          const company = record['Company'] || record['company'] || '';
+          const location = record['Location'] || record['location'] || '';
+          const skills = record['Skills'] || record['skills'] || '';
+
+          if (email && firstName && lastName) {
+            // Check if profile already exists
+            const { data: existingProfile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('email', email)
+              .single();
+
+            if (!existingProfile) {
+              // Create profile
+              const fullName = `${firstName} ${lastName}`.trim();
+              const skillsArray = skills ? skills.split(';').map((s: string) => s.trim()).filter((s: string) => s) : [];
+              
+              const { error: profileError } = await supabase
+                .from('profiles')
+                .insert({
+                  full_name: fullName,
+                  email: email,
+                  title: jobTitle,
+                  location: location,
+                  linkedin_url: linkedInUrl,
+                  about: `Imported from LinkedIn. Job Title: ${jobTitle} at ${company}`
+                });
+
+              if (!profileError) {
+                successCount++;
+              } else {
+                failCount++;
+              }
+            } else {
+              failCount++; // Already exists
+            }
+          } else {
+            failCount++;
+          }
+        }
+      }
+
+      // Update job status
+      await supabase
+        .from('linkedin_import_batches')
+        .update({
+          status: 'completed',
+          processed_records: successCount + failCount,
+          failed_records: failCount
+        })
+        .eq('id', importJob.id);
+
+      // Award tokens for successful imports
+      const tokensAwarded = successCount * tokenRewardPerUser;
+      if (tokensAwarded > 0) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Add tokens to user's balance
+          const { data: existingBalance } = await supabase
+            .from('token_balances')
+            .select('balance')
+            .eq('user_id', user.id)
+            .eq('token_type', 'TXC')
+            .single();
+
+          const newBalance = (existingBalance?.balance || 0) + tokensAwarded;
+
+          await supabase
+            .from('token_balances')
+            .upsert({
+              user_id: user.id,
+              balance: newBalance,
+              token_type: 'TXC'
+            });
+
+          // Create transaction record
+          await supabase
+            .from('token_transactions')
+            .insert({
+              to_user_id: user.id,
+              transaction_type: 'earned',
+              amount: tokensAwarded,
+              description: `LinkedIn import reward: ${successCount} users imported`,
+              token_type: 'TXC',
+              status: 'completed'
+            });
+        }
+      }
+
+      toast.success(`Import completed! ${successCount} users imported, ${tokensAwarded} TXC tokens earned`);
+      fetchImportJobs();
     } catch (error) {
       console.error('Import error:', error);
-      toast.error('Failed to start import process');
+      toast.error('Failed to process import');
     } finally {
       setImporting(false);
     }
@@ -103,7 +223,7 @@ export const LinkedInImportManager = () => {
   const fetchImportJobs = async () => {
     try {
       const { data, error } = await supabase
-        .from('linkedin_import_jobs')
+        .from('linkedin_import_batches')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
@@ -115,9 +235,9 @@ export const LinkedInImportManager = () => {
       const stats = (data || []).reduce((acc, job) => ({
         total: acc.total + job.total_records,
         processed: acc.processed + job.processed_records,
-        successful: acc.successful + job.successful_imports,
-        failed: acc.failed + job.failed_imports,
-        tokensAwarded: acc.tokensAwarded + job.tokens_awarded
+        successful: acc.successful + (job.processed_records - job.failed_records),
+        failed: acc.failed + job.failed_records,
+        tokensAwarded: acc.tokensAwarded + ((job.processed_records - job.failed_records) * tokenRewardPerUser)
       }), { total: 0, processed: 0, successful: 0, failed: 0, tokensAwarded: 0 });
 
       setCurrentStats(stats);
@@ -128,25 +248,12 @@ export const LinkedInImportManager = () => {
 
   React.useEffect(() => {
     fetchImportJobs();
-    
-    // Set up real-time subscription for import job updates
-    const channel = supabase
-      .channel('import-jobs')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'linkedin_import_jobs' },
-        () => fetchImportJobs()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const downloadTemplate = () => {
-    const csvContent = `First Name,Last Name,Email,LinkedIn URL,Job Title,Company,Location,Skills,Experience Years,Education,Phone
-John,Doe,john.doe@example.com,https://linkedin.com/in/johndoe,Software Engineer,TechCorp,San Francisco,JavaScript;React;Node.js,5,Computer Science - Stanford,+1234567890
-Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Manager,InnovateCo,New York,Product Strategy;Agile;Analytics,7,MBA - Harvard,+0987654321`;
+    const csvContent = `First Name,Last Name,Email,LinkedIn URL,Job Title,Company,Location,Skills
+John,Doe,john.doe@example.com,https://linkedin.com/in/johndoe,Software Engineer,TechCorp,San Francisco,"JavaScript;React;Node.js"
+Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Manager,InnovateCo,New York,"Product Strategy;Agile;Analytics"`;
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -211,7 +318,7 @@ Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Mana
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tokens Awarded</CardTitle>
+            <CardTitle className="text-sm font-medium">Tokens Earned</CardTitle>
             <Coins className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
@@ -298,8 +405,8 @@ Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Mana
               <Alert className="mt-4">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Important:</strong> Ensure your CSV includes columns for first name, last name, 
-                  email, LinkedIn URL, job title, company, location, and skills. Invalid data will be skipped.
+                  <strong>Important:</strong> Ensure your CSV includes columns for First Name, Last Name, 
+                  Email, LinkedIn URL, Job Title, Company, and Location. Invalid data will be skipped.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -329,7 +436,7 @@ Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Mana
                           <span className={getStatusColor(job.status)}>
                             {getStatusIcon(job.status)}
                           </span>
-                          <span className="font-medium">{job.filename}</span>
+                          <span className="font-medium">{job.batch_name}</span>
                           <Badge variant={
                             job.status === 'completed' ? 'default' :
                             job.status === 'failed' ? 'destructive' :
@@ -345,12 +452,12 @@ Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Mana
                       
                       {job.status === 'processing' && (
                         <Progress 
-                          value={(job.processed_records / job.total_records) * 100} 
+                          value={job.total_records > 0 ? (job.processed_records / job.total_records) * 100 : 0} 
                           className="mb-2" 
                         />
                       )}
                       
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <p className="font-medium">Total</p>
                           <p className="text-muted-foreground">{job.total_records}</p>
@@ -361,21 +468,17 @@ Jane,Smith,jane.smith@example.com,https://linkedin.com/in/janesmith,Product Mana
                         </div>
                         <div>
                           <p className="font-medium">Successful</p>
-                          <p className="text-green-600">{job.successful_imports}</p>
+                          <p className="text-green-600">{job.processed_records - job.failed_records}</p>
                         </div>
                         <div>
                           <p className="font-medium">Failed</p>
-                          <p className="text-red-600">{job.failed_imports}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium">Tokens</p>
-                          <p className="text-yellow-600">{job.tokens_awarded} TXC</p>
+                          <p className="text-red-600">{job.failed_records}</p>
                         </div>
                       </div>
                       
-                      {job.error_message && (
+                      {job.error_log && (
                         <Alert className="mt-2" variant="destructive">
-                          <AlertDescription>{job.error_message}</AlertDescription>
+                          <AlertDescription>{job.error_log}</AlertDescription>
                         </Alert>
                       )}
                     </div>

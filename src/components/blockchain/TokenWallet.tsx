@@ -20,7 +20,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface TokenTransaction {
   id: string;
-  type: 'earned' | 'spent' | 'bonus';
+  transaction_type: 'earned' | 'spent' | 'bonus';
   amount: number;
   description: string;
   created_at: string;
@@ -28,20 +28,14 @@ interface TokenTransaction {
 }
 
 interface TokenBalance {
-  total: number;
-  available: number;
-  locked: number;
-  lifetime_earned: number;
+  balance: number;
+  locked_balance: number;
+  token_type: string;
 }
 
 export const TokenWallet = () => {
   const { user } = useAuth();
-  const [balance, setBalance] = useState<TokenBalance>({
-    total: 0,
-    available: 0,
-    locked: 0,
-    lifetime_earned: 0
-  });
+  const [balance, setBalance] = useState<TokenBalance | null>(null);
   const [transactions, setTransactions] = useState<TokenTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
@@ -56,24 +50,58 @@ export const TokenWallet = () => {
     try {
       setLoading(true);
       
-      // Fetch balance
-      const { data: balanceData } = await supabase.functions.invoke('get-token-balance', {
-        body: { userId: user?.id }
-      });
-      
-      if (balanceData?.success) {
-        setBalance(balanceData.balance);
-      }
-
-      // Fetch recent transactions
-      const { data: transactionsData } = await supabase
-        .from('token_transactions')
+      // Fetch balance from existing token_balances table
+      const { data: balanceData, error: balanceError } = await supabase
+        .from('token_balances')
         .select('*')
         .eq('user_id', user?.id)
+        .eq('token_type', 'TXC')
+        .single();
+      
+      if (balanceError && balanceError.code !== 'PGRST116') {
+        console.error('Balance error:', balanceError);
+      } else if (balanceData) {
+        setBalance(balanceData);
+      } else {
+        // Create initial balance for user
+        const { data: newBalance, error: createError } = await supabase
+          .from('token_balances')
+          .insert({
+            user_id: user?.id,
+            balance: 100,
+            locked_balance: 0,
+            token_type: 'TXC'
+          })
+          .select()
+          .single();
+        
+        if (!createError && newBalance) {
+          setBalance(newBalance);
+          
+          // Create welcome transaction
+          await supabase.from('token_transactions').insert({
+            to_user_id: user?.id,
+            transaction_type: 'earned',
+            amount: 100,
+            description: 'Welcome bonus - TXC tokens!',
+            token_type: 'TXC',
+            status: 'completed'
+          });
+        }
+      }
+
+      // Fetch recent transactions from existing token_transactions table
+      const { data: transactionsData, error: txError } = await supabase
+        .from('token_transactions')
+        .select('*')
+        .or(`to_user_id.eq.${user?.id},from_user_id.eq.${user?.id}`)
+        .eq('token_type', 'TXC')
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (transactionsData) {
+      if (txError) {
+        console.error('Transactions error:', txError);
+      } else if (transactionsData) {
         setTransactions(transactionsData);
       }
     } catch (error) {
@@ -87,16 +115,52 @@ export const TokenWallet = () => {
   const claimDailyBonus = async () => {
     try {
       setClaiming(true);
-      const { data } = await supabase.functions.invoke('claim-daily-bonus', {
-        body: { userId: user?.id }
-      });
+      
+      // Check if already claimed today
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todayBonus } = await supabase
+        .from('token_transactions')
+        .select('id')
+        .eq('to_user_id', user?.id)
+        .eq('transaction_type', 'earned')
+        .eq('description', 'Daily login bonus')
+        .gte('created_at', today + 'T00:00:00Z')
+        .single();
 
-      if (data?.success) {
-        toast.success(`Claimed ${data.amount} TXC tokens!`);
-        fetchTokenData();
-      } else {
-        toast.error(data?.error || 'Failed to claim bonus');
+      if (todayBonus) {
+        toast.error('Daily bonus already claimed today!');
+        return;
       }
+
+      const bonusAmount = 50;
+      
+      // Create transaction
+      const { error: txError } = await supabase
+        .from('token_transactions')
+        .insert({
+          to_user_id: user?.id,
+          transaction_type: 'earned',
+          amount: bonusAmount,
+          description: 'Daily login bonus',
+          token_type: 'TXC',
+          status: 'completed'
+        });
+
+      if (txError) throw txError;
+
+      // Update balance
+      const { error: balanceError } = await supabase
+        .from('token_balances')
+        .update({
+          balance: (balance?.balance || 0) + bonusAmount
+        })
+        .eq('user_id', user?.id)
+        .eq('token_type', 'TXC');
+
+      if (balanceError) throw balanceError;
+
+      toast.success(`Claimed ${bonusAmount} TXC tokens!`);
+      fetchTokenData();
     } catch (error) {
       console.error('Error claiming bonus:', error);
       toast.error('Failed to claim daily bonus');
@@ -136,22 +200,9 @@ export const TokenWallet = () => {
             <Coins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{balance.available.toLocaleString()} TXC</div>
+            <div className="text-2xl font-bold">{(balance?.balance || 0).toLocaleString()} TXC</div>
             <p className="text-xs text-muted-foreground">
               Ready to spend
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lifetime Earned</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{balance.lifetime_earned.toLocaleString()} TXC</div>
-            <p className="text-xs text-muted-foreground">
-              Total tokens earned
             </p>
           </CardContent>
         </Card>
@@ -162,9 +213,22 @@ export const TokenWallet = () => {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{balance.locked.toLocaleString()} TXC</div>
+            <div className="text-2xl font-bold">{(balance?.locked_balance || 0).toLocaleString()} TXC</div>
             <p className="text-xs text-muted-foreground">
               Staked or pending
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{((balance?.balance || 0) + (balance?.locked_balance || 0)).toLocaleString()} TXC</div>
+            <p className="text-xs text-muted-foreground">
+              Total tokens owned
             </p>
           </CardContent>
         </Card>
@@ -185,7 +249,7 @@ export const TokenWallet = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">50 TXC Available</p>
-              <p className="text-sm text-muted-foreground">Resets in 18h 32m</p>
+              <p className="text-sm text-muted-foreground">New bonus available daily</p>
             </div>
             <Button 
               onClick={claimDailyBonus} 
@@ -225,12 +289,12 @@ export const TokenWallet = () => {
                     <div key={tx.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-full ${
-                          tx.type === 'earned' ? 'bg-green-100 text-green-600' :
-                          tx.type === 'spent' ? 'bg-red-100 text-red-600' :
+                          tx.transaction_type === 'earned' ? 'bg-green-100 text-green-600' :
+                          tx.transaction_type === 'spent' ? 'bg-red-100 text-red-600' :
                           'bg-blue-100 text-blue-600'
                         }`}>
-                          {tx.type === 'earned' ? <ArrowUpRight className="h-4 w-4" /> :
-                           tx.type === 'spent' ? <ArrowDownLeft className="h-4 w-4" /> :
+                          {tx.transaction_type === 'earned' ? <ArrowUpRight className="h-4 w-4" /> :
+                           tx.transaction_type === 'spent' ? <ArrowDownLeft className="h-4 w-4" /> :
                            <Trophy className="h-4 w-4" />}
                         </div>
                         <div>
@@ -242,15 +306,15 @@ export const TokenWallet = () => {
                       </div>
                       <div className="text-right">
                         <p className={`font-bold ${
-                          tx.type === 'spent' ? 'text-red-600' : 'text-green-600'
+                          tx.transaction_type === 'spent' ? 'text-red-600' : 'text-green-600'
                         }`}>
-                          {tx.type === 'spent' ? '-' : '+'}{tx.amount} TXC
+                          {tx.transaction_type === 'spent' ? '-' : '+'}{tx.amount} TXC
                         </p>
                         <Badge variant={
-                          tx.type === 'earned' ? 'default' :
-                          tx.type === 'spent' ? 'destructive' : 'secondary'
+                          tx.transaction_type === 'earned' ? 'default' :
+                          tx.transaction_type === 'spent' ? 'destructive' : 'secondary'
                         }>
-                          {tx.type}
+                          {tx.transaction_type}
                         </Badge>
                       </div>
                     </div>
@@ -268,7 +332,8 @@ export const TokenWallet = () => {
               { action: 'Upload Resume', reward: 50, progress: 100 },
               { action: 'Apply to 5 Jobs', reward: 75, progress: 60 },
               { action: 'Get Profile Views', reward: 25, progress: 30 },
-              { action: 'Share Content', reward: 15, progress: 0 }
+              { action: 'Share Content', reward: 15, progress: 0 },
+              { action: 'Daily Login', reward: 50, progress: 100 }
             ].map((item, index) => (
               <Card key={index}>
                 <CardContent className="p-4">
@@ -286,6 +351,42 @@ export const TokenWallet = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Token Economy Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Coins className="h-5 w-5" />
+            About TalentXcel Coin (TXC)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            TXC is the native token of TalentXcel platform. Use it for premium services, skill assessments, 
+            and exclusive career opportunities.
+          </p>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-medium">Earn TXC by:</p>
+              <ul className="list-disc list-inside text-muted-foreground">
+                <li>Completing your profile</li>
+                <li>Daily login bonuses</li>
+                <li>Referring friends</li>
+                <li>Participating in assessments</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-medium">Spend TXC on:</p>
+              <ul className="list-disc list-inside text-muted-foreground">
+                <li>Premium job applications</li>
+                <li>AI resume optimization</li>
+                <li>Interview coaching</li>
+                <li>Career analytics</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
