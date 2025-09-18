@@ -94,7 +94,13 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Template ${mapping.template_name} not found or disabled`);
     }
 
-    console.log('Template loaded successfully');
+    // Validate that template has HTML content
+    const htmlContent = template.html_template || template.content;
+    if (!htmlContent || !htmlContent.includes('<') || !htmlContent.includes('>')) {
+      throw new Error(`Template ${mapping.template_name} must contain valid HTML content. Plain text templates are not allowed.`);
+    }
+
+    console.log('HTML template validated and loaded successfully');
 
     // Create SMTP transporter
     const transporter = createSMTPTransporter();

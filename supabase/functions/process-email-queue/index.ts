@@ -231,13 +231,18 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
 
-    // Send email using nodemailer
+    // Validate HTML content before sending
+    if (!emailHtml.includes('<') || !emailHtml.includes('>')) {
+      throw new Error('Email content must be valid HTML. Plain text emails are not allowed.');
+    }
+
+    // Send email using nodemailer (HTML only, no plain text fallback)
     const mailResult = await transporter.sendMail({
       from: `TalentXcel <${Deno.env.get('SMTP_FROM_EMAIL') || 'noreply@talentxcel.in'}>`,
       to: email.recipient_email,
       subject: emailSubject,
       html: emailHtml,
-      text: emailHtml.replace(/<[^>]+>/g, ''), // Plain text fallback
+      // Removed text fallback - HTML only
     });
 
     console.log('Email sent successfully:', mailResult.messageId);

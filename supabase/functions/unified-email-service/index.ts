@@ -132,12 +132,16 @@ function renderTemplate(templateText: string, variables: AnyJson) {
   }
 }
 
-async function sendViaSES(to: string, subject: string, html: string, tags: { Name: string; Value: string }[], textFallback?: string) {
+async function sendViaSES(to: string, subject: string, html: string, tags: { Name: string; Value: string }[]) {
   const ses = initSes();
   if (!ses) throw new Error("SES client not initialized");
 
+  // Validate HTML content
+  if (!html.includes('<') || !html.includes('>')) {
+    throw new Error('Email content must be valid HTML. Plain text emails are not allowed.');
+  }
+
   const Source = Deno.env.get("SES_FROM_EMAIL") || "no-reply@talentxcel.in";
-  const plainText = textFallback || html.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").trim();
 
   const cmd = new SendEmailCommand({
     Source,
@@ -146,7 +150,7 @@ async function sendViaSES(to: string, subject: string, html: string, tags: { Nam
       Subject: { Data: subject, Charset: "UTF-8" },
       Body: {
         Html: { Data: html, Charset: "UTF-8" },
-        Text: { Data: plainText, Charset: "UTF-8" },
+        // Removed Text body - HTML only
       },
     },
     Tags: tags,
