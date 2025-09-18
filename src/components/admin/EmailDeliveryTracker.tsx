@@ -11,12 +11,13 @@ interface EmailDeliveryRecord {
   id: string;
   recipient_email: string;
   delivery_status: string;
-  delivery_timestamp: string;
+  sent_at: string;
   bounce_reason?: string;
-  spam_score?: number;
-  opened_at?: string;
-  clicked_at?: string;
-  created_at: string;
+  bounce_type?: string;
+  complaint_type?: string;
+  ses_message_id?: string;
+  template_name?: string;
+  recipient_name?: string;
 }
 
 export const EmailDeliveryTracker = () => {
@@ -27,8 +28,22 @@ export const EmailDeliveryTracker = () => {
     try {
       const { data, error } = await supabase
         .from('email_delivery_tracking')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .select(`
+          id,
+          recipient_email,
+          delivery_status,
+          sent_at,
+          bounce_type,
+          bounce_reason,
+          complaint_type,
+          ses_message_id,
+          email_automation_queue_id,
+          email_automation_queue:email_automation_queue_id (
+            trigger_type,
+            recipient_name
+          )
+        `)
+        .order('sent_at', { ascending: false })
         .limit(50);
 
       if (error) {
@@ -37,7 +52,14 @@ export const EmailDeliveryTracker = () => {
         return;
       }
 
-      setDeliveryRecords((data as any) || []);
+      // Transform the data to include template info
+      const transformedData = (data || []).map((record: any) => ({
+        ...record,
+        template_name: record.email_automation_queue?.trigger_type || 'Unknown',
+        recipient_name: record.email_automation_queue?.recipient_name || 'Unknown'
+      }));
+
+      setDeliveryRecords(transformedData);
     } catch (error) {
       console.error('Error in fetchDeliveryRecords:', error);
       toast.error('Failed to load delivery records');
@@ -125,10 +147,10 @@ export const EmailDeliveryTracker = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Recipient</TableHead>
+                  <TableHead>Template</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Delivered</TableHead>
-                  <TableHead>Opened</TableHead>
-                  <TableHead>Clicked</TableHead>
+                  <TableHead>Sent At</TableHead>
+                  <TableHead>Message ID</TableHead>
                   <TableHead>Issues</TableHead>
                 </TableRow>
               </TableHeader>
@@ -136,7 +158,17 @@ export const EmailDeliveryTracker = () => {
                 {deliveryRecords.map((record) => (
                   <TableRow key={record.id}>
                     <TableCell className="font-medium">
-                      {record.recipient_email}
+                      <div className="flex flex-col">
+                        <span>{record.recipient_email}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {record.recipient_name}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs">
+                        {record.template_name}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge 
@@ -148,34 +180,32 @@ export const EmailDeliveryTracker = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {record.delivery_timestamp ? 
-                        new Date(record.delivery_timestamp).toLocaleDateString() : 
+                      {record.sent_at ? 
+                        new Date(record.sent_at).toLocaleString() : 
                         '-'
                       }
                     </TableCell>
                     <TableCell>
-                      {record.opened_at ? 
-                        new Date(record.opened_at).toLocaleDateString() : 
-                        '-'
-                      }
+                      <span className="text-xs font-mono text-muted-foreground">
+                        {record.ses_message_id ? 
+                          record.ses_message_id.substring(0, 12) + '...' : 
+                          '-'
+                        }
+                      </span>
                     </TableCell>
                     <TableCell>
-                      {record.clicked_at ? 
-                        new Date(record.clicked_at).toLocaleDateString() : 
-                        '-'
-                      }
-                    </TableCell>
-                    <TableCell>
-                      {record.bounce_reason && (
-                        <Badge variant="destructive" className="text-xs">
-                          {record.bounce_reason}
-                        </Badge>
-                      )}
-                      {record.spam_score && record.spam_score > 5 && (
-                        <Badge variant="destructive" className="text-xs ml-1">
-                          High Spam Score
-                        </Badge>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {record.bounce_reason && (
+                          <Badge variant="destructive" className="text-xs">
+                            {record.bounce_type}: {record.bounce_reason}
+                          </Badge>
+                        )}
+                        {record.complaint_type && (
+                          <Badge variant="destructive" className="text-xs">
+                            Complaint: {record.complaint_type}
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

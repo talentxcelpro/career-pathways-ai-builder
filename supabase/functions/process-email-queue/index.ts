@@ -136,16 +136,33 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log(`Email sent successfully to ${email.recipient_email}`);
 
-        // Update email status to sent
+        // Extract SES message ID from result for tracking
+        const sesMessageId = emailResult?.messageId || emailResult?.data?.MessageId;
+
+        // Update email status to sent and store SES message ID
         await supabase
           .from('email_automation_queue')
           .update({
             status: 'sent',
             sent_at: new Date().toISOString(),
             error_message: null,
+            ses_message_id: sesMessageId,
             updated_at: new Date().toISOString()
           })
           .eq('id', email.id);
+
+        // Create delivery tracking record
+        if (sesMessageId) {
+          await supabase
+            .from('email_delivery_tracking')
+            .insert({
+              email_automation_queue_id: email.id,
+              recipient_email: email.recipient_email,
+              ses_message_id: sesMessageId,
+              delivery_status: 'sent',
+              sent_at: new Date().toISOString()
+            });
+        }
 
         processed++;
         results.push({
