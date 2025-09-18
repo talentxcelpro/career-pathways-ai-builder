@@ -64,17 +64,19 @@ const handler = async (req: Request): Promise<Response> => {
             .single();
 
           if (!existingEmail) {
-            const { error: queueError } = await supabase.functions.invoke('enqueue-email-event', {
-              body: {
-                event_key: 'welcome_email',
+            const { error: queueError } = await supabase
+              .from('email_automation_queue')
+              .insert({
+                trigger_type: 'welcome_email',
                 recipient_email: user.email,
                 recipient_name: user.full_name || 'User',
                 template_data: {
                   candidate_name: user.full_name || 'User',
                   user_id: user.id
-                }
-              }
-            });
+                },
+                scheduled_at: new Date().toISOString(),
+                status: 'pending'
+              });
 
             if (queueError) {
               results.errors.push(`Welcome email for ${user.email}: ${queueError.message}`);
@@ -115,18 +117,20 @@ const handler = async (req: Request): Promise<Response> => {
               .single();
 
             if (!recentReminder) {
-              const { error: queueError } = await supabase.functions.invoke('enqueue-email-event', {
-                body: {
-                  event_key: 'profile_completion_reminder',
+              const { error: queueError } = await supabase
+                .from('email_automation_queue')
+                .insert({
+                  trigger_type: 'profile_completion_reminder',
                   recipient_email: profile.email,
                   recipient_name: profile.full_name || 'User',
                   template_data: {
                     candidate_name: profile.full_name || 'User',
                     completion_percentage: completionScore,
                     user_id: profile.id
-                  }
-                }
-              });
+                  },
+                  scheduled_at: new Date().toISOString(),
+                  status: 'pending'
+                });
 
               if (queueError) {
                 results.errors.push(`Profile reminder for ${profile.email}: ${queueError.message}`);
@@ -172,9 +176,10 @@ const handler = async (req: Request): Promise<Response> => {
             if (!recentRec) {
               const randomJob = recentJobs[Math.floor(Math.random() * recentJobs.length)];
               
-              const { error: queueError } = await supabase.functions.invoke('enqueue-email-event', {
-                body: {
-                  event_key: 'job_recommendation',
+              const { error: queueError } = await supabase
+                .from('email_automation_queue')
+                .insert({
+                  trigger_type: 'job_recommendation',
                   recipient_email: user.email,
                   recipient_name: user.full_name || 'User',
                   template_data: {
@@ -184,9 +189,10 @@ const handler = async (req: Request): Promise<Response> => {
                     job_location: randomJob.location || 'Location',
                     job_id: randomJob.id,
                     user_id: user.id
-                  }
-                }
-              });
+                  },
+                  scheduled_at: new Date().toISOString(),
+                  status: 'pending'
+                });
 
               if (queueError) {
                 results.errors.push(`Job recommendation for ${user.email}: ${queueError.message}`);
