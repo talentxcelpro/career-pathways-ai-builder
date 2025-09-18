@@ -13,10 +13,16 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     console.log('SMTP email service started...');
-    const { to, subject, html, from } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { to, subject, html, from, test = false } = body;
+
+    // Handle test mode with defaults
+    const emailTo = to || (test ? 'test@talentxcel.in' : null);
+    const emailSubject = subject || (test ? 'SMTP Test Email' : null);
+    const emailHtml = html || (test ? '<h2>SMTP Test Successful</h2><p>Your SMTP configuration is working correctly.</p>' : null);
 
     // Validate inputs
-    if (!to || !subject || !html) {
+    if (!emailTo || !emailSubject || !emailHtml) {
       throw new Error('Missing required fields: to, subject, html');
     }
 
@@ -50,9 +56,9 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email
     const result = await transporter.sendMail({
       from: from || smtpFromEmail,
-      to: to,
-      subject: subject,
-      html: html,
+      to: emailTo,
+      subject: emailSubject,
+      html: emailHtml,
     });
 
     console.log('Email sent successfully:', result.messageId);
