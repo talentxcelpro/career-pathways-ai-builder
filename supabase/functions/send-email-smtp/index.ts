@@ -27,7 +27,10 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // SMTP configuration with fallback to more reliable AWS region
-    const smtpHost = Deno.env.get('SMTP_HOST') || 'email-smtp.us-east-1.amazonaws.com';
+    let smtpHost = Deno.env.get('SMTP_HOST') || 'email-smtp.us-east-1.amazonaws.com';
+    // Clean up host - remove any "Host: " prefix that might be there
+    smtpHost = smtpHost.replace(/^Host:\s*/i, '').trim();
+    
     const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '587');
     const smtpUser = Deno.env.get('SMTP_USER');
     const smtpPass = Deno.env.get('SMTP_PASS');
