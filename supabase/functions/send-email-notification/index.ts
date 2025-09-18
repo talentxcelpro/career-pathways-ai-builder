@@ -190,19 +190,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Template validation passed - enhanced HTML template detected:', emailOptimizations);
 
-    // Enhanced template validation - reject plain text templates
-    const htmlContent = template.html_template || template.content;
-    if (!htmlContent || !htmlContent.includes('<') || !htmlContent.includes('>')) {
-      throw new Error(`Template ${mapping.template_name} must contain valid HTML content. Plain text templates are strictly prohibited.`);
-    }
-
-    // Additional HTML structure validation
-    if (!htmlContent.includes('<html') && !htmlContent.includes('<body') && !htmlContent.includes('<div')) {
-      throw new Error(`Template ${mapping.template_name} must contain proper HTML structure with tags like <html>, <body>, or <div>.`);
-    }
-
-    console.log('HTML template validation passed - template is HTML-compliant');
-
     // Create SMTP transporter
     const transporter = createSMTPTransporter();
 

@@ -22,6 +22,7 @@ import { RealTimeEmailAnalytics } from '@/components/admin/RealTimeEmailAnalytic
 import { AIEmailOptimizer } from '@/components/admin/AIEmailOptimizer';
 import { AdvancedIntegrations } from '@/components/admin/AdvancedIntegrations';
 import { EnterpriseSecurityCenter } from '@/components/admin/EnterpriseSecurityCenter';
+import EmailSystemGuide from '@/components/admin/EmailSystemGuide';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Settings, Monitor, TestTube, Clock, BarChart, Users, TrendingUp, Shield, Wrench, Target, Zap, Activity, Send, Brain, Link2 } from "lucide-react";
 
@@ -172,6 +173,7 @@ const EmailAutomationPage = () => {
             <div className="lg:col-span-3">
               <div className="border rounded-lg p-6 min-h-[600px]">
                 <TabsContent value="automation" className="space-y-6 mt-0">
+                  <EmailSystemGuide />
                   <CommunicationCommandCenter />
                 </TabsContent>
 
