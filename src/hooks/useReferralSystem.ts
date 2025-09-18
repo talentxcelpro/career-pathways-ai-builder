@@ -223,8 +223,16 @@ export const useReferralSystem = () => {
     return {
       current: completedReferrals,
       nextTier: Math.ceil((completedReferrals + 1) / 5) * 5,
-      progress: (completedReferrals % 5) * 20
+      progress: (completedReferrals % 5) * 20,
+      next: Math.ceil((completedReferrals + 1) / 5) * 5,
+      remaining: Math.ceil((completedReferrals + 1) / 5) * 5 - completedReferrals
     };
+  };
+
+  const completedReferrals = referrals.filter(r => r.status === 'completed').length;
+
+  const getReferralLink = () => {
+    return myReferralCode ? `${window.location.origin}/signup?ref=${myReferralCode}` : '';
   };
 
   return {
@@ -237,16 +245,31 @@ export const useReferralSystem = () => {
     shareReferral,
     referralData: {
       totalReferrals: referrals.length,
-      completedReferrals: referrals.filter(r => r.status === 'completed').length,
+      completedReferrals,
       pendingReferrals: referrals.filter(r => r.status === 'pending').length,
-      totalEarnings: referrals.filter(r => r.status === 'completed').reduce((sum, r) => sum + r.txc_reward, 0)
+      totalEarnings: referrals.filter(r => r.status === 'completed').reduce((sum, r) => sum + r.txc_reward, 0),
+      total_referrals: referrals.length,
+      successful_referrals: completedReferrals,
+      current_tier: Math.floor(completedReferrals / 5) + 1,
+      referral_code: myReferralCode || ''
     },
-    referralEvents: referrals,
-    referralRewards: referrals.filter(r => r.status === 'completed'),
+    referralEvents: referrals.map(r => ({
+      ...r,
+      referee_name: `User ${r.referee_id?.slice(0, 8) || 'Unknown'}`,
+      referee_email: `user@example.com`,
+      status: r.status === 'completed' ? 'registered' as const : r.status,
+      reward_description: `${r.txc_reward} TXC earned`
+    })),
+    referralRewards: referrals.filter(r => r.status === 'completed').map(r => ({
+      ...r,
+      status: 'granted' as const,
+      reward_description: `${r.txc_reward} TXC earned`
+    })),
     loading: isLoading,
     generateReferralLink,
     copyReferralLink,
     shareOnPlatform,
-    getTierProgress
+    getTierProgress,
+    getReferralLink
   };
 };

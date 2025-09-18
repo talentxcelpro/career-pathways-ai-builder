@@ -230,7 +230,21 @@ export const useGamification = () => {
       totalAchievements: achievements.length,
       totalTXC: getTotalTXCFromAchievements(),
       currentStreak: userStreaks?.current_login_streak || 0,
-      profileCompletion: 75
+      profileCompletion: 75,
+      level: Math.floor(getTotalTXCFromAchievements() / 1000) + 1,
+      currentLevelPoints: getTotalTXCFromAchievements() % 1000,
+      nextLevelPoints: 1000,
+      totalPoints: getTotalTXCFromAchievements(),
+      achievements: achievements.map(a => ({
+        id: a.id,
+        achievement_title: a.achievement_name,
+        points_awarded: a.txc_reward
+      })),
+      streaks: {
+        learning: userStreaks?.current_login_streak || 0,
+        applications: userStreaks?.current_application_streak || 0,
+        profile_updates: userStreaks?.current_login_streak || 0
+      }
     },
     updateProfileCompletion: async () => {
       await fetchAchievements();

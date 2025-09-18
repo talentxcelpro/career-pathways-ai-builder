@@ -29,7 +29,8 @@ export const ReferralDashboard: React.FC = () => {
     generateReferralLink,
     copyReferralLink,
     shareOnPlatform,
-    getTierProgress
+    getTierProgress,
+    getReferralLink
   } = useReferralSystem();
 
   if (loading || !referralData) {
@@ -48,7 +49,7 @@ export const ReferralDashboard: React.FC = () => {
   }
 
   const tierProgress = getTierProgress();
-  const referralLink = generateReferralLink();
+  const referralLink = getReferralLink();
 
   return (
     <div className="w-full space-y-6">
@@ -188,7 +189,7 @@ export const ReferralDashboard: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => shareOnPlatform('telegram')}
+                onClick={() => shareOnPlatform('whatsapp')}
                 className="justify-start"
               >
                 <Send className="h-4 w-4 mr-2 text-blue-500" />
