@@ -71,8 +71,18 @@ export const MLRankPredictor: React.FC = () => {
         domainAge: formData.domainAge ? parseInt(formData.domainAge) : 1
       };
 
-      const { data, error } = await supabase.functions.invoke('seo-rank-predictor', {
-        body: requestData
+      const { data, error } = await supabase.functions.invoke('ml-rank-predictor', {
+        body: {
+          action: 'predict_rankings',
+          siteUrl: requestData.url,
+          targetKeywords: [requestData.targetKeyword],
+          historicalData: {
+            currentRank: requestData.currentRank,
+            contentLength: requestData.contentLength,
+            backlinks: requestData.backlinks,
+            domainAge: requestData.domainAge
+          }
+        }
       });
 
       if (error) throw error;
