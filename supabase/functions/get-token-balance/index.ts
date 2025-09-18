@@ -11,20 +11,22 @@ interface Database {
       token_balances: {
         Row: {
           user_id: string
-          available_balance: number
+          balance: number
           locked_balance: number
-          lifetime_earned: number
-          last_daily_bonus: string | null
+          token_type: string
+          last_updated: string
         }
       }
       token_transactions: {
         Row: {
           id: string
-          user_id: string
+          from_user_id: string | null
+          to_user_id: string | null
           transaction_type: string
           amount: number
+          token_type: string
           description: string
-          source: string | null
+          status: string
           created_at: string
         }
       }
@@ -83,9 +85,9 @@ Deno.serve(async (req) => {
         .from('token_balances')
         .insert({
           user_id: targetUserId,
-          available_balance: 0,
+          balance: 0,
           locked_balance: 0,
-          lifetime_earned: 0
+          token_type: 'TXC'
         })
         .select()
         .single()
@@ -117,10 +119,10 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         balance: {
-          total: finalBalance.available_balance + finalBalance.locked_balance,
-          available: finalBalance.available_balance,
+          total: finalBalance.balance + finalBalance.locked_balance,
+          available: finalBalance.balance,
           locked: finalBalance.locked_balance,
-          lifetime_earned: finalBalance.lifetime_earned
+          lifetime_earned: finalBalance.balance // Use current balance as lifetime earned for now
         },
         transactions: transactions || []
       }),
