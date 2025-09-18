@@ -123,7 +123,13 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         if (emailError) {
-          throw new Error(`Unified email service error: ${emailError.message}`);
+          console.error('Unified email service error details:', emailError);
+          throw new Error(`Unified email service error: ${emailError.message || 'Unknown error'}`);
+        }
+
+        if (!emailResult || !emailResult.success) {
+          console.error('Email service returned unsuccessful result:', emailResult);
+          throw new Error(`Email sending failed: ${emailResult?.error || 'Unknown error'}`);
         }
 
         console.log('Email sent successfully via unified service:', emailResult);
