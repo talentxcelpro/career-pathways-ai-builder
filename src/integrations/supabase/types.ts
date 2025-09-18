@@ -10087,42 +10087,104 @@ export type Database = {
         }
         Relationships: []
       }
+      email_template_versions: {
+        Row: {
+          change_notes: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_current_version: boolean | null
+          quality_score: number | null
+          subject: string | null
+          template_id: string
+          version_number: number
+        }
+        Insert: {
+          change_notes?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_current_version?: boolean | null
+          quality_score?: number | null
+          subject?: string | null
+          template_id: string
+          version_number: number
+        }
+        Update: {
+          change_notes?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_current_version?: boolean | null
+          quality_score?: number | null
+          subject?: string | null
+          template_id?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_template_versions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_templates: {
         Row: {
+          approval_status: string | null
+          approved_at: string | null
+          approved_by: string | null
           company_id: string | null
           content: string
           created_at: string | null
           created_by: string | null
+          current_version: number | null
           html_template: string | null
           id: string
           is_active: boolean | null
           name: string
+          quality_score: number | null
           subject: string
           template_type: string | null
           updated_at: string | null
         }
         Insert: {
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           company_id?: string | null
           content: string
           created_at?: string | null
           created_by?: string | null
+          current_version?: number | null
           html_template?: string | null
           id?: string
           is_active?: boolean | null
           name: string
+          quality_score?: number | null
           subject: string
           template_type?: string | null
           updated_at?: string | null
         }
         Update: {
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           company_id?: string | null
           content?: string
           created_at?: string | null
           created_by?: string | null
+          current_version?: number | null
           html_template?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
+          quality_score?: number | null
           subject?: string
           template_type?: string | null
           updated_at?: string | null
@@ -14475,6 +14537,7 @@ export type Database = {
           sentiment_score: number | null
           seo_metadata: Json | null
           shares_count: number | null
+          slug: string | null
           source_name: string
           source_url: string | null
           summary: string | null
@@ -14503,6 +14566,7 @@ export type Database = {
           sentiment_score?: number | null
           seo_metadata?: Json | null
           shares_count?: number | null
+          slug?: string | null
           source_name: string
           source_url?: string | null
           summary?: string | null
@@ -14531,6 +14595,7 @@ export type Database = {
           sentiment_score?: number | null
           seo_metadata?: Json | null
           shares_count?: number | null
+          slug?: string | null
           source_name?: string
           source_url?: string | null
           summary?: string | null
@@ -24102,6 +24167,47 @@ export type Database = {
           },
         ]
       }
+      template_approval_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          new_status: string
+          previous_status: string | null
+          review_notes: string | null
+          reviewer_id: string
+          template_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          new_status: string
+          previous_status?: string | null
+          review_notes?: string | null
+          reviewer_id: string
+          template_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          new_status?: string
+          previous_status?: string | null
+          review_notes?: string | null
+          reviewer_id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_approval_log_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       template_customizations: {
         Row: {
           applied_at: string | null
@@ -24130,6 +24236,62 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "resume_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      template_quality_metrics: {
+        Row: {
+          accessibility_score: number | null
+          audit_date: string
+          audited_by: string | null
+          compatibility_score: number | null
+          grade: string
+          id: string
+          issues: Json | null
+          performance_score: number | null
+          quality_score: number
+          recommendations: Json | null
+          security_score: number | null
+          template_id: string
+          version_number: number | null
+        }
+        Insert: {
+          accessibility_score?: number | null
+          audit_date?: string
+          audited_by?: string | null
+          compatibility_score?: number | null
+          grade: string
+          id?: string
+          issues?: Json | null
+          performance_score?: number | null
+          quality_score: number
+          recommendations?: Json | null
+          security_score?: number | null
+          template_id: string
+          version_number?: number | null
+        }
+        Update: {
+          accessibility_score?: number | null
+          audit_date?: string
+          audited_by?: string | null
+          compatibility_score?: number | null
+          grade?: string
+          id?: string
+          issues?: Json | null
+          performance_score?: number | null
+          quality_score?: number
+          recommendations?: Json | null
+          security_score?: number | null
+          template_id?: string
+          version_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_quality_metrics_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -27374,6 +27536,10 @@ export type Database = {
       }
       generate_talentxcel_id: {
         Args: { user_uuid: string }
+        Returns: string
+      }
+      generate_unique_slug: {
+        Args: { article_id: string; base_slug: string }
         Returns: string
       }
       generate_username: {
