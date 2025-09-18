@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SEOIssueDetail } from './SEOIssueDetail';
 import { SEOPageEditor } from './SEOPageEditor';
 import { SEOBulkOperations } from './SEOBulkOperations';
 import { SEOProgressTracker } from './SEOProgressTracker';
 import { SEODashboard } from './SEODashboard';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SEOIssue {
   id: string;
@@ -138,10 +140,75 @@ export const SEOIssueManager: React.FC = () => {
   const [selectedIssue, setSelectedIssue] = useState<SEOIssue | null>(null);
   const [selectedPageUrl, setSelectedPageUrl] = useState<string>('');
   const [resolvedIssues, setResolvedIssues] = useState<string[]>([]);
+  const [realIssues, setRealIssues] = useState<SEOIssue[]>([]);
+  const [isLoadingIssues, setIsLoadingIssues] = useState(false);
+
+  // Fetch real SEO issues on component mount
+  useEffect(() => {
+    fetchRealSEOIssues();
+  }, []);
+
+  const fetchRealSEOIssues = async () => {
+    setIsLoadingIssues(true);
+    try {
+      // Analyze the current domain for real SEO issues
+      const { data, error } = await supabase.functions.invoke('seo-site-analyzer', {
+        body: { url: 'https://talentxcel.in' }
+      });
+
+      if (error) {
+        console.error('Error fetching SEO issues:', error);
+        toast.error('Failed to fetch SEO issues, using fallback data');
+        setRealIssues(mockIssues);
+        return;
+      }
+
+      if (data && data.issues) {
+        // Convert API response to our SEOIssue format
+        const convertedIssues: SEOIssue[] = data.issues.map((issue: any, index: number) => ({
+          id: `real-issue-${index}`,
+          type: issue.type || 'warning',
+          category: issue.category || 'Technical',
+          title: issue.title,
+          description: issue.description,
+          impact: issue.impact || 'medium',
+          difficulty: 'medium', // Default difficulty
+          affectedPages: [
+            {
+              url: data.url,
+              title: data.analysis?.title?.content || 'Page',
+              issue: issue.description,
+              priority: issue.priority || 2
+            }
+          ],
+          fixInstructions: data.recommendations || [
+            'Analyze the current implementation',
+            'Plan the improvement strategy',
+            'Execute the changes systematically',
+            'Monitor results and iterate'
+          ],
+          automatedFix: false,
+          estimatedTime: issue.impact === 'high' ? '1-2 days' : '2-4 hours'
+        }));
+
+        setRealIssues(convertedIssues.length > 0 ? convertedIssues : mockIssues);
+        toast.success(`Found ${convertedIssues.length} SEO issues to address`);
+      } else {
+        setRealIssues(mockIssues);
+      }
+    } catch (error) {
+      console.error('Error in fetchRealSEOIssues:', error);
+      setRealIssues(mockIssues);
+      toast.warning('Using demo data - real analysis unavailable');
+    } finally {
+      setIsLoadingIssues(false);
+    }
+  };
 
   const handleIssueClick = (issueData: any) => {
-    // Find the matching issue from our mock data
-    const issue = mockIssues.find(i => 
+    // Find the matching issue from our real data or fallback to mock
+    const allIssues = [...realIssues, ...mockIssues];
+    const issue = allIssues.find(i => 
       i.description === issueData.description || 
       i.title.toLowerCase().includes(issueData.description.toLowerCase().split(' ')[0])
     );

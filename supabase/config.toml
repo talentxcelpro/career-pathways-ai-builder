@@ -186,4 +186,12 @@ verify_jwt = false
 [functions.sitemap-module]
 verify_jwt = false
 
+# SEO Analysis Functions (New)
+[functions.seo-site-analyzer]
+verify_jwt = false
 
+[functions.seo-keyword-research]
+verify_jwt = false
+
+[functions.seo-content-optimizer]
+verify_jwt = false

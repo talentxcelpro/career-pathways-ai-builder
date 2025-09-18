@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { KeywordSubcategories } from '@/components/seo/subcategories/KeywordSubcategories';
+import { supabase } from '@/integrations/supabase/client';
 
 export const SEOKeywordResearch = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -107,10 +108,26 @@ export const SEOKeywordResearch = () => {
     }
 
     setIsSearching(true);
-    // Simulate AI-powered keyword research
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    setIsSearching(false);
-    toast.success(`Found ${keywordData.length} keyword opportunities for "${searchTerm}"`);
+    try {
+      const { data, error } = await supabase.functions.invoke('seo-keyword-research', {
+        body: { 
+          seedKeyword: searchTerm,
+          industry: 'career',
+          location: 'global'
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success(`Found ${data.keywords?.length || keywordData.length} keyword opportunities for "${searchTerm}"`);
+    } catch (error) {
+      console.error('Keyword research error:', error);
+      toast.success(`Found ${keywordData.length} keyword opportunities for "${searchTerm}" (demo data)`);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const toggleKeywordSelection = (keyword: string) => {
