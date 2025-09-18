@@ -24,6 +24,7 @@ import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
 import { analyticsRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
+import { gamificationRoutes } from "./navigation/gamificationRoutes";
 import { publicRoutes } from "./navigation/publicRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
@@ -126,6 +127,7 @@ export const navItems = [
   ...proRoutes,
   ...assessmentRoutes,
   ...referralRoutes,
+  ...gamificationRoutes,
   ...mobileRoutes,
   ...mobileSearchRoutes,
   ...notificationRoutes,
