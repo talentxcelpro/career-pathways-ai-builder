@@ -1,44 +1,11 @@
 import React, { Suspense, lazy } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Lazy load recharts components
-const LineChart = lazy(() => import('recharts').then(module => ({ default: module.LineChart })));
-const AreaChart = lazy(() => import('recharts').then(module => ({ default: module.AreaChart })));
-const BarChart = lazy(() => import('recharts').then(module => ({ default: module.BarChart })));
-const PieChart = lazy(() => import('recharts').then(module => ({ default: module.PieChart })));
-
-// Re-export other chart components
-export const LazyLineChart = lazy(() => import('recharts').then(module => ({ 
-  default: ({ children, ...props }: any) => (
-    <Suspense fallback={<ChartSkeleton />}>
-      <module.LineChart {...props}>{children}</module.LineChart>
-    </Suspense>
-  )
-})));
-
-export const LazyAreaChart = lazy(() => import('recharts').then(module => ({ 
-  default: ({ children, ...props }: any) => (
-    <Suspense fallback={<ChartSkeleton />}>
-      <module.AreaChart {...props}>{children}</module.AreaChart>
-    </Suspense>
-  )
-})));
-
-export const LazyBarChart = lazy(() => import('recharts').then(module => ({ 
-  default: ({ children, ...props }: any) => (
-    <Suspense fallback={<ChartSkeleton />}>
-      <module.BarChart {...props}>{children}</module.BarChart>
-    </Suspense>
-  )
-})));
-
-export const LazyPieChart = lazy(() => import('recharts').then(module => ({ 
-  default: ({ children, ...props }: any) => (
-    <Suspense fallback={<ChartSkeleton />}>
-      <module.PieChart {...props}>{children}</module.PieChart>
-    </Suspense>
-  )
-})));
+// Properly lazy load recharts components
+export const LazyLineChart = lazy(() => import('recharts').then(module => ({ default: module.LineChart })));
+export const LazyAreaChart = lazy(() => import('recharts').then(module => ({ default: module.AreaChart })));
+export const LazyBarChart = lazy(() => import('recharts').then(module => ({ default: module.BarChart })));
+export const LazyPieChart = lazy(() => import('recharts').then(module => ({ default: module.PieChart })));
 
 // Chart components that are commonly used together
 export const LazyResponsiveContainer = lazy(() => import('recharts').then(module => ({ default: module.ResponsiveContainer })));
