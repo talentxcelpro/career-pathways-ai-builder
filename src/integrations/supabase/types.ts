@@ -27524,6 +27524,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      award_achievement_enhanced: {
+        Args: {
+          p_achievement_type: string
+          p_metadata?: Json
+          p_user_id: string
+        }
+        Returns: Json
+      }
       award_tokens: {
         Args: {
           p_amount: number
@@ -28193,6 +28201,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: string
       }
+      get_user_referral_tier: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
       get_user_subscription_tier: {
         Args: { user_uuid: string }
         Returns: string
@@ -28700,6 +28712,14 @@ export type Database = {
               p_user_id: string
             }
         Returns: undefined
+      }
+      update_user_progress: {
+        Args: {
+          p_activity_type?: string
+          p_points_earned: number
+          p_user_id: string
+        }
+        Returns: Json
       }
       upsert_daily_analytics: {
         Args: { p_date: string; p_field: string; p_increment?: number }
