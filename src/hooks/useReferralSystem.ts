@@ -198,6 +198,35 @@ export const useReferralSystem = () => {
     }
   }, [user]);
 
+  const generateReferralLink = async () => {
+    const code = await generateReferralCode();
+    return code ? `${window.location.origin}/signup?ref=${code}` : '';
+  };
+
+  const copyReferralLink = async () => {
+    const link = await generateReferralLink();
+    if (link) {
+      await navigator.clipboard.writeText(link);
+      toast({
+        title: "Copied!",
+        description: "Referral link copied to clipboard",
+      });
+    }
+  };
+
+  const shareOnPlatform = (platform: 'whatsapp' | 'twitter' | 'linkedin') => {
+    shareReferral(platform);
+  };
+
+  const getTierProgress = () => {
+    const completedReferrals = referrals.filter(r => r.status === 'completed').length;
+    return {
+      current: completedReferrals,
+      nextTier: Math.ceil((completedReferrals + 1) / 5) * 5,
+      progress: (completedReferrals % 5) * 20
+    };
+  };
+
   return {
     referrals,
     myReferralCode,
@@ -205,6 +234,19 @@ export const useReferralSystem = () => {
     generateReferralCode,
     useReferralCode,
     fetchReferrals,
-    shareReferral
+    shareReferral,
+    referralData: {
+      totalReferrals: referrals.length,
+      completedReferrals: referrals.filter(r => r.status === 'completed').length,
+      pendingReferrals: referrals.filter(r => r.status === 'pending').length,
+      totalEarnings: referrals.filter(r => r.status === 'completed').reduce((sum, r) => sum + r.txc_reward, 0)
+    },
+    referralEvents: referrals,
+    referralRewards: referrals.filter(r => r.status === 'completed'),
+    loading: isLoading,
+    generateReferralLink,
+    copyReferralLink,
+    shareOnPlatform,
+    getTierProgress
   };
 };

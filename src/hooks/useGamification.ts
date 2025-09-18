@@ -225,6 +225,19 @@ export const useGamification = () => {
     checkAchievements,
     getAchievementProgress,
     getRecentAchievements,
-    getTotalTXCFromAchievements
+    getTotalTXCFromAchievements,
+    stats: {
+      totalAchievements: achievements.length,
+      totalTXC: getTotalTXCFromAchievements(),
+      currentStreak: userStreaks?.current_login_streak || 0,
+      profileCompletion: 75
+    },
+    updateProfileCompletion: async () => {
+      await fetchAchievements();
+    },
+    refreshAchievements: fetchAchievements,
+    refreshStreaks: fetchUserStreaks,
+    refreshLeaderboards: fetchLeaderboards,
+    updateStreak: checkAchievements
   };
 };

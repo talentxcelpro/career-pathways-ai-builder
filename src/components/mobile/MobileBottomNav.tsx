@@ -4,7 +4,9 @@ import {
   Briefcase, 
   Play,
   MessageCircle,
-  CreditCard
+  CreditCard,
+  Trophy,
+  Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -44,7 +46,8 @@ export const MobileBottomNav = () => {
     { to: '/network', icon: MessageCircle, label: 'Network', badge: unreadMessages > 0 },
     { to: '/mobile/reels', icon: Play, label: 'Reels' },
     { to: '/jobs', icon: Briefcase, label: 'Jobs' },
-    { to: '/passport', icon: CreditCard, label: 'Passport' },
+    { to: '/gamification', icon: Trophy, label: 'Rewards' },
+    { to: '/refer-and-earn', icon: Users, label: 'Refer' },
   ];
 
   const isCurrentPath = (path: string) => {
