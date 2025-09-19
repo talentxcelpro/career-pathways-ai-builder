@@ -33,18 +33,18 @@ export const EnhancedJobApplicationDialog: React.FC<EnhancedJobApplicationDialog
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="h-[95vh] p-0 mobile-optimized">
+        <DrawerContent className="h-[90vh] p-0 mobile-optimized">
           <div className="relative h-full flex flex-col">
-            <DrawerHeader className="flex-shrink-0 pb-2 safe-top">
+            <DrawerHeader className="flex-shrink-0 py-2 px-3 border-b safe-top">
               <div className="flex items-center justify-between">
-                <DrawerTitle className="text-lg font-semibold">Job Application</DrawerTitle>
+                <DrawerTitle className="text-sm font-medium">Apply for Job</DrawerTitle>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="touch-target rounded-full hover:bg-muted"
+                  size="sm"
+                  className="h-7 w-7 p-0"
                   onClick={handleCancel}
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             </DrawerHeader>

@@ -115,58 +115,62 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
   }
 
   return (
-    <div className={`space-y-${isMobile ? '4' : '6'}`}>
-      <div className="text-center">
-        <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-2`}>Select Your Resume</h3>
-        <p className={`text-muted-foreground ${isMobile ? 'text-sm' : ''}`}>
-          Choose an existing resume or upload a new one to apply for this position.
-        </p>
-      </div>
+    <div className={`space-y-${isMobile ? '3' : '6'}`}>
+      {!isMobile && (
+        <div className="text-center">
+          <h3 className="text-lg font-semibold mb-2">Select Your Resume</h3>
+          <p className="text-muted-foreground">
+            Choose an existing resume or upload a new one to apply for this position.
+          </p>
+        </div>
+      )}
 
       <RadioGroup
         value={formData.resumeSource}
         onValueChange={handleResumeSourceChange}
-        className="space-y-4"
+        className={`space-y-${isMobile ? '2' : '4'}`}
       >
         {/* Existing Resumes Option */}
         {resumes.length > 0 && (
-          <div className="space-y-4">
+          <div className={`space-y-${isMobile ? '2' : '4'}`}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="existing" id="existing" />
-              <Label htmlFor="existing" className="text-base font-medium">
+              <Label htmlFor="existing" className={`${isMobile ? 'text-xs' : 'text-base'} font-medium`}>
                 Use existing resume
               </Label>
             </div>
             
             {formData.resumeSource === 'existing' && (
-              <div className="grid gap-3 ml-6">
+              <div className={`grid gap-${isMobile ? '2' : '3'} ${isMobile ? 'ml-4' : 'ml-6'}`}>
                 {resumes.map((resume) => (
                   <Card
                     key={resume.id}
                     className={`cursor-pointer transition-colors hover:bg-muted/50 ${
                       formData.selectedResumeId === resume.id
-                        ? 'ring-2 ring-primary bg-primary/5'
+                        ? 'ring-1 ring-primary bg-primary/5'
                         : ''
                     }`}
                     onClick={() => handleResumeSelect(resume.id)}
                   >
-                    <CardContent className="p-4">
+                    <CardContent className={`${isMobile ? 'p-2' : 'p-4'}`}>
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                            <FileText className="h-5 w-5 text-primary" />
+                        <div className="flex items-center space-x-2">
+                          <div className={`${isMobile ? 'w-6 h-6' : 'w-10 h-10'} bg-primary/10 rounded-lg flex items-center justify-center`}>
+                            <FileText className={`${isMobile ? 'h-3 w-3' : 'h-5 w-5'} text-primary`} />
                           </div>
                           <div>
-                            <h4 className="font-medium flex items-center gap-2">
+                            <h4 className={`${isMobile ? 'text-xs' : 'font-medium'} flex items-center gap-2`}>
                               {resume.title}
                               {resume.is_primary && (
-                                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                                <Star className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} text-yellow-500 fill-current`} />
                               )}
                             </h4>
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3 mr-1" />
-                              {new Date(resume.created_at).toLocaleDateString()}
-                            </div>
+                            {!isMobile && (
+                              <div className="flex items-center text-sm text-muted-foreground">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                {new Date(resume.created_at).toLocaleDateString()}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <RadioGroupItem 
@@ -184,17 +188,17 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
         )}
 
         {/* Upload New Resume Option */}
-        <div className="space-y-4">
+        <div className={`space-y-${isMobile ? '2' : '4'}`}>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="upload" id="upload" />
-            <Label htmlFor="upload" className="text-base font-medium">
+            <Label htmlFor="upload" className={`${isMobile ? 'text-xs' : 'text-base'} font-medium`}>
               Upload new resume
             </Label>
           </div>
           
           {formData.resumeSource === 'upload' && (
-            <div className="ml-6">
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+            <div className={`${isMobile ? 'ml-4' : 'ml-6'}`}>
+              <div className={`border-2 border-dashed border-muted-foreground/25 rounded-lg text-center ${isMobile ? 'p-3' : 'p-6'}`}>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
@@ -206,13 +210,16 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById('resume-upload')?.click()}
-                  className={`w-full ${isMobile ? 'text-sm touch-target' : 'max-w-xs'}`}
-                  size={isMobile ? "lg" : "default"}
+                  className="w-full"
+                  size={isMobile ? "sm" : "default"}
                 >
-                  <Upload className="h-4 w-4 mr-2" />
-                  {formData.uploadedResume ? formData.uploadedResume.name : 'Choose Resume File'}
+                  <Upload className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-2`} />
+                  {formData.uploadedResume ? 
+                    (isMobile ? 'Resume Selected' : formData.uploadedResume.name) : 
+                    (isMobile ? 'Upload Resume' : 'Choose Resume File')
+                  }
                 </Button>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-muted-foreground mt-2`}>
                   PDF, DOC, DOCX (Max 10MB)
                 </p>
               </div>

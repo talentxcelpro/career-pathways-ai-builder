@@ -174,165 +174,138 @@ const DeclarationStep: React.FC<DeclarationStepProps> = ({
   };
 
   return (
-    <div className={`space-y-${isMobile ? '6' : '8'}`}>
-      <div className="text-center">
-        <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-2`}>Review & Submit Application</h3>
-        <p className={`text-muted-foreground ${isMobile ? 'text-sm' : ''}`}>
-          Please review your information and confirm the declarations below.
-        </p>
-      </div>
+    <div className={`space-y-${isMobile ? '3' : '8'}`}>
+      {!isMobile && (
+        <div className="text-center">
+          <h3 className="text-lg font-semibold mb-2">Review & Submit Application</h3>
+          <p className="text-muted-foreground">
+            Please review your information and confirm the declarations below.
+          </p>
+        </div>
+      )}
 
       {/* Application Summary */}
-      <Card>
-        <CardContent className="p-6">
+      <div className={`${isMobile ? 'bg-muted/30 rounded-lg p-2' : 'bg-card border rounded-lg p-6'}`}>
+        {!isMobile && (
           <h4 className="font-semibold mb-4 flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
             Application Summary
           </h4>
-          
-          <div className="space-y-4">
-            {/* Job Details */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">Position</span>
-              </div>
-              <div className="ml-6">
-                <p className="font-medium">{job.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  at {job.companies?.name || job.company_name}
-                </p>
-              </div>
+        )}
+        
+        <div className={`space-y-${isMobile ? '2' : '4'}`}>
+          {/* Job Details */}
+          <div>
+            <div className={`flex items-center gap-2 ${isMobile ? 'mb-1' : 'mb-2'}`}>
+              <Briefcase className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
+              <span className={`${isMobile ? 'text-xs' : ''} font-medium`}>Position</span>
             </div>
-
-            <Separator />
-
-            {/* Personal Details */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">Personal Information</span>
-              </div>
-              <div className="ml-6 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                <div><strong>Name:</strong> {formData.fullName}</div>
-                <div><strong>Email:</strong> {formData.email}</div>
-                <div><strong>Phone:</strong> {formData.phoneNumber}</div>
-                <div><strong>Location:</strong> {formData.location}</div>
-              </div>
+            <div className={`${isMobile ? 'ml-4' : 'ml-6'}`}>
+              <p className={`${isMobile ? 'text-xs' : ''} font-medium`}>{job.title}</p>
+              <p className={`${isMobile ? 'text-[10px]' : 'text-sm'} text-muted-foreground`}>
+                at {job.companies?.name || job.company_name}
+              </p>
             </div>
+          </div>
 
-            <Separator />
+          {!isMobile && <Separator />}
 
-            {/* Professional Details */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">Professional Information</span>
-              </div>
-              <div className="ml-6 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                {formData.yearsOfExperience && (
-                  <div><strong>Experience:</strong> {formData.yearsOfExperience}</div>
-                )}
-                {formData.currentCTC && (
-                  <div><strong>Current CTC:</strong> ₹{formData.currentCTC} LPA</div>
-                )}
-                {formData.expectedCTC && (
-                  <div><strong>Expected CTC:</strong> ₹{formData.expectedCTC} LPA</div>
-                )}
-                {formData.noticePeriod && (
-                  <div><strong>Notice Period:</strong> {formData.noticePeriod.replace('_', ' ')}</div>
-                )}
-              </div>
+          {/* Personal Details */}
+          <div>
+            <div className={`flex items-center gap-2 ${isMobile ? 'mb-1' : 'mb-2'}`}>
+              <User className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
+              <span className={`${isMobile ? 'text-xs' : ''} font-medium`}>Personal Info</span>
             </div>
+            <div className={`${isMobile ? 'ml-4 text-[10px]' : 'ml-6 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm'}`}>
+              <div><strong>Name:</strong> {formData.fullName}</div>
+              <div><strong>Email:</strong> {formData.email}</div>
+              {!isMobile && (
+                <>
+                  <div><strong>Phone:</strong> {formData.phoneNumber}</div>
+                  <div><strong>Location:</strong> {formData.location}</div>
+                </>
+              )}
+            </div>
+          </div>
 
-            {/* Resume & Documents */}
-            <Separator />
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">Documents</span>
-              </div>
-              <div className="ml-6 space-y-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span>Resume: {
-                    formData.resumeSource === 'upload' && formData.uploadedResume
-                      ? formData.uploadedResume.name
-                      : 'Existing resume selected'
-                  }</span>
-                </div>
-                {formData.coverLetter && (
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Cover Letter: {formData.coverLetter.name}</span>
-                  </div>
-                )}
+          {/* Resume & Documents */}
+          {!isMobile && <Separator />}
+          <div>
+            <div className={`flex items-center gap-2 ${isMobile ? 'mb-1' : 'mb-2'}`}>
+              <FileText className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground`} />
+              <span className={`${isMobile ? 'text-xs' : ''} font-medium`}>Documents</span>
+            </div>
+            <div className={`${isMobile ? 'ml-4 text-[10px]' : 'ml-6 space-y-1 text-sm'}`}>
+              <div className="flex items-center gap-2">
+                <CheckCircle className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} text-green-500`} />
+                <span>Resume attached</span>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Declarations */}
-      <Card>
-        <CardContent className="p-6">
+      <div className={`${isMobile ? 'bg-muted/30 rounded-lg p-2' : 'bg-card border rounded-lg p-6'}`}>
+        {!isMobile && (
           <h4 className="font-semibold mb-4 flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
             Declarations
           </h4>
-          
-          <div className="space-y-4">
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="information-confirmed"
-                checked={formData.informationConfirmed}
-                onCheckedChange={(checked) => 
-                  onUpdate({ informationConfirmed: checked as boolean })
+        )}
+        
+        <div className={`space-y-${isMobile ? '2' : '4'}`}>
+          <div className={`flex items-start space-x-${isMobile ? '2' : '3'}`}>
+            <Checkbox
+              id="information-confirmed"
+              checked={formData.informationConfirmed}
+              onCheckedChange={(checked) => 
+                onUpdate({ informationConfirmed: checked as boolean })
+              }
+              className="mt-1"
+            />
+            <div className="space-y-1">
+              <label
+                htmlFor="information-confirmed"
+                className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer`}
+              >
+                Information Accuracy
+              </label>
+              <p className={`${isMobile ? 'text-[10px]' : 'text-sm'} text-muted-foreground`}>
+                {isMobile ? 
+                  "I confirm all information provided is true and accurate." :
+                  "I confirm that all the information provided in this application is true, complete, and accurate to the best of my knowledge. I understand that any false or misleading information may result in the rejection of my application or termination of employment if discovered later."
                 }
-                className="mt-1"
-              />
-              <div className="space-y-1">
-                <label
-                  htmlFor="information-confirmed"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                >
-                  Information Accuracy
-                </label>
-                <p className="text-sm text-muted-foreground">
-                  I confirm that all the information provided in this application is true, 
-                  complete, and accurate to the best of my knowledge. I understand that any 
-                  false or misleading information may result in the rejection of my application 
-                  or termination of employment if discovered later.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Checkbox
-                id="contact-authorized"
-                checked={formData.contactAuthorized}
-                onCheckedChange={(checked) => 
-                  onUpdate({ contactAuthorized: checked as boolean })
-                }
-                className="mt-1"
-              />
-              <div className="space-y-1">
-                <label
-                  htmlFor="contact-authorized"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                >
-                  Authorization to Contact
-                </label>
-                <p className="text-sm text-muted-foreground">
-                  I authorize the employer to contact me via the phone number and email 
-                  address provided. I also consent to the processing of my personal data 
-                  for recruitment purposes in accordance with applicable data protection laws.
-                </p>
-              </div>
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className={`flex items-start space-x-${isMobile ? '2' : '3'}`}>
+            <Checkbox
+              id="contact-authorized"
+              checked={formData.contactAuthorized}
+              onCheckedChange={(checked) => 
+                onUpdate({ contactAuthorized: checked as boolean })
+              }
+              className="mt-1"
+            />
+            <div className="space-y-1">
+              <label
+                htmlFor="contact-authorized"
+                className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer`}
+              >
+                Authorization to Contact
+              </label>
+              <p className={`${isMobile ? 'text-[10px]' : 'text-sm'} text-muted-foreground`}>
+                {isMobile ?
+                  "I authorize the employer to contact me and process my data for recruitment." :
+                  "I authorize the employer to contact me via the phone number and email address provided. I also consent to the processing of my personal data for recruitment purposes in accordance with applicable data protection laws."
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Submit Button */}
       <div className="flex justify-center">
@@ -343,8 +316,8 @@ const DeclarationStep: React.FC<DeclarationStepProps> = ({
             !formData.informationConfirmed || 
             !formData.contactAuthorized
           }
-          size="lg"
-          className={isMobile ? "w-full touch-target" : "min-w-[200px]"}
+          size={isMobile ? "sm" : "lg"}
+          className={isMobile ? "w-full" : "min-w-[200px]"}
         >
           {isSubmitting ? (
             <>
@@ -361,19 +334,21 @@ const DeclarationStep: React.FC<DeclarationStepProps> = ({
       </div>
 
       {/* Privacy Notice */}
-      <div className="bg-muted/50 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
-          <div className="text-sm">
-            <p className="font-medium mb-1">Privacy & Data Protection</p>
-            <p className="text-muted-foreground">
-              Your personal information will be processed in accordance with our Privacy Policy. 
-              We will only use your data for recruitment purposes and will not share it with 
-              third parties without your consent.
-            </p>
+      {!isMobile && (
+        <div className="bg-muted/50 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
+            <div className="text-sm">
+              <p className="font-medium mb-1">Privacy & Data Protection</p>
+              <p className="text-muted-foreground">
+                Your personal information will be processed in accordance with our Privacy Policy. 
+                We will only use your data for recruitment purposes and will not share it with 
+                third parties without your consent.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

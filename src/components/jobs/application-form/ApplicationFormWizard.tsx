@@ -119,45 +119,36 @@ export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({
     return (
       <div className="h-full flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5 mobile-optimized">
         {/* Mobile Progress Header */}
-        <div className="flex-shrink-0 px-4 py-3 safe-top">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-2">
+        <div className="flex-shrink-0 px-3 py-2 safe-top border-b">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-1">
               {steps.map((step, index) => (
                 <div
                   key={step.id}
-                  className={`w-8 h-1 rounded-full transition-all duration-300 ${
+                  className={`w-6 h-1 rounded-full transition-all duration-300 ${
                     index <= currentStep ? 'bg-primary' : 'bg-muted'
                   }`}
                 />
               ))}
             </div>
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground">
               {currentStep + 1}/{steps.length}
             </span>
           </div>
           
           <div className="text-center">
-            <h1 className="text-lg font-bold text-foreground mb-1 line-clamp-2">
+            <h1 className="text-sm font-medium text-foreground mb-1 line-clamp-1">
               {job.title}
             </h1>
-            <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
-              at {job.companies?.name || job.company_name}
-            </p>
-            <div className="space-y-1">
-              <h2 className="text-base font-semibold text-foreground">
-                {steps[currentStep].title}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {steps[currentStep].description}
-              </p>
-            </div>
+            <h2 className="text-xs font-medium text-foreground">
+              {steps[currentStep].title}
+            </h2>
           </div>
         </div>
 
         {/* Mobile Step Content */}
-        <div className="flex-1 overflow-y-auto px-4 pb-4">
-          <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-4">
+        <div className="flex-1 overflow-y-auto px-2 pb-2">
+          <div className="p-3">
               {currentStep === 0 && (
                 <ResumeSelectionStep
                   formData={formData}
@@ -220,31 +211,28 @@ export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({
                   isMobile={true}
                 />
               )}
-            </CardContent>
-          </Card>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex-shrink-0 p-4 safe-bottom bg-background/95 backdrop-blur-sm border-t">
-          <div className="flex gap-3">
+        <div className="flex-shrink-0 p-2 safe-bottom bg-background border-t">
+          <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={currentStep === 0 ? onCancel : handleBack}
-              className="flex-1 touch-target"
-              size="lg"
+              className="flex-1"
+              size="sm"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
               {currentStep === 0 ? 'Cancel' : 'Back'}
             </Button>
             
             <Button
               onClick={currentStep === steps.length - 1 ? handleComplete : handleNext}
               disabled={!canProceed()}
-              className="flex-1 touch-target"
-              size="lg"
+              className="flex-1"
+              size="sm"
             >
               {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
-              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </div>
