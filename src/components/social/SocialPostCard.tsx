@@ -281,7 +281,11 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleLike()}
+                  onClick={() => {
+                    toggleLike();
+                    // Trigger TXC mining for post like
+                    window.dispatchEvent(new CustomEvent('txc:post_liked'));
+                  }}
                   disabled={isLiking}
                   className={`gap-1 transition-colors ${
                     interactions.isLiked ? 'text-red-600 hover:text-red-700' : 'text-gray-600 hover:text-red-600'
