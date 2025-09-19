@@ -152,6 +152,12 @@ const txcTokenItems = [
 
 const linkedinToolsItems = [
   {
+    title: 'LinkedIn Importer',
+    url: '/admin/linkedin-importer',
+    icon: Linkedin,
+    description: 'LinkedIn profile import management'
+  },
+  {
     title: 'LinkedIn Bulk Upload',
     url: '/admin/linkedin-bulk-upload',
     icon: Linkedin,
@@ -172,6 +178,12 @@ const linkedinToolsItems = [
 ];
 
 const enterpriseItems = [
+  {
+    title: 'Enterprise Overview',
+    url: '/admin/enterprise-overview',
+    icon: Factory,
+    description: 'Complete enterprise management dashboard'
+  },
   {
     title: 'Enterprise Solutions',
     url: '/admin/enterprise',

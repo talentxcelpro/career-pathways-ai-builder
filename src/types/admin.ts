@@ -18,6 +18,16 @@ export interface AdminPermissions {
   canExportData: boolean;
   canModerateContent: boolean;
   canManageRoles: boolean;
+  canAccessTXC: boolean;
+  canAccessLinkedIn: boolean;
+  canAccessEnterprise: boolean;
+  canAccessAI: boolean;
+  canAccessSEO: boolean;
+  canAccessContent: boolean;
+  canAccessMarketing: boolean;
+  canAccessBots: boolean;
+  canAccessNews: boolean;
+  canAccessEdgeFunctions: boolean;
 }
 
 export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
@@ -38,6 +48,16 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canExportData: true,
     canModerateContent: true,
     canManageRoles: true,
+    canAccessTXC: true,
+    canAccessLinkedIn: true,
+    canAccessEnterprise: true,
+    canAccessAI: true,
+    canAccessSEO: true,
+    canAccessContent: true,
+    canAccessMarketing: true,
+    canAccessBots: true,
+    canAccessNews: true,
+    canAccessEdgeFunctions: true,
   },
   content_admin: {
     canAccessDashboard: true,
@@ -56,6 +76,16 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canExportData: true,
     canModerateContent: true,
     canManageRoles: false,
+    canAccessTXC: false,
+    canAccessLinkedIn: false,
+    canAccessEnterprise: false,
+    canAccessAI: true,
+    canAccessSEO: true,
+    canAccessContent: true,
+    canAccessMarketing: true,
+    canAccessBots: true,
+    canAccessNews: true,
+    canAccessEdgeFunctions: false,
   },
   job_admin: {
     canAccessDashboard: true,
@@ -74,6 +104,16 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canExportData: true,
     canModerateContent: false,
     canManageRoles: false,
+    canAccessTXC: false,
+    canAccessLinkedIn: true,
+    canAccessEnterprise: false,
+    canAccessAI: false,
+    canAccessSEO: true,
+    canAccessContent: false,
+    canAccessMarketing: false,
+    canAccessBots: false,
+    canAccessNews: false,
+    canAccessEdgeFunctions: false,
   },
   support_admin: {
     canAccessDashboard: true,
@@ -92,6 +132,16 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canExportData: false,
     canModerateContent: true,
     canManageRoles: false,
+    canAccessTXC: false,
+    canAccessLinkedIn: false,
+    canAccessEnterprise: false,
+    canAccessAI: false,
+    canAccessSEO: false,
+    canAccessContent: false,
+    canAccessMarketing: false,
+    canAccessBots: false,
+    canAccessNews: false,
+    canAccessEdgeFunctions: false,
   },
   moderator: {
     canAccessDashboard: true,
@@ -110,5 +160,15 @@ export const ROLE_PERMISSIONS: Record<AdminRole, AdminPermissions> = {
     canExportData: false,
     canModerateContent: true,
     canManageRoles: false,
+    canAccessTXC: false,
+    canAccessLinkedIn: false,
+    canAccessEnterprise: false,
+    canAccessAI: false,
+    canAccessSEO: false,
+    canAccessContent: false,
+    canAccessMarketing: false,
+    canAccessBots: false,
+    canAccessNews: false,
+    canAccessEdgeFunctions: false,
   },
 };

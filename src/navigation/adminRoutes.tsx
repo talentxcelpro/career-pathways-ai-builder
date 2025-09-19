@@ -63,6 +63,8 @@ import NewsAutomationPage from "../pages/admin/NewsAutomationPage";
 import ProductRequirementDocument from "../pages/admin/ProductRequirementDocument";
 import NewsManagement from "../pages/admin/NewsManagement";
 import EdgeFunctionsMonitor from "../pages/admin/EdgeFunctionsMonitor";
+import LinkedInImporter from "../pages/admin/LinkedInImporter";
+import EnterpriseOverview from "../pages/admin/EnterpriseOverview";
 
 export const adminRoutes = [
   {
@@ -511,6 +513,20 @@ export const adminRoutes = [
     to: "/admin/edge-functions-monitor",
     icon: <Eye className="h-4 w-4" />,
     page: <EdgeFunctionsMonitor />,
+    requiresAuth: true,
+  },
+  {
+    title: "LinkedIn Importer",
+    to: "/admin/linkedin-importer",
+    icon: <Upload className="h-4 w-4" />,
+    page: <LinkedInImporter />,
+    requiresAuth: true,
+  },
+  {
+    title: "Enterprise Overview",
+    to: "/admin/enterprise-overview",
+    icon: <Building2 className="h-4 w-4" />,
+    page: <EnterpriseOverview />,
     requiresAuth: true,
   }
 ];

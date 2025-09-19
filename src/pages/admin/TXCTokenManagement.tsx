@@ -14,46 +14,24 @@ import {
   ArrowDownRight,
   Plus,
   Minus,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useTXCTokenStats, useTXCTopHolders, useTXCRecentTransactions } from '@/hooks/useTXCData';
+import { ProtectedAdminRoute } from '@/components/admin/ProtectedAdminRoute';
 
 const TXCTokenManagement = () => {
-  // Mock data - replace with real queries
-  const { data: tokenStats } = useQuery({
-    queryKey: ['txc-token-stats'],
-    queryFn: async () => ({
-      totalSupply: 50000000,
-      circulatingSupply: 12500000,
-      totalHolders: 8450,
-      avgBalance: 1480,
-      dailyTransactions: 2340,
-      weeklyGrowth: 12.5
-    })
-  });
+  const { data: tokenStats, isLoading: statsLoading } = useTXCTokenStats();
+  const { data: topHolders, isLoading: holdersLoading } = useTXCTopHolders();
+  const { data: recentTransactions, isLoading: transactionsLoading } = useTXCRecentTransactions();
 
-  const { data: topHolders } = useQuery({
-    queryKey: ['txc-top-holders'],
-    queryFn: async () => [
-      { id: '1', name: 'Rajesh Kumar', email: 'rajesh@example.com', balance: 15750, rank: 1 },
-      { id: '2', name: 'Priya Sharma', email: 'priya@example.com', balance: 14200, rank: 2 },
-      { id: '3', name: 'Amit Singh', email: 'amit@example.com', balance: 12800, rank: 3 },
-      { id: '4', name: 'Neha Gupta', email: 'neha@example.com', balance: 11500, rank: 4 },
-      { id: '5', name: 'Vikram Patel', email: 'vikram@example.com', balance: 10900, rank: 5 }
-    ]
-  });
-
-  const { data: recentTransactions } = useQuery({
-    queryKey: ['txc-recent-transactions'],
-    queryFn: async () => [
-      { id: '1', user: 'Rajesh Kumar', type: 'earned', amount: 150, activity: 'Created post', timestamp: '2024-01-20T10:30:00Z' },
-      { id: '2', user: 'Priya Sharma', type: 'earned', amount: 75, activity: 'Daily login', timestamp: '2024-01-20T09:15:00Z' },
-      { id: '3', user: 'Amit Singh', type: 'earned', amount: 300, activity: 'Profile completion', timestamp: '2024-01-20T08:45:00Z' },
-      { id: '4', user: 'Neha Gupta', type: 'earned', amount: 90, activity: 'Applied to job', timestamp: '2024-01-20T08:20:00Z' },
-      { id: '5', user: 'Vikram Patel', type: 'earned', amount: 120, activity: 'Gave recommendation', timestamp: '2024-01-19T17:30:00Z' }
-    ]
-  });
+  if (statsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -136,22 +114,28 @@ const TXCTokenManagement = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {topHolders?.map((holder) => (
-                  <div key={holder.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">#{holder.rank}</Badge>
-                      <div>
-                        <p className="font-medium">{holder.name}</p>
-                        <p className="text-sm text-muted-foreground">{holder.email}</p>
+              {holdersLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {topHolders?.map((holder) => (
+                    <div key={holder.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary">#{holder.rank}</Badge>
+                        <div>
+                          <p className="font-medium">{holder.name}</p>
+                          <p className="text-sm text-muted-foreground">{holder.email}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-primary">{holder.balance.toLocaleString()} TXC</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-primary">{holder.balance.toLocaleString()} TXC</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -165,27 +149,33 @@ const TXCTokenManagement = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentTransactions?.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
-                        <ArrowUpRight className="h-4 w-4 text-green-600" />
+              {transactionsLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentTransactions?.map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
+                          <ArrowUpRight className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{transaction.user}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.activity}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{transaction.user}</p>
-                        <p className="text-sm text-muted-foreground">{transaction.activity}</p>
+                      <div className="text-right">
+                        <p className="font-bold text-green-600">+{transaction.amount} TXC</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(transaction.timestamp).toLocaleString()}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-green-600">+{transaction.amount} TXC</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(transaction.timestamp).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -275,4 +265,10 @@ const TXCTokenManagement = () => {
   );
 };
 
-export default TXCTokenManagement;
+const WrappedTXCTokenManagement = () => (
+  <ProtectedAdminRoute requiredPermission="canAccessTXC">
+    <TXCTokenManagement />
+  </ProtectedAdminRoute>
+);
+
+export default WrappedTXCTokenManagement;
