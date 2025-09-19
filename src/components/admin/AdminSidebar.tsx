@@ -29,7 +29,22 @@ import {
   Eye,
   Newspaper,
   Rocket,
-  Search
+  Search,
+  Coins,
+  Package,
+  Database,
+  Globe,
+  Zap,
+  Target,
+  MessageSquare,
+  Calendar,
+  Filter,
+  Code,
+  Archive,
+  Gift,
+  Linkedin,
+  DollarSign,
+  Factory
 } from 'lucide-react';
 import {
   Sidebar,
@@ -47,7 +62,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAdminStats } from '@/hooks/useAdminStats';
 
-const adminMenuItems = [
+const coreAdminItems = [
   {
     title: 'Dashboard',
     url: '/admin',
@@ -61,6 +76,21 @@ const adminMenuItems = [
     description: 'Manage all users'
   },
   {
+    title: 'Admin Management',
+    url: '/admin/admins',
+    icon: Settings,
+    description: 'Manage administrators'
+  },
+  {
+    title: 'Security',
+    url: '/admin/security',
+    icon: Lock,
+    description: 'Logs & security monitoring'
+  }
+];
+
+const businessItems = [
+  {
     title: 'Pro Users',
     url: '/admin/pro-users',
     icon: Crown,
@@ -71,19 +101,7 @@ const adminMenuItems = [
     url: '/admin/employer-requests',
     icon: Building2,
     description: 'Review employer applications',
-    badge: 'dynamic' // This will be updated dynamically
-  },
-  {
-    title: 'Jobs Management',
-    url: '/admin/jobs',
-    icon: Briefcase,
-    description: 'Manage job postings'
-  },
-  {
-    title: 'Companies',
-    url: '/admin/companies',
-    icon: Building2,
-    description: 'Company profiles & verification'
+    badge: 'dynamic'
   },
   {
     title: 'Employer Dashboard',
@@ -92,106 +110,112 @@ const adminMenuItems = [
     description: 'Access employer features'
   },
   {
-    title: 'Network',
-    url: '/admin/network',
-    icon: Network,
-    description: 'Social network moderation'
+    title: 'Companies',
+    url: '/admin/companies',
+    icon: Building2,
+    description: 'Company profiles & verification'
   },
   {
-    title: 'Learning',
-    url: '/admin/learning',
-    icon: GraduationCap,
-    description: 'Courses & learning paths'
-  },
-  {
-    title: 'Colleges',
-    url: '/admin/colleges',
-    icon: GraduationCap,
-    description: 'College management & verification'
-  },
-  {
-    title: 'Career Map',
-    url: '/admin/career-map',
-    icon: Map,
-    description: 'Career guidance system'
-  },
-  {
-    title: 'Resume Management',
-    url: '/admin/resumes',
-    icon: FileText,
-    description: 'Resume templates & tools'
-  },
-  {
-    title: 'SEO Enhancement',
-    url: '/admin/seo-enhancement',
-    icon: Settings,
-    description: 'Job SEO optimization & sitemap'
-  },
-  {
-    title: 'Tools',
-    url: '/admin/tools',
-    icon: Wrench,
-    description: 'AI tools & utilities'
-  },
-  {
-    title: 'Home Content',
-    url: '/admin/home',
-    icon: Home,
-    description: 'Homepage management'
-  },
-  {
-    title: 'Career Platform',
-    url: '/career-platform',
-    icon: Rocket,
-    description: 'Complete AI career platform overview'
-  },
-  {
-    title: 'Analytics',
-    url: '/admin/analytics',
-    icon: BarChart3,
-    description: 'Reports & insights'
-  },
-  {
-    title: 'Payments',
-    url: '/admin/payments',
-    icon: CreditCard,
-    description: 'Pricing & billing'
-  },
-  {
-    title: 'Security',
-    url: '/admin/security',
-    icon: Lock,
-    description: 'Logs & security'
+    title: 'Jobs Management',
+    url: '/admin/jobs',
+    icon: Briefcase,
+    description: 'Manage job postings'
   },
   {
     title: 'Scraped Job CVs',
     url: '/admin/scraped-applications',
     icon: FileText,
     description: 'View scraped job applications and CVs'
+  }
+];
+
+const txcTokenItems = [
+  {
+    title: 'TXC Token Management',
+    url: '/admin/txc-tokens',
+    icon: Coins,
+    description: 'Token balances, transactions & mining'
   },
   {
-    title: 'Talent Database',
-    url: '/talent-database',
-    icon: Upload,
-    description: 'Comprehensive talent management system'
+    title: 'TXC Awards & Bonuses',
+    url: '/admin/txc-awards',
+    icon: Gift,
+    description: 'Social bonuses, joining bonuses & rewards'
   },
   {
-    title: 'Email Automation',
-    url: '/admin/email-automation',
-    icon: Mail,
-    description: 'Manage email templates & triggers'
+    title: 'TXC Analytics',
+    url: '/admin/txc-analytics',
+    icon: BarChart3,
+    description: 'Token economics & usage analytics'
+  }
+];
+
+const linkedinToolsItems = [
+  {
+    title: 'LinkedIn Bulk Upload',
+    url: '/admin/linkedin-bulk-upload',
+    icon: Linkedin,
+    description: 'Bulk import LinkedIn profiles & data'
+  },
+  {
+    title: 'LinkedIn Job Scraper',
+    url: '/admin/linkedin-scraper',
+    icon: Database,
+    description: 'Automated job scraping from LinkedIn'
+  },
+  {
+    title: 'LinkedIn Analytics',
+    url: '/admin/linkedin-analytics',
+    icon: TrendingUp,
+    description: 'LinkedIn import analytics & insights'
+  }
+];
+
+const enterpriseItems = [
+  {
+    title: 'Enterprise Solutions',
+    url: '/admin/enterprise',
+    icon: Factory,
+    description: 'Enterprise AI solutions dashboard'
+  },
+  {
+    title: 'Enterprise Analytics',
+    url: '/admin/enterprise/analytics',
+    icon: BarChart3,
+    description: 'Enterprise performance metrics'
+  },
+  {
+    title: 'Enterprise Clients',
+    url: '/admin/enterprise/clients',
+    icon: Building2,
+    description: 'Manage enterprise client accounts'
+  },
+  {
+    title: 'Enterprise Billing',
+    url: '/admin/enterprise/billing',
+    icon: DollarSign,
+    description: 'Enterprise subscription & billing'
+  }
+];
+
+const aiToolsItems = [
+  {
+    title: 'AI Management',
+    url: '/admin/ai-management',
+    icon: Brain,
+    description: 'Monitor and manage AI features'
   },
   {
     title: 'AI/ML Training Center',
     url: '/admin/ai-ml-training',
     icon: Brain,
-    description: 'Train and manage custom AI models for TalentXcel services'
+    description: 'Train and manage custom AI models'
   },
   {
-    title: 'AI Management',
-    url: '/admin/ai-management',
-    icon: Brain,
-    description: 'Monitor and manage AI features across the platform'
+    title: 'AI Agent Operations',
+    url: '/admin/agent-operations',
+    icon: Bot,
+    description: 'Monitor & manage AI agents'
   },
   {
     title: 'Bot Management',
@@ -212,34 +236,25 @@ const adminMenuItems = [
     description: 'Assign users to bots for posting'
   },
   {
-    title: 'AI Agent Operations',
-    url: '/admin/agent-operations',
-    icon: Bot,
-    description: 'AI Agent Operations Engine - Monitor & manage AI agents'
+    title: 'AI Tools',
+    url: '/admin/tools',
+    icon: Wrench,
+    description: 'AI tools & utilities'
+  }
+];
+
+const contentManagementItems = [
+  {
+    title: 'Home Content',
+    url: '/admin/home',
+    icon: Home,
+    description: 'Homepage management'
   },
   {
-    title: 'Admin Management',
-    url: '/admin/admins',
-    icon: Settings,
-    description: 'Manage administrators'
-  },
-  {
-    title: 'Create Course',
-    url: '/admin/learning/create',
-    icon: GraduationCap,
-    description: 'Create new learning courses'
-  },
-  {
-    title: 'Create Pricing Plan',
-    url: '/admin/pricing/create',
-    icon: CreditCard,
-    description: 'Create new subscription plans'
-  },
-  {
-    title: 'Backlink System',
-    url: '/admin/backlinks',
-    icon: Network,
-    description: 'Automated backlink management & monitoring'
+    title: 'News Management',
+    url: '/admin/news-management',
+    icon: Newspaper,
+    description: 'Manage news articles & press releases'
   },
   {
     title: 'News Automation',
@@ -248,11 +263,119 @@ const adminMenuItems = [
     description: 'Test and manage news feed automation'
   },
   {
+    title: 'Advanced Content Hub',
+    url: '/admin/content-hub',
+    icon: Star,
+    description: 'AI-powered content creation'
+  },
+  {
+    title: 'Email Automation',
+    url: '/admin/email-automation',
+    icon: Mail,
+    description: 'Manage email templates & triggers'
+  }
+];
+
+const platformFeaturesItems = [
+  {
+    title: 'Network',
+    url: '/admin/network',
+    icon: Network,
+    description: 'Social network moderation'
+  },
+  {
+    title: 'Learning',
+    url: '/admin/learning',
+    icon: GraduationCap,
+    description: 'Courses & learning paths'
+  },
+  {
+    title: 'Create Course',
+    url: '/admin/learning/create',
+    icon: GraduationCap,
+    description: 'Create new learning courses'
+  },
+  {
+    title: 'Colleges',
+    url: '/admin/colleges',
+    icon: GraduationCap,
+    description: 'College management & verification'
+  },
+  {
+    title: 'Career Map',
+    url: '/admin/career-map',
+    icon: Map,
+    description: 'Career guidance system'
+  },
+  {
+    title: 'Resume Management',
+    url: '/admin/resumes',
+    icon: FileText,
+    description: 'Resume templates & tools'
+  },
+  {
+    title: 'Talent Database',
+    url: '/talent-database',
+    icon: Upload,
+    description: 'Comprehensive talent management'
+  }
+];
+
+const marketingGrowthItems = [
+  {
+    title: 'SEO Enhancement',
+    url: '/admin/seo-enhancement',
+    icon: Search,
+    description: 'Job SEO optimization & sitemap'
+  },
+  {
     title: 'SEO Suite',
     url: '/seo-suite',
     icon: Search,
     description: 'Advanced SEO tools & analytics'
   },
+  {
+    title: 'Backlink System',
+    url: '/admin/backlinks',
+    icon: Network,
+    description: 'Automated backlink management'
+  },
+  {
+    title: 'Ad Campaign Manager',
+    url: '/admin/campaigns',
+    icon: Target,
+    description: 'Create and manage ad campaigns'
+  },
+  {
+    title: 'Feature Flags',
+    url: '/admin/feature-flags',
+    icon: Filter,
+    description: 'Control feature rollouts & A/B testing'
+  }
+];
+
+const analyticsReportsItems = [
+  {
+    title: 'Analytics',
+    url: '/admin/analytics',
+    icon: BarChart3,
+    description: 'Reports & insights'
+  },
+  {
+    title: 'Payments',
+    url: '/admin/payments',
+    icon: CreditCard,
+    description: 'Pricing & billing'
+  },
+  {
+    title: 'Create Pricing Plan',
+    url: '/admin/pricing/create',
+    icon: CreditCard,
+    description: 'Create new subscription plans'
+  }
+];
+
+const systemToolsItems = [
   {
     title: 'Edge Functions Monitor',
     url: '/admin/edge-functions-monitor',
@@ -260,10 +383,10 @@ const adminMenuItems = [
     description: 'Monitor & debug all edge functions'
   },
   {
-    title: 'News Management',
-    url: '/admin/news-management',
-    icon: Newspaper,
-    description: 'Manage news articles & press releases'
+    title: 'Career Platform',
+    url: '/career-platform',
+    icon: Rocket,
+    description: 'Complete AI career platform overview'
   }
 ];
 
@@ -332,11 +455,40 @@ export const AdminSidebar: React.FC = () => {
       <SidebarContent className="px-2">
         <SidebarGroup>
           <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
-            Platform Management
+            Core Admin
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminMenuItems.map((item) => (
+              {coreAdminItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{item.title}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Business Management
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {businessItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavClasses(item.url)}>
@@ -348,11 +500,6 @@ export const AdminSidebar: React.FC = () => {
                             {item.badge && item.badge === 'dynamic' && item.url === '/admin/employer-requests' && (
                               <Badge variant="destructive" className="text-xs">
                                 {adminStats?.pendingEmployerRequests || 0}
-                              </Badge>
-                            )}
-                            {item.badge && item.badge !== 'dynamic' && (
-                              <Badge variant="destructive" className="text-xs">
-                                {item.badge}
                               </Badge>
                             )}
                           </div>
@@ -371,20 +518,234 @@ export const AdminSidebar: React.FC = () => {
 
         <SidebarGroup>
           <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
-            Growth Tools
+            TXC Token System
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {growthMenuItems.map((item) => (
+              {txcTokenItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavClasses(item.url)}>
                       <item.icon className="h-4 w-4 flex-shrink-0" />
                       {!isCollapsed && (
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium">{item.title}</span>
-                          </div>
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            LinkedIn Tools
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {linkedinToolsItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Enterprise Solutions
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {enterpriseItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            AI & Automation
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {aiToolsItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Content Management
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {contentManagementItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Platform Features
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {platformFeaturesItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Marketing & Growth
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {marketingGrowthItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            Analytics & Reports
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {analyticsReportsItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {item.description}
+                          </p>
+                        </div>
+                      )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={isCollapsed ? 'sr-only' : ''}>
+            System Tools
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {systemToolsItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} className={getNavClasses(item.url)}>
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {!isCollapsed && (
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium">{item.title}</span>
                           <p className="text-xs text-muted-foreground truncate">
                             {item.description}
                           </p>
