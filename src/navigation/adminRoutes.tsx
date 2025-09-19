@@ -9,6 +9,11 @@ import TXCAnalytics from "../pages/admin/TXCAnalytics";
 import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
 import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
 import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";
+import EnterpriseSolutions from "../pages/admin/EnterpriseSolutions";
+import EnterpriseAnalytics from "../pages/admin/EnterpriseAnalytics";
+import EnterpriseClients from "../pages/admin/EnterpriseClients";
+import EnterpriseBilling from "../pages/admin/EnterpriseBilling";
+import SEOSuite from "../pages/admin/SEOSuite";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
@@ -439,6 +444,41 @@ export const adminRoutes = [
     to: "/admin/linkedin-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
     page: <LinkedInAnalytics />,
+    requiresAuth: true,
+  },
+  {
+    title: "Enterprise Solutions",
+    to: "/admin/enterprise",
+    icon: <Building2 className="h-4 w-4" />,
+    page: <EnterpriseSolutions />,
+    requiresAuth: true,
+  },
+  {
+    title: "Enterprise Analytics",
+    to: "/admin/enterprise/analytics",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <EnterpriseAnalytics />,
+    requiresAuth: true,
+  },
+  {
+    title: "Enterprise Clients",
+    to: "/admin/enterprise/clients",
+    icon: <Building2 className="h-4 w-4" />,
+    page: <EnterpriseClients />,
+    requiresAuth: true,
+  },
+  {
+    title: "Enterprise Billing",
+    to: "/admin/enterprise/billing",
+    icon: <CreditCard className="h-4 w-4" />,
+    page: <EnterpriseBilling />,
+    requiresAuth: true,
+  },
+  {
+    title: "SEO Suite",
+    to: "/admin/seo-suite",
+    icon: <Search className="h-4 w-4" />,
+    page: <SEOSuite />,
     requiresAuth: true,
   }
 ];
