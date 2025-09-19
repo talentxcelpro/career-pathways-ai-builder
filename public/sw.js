@@ -1,12 +1,25 @@
-// Enhanced Service Worker with proper push notification handling
-const CACHE_NAME = 'talentxcel-v4';
-const urlsToCache = [
+// Performance-Optimized Service Worker with advanced caching strategies
+const CACHE_VERSION = 'v5.0.0';
+const STATIC_CACHE = `static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
+const API_CACHE = `api-${CACHE_VERSION}`;
+const IMAGES_CACHE = `images-${CACHE_VERSION}`;
+
+// Critical assets to cache on install
+const STATIC_ASSETS = [
   '/offline.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
   '/sounds/notification.mp3'
 ];
+
+// Cache sizes to prevent unlimited growth
+const CACHE_LIMITS = {
+  [DYNAMIC_CACHE]: 50,
+  [API_CACHE]: 100,
+  [IMAGES_CACHE]: 60
+};
 
 // Install event
 self.addEventListener('install', event => {
