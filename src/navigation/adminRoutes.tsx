@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket } from "lucide-react";
 import { LinkedInImportManager } from "../components/admin/LinkedInImportManager";
 import { TokenWallet } from "../components/blockchain/TokenWallet";
 import { BotPostManager } from "../components/admin/BotPostManager";
@@ -14,6 +14,8 @@ import EnterpriseAnalytics from "../pages/admin/EnterpriseAnalytics";
 import EnterpriseClients from "../pages/admin/EnterpriseClients";
 import EnterpriseBilling from "../pages/admin/EnterpriseBilling";
 import SEOSuite from "../pages/admin/SEOSuite";
+import TalentDatabase from "../pages/admin/TalentDatabase";
+import CareerPlatform from "../pages/admin/CareerPlatform";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
@@ -479,6 +481,20 @@ export const adminRoutes = [
     to: "/admin/seo-suite",
     icon: <Search className="h-4 w-4" />,
     page: <SEOSuite />,
+    requiresAuth: true,
+  },
+  {
+    title: "Talent Database",
+    to: "/admin/talent-database",
+    icon: <Database className="h-4 w-4" />,
+    page: <TalentDatabase />,
+    requiresAuth: true,
+  },
+  {
+    title: "Career Platform",
+    to: "/admin/career-platform",
+    icon: <Rocket className="h-4 w-4" />,
+    page: <CareerPlatform />,
     requiresAuth: true,
   }
 ];

@@ -315,7 +315,7 @@ const platformFeaturesItems = [
   },
   {
     title: 'Talent Database',
-    url: '/talent-database',
+    url: '/admin/talent-database',
     icon: Upload,
     description: 'Comprehensive talent management'
   }
@@ -330,7 +330,7 @@ const marketingGrowthItems = [
   },
   {
     title: 'SEO Suite',
-    url: '/seo-suite',
+    url: '/admin/seo-suite',
     icon: Search,
     description: 'Advanced SEO tools & analytics'
   },
@@ -342,7 +342,7 @@ const marketingGrowthItems = [
   },
   {
     title: 'Ad Campaign Manager',
-    url: '/admin/campaigns',
+    url: '/admin/ad-campaigns',
     icon: Target,
     description: 'Create and manage ad campaigns'
   },
@@ -384,7 +384,7 @@ const systemToolsItems = [
   },
   {
     title: 'Career Platform',
-    url: '/career-platform',
+    url: '/admin/career-platform',
     icon: Rocket,
     description: 'Complete AI career platform overview'
   }
