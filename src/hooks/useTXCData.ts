@@ -1,6 +1,40 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+interface TXCBalance {
+  balance: number;
+}
+
+interface TXCTransaction {
+  amount: number;
+  created_at: string;
+}
+
+interface TXCHolder {
+  user_id: string;
+}
+
+interface TXCHolderWithProfile {
+  user_id: string;
+  balance: number;
+  profiles: {
+    full_name?: string;
+    email?: string;
+  } | null;
+}
+
+interface TXCTransactionWithProfile {
+  id: string;
+  user_id: string;
+  amount: number;
+  transaction_type: string;
+  description: string;
+  created_at: string;
+  profiles: {
+    full_name?: string;
+  } | null;
+}
+
 export const useTXCTokenStats = () => {
   return useQuery({
     queryKey: ['txc-token-stats'],
@@ -17,7 +51,7 @@ export const useTXCTokenStats = () => {
       ]);
 
       const totalSupply = 50000000; // Set by system
-      const circulatingSupply = balances?.reduce((sum, b) => sum + (b.balance || 0), 0) || 0;
+      const circulatingSupply = (balances as TXCBalance[])?.reduce((sum, b) => sum + (b.balance || 0), 0) || 0;
       const totalHolders = holders?.length || 0;
       const dailyTransactions = transactions?.length || 0;
       const avgBalance = totalHolders > 0 ? circulatingSupply / totalHolders : 0;
@@ -54,13 +88,15 @@ export const useTXCTopHolders = () => {
 
       if (error) throw error;
 
-      return data?.map((item, index) => ({
-        id: item.user_id,
-        name: (item.profiles as any)?.full_name || 'Anonymous User',
-        email: (item.profiles as any)?.email || 'No email',
-        balance: item.balance || 0,
-        rank: index + 1
-      })) || [];
+      return (data as TXCHolderWithProfile[])?.map((item, index) => {
+        return {
+          id: item.user_id,
+          name: item.profiles?.full_name || 'Anonymous User',
+          email: item.profiles?.email || 'No email',
+          balance: item.balance || 0,
+          rank: index + 1
+        };
+      }) || [];
     }
   });
 };
@@ -87,14 +123,16 @@ export const useTXCRecentTransactions = () => {
 
       if (error) throw error;
 
-      return data?.map(tx => ({
-        id: tx.id,
-        user: (tx.profiles as any)?.full_name || 'Anonymous User',
-        type: tx.transaction_type || 'earned',
-        amount: tx.amount || 0,
-        activity: tx.description || 'Token transaction',
-        timestamp: tx.created_at
-      })) || [];
+      return (data as TXCTransactionWithProfile[])?.map(tx => {
+        return {
+          id: tx.id,
+          user: tx.profiles?.full_name || 'Anonymous User',
+          type: tx.transaction_type || 'earned',
+          amount: tx.amount || 0,
+          activity: tx.description || 'Token transaction',
+          timestamp: tx.created_at
+        };
+      }) || [];
     }
   });
 };
