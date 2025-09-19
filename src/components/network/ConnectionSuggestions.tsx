@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 
 interface Connection {
   id: string;
@@ -17,6 +18,7 @@ interface Connection {
 }
 
 export const ConnectionSuggestions: React.FC = () => {
+  const { sendConnectionRequest, isSending } = useConnectionRequests();
   const [sendingConnection, setSendingConnection] = useState<string | null>(null);
 
   const { data: currentUser } = useQuery({
@@ -64,24 +66,12 @@ export const ConnectionSuggestions: React.FC = () => {
     enabled: !!currentUser
   });
 
-  const sendConnectionRequest = async (userId: string) => {
+  const handleConnectionRequest = async (userId: string) => {
     if (!currentUser) return;
 
     setSendingConnection(userId);
     try {
-      const { error } = await supabase
-        .from('connections')
-        .insert({
-          requester_id: currentUser.id,
-          recipient_id: userId,
-          status: 'pending',
-          message: 'Hi! I would love to connect with you.'
-        });
-
-      if (error) throw error;
-      toast.success('Connection request sent!');
-    } catch (error) {
-      toast.error('Failed to send connection request');
+      await sendConnectionRequest.mutateAsync(userId);
     } finally {
       setSendingConnection(null);
     }
@@ -158,8 +148,8 @@ export const ConnectionSuggestions: React.FC = () => {
                     </div>
                   </div>
                   <Button
-                    onClick={() => sendConnectionRequest(suggestion.id)}
-                    disabled={sendingConnection === suggestion.id}
+                    onClick={() => handleConnectionRequest(suggestion.id)}
+                    disabled={sendingConnection === suggestion.id || sendConnectionRequest.isPending}
                     size="sm"
                     className="shrink-0 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
                   >

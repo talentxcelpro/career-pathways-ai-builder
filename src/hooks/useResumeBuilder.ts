@@ -5,9 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { coreToEditor } from '@/utils/resume-adapters';
+import { useTXCIntegration } from './useTXCIntegration';
 
 export const useResumeBuilder = (initialData?: CoreResumeData) => {
   const { user } = useAuth();
+  const { triggerResumeCreated } = useTXCIntegration();
   const [resumeData, setResumeData] = useState<CoreResumeData | null>(
     initialData || (user ? createEmptyResumeData(user.id) : null)
   );
@@ -75,6 +77,10 @@ export const useResumeBuilder = (initialData?: CoreResumeData) => {
       });
 
       setHasChanges(false);
+      
+      // Trigger TXC mining for resume creation
+      await triggerResumeCreated();
+      
       toast.success('Resume saved successfully!');
     } catch (error) {
       console.error('Failed to save resume:', error);

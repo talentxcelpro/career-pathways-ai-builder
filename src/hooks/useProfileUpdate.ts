@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTXCIntegration } from './useTXCIntegration';
 
 interface ProfileUpdateData {
   id?: string;
@@ -30,6 +31,7 @@ interface ProfileUpdateData {
 
 export function useProfileUpdate() {
   const queryClient = useQueryClient();
+  const { triggerProfileCompleted, triggerSkillAdded } = useTXCIntegration();
 
   const updateProfile = useMutation({
     mutationFn: async (data: ProfileUpdateData) => {
@@ -61,10 +63,23 @@ export function useProfileUpdate() {
 
       return result;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data, variables) => {
       // Invalidate all profile-related queries
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      
+      // Trigger TXC mining for profile updates
+      if (variables.skills) {
+        await triggerSkillAdded();
+      }
+      
+      // Check if profile is becoming more complete and trigger completion bonus
+      const completionFields = ['full_name', 'title', 'about', 'location', 'skills', 'current_company'];
+      const completedFields = completionFields.filter(field => variables[field as keyof ProfileUpdateData]);
+      
+      if (completedFields.length >= 4) {
+        await triggerProfileCompleted();
+      }
       
       toast.success('Profile updated successfully');
       return data;

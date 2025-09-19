@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, X } from 'lucide-react';
+import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 
 interface ConnectionSuggestion {
   id: string;
@@ -22,6 +23,7 @@ export const ConnectionSuggestions: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { sendConnectionRequest } = useConnectionRequests();
   const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 
   // Fetch connection suggestions
@@ -60,42 +62,13 @@ export const ConnectionSuggestions: React.FC = () => {
     enabled: !!user?.id
   });
 
-  // Send connection request mutation
-  const sendConnectionRequest = useMutation({
-    mutationFn: async (recipientId: string) => {
-      const { data, error } = await supabase
-        .from('connections')
-        .insert({
-          requester_id: user?.id,
-          recipient_id: recipientId,
-          status: 'pending'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (_, recipientId) => {
-      setDismissedSuggestions(prev => [...prev, recipientId]);
-      queryClient.invalidateQueries({ queryKey: ['connection-suggestions'] });
-      toast({
-        title: "Connection request sent",
-        description: "Your connection request has been sent successfully."
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to send request",
-        description: "Unable to send connection request. Please try again.",
-        variant: "destructive"
-      });
-      console.error('Connection request error:', error);
+  const handleConnect = async (suggestion: ConnectionSuggestion) => {
+    try {
+      await sendConnectionRequest.mutateAsync(suggestion.id);
+      setDismissedSuggestions(prev => [...prev, suggestion.id]);
+    } catch (error) {
+      // Error is already handled in the hook
     }
-  });
-
-  const handleConnect = (suggestion: ConnectionSuggestion) => {
-    sendConnectionRequest.mutate(suggestion.id);
   };
 
   const handleDismiss = (suggestionId: string) => {

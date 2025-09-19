@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTXCIntegration } from './useTXCIntegration';
 
 export interface JobApplication {
   id: string;
@@ -50,6 +51,7 @@ export const useJobApplications = (userId?: string) => {
 
 export const useCreateJobApplication = () => {
   const queryClient = useQueryClient();
+  const { triggerJobApplied } = useTXCIntegration();
 
   return useMutation({
     mutationFn: async (applicationData: {
@@ -74,8 +76,12 @@ export const useCreateJobApplication = () => {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['job-applications'] });
+      
+      // Trigger TXC mining for job application
+      await triggerJobApplied();
+      
       toast.success('Application submitted successfully');
     },
     onError: (error) => {

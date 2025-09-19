@@ -27,7 +27,7 @@ interface PostCardProps {
 }
 
 function PostCard({ post, showCompanyInfo = false }: PostCardProps) {
-  const { likePost, unlikePost, canInteract } = usePostInteractions(post.id);
+  const { likePost, canInteract } = usePostInteractions(post.id);
 
   const handleLike = () => {
     if (!canInteract) return;

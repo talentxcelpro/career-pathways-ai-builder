@@ -28,7 +28,7 @@ interface GlobalCompanyFeedProps {
 }
 
 function PostCard({ post }: { post: any }) {
-  const { likePost, unlikePost, canInteract } = usePostInteractions(post.id);
+  const { likePost, canInteract } = usePostInteractions(post.id);
 
   const handleLike = () => {
     if (!canInteract) return;
