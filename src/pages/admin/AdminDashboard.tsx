@@ -18,6 +18,7 @@ import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
 import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
 import { JobGenerator } from '@/components/admin/JobGenerator';
+import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -63,6 +64,11 @@ const AdminDashboard = () => {
           <div>
             <PlatformOverviewWidget stats={adminStats} />
           </div>
+        </div>
+
+        {/* Social TXC Award Panel */}
+        <div className="mt-8">
+          <SocialTXCAwardPanel />
         </div>
 
         {/* Job Generator for SEO - High Priority */}

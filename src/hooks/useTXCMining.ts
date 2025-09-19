@@ -71,6 +71,12 @@ export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
     amount: 15,
     description: 'Provide feedback',
     cooldownMinutes: 60
+  },
+  'social_activity_bonus': {
+    action: 'social_activity_bonus',
+    amount: 100,
+    description: 'Social activity bonus',
+    cooldownMinutes: 10080 // Once per week
   }
 };
 
