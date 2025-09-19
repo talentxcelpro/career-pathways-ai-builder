@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
+import { ReelsHeader } from '@/components/mobile/ReelsHeader';
 import { Button } from '@/components/ui/button';
 import { Plus, Home, Search, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { toast } from 'sonner';
 
 export const MobileReels = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'following' | 'explore'>('explore');
   const navigate = useNavigate();
 
   const handleUploadSuccess = () => {
@@ -19,19 +21,15 @@ export const MobileReels = () => {
   return (
     <div className="w-full h-screen overflow-hidden bg-black relative">
       {/* Mobile Header */}
-      <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/50 to-transparent p-4">
-        <div className="flex items-center justify-between text-white">
-          <h1 className="text-xl font-bold">TalentXcel Reels</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowUploadModal(true)}
-            className="text-white hover:bg-white/20 rounded-full"
-          >
-            <Plus className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
+      <ReelsHeader
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onSearch={() => navigate('/mobile/search')}
+        onNotifications={() => navigate('/mobile/notifications')}
+        onMessages={() => console.log('Messages clicked')}
+        notificationCount={3}
+        messageCount={1}
+      />
 
       {/* Infinite Reels Feed */}
       <InfiniteReelsFeed 
