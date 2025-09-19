@@ -115,7 +115,7 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
   }
 
   return (
-    <div className={`space-y-${isMobile ? '3' : '6'}`}>
+    <div className={`space-y-${isMobile ? '2' : '6'}`}>
       {!isMobile && (
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">Select Your Resume</h3>
@@ -128,20 +128,20 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
       <RadioGroup
         value={formData.resumeSource}
         onValueChange={handleResumeSourceChange}
-        className={`space-y-${isMobile ? '2' : '4'}`}
+        className={`space-y-${isMobile ? '1' : '4'}`}
       >
         {/* Existing Resumes Option */}
         {resumes.length > 0 && (
-          <div className={`space-y-${isMobile ? '2' : '4'}`}>
+          <div className={`space-y-${isMobile ? '1' : '4'}`}>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="existing" id="existing" />
-              <Label htmlFor="existing" className={`${isMobile ? 'text-xs' : 'text-base'} font-medium`}>
+              <Label htmlFor="existing" className={`${isMobile ? 'text-[10px]' : 'text-base'} font-medium`}>
                 Use existing resume
               </Label>
             </div>
             
             {formData.resumeSource === 'existing' && (
-              <div className={`grid gap-${isMobile ? '2' : '3'} ${isMobile ? 'ml-4' : 'ml-6'}`}>
+              <div className={`grid gap-${isMobile ? '1' : '3'} ${isMobile ? 'ml-3' : 'ml-6'}`}>
                 {resumes.map((resume) => (
                   <Card
                     key={resume.id}
@@ -152,17 +152,17 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
                     }`}
                     onClick={() => handleResumeSelect(resume.id)}
                   >
-                    <CardContent className={`${isMobile ? 'p-2' : 'p-4'}`}>
+                    <CardContent className={`${isMobile ? 'p-1' : 'p-4'}`}>
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className={`${isMobile ? 'w-6 h-6' : 'w-10 h-10'} bg-primary/10 rounded-lg flex items-center justify-center`}>
-                            <FileText className={`${isMobile ? 'h-3 w-3' : 'h-5 w-5'} text-primary`} />
+                        <div className="flex items-center space-x-1">
+                          <div className={`${isMobile ? 'w-4 h-4' : 'w-10 h-10'} bg-primary/10 rounded-lg flex items-center justify-center`}>
+                            <FileText className={`${isMobile ? 'h-2 w-2' : 'h-5 w-5'} text-primary`} />
                           </div>
                           <div>
-                            <h4 className={`${isMobile ? 'text-xs' : 'font-medium'} flex items-center gap-2`}>
+                            <h4 className={`${isMobile ? 'text-[10px] truncate max-w-[120px]' : 'font-medium'} flex items-center gap-2`}>
                               {resume.title}
                               {resume.is_primary && (
-                                <Star className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} text-yellow-500 fill-current`} />
+                                <Star className={`${isMobile ? 'h-2 w-2' : 'h-4 w-4'} text-yellow-500 fill-current`} />
                               )}
                             </h4>
                             {!isMobile && (
@@ -188,17 +188,17 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
         )}
 
         {/* Upload New Resume Option */}
-        <div className={`space-y-${isMobile ? '2' : '4'}`}>
+        <div className={`space-y-${isMobile ? '1' : '4'}`}>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="upload" id="upload" />
-            <Label htmlFor="upload" className={`${isMobile ? 'text-xs' : 'text-base'} font-medium`}>
+            <Label htmlFor="upload" className={`${isMobile ? 'text-[10px]' : 'text-base'} font-medium`}>
               Upload new resume
             </Label>
           </div>
           
           {formData.resumeSource === 'upload' && (
-            <div className={`${isMobile ? 'ml-4' : 'ml-6'}`}>
-              <div className={`border-2 border-dashed border-muted-foreground/25 rounded-lg text-center ${isMobile ? 'p-3' : 'p-6'}`}>
+            <div className={`${isMobile ? 'ml-3' : 'ml-6'}`}>
+              <div className={`border-2 border-dashed border-muted-foreground/25 rounded-lg text-center ${isMobile ? 'p-2' : 'p-6'}`}>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
@@ -210,17 +210,17 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById('resume-upload')?.click()}
-                  className="w-full"
+                  className={`w-full ${isMobile ? 'h-6 text-[10px]' : ''}`}
                   size={isMobile ? "sm" : "default"}
                 >
-                  <Upload className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-2`} />
+                  <Upload className={`${isMobile ? 'h-2 w-2' : 'h-4 w-4'} mr-1`} />
                   {formData.uploadedResume ? 
-                    (isMobile ? 'Resume Selected' : formData.uploadedResume.name) : 
-                    (isMobile ? 'Upload Resume' : 'Choose Resume File')
+                    (isMobile ? 'Selected' : formData.uploadedResume.name) : 
+                    (isMobile ? 'Upload' : 'Choose Resume File')
                   }
                 </Button>
-                <p className={`${isMobile ? 'text-[10px]' : 'text-xs'} text-muted-foreground mt-2`}>
-                  PDF, DOC, DOCX (Max 10MB)
+                <p className={`${isMobile ? 'text-[8px]' : 'text-xs'} text-muted-foreground mt-1`}>
+                  PDF, DOC, DOCX
                 </p>
               </div>
             </div>
@@ -230,20 +230,22 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
 
       {/* No Resumes Available */}
       {resumes.length === 0 && (
-        <div className="text-center py-8 space-y-4">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
-            <FileText className="h-8 w-8 text-muted-foreground" />
+        <div className={`text-center ${isMobile ? 'py-3 space-y-2' : 'py-8 space-y-4'}`}>
+          <div className={`${isMobile ? 'w-8 h-8' : 'w-16 h-16'} bg-muted rounded-full flex items-center justify-center mx-auto`}>
+            <FileText className={`${isMobile ? 'h-4 w-4' : 'h-8 w-8'} text-muted-foreground`} />
           </div>
           <div>
-            <h4 className="font-medium mb-2">No resumes found</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              You don't have any resumes yet. Upload one to continue with your application.
+            <h4 className={`${isMobile ? 'text-xs' : ''} font-medium mb-1`}>No resumes found</h4>
+            <p className={`${isMobile ? 'text-[10px]' : 'text-sm'} text-muted-foreground mb-2`}>
+              {isMobile ? 'Upload one to continue.' : 'You don\'t have any resumes yet. Upload one to continue with your application.'}
             </p>
             <Button
               variant="outline"
               onClick={() => onUpdate({ resumeSource: 'upload' })}
+              size={isMobile ? "sm" : "default"}
+              className={isMobile ? 'h-6 text-[10px]' : ''}
             >
-              <Upload className="h-4 w-4 mr-2" />
+              <Upload className={`${isMobile ? 'h-2 w-2' : 'h-4 w-4'} mr-1`} />
               Upload Resume
             </Button>
           </div>

@@ -119,36 +119,36 @@ export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({
     return (
       <div className="h-full flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5 mobile-optimized">
         {/* Mobile Progress Header */}
-        <div className="flex-shrink-0 px-3 py-2 safe-top border-b">
-          <div className="flex items-center justify-between mb-2">
+        <div className="flex-shrink-0 px-2 py-1 safe-top border-b">
+          <div className="flex items-center justify-between mb-1">
             <div className="flex items-center space-x-1">
               {steps.map((step, index) => (
                 <div
                   key={step.id}
-                  className={`w-6 h-1 rounded-full transition-all duration-300 ${
+                  className={`w-4 h-0.5 rounded-full transition-all duration-300 ${
                     index <= currentStep ? 'bg-primary' : 'bg-muted'
                   }`}
                 />
               ))}
             </div>
-            <span className="text-xs font-medium text-muted-foreground">
+            <span className="text-[10px] font-medium text-muted-foreground">
               {currentStep + 1}/{steps.length}
             </span>
           </div>
           
           <div className="text-center">
-            <h1 className="text-sm font-medium text-foreground mb-1 line-clamp-1">
+            <h1 className="text-xs font-medium text-foreground mb-0.5 line-clamp-1 truncate">
               {job.title}
             </h1>
-            <h2 className="text-xs font-medium text-foreground">
+            <h2 className="text-[10px] font-medium text-muted-foreground">
               {steps[currentStep].title}
             </h2>
           </div>
         </div>
 
         {/* Mobile Step Content */}
-        <div className="flex-1 overflow-y-auto px-2 pb-2">
-          <div className="p-3">
+        <div className="flex-1 overflow-y-auto px-1 pb-1">
+          <div className="p-2">
               {currentStep === 0 && (
                 <ResumeSelectionStep
                   formData={formData}
@@ -215,12 +215,12 @@ export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex-shrink-0 p-2 safe-bottom bg-background border-t">
-          <div className="flex gap-2">
+        <div className="flex-shrink-0 p-1 safe-bottom bg-background border-t">
+          <div className="flex gap-1">
             <Button
               variant="outline"
               onClick={currentStep === 0 ? onCancel : handleBack}
-              className="flex-1"
+              className="flex-1 h-7 text-xs"
               size="sm"
             >
               {currentStep === 0 ? 'Cancel' : 'Back'}
@@ -229,7 +229,7 @@ export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({
             <Button
               onClick={currentStep === steps.length - 1 ? handleComplete : handleNext}
               disabled={!canProceed()}
-              className="flex-1"
+              className="flex-1 h-7 text-xs"
               size="sm"
             >
               {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
