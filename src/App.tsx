@@ -149,6 +149,11 @@ const publicRoutes = [
 ];
 
 const App = () => {
+  // Initialize performance optimizations once on startup
+  useEffect(() => {
+    initializePerformanceOptimizations();
+    // performanceOptimizer.initialize();
+  }, []);
   // Check if this is a subdomain - simplified as fallback only
   const hostname = window.location.hostname;
   const isSubdomain = hostname.includes('.talentxcel.in') && hostname !== 'talentxcel.in';
@@ -284,12 +289,6 @@ const App = () => {
 };
 
 const AppWrapper = () => {
-  // Initialize performance optimizations once on startup
-  useEffect(() => {
-    initializePerformanceOptimizations();
-    // performanceOptimizer.initialize();
-  }, []);
-
   return (
     <HelmetProvider>
       <App />
