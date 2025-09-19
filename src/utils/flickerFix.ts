@@ -11,7 +11,7 @@ export class FlickerFix {
       /* Minimal flicker prevention */
       body {
         opacity: 0;
-        transition: opacity 0.1s ease-in;
+        transition: opacity 0.15s ease-in;
       }
       
       body.loaded {
@@ -22,6 +22,19 @@ export class FlickerFix {
       img {
         height: auto;
         max-width: 100%;
+        contain: layout;
+      }
+      
+      /* Stable rendering for dynamic content */
+      .will-change-auto {
+        will-change: auto;
+        contain: layout style;
+      }
+      
+      /* Optimize repaints */
+      .hover-scale {
+        transform: translateZ(0);
+        backface-visibility: hidden;
       }
       
       /* Smooth transitions for components */

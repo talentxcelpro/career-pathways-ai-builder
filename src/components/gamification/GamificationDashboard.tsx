@@ -38,62 +38,67 @@ const GamificationDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="group relative overflow-hidden hover-scale">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/5"></div>
-          <CardContent className="relative p-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/3">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold text-primary">{achievements.length}</p>
-                <p className="text-sm text-muted-foreground font-medium">Achievements</p>
+                <p className="text-2xl font-bold text-primary" key={`achievements-${achievements.length}`}>
+                  {achievements.length}
+                </p>
+                <p className="text-xs text-muted-foreground font-medium">Achievements</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
-                <Trophy className="h-8 w-8 text-primary" />
+              <div className="p-2 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex-shrink-0">
+                <Trophy className="h-6 w-6 text-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="group relative overflow-hidden hover-scale">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-accent/5"></div>
-          <CardContent className="relative p-6">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-accent/5 to-accent/3">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold text-accent">{userStreaks?.current_login_streak || 0}</p>
-                <p className="text-sm text-muted-foreground font-medium">Login Streak</p>
+                <p className="text-2xl font-bold text-accent" key={`login-streak-${userStreaks?.current_login_streak || 0}`}>
+                  {userStreaks?.current_login_streak || 0}
+                </p>
+                <p className="text-xs text-muted-foreground font-medium">Login Streak</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-accent/20 to-accent/10 rounded-xl">
-                <Flame className="h-8 w-8 text-accent" />
+              <div className="p-2 bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg flex-shrink-0">
+                <Flame className="h-6 w-6 text-accent" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="group relative overflow-hidden hover-scale">
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-secondary/5"></div>
-          <CardContent className="relative p-6">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-secondary/5 to-secondary/3">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold text-secondary">{userStreaks?.current_application_streak || 0}</p>
-                <p className="text-sm text-muted-foreground font-medium">Application Streak</p>
+                <p className="text-2xl font-bold text-secondary" key={`app-streak-${userStreaks?.current_application_streak || 0}`}>
+                  {userStreaks?.current_application_streak || 0}
+                </p>
+                <p className="text-xs text-muted-foreground font-medium">App Streak</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-xl">
-                <Target className="h-8 w-8 text-secondary" />
+              <div className="p-2 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-lg flex-shrink-0">
+                <Target className="h-6 w-6 text-secondary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="group relative overflow-hidden hover-scale">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10"></div>
-          <CardContent className="relative p-6">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/3 to-accent/5">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{formatTXC(totalTXCEarned)}</p>
-                <p className="text-sm text-muted-foreground font-medium">From Achievements</p>
+                <p className="text-2xl font-bold text-primary flex items-center gap-1" key={`txc-earned-${totalTXCEarned}`}>
+                  <span className="text-lg">TXC</span>
+                  {formatTXC(totalTXCEarned)}
+                </p>
+                <p className="text-xs text-muted-foreground font-medium">From Achievements</p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20 rounded-xl">
-                <TrendingUp className="h-8 w-8 text-primary" />
+              <div className="p-2 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20 rounded-lg flex-shrink-0">
+                <TrendingUp className="h-6 w-6 text-primary" />
               </div>
             </div>
           </CardContent>

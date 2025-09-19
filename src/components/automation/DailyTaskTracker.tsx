@@ -192,14 +192,13 @@ export const DailyTaskTracker: React.FC = () => {
     const isCompleted = completedToday.has(task.id) || (task.id === 'daily_login' && user);
     
     return (
-      <Card className={`group relative overflow-hidden transition-all duration-300 ${
-        isCompleted ? 'bg-gradient-to-br from-success/10 to-success/5 border-success/30' : 'hover-scale'
+      <Card className={`relative overflow-hidden transition-colors duration-200 will-change-auto ${
+        isCompleted ? 'bg-gradient-to-br from-success/10 to-success/5 border-success/30' : ''
       }`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <CardContent className="relative p-3">
+        <CardContent className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1">
-              <div className={`p-2 rounded-lg ${
+              <div className={`p-2 rounded-lg flex-shrink-0 ${
                 isCompleted 
                   ? 'bg-success/20 text-success' 
                   : 'bg-gradient-to-br from-primary/20 to-secondary/20 text-primary'
@@ -207,16 +206,16 @@ export const DailyTaskTracker: React.FC = () => {
                 {isCompleted ? <Check className="h-4 w-4" /> : task.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-foreground text-sm leading-tight">{task.title}</h4>
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{task.description}</p>
+                <h4 className="font-medium text-foreground text-sm leading-tight truncate">{task.title}</h4>
+                <p className="text-xs text-muted-foreground mt-1 truncate">{task.description}</p>
                 <Badge variant={task.category === 'daily' ? 'default' : 'secondary'} className="text-xs mt-1">
                   {task.category === 'daily' ? 'Daily Habit' : 'Growth Activity'}
                 </Badge>
               </div>
             </div>
-            <div className="text-right ml-2">
+            <div className="text-right ml-2 flex-shrink-0">
               <div className="flex items-center gap-1 text-sm font-bold text-secondary mb-1">
-                <Coins className="h-3 w-3" />
+                <Coins className="h-3 w-3 flex-shrink-0" />
                 <span className="text-xs">{formatTXC(task.reward)}</span>
               </div>
               {!isCompleted && (
@@ -224,13 +223,13 @@ export const DailyTaskTracker: React.FC = () => {
                   size="sm"
                   variant="primary"
                   onClick={() => handleTaskAction(task)}
-                  className="text-xs px-2 py-1 h-7"
+                  className="text-xs px-2 py-1 h-7 w-full"
                 >
                   Complete
                 </TouchButton>
               )}
               {isCompleted && (
-                <Badge variant="default" className="bg-success/20 text-success border-success/30 text-xs">
+                <Badge variant="default" className="bg-success/20 text-success border-success/30 text-xs w-full justify-center">
                   Complete
                 </Badge>
               )}
@@ -242,78 +241,84 @@ export const DailyTaskTracker: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 will-change-auto">
       {/* Progress Overview */}
-      <Card className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10"></div>
-        <CardHeader className="relative">
+      <Card className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/3 to-accent/5">
+        <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg">
+            <div className="p-2 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex-shrink-0">
               <Target className="h-5 w-5 text-primary" />
             </div>
-            <span className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              Daily Progress
-            </span>
+            <span className="text-foreground">Daily Progress</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-1">{completedToday.size}</div>
+              <div className="text-2xl font-bold text-primary mb-1" key={`completed-${completedToday.size}`}>
+                {completedToday.size}
+              </div>
               <div className="text-sm text-muted-foreground">Tasks Completed</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-secondary mb-1">{formatTXC(earnedToday)}</div>
+              <div className="text-2xl font-bold text-secondary mb-1 flex items-center justify-center gap-1" key={`earned-${earnedToday}`}>
+                <Coins className="h-4 w-4" />
+                {formatTXC(earnedToday)}
+              </div>
               <div className="text-sm text-muted-foreground">TXC Earned Today</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-accent mb-1">{Math.round(dailyProgress)}%</div>
+              <div className="text-2xl font-bold text-accent mb-1" key={`progress-${dailyProgress}`}>
+                {Math.round(dailyProgress)}%
+              </div>
               <div className="text-sm text-muted-foreground">Daily Goals</div>
             </div>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Daily Progress</span>
               <span className="font-medium">{completedToday.size}/{dailyTasks.length} tasks</span>
             </div>
-            <Progress value={dailyProgress} className="h-3" />
+            <Progress value={dailyProgress} className="h-2" />
           </div>
         </CardContent>
       </Card>
 
       {/* Daily Habits */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-1.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="p-1.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex-shrink-0">
             <Calendar className="h-4 w-4 text-primary" />
           </div>
           <h3 className="text-lg font-bold text-foreground">Daily Habits</h3>
-          <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30">
+          <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30 flex items-center gap-1">
+            <Coins className="h-3 w-3" />
             {formatTXC(dailyTasks.reduce((sum, task) => sum + task.reward, 0))} potential
           </Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {dailyTasks.map(task => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={`daily-${task.id}`} task={task} />
           ))}
         </div>
       </div>
 
       {/* Growth Activities */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-1.5 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-lg">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="p-1.5 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-lg flex-shrink-0">
             <TrendingUp className="h-4 w-4 text-secondary" />
           </div>
           <h3 className="text-lg font-bold text-foreground">Growth Activities</h3>
-          <Badge variant="outline" className="text-xs bg-secondary/10 text-secondary border-secondary/30">
+          <Badge variant="outline" className="text-xs bg-secondary/10 text-secondary border-secondary/30 flex items-center gap-1">
+            <Coins className="h-3 w-3" />
             {formatTXC(growthTasks.reduce((sum, task) => sum + task.reward, 0))} potential
           </Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {growthTasks.map(task => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={`growth-${task.id}`} task={task} />
           ))}
         </div>
       </div>
