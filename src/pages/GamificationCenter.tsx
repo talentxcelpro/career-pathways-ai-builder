@@ -1,11 +1,18 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import GamificationDashboard from '@/components/gamification/GamificationDashboard';
+import { DailyTaskTracker } from '@/components/automation/DailyTaskTracker';
+import { WelcomeExperience } from '@/components/welcome/WelcomeExperience';
+import { useAuth } from '@/contexts/AuthContext';
 import { Trophy, Target, Flame, TrendingUp } from 'lucide-react';
 
 const GamificationCenter: React.FC = () => {
+  const { user } = useAuth();
+  
   return (
     <div className="min-h-screen bg-background">
+      <WelcomeExperience />
+      
       <Helmet>
         <title>Gamification Center - Achievements & Rewards | TalentXcel</title>
         <meta name="description" content="Track your achievements, streaks, and earn TXC tokens through gamified activities. Complete challenges, build streaks, and climb the leaderboards." />
@@ -79,6 +86,9 @@ const GamificationCenter: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Daily Task Tracker */}
+        <DailyTaskTracker />
 
         {/* Main Dashboard */}
         <GamificationDashboard />

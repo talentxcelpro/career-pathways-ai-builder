@@ -2,10 +2,16 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Share2 } from 'lucide-react';
 import ReferralCenter from '@/components/referral/ReferralCenter';
+import { WelcomeExperience } from '@/components/welcome/WelcomeExperience';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ReferralCenterPage: React.FC = () => {
+  const { user } = useAuth();
+  
   return (
     <div className="min-h-screen bg-background">
+      <WelcomeExperience />
+      
       <Helmet>
         <title>Referral Center - Invite Friends & Earn TXC | TalentXcel</title>
         <meta name="description" content="Invite friends to TalentXcel and earn TXC tokens for every successful referral. Share your unique code and build your network." />
