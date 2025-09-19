@@ -1,206 +1,175 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useJobApplicationStats, useJobApplications } from '@/hooks/useJobApplications';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ApplicationStatusTracker } from '@/components/jobs/ApplicationStatusTracker';
+import { ApplicationInsights } from '@/components/jobs/ApplicationInsights';
+import { useJobApplications, useDeleteJobApplication } from '@/hooks/useJobApplications';
 import { useAuth } from '@/contexts/AuthContext';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Briefcase, Clock, CheckCircle, TrendingUp, Eye, ExternalLink, Calendar, MapPin, DollarSign, FileText } from 'lucide-react';
+import { Search, Filter, FileText, TrendingUp, Briefcase, Clock, CheckCircle, Eye, ExternalLink, Calendar, MapPin, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 
 const MyApplications = () => {
   const { user } = useAuth();
-  const { data: stats } = useJobApplicationStats();
-  const { data: applications = [], isLoading } = useJobApplications(user?.id);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [activeTab, setActiveTab] = useState('tracker');
+  
+  const { data: applications, isLoading } = useJobApplications(user?.id);
+  const deleteApplication = useDeleteJobApplication();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'applied': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'reviewed': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'shortlisted': return 'bg-green-100 text-green-800 border-green-200';
-      case 'interviewed': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'hired': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+  const filteredApplications = applications?.filter(app => {
+    const matchesSearch = !searchTerm || 
+      app.jobs?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.jobs?.company_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !statusFilter || app.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  }) || [];
+
+  const handleWithdraw = async (applicationId: string) => {
+    try {
+      await deleteApplication.mutateAsync(applicationId);
+    } catch (error) {
+      console.error('Failed to withdraw application:', error);
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'applied': return 'Applied';
-      case 'reviewed': return 'Under Review';
-      case 'shortlisted': return 'Shortlisted';
-      case 'interviewed': return 'Interviewed';
-      case 'hired': return 'Hired';
-      case 'rejected': return 'Not Selected';
-      default: return 'Pending';
-    }
+  const handleFollowUp = (applicationId: string) => {
+    // TODO: Implement follow-up functionality
+    toast.info('Follow-up feature coming soon!');
   };
+
+  // Calculate insights
+  const totalApplications = applications?.length || 0;
+  const interviewCount = applications?.filter(app => 
+    ['interviewed', 'hired'].includes(app.status)
+  ).length || 0;
+  const successRate = totalApplications > 0 ? (interviewCount / totalApplications) * 100 : 0;
+  
+  const recentActivity = applications?.slice(0, 10).map(app => ({
+    type: app.status as any,
+    date: app.applied_at,
+    company: app.jobs?.company_name || 'Unknown Company',
+    role: app.jobs?.title || 'Unknown Role'
+  })) || [];
+
+  const recommendations = totalApplications > 0 ? [
+    'Your response rate is above average! Keep applying to similar roles.',
+    'Consider customizing your resume for each application to increase success rate.',
+    'Follow up on applications that are older than 2 weeks.',
+    'Expand your search to include related job titles and companies.'
+  ] : [
+    'Start by applying to 5-10 jobs this week to build momentum.',
+    'Focus on roles that match 70-80% of your skills.',
+    'Customize your resume for each application.',
+    'Set up job alerts for your target roles.'
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse space-y-8">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">My Applications</h1>
-        <p className="text-muted-foreground">Track your job applications and their status</p>
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">My Applications</h1>
+          <p className="text-muted-foreground">
+            Track and manage your job applications
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <FileText className="h-4 w-4" />
+          <span>{totalApplications} total applications</span>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Applications</p>
-                  <p className="text-2xl font-bold">{stats.total}</p>
-                </div>
-                <Briefcase className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">This Month</p>
-                  <p className="text-2xl font-bold">{stats.thisMonth}</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Pending</p>
-                  <p className="text-2xl font-bold">{stats.pending}</p>
-                </div>
-                <Clock className="h-8 w-8 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Shortlisted</p>
-                  <p className="text-2xl font-bold">{stats.statusBreakdown?.shortlisted || 0}</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-emerald-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Applications List */}
+      {/* Filters */}
       <Card>
-        <CardHeader>
-          <CardTitle>Your Applications</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-20 bg-gray-200 rounded-lg"></div>
-                </div>
-              ))}
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search by job title or company..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
-          ) : applications.length === 0 ? (
-            <div className="text-center py-8">
-              <Briefcase className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
-              <p className="text-gray-600 mb-4">Start applying to jobs to see your applications here</p>
-              <Button asChild>
-                <a href="/jobs">Browse Jobs</a>
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {applications.map((application) => (
-                <div key={application.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{application.jobs?.title}</h3>
-                      <p className="text-muted-foreground">{application.jobs?.company_name}</p>
-                    </div>
-                    <Badge className={getStatusColor(application.status)}>
-                      {getStatusText(application.status)}
-                    </Badge>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>Applied {new Date(application.applied_at).toLocaleDateString()}</span>
-                    </div>
-                    {application.jobs?.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{application.jobs.location}</span>
-                      </div>
-                    )}
-                    {application.application_data?.expectedCTC && (
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4" />
-                        <span>Expected: ₹{application.application_data.expectedCTC} LPA</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {application.application_data && (
-                    <div className="space-y-2 text-sm">
-                      {application.application_data.phoneNumber && (
-                        <div>
-                          <span className="font-medium">Phone:</span> {application.application_data.phoneNumber}
-                        </div>
-                      )}
-                      {application.application_data.noticePeriod && (
-                        <div>
-                          <span className="font-medium">Notice Period:</span> {application.application_data.noticePeriod}
-                        </div>
-                      )}
-                      {application.application_data.currentCTC && (
-                        <div>
-                          <span className="font-medium">Current CTC:</span> ₹{application.application_data.currentCTC} LPA
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex gap-2 mt-4">
-                    {application.resume_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={application.resume_url} target="_blank" rel="noopener noreferrer">
-                          <FileText className="h-4 w-4 mr-2" />
-                          View Resume
-                        </a>
-                      </Button>
-                    )}
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={`/jobs/${application.job_id}`}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Job
-                      </a>
-                    </Button>
-                    {application.redirect_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={application.redirect_url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Company Site
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="applied">Applied</SelectItem>
+                <SelectItem value="reviewed">Reviewed</SelectItem>
+                <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                <SelectItem value="interviewed">Interviewed</SelectItem>
+                <SelectItem value="hired">Hired</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="tracker" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Application Tracker
+          </TabsTrigger>
+          <TabsTrigger value="insights" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Insights & Analytics
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="tracker" className="mt-6">
+          <ApplicationStatusTracker
+            applications={filteredApplications.map(app => ({
+              id: app.id,
+              job_title: app.jobs?.title || 'Unknown Role',
+              company_name: app.jobs?.company_name || 'Unknown Company',
+              status: app.status as any,
+              applied_at: app.applied_at,
+              last_updated: app.updated_at,
+              notes: app.application_data?.notes,
+              application_data: app.application_data
+            }))}
+            onWithdraw={handleWithdraw}
+            onFollowUp={handleFollowUp}
+          />
+        </TabsContent>
+
+        <TabsContent value="insights" className="mt-6">
+          <ApplicationInsights
+            totalApplications={totalApplications}
+            successRate={Math.round(successRate)}
+            averageResponseTime={7} // TODO: Calculate actual average
+            recentActivity={recentActivity}
+            recommendations={recommendations}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
