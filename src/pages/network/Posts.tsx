@@ -342,9 +342,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
 
           {/* Right Sidebar - Network Activity & Advertising */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Trending Hashtags */}
-            <TrendingHashtags limit={8} />
-
             {/* Advertising Sidebar */}
             <AdvertisingSidebar maxAds={2} />
             

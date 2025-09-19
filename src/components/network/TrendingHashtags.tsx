@@ -28,9 +28,9 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
       // Get real hashtags from posts in the last 7 days
       const { data: posts, error } = await supabase
         .from('posts')
-        .select('tags')
+        .select('hashtags')
         .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-        .not('tags', 'is', null)
+        .not('hashtags', 'is', null)
         .eq('status', 'published');
 
       if (error) {
@@ -41,7 +41,7 @@ export const TrendingHashtags: React.FC<TrendingHashtagsProps> = ({
       // Count hashtag occurrences
       const hashtagCounts: Record<string, number> = {};
       posts?.forEach(post => {
-        post.tags?.forEach((tag: string) => {
+        post.hashtags?.forEach((tag: string) => {
           if (tag && typeof tag === 'string') {
             hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
           }

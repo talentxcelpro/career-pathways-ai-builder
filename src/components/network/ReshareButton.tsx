@@ -53,10 +53,12 @@ export const ReshareButton: React.FC<ReshareButtonProps> = ({
       const { error } = await supabase
         .from('posts')
         .insert({
-          user_id: user.id,
+          author_id: user.id,
           content: withComment ? reshareText : `Reshared from ${postAuthor}`,
           original_post_id: postId,
           post_type: 'reshare',
+          status: 'published',
+          visibility: 'public',
           created_at: new Date().toISOString()
         });
 
