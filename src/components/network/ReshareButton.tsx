@@ -54,6 +54,7 @@ export const ReshareButton: React.FC<ReshareButtonProps> = ({
         .from('posts')
         .insert({
           author_id: user.id,
+          user_id: user.id,
           content: withComment ? reshareText : `Reshared from ${postAuthor}`,
           original_post_id: postId,
           post_type: 'reshare',

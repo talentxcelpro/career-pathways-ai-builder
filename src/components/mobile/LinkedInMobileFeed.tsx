@@ -11,6 +11,7 @@ import { MobileCreatePost } from './MobileCreatePost';
 import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface LinkedInPost {
   id: string;
@@ -357,6 +358,7 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
   onApply 
 }) => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   if (!user) {
     return (
@@ -379,7 +381,12 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
       <div className="max-w-2xl mx-auto pt-4 pb-20">
         {/* Create Post Section */}
-        <MobileCreatePost onPostCreate={() => window.location.reload()} />
+        <MobileCreatePost onPostCreate={() => {
+          // Refresh the posts data without reloading the page
+          queryClient.invalidateQueries({ queryKey: ['posts'] });
+          queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
+          queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
+        }} />
         
         {/* Posts Feed */}
         {posts.map((post) => (
