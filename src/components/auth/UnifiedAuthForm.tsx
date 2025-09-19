@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { useNavigate } from 'react-router-dom';
-import { useFastAuth } from '@/hooks/useFastAuth';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
 
 interface UnifiedAuthFormProps {
@@ -26,7 +27,8 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const { fastLogin, fastSignup, isAuthenticating } = useFastAuth();
+  const { user } = useAuth();
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -49,14 +51,46 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
       }
     }
 
-    const result = isLogin 
-      ? await fastLogin(formData.email, formData.password)
-      : await fastSignup(formData.email, formData.password, formData.fullName);
+    setIsAuthenticating(true);
+    try {
+      if (isLogin) {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
 
-    if (result.success) {
-      onSuccess?.();
-      const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
-      navigate(redirectPath);
+        if (error) {
+          toast.error(error.message);
+        } else {
+          onSuccess?.();
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          navigate(redirectPath);
+        }
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: { full_name: formData.fullName },
+            emailRedirectTo: `${window.location.origin}/`
+          }
+        });
+
+        if (error) {
+          toast.error(error.message);
+        } else if (data.session) {
+          toast.success('Account created successfully! 🎉');
+          onSuccess?.();
+          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+          navigate(redirectPath);
+        } else {
+          toast.success('Please check your email to verify your account');
+        }
+      }
+    } catch (error: any) {
+      toast.error(isLogin ? 'Login failed' : 'Signup failed');
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
