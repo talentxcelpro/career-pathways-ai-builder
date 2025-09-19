@@ -12,11 +12,13 @@ import { toast } from "sonner";
 interface PersonalDetailsStepProps {
   formData: FormData;
   onUpdate: (data: Partial<FormData>) => void;
+  isMobile?: boolean;
 }
 
 const PersonalDetailsStep: React.FC<PersonalDetailsStepProps> = ({
   formData,
-  onUpdate
+  onUpdate,
+  isMobile = false
 }) => {
   useEffect(() => {
     fetchUserProfile();
@@ -78,10 +80,10 @@ const PersonalDetailsStep: React.FC<PersonalDetailsStepProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <div className={`space-y-${isMobile ? '6' : '8'}`}>
       <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">Personal & Professional Details</h3>
-        <p className="text-muted-foreground">
+        <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-2`}>Personal & Professional Details</h3>
+        <p className={`text-muted-foreground ${isMobile ? 'text-sm' : ''}`}>
           Provide your information to complete your job application.
         </p>
       </div>
@@ -93,7 +95,7 @@ const PersonalDetailsStep: React.FC<PersonalDetailsStepProps> = ({
           Personal Information
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 gap-4'}`}>
           <div className="space-y-2">
             <Label htmlFor="fullName">
               Full Name <span className="text-destructive">*</span>

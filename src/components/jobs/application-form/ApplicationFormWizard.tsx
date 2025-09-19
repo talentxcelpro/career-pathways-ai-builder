@@ -12,12 +12,14 @@ interface ApplicationFormWizardProps {
   job: JobInfo;
   onComplete?: (data: FormData) => void;
   onCancel?: () => void;
+  isMobile?: boolean;
 }
 
 export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({ 
   job, 
   onComplete, 
-  onCancel 
+  onCancel,
+  isMobile = false
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({
@@ -113,6 +115,144 @@ export const ApplicationFormWizard: React.FC<ApplicationFormWizardProps> = ({
     }
   };
 
+  if (isMobile) {
+    return (
+      <div className="h-full flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5 mobile-optimized">
+        {/* Mobile Progress Header */}
+        <div className="flex-shrink-0 px-4 py-3 safe-top">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-2">
+              {steps.map((step, index) => (
+                <div
+                  key={step.id}
+                  className={`w-8 h-1 rounded-full transition-all duration-300 ${
+                    index <= currentStep ? 'bg-primary' : 'bg-muted'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm font-medium text-muted-foreground">
+              {currentStep + 1}/{steps.length}
+            </span>
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-lg font-bold text-foreground mb-1 line-clamp-2">
+              {job.title}
+            </h1>
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
+              at {job.companies?.name || job.company_name}
+            </p>
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold text-foreground">
+                {steps[currentStep].title}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                {steps[currentStep].description}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Step Content */}
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm">
+            <CardContent className="p-4">
+              {currentStep === 0 && (
+                <ResumeSelectionStep
+                  formData={formData}
+                  onUpdate={updateFormData}
+                  isMobile={true}
+                />
+              )}
+              
+              {currentStep === 1 && (
+                <div className="text-center space-y-4">
+                  <div className="flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mx-auto">
+                    <Briefcase className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">{job.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {job.companies?.name || job.company_name}
+                    </p>
+                    {job.skills_required && job.skills_required.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Required Skills:</p>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {job.skills_required.slice(0, 6).map((skill, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                          {job.skills_required.length > 6 && (
+                            <span className="px-2 py-1 bg-muted/50 text-muted-foreground rounded-full text-xs">
+                              +{job.skills_required.length - 6} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Review the details and proceed to provide your information.
+                  </p>
+                </div>
+              )}
+              
+              {currentStep === 2 && (
+                <PersonalDetailsStep
+                  formData={formData}
+                  onUpdate={updateFormData}
+                  isMobile={true}
+                />
+              )}
+              
+              {currentStep === 3 && (
+                <DeclarationStep
+                  formData={formData}
+                  onUpdate={updateFormData}
+                  onSubmit={handleComplete}
+                  job={job}
+                  isMobile={true}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="flex-shrink-0 p-4 safe-bottom bg-background/95 backdrop-blur-sm border-t">
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={currentStep === 0 ? onCancel : handleBack}
+              className="flex-1 touch-target"
+              size="lg"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {currentStep === 0 ? 'Cancel' : 'Back'}
+            </Button>
+            
+            <Button
+              onClick={currentStep === steps.length - 1 ? handleComplete : handleNext}
+              disabled={!canProceed()}
+              className="flex-1 touch-target"
+              size="lg"
+            >
+              {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop version
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <div className="max-w-4xl mx-auto px-4 py-8">

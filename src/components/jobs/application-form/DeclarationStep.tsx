@@ -15,13 +15,15 @@ interface DeclarationStepProps {
   onUpdate: (data: Partial<FormData>) => void;
   onSubmit: () => void;
   job: JobInfo;
+  isMobile?: boolean;
 }
 
 const DeclarationStep: React.FC<DeclarationStepProps> = ({
   formData,
   onUpdate,
   onSubmit,
-  job
+  job,
+  isMobile = false
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { uploadFile } = useFileUpload({
@@ -172,10 +174,10 @@ const DeclarationStep: React.FC<DeclarationStepProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <div className={`space-y-${isMobile ? '6' : '8'}`}>
       <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">Review & Submit Application</h3>
-        <p className="text-muted-foreground">
+        <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-2`}>Review & Submit Application</h3>
+        <p className={`text-muted-foreground ${isMobile ? 'text-sm' : ''}`}>
           Please review your information and confirm the declarations below.
         </p>
       </div>
@@ -342,7 +344,7 @@ const DeclarationStep: React.FC<DeclarationStepProps> = ({
             !formData.contactAuthorized
           }
           size="lg"
-          className="min-w-[200px]"
+          className={isMobile ? "w-full touch-target" : "min-w-[200px]"}
         >
           {isSubmitting ? (
             <>

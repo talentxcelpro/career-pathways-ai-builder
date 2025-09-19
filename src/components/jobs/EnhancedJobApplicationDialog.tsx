@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { ApplicationFormWizard } from './application-form/ApplicationFormWizard';
 import { JobInfo } from './application-form/types';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface EnhancedJobApplicationDialogProps {
   open: boolean;
@@ -16,6 +18,8 @@ export const EnhancedJobApplicationDialog: React.FC<EnhancedJobApplicationDialog
   onOpenChange,
   job
 }) => {
+  const { isMobile } = useMobileDetection();
+
   const handleComplete = (formData: any) => {
     // Application submitted successfully
     onOpenChange(false);
@@ -25,6 +29,41 @@ export const EnhancedJobApplicationDialog: React.FC<EnhancedJobApplicationDialog
     onOpenChange(false);
   };
 
+  // Mobile-first: Use drawer on mobile, dialog on desktop
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="h-[95vh] p-0 mobile-optimized">
+          <div className="relative h-full flex flex-col">
+            <DrawerHeader className="flex-shrink-0 pb-2 safe-top">
+              <div className="flex items-center justify-between">
+                <DrawerTitle className="text-lg font-semibold">Job Application</DrawerTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="touch-target rounded-full hover:bg-muted"
+                  onClick={handleCancel}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </DrawerHeader>
+            
+            <div className="flex-1 overflow-hidden">
+              <ApplicationFormWizard
+                job={job}
+                onComplete={handleComplete}
+                onCancel={handleCancel}
+                isMobile={true}
+              />
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  // Desktop version
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[95vh] p-0 overflow-hidden">
@@ -42,6 +81,7 @@ export const EnhancedJobApplicationDialog: React.FC<EnhancedJobApplicationDialog
             job={job}
             onComplete={handleComplete}
             onCancel={handleCancel}
+            isMobile={false}
           />
         </div>
       </DialogContent>

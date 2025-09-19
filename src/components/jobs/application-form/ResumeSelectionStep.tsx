@@ -11,11 +11,13 @@ import { toast } from "sonner";
 interface ResumeSelectionStepProps {
   formData: FormData;
   onUpdate: (data: Partial<FormData>) => void;
+  isMobile?: boolean;
 }
 
 const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
   formData,
-  onUpdate
+  onUpdate,
+  isMobile = false
 }) => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,10 +115,10 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-${isMobile ? '4' : '6'}`}>
       <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">Select Your Resume</h3>
-        <p className="text-muted-foreground">
+        <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-2`}>Select Your Resume</h3>
+        <p className={`text-muted-foreground ${isMobile ? 'text-sm' : ''}`}>
           Choose an existing resume or upload a new one to apply for this position.
         </p>
       </div>
@@ -204,7 +206,8 @@ const ResumeSelectionStep: React.FC<ResumeSelectionStepProps> = ({
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById('resume-upload')?.click()}
-                  className="w-full max-w-xs"
+                  className={`w-full ${isMobile ? 'text-sm touch-target' : 'max-w-xs'}`}
+                  size={isMobile ? "lg" : "default"}
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   {formData.uploadedResume ? formData.uploadedResume.name : 'Choose Resume File'}
