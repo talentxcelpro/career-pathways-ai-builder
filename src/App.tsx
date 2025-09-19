@@ -89,7 +89,16 @@ import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
+import { performanceBooster } from "@/utils/performanceBooster";
+import { mobileOptimizer } from "@/utils/mobileOptimizer";
+import { FastLoadingWrapper } from "@/components/FastLoadingWrapper";
+
+// Lazy load components with preloading for critical routes
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
+const NetworkPage = React.lazy(() => import("./pages/Network"));
+const JobsPage = React.lazy(() => import("./pages/Jobs"));
+const ProfilePage = React.lazy(() => import("./pages/Profile"));
+const CompaniesPage = React.lazy(() => import("./pages/Companies"));
 
 // Create query client optimized for performance and SEO
 const queryClient = new QueryClient({
@@ -191,10 +200,11 @@ const App = () => {
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
-                  <div className="min-h-screen flex flex-col">
-                    <OfflineIndicator />
-                    <Navbar />
-                    <main className="flex-1">
+                  <FastLoadingWrapper>
+                    <div className="min-h-screen flex flex-col">
+                      <OfflineIndicator />
+                      <Navbar />
+                      <main className="flex-1">
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                           <Routes>
                         {navItems.map((item: NavItem) => {
@@ -359,12 +369,13 @@ const App = () => {
                         </Routes>
                         </React.Suspense>
                      </main>
-                     <FooterWrapper />
-                     <InstallPrompt />
-                     <InstallButton />
-                     <IOSInstallPrompt />
-                   </div>
-                 </MobileAppWrapper>
+                      <FooterWrapper />
+                      <InstallPrompt />
+                      <InstallButton />
+                      <IOSInstallPrompt />
+                    </div>
+                  </FastLoadingWrapper>
+                </MobileAppWrapper>
                   <Analytics />
                 </CopilotProvider>
                 {/* </RealtimeProvider> */}
@@ -392,6 +403,12 @@ const AppWrapper = () => {
     
     // Initialize performance optimizations for better Core Web Vitals
     initializePerformanceOptimizations();
+    
+    // Initialize performance booster for faster loading
+    performanceBooster.initialize();
+    
+    // Initialize mobile optimizations
+    mobileOptimizer.initialize();
   }, []);
 
   return <App />;

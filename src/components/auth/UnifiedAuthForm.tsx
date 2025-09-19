@@ -4,11 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
 import { useNavigate } from 'react-router-dom';
+import { useFastAuth } from '@/hooks/useFastAuth';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
 
 interface UnifiedAuthFormProps {
@@ -25,8 +25,8 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { fastLogin, fastSignup, isAuthenticating } = useFastAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -49,56 +49,14 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
       }
     }
 
-    setLoading(true);
+    const result = isLogin 
+      ? await fastLogin(formData.email, formData.password)
+      : await fastSignup(formData.email, formData.password, formData.fullName);
 
-    try {
-      if (isLogin) {
-        // Sign In
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
-
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-
-        if (data.user) {
-          // Login successful - no toast message
-          onSuccess?.();
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
-          navigate(redirectPath);
-        }
-      } else {
-        // Sign Up
-        const { data, error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            data: {
-              full_name: formData.fullName,
-            },
-            emailRedirectTo: `${window.location.origin}/`
-          }
-        });
-
-        if (error) {
-          toast.error(error.message);
-          return;
-        }
-
-        if (data.user) {
-          toast.success('Account created successfully! 🎉');
-          onSuccess?.();
-          const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
-          navigate(redirectPath);
-        }
-      }
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-    } finally {
-      setLoading(false);
+    if (result.success) {
+      onSuccess?.();
+      const redirectPath = window.location.hostname === 'employer.talentxcel.in' ? '/employer' : '/network';
+      navigate(redirectPath);
     }
   };
 
@@ -253,9 +211,9 @@ export const UnifiedAuthForm = ({ onSuccess }: UnifiedAuthFormProps) => {
           <Button 
             type="submit" 
             className="w-full h-9 font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm" 
-            disabled={loading}
+            disabled={isAuthenticating}
           >
-            {loading ? (
+            {isAuthenticating ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 {isLogin ? 'Signing in...' : 'Creating...'}
