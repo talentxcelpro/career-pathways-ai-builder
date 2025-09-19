@@ -34,13 +34,16 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Dynamic chunking to reduce memory usage
+          // Enhanced code splitting for performance
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor';
             }
             if (id.includes('@radix-ui')) {
               return 'ui';
+            }
+            if (id.includes('@supabase') || id.includes('@tanstack')) {
+              return 'data';
             }
             if (id.includes('mammoth') || id.includes('pdfjs-dist') || id.includes('docx')) {
               return 'pdf-tools';
@@ -54,20 +57,36 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('framer-motion')) {
               return 'animations';
             }
-            if (id.includes('@supabase') || id.includes('@tanstack') || id.includes('react-router')) {
-              return 'libs';
+            if (id.includes('lucide-react')) {
+              return 'icons';
             }
             return 'vendor';
           }
+          // Feature-based chunks for application code
+          if (id.includes('/social/')) return 'social';
+          if (id.includes('/learning/')) return 'learning';
+          if (id.includes('/mobile/')) return 'mobile';
+          if (id.includes('/growth/')) return 'growth';
+          if (id.includes('/analytics/')) return 'analytics';
         }
       },
-      maxParallelFileOps: 1 // Further reduce parallel operations
+      maxParallelFileOps: mode === 'production' ? 4 : 1
     },
-    target: 'es2020', // Less aggressive target for better compatibility
-    minify: false, // Disable minification for development builds
-    sourcemap: false,
-    chunkSizeWarningLimit: 2000,
-    assetsInlineLimit: 2048
+    target: mode === 'production' ? 'es2020' : 'es2020',
+    minify: mode === 'production' ? 'terser' : false,
+    terserOptions: mode === 'production' ? {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info']
+      },
+      mangle: {
+        safari10: true
+      }
+    } : undefined,
+    sourcemap: mode === 'production' ? false : true,
+    chunkSizeWarningLimit: 1000,
+    assetsInlineLimit: 4096
   },
   optimizeDeps: {
     include: [

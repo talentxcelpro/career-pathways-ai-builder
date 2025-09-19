@@ -1,147 +1,84 @@
-// Critical CSS extraction and inlining for above-the-fold content
-export class CriticalCSSManager {
-  private static extractedCSS: string | null = null;
-  private static isExtracted = false;
-
-  // Extract critical CSS for above-the-fold content
-  static extractCriticalCSS(): string {
-    if (this.extractedCSS && this.isExtracted) {
-      return this.extractedCSS;
-    }
-
-    const criticalCSS = `
-      /* Critical styles for immediate rendering */
-      *, *::before, *::after {
-        box-sizing: border-box;
-      }
-      
-      html {
-        line-height: 1.15;
-        -webkit-text-size-adjust: 100%;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      }
-      
-      body {
-        margin: 0;
-        font-family: inherit;
-        background-color: hsl(0 0% 100%);
-        color: hsl(222.2 84% 4.9%);
-      }
-      
-      .min-h-screen { min-height: 100vh; }
-      .flex { display: flex; }
-      .items-center { align-items: center; }
-      .justify-center { justify-content: center; }
-      .text-center { text-align: center; }
-      .font-bold { font-weight: 700; }
-      .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
-      .mb-4 { margin-bottom: 1rem; }
-      .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-      
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: .5; }
-      }
-      
-      /* Hero section critical styles */
-      .hero-gradient {
-        background: linear-gradient(135deg, hsl(221.2 83.2% 53.3%), hsl(212 95% 68%));
-      }
-      
-      /* Navigation critical styles */
-      .nav-blur {
-        backdrop-filter: blur(8px);
-        background-color: hsla(0, 0%, 100%, 0.8);
-      }
-    `;
-
-    this.extractedCSS = criticalCSS;
-    this.isExtracted = true;
-    return criticalCSS;
+// Critical CSS inlining utilities
+export const criticalCSS = `
+  /* Critical above-the-fold styles */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
   }
 
-  // Inline critical CSS in document head
-  static inlineCriticalCSS(): void {
-    if (typeof document === 'undefined') return;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 240 10% 3.9%;
+      --foreground: 0 0% 98%;
+      --primary: 0 0% 98%;
+      --primary-foreground: 240 5.9% 10%;
+      --muted: 240 3.7% 15.9%;
+      --muted-foreground: 240 5% 64.9%;
+    }
+  }
 
-    const existingStyle = document.getElementById('critical-css');
-    if (existingStyle) return;
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    line-height: 1.5;
+  }
+
+  /* Loading skeleton styles for immediate render */
+  .skeleton {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--muted)/0.5) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+  }
+
+  @keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Critical navigation styles */
+  .nav-critical {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: hsl(var(--background)/0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid hsl(var(--muted));
+    z-index: 1000;
+  }
+`;
+
+export const injectCriticalCSS = () => {
+  if (typeof document !== 'undefined') {
     const style = document.createElement('style');
-    style.id = 'critical-css';
-    style.innerHTML = this.extractCriticalCSS();
-    
-    // Insert before any other stylesheets
-    const firstLink = document.querySelector('link[rel="stylesheet"]');
-    if (firstLink) {
-      document.head.insertBefore(style, firstLink);
-    } else {
-      document.head.appendChild(style);
-    }
+    style.textContent = criticalCSS;
+    document.head.insertBefore(style, document.head.firstChild);
   }
+};
 
-  // Optimize font loading with swap
-  static optimizeFontLoading(): void {
-    if (typeof document === 'undefined') return;
-
-    // Add font-display: swap to existing font links
-    const fontLinks = document.querySelectorAll('link[href*="fonts.googleapis.com"]');
-    fontLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href && !href.includes('display=swap')) {
-        const separator = href.includes('?') ? '&' : '?';
-        link.setAttribute('href', `${href}${separator}display=swap`);
-      }
-    });
+export const loadNonCriticalCSS = () => {
+  if (typeof document !== 'undefined') {
+    // Load non-critical CSS after page load
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/src/index.css';
+    link.media = 'print';
+    link.onload = () => {
+      link.media = 'all';
+    };
+    document.head.appendChild(link);
   }
-
-  // Remove unused CSS classes (basic implementation)
-  static removeUnusedCSS(): void {
-    if (typeof document === 'undefined') return;
-
-    // This is a simplified version - in production, you'd use tools like PurgeCSS
-    const unusedSelectors = [
-      '.unused-class',
-      '.debug-mode',
-      '.development-only'
-    ];
-
-    const styleSheets = Array.from(document.styleSheets);
-    styleSheets.forEach(sheet => {
-      try {
-        const rules = Array.from(sheet.cssRules || []);
-        rules.forEach((rule, index) => {
-          if (rule.type === CSSRule.STYLE_RULE) {
-            const styleRule = rule as CSSStyleRule;
-            if (unusedSelectors.some(selector => styleRule.selectorText?.includes(selector))) {
-              sheet.deleteRule(index);
-            }
-          }
-        });
-      } catch (e) {
-        // Cross-origin stylesheets can't be accessed
-        console.warn('Cannot access stylesheet:', e);
-      }
-    });
-  }
-
-  // Initialize all optimizations
-  static init(): void {
-    this.inlineCriticalCSS();
-    this.optimizeFontLoading();
-    
-    // Remove unused CSS after page load
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => this.removeUnusedCSS(), 1000);
-      });
-    } else {
-      setTimeout(() => this.removeUnusedCSS(), 1000);
-    }
-  }
-}
-
-// Auto-initialize
-if (typeof window !== 'undefined') {
-  CriticalCSSManager.init();
-}
+};
