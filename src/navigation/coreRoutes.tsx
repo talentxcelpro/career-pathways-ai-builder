@@ -1,5 +1,6 @@
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
 import Index from "../pages/Index";
+import HomePage from "../pages/HomePage";
 import RealtimeDemoPage from "../pages/RealtimeDemo";
 import TalentXcelResumeBuilder from "../pages/resume/TalentXcelResumeBuilder";
 import About from "../pages/About";
@@ -40,6 +41,14 @@ export const coreRoutes = [
     page: <Index />,
     exact: true,
     requiresAuth: false,
+  },
+  {
+    title: "Home Feed",
+    to: "/home",
+    icon: <HomeIcon className="h-4 w-4" />,
+    page: <HomePage />,
+    isPublic: true,
+    requiresAuth: true,
   },
   {
     title: "Dashboard",

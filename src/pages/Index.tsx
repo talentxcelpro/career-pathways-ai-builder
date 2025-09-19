@@ -45,7 +45,7 @@ const Index = () => {
 
   // Redirect logged-in users after auth check completes
   if (authChecked && isLoggedIn) {
-    return <Navigate to="/network" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return (

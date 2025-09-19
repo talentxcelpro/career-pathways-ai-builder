@@ -356,6 +356,16 @@ const Jobs = () => {
   ];
 
 
+  // Add loadMoreRef for infinite scroll
+  const loadMoreRef = React.useRef<HTMLDivElement>(null);
+  
+  // Use intersection observer for infinite loading (commented out for now since Jobs uses pagination)
+  // useIntersectionObserver(loadMoreRef, () => {
+  //   if (hasMore && !isLoading) {
+  //     // Could implement infinite scroll here
+  //   }
+  // }, { threshold: 0.1 });
+
   return (
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
