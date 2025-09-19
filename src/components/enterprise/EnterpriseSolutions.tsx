@@ -5,42 +5,38 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   Building2, 
   Users, 
   TrendingUp, 
-  Search, 
   Brain,
   Target,
   BarChart3,
-  Shield,
   UserPlus,
   Award,
   Briefcase,
-  Globe,
-  Lightbulb,
   CheckCircle,
   ArrowRight,
   Star,
-  Zap,
-  Settings,
-  Calendar,
-  FileText,
-  Download,
-  Upload,
-  Filter,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
   Clock,
   DollarSign,
-  AlertTriangle
+  AlertTriangle,
+  GitBranch,
+  Network,
+  Layers,
+  Database,
+  MessageSquare,
+  Workflow,
+  BookOpen,
+  Zap,
+  Plus,
+  Filter,
+  Eye,
+  Edit
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { updateMetaTags } from '@/utils/metaTags';
 
 interface Employee {
   id: string;
@@ -76,11 +72,73 @@ interface TalentMetric {
 export const EnterpriseSolutions: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('overview');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [trainingPrograms, setTrainingPrograms] = useState<TrainingProgram[]>([]);
   const [metrics, setMetrics] = useState<TalentMetric[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // SEO Setup
+  useEffect(() => {
+    updateMetaTags({
+      title: 'Enterprise Solutions - AI-Powered Talent Management | TalentXcel',
+      description: 'Transform your workforce with AI-powered internal mobility, skill gap analysis, talent analytics, and specialized recruitment solutions. Reduce costs by 60% and improve retention by 40%.',
+      keywords: ['enterprise talent management', 'AI recruitment', 'internal mobility', 'skill gap analysis', 'workforce analytics', 'corporate training', 'talent retention'],
+      url: `${window.location.origin}/enterprise/solutions`,
+      type: 'website',
+      image: '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'
+    });
+
+    // Add structured data for Enterprise Solutions
+    const enterpriseSchema = {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "TalentXcel Enterprise Solutions",
+      "description": "AI-powered talent management platform for enterprises",
+      "provider": {
+        "@type": "Organization",
+        "name": "TalentXcel",
+        "url": "https://talentxcel.in"
+      },
+      "serviceType": "Enterprise Talent Management",
+      "areaServed": "IN",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Enterprise Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI-Powered Internal Mobility"
+            }
+          },
+          {
+            "@type": "Offer", 
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Skill Gap Analysis"
+            }
+          }
+        ]
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(enterpriseSchema);
+    script.id = 'enterprise-schema';
+    
+    const existing = document.getElementById('enterprise-schema');
+    if (existing) existing.remove();
+    
+    document.head.appendChild(script);
+
+    return () => {
+      const schemaScript = document.getElementById('enterprise-schema');
+      if (schemaScript) schemaScript.remove();
+    };
+  }, []);
 
   useEffect(() => {
     // Simulate loading data
@@ -141,16 +199,6 @@ export const EnterpriseSolutions: React.FC = () => {
           participants: 12,
           completionRate: 73,
           status: 'active'
-        },
-        {
-          id: '3',
-          title: 'Leadership Excellence',
-          provider: 'Business Leaders Institute',
-          duration: '4 weeks',
-          cost: 950,
-          participants: 8,
-          completionRate: 95,
-          status: 'completed'
         }
       ]);
 
@@ -164,6 +212,273 @@ export const EnterpriseSolutions: React.FC = () => {
       setLoading(false);
     }, 1000);
   }, []);
+
+  // Hero Section with detailed B2B value proposition
+  const renderOverview = () => (
+    <div className="space-y-12">
+      {/* Hero Section */}
+      <div className="text-center py-16 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white rounded-2xl">
+        <div className="max-w-4xl mx-auto px-6">
+          <h1 className="text-5xl font-bold mb-6 font-display">
+            Transform Your Workforce with AI-Powered Enterprise Solutions
+          </h1>
+          <p className="text-xl mb-8 opacity-90">
+            Unlock your organization's potential through intelligent talent management, 
+            internal mobility, and strategic workforce planning
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+              Schedule Demo
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+              Download ROI Calculator
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Core Enterprise Solutions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* AI-Powered Internal Mobility */}
+        <Card className="p-8 hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500">
+          <div className="flex items-start gap-4 mb-6">
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <TrendingUp className="h-8 w-8 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-2">AI-Powered Internal Mobility & Career Pathing</h3>
+              <p className="text-gray-600 text-lg">Connect your existing talent with internal opportunities through intelligent matching</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <Database className="h-5 w-5 text-blue-600" />
+                Input (For Your Company)
+              </h4>
+              <div className="bg-blue-50 p-4 rounded-lg space-y-2">
+                <p className="text-sm">• <strong>HRIS Integration:</strong> Anonymized employee data including skills, work history, performance reviews, and career interests</p>
+                <p className="text-sm">• <strong>Career Passport Profiles:</strong> Employee's self-reported competencies and aspirations</p>
+                <p className="text-sm">• <strong>Internal Job Listings:</strong> Current and future role requirements</p>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <Workflow className="h-5 w-5 text-green-600" />
+                The Process (TalentXcel's Role)
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                  <GitBranch className="h-5 w-5 text-green-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Skill Graphing</p>
+                    <p className="text-sm text-gray-600">Create comprehensive "Skill Graphs" for each employee based on HRIS data and Career Passport profiles</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                  <Network className="h-5 w-5 text-green-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Intelligent Matching Engine</p>
+                    <p className="text-sm text-gray-600">Continuously scan internal opportunities and match with best-fit employees using advanced algorithms</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                  <MessageSquare className="h-5 w-5 text-green-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Personalized Recommendations</p>
+                    <p className="text-sm text-gray-600">Employees receive tailored notifications for relevant roles, skill-building courses, and mentorship programs</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-purple-600" />
+                Output (For Your Company)
+              </h4>
+              <div className="bg-purple-50 p-4 rounded-lg space-y-2">
+                <p className="text-sm">• <strong>Talent Pipeline Dashboard:</strong> Clear view of internal talent readiness for key roles</p>
+                <p className="text-sm">• <strong>Cost Reduction:</strong> 60% reduction in recruitment costs through internal hiring</p>
+                <p className="text-sm">• <strong>Future Readiness:</strong> Strategic workforce planning aligned with business goals</p>
+              </div>
+            </div>
+
+            <Button 
+              onClick={() => navigate('/enterprise/internal-mobility')} 
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              Explore Internal Mobility Solution
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </Card>
+
+        {/* Skill Gap Analysis */}
+        <Card className="p-8 hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500">
+          <div className="flex items-start gap-4 mb-6">
+            <div className="p-3 bg-green-100 rounded-lg">
+              <Brain className="h-8 w-8 text-green-600" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-2">Skill Gap Analysis & Corporate Training Marketplace</h3>
+              <p className="text-gray-600 text-lg">Proactively address skills shortages with curated training solutions</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <Target className="h-5 w-5 text-green-600" />
+                Input
+              </h4>
+              <div className="bg-green-50 p-4 rounded-lg space-y-2">
+                <p className="text-sm">• <strong>Strategic Business Goals:</strong> Future skills needed for growth (AI, cloud security, data analytics)</p>
+                <p className="text-sm">• <strong>Performance Management Integration:</strong> Current workforce capabilities assessment</p>
+                <p className="text-sm">• <strong>Industry Benchmarks:</strong> Competitive skill requirements analysis</p>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <Layers className="h-5 w-5 text-blue-600" />
+                The Process
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                  <AlertTriangle className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Gap Identification</p>
+                    <p className="text-sm text-gray-600">Analyze workforce skills against future needs, generating detailed reports at individual and department levels</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                  <BookOpen className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Marketplace Curation</p>
+                    <p className="text-sm text-gray-600">Recommend relevant training from vetted providers (Coursera, Udacity, specialized centers)</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                  <Zap className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Automated Enrollment</p>
+                    <p className="text-sm text-gray-600">HR managers can enroll employees directly from the dashboard with one-click automation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <Award className="h-5 w-5 text-orange-600" />
+                Output
+              </h4>
+              <div className="bg-orange-50 p-4 rounded-lg space-y-2">
+                <p className="text-sm">• <strong>Clear Upskilling Roadmap:</strong> Strategic workforce development plan</p>
+                <p className="text-sm">• <strong>Competitive Advantage:</strong> Stay ahead in fast-changing markets</p>
+                <p className="text-sm">• <strong>ROI Tracking:</strong> Measure training effectiveness and business impact</p>
+              </div>
+            </div>
+
+            <Button 
+              onClick={() => navigate('/enterprise/skill-gap')} 
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              Explore Skill Gap Analysis
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </Card>
+      </div>
+
+      {/* Additional Enterprise Services */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <BarChart3 className="h-6 w-6 text-purple-600" />
+            </div>
+            <h3 className="text-xl font-bold">Talent Analytics & Reporting</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            Real-time workforce insights, predictive analytics, and executive dashboards for data-driven talent decisions.
+          </p>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/enterprise/analytics')}
+            className="w-full"
+          >
+            View Analytics Suite <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Card>
+
+        <Card className="p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <UserPlus className="h-6 w-6 text-orange-600" />
+            </div>
+            <h3 className="text-xl font-bold">Specialized Recruitment</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            AI-powered recruitment for niche roles, executive search, and high-volume hiring with advanced matching algorithms.
+          </p>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/enterprise/recruitment')}
+            className="w-full"
+          >
+            Explore Recruitment <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Card>
+      </div>
+
+      {/* ROI & Benefits Section */}
+      <Card className="p-8 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold mb-4">Measurable Business Impact</h2>
+          <p className="text-xl text-gray-600">See the transformation our enterprise clients have achieved</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-blue-600 mb-2">60%</div>
+            <p className="text-sm text-gray-600">Reduction in recruitment costs</p>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-bold text-green-600 mb-2">40%</div>
+            <p className="text-sm text-gray-600">Improvement in employee retention</p>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-bold text-purple-600 mb-2">75%</div>
+            <p className="text-sm text-gray-600">Faster internal role fills</p>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-bold text-orange-600 mb-2">3.4x</div>
+            <p className="text-sm text-gray-600">ROI on training investments</p>
+          </div>
+        </div>
+      </Card>
+
+      {/* CTA Section */}
+      <Card className="p-8 bg-gradient-to-r from-primary to-blue-600 text-white text-center">
+        <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Workforce?</h2>
+        <p className="text-xl mb-6 opacity-90">
+          Join 500+ enterprises already using TalentXcel's AI-powered solutions
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+            Schedule Your Demo
+          </Button>
+          <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+            Download Case Studies
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
 
   const renderDashboard = () => (
     <div className="space-y-6">
@@ -455,104 +770,11 @@ export const EnterpriseSolutions: React.FC = () => {
     </div>
   );
 
-  const renderReports = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Reports & Analytics</h2>
-          <p className="text-gray-600">Generate insights and export data</p>
-        </div>
-        <Button className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
-          Export Data
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
-              Workforce Analytics
-            </CardTitle>
-            <CardDescription>Comprehensive workforce insights</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Generate Report
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              Career Progression
-            </CardTitle>
-            <CardDescription>Internal mobility trends</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Generate Report
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
-              Skill Gap Report
-            </CardTitle>
-            <CardDescription>Skills analysis across teams</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Generate Report
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Scheduled Reports</CardTitle>
-          <CardDescription>Automate your reporting workflow</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { name: 'Weekly Workforce Summary', frequency: 'Weekly', nextRun: 'Monday 9:00 AM' },
-              { name: 'Monthly Skills Assessment', frequency: 'Monthly', nextRun: '1st of next month' },
-              { name: 'Quarterly Performance Review', frequency: 'Quarterly', nextRun: 'Jan 1, 2024' }
-            ].map((report, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">{report.name}</p>
-                  <p className="text-sm text-gray-600">{report.frequency} • Next: {report.nextRun}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-gray-600">Loading Enterprise Solutions...</p>
         </div>
       </div>
@@ -562,28 +784,37 @@ export const EnterpriseSolutions: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 font-display">
-            Enterprise Solutions Platform
-          </h1>
-          <p className="text-lg text-gray-600">
-            Comprehensive talent management and workforce optimization tools
-          </p>
-        </div>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="employees">Employees</TabsTrigger>
-            <TabsTrigger value="training">Training</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+              Enterprise Solutions
+            </TabsTrigger>
+            <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="employees" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+              Employee Management
+            </TabsTrigger>
+            <TabsTrigger value="training" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+              Training Hub
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard">{renderDashboard()}</TabsContent>
-          <TabsContent value="employees">{renderEmployeeManagement()}</TabsContent>
-          <TabsContent value="training">{renderTrainingHub()}</TabsContent>
-          <TabsContent value="reports">{renderReports()}</TabsContent>
+          <TabsContent value="overview" className="space-y-6">
+            {renderOverview()}
+          </TabsContent>
+
+          <TabsContent value="dashboard" className="space-y-6">
+            {renderDashboard()}
+          </TabsContent>
+
+          <TabsContent value="employees" className="space-y-6">
+            {renderEmployeeManagement()}
+          </TabsContent>
+
+          <TabsContent value="training" className="space-y-6">
+            {renderTrainingHub()}
+          </TabsContent>
         </Tabs>
       </div>
     </div>
