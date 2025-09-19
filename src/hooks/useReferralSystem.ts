@@ -280,7 +280,7 @@ export const useReferralSystem = () => {
     },
     referralEvents: referrals.map(r => ({
       ...r,
-      referee_name: `User ${r.referee_id?.slice(0, 8) || 'Unknown'}`,
+      referee_name: `User ${r.referred_id?.slice(0, 8) || 'Unknown'}`,
       referee_email: `user@example.com`,
       status: r.status === 'completed' ? 'registered' as const : r.status,
       reward_description: `${r.txc_reward} TXC earned`

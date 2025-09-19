@@ -112,7 +112,7 @@ export const ReferralDashboard: React.FC = () => {
                   className="font-mono text-lg font-bold"
                 />
                 <TouchButton 
-                  variant="outline" 
+                  variant="ghost" 
                   size="md"
                   onClick={() => {
                     triggerHaptic('success');
@@ -129,7 +129,7 @@ export const ReferralDashboard: React.FC = () => {
               <p className="text-sm font-medium">Share on social media:</p>
               <div className="grid grid-cols-3 gap-3">
                 <TouchButton
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => shareReferral('whatsapp')}
                   disabled={!myReferralCode}
@@ -139,7 +139,7 @@ export const ReferralDashboard: React.FC = () => {
                   WhatsApp
                 </TouchButton>
                 <TouchButton
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => shareReferral('twitter')}
                   disabled={!myReferralCode}
@@ -149,7 +149,7 @@ export const ReferralDashboard: React.FC = () => {
                   Twitter
                 </TouchButton>
                 <TouchButton
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => shareReferral('linkedin')}
                   disabled={!myReferralCode}
