@@ -76,13 +76,14 @@ const GamificationCenter: React.FC = () => {
                   Maintain daily login and application streaks to maximize your TXC earnings.
                 </p>
               </div>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Main Dashboard */}
         <GamificationDashboard />
+
+        {/* Tips for Success */}
         <div className="relative mt-12">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-2xl"></div>
           <div className="relative bg-card/30 backdrop-blur-sm rounded-2xl p-8 border border-border/20">

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
-import { Share2, Copy, MessageCircle, Twitter, Linkedin, Users, Gift, TrendingUp } from 'lucide-react';
+import { Share2, Copy, MessageCircle, Twitter, Linkedin, Users, Gift, TrendingUp, Trophy } from 'lucide-react';
 import { formatTXC } from '@/types/txc-pricing';
 
 const ReferralCenter: React.FC = () => {
