@@ -182,45 +182,47 @@ export const TXC_TOOLS_PRICING: TXCFeaturePricing[] = [
 
 export const TXC_SUBSCRIPTION_TIERS: TXCPricingTier[] = [
   {
-    id: 'basic_monthly',
-    name: 'Basic Monthly',
-    cost: 15000,
+    id: 'pro_starter',
+    name: 'Pro Starter',
+    cost: 25000,
     duration: 'monthly',
     features: [
-      '50 AI tool uses per month',
-      'Basic analytics',
-      'Standard job applications',
-      'Community access'
+      'AI Resume Builder',
+      'Basic Analytics',
+      'Standard Support',
+      'Profile Enhancement',
+      'Community Access'
     ]
   },
   {
-    id: 'pro_monthly',
-    name: 'Pro Monthly',
+    id: 'pro_business',
+    name: 'Pro Business',
     cost: 35000,
     duration: 'monthly',
     features: [
-      'Unlimited AI tool uses',
-      'Advanced analytics',
-      'Priority job applications',
-      'Direct recruiter messaging',
-      'Premium profile features',
-      'Skill verification included'
+      'Everything in Pro Starter',
+      'AI Cover Letter Generator',
+      'Advanced Analytics',
+      'Priority Support',
+      'Direct Recruiter Messaging',
+      'Premium Profile Features',
+      'Skill Verification'
     ],
     popular: true
   },
   {
-    id: 'enterprise_monthly',
-    name: 'Enterprise Monthly',
-    cost: 75000,
+    id: 'pro_elite',
+    name: 'Pro Elite',
+    cost: 50000,
     duration: 'monthly',
     features: [
-      'Everything in Pro',
-      'Custom branding',
-      'API access',
-      'Dedicated account manager',
-      'Bulk operations',
-      'Advanced integrations',
-      'White-label solutions'
+      'Everything in Pro Business',
+      'AI Interview Prep',
+      'Custom Branding',
+      'API Access',
+      'Dedicated Account Manager',
+      'White-label Solutions',
+      'Advanced Integrations'
     ]
   }
 ];

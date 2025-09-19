@@ -167,6 +167,24 @@ Deno.serve(async (req) => {
             }
           })
 
+        // Create notification for the joining bonus
+        try {
+          await supabaseClient.rpc('create_notification', {
+            p_user_id: profile.id,
+            p_type: 'txc_bonus',
+            p_title: 'Welcome Bonus Received! 🎉',
+            p_message: `You've received ${JOINING_BONUS} TXC as a welcome bonus for joining TalentXcel!`,
+            p_module: 'txc',
+            p_reference_id: profile.id,
+            p_action_url: '/txc/mining',
+            p_priority: 'medium',
+            p_icon: 'coins'
+          });
+        } catch (notificationError) {
+          console.error('Failed to create joining bonus notification:', notificationError);
+          // Don't fail the bonus award if notification fails
+        }
+
         results.push({
           user_id: profile.id,
           name: profile.full_name,

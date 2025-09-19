@@ -164,11 +164,20 @@ export const useTXCMining = () => {
       }
 
       if (data?.success) {
-        toast({
-          title: "TXC Earned! 🎉",
-          description: `+${reward.amount} TXC for ${reward.description}`,
-          variant: "default"
-        });
+        // Special message for joining bonus
+        if (action === 'joining_bonus') {
+          toast({
+            title: "Welcome to TalentXcel! 🎉",
+            description: `You've received ${reward.amount} TXC as a welcome bonus! Start mining more tokens by completing activities.`,
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "TXC Earned! 🎉",
+            description: `+${reward.amount} TXC for ${reward.description}`,
+            variant: "default"
+          });
+        }
         
         // Refresh balance to show updated amount
         refreshBalance();
