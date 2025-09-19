@@ -13,12 +13,13 @@ const Index = () => {
   const [disableOneTap, setDisableOneTap] = useState(false);
   const enableTestSend = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('send_emails') === '1';
 
-  // Detect iOS Safari to avoid potential One Tap issues (less aggressive)
+  // Detect iOS Safari to avoid potential One Tap issues
   useEffect(() => {
     try {
       const ua = navigator.userAgent || '';
-      const isOldIOS = /iP(hone|od|ad)/.test(ua) && /OS ([1-9]|1[0-5])_/.test(ua);
-      setDisableOneTap(isOldIOS); // Only disable on very old iOS versions
+      const isIOS = /iP(hone|od|ad)/.test(ua);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+      setDisableOneTap(isIOS && isSafari);
     } catch {
       setDisableOneTap(false);
     }

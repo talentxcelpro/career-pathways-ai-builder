@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 import * as pdfjsLib from 'pdfjs-dist';
-import * as mammoth from 'mammoth';
+import mammoth from 'mammoth';
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';
 // Set PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;

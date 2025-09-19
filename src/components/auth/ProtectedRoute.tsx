@@ -34,10 +34,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
   }
 
-  // Redirect to auth if no user or session
+  // Redirect to login if no user or session
   if (!user || !session) {
-    console.log('No user or session in ProtectedRoute, redirecting to auth');
-    return <Navigate to="/auth" state={{ from: location, reason: 'unauthorized' }} replace />;
+    return <Navigate to="/" state={{ from: location, reason: 'unauthorized' }} replace />;
   }
 
   return <>{children}</>;

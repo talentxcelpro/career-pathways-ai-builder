@@ -26,12 +26,10 @@ export const ProtectedAdminRoute: React.FC<ProtectedAdminRouteProps> = ({
   }
 
   if (!isAdmin) {
-    console.log('User is not admin, redirecting to:', fallbackPath);
     return <Navigate to={fallbackPath} replace />;
   }
 
   if (requiredPermission && !hasPermission(requiredPermission)) {
-    console.log('Missing required permission:', requiredPermission, 'redirecting to main admin');
     return <Navigate to="/admin" replace />;
   }
 
