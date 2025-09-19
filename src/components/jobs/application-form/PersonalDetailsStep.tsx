@@ -187,13 +187,44 @@ const PersonalDetailsStep: React.FC<PersonalDetailsStepProps> = ({
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="expectedCTC">Expected CTC</Label>
+              <Label htmlFor="currentCTC">Current CTC</Label>
+              <Input
+                id="currentCTC"
+                value={formData.currentCTC}
+                onChange={(e) => handleInputChange('currentCTC', e.target.value)}
+                placeholder="e.g., 6.0 LPA"
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="expectedCTC">Expected CTC <span className="text-destructive">*</span></Label>
               <Input
                 id="expectedCTC"
                 value={formData.expectedCTC}
                 onChange={(e) => handleInputChange('expectedCTC', e.target.value)}
                 placeholder="e.g., 8.0 LPA"
               />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="noticePeriod">How soon can you join? <span className="text-destructive">*</span></Label>
+              <Select
+                value={formData.noticePeriod}
+                onValueChange={(value) => handleInputChange('noticePeriod', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Notice period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="immediate">Immediate</SelectItem>
+                  <SelectItem value="15-days">15 days</SelectItem>
+                  <SelectItem value="1-month">1 month</SelectItem>
+                  <SelectItem value="2-months">2 months</SelectItem>
+                  <SelectItem value="3-months">3 months</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -220,6 +251,53 @@ const PersonalDetailsStep: React.FC<PersonalDetailsStepProps> = ({
                 <SelectItem value="5-8">5-8 years</SelectItem>
                 <SelectItem value="8-12">8-12 years</SelectItem>
                 <SelectItem value="12+">12+ years</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-1">
+            <Label htmlFor="currentCTC" className="text-xs font-medium">
+              Current CTC
+            </Label>
+            <Input
+              id="currentCTC"
+              value={formData.currentCTC}
+              onChange={(e) => handleInputChange('currentCTC', e.target.value)}
+              placeholder="e.g., 6.0 LPA"
+              className="h-8 text-xs"
+            />
+          </div>
+          
+          <div className="space-y-1">
+            <Label htmlFor="expectedCTC" className="text-xs font-medium">
+              Expected CTC <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="expectedCTC"
+              value={formData.expectedCTC}
+              onChange={(e) => handleInputChange('expectedCTC', e.target.value)}
+              placeholder="e.g., 8.0 LPA"
+              className="h-8 text-xs"
+            />
+          </div>
+          
+          <div className="space-y-1">
+            <Label htmlFor="noticePeriod" className="text-xs font-medium">
+              How soon can you join? <span className="text-destructive">*</span>
+            </Label>
+            <Select
+              value={formData.noticePeriod}
+              onValueChange={(value) => handleInputChange('noticePeriod', value)}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue placeholder="Notice period" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="immediate">Immediate</SelectItem>
+                <SelectItem value="15-days">15 days</SelectItem>
+                <SelectItem value="1-month">1 month</SelectItem>
+                <SelectItem value="2-months">2 months</SelectItem>
+                <SelectItem value="3-months">3 months</SelectItem>
               </SelectContent>
             </Select>
           </div>

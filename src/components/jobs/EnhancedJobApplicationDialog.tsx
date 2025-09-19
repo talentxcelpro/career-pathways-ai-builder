@@ -33,7 +33,7 @@ export const EnhancedJobApplicationDialog: React.FC<EnhancedJobApplicationDialog
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="h-[75vh] p-0 mobile-optimized">
+        <DrawerContent className="h-[60vh] p-0 mobile-optimized">
           <div className="relative h-full flex flex-col">
             <DrawerHeader className="flex-shrink-0 py-1 px-2 border-b safe-top">
               <div className="flex items-center justify-between">
@@ -66,7 +66,7 @@ export const EnhancedJobApplicationDialog: React.FC<EnhancedJobApplicationDialog
   // Desktop version
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[95vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-xl max-h-[70vh] p-0 overflow-hidden">
         <div className="relative">
           <Button
             variant="ghost"
