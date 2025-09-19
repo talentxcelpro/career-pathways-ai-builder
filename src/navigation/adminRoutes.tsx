@@ -3,6 +3,12 @@ import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, G
 import { LinkedInImportManager } from "../components/admin/LinkedInImportManager";
 import { TokenWallet } from "../components/blockchain/TokenWallet";
 import { BotPostManager } from "../components/admin/BotPostManager";
+import TXCTokenManagement from "../pages/admin/TXCTokenManagement";
+import TXCAwardsAndBonuses from "../pages/admin/TXCAwardsAndBonuses";
+import TXCAnalytics from "../pages/admin/TXCAnalytics";
+import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
+import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
+import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";
 import { BotIdentityManager } from "../components/admin/BotIdentityManager";
 import { TestimonialsManagement } from "../components/admin/TestimonialsManagement";
 import { VerificationManagement } from "../components/admin/VerificationManagement";
@@ -391,6 +397,48 @@ export const adminRoutes = [
     to: "/admin/token-wallet",
     icon: <Coins className="h-4 w-4" />,
     page: <TokenWallet />,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Token Management",
+    to: "/admin/txc-tokens",
+    icon: <Coins className="h-4 w-4" />,
+    page: <TXCTokenManagement />,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Awards & Bonuses",
+    to: "/admin/txc-awards",
+    icon: <Coins className="h-4 w-4" />,
+    page: <TXCAwardsAndBonuses />,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Analytics",
+    to: "/admin/txc-analytics",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <TXCAnalytics />,
+    requiresAuth: true,
+  },
+  {
+    title: "LinkedIn Bulk Upload",
+    to: "/admin/linkedin-bulk-upload",
+    icon: <Upload className="h-4 w-4" />,
+    page: <LinkedInBulkUpload />,
+    requiresAuth: true,
+  },
+  {
+    title: "LinkedIn Job Scraper",
+    to: "/admin/linkedin-scraper",
+    icon: <Bot className="h-4 w-4" />,
+    page: <LinkedInJobScraper />,
+    requiresAuth: true,
+  },
+  {
+    title: "LinkedIn Analytics",
+    to: "/admin/linkedin-analytics",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <LinkedInAnalytics />,
     requiresAuth: true,
   }
 ];
