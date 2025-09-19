@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Bell, Plus, Edit, Trash2, AlertCircle, BellRing, Search, Filter } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { 
-  Bell, Plus, Edit, Trash2, Search, MapPin, DollarSign, 
-  Clock, Mail, Volume2, AlertCircle
-} from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface JobAlert {
   id: string;
@@ -21,189 +21,124 @@ interface JobAlert {
   location: string;
   employment_type: string[];
   experience_level: string[];
-  salary_min: number | null;
-  salary_max: number | null;
+  salary_min: number;
+  salary_max: number;
   is_remote: boolean;
+  frequency: string;
   is_active: boolean;
-  frequency: 'immediate' | 'daily' | 'weekly';
-  last_sent: string | null;
+  last_sent: string;
   created_at: string;
-  updated_at: string;
+  total_matches?: number;
 }
 
-interface JobAlertFormData {
-  title: string;
-  keywords: string;
-  location: string;
-  employment_type: string[];
-  experience_level: string[];
-  salary_min: string;
-  salary_max: string;
-  is_remote: boolean;
-  frequency: 'immediate' | 'daily' | 'weekly';
-}
-
-export const JobAlertsManager = () => {
-  const [user, setUser] = useState<any>(null);
-  const [alerts, setAlerts] = useState<JobAlert[]>([]);
-  const [loading, setLoading] = useState(true);
+const JobAlertsManager = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingAlert, setEditingAlert] = useState<JobAlert | null>(null);
-  const [formData, setFormData] = useState<JobAlertFormData>({
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  const [formData, setFormData] = useState({
     title: '',
     keywords: '',
     location: '',
-    employment_type: [],
-    experience_level: [],
+    employment_type: [] as string[],
+    experience_level: [] as string[],
     salary_min: '',
     salary_max: '',
     is_remote: false,
-    frequency: 'daily'
+    frequency: 'daily',
+    is_active: true
   });
 
-  useEffect(() => {
-    // Get current user
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        fetchJobAlerts();
-      } else {
-        setLoading(false);
-      }
-    };
-    getCurrentUser();
-  }, []);
+  // Fetch job alerts
+  const { data: alerts = [], isLoading } = useQuery({
+    queryKey: ['job-alerts'],
+    queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
 
-  const fetchJobAlerts = async () => {
-    try {
       const { data, error } = await supabase
         .from('job_alerts')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
+      
       if (error) throw error;
-      setAlerts((data || []).map(alert => ({
-        ...alert,
-        frequency: alert.frequency as 'immediate' | 'daily' | 'weekly'
-      })));
-    } catch (error) {
-      console.error('Error fetching job alerts:', error);
-      toast.error('Failed to fetch job alerts');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data as JobAlert[];
+    },
+    enabled: !!user
+  });
 
-  const handleCreateAlert = async () => {
-    if (!user || !formData.title.trim()) {
-      toast.error('Please provide an alert title');
-      return;
-    }
-
-    try {
-      const alertData = {
-        user_id: user.id,
-        title: formData.title.trim(),
-        keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : [],
-        location: formData.location.trim() || null,
-        employment_type: formData.employment_type,
-        experience_level: formData.experience_level,
-        salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
-        salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-        is_remote: formData.is_remote,
-        frequency: formData.frequency,
-        is_active: true
-      };
+  // Create alert mutation
+  const createAlertMutation = useMutation({
+    mutationFn: async (alertData: any) => {
+      if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('job_alerts')
-        .insert([alertData]);
-
+        .insert({
+          ...alertData,
+          user_id: user.id,
+          keywords: alertData.keywords.split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 0),
+          salary_min: alertData.salary_min ? parseInt(alertData.salary_min) : null,
+          salary_max: alertData.salary_max ? parseInt(alertData.salary_max) : null,
+        });
+      
       if (error) throw error;
-
-      toast.success('Job alert created successfully!');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-alerts'] });
       setIsCreateDialogOpen(false);
       resetForm();
-      fetchJobAlerts();
-    } catch (error) {
-      console.error('Error creating job alert:', error);
+      toast.success('Job alert created successfully!');
+    },
+    onError: (error) => {
+      console.error('Create alert error:', error);
       toast.error('Failed to create job alert');
     }
-  };
+  });
 
-  const handleUpdateAlert = async () => {
-    if (!editingAlert || !formData.title.trim()) {
-      toast.error('Please provide an alert title');
-      return;
-    }
-
-    try {
-      const alertData = {
-        title: formData.title.trim(),
-        keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : [],
-        location: formData.location.trim() || null,
-        employment_type: formData.employment_type,
-        experience_level: formData.experience_level,
-        salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
-        salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-        is_remote: formData.is_remote,
-        frequency: formData.frequency
-      };
-
+  // Update alert mutation
+  const updateAlertMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
       const { error } = await supabase
         .from('job_alerts')
-        .update(alertData)
-        .eq('id', editingAlert.id);
-
+        .update(updates)
+        .eq('id', id);
+      
       if (error) throw error;
-
-      toast.success('Job alert updated successfully!');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-alerts'] });
       setEditingAlert(null);
-      resetForm();
-      fetchJobAlerts();
-    } catch (error) {
-      console.error('Error updating job alert:', error);
+      toast.success('Job alert updated successfully!');
+    },
+    onError: (error) => {
+      console.error('Update alert error:', error);
       toast.error('Failed to update job alert');
     }
-  };
+  });
 
-  const handleToggleAlert = async (alertId: string, isActive: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('job_alerts')
-        .update({ is_active: isActive })
-        .eq('id', alertId);
-
-      if (error) throw error;
-
-      toast.success(`Job alert ${isActive ? 'activated' : 'deactivated'}`);
-      fetchJobAlerts();
-    } catch (error) {
-      console.error('Error toggling job alert:', error);
-      toast.error('Failed to update job alert');
-    }
-  };
-
-  const handleDeleteAlert = async (alertId: string) => {
-    if (!confirm('Are you sure you want to delete this job alert?')) return;
-
-    try {
+  // Delete alert mutation
+  const deleteAlertMutation = useMutation({
+    mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('job_alerts')
         .delete()
-        .eq('id', alertId);
-
+        .eq('id', id);
+      
       if (error) throw error;
-
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-alerts'] });
       toast.success('Job alert deleted successfully!');
-      fetchJobAlerts();
-    } catch (error) {
-      console.error('Error deleting job alert:', error);
+    },
+    onError: (error) => {
+      console.error('Delete alert error:', error);
       toast.error('Failed to delete job alert');
     }
-  };
+  });
 
   const resetForm = () => {
     setFormData({
@@ -215,198 +150,129 @@ export const JobAlertsManager = () => {
       salary_min: '',
       salary_max: '',
       is_remote: false,
-      frequency: 'daily'
+      frequency: 'daily',
+      is_active: true
     });
   };
 
-  const populateFormForEdit = (alert: JobAlert) => {
+  const handleEdit = (alert: JobAlert) => {
     setFormData({
       title: alert.title,
       keywords: alert.keywords.join(', '),
-      location: alert.location || '',
+      location: alert.location,
       employment_type: alert.employment_type,
       experience_level: alert.experience_level,
       salary_min: alert.salary_min?.toString() || '',
       salary_max: alert.salary_max?.toString() || '',
       is_remote: alert.is_remote,
-      frequency: alert.frequency
+      frequency: alert.frequency,
+      is_active: alert.is_active
     });
     setEditingAlert(alert);
   };
 
-  const getFrequencyIcon = (frequency: string) => {
-    switch (frequency) {
-      case 'immediate': return <Volume2 className="h-4 w-4" />;
-      case 'daily': return <Clock className="h-4 w-4" />;
-      case 'weekly': return <Mail className="h-4 w-4" />;
-      default: return <Bell className="h-4 w-4" />;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (editingAlert) {
+      updateAlertMutation.mutate({ 
+        id: editingAlert.id, 
+        updates: {
+          ...formData,
+          keywords: formData.keywords.split(',').map(k => k.trim()).filter(k => k.length > 0),
+          salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
+          salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
+        }
+      });
+    } else {
+      createAlertMutation.mutate(formData);
     }
   };
 
-  const getFrequencyColor = (frequency: string) => {
-    switch (frequency) {
-      case 'immediate': return 'bg-red-100 text-red-800';
-      case 'daily': return 'bg-blue-100 text-blue-800';
-      case 'weekly': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const filteredAlerts = alerts.filter(alert => {
+    const matchesSearch = alert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         alert.keywords.some(k => k.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'active' && alert.is_active) ||
+                         (statusFilter === 'inactive' && !alert.is_active);
+    return matchesSearch && matchesStatus;
+  });
+
+  const activeAlerts = alerts.filter(alert => alert.is_active);
+  const totalAlerts = alerts.length;
 
   if (!user) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="font-semibold mb-2">Please Sign In</h3>
-          <p className="text-muted-foreground text-center">
-            Sign in to create and manage your job alerts.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-4"></div>
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
+      <div className="max-w-4xl mx-auto p-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">Login Required</h3>
+            <p className="text-muted-foreground">Please log in to manage your job alerts</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Job Alerts</h1>
-          <p className="text-muted-foreground">Get notified when jobs matching your criteria are posted</p>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <BellRing className="h-8 w-8 text-primary" />
+            Job Alerts
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Stay informed about new job opportunities that match your preferences
+          </p>
         </div>
-        <Dialog open={isCreateDialogOpen || !!editingAlert} onOpenChange={(open) => {
-          setIsCreateDialogOpen(open);
-          if (!open) {
-            setEditingAlert(null);
-            resetForm();
-          }
-        }}>
+
+        <Dialog 
+          open={isCreateDialogOpen || !!editingAlert} 
+          onOpenChange={(open) => {
+            if (!open) {
+              setIsCreateDialogOpen(false);
+              setEditingAlert(null);
+              resetForm();
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button onClick={() => setIsCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Alert
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingAlert ? 'Edit Job Alert' : 'Create New Job Alert'}</DialogTitle>
-              <DialogDescription>
-                Set up criteria to receive notifications when matching jobs are posted.
-              </DialogDescription>
+              <DialogTitle>
+                {editingAlert ? 'Edit Job Alert' : 'Create Job Alert'}
+              </DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-4 py-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="title">Alert Title *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g., Senior React Developer Jobs"
+                  placeholder="e.g., Senior Frontend Developer"
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="keywords">Keywords</Label>
-                <Input
+                <Label htmlFor="keywords">Keywords (comma-separated)</Label>
+                <Textarea
                   id="keywords"
                   value={formData.keywords}
                   onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                  placeholder="e.g., React, JavaScript, Frontend (comma-separated)"
+                  placeholder="e.g., React, JavaScript, Frontend, TypeScript"
+                  rows={3}
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="employment_types">Employment Types</Label>
-                  <Select onValueChange={(value) => {
-                    if (!formData.employment_type.includes(value)) {
-                      setFormData({ 
-                        ...formData, 
-                        employment_type: [...formData.employment_type, value]
-                      });
-                    }
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full-time">Full Time</SelectItem>
-                      <SelectItem value="part-time">Part Time</SelectItem>
-                      <SelectItem value="contract">Contract</SelectItem>
-                      <SelectItem value="freelance">Freelance</SelectItem>
-                      <SelectItem value="internship">Internship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {formData.employment_type.map((type) => (
-                      <Badge key={type} variant="secondary" className="text-xs">
-                        {type}
-                        <button
-                          onClick={() => setFormData({
-                            ...formData,
-                            employment_type: formData.employment_type.filter(t => t !== type)
-                          })}
-                          className="ml-1 text-xs"
-                        >
-                          ×
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="experience_levels">Experience Levels</Label>
-                  <Select onValueChange={(value) => {
-                    if (!formData.experience_level.includes(value)) {
-                      setFormData({ 
-                        ...formData, 
-                        experience_level: [...formData.experience_level, value]
-                      });
-                    }
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select levels" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fresher">Fresher</SelectItem>
-                      <SelectItem value="mid-level">Mid Level</SelectItem>
-                      <SelectItem value="senior-level">Senior Level</SelectItem>
-                      <SelectItem value="executive">Executive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {formData.experience_level.map((level) => (
-                      <Badge key={level} variant="secondary" className="text-xs">
-                        {level}
-                        <button
-                          onClick={() => setFormData({
-                            ...formData,
-                            experience_level: formData.experience_level.filter(l => l !== level)
-                          })}
-                          className="ml-1 text-xs"
-                        >
-                          ×
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               <div>
@@ -415,188 +281,290 @@ export const JobAlertsManager = () => {
                   id="location"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="e.g., Mumbai, Bangalore, Remote"
+                  placeholder="e.g., Mumbai, Remote, Bangalore"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="salary_min">Minimum Salary (₹)</Label>
+                  <Label htmlFor="salary_min">Min Salary (₹)</Label>
                   <Input
                     id="salary_min"
                     type="number"
                     value={formData.salary_min}
                     onChange={(e) => setFormData({ ...formData, salary_min: e.target.value })}
-                    placeholder="e.g., 500000"
+                    placeholder="500000"
                   />
                 </div>
+                
                 <div>
-                  <Label htmlFor="salary_max">Maximum Salary (₹)</Label>
+                  <Label htmlFor="salary_max">Max Salary (₹)</Label>
                   <Input
                     id="salary_max"
                     type="number"
                     value={formData.salary_max}
                     onChange={(e) => setFormData({ ...formData, salary_max: e.target.value })}
-                    placeholder="e.g., 1500000"
+                    placeholder="1500000"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="is_remote"
-                  checked={formData.is_remote}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_remote: checked })}
-                />
-                <Label htmlFor="is_remote">Remote Work Only</Label>
-              </div>
-
               <div>
-                <Label htmlFor="frequency">Notification Frequency</Label>
-                <Select value={formData.frequency} onValueChange={(value: any) => setFormData({ ...formData, frequency: value })}>
+                <Label htmlFor="frequency">Alert Frequency</Label>
+                <Select 
+                  value={formData.frequency} 
+                  onValueChange={(value) => setFormData({ ...formData, frequency: value })}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="immediate">Immediate</SelectItem>
+                    <SelectItem value="instantly">Instantly</SelectItem>
                     <SelectItem value="daily">Daily</SelectItem>
                     <SelectItem value="weekly">Weekly</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
 
-            <DialogFooter>
-              <Button variant="outline" onClick={() => {
-                setIsCreateDialogOpen(false);
-                setEditingAlert(null);
-                resetForm();
-              }}>
-                Cancel
-              </Button>
-              <Button onClick={editingAlert ? handleUpdateAlert : handleCreateAlert}>
-                {editingAlert ? 'Update Alert' : 'Create Alert'}
-              </Button>
-            </DialogFooter>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_remote"
+                    checked={formData.is_remote}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_remote: checked })}
+                  />
+                  <Label htmlFor="is_remote">Remote jobs only</Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="is_active"
+                    checked={formData.is_active}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                  />
+                  <Label htmlFor="is_active">Active</Label>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  type="submit" 
+                  disabled={createAlertMutation.isPending || updateAlertMutation.isPending}
+                  className="flex-1"
+                >
+                  {editingAlert ? 'Update Alert' : 'Create Alert'}
+                </Button>
+                
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={() => {
+                    setIsCreateDialogOpen(false);
+                    setEditingAlert(null);
+                    resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {alerts.length === 0 ? (
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="font-semibold mb-2">No Job Alerts Set Up</h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Create your first job alert to get notified when matching opportunities are posted.
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Total Alerts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalAlerts}</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{activeAlerts.length}</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">This Week</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {alerts.filter(a => {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return new Date(a.created_at) > weekAgo;
+              }).length}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="search">Search Alerts</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="search"
+                  placeholder="Search by title or keywords..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Alerts</SelectItem>
+                  <SelectItem value="active">Active Only</SelectItem>
+                  <SelectItem value="inactive">Inactive Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Alerts List */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      ) : filteredAlerts.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">
+              {totalAlerts === 0 ? 'No job alerts yet' : 'No alerts match your filters'}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              {totalAlerts === 0 
+                ? 'Create your first job alert to get notified about relevant opportunities'
+                : 'Try adjusting your search or filter criteria'
+              }
             </p>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Your First Alert
-            </Button>
+            {totalAlerts === 0 && (
+              <Button onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Alert
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
-          {alerts.map((alert) => (
-            <Card key={alert.id}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredAlerts.map((alert) => (
+            <Card key={alert.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {alert.title}
-                      <Badge className={`${getFrequencyColor(alert.frequency)} flex items-center gap-1`}>
-                        {getFrequencyIcon(alert.frequency)}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg mb-1">{alert.title}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={alert.is_active ? 'default' : 'secondary'}>
+                        {alert.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
                         {alert.frequency}
                       </Badge>
-                    </CardTitle>
-                    <CardDescription>
-                      {alert.last_sent 
-                        ? `Last sent: ${new Date(alert.last_sent).toLocaleDateString()}`
-                        : 'Never sent'
-                      }
-                    </CardDescription>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={alert.is_active}
-                      onCheckedChange={(checked) => handleToggleAlert(alert.id, checked)}
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => populateFormForEdit(alert)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteAlert(alert.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  
+                  <Switch
+                    checked={alert.is_active}
+                    onCheckedChange={(checked) => 
+                      updateAlertMutation.mutate({ 
+                        id: alert.id, 
+                        updates: { is_active: checked } 
+                      })
+                    }
+                  />
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {alert.keywords.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Search className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Keywords:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {alert.keywords.map((keyword) => (
-                          <Badge key={keyword} variant="outline" className="text-xs">
-                            {keyword}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {alert.location && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Location:</span>
-                      <Badge variant="outline" className="text-xs">
-                        {alert.location}
-                      </Badge>
+              <CardContent className="space-y-3">
+                {alert.keywords && alert.keywords.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mb-1">Keywords:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {alert.keywords.slice(0, 4).map((keyword, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {keyword}
+                        </Badge>
+                      ))}
+                      {alert.keywords.length > 4 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{alert.keywords.length - 4}
+                        </Badge>
+                      )}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {(alert.salary_min || alert.salary_max) && (
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Salary:</span>
-                      <Badge variant="outline" className="text-xs">
-                        ₹{alert.salary_min?.toLocaleString() || '0'} - ₹{alert.salary_max?.toLocaleString() || '∞'}
-                      </Badge>
-                    </div>
-                  )}
+                {alert.location && (
+                  <p className="text-sm"><strong>Location:</strong> {alert.location}</p>
+                )}
 
-                  {alert.employment_type.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Types:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {alert.employment_type.map((type) => (
-                          <Badge key={type} variant="outline" className="text-xs">
-                            {type}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                {(alert.salary_min || alert.salary_max) && (
+                  <p className="text-sm">
+                    <strong>Salary:</strong> ₹{(alert.salary_min || 0).toLocaleString()} - ₹{(alert.salary_max || 0).toLocaleString()}
+                  </p>
+                )}
 
-                  {alert.is_remote && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Remote Work Only</span>
-                      <Badge variant="outline" className="text-xs">
-                        Remote
-                      </Badge>
-                    </div>
-                  )}
+                {alert.is_remote && (
+                  <Badge variant="outline" className="text-xs">Remote Only</Badge>
+                )}
+
+                {alert.last_sent && (
+                  <p className="text-xs text-muted-foreground">
+                    Last sent: {new Date(alert.last_sent).toLocaleDateString()}
+                  </p>
+                )}
+
+                <div className="flex gap-2 pt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleEdit(alert)}
+                  >
+                    <Edit className="h-3 w-3 mr-1" />
+                    Edit
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => deleteAlertMutation.mutate(alert.id)}
+                    disabled={deleteAlertMutation.isPending}
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Delete
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -606,3 +574,5 @@ export const JobAlertsManager = () => {
     </div>
   );
 };
+
+export default JobAlertsManager;

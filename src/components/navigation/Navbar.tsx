@@ -103,7 +103,7 @@ export const Navbar = () => {
   const mainNavItems = [
     { to: "/network", label: "Network" },
     { to: "/search/jobs", label: "Search Jobs" },
-    { to: "/employer", label: "Employer" },
+    { to: "/jobs/alerts", label: "Job Alerts" },
     { to: "/companies", label: "Companies" },
     { to: "/resume-builder", label: "Resume Builder" },
     { to: "/tools", label: "Career Tools" },
