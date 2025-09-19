@@ -69,6 +69,9 @@ import NewsPage from "@/pages/NewsPage";
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
+import { TXCMiningPage } from "@/pages/txc/TXCMiningPage";
+import { TXCTokenSystemPage } from "@/pages/txc/TXCTokenSystemPage";
+import { TXCAutoMiner } from "@/components/txc/TXCAutoMiner";
 import Platform from "./pages/Platform";
 import DebugPage from "./pages/DebugPage";
 import CareerPassportDashboard from "./pages/passport/CareerPassportDashboard";
@@ -199,6 +202,7 @@ const App = () => {
                 <GoogleOneTapLogin autoSelect />
                 <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
                 <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
+                <TXCAutoMiner />
                 <MobileAppWrapper>
                   <FastLoadingWrapper>
                     <div className="min-h-screen flex flex-col">
@@ -289,6 +293,8 @@ const App = () => {
                          <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
                          <Route path="/admin/edge-functions-monitor" element={<ProtectedRoute><AdminLayout><EdgeFunctionsMonitor /></AdminLayout></ProtectedRoute>} />
                          <Route path="/admin/news-management" element={<ProtectedRoute><AdminLayout><NewsManagement /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/txc/mining" element={<ProtectedRoute><TXCMiningPage /></ProtectedRoute>} />
+                         <Route path="/txc/system" element={<ProtectedRoute><TXCTokenSystemPage /></ProtectedRoute>} />
                          <Route path="/news" element={<NewsPage />} />
                          <Route path="/news/:slug" element={<NewsPage />} />
                          <Route path="/employer/cv-database" element={<CVDatabase />} />

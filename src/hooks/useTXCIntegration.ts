@@ -15,6 +15,22 @@ export const useTXCIntegration = () => {
     if (user) {
       // Silent attempt to earn daily login bonus
       earnTXC('daily_login');
+      
+      // Auto-trigger post, comment, like mining when those actions happen
+      const handlePostCreated = () => earnTXC('post_created');
+      const handleCommentMade = () => earnTXC('comment_made');
+      const handlePostLiked = () => earnTXC('post_liked');
+      
+      // Listen for custom events that trigger TXC mining
+      window.addEventListener('txc:post_created', handlePostCreated);
+      window.addEventListener('txc:comment_made', handleCommentMade);
+      window.addEventListener('txc:post_liked', handlePostLiked);
+      
+      return () => {
+        window.removeEventListener('txc:post_created', handlePostCreated);
+        window.removeEventListener('txc:comment_made', handleCommentMade);
+        window.removeEventListener('txc:post_liked', handlePostLiked);
+      };
     }
   }, [user, earnTXC]);
 

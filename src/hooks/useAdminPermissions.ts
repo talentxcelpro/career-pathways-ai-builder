@@ -96,7 +96,7 @@ export const useAdminPermissions = () => {
     return permissions[permission];
   };
 
-  const isAdmin = adminRole === 'super_admin' || adminRole === 'content_admin' || adminRole === 'job_admin';
+  const isAdmin = adminRole === 'super_admin' || adminRole === 'content_admin' || adminRole === 'job_admin' || adminRole === 'moderator';
 
   return {
     adminRole,
