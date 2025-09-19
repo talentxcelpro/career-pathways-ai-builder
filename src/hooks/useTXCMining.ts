@@ -14,75 +14,99 @@ export interface TXCReward {
 export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
   'post_created': {
     action: 'post_created',
-    amount: 50,
+    amount: 150,
     description: 'Create a post',
     cooldownMinutes: 60 // Once per hour
   },
   'connection_made': {
     action: 'connection_made', 
-    amount: 25,
+    amount: 75,
     description: 'Connect with someone',
     cooldownMinutes: 30
   },
   'profile_completed': {
     action: 'profile_completed',
-    amount: 100,
+    amount: 300,
     description: 'Complete your profile',
     cooldownMinutes: 1440 // Once per day
   },
   'resume_created': {
     action: 'resume_created',
-    amount: 75,
+    amount: 225,
     description: 'Create a resume',
     cooldownMinutes: 240 // Once per 4 hours
   },
   'job_applied': {
     action: 'job_applied',
-    amount: 30,
+    amount: 90,
     description: 'Apply to a job',
     cooldownMinutes: 60
   },
   'recommendation_given': {
     action: 'recommendation_given',
-    amount: 40,
+    amount: 120,
     description: 'Give a recommendation',
     cooldownMinutes: 120
   },
   'skill_added': {
     action: 'skill_added',
-    amount: 20,
+    amount: 60,
     description: 'Add skills to profile',
     cooldownMinutes: 180
   },
   'daily_login': {
     action: 'daily_login',
-    amount: 25,
+    amount: 75,
     description: 'Daily login bonus',
     cooldownMinutes: 1440 // Once per day
   },
   'course_completed': {
     action: 'course_completed',
-    amount: 200,
+    amount: 600,
     description: 'Complete a course',
     cooldownMinutes: 60
   },
   'feedback_given': {
     action: 'feedback_given',
-    amount: 15,
+    amount: 45,
     description: 'Provide feedback',
     cooldownMinutes: 60
   },
   'social_activity_bonus': {
     action: 'social_activity_bonus',
-    amount: 100,
+    amount: 300,
     description: 'Social activity bonus',
     cooldownMinutes: 10080 // Once per week
   },
   'joining_bonus': {
     action: 'joining_bonus',
-    amount: 100,
+    amount: 300,
     description: 'Welcome to TalentXcel!',
     cooldownMinutes: 0 // One-time only
+  },
+  'referral_made': {
+    action: 'referral_made',
+    amount: 1000,
+    description: 'Refer a friend',
+    cooldownMinutes: 0 // No limit on referrals
+  },
+  'post_liked': {
+    action: 'post_liked',
+    amount: 20,
+    description: 'Like a post',
+    cooldownMinutes: 5 // 5 minutes between likes
+  },
+  'comment_made': {
+    action: 'comment_made',
+    amount: 20,
+    description: 'Comment on a post',
+    cooldownMinutes: 10 // 10 minutes between comments
+  },
+  'article_posted': {
+    action: 'article_posted',
+    amount: 500,
+    description: 'Post an article',
+    cooldownMinutes: 240 // Once per 4 hours
   }
 };
 
