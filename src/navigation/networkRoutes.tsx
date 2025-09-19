@@ -1,5 +1,5 @@
 
-import { Users } from "lucide-react";
+import { Users, Coins } from "lucide-react";
 import NetworkMain from "../pages/Network";
 import NetworkPage from "../pages/NetworkPage";
 import People from "../pages/network/People";
@@ -39,6 +39,14 @@ export const networkRoutes = [
     icon: <Users className="h-4 w-4" />,
     page: <NetworkMain />,
     isPublic: true,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Mining",
+    to: "/txc/mining",
+    icon: <Coins className="h-4 w-4" />,
+    page: <div>TXC Mining</div>,
+    isPublic: false,
     requiresAuth: true,
   },
   {

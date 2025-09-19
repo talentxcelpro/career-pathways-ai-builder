@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Coins, Clock, CheckCircle, Trophy, Zap } from 'lucide-react';
+import { Coins, Clock, CheckCircle, Trophy, Zap, Sparkles, TrendingUp } from 'lucide-react';
 import { useTXCMining, TXC_MINING_REWARDS } from '@/hooks/useTXCMining';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { formatTXC } from '@/types/txc-pricing';
+import txcMascot from '@/assets/txc-mascot.jpg';
 
 export const TXCMiningDashboard: React.FC = () => {
   const { earnTXC, canEarnReward, getAllRewards, getAvailableActions, isProcessing } = useTXCMining();
@@ -48,14 +49,25 @@ export const TXCMiningDashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Header Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-6">
+        <Card className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+          <CardContent className="p-6 relative">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Available TXC</p>
-                <p className="text-2xl font-bold text-primary">{formatTXC(availableBalance)}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {formatTXC(Math.max(availableBalance, 500))}
+                </p>
+                {availableBalance < 500 && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <Sparkles className="h-3 w-3 text-green-500" />
+                    <span className="text-xs text-green-600 font-medium">+500 Welcome Bonus!</span>
+                  </div>
+                )}
               </div>
-              <Coins className="h-8 w-8 text-primary" />
+              <div className="relative">
+                <Coins className="h-8 w-8 text-primary animate-pulse" />
+              </div>
             </div>
           </CardContent>
         </Card>

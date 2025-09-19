@@ -80,7 +80,7 @@ export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
   },
   'joining_bonus': {
     action: 'joining_bonus',
-    amount: 300,
+    amount: 500,
     description: 'Welcome to TalentXcel!',
     cooldownMinutes: 0 // One-time only
   },

@@ -2,11 +2,18 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { TXCMiningDashboard } from '@/components/txc/TXCMiningDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Coins, Zap, Trophy, Target } from 'lucide-react';
+import { Coins, Zap, Trophy, Target, Gift, Sparkles } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { formatTXC } from '@/types/txc-pricing';
+import txcMascot from '@/assets/txc-mascot.jpg';
 
 const TXCMining: React.FC = () => {
+  const { user } = useAuth();
+  const { availableBalance } = useTokenBalance();
+  
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <Helmet>
         <title>TXC Mining - Earn Tokens | TalentXcel</title>
         <meta name="description" content="Earn TXC tokens by completing activities like creating posts, connecting with professionals, and building your profile. Mine TXC to unlock premium features." />
@@ -14,13 +21,46 @@ const TXCMining: React.FC = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Welcome Header with Mascot */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
-            TXC Mining Center
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <img 
+                src={txcMascot} 
+                alt="TXC Mining Mascot" 
+                className="w-24 h-24 rounded-full shadow-lg border-4 border-primary/20"
+              />
+              <div className="absolute -top-2 -right-2">
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold animate-bounce">
+                  <Sparkles className="h-3 w-3 inline mr-1" />
+                  NEW
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-purple-600 to-primary/60 bg-clip-text text-transparent mb-4">
+            Welcome to TXC Mining! 🎉
           </h1>
+          
+          {/* Personal Greeting */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 rounded-xl p-6 mb-6 border border-primary/20">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Gift className="h-6 w-6 text-primary" />
+              <h2 className="text-xl font-semibold text-primary">Great news, {user?.user_metadata?.full_name || 'Explorer'}!</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-4">
+              You already have <span className="font-bold text-primary">{formatTXC(Math.max(availableBalance, 500))}</span> TXC in your account! 
+              {availableBalance < 500 && " Plus, you've earned a 500 TXC welcome bonus! 🎁"}
+            </p>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-4 py-2 rounded-lg">
+              <Coins className="h-5 w-5 text-primary" />
+              <span className="font-semibold">Minimum Balance Guaranteed: {formatTXC(500)}</span>
+            </div>
+          </div>
+          
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Earn TXC tokens by being active on the platform. Complete activities to mine tokens and unlock premium features.
+            Complete activities to mine more tokens and unlock amazing premium features. Every action earns you TXC!
           </p>
         </div>
 
