@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { TouchButton } from '@/components/mobile/TouchButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { 
   Check, 
   Calendar, 
@@ -35,6 +37,7 @@ interface DailyTask {
 
 export const DailyTaskTracker: React.FC = () => {
   const { user } = useAuth();
+  const { triggerHaptic } = useHapticFeedback();
   const { 
     triggerJobApplied,
     triggerProfileCompleted,
@@ -139,6 +142,9 @@ export const DailyTaskTracker: React.FC = () => {
   const handleTaskAction = async (task: DailyTask) => {
     if (completedToday.has(task.id)) return;
 
+    // Trigger haptic feedback on task interaction
+    triggerHaptic('medium');
+
     let success = false;
     
     switch (task.action) {
@@ -169,7 +175,10 @@ export const DailyTaskTracker: React.FC = () => {
     }
 
     if (success) {
+      triggerHaptic('success'); // Success feedback
       setCompletedToday(prev => new Set([...prev, task.id]));
+    } else {
+      triggerHaptic('error'); // Error feedback
     }
   };
 
@@ -184,45 +193,45 @@ export const DailyTaskTracker: React.FC = () => {
     
     return (
       <Card className={`group relative overflow-hidden transition-all duration-300 ${
-        isCompleted ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : 'hover-scale'
+        isCompleted ? 'bg-gradient-to-br from-success/10 to-success/5 border-success/30' : 'hover-scale'
       }`}>
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <CardContent className="relative p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-start gap-4">
-              <div className={`p-3 rounded-xl ${
+        <CardContent className="relative p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 flex-1">
+              <div className={`p-2 rounded-lg ${
                 isCompleted 
-                  ? 'bg-green-100 text-green-600' 
+                  ? 'bg-success/20 text-success' 
                   : 'bg-gradient-to-br from-primary/20 to-secondary/20 text-primary'
               }`}>
-                {isCompleted ? <Check className="h-5 w-5" /> : task.icon}
+                {isCompleted ? <Check className="h-4 w-4" /> : task.icon}
               </div>
-              <div className="flex-1">
-                <h4 className="font-semibold text-foreground mb-2">{task.title}</h4>
-                <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-                <Badge variant={task.category === 'daily' ? 'default' : 'secondary'} className="text-xs">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-foreground text-sm leading-tight">{task.title}</h4>
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{task.description}</p>
+                <Badge variant={task.category === 'daily' ? 'default' : 'secondary'} className="text-xs mt-1">
                   {task.category === 'daily' ? 'Daily Habit' : 'Growth Activity'}
                 </Badge>
               </div>
             </div>
-            <div className="text-right">
-              <div className="flex items-center gap-1 text-sm font-bold text-secondary mb-2">
-                <Coins className="h-4 w-4" />
-                {formatTXC(task.reward)}
+            <div className="text-right ml-2">
+              <div className="flex items-center gap-1 text-sm font-bold text-secondary mb-1">
+                <Coins className="h-3 w-3" />
+                <span className="text-xs">{formatTXC(task.reward)}</span>
               </div>
               {!isCompleted && (
-                <Button
+                <TouchButton
                   size="sm"
-                  variant="outline"
+                  variant="primary"
                   onClick={() => handleTaskAction(task)}
-                  className="text-xs"
+                  className="text-xs px-2 py-1 h-7"
                 >
                   Complete
-                </Button>
+                </TouchButton>
               )}
               {isCompleted && (
-                <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">
-                  Done!
+                <Badge variant="default" className="bg-success/20 text-success border-success/30 text-xs">
+                  Complete
                 </Badge>
               )}
             </div>
@@ -275,14 +284,16 @@ export const DailyTaskTracker: React.FC = () => {
 
       {/* Daily Habits */}
       <div>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
-            <Calendar className="h-5 w-5 text-primary" />
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-1.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
+            <Calendar className="h-4 w-4 text-primary" />
           </div>
-          <h3 className="text-xl font-bold text-foreground">Daily Habits</h3>
-          <Badge variant="outline">{formatTXC(dailyTasks.reduce((sum, task) => sum + task.reward, 0))} potential</Badge>
+          <h3 className="text-lg font-bold text-foreground">Daily Habits</h3>
+          <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30">
+            {formatTXC(dailyTasks.reduce((sum, task) => sum + task.reward, 0))} potential
+          </Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {dailyTasks.map(task => (
             <TaskCard key={task.id} task={task} />
           ))}
@@ -291,14 +302,16 @@ export const DailyTaskTracker: React.FC = () => {
 
       {/* Growth Activities */}
       <div>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-lg">
-            <TrendingUp className="h-5 w-5 text-secondary" />
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-1.5 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-lg">
+            <TrendingUp className="h-4 w-4 text-secondary" />
           </div>
-          <h3 className="text-xl font-bold text-foreground">Growth Activities</h3>
-          <Badge variant="outline">{formatTXC(growthTasks.reduce((sum, task) => sum + task.reward, 0))} potential</Badge>
+          <h3 className="text-lg font-bold text-foreground">Growth Activities</h3>
+          <Badge variant="outline" className="text-xs bg-secondary/10 text-secondary border-secondary/30">
+            {formatTXC(growthTasks.reduce((sum, task) => sum + task.reward, 0))} potential
+          </Badge>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {growthTasks.map(task => (
             <TaskCard key={task.id} task={task} />
           ))}
