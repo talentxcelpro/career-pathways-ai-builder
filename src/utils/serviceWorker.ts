@@ -165,13 +165,14 @@ async function handleImageRequest(request) {
   
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (response && response.ok) {
       cache.put(request, response.clone());
+      return response;
     }
-    return response;
+    return new Response('', { status: 404, statusText: 'Image not found' });
   } catch {
-    // Return placeholder if offline
-    return new Response('', { status: 204 });
+    // Return proper response if offline
+    return new Response('', { status: 503, statusText: 'Service unavailable' });
   }
 }
 
@@ -181,10 +182,14 @@ async function handleAPIRequest(request) {
   
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (response && response.ok) {
       cache.put(request, response.clone());
+      return response;
     }
-    return response;
+    return new Response('{"error":"Request failed"}', {
+      status: response ? response.status : 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch {
     const cached = await cache.match(request);
     return cached || new Response('{"error":"Offline"}', {
@@ -200,13 +205,28 @@ async function handleNavigationRequest(request) {
   
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (response && response.ok) {
       cache.put(request, response.clone());
+      return response;
     }
-    return response;
+    // Return cached version or fallback
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    
+    const offline = await cache.match('/offline.html');
+    return offline || new Response('Page not found', { 
+      status: 404, 
+      headers: { 'Content-Type': 'text/html' }
+    });
   } catch {
     const cached = await cache.match(request);
-    return cached || cache.match('/offline.html');
+    if (cached) return cached;
+    
+    const offline = await cache.match('/offline.html');
+    return offline || new Response('Service unavailable', { 
+      status: 503, 
+      headers: { 'Content-Type': 'text/html' }
+    });
   }
 }
 `;
