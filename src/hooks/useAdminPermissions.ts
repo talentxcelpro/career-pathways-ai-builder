@@ -20,62 +20,34 @@ export const useAdminPermissions = () => {
       }
 
       try {
-        // Enhanced role fetch with multiple checks
+        // Simplified role fetch without complex state tracking
         const { data, error } = await supabase.rpc('get_user_app_role', {
           _user_id: user.id
         });
 
-        // Enhanced role mapping - define first for both RPC and fallback
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setAdminRole('moderator');
+          setPermissions(ROLE_PERMISSIONS.moderator);
+          return;
+        }
+
+        // Secure role mapping - default to lowest privilege level
         const roleMapping: Record<string, AdminRole> = {
           'super_admin': 'super_admin',
-          'admin': 'super_admin', // Map admin to super_admin for compatibility
-          'content_admin': 'content_admin',
+          'admin': 'content_admin',
           'moderator': 'moderator',
           'employer': 'job_admin'
         };
-
-        if (error) {
-          console.error('Error fetching user role:', error);
-          // Try direct role check as fallback
-          const { data: roleData, error: roleError } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', user.id)
-            .eq('is_active', true)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-          
-          if (!roleError && roleData) {
-            const mappedRole = roleMapping[roleData.role] || 'moderator';
-            setAdminRole(mappedRole);
-            setPermissions(ROLE_PERMISSIONS[mappedRole]);
-            return;
-          }
-          
-          setAdminRole('moderator');
-          setPermissions(ROLE_PERMISSIONS.moderator);
-          return;
-        }
         
-        let mappedRole = roleMapping[data];
-        
-        // If no direct mapping, try to map the actual role value
-        if (!mappedRole && data) {
-          // Handle cases where the function returns the actual enum value
-          if (data === 'super_admin' || data === 'admin' || data === 'moderator' || data === 'employer') {
-            mappedRole = roleMapping[data] || 'moderator';
-          }
-        }
-        
+        // Only assign admin roles to explicitly defined roles, default to null for security
+        const mappedRole = roleMapping[data] || null;
         if (!mappedRole) {
-          console.warn('Unknown role detected:', data, 'using moderator as fallback');
+          console.warn('Unknown role detected:', data);
           setAdminRole('moderator');
           setPermissions(ROLE_PERMISSIONS.moderator);
           return;
         }
-        
-        console.log('Admin role resolved:', mappedRole, 'from data:', data);
         setAdminRole(mappedRole);
         setPermissions(ROLE_PERMISSIONS[mappedRole]);
 
@@ -96,7 +68,7 @@ export const useAdminPermissions = () => {
     return permissions[permission];
   };
 
-  const isAdmin = adminRole === 'super_admin' || adminRole === 'content_admin' || adminRole === 'job_admin' || adminRole === 'moderator';
+  const isAdmin = adminRole === 'super_admin' || adminRole === 'content_admin';
 
   return {
     adminRole,

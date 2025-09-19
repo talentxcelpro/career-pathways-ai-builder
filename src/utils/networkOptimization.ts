@@ -143,12 +143,12 @@ export class NetworkOptimizer {
         video.removeAttribute('autoplay');
       });
 
-      // Reduce animation duration more conservatively
+      // Reduce animation duration
       const style = document.createElement('style');
       style.textContent = `
         *, *::before, *::after {
-          animation-duration: 0.3s !important;
-          transition-duration: 0.3s !important;
+          animation-duration: 0.1s !important;
+          transition-duration: 0.1s !important;
         }
       `;
       document.head.appendChild(style);

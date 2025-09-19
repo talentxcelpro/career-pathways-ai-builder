@@ -64,11 +64,10 @@ export const useGoogleOneTap = ({
     if (!window.google || disabled) return;
 
     const hostname = window.location.hostname;
-    const isProduction = hostname.includes('talentxcel.in');
+    const isProduction = hostname === 'talentxcel.in' || hostname === 'www.talentxcel.in';
     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-    const isLovablePreview = hostname.includes('lovableproject.com');
     
-    if (!isProduction && !isLocalhost && !isLovablePreview) {
+    if (!isProduction && !isLocalhost) {
       if (process.env.NODE_ENV === 'development') {
         console.warn('Google One Tap disabled on origin:', hostname);
       }
@@ -82,7 +81,7 @@ export const useGoogleOneTap = ({
         context: 'signin',
         auto_select: autoSelect,
         cancel_on_tap_outside: false,
-        use_fedcm_for_prompt: false,
+        use_fedcm_for_prompt: true,
         ux_mode: 'popup',
       });
 
@@ -106,19 +105,12 @@ export const useGoogleOneTap = ({
     if (window.google) {
       initializeGoogleOneTap();
     } else {
-      // Wait for the script to load with retry limit
-      let retryCount = 0;
-      const maxRetries = 50; // 5 seconds max
+      // Wait for the script to load
       const checkGoogleLoaded = () => {
         if (window.google) {
           initializeGoogleOneTap();
-        } else if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(checkGoogleLoaded, 100);
         } else {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Google One Tap script failed to load after 5 seconds');
-          }
+          setTimeout(checkGoogleLoaded, 100);
         }
       };
       checkGoogleLoaded();

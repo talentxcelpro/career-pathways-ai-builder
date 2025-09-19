@@ -84,9 +84,6 @@ export const PostComments: React.FC<PostCommentsProps> = ({ postId, onClose }) =
   const handleSubmitComment = () => {
     if (!newComment.trim()) return;
 
-    // Trigger TXC mining for comment
-    window.dispatchEvent(new CustomEvent('txc:comment_made'));
-
     const comment: Comment = {
       id: Date.now().toString(),
       user: {

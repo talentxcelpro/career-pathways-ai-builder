@@ -218,11 +218,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       setPrivacy('public');
       
       toast.success('Post created successfully!');
-      // Trigger TXC mining for post creation
-      triggerPostCreated();
-      
-      // Dispatch custom event for TXC mining
-      window.dispatchEvent(new CustomEvent('txc:post_created'));
     } catch (error) {
       console.error('Error creating post:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

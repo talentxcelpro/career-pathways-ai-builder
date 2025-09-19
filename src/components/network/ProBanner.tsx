@@ -31,19 +31,22 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                   <Crown className="h-3 w-3 text-yellow-200" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-xs sm:text-sm text-white tracking-tight truncate">Network Enhancement</h3>
+                  <h3 className="font-semibold text-xs sm:text-sm text-white tracking-tight truncate">Promote your services</h3>
                   <p className="text-white/80 text-[10px] sm:text-xs leading-tight hidden sm:block font-medium">
-                    Advanced networking features
+                    Pro features & CRM tools
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
+                <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white text-[10px] px-2 py-1 font-semibold border border-white/20 rounded-full">
+                  ₹399/mo
+                </Badge>
                 <Button 
                   asChild
                   size="sm"
                   className="bg-white/95 backdrop-blur-sm text-blue-600 hover:bg-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 font-semibold rounded-full shadow-lg border border-white/20 transition-all duration-200"
                 >
-                  <Link to="/network">Explore</Link>
+                  <Link to="/pro/subscription">Get Pro</Link>
                 </Button>
                 {onDismiss && (
                   <Button 
@@ -81,18 +84,18 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                   <Crown className="h-3.5 w-3.5 text-white" />
                 </div>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-1 text-xs tracking-tight">Enhance Network</h3>
+              <h3 className="font-semibold text-gray-900 mb-1 text-xs tracking-tight">Upgrade to Pro</h3>
               <p className="text-[10px] text-gray-600 mb-2 leading-tight font-medium">
-                Build professional connections
+                Showcase services & get clients
               </p>
               <div className="space-y-0.5 text-[10px] text-gray-500 mb-2.5 font-medium">
                 <div className="flex items-center justify-center gap-1">
                   <TrendingUp className="h-2.5 w-2.5" />
-                  <span>Profile visibility</span>
+                  <span>Profile boost</span>
                 </div>
                 <div className="flex items-center justify-center gap-1">
                   <Sparkles className="h-2.5 w-2.5" />
-                  <span>Connect with experts</span>
+                  <span>Service pages</span>
                 </div>
               </div>
               <Button 
@@ -100,7 +103,7 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                 className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-[10px] h-6 font-semibold rounded-full shadow-lg border border-white/20 transition-all duration-200"
                 size="sm"
               >
-                <Link to="/network/people">Explore</Link>
+                <Link to="/pro/subscription">Get Pro</Link>
               </Button>
             </div>
           </CardContent>
@@ -127,19 +130,22 @@ const ProBanner: React.FC<ProBannerProps> = ({ variant, onDismiss }) => {
                   <Sparkles className="h-3 w-3 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="font-semibold text-gray-900 text-xs truncate tracking-tight">Grow your network</h4>
+                  <h4 className="font-semibold text-gray-900 text-xs truncate tracking-tight">Sell your services</h4>
                   <p className="text-[10px] text-gray-600 leading-tight hidden sm:block font-medium">
-                    Connect with professionals
+                    Get listed in marketplace
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
+                <Badge variant="outline" className="border-green-500/30 text-green-700 text-[10px] px-2 py-1 font-semibold rounded-full bg-white/80 backdrop-blur-sm">
+                  ₹399/mo
+                </Badge>
                 <Button 
                   asChild
                   size="sm" 
                   className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-[10px] px-2 sm:px-3 py-1 h-6 sm:h-7 font-semibold rounded-full shadow-lg border border-white/20 text-white transition-all duration-200"
                 >
-                  <Link to="/network/people">Connect</Link>
+                  <Link to="/pro/subscription">Try Pro</Link>
                 </Button>
               </div>
             </div>

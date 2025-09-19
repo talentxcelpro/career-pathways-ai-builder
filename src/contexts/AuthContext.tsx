@@ -92,12 +92,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                                    new URLSearchParams(window.location.search).get('redirect') ||
                                    '';
               
-              // If on auth pages, redirect to network (but not admin routes)
-              if (currentPath.startsWith('/auth') && !currentPath.startsWith('/admin')) {
-                const redirectPath = subdomainPath || '/network';
-                navigate(redirectPath, { replace: true });
-                localStorage.removeItem('subdomain_redirect');
-              } else if (currentPath === '/' && !currentPath.startsWith('/admin')) {
+              // If on auth pages, redirect to onboarding first, then dashboard
+              if (currentPath.startsWith('/auth')) {
+                const onboardingUrl = subdomainPath 
+                  ? `/onboarding?flow=resume&type=candidate&redirect=${encodeURIComponent(subdomainPath)}`
+                  : '/onboarding?flow=resume&type=candidate';
+                navigate(onboardingUrl, { replace: true });
+              } else if (currentPath === '/') {
                 // Use subdomain path if available, otherwise default to network
                 const redirectPath = subdomainPath || '/network';
                 navigate(redirectPath, { replace: true });
@@ -156,8 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const currentPath = window.location.pathname;
             console.log('Auto-redirect check:', currentPath);
             
-            // Only redirect from home and auth pages, but exclude admin routes
-            if ((currentPath === '/' || currentPath.startsWith('/auth')) && !currentPath.startsWith('/admin')) {
+            if (currentPath === '/') {
               setTimeout(() => {
                 if (mounted) {
                   // Check for stored subdomain redirect

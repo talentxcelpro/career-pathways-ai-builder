@@ -193,15 +193,6 @@ export const Navbar = () => {
                   );
                 })}
                 
-                {/* TXC Mining Link */}
-                <Link
-                  to="/txc/mining"
-                  className={`flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-medium transition-colors bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-700 hover:from-yellow-200 hover:to-orange-200 border border-orange-200
-                    ${isCurrentPath('/txc/mining') ? 'ring-2 ring-orange-300' : ''}`}
-                >
-                  <span>🪙 TXC Mining</span>
-                </Link>
-                
                 {/* Admin Menu - Only show for admin */}
                 {isAdmin && (
                   <div className="relative" ref={dropdownRef}>

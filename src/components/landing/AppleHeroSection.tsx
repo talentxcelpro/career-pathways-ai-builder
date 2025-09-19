@@ -2,8 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight } from 'lucide-react';
-import carrepassportDashboard from '@/assets/carrepassport-dashboard.jpeg';
-
+import careerPassportPreview from '@/assets/career-passport-preview.png';
 
 export const AppleHeroSection = () => {
   return (
@@ -79,18 +78,20 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Dashboard Preview */}
+          {/* Right Side - Career Passport Preview */}
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 via-secondary/15 to-accent/20 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
             <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50">
-              <img 
-                src={carrepassportDashboard}
-                alt="TalentXcel Career Passport Dashboard showing professional analytics, career metrics, and growth insights"
-                className="w-full h-auto object-cover rounded-[2rem] transition-transform duration-300 hover:scale-105"
-                loading="lazy"
-              />
-              {/* Overlay for better text contrast */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent rounded-[2rem]"></div>
+              <a href="/passport" className="block transition-transform hover:scale-105">
+                <img
+                  src={careerPassportPreview}
+                  alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
+                  loading="eager"
+                  width="600"
+                  height="400"
+                  className="block w-full h-auto object-cover"
+                />
+              </a>
             </div>
           </div>
         </div>
