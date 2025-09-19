@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
 import { toast } from 'sonner';
 import { 
   Plus, 
@@ -89,6 +90,7 @@ interface PortfolioSettings {
 
 export const ProfessionalPortfolio: React.FC = () => {
   const { user } = useAuth();
+  const { profile } = useProfile();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
   const [isEditingProject, setIsEditingProject] = useState(false);
@@ -213,7 +215,7 @@ export const ProfessionalPortfolio: React.FC = () => {
     
     // Basic profile info (20%)
     if (user?.email) completion += 10;
-    if (user?.full_name) completion += 10;
+    if (profile?.full_name) completion += 10;
     
     // Projects (30%)
     if (projects.length >= 1) completion += 15;
@@ -350,12 +352,12 @@ export const ProfessionalPortfolio: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-20 w-20">
                     <AvatarImage src="/placeholder-avatar.jpg" />
-                    <AvatarFallback>{user?.full_name?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    <AvatarFallback>{profile?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}</AvatarFallback>
                   </Avatar>
                   
                   <div className="flex-1 space-y-3">
                     <div>
-                      <h3 className="text-xl font-bold">{user?.full_name || 'Your Name'}</h3>
+                      <h3 className="text-xl font-bold">{profile?.full_name || 'Your Name'}</h3>
                       <p className="text-muted-foreground">Full Stack Developer | React & Node.js Specialist</p>
                       <div className="flex items-center gap-2 mt-2">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
