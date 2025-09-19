@@ -5318,6 +5318,59 @@ export type Database = {
         }
         Relationships: []
       }
+      career_progressions: {
+        Row: {
+          created_at: string | null
+          effective_date: string | null
+          employee_id: string | null
+          from_department: string | null
+          from_role: string | null
+          id: string
+          progression_type: string | null
+          reason: string | null
+          salary_change_percentage: number | null
+          success_metrics: Json | null
+          to_department: string | null
+          to_role: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          effective_date?: string | null
+          employee_id?: string | null
+          from_department?: string | null
+          from_role?: string | null
+          id?: string
+          progression_type?: string | null
+          reason?: string | null
+          salary_change_percentage?: number | null
+          success_metrics?: Json | null
+          to_department?: string | null
+          to_role?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          effective_date?: string | null
+          employee_id?: string | null
+          from_department?: string | null
+          from_role?: string | null
+          id?: string
+          progression_type?: string | null
+          reason?: string | null
+          salary_change_percentage?: number | null
+          success_metrics?: Json | null
+          to_department?: string | null
+          to_role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_progressions_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       career_switches: {
         Row: {
           created_at: string
@@ -10229,6 +10282,147 @@ export type Database = {
         }
         Relationships: []
       }
+      employee_profiles: {
+        Row: {
+          career_interests: Json | null
+          career_level: string | null
+          company_id: string | null
+          created_at: string | null
+          department: string | null
+          email: string
+          employee_id: string | null
+          employment_status: string | null
+          employment_type: string | null
+          full_name: string
+          hire_date: string | null
+          id: string
+          is_high_potential: boolean | null
+          last_promotion_date: string | null
+          location: string | null
+          manager_id: string | null
+          performance_rating: number | null
+          role_title: string | null
+          salary_range: string | null
+          skills: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          career_interests?: Json | null
+          career_level?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          department?: string | null
+          email: string
+          employee_id?: string | null
+          employment_status?: string | null
+          employment_type?: string | null
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          is_high_potential?: boolean | null
+          last_promotion_date?: string | null
+          location?: string | null
+          manager_id?: string | null
+          performance_rating?: number | null
+          role_title?: string | null
+          salary_range?: string | null
+          skills?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          career_interests?: Json | null
+          career_level?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string
+          employee_id?: string | null
+          employment_status?: string | null
+          employment_type?: string | null
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          is_high_potential?: boolean | null
+          last_promotion_date?: string | null
+          location?: string | null
+          manager_id?: string | null
+          performance_rating?: number | null
+          role_title?: string | null
+          salary_range?: string | null
+          skills?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_profiles_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_skills: {
+        Row: {
+          assessment_method: string | null
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          last_assessed_at: string | null
+          proficiency_level: number | null
+          skill_id: string | null
+          updated_at: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          assessment_method?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          last_assessed_at?: string | null
+          proficiency_level?: number | null
+          skill_id?: string | null
+          updated_at?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          assessment_method?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          last_assessed_at?: string | null
+          proficiency_level?: number | null
+          skill_id?: string | null
+          updated_at?: string | null
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_skills_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills_taxonomy"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employer_requests: {
         Row: {
           admin_notes: string | null
@@ -10822,6 +11016,59 @@ export type Database = {
           },
         ]
       }
+      enterprise_subscriptions: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          expires_at: string | null
+          features: Json | null
+          id: string
+          max_employees: number | null
+          monthly_cost: number | null
+          pricing_tier: string | null
+          started_at: string | null
+          status: string | null
+          subscription_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          features?: Json | null
+          id?: string
+          max_employees?: number | null
+          monthly_cost?: number | null
+          pricing_tier?: string | null
+          started_at?: string | null
+          status?: string | null
+          subscription_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          features?: Json | null
+          id?: string
+          max_employees?: number | null
+          monthly_cost?: number | null
+          pricing_tier?: string | null
+          started_at?: string | null
+          status?: string | null
+          subscription_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enterprise_subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       enterprise_webhooks: {
         Row: {
           created_at: string | null
@@ -11333,6 +11580,476 @@ export type Database = {
         }
         Relationships: []
       }
+      global_seo_automation_queue: {
+        Row: {
+          batch_size: number | null
+          completed_at: string | null
+          created_at: string
+          error_log: string | null
+          execution_time_seconds: number | null
+          failed_items: number | null
+          filters: Json | null
+          id: string
+          job_type: string
+          max_retries: number | null
+          parameters: Json
+          priority: number
+          processed_items: number | null
+          results: Json | null
+          retry_count: number | null
+          scheduled_for: string | null
+          started_at: string | null
+          status: string
+          success_rate: number | null
+          target_locale: string | null
+          total_items: number | null
+          updated_at: string
+        }
+        Insert: {
+          batch_size?: number | null
+          completed_at?: string | null
+          created_at?: string
+          error_log?: string | null
+          execution_time_seconds?: number | null
+          failed_items?: number | null
+          filters?: Json | null
+          id?: string
+          job_type: string
+          max_retries?: number | null
+          parameters?: Json
+          priority?: number
+          processed_items?: number | null
+          results?: Json | null
+          retry_count?: number | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string
+          success_rate?: number | null
+          target_locale?: string | null
+          total_items?: number | null
+          updated_at?: string
+        }
+        Update: {
+          batch_size?: number | null
+          completed_at?: string | null
+          created_at?: string
+          error_log?: string | null
+          execution_time_seconds?: number | null
+          failed_items?: number | null
+          filters?: Json | null
+          id?: string
+          job_type?: string
+          max_retries?: number | null
+          parameters?: Json
+          priority?: number
+          processed_items?: number | null
+          results?: Json | null
+          retry_count?: number | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string
+          success_rate?: number | null
+          target_locale?: string | null
+          total_items?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      global_seo_content: {
+        Row: {
+          ai_model_used: string | null
+          auto_update_enabled: boolean | null
+          avg_time_on_page: number | null
+          bounce_rate: number | null
+          breadcrumbs: Json
+          canonical_url: string
+          competition_score: number | null
+          content_type: string
+          conversion_rate: number | null
+          country_code: string
+          created_at: string
+          faqs: Json | null
+          footer_content: Json | null
+          generated_at: string
+          h1_title: string
+          hero_content: Json
+          id: string
+          internal_links: Json | null
+          intro_content: string
+          language_code: string
+          last_indexed_at: string | null
+          last_optimized_at: string | null
+          main_content: Json
+          meta_description: string
+          meta_title: string
+          next_update_at: string | null
+          optimization_version: number | null
+          page_views: number | null
+          primary_slug: string
+          publish_date: string | null
+          quality_score: number | null
+          related_links: Json | null
+          search_volume: number | null
+          secondary_slug: string | null
+          semantic_keywords: string[] | null
+          sidebar_content: Json | null
+          status: string
+          structured_data: Json
+          target_keywords: string[]
+          tertiary_slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_model_used?: string | null
+          auto_update_enabled?: boolean | null
+          avg_time_on_page?: number | null
+          bounce_rate?: number | null
+          breadcrumbs?: Json
+          canonical_url: string
+          competition_score?: number | null
+          content_type: string
+          conversion_rate?: number | null
+          country_code?: string
+          created_at?: string
+          faqs?: Json | null
+          footer_content?: Json | null
+          generated_at?: string
+          h1_title: string
+          hero_content?: Json
+          id?: string
+          internal_links?: Json | null
+          intro_content: string
+          language_code?: string
+          last_indexed_at?: string | null
+          last_optimized_at?: string | null
+          main_content?: Json
+          meta_description: string
+          meta_title: string
+          next_update_at?: string | null
+          optimization_version?: number | null
+          page_views?: number | null
+          primary_slug: string
+          publish_date?: string | null
+          quality_score?: number | null
+          related_links?: Json | null
+          search_volume?: number | null
+          secondary_slug?: string | null
+          semantic_keywords?: string[] | null
+          sidebar_content?: Json | null
+          status?: string
+          structured_data?: Json
+          target_keywords?: string[]
+          tertiary_slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_model_used?: string | null
+          auto_update_enabled?: boolean | null
+          avg_time_on_page?: number | null
+          bounce_rate?: number | null
+          breadcrumbs?: Json
+          canonical_url?: string
+          competition_score?: number | null
+          content_type?: string
+          conversion_rate?: number | null
+          country_code?: string
+          created_at?: string
+          faqs?: Json | null
+          footer_content?: Json | null
+          generated_at?: string
+          h1_title?: string
+          hero_content?: Json
+          id?: string
+          internal_links?: Json | null
+          intro_content?: string
+          language_code?: string
+          last_indexed_at?: string | null
+          last_optimized_at?: string | null
+          main_content?: Json
+          meta_description?: string
+          meta_title?: string
+          next_update_at?: string | null
+          optimization_version?: number | null
+          page_views?: number | null
+          primary_slug?: string
+          publish_date?: string | null
+          quality_score?: number | null
+          related_links?: Json | null
+          search_volume?: number | null
+          secondary_slug?: string | null
+          semantic_keywords?: string[] | null
+          sidebar_content?: Json | null
+          status?: string
+          structured_data?: Json
+          target_keywords?: string[]
+          tertiary_slug?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      global_seo_keywords: {
+        Row: {
+          best_rank: number | null
+          clicks_30d: number | null
+          competition_score: number | null
+          content_gaps: boolean | null
+          country_code: string
+          cpc_usd: number | null
+          created_at: string
+          current_rank: number | null
+          data_source: string | null
+          difficulty_score: number | null
+          id: string
+          impressions_30d: number | null
+          intent_type: string
+          keyword: string
+          keyword_type: string
+          language_code: string
+          last_updated: string
+          peak_months: number[] | null
+          rank_history: Json | null
+          search_volume: number
+          seasonal_pattern: Json | null
+          target_urls: string[] | null
+          trend_direction: string | null
+        }
+        Insert: {
+          best_rank?: number | null
+          clicks_30d?: number | null
+          competition_score?: number | null
+          content_gaps?: boolean | null
+          country_code?: string
+          cpc_usd?: number | null
+          created_at?: string
+          current_rank?: number | null
+          data_source?: string | null
+          difficulty_score?: number | null
+          id?: string
+          impressions_30d?: number | null
+          intent_type: string
+          keyword: string
+          keyword_type: string
+          language_code?: string
+          last_updated?: string
+          peak_months?: number[] | null
+          rank_history?: Json | null
+          search_volume?: number
+          seasonal_pattern?: Json | null
+          target_urls?: string[] | null
+          trend_direction?: string | null
+        }
+        Update: {
+          best_rank?: number | null
+          clicks_30d?: number | null
+          competition_score?: number | null
+          content_gaps?: boolean | null
+          country_code?: string
+          cpc_usd?: number | null
+          created_at?: string
+          current_rank?: number | null
+          data_source?: string | null
+          difficulty_score?: number | null
+          id?: string
+          impressions_30d?: number | null
+          intent_type?: string
+          keyword?: string
+          keyword_type?: string
+          language_code?: string
+          last_updated?: string
+          peak_months?: number[] | null
+          rank_history?: Json | null
+          search_volume?: number
+          seasonal_pattern?: Json | null
+          target_urls?: string[] | null
+          trend_direction?: string | null
+        }
+        Relationships: []
+      }
+      global_seo_sitemaps: {
+        Row: {
+          auto_regenerate: boolean | null
+          bing_submission_date: string | null
+          changefreq: string | null
+          compression_ratio: number | null
+          country_code: string
+          crawl_errors: number | null
+          created_at: string
+          file_size_mb: number | null
+          filename: string
+          google_submission_date: string | null
+          id: string
+          indexed_urls: number | null
+          language_code: string
+          last_crawl_date: string | null
+          local_path: string | null
+          max_urls: number | null
+          next_regeneration: string | null
+          priority_range: Json | null
+          regeneration_frequency: string | null
+          s3_url: string | null
+          sitemap_type: string
+          status: string
+          submitted_to_bing: boolean | null
+          submitted_to_google: boolean | null
+          submitted_to_yandex: boolean | null
+          updated_at: string
+          url_count: number
+          urls: Json
+        }
+        Insert: {
+          auto_regenerate?: boolean | null
+          bing_submission_date?: string | null
+          changefreq?: string | null
+          compression_ratio?: number | null
+          country_code?: string
+          crawl_errors?: number | null
+          created_at?: string
+          file_size_mb?: number | null
+          filename: string
+          google_submission_date?: string | null
+          id?: string
+          indexed_urls?: number | null
+          language_code?: string
+          last_crawl_date?: string | null
+          local_path?: string | null
+          max_urls?: number | null
+          next_regeneration?: string | null
+          priority_range?: Json | null
+          regeneration_frequency?: string | null
+          s3_url?: string | null
+          sitemap_type: string
+          status?: string
+          submitted_to_bing?: boolean | null
+          submitted_to_google?: boolean | null
+          submitted_to_yandex?: boolean | null
+          updated_at?: string
+          url_count?: number
+          urls?: Json
+        }
+        Update: {
+          auto_regenerate?: boolean | null
+          bing_submission_date?: string | null
+          changefreq?: string | null
+          compression_ratio?: number | null
+          country_code?: string
+          crawl_errors?: number | null
+          created_at?: string
+          file_size_mb?: number | null
+          filename?: string
+          google_submission_date?: string | null
+          id?: string
+          indexed_urls?: number | null
+          language_code?: string
+          last_crawl_date?: string | null
+          local_path?: string | null
+          max_urls?: number | null
+          next_regeneration?: string | null
+          priority_range?: Json | null
+          regeneration_frequency?: string | null
+          s3_url?: string | null
+          sitemap_type?: string
+          status?: string
+          submitted_to_bing?: boolean | null
+          submitted_to_google?: boolean | null
+          submitted_to_yandex?: boolean | null
+          updated_at?: string
+          url_count?: number
+          urls?: Json
+        }
+        Relationships: []
+      }
+      global_seo_urls: {
+        Row: {
+          avg_position: number | null
+          canonical_url: string
+          changefreq: string
+          content_id: string | null
+          content_type: string
+          country_code: string
+          crawl_errors: string[] | null
+          created_at: string
+          ctr_percentage: number | null
+          http_status: number | null
+          id: string
+          indexed_bing: boolean | null
+          indexed_google: boolean | null
+          language_code: string
+          last_crawled: string | null
+          last_modified: string
+          monthly_clicks: number | null
+          monthly_views: number | null
+          priority: number
+          redirect_url: string | null
+          regional_variant: string | null
+          status: string
+          updated_at: string
+          url_path: string
+          url_type: string
+        }
+        Insert: {
+          avg_position?: number | null
+          canonical_url: string
+          changefreq?: string
+          content_id?: string | null
+          content_type: string
+          country_code?: string
+          crawl_errors?: string[] | null
+          created_at?: string
+          ctr_percentage?: number | null
+          http_status?: number | null
+          id?: string
+          indexed_bing?: boolean | null
+          indexed_google?: boolean | null
+          language_code?: string
+          last_crawled?: string | null
+          last_modified?: string
+          monthly_clicks?: number | null
+          monthly_views?: number | null
+          priority?: number
+          redirect_url?: string | null
+          regional_variant?: string | null
+          status?: string
+          updated_at?: string
+          url_path: string
+          url_type: string
+        }
+        Update: {
+          avg_position?: number | null
+          canonical_url?: string
+          changefreq?: string
+          content_id?: string | null
+          content_type?: string
+          country_code?: string
+          crawl_errors?: string[] | null
+          created_at?: string
+          ctr_percentage?: number | null
+          http_status?: number | null
+          id?: string
+          indexed_bing?: boolean | null
+          indexed_google?: boolean | null
+          language_code?: string
+          last_crawled?: string | null
+          last_modified?: string
+          monthly_clicks?: number | null
+          monthly_views?: number | null
+          priority?: number
+          redirect_url?: string | null
+          regional_variant?: string | null
+          status?: string
+          updated_at?: string
+          url_path?: string
+          url_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "global_seo_urls_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "global_seo_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goal_communities: {
         Row: {
           cover_image_url: string | null
@@ -11813,6 +12530,79 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_applications: {
+        Row: {
+          application_data: Json | null
+          application_type: string | null
+          applied_at: string | null
+          cover_letter: string | null
+          created_at: string | null
+          employee_id: string | null
+          feedback: string | null
+          id: string
+          match_score: number | null
+          opportunity_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          application_data?: Json | null
+          application_type?: string | null
+          applied_at?: string | null
+          cover_letter?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          feedback?: string | null
+          id?: string
+          match_score?: number | null
+          opportunity_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          application_data?: Json | null
+          application_type?: string | null
+          applied_at?: string | null
+          cover_letter?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          feedback?: string | null
+          id?: string
+          match_score?: number | null
+          opportunity_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_applications_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_applications_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "internal_opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_applications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       internal_linking_suggestions: {
         Row: {
           anchor_text: string
@@ -11917,6 +12707,94 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      internal_opportunities: {
+        Row: {
+          application_deadline: string | null
+          career_level: string | null
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          department: string | null
+          description: string | null
+          id: string
+          is_remote: boolean | null
+          location: string | null
+          opportunity_type: string | null
+          preferred_skills: Json | null
+          reporting_manager_id: string | null
+          required_skills: Json | null
+          salary_max: number | null
+          salary_min: number | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          application_deadline?: string | null
+          career_level?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          department?: string | null
+          description?: string | null
+          id?: string
+          is_remote?: boolean | null
+          location?: string | null
+          opportunity_type?: string | null
+          preferred_skills?: Json | null
+          reporting_manager_id?: string | null
+          required_skills?: Json | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          application_deadline?: string | null
+          career_level?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          department?: string | null
+          description?: string | null
+          id?: string
+          is_remote?: boolean | null
+          location?: string | null
+          opportunity_type?: string | null
+          preferred_skills?: Json | null
+          reporting_manager_id?: string | null
+          required_skills?: Json | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_opportunities_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_opportunities_reporting_manager_id_fkey"
+            columns: ["reporting_manager_id"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       interview_schedules: {
         Row: {
@@ -23079,6 +23957,66 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_gap_analyses: {
+        Row: {
+          analysis_name: string
+          analysis_results: Json | null
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          priority_level: string | null
+          recommendations: Json | null
+          required_skills: Json | null
+          status: string | null
+          target_roles: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          analysis_name: string
+          analysis_results?: Json | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          priority_level?: string | null
+          recommendations?: Json | null
+          required_skills?: Json | null
+          status?: string | null
+          target_roles?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          analysis_name?: string
+          analysis_results?: Json | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          priority_level?: string | null
+          recommendations?: Json | null
+          required_skills?: Json | null
+          status?: string | null
+          target_roles?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_gap_analyses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_gap_analyses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       skill_recommendations: {
         Row: {
           based_on_data: Json
@@ -23295,6 +24233,36 @@ export type Database = {
           related_skills?: string[] | null
           subcategory?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      skills_taxonomy: {
+        Row: {
+          category: string
+          created_at: string | null
+          demand_level: string | null
+          description: string | null
+          id: string
+          name: string
+          subcategory: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          demand_level?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          subcategory?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          demand_level?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          subcategory?: string | null
         }
         Relationships: []
       }
@@ -24781,6 +25749,156 @@ export type Database = {
         }
         Relationships: []
       }
+      training_enrollments: {
+        Row: {
+          completed_at: string | null
+          completion_date: string | null
+          created_at: string | null
+          employee_id: string | null
+          enrolled_at: string | null
+          enrollment_type: string | null
+          feedback: string | null
+          id: string
+          program_id: string | null
+          progress_percentage: number | null
+          score: number | null
+          started_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          enrolled_at?: string | null
+          enrollment_type?: string | null
+          feedback?: string | null
+          id?: string
+          program_id?: string | null
+          progress_percentage?: number | null
+          score?: number | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          enrolled_at?: string | null
+          enrollment_type?: string | null
+          feedback?: string | null
+          id?: string
+          program_id?: string | null
+          progress_percentage?: number | null
+          score?: number | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_enrollments_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_enrollments_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "training_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_programs: {
+        Row: {
+          company_id: string | null
+          cost_per_person: number | null
+          created_at: string | null
+          created_by: string | null
+          delivery_method: string | null
+          description: string | null
+          difficulty_level: string | null
+          duration_hours: number | null
+          end_date: string | null
+          id: string
+          learning_outcomes: Json | null
+          max_participants: number | null
+          prerequisites: Json | null
+          program_type: string | null
+          provider: string | null
+          start_date: string | null
+          status: string | null
+          target_skills: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          cost_per_person?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          delivery_method?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_hours?: number | null
+          end_date?: string | null
+          id?: string
+          learning_outcomes?: Json | null
+          max_participants?: number | null
+          prerequisites?: Json | null
+          program_type?: string | null
+          provider?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_skills?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          cost_per_person?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          delivery_method?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          duration_hours?: number | null
+          end_date?: string | null
+          id?: string
+          learning_outcomes?: Json | null
+          max_participants?: number | null
+          prerequisites?: Json | null
+          program_type?: string | null
+          provider?: string | null
+          start_date?: string | null
+          status?: string | null
+          target_skills?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_programs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_programs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trending_hashtags: {
         Row: {
           count: number | null
@@ -24868,6 +25986,42 @@ export type Database = {
           trending_topics?: Json | null
           updated_at?: string | null
           week_start?: string | null
+        }
+        Relationships: []
+      }
+      txc_transactions: {
+        Row: {
+          activity_type: string | null
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -26790,6 +27944,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_txc_balances: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          last_activity_at: string | null
+          total_earned: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_activity_at?: string | null
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_activity_at?: string | null
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_verification_requests: {
         Row: {
           admin_notes: string | null
@@ -27231,6 +28418,65 @@ export type Database = {
         }
         Relationships: []
       }
+      workforce_analytics: {
+        Row: {
+          benchmark_value: number | null
+          company_id: string | null
+          created_at: string | null
+          department: string | null
+          id: string
+          metadata: Json | null
+          metric_category: string | null
+          metric_name: string
+          metric_unit: string | null
+          metric_value: number | null
+          period_end: string | null
+          period_start: string | null
+          time_period: string | null
+          trend_direction: string | null
+        }
+        Insert: {
+          benchmark_value?: number | null
+          company_id?: string | null
+          created_at?: string | null
+          department?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_category?: string | null
+          metric_name: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          period_end?: string | null
+          period_start?: string | null
+          time_period?: string | null
+          trend_direction?: string | null
+        }
+        Update: {
+          benchmark_value?: number | null
+          company_id?: string | null
+          created_at?: string | null
+          department?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_category?: string | null
+          metric_name?: string
+          metric_unit?: string | null
+          metric_value?: number | null
+          period_end?: string | null
+          period_start?: string | null
+          time_period?: string | null
+          trend_direction?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workforce_analytics_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       youtube_channels: {
         Row: {
           created_at: string
@@ -27539,6 +28785,15 @@ export type Database = {
           p_reference_id?: string
           p_reference_type?: string
           p_transaction_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      award_txc_tokens: {
+        Args: {
+          p_activity_type: string
+          p_amount: number
+          p_description?: string
           p_user_id: string
         }
         Returns: string
