@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '../auth/AuthDialog';
 import { ChevronRight } from 'lucide-react';
-import careerPassportPreview from '@/assets/career-passport-preview.png';
+
 
 export const AppleHeroSection = () => {
   return (
@@ -78,20 +78,34 @@ export const AppleHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Side - Career Passport Preview */}
+          {/* Right Side - Interactive Visual */}
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 via-secondary/15 to-accent/20 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
-            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50">
-              <a href="/passport" className="block transition-transform hover:scale-105">
-                <img
-                  src={careerPassportPreview}
-                  alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
-                  loading="eager"
-                  width="600"
-                  height="400"
-                  className="block w-full h-auto object-cover"
-                />
-              </a>
+            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-border/50 bg-gradient-to-br from-background to-muted/50 p-8">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded w-32"></div>
+                    <div className="h-3 bg-muted rounded w-24"></div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-4 space-y-3">
+                    <div className="h-3 bg-primary/30 rounded w-16"></div>
+                    <div className="h-8 bg-gradient-to-r from-primary/20 to-primary/40 rounded"></div>
+                  </div>
+                  <div className="bg-gradient-to-br from-secondary/10 to-accent/10 rounded-xl p-4 space-y-3">
+                    <div className="h-3 bg-secondary/30 rounded w-20"></div>
+                    <div className="h-8 bg-gradient-to-r from-secondary/20 to-secondary/40 rounded"></div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-xl p-4 space-y-2">
+                  <div className="h-4 bg-accent/30 rounded w-24"></div>
+                  <div className="h-2 bg-muted rounded w-full"></div>
+                  <div className="h-2 bg-muted rounded w-3/4"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
