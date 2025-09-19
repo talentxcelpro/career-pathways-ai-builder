@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye } from "lucide-react";
 import { LinkedInImportManager } from "../components/admin/LinkedInImportManager";
 import { TokenWallet } from "../components/blockchain/TokenWallet";
 import { BotPostManager } from "../components/admin/BotPostManager";
@@ -61,6 +61,8 @@ import LinkBuildingDashboard from "../pages/admin/LinkBuildingDashboard";
 import AgentOperationsPage from "../pages/admin/AgentOperations";
 import NewsAutomationPage from "../pages/admin/NewsAutomationPage";
 import ProductRequirementDocument from "../pages/admin/ProductRequirementDocument";
+import NewsManagement from "../pages/admin/NewsManagement";
+import EdgeFunctionsMonitor from "../pages/admin/EdgeFunctionsMonitor";
 
 export const adminRoutes = [
   {
@@ -495,6 +497,20 @@ export const adminRoutes = [
     to: "/admin/career-platform",
     icon: <Rocket className="h-4 w-4" />,
     page: <CareerPlatform />,
+    requiresAuth: true,
+  },
+  {
+    title: "News Management",
+    to: "/admin/news-management",
+    icon: <Newspaper className="h-4 w-4" />,
+    page: <NewsManagement />,
+    requiresAuth: true,
+  },
+  {
+    title: "Edge Functions Monitor",
+    to: "/admin/edge-functions-monitor",
+    icon: <Eye className="h-4 w-4" />,
+    page: <EdgeFunctionsMonitor />,
     requiresAuth: true,
   }
 ];

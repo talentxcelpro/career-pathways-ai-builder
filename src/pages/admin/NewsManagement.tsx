@@ -1,155 +1,290 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, Newspaper, Eye, Calendar, Edit, Trash2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-const NewsManagement: React.FC = () => {
-  const qc = useQueryClient();
-  const [form, setForm] = useState({
-    title: '',
-    slug: '',
-    summary: '',
-    content: '',
-    category: 'Press Release',
-    image_url: '',
-    published_status: 'draft',
-  });
+const NewsManagement = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const queryClient = useQueryClient();
 
-  const { data: articles } = useQuery({
-    queryKey: ['admin-news-list'],
+  // Fetch news articles from Supabase
+  const { data: articles, isLoading } = useQuery({
+    queryKey: ['news-articles'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('news_articles')
-        .select('id, title, url, published_status, published_at, created_at, category')
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .select('*')
+        .order('created_at', { ascending: false });
+      
       if (error) throw error;
       return data || [];
-    },
+    }
   });
 
-  const createMutation = useMutation({
-    mutationFn: async () => {
-      const slug = form.slug || form.title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 100);
-      const payload: any = {
-        title: form.title,
-        url: slug,
-        description: form.summary,
-        content: form.content,
-        category: form.category,
-        image_url: form.image_url || null,
-        published_status: form.published_status,
-        type: 'news',
-        author: 'Admin',
-        source_name: 'TalentXcel',
-        tags: [form.category.toLowerCase()],
-      };
-      // If publishing now, set published_at
-      if (payload.published_status === 'published') payload.published_at = new Date().toISOString();
-
-      const { error } = await supabase.from('news_articles').insert(payload);
+  // Create article mutation
+  const createArticle = useMutation({
+    mutationFn: async (articleData: any) => {
+      const { data, error } = await supabase
+        .from('news_articles')
+        .insert(articleData)
+        .select()
+        .single();
+      
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
-      toast.success('News article created');
-      setForm({ title: '', slug: '', summary: '', content: '', category: 'Press Release', image_url: '', published_status: 'draft' });
-      qc.invalidateQueries({ queryKey: ['admin-news-list'] });
+      queryClient.invalidateQueries({ queryKey: ['news-articles'] });
+      toast.success('Article created successfully');
+      setNewArticle({ title: '', content: '', excerpt: '', category: '' });
     },
-    onError: (e: any) => toast.error(e.message || 'Failed to create article'),
+    onError: (error) => {
+      toast.error('Failed to create article');
+      console.error(error);
+    }
   });
 
-  const handleGenerateRSS = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-rss-feed');
-      if (error) throw error;
-      toast.success('RSS feed generated');
-      window.open('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/generate-rss-feed', '_blank');
-    } catch (e: any) {
-      toast.error(e.message || 'Failed to generate RSS');
-    }
+  const [newArticle, setNewArticle] = useState({
+    title: '',
+    content: '',
+    excerpt: '',
+    category: ''
+  });
+
+  const articleStats = {
+    totalArticles: articles?.length || 0,
+    publishedArticles: articles?.filter(a => a.status === 'published').length || 0,
+    draftArticles: articles?.filter(a => a.status === 'draft').length || 0,
+    totalViews: articles?.reduce((sum, a) => sum + (a.views_count || 0), 0) || 0
   };
 
-  const handleGenerateGoogleNews = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('google-news-sitemap');
-      if (error) throw error;
-      toast.success('Google News sitemap generated');
-      window.open('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/google-news-sitemap', '_blank');
-    } catch (e: any) {
-      toast.error(e.message || 'Failed to generate Google News sitemap');
+  const handleCreateArticle = async () => {
+    if (!newArticle.title || !newArticle.content) {
+      toast.error('Please fill in all required fields');
+      return;
     }
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    createArticle.mutate({
+      ...newArticle,
+      status: 'draft',
+      created_by: user?.id,
+      slug: newArticle.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    });
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">News Management</h1>
-        <p className="text-sm text-muted-foreground">Create and manage News & Press Releases.</p>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">News Management</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage news articles and press releases
+          </p>
+        </div>
+        <Button size="lg" className="gap-2" onClick={() => setActiveTab('create')}>
+          <Plus className="h-4 w-4" />
+          New Article
+        </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create Article</CardTitle>
-          <CardDescription>Quickly add a press release or news post</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Input placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-            <Input placeholder="Slug (optional)" value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} />
-          </div>
-          <Input placeholder="Category" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} />
-          <Input placeholder="Image URL (optional)" value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} />
-          <Textarea placeholder="Summary" value={form.summary} onChange={e => setForm({ ...form, summary: e.target.value })} />
-          <Textarea placeholder="Content (HTML/Markdown)" rows={6} value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
-          <div className="flex items-center gap-2">
-            <Button onClick={() => createMutation.mutate()} disabled={!form.title}>Save Draft</Button>
-            <Button variant="secondary" onClick={() => { setForm({ ...form, published_status: 'published' }); createMutation.mutate(); }}>Publish</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Articles</CardTitle>
-          <CardDescription>Latest created articles</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {articles?.map((a: any) => (
-              <div key={a.id} className="flex items-center justify-between border rounded-lg p-3">
-                <div>
-                  <div className="font-medium">{a.title}</div>
-                  <div className="text-xs text-muted-foreground">/{a.url || 'no-url'}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={a.published_status === 'published' ? 'secondary' : 'outline'}>{a.published_status}</Badge>
-                  <a className="text-sm text-primary hover:underline" href={`/news/${a.id}/${a.url || 'view'}`} target="_blank">View</a>
-                </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-lg bg-blue-500">
+                <Newspaper className="h-6 w-6 text-white" />
               </div>
-            ))}
-            {!articles?.length && (
-              <div className="text-sm text-muted-foreground">No articles yet.</div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              <div>
+                <h3 className="font-semibold">Total Articles</h3>
+                <p className="text-2xl font-bold text-primary">{articleStats.totalArticles}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Distribution</CardTitle>
-          <CardDescription>Generate feeds for syndication</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          <Button variant="outline" onClick={handleGenerateRSS}>Generate RSS</Button>
-          <Button variant="outline" onClick={handleGenerateGoogleNews}>Generate Google News Sitemap</Button>
-          <a className="text-sm text-primary hover:underline" href="https://talentxcel.in/sitemap.xml" target="_blank" rel="noreferrer">Open Main Sitemap</a>
-        </CardContent>
-      </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-lg bg-green-500">
+                <Calendar className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Published</h3>
+                <p className="text-2xl font-bold text-primary">{articleStats.publishedArticles}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-lg bg-orange-500">
+                <Edit className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Drafts</h3>
+                <p className="text-2xl font-bold text-primary">{articleStats.draftArticles}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 rounded-lg bg-purple-500">
+                <Eye className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Total Views</h3>
+                <p className="text-2xl font-bold text-primary">{articleStats.totalViews.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Articles Overview</TabsTrigger>
+          <TabsTrigger value="create">Create Article</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Articles</CardTitle>
+              <CardDescription>Manage your news articles and press releases</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-8">Loading articles...</div>
+              ) : articles?.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No articles found. Create your first article to get started.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {articles?.map((article) => (
+                    <div key={article.id} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{article.title}</h3>
+                          <p className="text-sm text-muted-foreground">{article.excerpt}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant={article.status === 'published' ? 'default' : 'secondary'}>
+                              {article.status}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {article.views_count || 0} views
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="create" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Create New Article</CardTitle>
+              <CardDescription>Write and publish a new news article</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="article-title">Article Title *</Label>
+                <Input
+                  id="article-title"
+                  value={newArticle.title}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter article title"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="article-excerpt">Excerpt</Label>
+                <Textarea
+                  id="article-excerpt"
+                  value={newArticle.excerpt}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, excerpt: e.target.value }))}
+                  placeholder="Brief summary of the article"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="article-category">Category</Label>
+                <Input
+                  id="article-category"
+                  value={newArticle.category}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, category: e.target.value }))}
+                  placeholder="e.g., Technology, Business, Career"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="article-content">Content *</Label>
+                <Textarea
+                  id="article-content"
+                  value={newArticle.content}
+                  onChange={(e) => setNewArticle(prev => ({ ...prev, content: e.target.value }))}
+                  placeholder="Write your article content here..."
+                  rows={10}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleCreateArticle} disabled={createArticle.isPending}>
+                  {createArticle.isPending ? 'Creating...' : 'Create Draft'}
+                </Button>
+                <Button variant="outline">
+                  Preview
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>News Analytics</CardTitle>
+              <CardDescription>Track article performance and engagement</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                Detailed analytics will be available once articles are published and receiving traffic.
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
