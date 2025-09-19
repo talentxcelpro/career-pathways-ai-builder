@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ExtractionResult } from '@/types/resume';
-import mammoth from 'mammoth';
+import JSZip from 'jszip';
 import * as pdfjsLib from 'pdfjs-dist';
 import { useAIService } from '@/hooks/useAIService';
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';
@@ -85,8 +85,21 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
   const parseDOCX = async (file: File): Promise<string> => {
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer });
-      return result.value;
+      const zip = new JSZip();
+      const zipFile = await zip.loadAsync(arrayBuffer);
+      const documentXml = await zipFile.file('word/document.xml')?.async('text');
+      
+      if (!documentXml) {
+        throw new Error('Could not find document.xml in DOCX file');
+      }
+      
+      // Basic text extraction from XML
+      const textContent = documentXml
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      return textContent;
     } catch (error) {
       console.error('DOCX parsing error:', error);
       throw new Error('Failed to parse DOCX file');

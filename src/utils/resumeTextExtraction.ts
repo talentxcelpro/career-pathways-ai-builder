@@ -1,4 +1,4 @@
-import * as mammoth from 'mammoth';
+import JSZip from 'jszip';
 
 /**
  * Shared utility for extracting text from resume files (PDF/DOC/DOCX)
@@ -40,8 +40,16 @@ export const extractTextFromFile = async (file: File): Promise<string> => {
     // Handle Word documents
     if (type.includes('word') || type.includes('doc')) {
       const arrayBuffer = await file.arrayBuffer();
-      const { value } = await mammoth.extractRawText({ arrayBuffer });
-      return value || '';
+      const zip = new JSZip();
+      const zipFile = await zip.loadAsync(arrayBuffer);
+      const documentXml = await zipFile.file('word/document.xml')?.async('text');
+      
+      if (!documentXml) return '';
+      
+      return documentXml
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
     }
 
     // Handle PDFs

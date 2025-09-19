@@ -1,6 +1,6 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
-import mammoth from 'mammoth';
+import JSZip from 'jszip';
 import type { Resume, ResumePersonalInfo, ResumeExperience, ResumeEducation, ResumeSkill, ExtractionResult } from '@/types/resume';
 
 // Set the worker source for PDF.js
@@ -77,8 +77,16 @@ export class ResumeExtractor {
 
   private async extractTextFromDOCX(file: File): Promise<string> {
     const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({ arrayBuffer });
-    return result.value;
+    const zip = new JSZip();
+    const zipFile = await zip.loadAsync(arrayBuffer);
+    const documentXml = await zipFile.file('word/document.xml')?.async('text');
+    
+    if (!documentXml) return '';
+    
+    return documentXml
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private preprocessText(): void {
