@@ -1,34 +1,70 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useQuery, useQueryClient, QueryKey } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
 
 interface OptimizedQueryOptions<T> {
-  queryKey: string[];
+  queryKey: QueryKey;
   queryFn: () => Promise<T>;
   staleTime?: number;
   cacheTime?: number;
+  refetchOnWindowFocus?: boolean;
+  refetchInterval?: number;
   enabled?: boolean;
-  priority?: 'high' | 'normal' | 'low';
+  select?: (data: T) => any;
+  placeholderData?: T;
 }
 
-export const useOptimizedQuery = <T>({
+export function useOptimizedQuery<T>({
   queryKey,
   queryFn,
-  staleTime = 5 * 60 * 1000,
-  cacheTime = 10 * 60 * 1000,
+  staleTime = 5 * 60 * 1000, // 5 minutes
+  cacheTime = 10 * 60 * 1000, // 10 minutes
+  refetchOnWindowFocus = false,
+  refetchInterval,
   enabled = true,
-  priority = 'normal'
-}: OptimizedQueryOptions<T>) => {
-  const enhancedQueryFn = useCallback(async (): Promise<T> => {
-    return await queryFn();
-  }, [queryFn]);
+  select,
+  placeholderData
+}: OptimizedQueryOptions<T>) {
+  const queryClient = useQueryClient();
 
-  return useQuery({
+  // Memoize query function to prevent unnecessary re-renders
+  const memoizedQueryFn = useCallback(queryFn, []);
+
+  // Memoize select function if provided
+  const memoizedSelect = useMemo(() => select, [select]);
+
+  const query = useQuery({
     queryKey,
-    queryFn: enhancedQueryFn,
+    queryFn: memoizedQueryFn,
     staleTime,
     gcTime: cacheTime,
+    refetchOnWindowFocus,
+    refetchInterval,
     enabled,
-    refetchOnWindowFocus: priority === 'high',
-    retry: priority === 'low' ? 1 : 2,
+    select: memoizedSelect,
+    placeholderData: placeholderData as any,
+    // Aggressive optimizations
+    networkMode: 'online',
+    retry: 1,
+    retryDelay: 1000,
   });
-};
+
+  // Prefetch related data
+  const prefetchRelated = useCallback((relatedQueryKey: QueryKey, relatedQueryFn: () => Promise<any>) => {
+    queryClient.prefetchQuery({
+      queryKey: relatedQueryKey,
+      queryFn: relatedQueryFn,
+      staleTime: staleTime,
+    });
+  }, [queryClient, staleTime, cacheTime]);
+
+  // Invalidate and refetch
+  const invalidateAndRefetch = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey });
+  }, [queryClient, queryKey]);
+
+  return {
+    ...query,
+    prefetchRelated,
+    invalidateAndRefetch,
+  };
+}

@@ -211,9 +211,10 @@ export const OptimizedSocialFeed = memo<OptimizedSocialFeedProps>(({
   }, [feedType, userId, page]);
 
   const { data: posts = [], isLoading, error } = useOptimizedQuery({
-    queryKey: ['social-feed', feedType, userId, page.toString()],
+    queryKey: ['social-feed', feedType, userId, page],
     queryFn: fetchPosts,
-    staleTime: 2 * 60 * 1000 // 2 minutes for real-time feel
+    staleTime: 2 * 60 * 1000, // 2 minutes for real-time feel
+    placeholderData: []
   });
 
   // Merge new posts with existing ones

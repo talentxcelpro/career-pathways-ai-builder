@@ -262,7 +262,7 @@ const Companies = () => {
                       showFollowersCount={false}
                     />
                      <div className="flex gap-3">
-                       <Link to={company.slug ? `/${company.slug}` : `/companies/${company.id}`}>
+                       <Link to={`/company/${company.slug}`}>
                          <Button variant="outline" size="sm" className="rounded-xl border-gray-200 text-text-secondary hover:bg-gray-50">
                            View Profile
                          </Button>

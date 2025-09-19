@@ -24,6 +24,7 @@ import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
+import { initializePerformanceOptimizations } from "@/utils/performanceOptimizer";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
 import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
@@ -48,7 +49,6 @@ import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
 import ToolsHub from './pages/tools/ToolsHub';
-import SystemOverview from './pages/SystemOverview';
 import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
 import PublicJobSearch from './pages/tools/PublicJobSearch';
 import PublicMarketInsights from './pages/tools/PublicMarketInsights';
@@ -88,6 +88,7 @@ import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
+import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -293,9 +294,8 @@ const App = () => {
                         <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                         <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                         
-                         {/* Tools Routes */}
-                         <Route path="/tools" element={<ToolsHub />} />
-                         <Route path="/system-overview" element={<SystemOverview />} />
+                        {/* Tools Routes */}
+                        <Route path="/tools" element={<ToolsHub />} />
                         <Route path="/public/resume-builder" element={<PublicResumeBuilder />} />
                         <Route path="/public/jobs" element={<PublicJobSearch />} />
                         <Route path="/public/market-insights" element={<PublicMarketInsights />} />
@@ -389,6 +389,9 @@ const AppWrapper = () => {
     if (savedColorScheme) {
       document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
     }
+    
+    // Initialize performance optimizations for better Core Web Vitals
+    initializePerformanceOptimizations();
   }, []);
 
   return <App />;
