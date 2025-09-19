@@ -132,7 +132,7 @@ function DashboardContent() {
           companyId={companyId || ''}
           fallbackMessage="You need job management permission to post jobs."
         >
-          <Button onClick={() => navigate('/jobs/post')} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={() => navigate('/employer/jobs/post')} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="h-4 w-4 mr-2" />
             Post New Job
           </Button>
@@ -144,7 +144,7 @@ function DashboardContent() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/jobs/post')}>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/employer/jobs/post')}>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -301,7 +301,7 @@ function DashboardContent() {
               <Briefcase className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs posted yet</h3>
               <p className="text-gray-600 mb-4">Start by posting your first job to attract candidates</p>
-              <Button onClick={() => navigate('/jobs/post')}>
+              <Button onClick={() => navigate('/employer/jobs/post')}>
                 Post Your First Job
               </Button>
             </div>
