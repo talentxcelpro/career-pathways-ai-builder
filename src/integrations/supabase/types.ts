@@ -9162,6 +9162,36 @@ export type Database = {
           },
         ]
       }
+      daily_task_completions: {
+        Row: {
+          completed_date: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          task_id: string
+          txc_earned: number
+          user_id: string
+        }
+        Insert: {
+          completed_date?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          task_id: string
+          txc_earned?: number
+          user_id: string
+        }
+        Update: {
+          completed_date?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          task_id?: string
+          txc_earned?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       dashboard_widgets: {
         Row: {
           configuration: Json
@@ -12244,6 +12274,33 @@ export type Database = {
           name?: string
           rules?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      growth_task_completions: {
+        Row: {
+          completed_at: string
+          id: string
+          metadata: Json | null
+          task_id: string
+          txc_earned: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          metadata?: Json | null
+          task_id: string
+          txc_earned?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          metadata?: Json | null
+          task_id?: string
+          txc_earned?: number
+          user_id?: string
         }
         Relationships: []
       }
@@ -26872,6 +26929,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_gamification_stats: {
+        Row: {
+          achievements_unlocked: number
+          created_at: string
+          current_streak: number
+          id: string
+          last_login_date: string | null
+          level: number
+          longest_streak: number
+          tasks_completed: number
+          total_txc: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievements_unlocked?: number
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_login_date?: string | null
+          level?: number
+          longest_streak?: number
+          tasks_completed?: number
+          total_txc?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievements_unlocked?: number
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_login_date?: string | null
+          level?: number
+          longest_streak?: number
+          tasks_completed?: number
+          total_txc?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_interactions: {
         Row: {
           id: string
@@ -28793,13 +28892,21 @@ export type Database = {
         Returns: string
       }
       award_txc_tokens: {
-        Args: {
-          p_activity_type: string
-          p_amount: number
-          p_description?: string
-          p_user_id: string
-        }
-        Returns: string
+        Args:
+          | {
+              amount: number
+              description_text?: string
+              metadata_json?: Json
+              source_text: string
+              user_uuid: string
+            }
+          | {
+              p_activity_type: string
+              p_amount: number
+              p_description?: string
+              p_user_id: string
+            }
+        Returns: undefined
       }
       backfill_admin_connections: {
         Args: Record<PropertyKey, never>
@@ -29522,6 +29629,10 @@ export type Database = {
           reel_id_param: string
           user_id_param?: string
         }
+        Returns: undefined
+      }
+      initialize_user_gamification_stats: {
+        Args: { user_uuid: string }
         Returns: undefined
       }
       invalidate_session: {
