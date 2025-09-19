@@ -24,7 +24,6 @@ import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
-import { initializePerformanceOptimizations } from "@/utils/performanceOptimizer";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
 import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
@@ -88,7 +87,6 @@ import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
-import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -389,9 +387,6 @@ const AppWrapper = () => {
     if (savedColorScheme) {
       document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
     }
-    
-    // Initialize performance optimizations for better Core Web Vitals
-    initializePerformanceOptimizations();
   }, []);
 
   return <App />;
