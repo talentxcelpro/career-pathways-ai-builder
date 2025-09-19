@@ -56,8 +56,8 @@ export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {jobs.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">No featured jobs available at the moment.</p>
+          {!jobs || jobs.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">No featured jobs available at the moment.</p>
           ) : (
             jobs.slice(0, 3).map((job) => (
               <div key={job.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">

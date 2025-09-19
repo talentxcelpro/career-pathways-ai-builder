@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight, Zap, CheckCircle2, Award, ExternalLink } from 'lucide-react';
+import { JobsStatsCard } from '@/components/dashboard/JobsStatsCard';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -26,14 +27,67 @@ const Dashboard = () => {
   // Get data with auto-refresh
   const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt, refetch: refetchStats } = useQuery({
     queryKey: ['dashboard_stats'],
-    queryFn: realDataService.getDashboardStats,
+    queryFn: async () => {
+      // Get jobs count
+      const { count: totalJobs } = await supabase
+        .from('jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .eq('job_status', 'open');
+
+      // Get companies count  
+      const { count: totalCompanies } = await supabase
+        .from('companies')
+        .select('*', { count: 'exact', head: true });
+
+      // Get recent jobs (last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { count: recentJobs } = await supabase
+        .from('jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .gte('created_at', sevenDaysAgo.toISOString());
+
+      return {
+        totalJobs: totalJobs || 0,
+        totalCompanies: totalCompanies || 0,
+        recentJobs: recentJobs || 0,
+        coursesCompleted: 2, // Mock data
+        resumeViews: 45, // Mock data
+        profileViews: 23, // Mock data
+      };
+    },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
   const { data: featuredJobs = [], isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
     queryKey: ['featured_jobs'],
-    queryFn: realDataService.getFeaturedJobs,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo_url,
+            industry,
+            is_verified
+          )
+        `)
+        .eq('is_active', true)
+        .eq('job_status', 'open')
+        .eq('is_featured', true)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (error) throw error;
+      return data || [];
+    },
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
   });
@@ -276,6 +330,7 @@ const Dashboard = () => {
             {/* Right Column - Sidebar */}
             <div className="space-y-4">
               <QuickActions />
+              <JobsStatsCard />
               <CareerInsights />
               
               {/* Enhanced Progress Summary */}
