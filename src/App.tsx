@@ -279,8 +279,10 @@ const App = () => {
                        <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
                         <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                         <Route path="/resume/ai-enhancement" element={<ProtectedRoute><AIEnhancement /></ProtectedRoute>} />
-                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
-                        <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
+                         {/* Main Admin Dashboard Route */}
+                         <Route path="/admin" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                         <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
                         <Route path="/admin/prd" element={<ProtectedRoute><AdminLayout><ProductRequirementDocument /></AdminLayout></ProtectedRoute>} />
                         <Route path="/seo-suite" element={<SEOSuite />} />

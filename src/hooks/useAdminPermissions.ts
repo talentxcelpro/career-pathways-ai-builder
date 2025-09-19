@@ -28,7 +28,8 @@ export const useAdminPermissions = () => {
         // Enhanced role mapping - define first for both RPC and fallback
         const roleMapping: Record<string, AdminRole> = {
           'super_admin': 'super_admin',
-          'admin': 'content_admin',
+          'admin': 'super_admin', // Map admin to super_admin for compatibility
+          'content_admin': 'content_admin',
           'moderator': 'moderator',
           'employer': 'job_admin'
         };

@@ -92,12 +92,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                                    new URLSearchParams(window.location.search).get('redirect') ||
                                    '';
               
-              // If on auth pages, redirect to onboarding first, then dashboard
+              // If on auth pages, redirect to network
               if (currentPath.startsWith('/auth')) {
-                const onboardingUrl = subdomainPath 
-                  ? `/onboarding?flow=resume&type=candidate&redirect=${encodeURIComponent(subdomainPath)}`
-                  : '/onboarding?flow=resume&type=candidate';
-                navigate(onboardingUrl, { replace: true });
+                const redirectPath = subdomainPath || '/network';
+                navigate(redirectPath, { replace: true });
+                localStorage.removeItem('subdomain_redirect');
               } else if (currentPath === '/') {
                 // Use subdomain path if available, otherwise default to network
                 const redirectPath = subdomainPath || '/network';
@@ -157,7 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const currentPath = window.location.pathname;
             console.log('Auto-redirect check:', currentPath);
             
-            if (currentPath === '/') {
+            if (currentPath === '/' || currentPath.startsWith('/auth')) {
               setTimeout(() => {
                 if (mounted) {
                   // Check for stored subdomain redirect
