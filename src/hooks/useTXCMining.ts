@@ -77,6 +77,12 @@ export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
     amount: 100,
     description: 'Social activity bonus',
     cooldownMinutes: 10080 // Once per week
+  },
+  'joining_bonus': {
+    action: 'joining_bonus',
+    amount: 100,
+    description: 'Welcome to TalentXcel!',
+    cooldownMinutes: 0 // One-time only
   }
 };
 
