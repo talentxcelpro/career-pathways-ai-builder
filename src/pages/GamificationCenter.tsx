@@ -4,10 +4,13 @@ import GamificationDashboard from '@/components/gamification/GamificationDashboa
 import { DailyTaskTracker } from '@/components/automation/DailyTaskTracker';
 import { WelcomeExperience } from '@/components/welcome/WelcomeExperience';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trophy, Target, Flame, TrendingUp } from 'lucide-react';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { TouchButton } from '@/components/mobile/TouchButton';
+import { Trophy, Target, Flame, TrendingUp, Zap, Coins, Star, Sparkles } from 'lucide-react';
 
 const GamificationCenter: React.FC = () => {
   const { user } = useAuth();
+  const { triggerHaptic } = useHapticFeedback();
   
   return (
     <div className="min-h-screen bg-background">
@@ -22,18 +25,61 @@ const GamificationCenter: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Hero Header */}
         <div className="relative text-center mb-12">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 rounded-2xl blur-3xl"></div>
-          <div className="relative bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl rounded-2xl p-8 border border-border/50">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full mb-6 shadow-lg">
-              <Trophy className="h-10 w-10 text-primary-foreground animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/15 to-accent/20 rounded-3xl blur-3xl animate-pulse"></div>
+          <div className="relative bg-gradient-to-br from-background/90 to-background/50 backdrop-blur-xl rounded-3xl p-10 border border-border/30 shadow-2xl">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-primary via-secondary to-accent rounded-full mb-8 shadow-2xl animate-bounce">
+              <Trophy className="h-12 w-12 text-white animate-pulse" />
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4">
+            
+            {/* TXC Token Display */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-full px-6 py-3 border border-primary/30">
+                <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
+                  <Coins className="h-5 w-5 text-white font-bold" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">TXC</span>
+                <span className="text-lg text-muted-foreground">Tokens</span>
+              </div>
+            </div>
+            
+            <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4 animate-fade-in">
               Gamification Center
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Unlock your potential through achievements, build impressive streaks, and earn valuable TXC tokens 
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+              Unlock your potential through achievements, build impressive streaks, and earn valuable 
+              <span className="font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent"> TXC tokens </span>
               in our engaging career advancement ecosystem.
             </p>
+            
+            {/* Interactive Buttons */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <TouchButton 
+                variant="primary" 
+                size="lg"
+                onClick={() => {
+                  triggerHaptic('success');
+                  document.getElementById('daily-tasks')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-gradient-to-r from-primary to-secondary text-white shadow-xl hover:shadow-2xl"
+              >
+                <Zap className="h-5 w-5 mr-2" />
+                Start Earning TXC
+                <Sparkles className="h-5 w-5 ml-2" />
+              </TouchButton>
+              
+              <TouchButton 
+                variant="ghost" 
+                size="lg"
+                onClick={() => {
+                  triggerHaptic('light');
+                  document.getElementById('tips')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="border-primary/30 hover:bg-primary/10"
+              >
+                <Star className="h-5 w-5 mr-2" />
+                View Tips
+              </TouchButton>
+            </div>
           </div>
         </div>
 
@@ -88,13 +134,15 @@ const GamificationCenter: React.FC = () => {
         </div>
 
         {/* Daily Task Tracker */}
-        <DailyTaskTracker />
+        <div id="daily-tasks">
+          <DailyTaskTracker />
+        </div>
 
         {/* Main Dashboard */}
         <GamificationDashboard />
 
         {/* Tips for Success */}
-        <div className="relative mt-12">
+        <div id="tips" className="relative mt-12">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-2xl"></div>
           <div className="relative bg-card/30 backdrop-blur-sm rounded-2xl p-8 border border-border/20">
             <div className="text-center mb-8">

@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
-import { Share2, Copy, MessageCircle, Twitter, Linkedin, Users, Gift, TrendingUp, Trophy } from 'lucide-react';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { TouchButton } from '@/components/mobile/TouchButton';
+import { Share2, Copy, MessageCircle, Twitter, Linkedin, Users, Gift, TrendingUp, Trophy, Coins, Sparkles } from 'lucide-react';
 import { formatTXC } from '@/types/txc-pricing';
 
 const ReferralCenter: React.FC = () => {
@@ -15,6 +17,7 @@ const ReferralCenter: React.FC = () => {
     generateReferralCode,
     shareReferral
   } = useReferralSystem();
+  const { triggerHaptic } = useHapticFeedback();
 
   const completedReferrals = referrals.filter(r => r.status === 'completed');
   const pendingReferrals = referrals.filter(r => r.status === 'pending');
@@ -57,12 +60,17 @@ const ReferralCenter: React.FC = () => {
             <CardContent className="relative p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-4xl font-bold text-secondary mb-1">{formatTXC(totalTXCEarned)}</p>
-                  <p className="text-sm text-muted-foreground font-medium">Total Earned</p>
-                  <div className="w-12 h-1 bg-gradient-to-r from-secondary to-accent rounded-full mt-2"></div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                      <Coins className="h-4 w-4 text-white font-bold" />
+                    </div>
+                    <p className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">{formatTXC(totalTXCEarned)}</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-medium">Total TXC Earned</p>
+                  <div className="w-12 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mt-2"></div>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-2xl">
-                  <Gift className="h-10 w-10 text-secondary" />
+                <div className="p-4 bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 rounded-2xl">
+                  <Sparkles className="h-10 w-10 text-yellow-500" />
                 </div>
               </div>
             </CardContent>
@@ -111,15 +119,18 @@ const ReferralCenter: React.FC = () => {
                     readOnly 
                     className="font-mono text-lg font-bold bg-background/50 backdrop-blur-sm border-border/30"
                   />
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => shareReferral('copy')}
+                  <TouchButton 
+                    variant="floating" 
+                    size="md"
+                    onClick={() => {
+                      triggerHaptic('success');
+                      shareReferral('copy');
+                    }}
                     disabled={!myReferralCode}
                     className="bg-background/50 backdrop-blur-sm border-border/30 hover:bg-primary/10"
                   >
                     <Copy className="h-4 w-4" />
-                  </Button>
+                  </TouchButton>
                 </div>
               </div>
             </div>
@@ -127,36 +138,45 @@ const ReferralCenter: React.FC = () => {
             <div className="space-y-4">
               <p className="text-sm font-medium text-muted-foreground">Share on social media:</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <Button
-                  variant="outline"
+                <TouchButton
+                  variant="floating"
                   size="sm"
-                  onClick={() => shareReferral('whatsapp')}
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    shareReferral('whatsapp');
+                  }}
                   disabled={!myReferralCode}
                   className="flex items-center gap-2 bg-background/50 backdrop-blur-sm border-border/30 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all duration-200"
                 >
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
-                </Button>
-                <Button
-                  variant="outline"
+                </TouchButton>
+                <TouchButton
+                  variant="floating"
                   size="sm"
-                  onClick={() => shareReferral('twitter')}
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    shareReferral('twitter');
+                  }}
                   disabled={!myReferralCode}
                   className="flex items-center gap-2 bg-background/50 backdrop-blur-sm border-border/30 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200"
                 >
                   <Twitter className="h-4 w-4" />
                   Twitter
-                </Button>
-                <Button
-                  variant="outline"
+                </TouchButton>
+                <TouchButton
+                  variant="floating"
                   size="sm"
-                  onClick={() => shareReferral('linkedin')}
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    shareReferral('linkedin');
+                  }}
                   disabled={!myReferralCode}
                   className="flex items-center gap-2 bg-background/50 backdrop-blur-sm border-border/30 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200"
                 >
                   <Linkedin className="h-4 w-4" />
                   LinkedIn
-                </Button>
+                </TouchButton>
               </div>
             </div>
 
@@ -192,7 +212,14 @@ const ReferralCenter: React.FC = () => {
                     <div className="w-6 h-6 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                       <span className="text-xs font-bold text-primary">4</span>
                     </div>
-                    <span className="text-sm text-muted-foreground">Earn 1,000 TXC per successful referral</span>
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      Earn 
+                      <div className="inline-flex items-center gap-1">
+                        <Coins className="h-3 w-3 text-yellow-500" />
+                        <span className="font-bold text-yellow-600">1,000 TXC</span>
+                      </div>
+                      per successful referral
+                    </span>
                   </div>
                 </div>
               </div>
@@ -267,7 +294,10 @@ const ReferralCenter: React.FC = () => {
                     <span className="text-2xl font-bold text-primary">1-5</span>
                   </div>
                   <div className="text-sm text-muted-foreground mb-3">Referrals</div>
-                  <Badge variant="outline" className="bg-background/50 mb-3">1,000 TXC each</Badge>
+                  <Badge variant="outline" className="bg-background/50 mb-3 flex items-center gap-1">
+                    <Coins className="h-3 w-3 text-yellow-500" />
+                    1,000 TXC each
+                  </Badge>
                   <p className="text-xs text-muted-foreground font-medium">Starter Bonus</p>
                 </div>
               </div>
@@ -279,7 +309,10 @@ const ReferralCenter: React.FC = () => {
                     <span className="text-2xl font-bold text-secondary">6-15</span>
                   </div>
                   <div className="text-sm text-muted-foreground mb-3">Referrals</div>
-                  <Badge className="bg-secondary mb-3">1,500 TXC each</Badge>
+                  <Badge className="bg-secondary mb-3 flex items-center gap-1">
+                    <Coins className="h-3 w-3 text-white" />
+                    1,500 TXC each
+                  </Badge>
                   <p className="text-xs text-muted-foreground font-medium">Super Referrer</p>
                 </div>
               </div>
@@ -291,7 +324,10 @@ const ReferralCenter: React.FC = () => {
                     <span className="text-2xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">16+</span>
                   </div>
                   <div className="text-sm text-muted-foreground mb-3">Referrals</div>
-                  <Badge variant="secondary" className="bg-gradient-to-r from-accent/20 to-primary/20 border-accent/30 mb-3">2,000 TXC each</Badge>
+                  <Badge variant="secondary" className="bg-gradient-to-r from-accent/20 to-primary/20 border-accent/30 mb-3 flex items-center gap-1">
+                    <Coins className="h-3 w-3 text-yellow-600" />
+                    2,000 TXC each
+                  </Badge>
                   <p className="text-xs text-muted-foreground font-medium">Elite Ambassador</p>
                 </div>
               </div>

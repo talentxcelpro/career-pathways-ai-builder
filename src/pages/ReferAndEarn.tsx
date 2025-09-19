@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
 import { ReferralDashboard } from '@/components/referral/ReferralDashboard';
 import { SocialShare } from '@/components/shared/SocialShare';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { TouchButton } from '@/components/mobile/TouchButton';
 import { 
   Gift, 
   Users, 
@@ -19,12 +21,16 @@ import {
   Crown,
   Rocket,
   ArrowRight,
-  Share2
+  Share2,
+  Coins,
+  Heart,
+  DollarSign
 } from 'lucide-react';
 import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-logo';
 
 const ReferAndEarn: React.FC = () => {
   const { referralData, loading, generateReferralLink, copyReferralLink, shareOnPlatform } = useReferralSystem();
+  const { triggerHaptic } = useHapticFeedback();
 
   useEnhancedSEO({
     title: 'Refer TalentXcel AI – Earn Free Pro Access, Tools & Priority Support',
@@ -107,19 +113,37 @@ const ReferAndEarn: React.FC = () => {
       <section className="pt-12 pb-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
           {/* Logo and Title */}
-          <div className="mb-6">
-            <div className="flex justify-center mb-4">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-10 w-10 rounded-sm"
-              />
+          <div className="mb-8">
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-lg animate-pulse"></div>
+                <div className="relative bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-xl rounded-2xl p-4 border border-border/30">
+                  <img 
+                    src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                    alt="TalentXcel" 
+                    className="h-12 w-12 rounded-lg shadow-lg"
+                  />
+                </div>
+              </div>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-              Refer Friends & Unlock <span className="bg-gradient-to-r from-primary to-brand-green bg-clip-text text-transparent">Pro Access</span>
+            
+            {/* TXC Hero Display */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="flex items-center gap-3 bg-gradient-to-r from-yellow-400/20 via-yellow-500/20 to-yellow-600/20 backdrop-blur-sm rounded-full px-8 py-4 border border-yellow-400/30 shadow-xl">
+                <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                  <Coins className="h-6 w-6 text-white font-bold" />
+                </div>
+                <span className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">TXC</span>
+                <span className="text-xl text-muted-foreground font-medium">Rewards</span>
+              </div>
+            </div>
+            
+            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4 animate-fade-in">
+              Refer Friends & Unlock <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Pro Access</span>
             </h1>
-            <h2 className="text-sm md:text-base text-muted-foreground mb-4">
-              Share TalentXcel with your network and unlock premium AI career tools
+            <h2 className="text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Share TalentXcel with your network and unlock premium AI career tools while earning 
+              <span className="font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent"> TXC tokens</span>
             </h2>
           </div>
           
@@ -150,40 +174,49 @@ const ReferAndEarn: React.FC = () => {
           )}
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Button 
-              size="default" 
-              className="gradient-primary text-white hover:opacity-90 px-6 py-2 shadow-elegant"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <TouchButton 
+              size="xl" 
+              variant="primary"
               onClick={() => {
+                triggerHaptic('success');
                 if (referralData?.referral_code) {
                   copyReferralLink();
                 } else {
-                  // Scroll to dashboard to set up referral
                   document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
+              className="bg-gradient-to-r from-primary via-secondary to-accent text-white shadow-2xl hover:shadow-3xl transform hover:scale-105"
             >
-              <Zap className="w-4 h-4 mr-2" />
+              <Zap className="w-5 h-5 mr-2" />
               {referralData?.referral_code ? 'Copy Referral Link' : 'Get Started Now'}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-            <Button 
-              size="default" 
-              variant="outline" 
-              className="px-6 py-2 border-primary/20 hover:bg-primary/5"
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </TouchButton>
+            
+            <TouchButton 
+              size="lg" 
+              variant="floating"
               onClick={() => {
+                triggerHaptic('light');
                 document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
               }}
+              className="border-primary/30 hover:bg-primary/10 hover:border-primary/50"
             >
-              <Star className="w-4 h-4 mr-2" />
-              View Rewards
-            </Button>
-            <Button size="default" variant="secondary" className="px-6 py-2" asChild>
-              <Link to="/pro/subscription">
-                <Crown className="w-4 h-4 mr-2" />
+              <Star className="w-5 h-5 mr-2 text-yellow-500" />
+              View TXC Rewards
+            </TouchButton>
+            
+            <TouchButton 
+              size="lg" 
+              variant="ghost"
+              onClick={() => triggerHaptic('medium')}
+              className="border-accent/30 hover:bg-accent/10"
+            >
+              <Link to="/pro/subscription" className="flex items-center">
+                <Crown className="w-5 h-5 mr-2 text-yellow-600" />
                 Upgrade to Pro
               </Link>
-            </Button>
+            </TouchButton>
           </div>
         </div>
       </section>
