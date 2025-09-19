@@ -1,0 +1,78 @@
+-- Insert sample companies with correct columns
+INSERT INTO public.companies (id, name, slug, description, industry, location, is_verified) VALUES
+  ('company-1', 'TechCorp India', 'techcorp-india', 'Leading technology solutions provider', 'Technology', 'Bangalore, India', true),
+  ('company-2', 'DataMinds', 'dataminds', 'Data science and analytics company', 'Analytics', 'Hyderabad, India', false),
+  ('company-3', 'StartupXYZ', 'startupxyz', 'Innovative fintech startup', 'Fintech', 'Mumbai, India', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Insert sample jobs
+INSERT INTO public.jobs (
+  id, title, description, company_name, company_id, location, 
+  salary_min, salary_max, salary_range, employment_type, experience_level, 
+  skills_required, requirements, responsibilities, benefits, is_featured, 
+  role_category, remote_policy, is_remote
+) VALUES
+  (
+    'job-1',
+    'Senior Frontend Developer',
+    'We are looking for a Senior Frontend Developer to join our growing team and build amazing user experiences.',
+    'TechCorp India',
+    'company-1',
+    'Bangalore, India',
+    1200000,
+    1800000,
+    '₹12-18 LPA',
+    'full_time',
+    'senior_level',
+    ARRAY['React', 'TypeScript', 'Node.js', 'AWS'],
+    'Bachelor''s degree in Computer Science or equivalent experience. 5+ years of frontend development experience.',
+    'Develop and maintain React applications. Collaborate with design and backend teams. Write clean, testable code.',
+    'Health insurance, flexible working hours, learning budget, stock options',
+    true,
+    'Engineering',
+    'hybrid',
+    false
+  ),
+  (
+    'job-2',
+    'Product Manager',
+    'Join our product team to drive innovation and create products that users love.',
+    'StartupXYZ',
+    'company-3',
+    'Mumbai, India',
+    2000000,
+    3000000,
+    '₹20-30 LPA',
+    'full_time',
+    'mid_level',
+    ARRAY['Product Strategy', 'Analytics', 'Agile', 'User Research'],
+    '4-7 years of product management experience. Strong analytical skills.',
+    'Define product roadmap. Work with engineering and design teams. Analyze user data.',
+    'Equity participation, health insurance, unlimited PTO',
+    true,
+    'Product',
+    'remote',
+    true
+  ),
+  (
+    'job-3',
+    'Data Scientist',
+    'Work with large datasets to derive actionable insights and build machine learning models.',
+    'DataMinds',
+    'company-2',
+    'Hyderabad, India',
+    1500000,
+    2200000,
+    '₹15-22 LPA',
+    'full_time',
+    'mid_level',
+    ARRAY['Python', 'Machine Learning', 'SQL', 'Tableau'],
+    '2-4 years of data science experience. Strong Python and SQL skills.',
+    'Build predictive models. Analyze business data. Present insights to stakeholders.',
+    'Health insurance, learning budget, conference attendance',
+    false,
+    'Data Science',
+    'office',
+    false
+  )
+ON CONFLICT (id) DO NOTHING;
