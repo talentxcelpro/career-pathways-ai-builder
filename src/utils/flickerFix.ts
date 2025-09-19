@@ -1,78 +1,175 @@
-// Minimal flicker prevention utility
+// Enhanced flicker prevention utility
 export class FlickerFix {
   private static applied = false;
+  private static observer: MutationObserver | null = null;
 
-  static applyMinimalFix() {
+  static applyEnhancedFix() {
     if (this.applied || typeof document === 'undefined') return;
 
-    // Only critical CSS to prevent major layout shifts
+    // Enhanced CSS to prevent all types of flickering
     const style = document.createElement('style');
     style.textContent = `
-      /* Minimal flicker prevention */
-      body {
+      /* Enhanced flicker prevention */
+      html {
+        visibility: hidden;
         opacity: 0;
-        transition: opacity 0.15s ease-in;
       }
       
-      body.loaded {
+      html.loaded {
+        visibility: visible;
+        opacity: 1;
+        transition: opacity 0.2s ease-in;
+      }
+      
+      /* Prevent content jump during hydration */
+      body {
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      
+      /* Stabilize layouts during loading */
+      .loading-skeleton {
+        background: linear-gradient(90deg, 
+          hsl(var(--muted)) 25%, 
+          hsl(var(--muted-foreground) / 0.1) 50%, 
+          hsl(var(--muted)) 75%
+        );
+        background-size: 200px 100%;
+        animation: shimmer 1.5s infinite;
+      }
+      
+      /* Prevent flash of unstyled content */
+      *:not(.loaded) img {
+        opacity: 0;
+        transition: opacity 0.3s ease-in;
+      }
+      
+      *.loaded img {
         opacity: 1;
       }
       
-      /* Prevent image layout shifts */
-      img {
-        height: auto;
-        max-width: 100%;
-        contain: layout;
+      /* Stabilize component mounting */
+      .mount-transition {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
       }
       
-      /* Stable rendering for dynamic content */
-      .will-change-auto {
-        will-change: auto;
-        contain: layout style;
+      .mount-transition.mounted {
+        opacity: 1;
+        transform: translateY(0);
       }
       
-      /* Optimize repaints */
-      .hover-scale {
-        transform: translateZ(0);
-        backface-visibility: hidden;
+      /* Prevent dropdown flicker */
+      [data-radix-popper-content-wrapper] {
+        opacity: 0;
+        transition: opacity 0.15s ease-out;
       }
       
-      /* Smooth transitions for components */
-      .animate-fade-in {
-        animation: fade-in 0.2s ease-out;
+      [data-radix-popper-content-wrapper][data-state="open"] {
+        opacity: 1;
+      }
+      
+      /* Smooth sidebar transitions */
+      .sidebar-content {
+        transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+      }
+      
+      /* Prevent form input flickering */
+      input, textarea, select {
+        transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
       }
     `;
     
     document.head.appendChild(style);
     this.applied = true;
 
-    // Add loaded class when DOM is ready
-    const addLoadedClass = () => {
-      document.body.classList.add('loaded');
-    };
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', addLoadedClass);
-    } else {
-      addLoadedClass();
-    }
+    // Enhanced load detection
+    this.setupLoadDetection();
   }
 
-  static stabilizeDOM() {
-    // Minimal DOM stabilization - just ensure loaded class is present
-    if (!document.body.classList.contains('loaded')) {
-      document.body.classList.add('loaded');
+  static setupLoadDetection() {
+    const markAsLoaded = () => {
+      if (!document.documentElement.classList.contains('loaded')) {
+        document.documentElement.classList.add('loaded');
+        document.body.classList.add('loaded');
+        
+        // Mark all images as loaded after fonts are ready
+        if ('fonts' in document) {
+          document.fonts.ready.then(() => {
+            document.querySelectorAll('img').forEach(img => {
+              img.classList.add('loaded');
+            });
+          });
+        }
+      }
+    };
+
+    // Multiple load detection strategies
+    if (document.readyState === 'complete') {
+      markAsLoaded();
+    } else if (document.readyState === 'interactive') {
+      // Wait for fonts and images
+      setTimeout(markAsLoaded, 100);
+    } else {
+      document.addEventListener('DOMContentLoaded', markAsLoaded);
+      window.addEventListener('load', markAsLoaded);
+    }
+
+    // Fallback timer
+    setTimeout(markAsLoaded, 500);
+  }
+
+  static observeComponentMounts() {
+    if (this.observer || typeof window === 'undefined') return;
+
+    this.observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as Element;
+            
+            // Add mount transition to new components
+            if (element.getAttribute('data-component')) {
+              element.classList.add('mount-transition');
+              requestAnimationFrame(() => {
+                element.classList.add('mounted');
+              });
+            }
+          }
+        });
+      });
+    });
+
+    this.observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  static cleanup() {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
     }
   }
 }
 
-// Auto-apply minimal fix
+// Auto-apply enhanced fix
 if (typeof window !== 'undefined') {
+  FlickerFix.applyEnhancedFix();
+  
+  // Set up component mount observation after React hydration
   if (document.readyState !== 'loading') {
-    FlickerFix.applyMinimalFix();
+    setTimeout(() => FlickerFix.observeComponentMounts(), 1000);
   } else {
     document.addEventListener('DOMContentLoaded', () => {
-      FlickerFix.applyMinimalFix();
+      setTimeout(() => FlickerFix.observeComponentMounts(), 1000);
     });
   }
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    FlickerFix.cleanup();
+  });
 }

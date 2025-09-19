@@ -87,6 +87,7 @@ import CareerRoadmapGenerator from "./components/career/CareerRoadmapGenerator";
 import CareerGoals from "./pages/CareerGoals";
 import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
+import GamificationCenter from "./pages/GamificationCenter";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";

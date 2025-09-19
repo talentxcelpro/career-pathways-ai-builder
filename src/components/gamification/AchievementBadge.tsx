@@ -1,175 +1,225 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Trophy, 
-  Medal, 
-  Award, 
-  Crown, 
-  Star, 
-  Flame, 
-  Target, 
-  Users,
-  Zap,
-  BookOpen,
-  Briefcase,
-  TrendingUp
-} from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Trophy, Star, Crown, Medal, Award, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-export interface Achievement {
+interface Achievement {
   id: string;
   title: string;
   description: string;
-  icon_type: string;
+  icon?: React.ReactNode;
+  requirement: number;
+  current: number;
+  reward: number;
+  category: 'daily' | 'growth' | 'milestone' | 'special';
+  unlocked: boolean;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  category: string;
-  points_awarded: number;
-  earned_at?: string;
-  progress?: number;
-  max_progress?: number;
+  unlockedAt?: Date;
 }
 
 interface AchievementBadgeProps {
   achievement: Achievement;
   size?: 'sm' | 'md' | 'lg';
   showProgress?: boolean;
-  interactive?: boolean;
+  onClick?: () => void;
+  className?: string;
 }
-
-const ACHIEVEMENT_ICONS = {
-  trophy: Trophy,
-  medal: Medal,
-  award: Award,
-  crown: Crown,
-  star: Star,
-  flame: Flame,
-  target: Target,
-  users: Users,
-  zap: Zap,
-  book: BookOpen,
-  briefcase: Briefcase,
-  trending: TrendingUp
-};
-
-const RARITY_COLORS = {
-  common: 'bg-gray-500 text-white',
-  rare: 'bg-blue-500 text-white',
-  epic: 'bg-purple-500 text-white',
-  legendary: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
-};
-
-const RARITY_GLOW = {
-  common: '',
-  rare: 'shadow-blue-200 shadow-lg',
-  epic: 'shadow-purple-200 shadow-lg',
-  legendary: 'shadow-yellow-200 shadow-xl animate-pulse'
-};
 
 export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
   achievement,
   size = 'md',
-  showProgress = false,
-  interactive = false
+  showProgress = true,
+  onClick,
+  className
 }) => {
-  const Icon = ACHIEVEMENT_ICONS[achievement.icon_type as keyof typeof ACHIEVEMENT_ICONS] || Award;
-  const isEarned = !!achievement.earned_at;
-  const progress = achievement.progress || 0;
-  const maxProgress = achievement.max_progress || 100;
-  const progressPercentage = (progress / maxProgress) * 100;
-
-  const sizeClasses = {
-    sm: 'w-12 h-12 text-xs',
-    md: 'w-16 h-16 text-sm',
-    lg: 'w-20 h-20 text-base'
+  const getRarityConfig = (rarity: Achievement['rarity']) => {
+    switch (rarity) {
+      case 'common':
+        return {
+          bg: 'bg-slate-500/10',
+          border: 'border-slate-500/20',
+          text: 'text-slate-600',
+          accent: 'bg-slate-500'
+        };
+      case 'rare':
+        return {
+          bg: 'bg-blue-500/10',
+          border: 'border-blue-500/20',
+          text: 'text-blue-600',
+          accent: 'bg-blue-500'
+        };
+      case 'epic':
+        return {
+          bg: 'bg-purple-500/10',
+          border: 'border-purple-500/20',
+          text: 'text-purple-600',
+          accent: 'bg-purple-500'
+        };
+      case 'legendary':
+        return {
+          bg: 'bg-orange-500/10',
+          border: 'border-orange-500/20',
+          text: 'text-orange-600',
+          accent: 'bg-orange-500'
+        };
+      default:
+        return {
+          bg: 'bg-muted',
+          border: 'border-muted',
+          text: 'text-muted-foreground',
+          accent: 'bg-muted-foreground'
+        };
+    }
   };
 
-  const iconSizes = {
-    sm: 'h-6 w-6',
-    md: 'h-8 w-8',
-    lg: 'h-10 w-10'
+  const getSizeConfig = (size: 'sm' | 'md' | 'lg') => {
+    switch (size) {
+      case 'sm':
+        return {
+          container: 'p-3',
+          icon: 'h-4 w-4',
+          title: 'text-sm font-medium',
+          description: 'text-xs',
+          progress: 'h-1'
+        };
+      case 'lg':
+        return {
+          container: 'p-6',
+          icon: 'h-8 w-8',
+          title: 'text-lg font-semibold',
+          description: 'text-sm',
+          progress: 'h-3'
+        };
+      default:
+        return {
+          container: 'p-4',
+          icon: 'h-6 w-6',
+          title: 'text-base font-semibold',
+          description: 'text-sm',
+          progress: 'h-2'
+        };
+    }
   };
+
+  const getDefaultIcon = (category: Achievement['category']) => {
+    switch (category) {
+      case 'daily': return <Star className="h-full w-full" />;
+      case 'growth': return <Trophy className="h-full w-full" />;
+      case 'milestone': return <Medal className="h-full w-full" />;
+      case 'special': return <Crown className="h-full w-full" />;
+      default: return <Award className="h-full w-full" />;
+    }
+  };
+
+  const rarityConfig = getRarityConfig(achievement.rarity);
+  const sizeConfig = getSizeConfig(size);
+  const progress = (achievement.current / achievement.requirement) * 100;
+  const isComplete = achievement.unlocked;
 
   return (
-    <div className={`
-      relative flex flex-col items-center gap-2 p-2 rounded-lg transition-all duration-300
-      ${interactive ? 'hover:scale-105 cursor-pointer' : ''}
-      ${isEarned ? RARITY_GLOW[achievement.rarity] : ''}
-    `}>
-      {/* Badge Container */}
-      <div className={`
-        ${sizeClasses[size]} 
-        relative flex items-center justify-center rounded-full border-2 transition-all duration-300
-        ${isEarned 
-          ? `${RARITY_COLORS[achievement.rarity]} border-transparent` 
-          : 'bg-gray-100 border-gray-300 text-gray-400'
-        }
-      `}>
-        <Icon className={iconSizes[size]} />
+    <motion.div
+      whileHover={{ scale: onClick ? 1.02 : 1 }}
+      whileTap={{ scale: onClick ? 0.98 : 1 }}
+      className={className}
+    >
+      <Card 
+        className={cn(
+          "relative overflow-hidden transition-all duration-200",
+          isComplete ? "bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20" : rarityConfig.bg,
+          isComplete ? "border-green-500/20" : rarityConfig.border,
+          onClick && "cursor-pointer hover:shadow-lg",
+          className
+        )}
+        onClick={onClick}
+      >
+        {/* Rarity Indicator */}
+        <div className={cn(
+          "absolute top-0 right-0 w-12 h-12 -mr-6 -mt-6 rotate-45",
+          isComplete ? "bg-green-500" : rarityConfig.accent
+        )} />
         
-        {/* Legendary Sparkle Effect */}
-        {isEarned && achievement.rarity === 'legendary' && (
-          <>
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full animate-ping"></div>
-            <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-orange-300 rounded-full animate-ping animation-delay-200"></div>
-          </>
-        )}
-
-        {/* New Achievement Indicator */}
-        {isEarned && new Date(achievement.earned_at!).getTime() > Date.now() - 24 * 60 * 60 * 1000 && (
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-          </div>
-        )}
-      </div>
-
-      {/* Achievement Info */}
-      <div className="text-center space-y-1">
-        <h4 className={`font-medium ${sizeClasses[size].includes('text-xs') ? 'text-xs' : 'text-sm'}`}>
-          {achievement.title}
-        </h4>
-        
-        {/* Rarity Badge */}
-        <Badge 
-          variant="outline" 
-          className={`text-xs capitalize ${
-            isEarned ? RARITY_COLORS[achievement.rarity] : 'bg-gray-100 text-gray-500'
-          }`}
-        >
-          {achievement.rarity}
-        </Badge>
-
-        {/* Progress Bar */}
-        {showProgress && !isEarned && achievement.max_progress && (
-          <div className="w-full space-y-1">
-            <div className="flex justify-between text-xs text-gray-600">
-              <span>{progress}</span>
-              <span>{maxProgress}</span>
+        <CardContent className={sizeConfig.container}>
+          <div className="flex items-start gap-3">
+            {/* Icon */}
+            <div className={cn(
+              "rounded-full p-2 flex-shrink-0",
+              isComplete ? "bg-green-500/10" : rarityConfig.bg
+            )}>
+              <div className={cn(
+                sizeConfig.icon,
+                isComplete ? "text-green-600" : rarityConfig.text
+              )}>
+                {achievement.icon || getDefaultIcon(achievement.category)}
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div 
-                className="bg-blue-500 h-1.5 rounded-full transition-all duration-500"
-                style={{ width: `${progressPercentage}%` }}
-              ></div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className={cn(
+                  sizeConfig.title,
+                  isComplete ? "text-green-600" : "text-foreground"
+                )}>
+                  {achievement.title}
+                </h3>
+                <div className="flex flex-col items-end gap-1">
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      "text-xs capitalize",
+                      isComplete ? "bg-green-500 text-white border-green-500" : `${rarityConfig.accent} text-white border-none`
+                    )}
+                  >
+                    {achievement.rarity}
+                  </Badge>
+                  {isComplete && (
+                    <Badge className="bg-green-500/10 text-green-600 border-green-500/20 text-xs">
+                      ✓ Unlocked
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <p className={cn(sizeConfig.description, "text-muted-foreground mb-3")}>
+                {achievement.description}
+              </p>
+
+              {/* Progress */}
+              {showProgress && !isComplete && (
+                <div className="space-y-2">
+                  <Progress 
+                    value={progress} 
+                    className={cn("w-full", sizeConfig.progress)}
+                  />
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">
+                      {achievement.current}/{achievement.requirement}
+                    </span>
+                    <span className={cn("font-medium flex items-center gap-1", rarityConfig.text)}>
+                      <Zap className="h-3 w-3" />
+                      {achievement.reward} TXC
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Completion Info */}
+              {isComplete && achievement.unlockedAt && (
+                <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
+                  <span>Unlocked {achievement.unlockedAt.toLocaleDateString()}</span>
+                  <span className="font-medium text-green-600 flex items-center gap-1">
+                    <Zap className="h-3 w-3" />
+                    {achievement.reward} TXC
+                  </span>
+                </div>
+              )}
             </div>
           </div>
-        )}
-
-        {/* Points */}
-        {achievement.points_awarded > 0 && (
-          <div className="flex items-center justify-center gap-1 text-xs text-gray-600">
-            <Star className="h-3 w-3" />
-            <span>{achievement.points_awarded} pts</span>
-          </div>
-        )}
-
-        {/* Earned Date */}
-        {isEarned && achievement.earned_at && (
-          <p className="text-xs text-gray-500">
-            Earned {new Date(achievement.earned_at).toLocaleDateString()}
-          </p>
-        )}
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
-
-export default AchievementBadge;
