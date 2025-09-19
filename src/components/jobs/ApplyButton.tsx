@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Send, ExternalLink } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateJobApplication } from '@/hooks/useJobApplications';
-import SimpleJobApplicationDialog from './SimpleJobApplicationDialog';
+import { EnhancedJobApplicationDialog } from './EnhancedJobApplicationDialog';
 import { toast } from 'sonner';
 
 interface ApplyButtonProps {
@@ -110,7 +110,7 @@ export default function ApplyButton({ job, variant = "default", size = "default"
         </Button>
       )}
 
-      <SimpleJobApplicationDialog
+      <EnhancedJobApplicationDialog
         open={showForm}
         onOpenChange={setShowForm}
         job={job}

@@ -47,4 +47,5 @@ export interface Resume {
   is_primary: boolean;
   file_url?: string;
   is_active?: boolean;
+  created_at: string;
 }

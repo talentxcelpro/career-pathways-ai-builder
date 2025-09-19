@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Check, ArrowRight, ArrowLeft, User, Briefcase, FileText, Shield } from "lucide-react";
 import { FormData, JobInfo, Resume } from './types';
-import { ResumeSelectionStep } from './ResumeSelectionStep';
-import { PersonalDetailsStep } from './PersonalDetailsStep';
-import { DeclarationStep } from './DeclarationStep';
+import ResumeSelectionStep from './ResumeSelectionStep';
+import PersonalDetailsStep from './PersonalDetailsStep';
+import DeclarationStep from './DeclarationStep';
 
 interface ApplicationFormWizardProps {
   job: JobInfo;

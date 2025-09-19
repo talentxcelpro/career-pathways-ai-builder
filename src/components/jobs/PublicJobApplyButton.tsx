@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Briefcase, User, ArrowRight } from 'lucide-react';
-import SimpleJobApplicationDialog from './SimpleJobApplicationDialog';
+import { EnhancedJobApplicationDialog } from './EnhancedJobApplicationDialog';
 
 interface PublicJobApplyButtonProps {
   jobId: string;
@@ -73,7 +73,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
       </Button>
 
       {showApplicationForm && currentUser && (
-        <SimpleJobApplicationDialog
+        <EnhancedJobApplicationDialog
           open={showApplicationForm}
           onOpenChange={setShowApplicationForm}
           job={job}
