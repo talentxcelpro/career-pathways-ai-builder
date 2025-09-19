@@ -25,14 +25,22 @@ export const useTaskNotifications = () => {
 
       // Send push notification via backend
       if (isSubscribed) {
-        await supabase.functions.invoke('send-push-notification', {
+        const response = await supabase.functions.invoke('send-push-notification', {
           body: {
             user_id: user.id,
             title: 'Complete Your Daily Task! 🎯',
             body: `Don't forget to ${taskTitle} and earn ${formatTXC(reward)} TXC tokens!`,
-            action_url: '/gamification'
+            action_url: '/gamification',
+            trigger_type: 'task_reminder',
+            priority: 'normal'
           }
         });
+        
+        if (response.error) {
+          console.error('Push notification error:', response.error);
+        } else {
+          console.log('Push notification sent successfully:', response.data);
+        }
       }
     } catch (error) {
       console.error('Error sending task reminder notification:', error);
@@ -55,14 +63,22 @@ export const useTaskNotifications = () => {
 
       // Send push notification via backend
       if (isSubscribed) {
-        await supabase.functions.invoke('send-push-notification', {
+        const response = await supabase.functions.invoke('send-push-notification', {
           body: {
             user_id: user.id,
             title: 'Task Completed! 🎉',
             body: `Great job! You earned ${formatTXC(reward)} TXC for ${taskTitle}`,
-            action_url: '/gamification'
+            action_url: '/gamification',
+            trigger_type: 'task_completed',
+            priority: 'normal'
           }
         });
+        
+        if (response.error) {
+          console.error('Push notification error:', response.error);
+        } else {
+          console.log('Task completion notification sent:', response.data);
+        }
       }
     } catch (error) {
       console.error('Error sending task completion notification:', error);

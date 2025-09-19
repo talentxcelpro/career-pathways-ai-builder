@@ -34,17 +34,21 @@ serve(async (req) => {
       }
     );
 
-    const { user_ids, title, body, data, trigger_type, priority = 'normal', rich_content, actions, image }: PushNotificationRequest & { priority?: string } = await req.json();
+    const requestBody = await req.json();
+    const { user_id, user_ids, title, body, data, trigger_type, priority = 'normal', rich_content, actions, image, action_url } = requestBody;
+    
+    // Handle both single user_id and multiple user_ids formats
+    const targetUserIds = user_ids || (user_id ? [user_id] : []);
 
-    if (!user_ids || !title || !body) {
+    if (!targetUserIds.length || !title || !body) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: user_ids, title, body' }),
+        JSON.stringify({ error: 'Missing required fields: user_id/user_ids, title, body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Create notifications in database first
-    const notifications = user_ids.map(userId => ({
+    const notifications = targetUserIds.map(userId => ({
       user_id: userId,
       type: trigger_type || 'general',
       title,
@@ -53,7 +57,8 @@ serve(async (req) => {
         ...(data || {}),
         rich_content,
         actions,
-        image
+        image,
+        action_url
       },
       priority,
       is_read: false,
@@ -78,7 +83,7 @@ serve(async (req) => {
     const { data: pushTokens, error: tokenError } = await supabaseClient
       .from('push_tokens')
       .select('*')
-      .in('user_id', user_ids)
+      .in('user_id', targetUserIds)
       .eq('is_active', true);
 
     if (tokenError) {

@@ -43,7 +43,7 @@ const GamificationDashboard: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-primary" key={`achievements-${achievements.length}`}>
+                <p className="text-xl font-bold text-primary" key={`achievements-${achievements.length}`}>
                   {achievements.length}
                 </p>
                 <p className="text-xs text-muted-foreground font-medium">Achievements</p>
@@ -59,7 +59,7 @@ const GamificationDashboard: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-accent" key={`login-streak-${userStreaks?.current_login_streak || 0}`}>
+                <p className="text-xl font-bold text-accent" key={`login-streak-${userStreaks?.current_login_streak || 0}`}>
                   {userStreaks?.current_login_streak || 0}
                 </p>
                 <p className="text-xs text-muted-foreground font-medium">Login Streak</p>
@@ -75,7 +75,7 @@ const GamificationDashboard: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-secondary" key={`app-streak-${userStreaks?.current_application_streak || 0}`}>
+                <p className="text-xl font-bold text-secondary" key={`app-streak-${userStreaks?.current_application_streak || 0}`}>
                   {userStreaks?.current_application_streak || 0}
                 </p>
                 <p className="text-xs text-muted-foreground font-medium">App Streak</p>
@@ -91,8 +91,8 @@ const GamificationDashboard: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-primary flex items-center gap-1" key={`txc-earned-${totalTXCEarned}`}>
-                  <span className="text-lg">TXC</span>
+                <p className="text-xl font-bold text-primary flex items-center gap-1" key={`txc-earned-${totalTXCEarned}`}>
+                  <span className="text-sm">TXC</span>
                   {formatTXC(totalTXCEarned)}
                 </p>
                 <p className="text-xs text-muted-foreground font-medium">From Achievements</p>

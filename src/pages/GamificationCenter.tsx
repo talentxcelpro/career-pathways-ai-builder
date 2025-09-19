@@ -42,10 +42,10 @@ const GamificationCenter: React.FC = () => {
               </div>
             </div>
             
-            <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4 animate-fade-in">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-4">
               Gamification Center
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
               Unlock your potential through achievements, build impressive streaks, and earn valuable 
               <span className="font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent"> TXC tokens </span>
               in our engaging career advancement ecosystem.
@@ -87,7 +87,7 @@ const GamificationCenter: React.FC = () => {
         <div className="relative mb-12">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl"></div>
           <div className="relative bg-card/50 backdrop-blur-sm rounded-2xl p-8 border border-border/30">
-            <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
               How It Works
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

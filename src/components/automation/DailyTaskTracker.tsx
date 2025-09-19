@@ -299,13 +299,13 @@ export const DailyTaskTracker: React.FC = () => {
         <CardContent className="pt-0">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary" key={`earned-${earnedToday}`}>
+              <div className="text-xl font-bold text-primary" key={`earned-${earnedToday}`}>
                 {formatTXC(earnedToday)}
               </div>
               <div className="text-xs text-muted-foreground">TXC Earned Today</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-secondary" key={`potential-${totalPossibleRewards}`}>
+              <div className="text-xl font-bold text-secondary" key={`potential-${totalPossibleRewards}`}>
                 {formatTXC(totalPossibleRewards)}
               </div>
               <div className="text-xs text-muted-foreground">TXC Potential</div>
