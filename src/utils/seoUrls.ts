@@ -77,9 +77,9 @@ export const isValidJobSlug = (slug: string): boolean => {
   // If it contains multiple dashes and looks like a slug, treat it as valid
   const parts = slug.split('-');
   
-  // Valid if it has multiple parts (at least 4 for our format: title-code-company-location)
+  // Valid if it has multiple parts (at least 3 for our format: title-location-id or title-company-location)
   // This covers both exact matches and partial matches that will be handled by the query logic
-  return parts.length >= 4 && parts.every(part => part.length > 0);
+  return parts.length >= 3 && parts.every(part => part.length > 0);
 };
 
 export const getJobDetailUrl = (job: any): string => {
