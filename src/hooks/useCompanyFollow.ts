@@ -69,11 +69,14 @@ export function useCompanyFollow(companyId: string) {
         .select();
       
       if (error) {
-        console.error('Supabase follow error:', error);
-        // If it's a relation does not exist error, it might be a temporary connection issue
-        if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
-          throw new Error('Database connection issue. Please try again in a moment.');
-        }
+        console.error('Supabase follow error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          companyId,
+          userId: currentUser.id
+        });
         throw error;
       }
       
