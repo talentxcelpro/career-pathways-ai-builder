@@ -8,25 +8,22 @@ const corsHeaders = {
 interface Database {
   public: {
     Tables: {
-      token_balances: {
+      user_txc_balances: {
         Row: {
           user_id: string
           balance: number
-          locked_balance: number
-          token_type: string
-          last_updated: string
+          lifetime_earned: number
+          created_at: string
+          updated_at: string
         }
       }
-      token_transactions: {
+      txc_transactions: {
         Row: {
           id: string
-          from_user_id: string | null
-          to_user_id: string | null
-          transaction_type: string
+          user_id: string
           amount: number
-          token_type: string
+          transaction_type: string
           description: string
-          status: string
           created_at: string
         }
       }
@@ -65,7 +62,7 @@ Deno.serve(async (req) => {
 
     // Get token balance
     const { data: balance, error: balanceError } = await supabaseClient
-      .from('token_balances')
+      .from('user_txc_balances')
       .select('*')
       .eq('user_id', targetUserId)
       .single()
@@ -78,16 +75,15 @@ Deno.serve(async (req) => {
       )
     }
 
-    // If no balance record exists, create one with 0 balance
+    // If no balance record exists, create one with initial balance
     let finalBalance = balance
     if (!balance) {
       const { data: newBalance, error: createError } = await supabaseClient
-        .from('token_balances')
+        .from('user_txc_balances')
         .insert({
           user_id: targetUserId,
-          balance: 0,
-          locked_balance: 0,
-          token_type: 'TXC'
+          balance: 500, // Give new users 500 TXC welcome bonus
+          lifetime_earned: 500
         })
         .select()
         .single()
@@ -105,9 +101,9 @@ Deno.serve(async (req) => {
 
     // Get recent transactions
     const { data: transactions, error: txError } = await supabaseClient
-      .from('token_transactions')
+      .from('txc_transactions')
       .select('*')
-      .or(`from_user_id.eq.${targetUserId},to_user_id.eq.${targetUserId}`)
+      .eq('user_id', targetUserId)
       .order('created_at', { ascending: false })
       .limit(20)
 
@@ -119,10 +115,10 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         balance: {
-          total: finalBalance.balance + finalBalance.locked_balance,
+          total: finalBalance.balance,
           available: finalBalance.balance,
-          locked: finalBalance.locked_balance,
-          lifetime_earned: finalBalance.balance // Use current balance as lifetime earned for now
+          locked: 0,
+          lifetime_earned: finalBalance.lifetime_earned || finalBalance.balance
         },
         transactions: transactions || []
       }),

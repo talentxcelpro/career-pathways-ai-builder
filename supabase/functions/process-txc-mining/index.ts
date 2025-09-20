@@ -39,9 +39,9 @@ Deno.serve(async (req) => {
     // Check for recent duplicate transactions (idempotency)
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
     const { data: recentTransaction } = await supabaseClient
-      .from('token_transactions')
+      .from('txc_transactions')
       .select('id')
-      .eq('to_user_id', userId)
+      .eq('user_id', userId)
       .eq('transaction_type', 'mining')
       .gte('created_at', fiveMinutesAgo)
       .maybeSingle()
@@ -60,18 +60,12 @@ Deno.serve(async (req) => {
 
     // Create transaction record
     const { error: txError } = await supabaseClient
-      .from('token_transactions')
+      .from('txc_transactions')
       .insert({
-        to_user_id: userId,
+        user_id: userId,
         transaction_type: 'mining',
         amount: amount,
-        description: description,
-        token_type: 'TXC',
-        status: 'completed',
-        metadata: {
-          action: action,
-          ...metadata
-        }
+        description: description
       })
 
     if (txError) {
@@ -84,26 +78,23 @@ Deno.serve(async (req) => {
 
     // Get current balance first
     const { data: currentBalance } = await supabaseClient
-      .from('token_balances')
-      .select('balance, locked_balance')
+      .from('user_txc_balances')
+      .select('balance, lifetime_earned')
       .eq('user_id', userId)
-      .eq('token_type', 'TXC')
       .maybeSingle()
 
     const newBalance = (currentBalance?.balance || 0) + amount
-    const lockedBalance = currentBalance?.locked_balance || 0
+    const newLifetimeEarned = (currentBalance?.lifetime_earned || 0) + amount
 
-    // Update balance using proper upsert with token_type
+    // Update balance using proper upsert
     const { error: balanceError } = await supabaseClient
-      .from('token_balances')
+      .from('user_txc_balances')
       .upsert({
         user_id: userId,
-        token_type: 'TXC',
         balance: newBalance,
-        locked_balance: lockedBalance,
-        last_updated: new Date().toISOString()
+        lifetime_earned: newLifetimeEarned
       }, {
-        onConflict: 'user_id,token_type'
+        onConflict: 'user_id'
       })
 
     if (balanceError) {

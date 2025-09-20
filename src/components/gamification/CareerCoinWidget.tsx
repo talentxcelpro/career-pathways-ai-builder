@@ -19,7 +19,7 @@ export const CareerCoinWidget = () => {
     >
       <Card className="bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-orange-500/10 border-amber-200/20 backdrop-blur-sm">
         <CardContent className="p-6">
-          {/* Your Career is Your Coin Header */}
+          {/* TXC Wallet Header */}
           <motion.div 
             className="text-center mb-6"
             initial={{ scale: 0.9 }}
@@ -27,14 +27,14 @@ export const CareerCoinWidget = () => {
             transition={{ delay: 0.2 }}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Zap className="h-5 w-5 text-amber-500" />
+              <Coins className="h-5 w-5 text-amber-500" />
               <h2 className="text-lg font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                Your Career is Your Coin
+                TXC Wallet
               </h2>
-              <Zap className="h-5 w-5 text-amber-500" />
+              <Coins className="h-5 w-5 text-amber-500" />
             </div>
             <p className="text-sm text-muted-foreground">
-              Every step forward earns you TXC tokens
+              Your token balance and earnings
             </p>
           </motion.div>
 
@@ -119,7 +119,7 @@ export const CareerCoinWidget = () => {
             </div>
           </div>
 
-          {/* Career Coin Philosophy */}
+          {/* TXC Information */}
           <motion.div 
             className="mt-4 p-3 rounded-lg bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/10 dark:to-orange-900/10 border border-amber-200/30"
             initial={{ opacity: 0 }}
@@ -127,7 +127,7 @@ export const CareerCoinWidget = () => {
             transition={{ delay: 0.5 }}
           >
             <p className="text-xs text-center text-amber-700/80 dark:text-amber-400/80 leading-relaxed">
-              💡 <strong>Every career action has value.</strong> Build your profile, apply to jobs, connect with professionals, learn new skills - all rewarded with TXC tokens you can spend on premium features.
+              💰 <strong>Earn TXC tokens for every career action.</strong> Complete your profile, apply to jobs, connect with professionals, learn new skills - all activities reward you with TXC tokens for premium features.
             </p>
           </motion.div>
         </CardContent>
