@@ -355,7 +355,6 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       // Use the TXC-enabled application hook instead of direct insertion
       const applicationResult = await createApplication.mutateAsync({
         job_id: job.id,
-        bot_id: job.posted_by,
         resume_url: resumeUrl,
         redirect_url: job.external_url,
         application_data: {
