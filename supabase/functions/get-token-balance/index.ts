@@ -12,7 +12,7 @@ interface Database {
         Row: {
           user_id: string
           balance: number
-          lifetime_earned: number
+          total_earned: number
           created_at: string
           updated_at: string
         }
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
         .insert({
           user_id: targetUserId,
           balance: 500, // Give new users 500 TXC welcome bonus
-          lifetime_earned: 500
+          total_earned: 500
         })
         .select()
         .single()
@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
           total: finalBalance.balance,
           available: finalBalance.balance,
           locked: 0,
-          lifetime_earned: finalBalance.lifetime_earned || finalBalance.balance
+          lifetime_earned: finalBalance.total_earned || finalBalance.balance
         },
         transactions: transactions || []
       }),
