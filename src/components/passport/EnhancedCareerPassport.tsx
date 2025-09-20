@@ -43,23 +43,24 @@ interface EnhancedCareerPassportProps {
 }
 
 export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, publicPassport }: EnhancedCareerPassportProps) {
-  const { metrics, insights, achievementTriggers, isLoading, error } = useRealCareerData(userId);
+  const { metrics, achievementTriggers, isLoading, error } = useRealCareerData();
   const { triggerAchievementCheck, isAwarding } = useRealTimeAchievements();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Use public summary data when viewing someone else's passport to avoid RLS issues
   const viewMetrics = (!isOwner && publicPassport?.passport) ? {
-    resumes_count: publicPassport.passport.resumes_count || 0,
-    jobs_applied_count: publicPassport.passport.jobs_applied_count || 0,
-    connections_count: publicPassport.passport.connections_count || 0,
-    certifications_count: publicPassport.passport.certifications_count || 0,
-    assessments_completed: 0,
-    profile_completion_score: publicPassport.passport.completion_percentage || 0,
-    recent_activity_days: 0,
-    network_quality_score: 0,
-    skill_verification_count: 0,
-    learning_hours: 0,
+    profileCompletion: publicPassport.passport.completion_percentage || 0,
+    jobApplications: publicPassport.passport.jobs_applied_count || 0,
+    connections: publicPassport.passport.connections_count || 0,
+    skillsAdded: 0,
+    coursesCompleted: 0,
+    postsCreated: 0,
+    achievementsEarned: 0,
+    totalTXCEarned: 0,
+    loginStreak: 0,
+    applicationStreak: 0,
+    lastActivityDate: new Date().toISOString()
   } : metrics;
 
   const viewInsights = (!isOwner && publicPassport?.passport) ? {
@@ -70,7 +71,15 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
     improvement_areas: [],
     next_actions: [],
     ai_recommendations: [],
-  } : insights;
+  } : {
+    career_readiness_score: 0,
+    market_competitiveness_score: 0,
+    industry_percentile: 0,
+    strengths: [],
+    improvement_areas: [],
+    next_actions: [],
+    ai_recommendations: [],
+  };
 
   // Auto-check achievements when metrics change
   useEffect(() => {
@@ -95,7 +104,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
     );
   }
 
-  if (!metrics || !insights) {
+  if (!viewMetrics || !viewInsights) {
     return null;
   }
 
@@ -178,28 +187,28 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                     <MetricCard
                       icon={<FileText className="w-4 h-4" />}
                       label="Resumes"
-                      value={viewMetrics?.resumes_count || 0}
+                      value={0}
                       color="blue"
                       onClick={() => isOwner && navigate('/resume')}
                     />
                     <MetricCard
                       icon={<Briefcase className="w-4 h-4" />}
                       label="Applications"
-                      value={viewMetrics?.jobs_applied_count || 0}
+                      value={viewMetrics?.jobApplications || 0}
                       color="green"
                       onClick={() => isOwner && navigate('/jobs')}
                     />
                     <MetricCard
                       icon={<Users className="w-4 h-4" />}
                       label="Connections"
-                      value={viewMetrics?.connections_count || 0}
+                      value={viewMetrics?.connections || 0}
                       color="purple"
                       onClick={() => isOwner && navigate('/network')}
                     />
                     <MetricCard
                       icon={<Award className="w-4 h-4" />}
                       label="Assessments"
-                      value={viewMetrics?.assessments_completed || 0}
+                      value={viewMetrics?.coursesCompleted || 0}
                       color="yellow"
                       onClick={() => isOwner && navigate('/assessments')}
                     />
@@ -239,7 +248,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
               <div>
                 <h4 className="font-medium text-green-600 mb-2 text-sm">Strengths</h4>
                 <div className="space-y-1">
-                  {insights.strengths.map((strength, idx) => (
+                  {viewInsights.strengths.map((strength, idx) => (
                     <div key={idx} className="flex items-center text-xs">
                       <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
                       {strength}
@@ -251,7 +260,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
               <div>
                 <h4 className="font-medium text-orange-600 mb-2 text-sm">Improvement Areas</h4>
                 <div className="space-y-1">
-                  {insights.improvement_areas.map((area, idx) => (
+                  {viewInsights.improvement_areas.map((area, idx) => (
                     <div key={idx} className="flex items-center text-xs">
                       <Target className="w-3 h-3 text-orange-500 mr-2 flex-shrink-0" />
                       {area}
@@ -274,17 +283,17 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              {insights.next_actions.map((action, idx) => (
+              {viewInsights.next_actions.map((action, idx) => (
                 <div key={idx} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
                   <span className="text-xs">{action}</span>
                   <ArrowRight className="w-3 h-3 text-muted-foreground" />
                 </div>
               ))}
               
-              {insights.ai_recommendations.length > 0 && (
+              {viewInsights.ai_recommendations.length > 0 && (
                 <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
                   <h5 className="font-medium text-primary mb-1 text-xs">AI Insight</h5>
-                  {insights.ai_recommendations.map((rec, idx) => (
+                  {viewInsights.ai_recommendations.map((rec, idx) => (
                     <p key={idx} className="text-xs text-muted-foreground">{rec}</p>
                   ))}
                 </div>
@@ -336,16 +345,16 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
             <TabsContent value="analytics" className="p-4">
               <JourneyTrackingAnalytics
                 userId={userId}
-                metrics={metrics}
-                insights={insights}
+                metrics={viewMetrics}
+                insights={viewInsights}
               />
             </TabsContent>
 
             <TabsContent value="ai-insights" className="p-4">
               <AIRecommendationEngine
                 userId={userId}
-                metrics={metrics}
-                insights={insights}
+                metrics={viewMetrics}
+                insights={viewInsights}
                 userProfile={userProfile}
               />
             </TabsContent>
@@ -353,8 +362,8 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
             <TabsContent value="social" className="p-4">
               <SocialSharingFeatures
                 userProfile={userProfile}
-                metrics={metrics}
-                insights={insights}
+                metrics={viewMetrics}
+                insights={viewInsights}
                 isOwner={isOwner}
               />
             </TabsContent>
