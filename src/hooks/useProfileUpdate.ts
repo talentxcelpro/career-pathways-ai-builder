@@ -75,6 +75,22 @@ export function useProfileUpdate() {
       
       // Check if profile is becoming more complete and trigger completion bonus
       const completionFields = ['full_name', 'title', 'about', 'location', 'skills', 'current_company'];
+      
+      // Try to earn TXC for profile completion
+      try {
+        const { useTXCMining } = await import('@/hooks/useTXCMining');
+        const { useTokenBalance } = await import('@/hooks/useTokenBalance');
+        const { earnTXC } = useTXCMining();
+        const { refreshBalance } = useTokenBalance();
+        
+        const earned = await earnTXC('profile_completed');
+        if (earned) {
+          await refreshBalance();
+          queryClient.invalidateQueries({ queryKey: ['token-balance'] });
+        }
+      } catch (error) {
+        console.error('Error earning TXC for profile completion:', error);
+      }
       const completedFields = completionFields.filter(field => variables[field as keyof ProfileUpdateData]);
       
       if (completedFields.length >= 4) {

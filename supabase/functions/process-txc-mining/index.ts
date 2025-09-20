@@ -79,12 +79,12 @@ Deno.serve(async (req) => {
     // Get current balance first
     const { data: currentBalance } = await supabaseClient
       .from('user_txc_balances')
-      .select('balance, lifetime_earned')
+      .select('balance, total_earned')
       .eq('user_id', userId)
       .maybeSingle()
 
     const newBalance = (currentBalance?.balance || 0) + amount
-    const newLifetimeEarned = (currentBalance?.lifetime_earned || 0) + amount
+    const newTotalEarned = (currentBalance?.total_earned || 0) + amount
 
     // Update balance using proper upsert
     const { error: balanceError } = await supabaseClient
@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
       .upsert({
         user_id: userId,
         balance: newBalance,
-        lifetime_earned: newLifetimeEarned
+        total_earned: newTotalEarned
       }, {
         onConflict: 'user_id'
       })

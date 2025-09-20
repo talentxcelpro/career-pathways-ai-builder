@@ -78,11 +78,20 @@ export const useCreateJobApplication = () => {
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['job-applications'] });
+      queryClient.invalidateQueries({ queryKey: ['token-balance'] });
       
-      // Trigger TXC mining for job application
-      await triggerJobApplied();
-      
-      toast.success('Application submitted successfully');
+      // Trigger TXC mining for job application with real-time updates
+      try {
+        const success = await triggerJobApplied();
+        if (success) {
+          toast.success('🎉 Application submitted! +90 TXC earned!');
+        } else {
+          toast.success('Application submitted successfully');
+        }
+      } catch (error) {
+        console.error('Error earning TXC for job application:', error);
+        toast.success('Application submitted successfully');
+      }
     },
     onError: (error) => {
       console.error('Application failed:', error);

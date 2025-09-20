@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTXCMining } from './useTXCMining';
+import { useTokenBalance } from './useTokenBalance';
 
 export interface ConnectionSuggestion {
   id: string;
@@ -24,6 +26,8 @@ export interface ConnectionSuggestion {
 
 export const useConnectionSuggestions = () => {
   const queryClient = useQueryClient();
+  const { earnTXC } = useTXCMining();
+  const { refreshBalance } = useTokenBalance();
 
   // Fetch connection suggestions
   const { data: suggestions = [], isLoading, error } = useQuery({
@@ -94,10 +98,23 @@ export const useConnectionSuggestions = () => {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['connection-suggestions'] });
       queryClient.invalidateQueries({ queryKey: ['connections'] });
-      toast.success('Connection request sent!');
+      
+      // Try to earn TXC for connection
+      try {
+        const earned = await earnTXC('connection_made');
+        if (earned) {
+          await refreshBalance();
+          toast.success('🎉 Connection request sent! +75 TXC earned!');
+        } else {
+          toast.success('Connection request sent!');
+        }
+      } catch (error) {
+        console.error('Error earning TXC for connection:', error);
+        toast.success('Connection request sent!');
+      }
     },
     onError: (error: any) => {
       if (error.message.includes('already exists')) {

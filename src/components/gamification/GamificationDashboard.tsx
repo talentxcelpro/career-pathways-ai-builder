@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { TXCFloatingEarner } from './TXCFloatingEarner';
+import { useDailyLoginBonus } from '@/hooks/useDailyLoginBonus';
 
 export const GamificationDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -39,6 +40,9 @@ export const GamificationDashboard: React.FC = () => {
   const txcIntegration = useTXCIntegration();
   const [recentEarning, setRecentEarning] = useState<number | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  
+  // Initialize daily login bonus
+  useDailyLoginBonus();
 
   // Fetch user profile
   const fetchUserProfile = async () => {
