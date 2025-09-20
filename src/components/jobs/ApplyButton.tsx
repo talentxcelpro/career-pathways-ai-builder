@@ -5,6 +5,7 @@ import { Send, ExternalLink } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateJobApplication } from '@/hooks/useJobApplications';
 import ComprehensiveJobApplicationForm from './ComprehensiveJobApplicationForm';
+import QuickApplyButton from './QuickApplyButton';
 import { toast } from 'sonner';
 
 interface ApplyButtonProps {
@@ -27,17 +28,31 @@ interface ApplyButtonProps {
 export default function ApplyButton({ job, variant = "default", size = "default", className }: ApplyButtonProps) {
   const [showForm, setShowForm] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [hasResume, setHasResume] = useState(false);
   const [loading, setLoading] = useState(true);
   const createApplication = useCreateJobApplication();
 
   useEffect(() => {
-    const checkUser = async () => {
+    const checkUserAndResume = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
+      
+      if (user) {
+        // Check if user has a resume
+        const { data: resumes } = await supabase
+          .from('resumes')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_active', true)
+          .limit(1);
+        
+        setHasResume(resumes && resumes.length > 0);
+      }
+      
       setLoading(false);
     };
     
-    checkUser();
+    checkUserAndResume();
   }, []);
 
   const handleApplyClick = () => {
@@ -86,15 +101,25 @@ export default function ApplyButton({ job, variant = "default", size = "default"
 
   return (
     <>
-      <Button
-        onClick={handleApplyClick}
-        variant={variant}
-        size={size}
-        className={className}
-      >
-        <Send className="h-4 w-4 mr-2" />
-        {currentUser ? 'Apply Now' : 'Login to Apply'}
-      </Button>
+      <div className="flex gap-2">
+        {currentUser && hasResume ? (
+          <QuickApplyButton 
+            job={job} 
+            className={className}
+            onApplicationSuccess={() => toast.success('Applied successfully!')}
+          />
+        ) : null}
+        
+        <Button
+          onClick={handleApplyClick}
+          variant={currentUser && hasResume ? "outline" : variant}
+          size={size}
+          className={currentUser && hasResume ? undefined : className}
+        >
+          <Send className="h-4 w-4 mr-2" />
+          {currentUser ? (hasResume ? 'Full Application' : 'Apply Now') : 'Login to Apply'}
+        </Button>
+      </div>
 
       {job.source_url && (
         <Button

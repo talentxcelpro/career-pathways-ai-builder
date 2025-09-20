@@ -220,6 +220,9 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
     }
 
     setIsSubmitting(true);
+    
+    // Show immediate feedback
+    toast.loading('Submitting your application...', { id: 'application-submit' });
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -442,9 +445,10 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       
     } catch (error: any) {
       console.error('Application submission error:', error);
-      toast.error(error.message || 'Failed to submit application. Please try again.');
+      toast.error(error.message || 'Failed to submit application. Please try again.', { id: 'application-submit' });
     } finally {
       setIsSubmitting(false);
+      toast.dismiss('application-submit');
     }
   };
 
