@@ -25,7 +25,7 @@ const Companies = () => {
         .select('*');
       
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,industry.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
+        query = query.or(`name.ilike.%${searchTerm}%,industry.ilike.%${searchTerm}%,headquarters_location.ilike.%${searchTerm}%`);
       }
       
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -212,9 +212,9 @@ const Companies = () => {
                           {company.industry}
                         </Badge>
                       )}
-                      {company.employee_count_range && (
+                      {company.company_size && (
                         <Badge variant="outline" className="text-sm px-3 py-1 border-gray-200 text-text-secondary rounded-xl">
-                          {company.employee_count_range}
+                          {company.company_size}
                         </Badge>
                       )}
                     </div>
@@ -227,16 +227,16 @@ const Companies = () => {
                   </CardDescription>
                   
                   <div className="space-y-3">
-                    {company.location && (
+                    {company.headquarters_location && (
                       <div className="flex items-center space-x-3 text-text-secondary">
                         <MapPin className="h-5 w-5" />
-                        <span className="text-base">{company.location}</span>
+                        <span className="text-base">{company.headquarters_location}</span>
                       </div>
                     )}
-                    {company.founded_year && (
+                    {company.founding_year && (
                       <div className="flex items-center space-x-3 text-text-secondary">
                         <Building2 className="h-5 w-5" />
-                        <span className="text-base">Founded in {company.founded_year}</span>
+                        <span className="text-base">Founded in {company.founding_year}</span>
                       </div>
                     )}
                     {company.website && (
