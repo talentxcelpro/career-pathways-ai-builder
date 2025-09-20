@@ -352,6 +352,7 @@ export function CareerPassportDashboard() {
                     const { data: { session }, error } = await supabase.auth.refreshSession();
                     if (session && !error) {
                       // Session refreshed successfully, reload the page
+                      toast.success('Session refreshed successfully');
                       window.location.reload();
                       return;
                     }
@@ -359,13 +360,22 @@ export function CareerPassportDashboard() {
                     console.error('Session refresh failed:', refreshError);
                   }
                   
-                  // If refresh fails, sign out and redirect to auth
+                  // If refresh fails, clear all auth data and redirect to auth
                   try {
+                    // Clear local storage and session storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // Sign out from Supabase
                     await supabase.auth.signOut();
+                    
+                    // Force redirect to auth page
+                    window.location.href = '/auth/login';
                   } catch (signOutError) {
                     console.error('Sign out error:', signOutError);
+                    // Force redirect even if sign out fails
+                    window.location.href = '/auth/login';
                   }
-                  window.location.href = '/auth';
                 }}
                 className="mr-4"
               >
@@ -373,9 +383,9 @@ export function CareerPassportDashboard() {
               </Button>
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/auth/login')}
               >
-                Go to Home
+                Sign In
               </Button>
             </div>
           </div>
