@@ -101,13 +101,13 @@ export const PostCard: React.FC<PostCardProps> = ({
             <div>
               <Link 
                 to={`/user/${post.author_id}`} 
-                className="hover:text-blue-600 transition-colors"
+                className="hover:text-primary transition-colors"
               >
-                <h3 className="font-semibold text-gray-900">
+                <h3 className="font-semibold text-foreground">
                   {formatDisplayName(post.profiles)}
                 </h3>
               </Link>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {post.profiles?.title || 'Professional'}
               </p>
               <p className="text-xs text-muted-foreground">{formatTimeAgo(post.created_at)}</p>

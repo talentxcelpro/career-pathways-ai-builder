@@ -348,12 +348,12 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-border/50">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border/50 gap-2">
           <Button
             variant="ghost"
-            size="sm"
+            size="mobile-touch"
             onClick={() => handleLike(post.id)}
-            className={`flex items-center space-x-2 ${(post as any).isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
+            className={`flex items-center gap-2 ${(post as any).isLiked ? 'text-destructive' : 'text-muted-foreground'}`}
           >
             <Heart className={`w-4 h-4 ${(post as any).isLiked ? 'fill-current' : ''}`} />
             <span className="text-xs">Like</span>
@@ -361,18 +361,18 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
           
           <Button 
             variant="ghost" 
-            size="sm" 
+            size="mobile-touch"
             onClick={() => window.location.href = `/network/posts/${post.id}`}
-            className="flex items-center space-x-2 text-muted-foreground">
+            className="flex items-center gap-2 text-muted-foreground">
             <MessageCircle className="w-4 h-4" />
             <span className="text-xs">Comment</span>
           </Button>
           
           <Button
             variant="ghost"
-            size="sm"
+            size="mobile-touch"
             onClick={() => handleShare(post)}
-            className="flex items-center space-x-2 text-muted-foreground"
+            className="flex items-center gap-2 text-muted-foreground"
           >
             <Share2 className="w-4 h-4" />
             <span className="text-xs">Share</span>
@@ -380,9 +380,9 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
           
           <Button
             variant="ghost"
-            size="sm"
+            size="mobile-touch"
             onClick={() => handleSave(post.id)}
-            className={`flex items-center space-x-2 ${(post as any).isSaved ? 'text-primary' : 'text-muted-foreground'}`}
+            className={`flex items-center gap-2 ${(post as any).isSaved ? 'text-primary' : 'text-muted-foreground'}`}
           >
             <Bookmark className={`w-4 h-4 ${(post as any).isSaved ? 'fill-current' : ''}`} />
             <span className="text-xs">Save</span>

@@ -100,12 +100,12 @@ export const EnhancedSwipeableCard: React.FC<EnhancedSwipeableCardProps> = ({
       {isDragging && Math.abs(currentX - startX) > 20 && (
         <>
           {currentX > startX && (
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-500 opacity-70">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-success opacity-70">
               <span className="text-2xl">👍</span>
             </div>
           )}
           {currentX < startX && (
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 opacity-70">
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary opacity-70">
               <span className="text-2xl">🔖</span>
             </div>
           )}

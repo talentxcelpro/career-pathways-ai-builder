@@ -18,6 +18,13 @@ const buttonVariants = cva(
         brand: "bg-gradient-brand text-white hover:shadow-brand hover:shadow-glow",
         premium: "bg-gradient-glass backdrop-blur-apple border border-glass-border text-foreground hover:shadow-glass hover:bg-gradient-brand-soft",
         glow: "bg-primary text-primary-foreground hover:shadow-glow animate-glow-pulse",
+        // Mobile-optimized variants
+        "mobile-primary": "bg-primary text-primary-foreground hover:bg-primary/90 min-h-[44px] touch-manipulation",
+        "mobile-glass": "bg-black/20 backdrop-blur-sm text-white hover:bg-black/30 border border-white/20 touch-manipulation",
+        // Reels-specific variants
+        "reels-action": "bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 border border-white/20 rounded-full h-9 w-9 touch-manipulation",
+        "reels-follow": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg touch-manipulation border border-white/20 rounded-full h-9 w-9",
+        "reels-overlay": "bg-black/50 text-white hover:bg-black/70 rounded-full touch-manipulation",
       },
       size: {
         default: "h-8 px-3 py-1.5",
@@ -25,6 +32,8 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-6 text-base font-semibold",
         xl: "h-12 rounded-md px-8 text-lg font-semibold",
         icon: "h-8 w-8",
+        "mobile-touch": "h-11 px-4 text-sm font-medium min-w-[44px]",
+        "mobile-icon": "h-11 w-11 min-w-[44px]",
       },
     },
     defaultVariants: {

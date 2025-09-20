@@ -93,7 +93,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   if (error) {
     return (
       <div className={cn(
-        "relative w-full h-full bg-gray-900 flex items-center justify-center",
+        "relative w-full h-full bg-background/90 flex items-center justify-center",
         className
       )}>
         <div className="text-white text-center">
@@ -119,8 +119,8 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       />
 
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <div className="absolute inset-0 bg-background/90 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       )}
 
@@ -128,9 +128,9 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       {!isPlaying && !isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/20">
           <Button
-            variant="ghost"
+            variant="reels-overlay"
             size="icon"
-            className="h-14 w-14 rounded-full bg-black/50 text-white hover:bg-black/70"
+            className="h-14 w-14"
             onClick={togglePlay}
           >
             <Play className="h-7 w-7 fill-current" />
@@ -141,9 +141,9 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       {/* Controls overlay - Only play/pause */}
       <div className="absolute bottom-4 right-4 opacity-100 transition-opacity z-10">
         <Button
-          variant="ghost"
+          variant="reels-overlay"
           size="icon"
-          className="h-7 w-7 rounded-full bg-black/50 text-white hover:bg-black/70"
+          className="h-7 w-7"
           onClick={togglePlay}
         >
           {isPlaying ? (
