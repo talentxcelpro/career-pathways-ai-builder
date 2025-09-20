@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import JSZip from 'jszip';
+import mammoth from 'mammoth';
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 // pdfjs-dist ESM build
 // @ts-ignore - pdfjs typing path
@@ -200,15 +200,8 @@ const legacyToEditor = (legacy: ResumeJSON): EditorResume => {
 export const useResumeParser = () => {
   const parseDocx = useCallback(async (file: File): Promise<ResumeJSON> => {
     const arrayBuffer = await file.arrayBuffer();
-    const zip = new JSZip();
-    const zipFile = await zip.loadAsync(arrayBuffer);
-    const documentXml = await zipFile.file('word/document.xml')?.async('text');
-    
-    const textContent = documentXml 
-      ? documentXml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
-      : '';
-    
-    return naiveParse(textContent);
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return naiveParse(result.value || '');
   }, []);
 
   const parsePdf = useCallback(async (file: File): Promise<ResumeJSON> => {

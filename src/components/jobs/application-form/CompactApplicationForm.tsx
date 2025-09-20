@@ -258,7 +258,9 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
         return (
           <ResumeSelectionStep
             formData={formData}
-            onUpdate={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+            resumes={resumes}
+            onInputChange={handleInputChange}
+            onResumeUpload={(e) => handleFileUpload(e, 'resume')}
           />
         );
       case 2:
@@ -267,16 +269,15 @@ export default function CompactApplicationForm({ open, onOpenChange, job }: Comp
         return (
           <PersonalDetailsStep
             formData={formData}
-            onUpdate={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+            onInputChange={handleInputChange}
+            onFileUpload={handleFileUpload}
           />
         );
       case 4:
         return (
           <DeclarationStep
             formData={formData}
-            onUpdate={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
-            onSubmit={() => {}}
-            job={job}
+            onInputChange={handleInputChange}
           />
         );
       default:

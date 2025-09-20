@@ -6,16 +6,13 @@ import { useToast } from '@/hooks/use-toast';
 export interface Referral {
   id: string;
   referrer_id: string;
-  referred_id: string | null;
+  referee_id: string | null;
   referral_code: string;
   status: 'pending' | 'completed' | 'expired';
   txc_reward: number;
   created_at: string;
   completed_at: string | null;
   metadata: any;
-  share_count?: number;
-  click_count?: number;
-  conversion_rate?: number;
 }
 
 export const useReferralSystem = () => {
@@ -25,26 +22,14 @@ export const useReferralSystem = () => {
   const [myReferralCode, setMyReferralCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Generate or get user's referral code  
+  // Generate or get user's referral code
   const generateReferralCode = async (): Promise<string | null> => {
     if (!user) return null;
 
     try {
       setIsLoading(true);
 
-      // Try to get from user_referrals table first
-      const { data: userStats } = await supabase
-        .from('user_referrals')
-        .select('referral_code')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (userStats?.referral_code) {
-        setMyReferralCode(userStats.referral_code);
-        return userStats.referral_code;
-      }
-
-      // Check if user already has a referral code in old table
+      // Check if user already has a referral code
       const { data: existingReferral } = await supabase
         .from('referrals')
         .select('referral_code')
@@ -56,26 +41,23 @@ export const useReferralSystem = () => {
         return existingReferral.referral_code;
       }
 
-      // Initialize user referral stats (this will generate a code)
-      const { data, error } = await supabase.rpc('initialize_user_referral_stats', {
-        p_user_id: user.id
-      });
+      // Generate new referral code
+      const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+      const { data, error } = await supabase
+        .from('referrals')
+        .insert({
+          referrer_id: user.id,
+          referral_code: code,
+          status: 'pending'
+        })
+        .select('referral_code')
+        .single();
 
       if (error) throw error;
 
-      // Get the generated code
-      const { data: newStats } = await supabase
-        .from('user_referrals')
-        .select('referral_code')
-        .eq('user_id', user.id)
-        .single();
-
-      if (newStats?.referral_code) {
-        setMyReferralCode(newStats.referral_code);
-        return newStats.referral_code;
-      }
-
-      return null;
+      setMyReferralCode(data.referral_code);
+      return data.referral_code;
     } catch (error) {
       console.error('Error generating referral code:', error);
       toast({
@@ -114,11 +96,11 @@ export const useReferralSystem = () => {
         return false;
       }
 
-      // Update referral with referee (using correct column name)
+      // Update referral with referee
       const { error: updateError } = await supabase
         .from('referrals')
         .update({
-          referred_id: user.id,
+          referee_id: user.id,
           status: 'completed',
           completed_at: new Date().toISOString()
         })
@@ -126,14 +108,14 @@ export const useReferralSystem = () => {
 
       if (updateError) throw updateError;
 
-      // Award TXC to referrer via gamification system
-      await supabase.functions.invoke('award-txc-tokens', {
+      // Award TXC to referrer
+      await supabase.functions.invoke('process-txc-mining', {
         body: {
-          user_id: referral.referrer_id,
+          userId: referral.referrer_id,
+          action: 'referral_completed',
           amount: referral.txc_reward,
           description: `Referral bonus for inviting a new user`,
-          source: 'referral',
-          metadata: { referred_id: user.id, referral_code: referralCode }
+          metadata: { referee_id: user.id }
         }
       });
 
@@ -180,29 +162,22 @@ export const useReferralSystem = () => {
     }
   };
 
-  // Share referral with tracking
+  // Share referral
   const shareReferral = async (platform: 'whatsapp' | 'twitter' | 'linkedin' | 'copy') => {
     if (!myReferralCode) {
       await generateReferralCode();
       return;
     }
 
-    const referralUrl = `${window.location.origin}/refer/${myReferralCode}`;
-    const shareText = `🚀 Join TalentXcel and boost your career with AI! Use my referral code: ${myReferralCode} and earn 1,000 TXC tokens!`;
-
-    // Track sharing event
-    await supabase.rpc('track_referral_event', {
-      p_referral_code: myReferralCode,
-      p_event_type: 'link_shared',
-      p_event_data: { platform, url: referralUrl }
-    });
+    const referralUrl = `${window.location.origin}/signup?ref=${myReferralCode}`;
+    const shareText = `Join TalentXcel and earn TXC tokens! Use my referral code: ${myReferralCode} 🚀`;
 
     switch (platform) {
       case 'whatsapp':
         window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + referralUrl)}`);
         break;
       case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(referralUrl)}&hashtags=TalentXcel,CareerGrowth,AI`);
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(referralUrl)}`);
         break;
       case 'linkedin':
         window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`);
@@ -210,7 +185,7 @@ export const useReferralSystem = () => {
       case 'copy':
         await navigator.clipboard.writeText(`${shareText} ${referralUrl}`);
         toast({
-          title: "Copied! 📋",
+          title: "Copied!",
           description: "Referral link copied to clipboard",
         });
         break;
@@ -280,7 +255,7 @@ export const useReferralSystem = () => {
     },
     referralEvents: referrals.map(r => ({
       ...r,
-      referee_name: `User ${r.referred_id?.slice(0, 8) || 'Unknown'}`,
+      referee_name: `User ${r.referee_id?.slice(0, 8) || 'Unknown'}`,
       referee_email: `user@example.com`,
       status: r.status === 'completed' ? 'registered' as const : r.status,
       reward_description: `${r.txc_reward} TXC earned`

@@ -4,7 +4,7 @@
  */
 
 import * as pdfjsLib from 'pdfjs-dist';
-import JSZip from 'jszip';
+import mammoth from 'mammoth';
 import Tesseract from 'tesseract.js';
 import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
 
@@ -153,29 +153,33 @@ export class ResumeTextExtractor {
    */
   private async extractFromDOCX(file: File): Promise<string> {
     try {
-      console.log('Starting enhanced DOCX extraction with JSZip...');
+      console.log('Starting enhanced DOCX extraction with mammoth...');
       const arrayBuffer = await file.arrayBuffer();
       
-      const zip = new JSZip();
-      const zipFile = await zip.loadAsync(arrayBuffer);
-      const documentXml = await zipFile.file('word/document.xml')?.async('text');
+      // Extract both raw text and structured content
+      const [rawResult, htmlResult] = await Promise.all([
+        mammoth.extractRawText({ arrayBuffer }),
+        mammoth.convertToHtml({ arrayBuffer })
+      ]);
       
-      if (!documentXml) {
-        console.warn('Could not find document.xml in DOCX file');
-        return '';
-      }
-      
-      // Enhanced text extraction preserving some structure
-      let extractedText = documentXml
-        .replace(/<w:p[^>]*>/g, '\n') // Paragraph breaks
-        .replace(/<w:br[^>]*>/g, '\n') // Line breaks
-        .replace(/<[^>]*>/g, ' ') // Remove remaining XML tags
-        .replace(/\s+/g, ' ') // Normalize whitespace
-        .trim();
-      
+      let extractedText = rawResult.value.trim();
       const wordCount = extractedText.split(/\s+/).filter(w => w.length > 0).length;
       
       console.log(`DOCX extraction complete. Extracted ${extractedText.length} characters, ${wordCount} words`);
+      
+      // If raw text is minimal, try to extract from HTML structure
+      if (extractedText.length < 100 || wordCount < 20) {
+        console.log('Raw text minimal, attempting HTML structure extraction...');
+        const htmlText = htmlResult.value
+          .replace(/<[^>]*>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        if (htmlText.length > extractedText.length) {
+          extractedText = htmlText;
+          console.log(`Enhanced extraction yielded ${extractedText.length} characters`);
+        }
+      }
       
       if (extractedText.length < 50) {
         console.warn('DOCX extraction yielded minimal text even after enhancement');

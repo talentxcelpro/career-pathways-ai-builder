@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 import * as pdfjsLib from 'pdfjs-dist';
-import JSZip from 'jszip';
+import * as mammoth from 'mammoth';
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';
 // Set PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -49,17 +49,8 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
   // Extract text from DOCX
   const extractTextFromDOCX = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
-    const zip = new JSZip();
-    const zipFile = await zip.loadAsync(arrayBuffer);
-    const documentXml = await zipFile.file('word/document.xml')?.async('text');
-    
-    if (!documentXml) return '';
-    
-    // Basic text extraction from XML
-    return documentXml
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
   };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {

@@ -31,19 +31,14 @@ export interface FormData {
 export interface JobInfo {
   id: string;
   title: string;
-  company_name?: string;
-  location?: string;
-  description?: string;
-  skills_required?: string[];
-  salary_min?: number;
-  salary_max?: number;
-  employment_type?: string;
   companies?: {
     name: string;
     logo_url?: string;
   } | null;
+  skills_required?: string[];
   external_url?: string;
   posted_by?: string;
+  company_name?: string;
 }
 
 export interface Resume {
@@ -52,5 +47,4 @@ export interface Resume {
   is_primary: boolean;
   file_url?: string;
   is_active?: boolean;
-  created_at: string;
 }

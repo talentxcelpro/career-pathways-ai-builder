@@ -394,23 +394,10 @@ export class EnhancedResumeExtractor {
 
   private static async extractFromDOCX(file: File): Promise<string> {
     try {
-      const JSZip = (await import('jszip')).default;
+      const mammoth = await import('mammoth');
       const arrayBuffer = await file.arrayBuffer();
-      const zip = new JSZip();
-      const zipFile = await zip.loadAsync(arrayBuffer);
-      const documentXml = await zipFile.file('word/document.xml')?.async('text');
-      
-      if (!documentXml) {
-        throw new Error('Could not find document.xml in DOCX file');
-      }
-      
-      // Basic text extraction from XML
-      const textContent = documentXml
-        .replace(/<[^>]*>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      
-      return textContent;
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      return result.value;
     } catch (error) {
       console.error('DOCX extraction failed:', error);
       throw new Error('Failed to extract text from DOCX file');

@@ -11,7 +11,6 @@ import { useRealtimeConnections } from '@/hooks/useRealtimeConnections';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
 import { GlobalSearch } from '@/components/ui/global-search';
 import { 
   Users, 
@@ -602,19 +601,9 @@ const NetworkPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12">
-                    <MessageCircle className="w-12 h-12 text-primary mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Professional Messaging</h3>
-                    <p className="text-slate-600 mb-4">Connect and communicate with your professional network</p>
-                    <div className="flex gap-2 justify-center">
-                      <Button onClick={() => navigate('/network/messages')} className="min-w-32">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Open Messages
-                      </Button>
-                      <Button variant="outline" onClick={() => navigate('/network/messages/new')}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        New Message
-                      </Button>
-                    </div>
+                    <MessageCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No messages yet</h3>
+                    <p className="text-slate-600">Start a conversation with your connections</p>
                   </div>
                 </CardContent>
               </Card>

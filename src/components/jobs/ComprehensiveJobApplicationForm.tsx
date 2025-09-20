@@ -474,7 +474,9 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         return (
           <ResumeSelectionStep
             formData={formData}
-            onUpdate={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+            resumes={resumes}
+            onInputChange={handleInputChange}
+            onResumeUpload={handleResumeUpload}
           />
         );
       case 2:
@@ -483,16 +485,15 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         return (
           <PersonalDetailsStep
             formData={formData}
-            onUpdate={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
+            onInputChange={handleInputChange}
+            onFileUpload={handleFileUpload}
           />
         );
       case 4:
         return (
           <DeclarationStep
             formData={formData}
-            onUpdate={(updates) => setFormData(prev => ({ ...prev, ...updates }))}
-            onSubmit={() => handleSubmit()}
-            job={job}
+            onInputChange={handleInputChange}
           />
         );
       default:

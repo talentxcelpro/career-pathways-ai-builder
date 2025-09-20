@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { EnhancedJobApplicationDialog } from '@/components/jobs/EnhancedJobApplicationDialog';
 import { 
   MapPin, 
   Building, 
@@ -42,7 +41,6 @@ const JobDetail = () => {
   const [hasApplied, setHasApplied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [triedRedirect, setTriedRedirect] = useState(false);
-  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
 
   // Get current user
   useEffect(() => {
@@ -255,17 +253,34 @@ const JobDetail = () => {
     }
   }, [job]);
 
-  const handleApply = () => {
-    if (!currentUser) {
-      toast.error('Please login to apply for jobs');
-      return;
+  // Apply to job mutation
+  const applyMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentUser) throw new Error('Please login to apply');
+      if (!job) throw new Error('Job not found');
+
+      const { error } = await supabase
+        .from('job_applications')
+        .insert({
+          job_id: job.id,
+          user_id: currentUser.id,
+          application_data: {
+            applied_via: 'talentxcel',
+            source_page: 'job_detail'
+          }
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setHasApplied(true);
+      toast.success('Application submitted successfully!');
+      queryClient.invalidateQueries({ queryKey: ['job-detail', slugOrId] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to apply');
     }
-    if (hasApplied) {
-      toast.info('You have already applied for this position');
-      return;
-    }
-    setShowApplicationDialog(true);
-  };
+  });
 
   // Save job mutation
   const saveMutation = useMutation({
@@ -298,6 +313,14 @@ const JobDetail = () => {
       toast.error(error.message || 'Failed to save job');
     }
   });
+
+  const handleApply = () => {
+    if (!currentUser) {
+      toast.error('Please login to apply for jobs');
+      return;
+    }
+    applyMutation.mutate();
+  };
 
   const handleSave = () => {
     if (!currentUser) {
@@ -518,13 +541,15 @@ const JobDetail = () => {
                   <Button
                     className="w-full"
                     onClick={handleApply}
-                    disabled={hasApplied}
+                    disabled={hasApplied || applyMutation.isPending}
                   >
                     {hasApplied ? (
                       <>
                         <CheckCircle className="h-4 w-4 mr-2" />
                         Applied
                       </>
+                    ) : applyMutation.isPending ? (
+                      'Applying...'
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
@@ -634,25 +659,6 @@ const JobDetail = () => {
       </div>
       
       <BrandedFooter />
-      
-      {/* Enhanced Job Application Dialog */}
-      {job && (
-        <EnhancedJobApplicationDialog
-          open={showApplicationDialog}
-          onOpenChange={setShowApplicationDialog}
-          job={{
-            id: job.id,
-            title: job.title,
-            company_name: job.companies?.name || job.company_name,
-            location: job.location,
-            description: job.description,
-            skills_required: job.skills_required || [],
-            salary_min: job.salary_min,
-            salary_max: job.salary_max,
-            employment_type: job.employment_type
-          }}
-        />
-      )}
       </div>
     </>
   );

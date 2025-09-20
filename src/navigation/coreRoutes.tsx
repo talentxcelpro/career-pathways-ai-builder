@@ -1,6 +1,5 @@
 import { HomeIcon, Settings, BarChart3 } from "lucide-react";
 import Index from "../pages/Index";
-import HomePage from "../pages/HomePage";
 import RealtimeDemoPage from "../pages/RealtimeDemo";
 import TalentXcelResumeBuilder from "../pages/resume/TalentXcelResumeBuilder";
 import About from "../pages/About";
@@ -32,10 +31,6 @@ import Careers from "../pages/Careers";
 import Security from "../pages/Security"; 
 import Api from "../pages/Api";
 import ResumeTemplates from "../pages/ResumeTemplates";
-import CompanyDetailPage from "../pages/CompanyDetailPage";
-import CollegeDetailPage from "../pages/CollegeDetailPage";
-import AdminSubmissionDashboardPage from "../pages/AdminSubmissionDashboard";
-import DirectoryHome from "../pages/DirectoryHome";
 
 export const coreRoutes = [
   {
@@ -45,14 +40,6 @@ export const coreRoutes = [
     page: <Index />,
     exact: true,
     requiresAuth: false,
-  },
-  {
-    title: "Home Feed",
-    to: "/home",
-    icon: <HomeIcon className="h-4 w-4" />,
-    page: <HomePage />,
-    isPublic: true,
-    requiresAuth: true,
   },
   {
     title: "Dashboard",
@@ -217,47 +204,6 @@ export const coreRoutes = [
     page: <div className="min-h-screen bg-background"><div className="container mx-auto"><div className="p-4">{/* PublicTools content will be imported */}</div></div></div>,
     isPublic: true,
     requiresAuth: false,
-  },
-  {
-    title: "Directory Home",
-    to: "/directory",
-    page: <DirectoryHome />,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "Companies",
-    to: "/companies",
-    page: <div className="min-h-screen bg-background flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Companies Directory</h1><p className="text-muted-foreground">Browse and discover companies</p></div></div>,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "Colleges",
-    to: "/colleges", 
-    page: <div className="min-h-screen bg-background flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold mb-4">Colleges Directory</h1><p className="text-muted-foreground">Explore educational institutions</p></div></div>,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "Company Detail",
-    to: "/companies/:slug",
-    page: <CompanyDetailPage />,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "College Detail",
-    to: "/colleges/:slug",
-    page: <CollegeDetailPage />,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "Admin Submissions",
-    to: "/admin/submissions",
-    page: <AdminSubmissionDashboardPage />,
-    requiresAdminAccess: true,
   },
   {
     title: "Not Found",

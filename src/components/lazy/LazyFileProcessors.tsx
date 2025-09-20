@@ -7,10 +7,9 @@ export const LazyResumeUploader = lazy(() =>
 );
 
 // Lazy load specific file processing utilities (async functions)
-export const loadDocxParser = async () => {
-  // Use browser-compatible DOCX parsing
-  const JSZip = (await import('jszip')).default;
-  return { JSZip };
+export const loadMammoth = async () => {
+  const module = await import('mammoth');
+  return module;
 };
 
 export const loadPDFJS = async () => {

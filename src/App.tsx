@@ -87,7 +87,6 @@ import CareerRoadmapGenerator from "./components/career/CareerRoadmapGenerator";
 import CareerGoals from "./pages/CareerGoals";
 import SEOSuite from "./pages/SEOSuite";
 import AIEnhancement from "./pages/resume/AIEnhancement";
-import GamificationCenter from "./pages/GamificationCenter";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
@@ -150,11 +149,6 @@ const publicRoutes = [
 ];
 
 const App = () => {
-  // Initialize performance optimizations once on startup
-  useEffect(() => {
-    initializePerformanceOptimizations();
-    // performanceOptimizer.initialize();
-  }, []);
   // Check if this is a subdomain - simplified as fallback only
   const hostname = window.location.hostname;
   const isSubdomain = hostname.includes('.talentxcel.in') && hostname !== 'talentxcel.in';
@@ -290,6 +284,12 @@ const App = () => {
 };
 
 const AppWrapper = () => {
+  // Initialize performance optimizations once on startup
+  useEffect(() => {
+    initializePerformanceOptimizations();
+    // performanceOptimizer.initialize();
+  }, []);
+
   return (
     <HelmetProvider>
       <App />

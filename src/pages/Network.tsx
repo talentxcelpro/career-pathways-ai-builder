@@ -7,15 +7,12 @@ import { NewsFeed } from "@/components/news/NewsFeed";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
-import { AIConnectIntegration } from "@/components/network/AIConnectIntegration";
-import { NetworkErrorBoundary } from "@/components/network/NetworkErrorBoundary";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
@@ -110,8 +107,7 @@ const Network = () => {
 
   // Desktop interface
   return (
-    <NetworkErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
@@ -231,12 +227,7 @@ const Network = () => {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               }>
-                <NetworkErrorBoundary>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <SmartConnectAI />
-                    <AIConnectIntegration />
-                  </div>
-                </NetworkErrorBoundary>
+                <SmartConnectAI />
               </React.Suspense>
             </div>
           </TabsContent>
@@ -252,28 +243,6 @@ const Network = () => {
               </React.Suspense>
             </div>
           </TabsContent>
-
-          <TabsContent value="live-events" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <NetworkErrorBoundary>
-                  <div className="text-center py-12">
-                    <Users className="h-16 w-16 text-primary mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2">Live Events</h3>
-                    <p className="text-muted-foreground mb-6">Join live networking events and webinars</p>
-                    <Button onClick={() => window.location.href = '/network/events'}>
-                      <Users className="h-4 w-4 mr-2" />
-                      View All Events
-                    </Button>
-                  </div>
-                </NetworkErrorBoundary>
-              </React.Suspense>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
       
@@ -282,8 +251,7 @@ const Network = () => {
       
       {/* Floating Messaging Sidebar */}
       <NetworkMessagingSidebar />
-      </div>
-    </NetworkErrorBoundary>
+    </div>
   );
 };
 

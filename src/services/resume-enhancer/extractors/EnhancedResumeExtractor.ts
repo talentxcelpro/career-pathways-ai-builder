@@ -1,6 +1,6 @@
 import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent';
 import { supabase } from "@/integrations/supabase/client";
-import JSZip from 'jszip';
+import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
 
@@ -224,16 +224,8 @@ export class EnhancedResumeExtractor {
     console.log('📄 Extracting from DOCX...');
     
     const arrayBuffer = await file.arrayBuffer();
-    const zip = new JSZip();
-    const zipFile = await zip.loadAsync(arrayBuffer);
-    const documentXml = await zipFile.file('word/document.xml')?.async('text');
-    
-    if (!documentXml) return '';
-    
-    return documentXml
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
   }
 
   private async extractFromDOC(file: File): Promise<string> {

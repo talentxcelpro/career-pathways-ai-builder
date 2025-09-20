@@ -1,310 +1,199 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Upload, User, MapPin, Phone, Mail, Briefcase, Clock, Globe, Linkedin, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { User, FileText } from "lucide-react";
 import { FormData } from './types';
-import { toast } from "sonner";
 
 interface PersonalDetailsStepProps {
   formData: FormData;
-  onUpdate: (data: Partial<FormData>) => void;
-  isMobile?: boolean;
+  onInputChange: (key: keyof FormData, value: any) => void;
+  onFileUpload: (event: React.ChangeEvent<HTMLInputElement>, type: 'coverLetter') => void;
 }
 
-const PersonalDetailsStep: React.FC<PersonalDetailsStepProps> = ({
-  formData,
-  onUpdate,
-  isMobile = false
-}) => {
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  const fetchUserProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (profile) {
-        onUpdate({
-          fullName: profile.full_name || formData.fullName,
-          email: profile.email || user.email || formData.email,
-          phoneNumber: profile.phone || formData.phoneNumber,
-          location: profile.location || formData.location,
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  };
-
-  const handleInputChange = (key: keyof FormData, value: string) => {
-    onUpdate({ [key]: value });
-  };
-
-  const handleCoverLetterUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain'
-    ];
-
-    if (file.size > maxSize) {
-      toast.error('File size must be less than 5MB');
-      return;
-    }
-
-    if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF, Word document, or text file');
-      return;
-    }
-
-    onUpdate({ coverLetter: file });
-    toast.success('Cover letter uploaded successfully!');
-  };
-
+export default function PersonalDetailsStep({ formData, onInputChange, onFileUpload }: PersonalDetailsStepProps) {
   return (
-    <div className={`space-y-${isMobile ? '3' : '8'}`}>
-      {!isMobile && (
-        <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Personal & Professional Details</h3>
-          <p className="text-muted-foreground">
-            Provide your information to complete your job application.
-          </p>
-        </div>
-      )}
-
-      {/* Personal Information */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-2 text-lg font-medium text-foreground">
-          <User className="h-5 w-5 text-primary" />
-          Personal Information
-        </div>
-        
-        <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 gap-4'}`}>
-          <div className="space-y-2">
-            <Label htmlFor="fullName">
-              Full Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="fullName"
-              value={formData.fullName}
-              onChange={(e) => handleInputChange('fullName', e.target.value)}
-              placeholder="Enter your full name"
-              className="w-full"
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <User className="h-5 w-5" />
+          Step 3: Personal & Professional Details
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-sm">Full Name</Label>
+            <Input 
+              value={formData.fullName} 
+              onChange={(e) => onInputChange('fullName', e.target.value)} 
+              className="h-9 mt-1"
             />
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">
-              Email Address <span className="text-destructive">*</span>
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Enter your email"
-                className="pl-10"
-              />
-            </div>
+          <div>
+            <Label className="text-sm">Email</Label>
+            <Input 
+              type="email" 
+              value={formData.email} 
+              onChange={(e) => onInputChange('email', e.target.value)} 
+              className="h-9 mt-1"
+            />
           </div>
-
-        <div className={`space-y-${isMobile ? '1' : '2'}`}>
-          <Label htmlFor="phoneNumber" className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
-            Phone Number <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-            placeholder="Phone number"
-            className={`${isMobile ? 'h-8 text-xs' : 'pl-10'}`}
-          />
-        </div>
-
-        <div className={`space-y-${isMobile ? '1' : '2'}`}>
-          <Label htmlFor="location" className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
-            Location <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="location"
-            value={formData.location}
-            onChange={(e) => handleInputChange('location', e.target.value)}
-            placeholder="City, State"
-            className={`${isMobile ? 'h-8 text-xs' : 'pl-10'}`}
-          />
-        </div>
-        </div>
-      </div>
-
-      {/* Experience Information */}
-      {!isMobile && (
-        <div className="space-y-6">
-          <div className="flex items-center gap-2 text-lg font-medium text-foreground">
-            <Briefcase className="h-5 w-5 text-primary" />
-            Experience
+          <div>
+            <Label className="text-sm">Phone</Label>
+            <Input 
+              value={formData.phoneNumber} 
+              onChange={(e) => onInputChange('phoneNumber', e.target.value)} 
+              className="h-9 mt-1"
+            />
           </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="yearsOfExperience">Experience</Label>
-              <Select
-                value={formData.yearsOfExperience}
-                onValueChange={(value) => handleInputChange('yearsOfExperience', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select experience" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fresher">Fresher</SelectItem>
-                  <SelectItem value="0-1">0-1 years</SelectItem>
-                  <SelectItem value="1-3">1-3 years</SelectItem>
-                  <SelectItem value="3-5">3-5 years</SelectItem>
-                  <SelectItem value="5-8">5-8 years</SelectItem>
-                  <SelectItem value="8-12">8-12 years</SelectItem>
-                  <SelectItem value="12+">12+ years</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="currentCTC">Current CTC</Label>
-              <Input
-                id="currentCTC"
-                value={formData.currentCTC}
-                onChange={(e) => handleInputChange('currentCTC', e.target.value)}
-                placeholder="e.g., 6.0 LPA"
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="expectedCTC">Expected CTC <span className="text-destructive">*</span></Label>
-              <Input
-                id="expectedCTC"
-                value={formData.expectedCTC}
-                onChange={(e) => handleInputChange('expectedCTC', e.target.value)}
-                placeholder="e.g., 8.0 LPA"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="noticePeriod">How soon can you join? <span className="text-destructive">*</span></Label>
-              <Select
-                value={formData.noticePeriod}
-                onValueChange={(value) => handleInputChange('noticePeriod', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Notice period" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="immediate">Immediate</SelectItem>
-                  <SelectItem value="15-days">15 days</SelectItem>
-                  <SelectItem value="1-month">1 month</SelectItem>
-                  <SelectItem value="2-months">2 months</SelectItem>
-                  <SelectItem value="3-months">3 months</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {isMobile && (
-        <div className="space-y-2">
-          <div className="space-y-1">
-            <Label htmlFor="yearsOfExperience" className="text-xs font-medium">
-              Experience
-            </Label>
-            <Select
-              value={formData.yearsOfExperience}
-              onValueChange={(value) => handleInputChange('yearsOfExperience', value)}
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder="Select experience" />
+          <div>
+            <Label className="text-sm">Preferred Call Time</Label>
+            <Select value={formData.preferredCallTime} onValueChange={(value) => onInputChange('preferredCallTime', value)}>
+              <SelectTrigger className="h-9 mt-1">
+                <SelectValue placeholder="Select time" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="fresher">Fresher</SelectItem>
-                <SelectItem value="0-1">0-1 years</SelectItem>
-                <SelectItem value="1-3">1-3 years</SelectItem>
-                <SelectItem value="3-5">3-5 years</SelectItem>
-                <SelectItem value="5-8">5-8 years</SelectItem>
-                <SelectItem value="8-12">8-12 years</SelectItem>
-                <SelectItem value="12+">12+ years</SelectItem>
+                <SelectItem value="9am-11am">9am–11am</SelectItem>
+                <SelectItem value="11am-1pm">11am–1pm</SelectItem>
+                <SelectItem value="2pm-4pm">2pm–4pm</SelectItem>
+                <SelectItem value="4pm-6pm">4pm–6pm</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          <div className="space-y-1">
-            <Label htmlFor="currentCTC" className="text-xs font-medium">
-              Current CTC
-            </Label>
-            <Input
-              id="currentCTC"
-              value={formData.currentCTC}
-              onChange={(e) => handleInputChange('currentCTC', e.target.value)}
-              placeholder="e.g., 6.0 LPA"
-              className="h-8 text-xs"
+          <div>
+            <Label className="text-sm">Location</Label>
+            <Input 
+              value={formData.location} 
+              onChange={(e) => onInputChange('location', e.target.value)} 
+              className="h-9 mt-1"
             />
           </div>
-          
-          <div className="space-y-1">
-            <Label htmlFor="expectedCTC" className="text-xs font-medium">
-              Expected CTC <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="expectedCTC"
-              value={formData.expectedCTC}
-              onChange={(e) => handleInputChange('expectedCTC', e.target.value)}
-              placeholder="e.g., 8.0 LPA"
-              className="h-8 text-xs"
+          <div>
+            <Label className="text-sm">Years of Experience</Label>
+            <Input 
+              value={formData.yearsOfExperience} 
+              onChange={(e) => onInputChange('yearsOfExperience', e.target.value)} 
+              className="h-9 mt-1"
             />
           </div>
-          
-          <div className="space-y-1">
-            <Label htmlFor="noticePeriod" className="text-xs font-medium">
-              How soon can you join? <span className="text-destructive">*</span>
-            </Label>
-            <Select
-              value={formData.noticePeriod}
-              onValueChange={(value) => handleInputChange('noticePeriod', value)}
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder="Notice period" />
+          <div>
+            <Label className="text-sm">Current CTC (₹/LPA)</Label>
+            <Input 
+              value={formData.currentCTC} 
+              onChange={(e) => onInputChange('currentCTC', e.target.value)} 
+              className="h-9 mt-1"
+            />
+          </div>
+          <div>
+            <Label className="text-sm">Expected CTC (₹/LPA)</Label>
+            <Input 
+              value={formData.expectedCTC} 
+              onChange={(e) => onInputChange('expectedCTC', e.target.value)} 
+              className="h-9 mt-1"
+            />
+          </div>
+          <div className="col-span-2">
+            <Label className="text-sm">Notice Period</Label>
+            <Select value={formData.noticePeriod} onValueChange={(value) => onInputChange('noticePeriod', value)}>
+              <SelectTrigger className="h-9 mt-1">
+                <SelectValue placeholder="Select period" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="immediate">Immediate</SelectItem>
-                <SelectItem value="15-days">15 days</SelectItem>
-                <SelectItem value="1-month">1 month</SelectItem>
-                <SelectItem value="2-months">2 months</SelectItem>
-                <SelectItem value="3-months">3 months</SelectItem>
+                <SelectItem value="15">15 Days</SelectItem>
+                <SelectItem value="30">30 Days</SelectItem>
+                <SelectItem value="60">60 Days</SelectItem>
+                <SelectItem value="90">90 Days</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
-      )}
-    </div>
-  );
-};
 
-export default PersonalDetailsStep;
+        <div className="space-y-3">
+          <div>
+            <Label className="text-sm">Ready to Relocate?</Label>
+            <RadioGroup
+              value={formData.readyToRelocate}
+              onValueChange={(value) => onInputChange('readyToRelocate', value)}
+              className="flex space-x-4 mt-1"
+            >
+              <div className="flex items-center space-x-1">
+                <RadioGroupItem value="yes" id="relocate-yes" />
+                <Label htmlFor="relocate-yes" className="text-sm">Yes</Label>
+              </div>
+              <div className="flex items-center space-x-1">
+                <RadioGroupItem value="no" id="relocate-no" />
+                <Label htmlFor="relocate-no" className="text-sm">No</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div>
+            <Label className="text-sm">Remote Work Preference</Label>
+            <RadioGroup
+              value={formData.remoteWorkPreference}
+              onValueChange={(value) => onInputChange('remoteWorkPreference', value)}
+              className="flex space-x-4 mt-1"
+            >
+              <div className="flex items-center space-x-1">
+                <RadioGroupItem value="yes" id="remote-yes" />
+                <Label htmlFor="remote-yes" className="text-sm">Yes</Label>
+              </div>
+              <div className="flex items-center space-x-1">
+                <RadioGroupItem value="no" id="remote-no" />
+                <Label htmlFor="remote-no" className="text-sm">No</Label>
+              </div>
+              <div className="flex items-center space-x-1">
+                <RadioGroupItem value="hybrid" id="remote-hybrid" />
+                <Label htmlFor="remote-hybrid" className="text-sm">Hybrid</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          <div>
+            <Label className="text-sm">LinkedIn Profile (Optional)</Label>
+            <Input 
+              value={formData.linkedinProfile} 
+              onChange={(e) => onInputChange('linkedinProfile', e.target.value)} 
+              className="h-9 mt-1"
+            />
+          </div>
+          <div>
+            <Label className="text-sm">Portfolio Website (Optional)</Label>
+            <Input 
+              value={formData.portfolioWebsite} 
+              onChange={(e) => onInputChange('portfolioWebsite', e.target.value)} 
+              className="h-9 mt-1"
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-sm">Upload Cover Letter (Optional)</Label>
+          <div className="border-2 border-dashed border-gray-200 rounded-lg p-3 mt-1">
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => onFileUpload(e, 'coverLetter')}
+              className="hidden"
+              id="cover-letter-upload"
+            />
+            <label htmlFor="cover-letter-upload" className="cursor-pointer flex items-center">
+              <FileText className="h-4 w-4 text-gray-400 mr-2" />
+              <span className="text-sm text-gray-600">Upload Cover Letter</span>
+              {formData.coverLetter && (
+                <span className="text-sm text-green-600 ml-2">{formData.coverLetter.name}</span>
+              )}
+            </label>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

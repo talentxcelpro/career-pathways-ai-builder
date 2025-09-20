@@ -15,7 +15,7 @@ import { templateList } from "./templates";
 import { toast } from 'sonner';
 
 // Import file processing libraries
-import JSZip from 'jszip';
+import mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import { configurePDFWorker } from '@/utils/pdfWorkerConfig';
 import { EnhancedResumeProcessor } from '@/services/enhancedResumeProcessor';
