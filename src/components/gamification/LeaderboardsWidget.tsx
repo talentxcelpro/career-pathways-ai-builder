@@ -21,6 +21,9 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { useToast } from '@/hooks/use-toast';
 
 interface LeaderboardUser {
   id: string;
@@ -84,6 +87,9 @@ const TIME_FILTERS = [
 export const LeaderboardsWidget: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('points');
   const [timeFilter, setTimeFilter] = useState('all');
+  const { toast } = useToast();
+  const { availableBalance } = useTokenBalance();
+  const txcIntegration = useTXCIntegration();
 
   const { data: currentUser } = useQuery({
     queryKey: ['current-user-leaderboard'],
@@ -169,8 +175,8 @@ export const LeaderboardsWidget: React.FC = () => {
                 <div className="text-xs text-gray-600">Points to Next</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{userRanking.total_users}</div>
-                <div className="text-xs text-gray-600">Total Users</div>
+                <div className="text-2xl font-bold text-green-600">{availableBalance?.toLocaleString() || 0}</div>
+                <div className="text-xs text-gray-600">Your TXC</div>
               </div>
             </div>
           )}

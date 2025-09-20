@@ -19,7 +19,11 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useUserBadges } from '@/hooks/useUserScores';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 interface Achievement {
   id: string;
@@ -45,9 +49,13 @@ const ACHIEVEMENT_CATEGORIES = [
 
 export const AchievementsSection: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const { data: userBadges } = useUserBadges();
+  const { availableBalance } = useTokenBalance();
+  const txcIntegration = useTXCIntegration();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showEarnedOnly, setShowEarnedOnly] = useState(false);
+  const [celebratingAchievement, setCelebratingAchievement] = useState<string | null>(null);
 
   // Mock achievements data with entertainment styling
   const achievements: Achievement[] = [
@@ -109,9 +117,9 @@ export const AchievementsSection: React.FC = () => {
       rarity: 'legendary',
       category: 'special',
       points: 5000,
-      progress: 3500,
+      progress: availableBalance || 0,
       maxProgress: 10000,
-      earned: false
+      earned: (availableBalance || 0) >= 10000
     },
     {
       id: '6',
@@ -172,6 +180,23 @@ export const AchievementsSection: React.FC = () => {
     if (showEarnedOnly && !achievement.earned) return false;
     return true;
   });
+
+  // Auto-check achievements and award TXC
+  useEffect(() => {
+    achievements.forEach(async (achievement) => {
+      if (!achievement.earned && achievement.progress && achievement.maxProgress && 
+          achievement.progress >= achievement.maxProgress) {
+        // Achievement completed! Award TXC
+        setCelebratingAchievement(achievement.id);
+        await txcIntegration.earnTXC('course_completed'); // Award bonus TXC
+        toast({
+          title: `🎉 Achievement Unlocked!`,
+          description: `${achievement.name} - You earned ${achievement.points} XP + bonus TXC!`,
+        });
+        setTimeout(() => setCelebratingAchievement(null), 3000);
+      }
+    });
+  }, [achievements, txcIntegration, toast]);
 
   const earnedCount = achievements.filter(a => a.earned).length;
   const totalPoints = achievements.filter(a => a.earned).reduce((sum, a) => sum + a.points, 0);
@@ -241,11 +266,29 @@ export const AchievementsSection: React.FC = () => {
           return (
             <Card 
               key={achievement.id}
-              className={`relative overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
+              className={`relative overflow-hidden border-2 transition-all duration-300 hover:scale-105 cursor-pointer ${
                 achievement.earned 
                   ? `${rarityConfig.bgClass} ${rarityConfig.glowClass}` 
                   : 'bg-gray-50 border-gray-200 opacity-75'
-              }`}
+              } ${celebratingAchievement === achievement.id ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}
+              onClick={async () => {
+                if (!achievement.earned && achievement.progress && achievement.maxProgress) {
+                  // Simulate progress for demo
+                  if (achievement.id === '3') {
+                    await txcIntegration.triggerConnectionMade();
+                    toast({
+                      title: "Progress Made! 🚀",
+                      description: `${achievement.name}: ${achievement.progress + 1}/${achievement.maxProgress}`,
+                    });
+                  } else if (achievement.id === '4') {
+                    await txcIntegration.triggerJobApplied();
+                    toast({
+                      title: "Progress Made! 💼",
+                      description: `${achievement.name}: ${achievement.progress + 1}/${achievement.maxProgress}`,
+                    });
+                  }
+                }
+              }}
             >
               {achievement.rarity === 'legendary' && achievement.earned && (
                 <>

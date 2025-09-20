@@ -20,16 +20,42 @@ import {
 } from 'lucide-react';
 import { useUserScores } from '@/hooks/useUserScores';
 import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
+import { TXCFloatingEarner } from './TXCFloatingEarner';
 
 export const GamificationDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { data: userScores } = useUserScores();
   const { userRanking } = useRealLeaderboard();
+  const { balance, availableBalance, refreshBalance } = useTokenBalance();
+  const txcIntegration = useTXCIntegration();
+  const [recentEarning, setRecentEarning] = useState<number | null>(null);
 
-  // Mock data for entertainment design
+  // Auto-earn TXC for engagement
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (user && Math.random() > 0.7) { // 30% chance every minute
+        const actions = ['post_liked', 'comment_made'];
+        const randomAction = actions[Math.floor(Math.random() * actions.length)];
+        const earned = await txcIntegration.earnTXC(randomAction);
+        if (earned) {
+          setRecentEarning(Date.now());
+          setTimeout(() => setRecentEarning(null), 3000);
+        }
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [user, txcIntegration]);
+
+  // Enhanced stats with real-time TXC balance
   const stats = {
     level: Math.floor((userScores?.total_points || 0) / 1000) + 1,
     currentXP: (userScores?.total_points || 0) % 1000,
@@ -40,7 +66,8 @@ export const GamificationDashboard: React.FC = () => {
     weeklyProgress: 3200,
     rank: userRanking?.rank || 42,
     totalUsers: userRanking?.total_users || 1250,
-    percentile: userRanking?.percentile || 85
+    percentile: userRanking?.percentile || 85,
+    txcBalance: availableBalance || 0
   };
 
   const quickStats = [
@@ -51,6 +78,15 @@ export const GamificationDashboard: React.FC = () => {
       color: 'text-yellow-500',
       bgColor: 'bg-yellow-50',
       borderColor: 'border-yellow-200'
+    },
+    {
+      icon: Coins,
+      label: 'TXC',
+      value: stats.txcBalance.toLocaleString(),
+      color: 'text-green-500',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+      animated: recentEarning
     },
     {
       icon: Flame,
@@ -67,14 +103,6 @@ export const GamificationDashboard: React.FC = () => {
       color: 'text-purple-500',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200'
-    },
-    {
-      icon: Star,
-      label: 'Top',
-      value: `${stats.percentile}%`,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200'
     }
   ];
 
@@ -176,11 +204,14 @@ export const GamificationDashboard: React.FC = () => {
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <div key={index} className="text-center">
-                  <div className="inline-flex p-2 rounded-lg bg-white/20 mb-2">
-                    <Icon className="h-4 w-4" />
+                <div key={index} className={`text-center transition-all duration-500 ${stat.animated ? 'animate-bounce' : ''}`}>
+                  <div className={`inline-flex p-2 rounded-lg bg-white/20 mb-2 ${stat.animated ? 'ring-2 ring-yellow-300 ring-opacity-60' : ''}`}>
+                    <Icon className={`h-4 w-4 ${stat.animated ? 'text-yellow-300' : ''}`} />
                   </div>
-                  <div className="text-lg font-bold">{stat.value}</div>
+                  <div className={`text-lg font-bold ${stat.animated ? 'text-yellow-300' : ''}`}>
+                    {stat.value}
+                    {stat.animated && <Sparkles className="inline h-3 w-3 ml-1 animate-pulse" />}
+                  </div>
                   <div className="text-xs text-white/80">{stat.label}</div>
                 </div>
               );
@@ -189,22 +220,53 @@ export const GamificationDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* TXC Balance Card - Prominent Display */}
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-100/30 to-emerald-100/30"></div>
+        <CardContent className="p-6 relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-green-500 rounded-xl">
+                <Coins className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-green-900">TXC Balance</h3>
+                <p className="text-sm text-green-700">Your digital tokens</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className={`text-3xl font-bold text-green-600 transition-all duration-500 ${recentEarning ? 'animate-pulse text-yellow-600' : ''}`}>
+                {stats.txcBalance.toLocaleString()}
+                {recentEarning && <Sparkles className="inline h-5 w-5 ml-2 animate-bounce text-yellow-500" />}
+              </div>
+              <div className="text-sm text-green-600">TXC Tokens</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              onClick={() => navigate('/txc/mining')}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Mine More
+            </Button>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                await txcIntegration.triggerSocialActivity();
+                refreshBalance();
+              }}
+              className="border-green-200 text-green-700 hover:bg-green-50"
+            >
+              <Activity className="h-4 w-4 mr-2" />
+              Quick Earn
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
-        <Button
-          onClick={() => navigate('/txc/mining')}
-          className="h-16 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-        >
-          <div className="flex items-center gap-2">
-            <Coins className="h-5 w-5" />
-            <div className="text-left">
-              <div className="font-semibold">Mine TXC</div>
-              <div className="text-xs opacity-90">Earn tokens</div>
-            </div>
-            <ChevronRight className="h-4 w-4 ml-auto" />
-          </div>
-        </Button>
-        
         <Button
           variant="outline"
           className="h-16"
@@ -215,6 +277,27 @@ export const GamificationDashboard: React.FC = () => {
             <div className="text-left">
               <div className="font-semibold">Leaderboard</div>
               <div className="text-xs text-muted-foreground">Rank #{stats.rank}</div>
+            </div>
+            <ChevronRight className="h-4 w-4 ml-auto" />
+          </div>
+        </Button>
+        
+        <Button
+          variant="outline"
+          className="h-16"
+          onClick={async () => {
+            await txcIntegration.triggerProfileCompleted();
+            toast({
+              title: "TXC Earned! 🎉",
+              description: "Keep completing activities to earn more tokens!"
+            });
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Star className="h-5 w-5 text-yellow-500" />
+            <div className="text-left">
+              <div className="font-semibold">Earn Bonus</div>
+              <div className="text-xs text-muted-foreground">Complete tasks</div>
             </div>
             <ChevronRight className="h-4 w-4 ml-auto" />
           </div>
@@ -349,6 +432,9 @@ export const GamificationDashboard: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Live TXC Earning Component */}
+      <TXCFloatingEarner />
     </div>
   );
 };
