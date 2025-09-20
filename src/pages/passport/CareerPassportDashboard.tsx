@@ -19,6 +19,8 @@ import { AuthDialog } from '@/components/auth/AuthDialog';
 import { CareerReadinessCard } from '@/components/gamification/CareerReadinessCard';
 import { UserBadges } from '@/components/gamification/UserBadges';
 import { QRCodeGenerator } from '@/components/passport/QRCodeGenerator';
+import EnhancedQRGenerator from '@/components/passport/EnhancedQRGenerator';
+import ProfessionalCard from '@/components/passport/ProfessionalCard';
 import { 
   QrCode, 
   Share2, 
@@ -371,12 +373,27 @@ export function CareerPassportDashboard() {
             </Card>
           </div>
         ) : displayData.profile ? (
-          <EnhancedCareerPassport 
-            userId={targetUserId || user?.id}
-            userProfile={displayData.profile}
-            isOwner={displayData.isOwner}
-            publicPassport={isPublicView ? publicPassportData : undefined}
-          />
+          <div className="space-y-8">
+            {/* Enhanced QR Generator for own profile */}
+            {!isPublicView && displayData.isOwner && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <EnhancedQRGenerator profileData={displayData.profile} />
+                <ProfessionalCard 
+                  profile={displayData.profile} 
+                  careerPassport={displayData.passport}
+                  isOwner={true}
+                />
+              </div>
+            )}
+
+            {/* Original Enhanced Career Passport */}
+            <EnhancedCareerPassport 
+              userId={targetUserId || user?.id}
+              userProfile={displayData.profile}
+              isOwner={displayData.isOwner}
+              publicPassport={isPublicView ? publicPassportData : undefined}
+            />
+          </div>
         ) : (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-muted-foreground mb-4">

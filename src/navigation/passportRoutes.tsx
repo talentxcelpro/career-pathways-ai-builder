@@ -1,6 +1,7 @@
 import { Award } from "lucide-react";
 import CareerPassportDashboard from "../pages/passport/CareerPassportDashboard";
 import PassportRouteHandler from "@/components/passport/PassportRouteHandler";
+import PublicPassportView from "../pages/PublicPassportView";
 export const passportRoutes = [
   {
     title: "Career Passport",
@@ -19,5 +20,12 @@ export const passportRoutes = [
     title: "Career Passport",
     to: "/passport/:username",
     page: <PassportRouteHandler />,
+  },
+  {
+    title: "Public Career Passport",
+    to: "/passport/public/:identifier",
+    page: <PublicPassportView />,
+    isPublic: true,
+    requiresAuth: false,
   },
 ];
