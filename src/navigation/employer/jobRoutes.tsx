@@ -2,7 +2,7 @@
 import { Briefcase, PlusCircle, Copy, XCircle, Star, Edit, Eye, Brain, Users, Calendar, MessageSquare, BarChart3, Activity, PieChart } from "lucide-react";
 
 // Job Posting Flow
-import JobPost from "../../pages/employer/jobs/JobPost";
+import JobPost from "../../pages/jobs/JobPost";
 import { EmployerAccessGuard } from "../../components/employer/EmployerAccessGuard";
 import JobPostAI from "../../pages/employer/jobs/JobPostAI";
 import JobPostPreview from "../../pages/employer/jobs/JobPostPreview";
@@ -41,7 +41,7 @@ export const employerJobRoutes = [
   // Job Posting Flow
   {
     title: "Post Job",
-    to: "/employer/jobs/post",
+    to: "/jobs/post",
     page: <EmployerAccessGuard><JobPost /></EmployerAccessGuard>,
     requiresAuth: true,
     requiresEmployerAccess: true,

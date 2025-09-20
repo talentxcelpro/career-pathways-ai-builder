@@ -1,41 +1,42 @@
+
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireAuth?: boolean;
-  redirectTo?: string;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  requireAuth = true,
-  redirectTo = '/auth'
-}) => {
-  const { user, loading } = useAuth();
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { user, loading, session } = useAuth();
   const location = useLocation();
 
+  // Show loading spinner while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Checking authentication...</p>
         </div>
       </div>
     );
   }
 
-  if (requireAuth && !user) {
-    // Redirect to auth page, but save the attempted location
-    return <Navigate to={redirectTo} state={{ from: location }} replace />;
+  // Validate session isn't expired
+  if (session) {
+    const now = Math.floor(Date.now() / 1000);
+    const expiresAt = session.expires_at;
+    
+    if (expiresAt && now >= expiresAt) {
+      console.log('Session expired in ProtectedRoute');
+      return <Navigate to="/" state={{ from: location, reason: 'expired' }} replace />;
+    }
   }
 
-  if (!requireAuth && user) {
-    // If user is logged in but trying to access auth page, redirect to home
-    return <Navigate to="/" replace />;
+  // Redirect to login if no user or session
+  if (!user || !session) {
+    return <Navigate to="/" state={{ from: location, reason: 'unauthorized' }} replace />;
   }
 
   return <>{children}</>;

@@ -37,7 +37,6 @@ import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper"
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
 import { EmbedTestPage } from "@/components/embed-test/EmbedTestPage";
-import AuthPage from "./pages/AuthPage";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -119,7 +118,6 @@ const publicRoutes = [
   '/passport/:username',
   '/passport/user/:userId',
   '/@:username',
-  '/auth',
   '/auth/login', 
   '/auth/register', 
   '/auth/forgot-password', 
@@ -199,13 +197,6 @@ const App = () => {
                     <main className="flex-1">
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                           <Routes>
-                            {/* Auth Route */}
-                            <Route path="/auth" element={
-                              <ProtectedRoute requireAuth={false}>
-                                <AuthPage />
-                              </ProtectedRoute>
-                            } />
-                            
                         {navItems.map((item: NavItem) => {
                            // Check if route is explicitly marked as public or in our public routes list
                            const isLegacyPublicRoute = item.requiresAuth === false || publicRoutes.some(route => {
@@ -238,64 +229,172 @@ const App = () => {
                            />
                          );
                         })}
-
-                        {/* Additional protected routes */}
-                        <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
-                        <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
                        
                         {/* Legacy UUID-based profile redirects */}
                         <Route path="/profile/:id" element={<ProfileUrlRedirect />} />
                         <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                         <Route path="/user/:id" element={<ProfileUrlRedirect />} />
-                          <Route path="/platform" element={<Platform />} />
-                           <Route path="/career-platform" element={
-                             <React.Suspense fallback={
-                               <StableContainer minHeight="100vh" className="flex items-center justify-center">
-                                 <div className="text-center space-y-4">
-                                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                                   <p className="text-muted-foreground">Loading Career Platform...</p>
-                                 </div>
-                               </StableContainer>
-                             }>
-                               <CareerPlatformShowcasePage />
-                             </React.Suspense>
-                           } />
-                          </Routes>
+                         <Route path="/platform" element={<Platform />} />
+                          <Route path="/career-platform" element={
+                            <React.Suspense fallback={
+                              <StableContainer minHeight="100vh" className="flex items-center justify-center">
+                                <div className="text-center space-y-4">
+                                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                                  <p className="text-muted-foreground">Loading Career Platform...</p>
+                                </div>
+                              </StableContainer>
+                            }>
+                              <CareerPlatformShowcasePage />
+                            </React.Suspense>
+                          } />
+                           {/* Career Platform feature routes */}
+                           <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
+                           <Route path="/embed-test" element={<EmbedTestPage />} />
+                          <Route path="/career-intelligence" element={<AICareerIntelligence />} />
+                          <Route path="/skills-assessment" element={<SkillsGap />} />
+                          <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
+                          <Route path="/career-goals" element={<CareerGoals />} />
+                          <Route path="/debug" element={<DebugPage />} />
+                          <Route path="/passport" element={<ProtectedRoute><CareerPassportDashboard /></ProtectedRoute>} />
+                          <Route path="/passport/user/:userId" element={<CareerPassportDashboard />} />
+                            {/* Legacy UUID-based passport redirect - instant redirect */}
+                            <Route path="/passport/:userId" element={<FastPassportRedirect />} />
+                          <Route path="/passport/:username" element={<CareerPassportDashboard />} />
+                          <Route path="/@:username" element={<CareerPassportDashboard />} />
+                         <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
+                          <Route path="/mobile/reels" element={<ProtectedRoute><MobileReelsPage /></ProtectedRoute>} />
+                           <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />
+                       <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                       <Route path="/resume/new" element={<ResumeNew />} />
+                       <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
+                        <Route path="/resume/edit/:id" element={<ResumeEdit />} />
+                        <Route path="/resume/ai-enhancement" element={<ProtectedRoute><AIEnhancement /></ProtectedRoute>} />
+                        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/admin/security" element={<ProtectedRoute><AdminLayout><SecurityCenter /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/admin/prd" element={<ProtectedRoute><AdminLayout><ProductRequirementDocument /></AdminLayout></ProtectedRoute>} />
+                        <Route path="/seo-suite" element={<SEOSuite />} />
+                         <Route path="/admin/scraped-applications" element={<ProtectedRoute><AdminLayout><AdminScrapedJobApplications /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/admin/edge-functions-monitor" element={<ProtectedRoute><AdminLayout><EdgeFunctionsMonitor /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/admin/news-management" element={<ProtectedRoute><AdminLayout><NewsManagement /></AdminLayout></ProtectedRoute>} />
+                         <Route path="/news" element={<NewsPage />} />
+                         <Route path="/news/:slug" element={<NewsPage />} />
+                         <Route path="/employer/cv-database" element={<CVDatabase />} />
+                         {/* <Route path="/employer/outreach" element={<OutreachCampaign />} /> */}
+                        
+                        {/* Real-time Features */}
+                        <Route path="/video-call/:roomId" element={<ProtectedRoute><VideoCall /></ProtectedRoute>} />
+                        <Route path="/chat/:chatId" element={<ProtectedRoute><RealTimeChat /></ProtectedRoute>} />
+                        <Route path="/live-event/:eventId" element={<ProtectedRoute><LiveEvent /></ProtectedRoute>} />
+                      
+                      {/* Legacy resume builder redirects */}
+                       <Route path="/resume" element={<Navigate to="/resume/new" replace />} />
+                       <Route path="/resume/create" element={<Navigate to="/resume/new" replace />} />
+                       <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
+                        <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
+                        <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
+                        
+                        {/* Tools Routes */}
+                        <Route path="/tools" element={<ToolsHub />} />
+                        <Route path="/public/resume-builder" element={<PublicResumeBuilder />} />
+                        <Route path="/public/jobs" element={<PublicJobSearch />} />
+                        <Route path="/public/market-insights" element={<PublicMarketInsights />} />
+                        <Route path="/public/interview-prep" element={<PublicInterviewPrep />} />
+                      
+                       {/* Privacy policy redirect for consistency */}
+                       <Route path="/privacy" element={<Navigate to="/privacypolicy" replace />} />
+                       
+                       {/* Onboarding redirect */}
+                       <Route path="/onboarding" element={<Navigate to="/auth/register" replace />} />
+                      
+       {/* SEO Routes - Dynamic categories */}
+                      <Route path="/jobs/role/:role" element={<JobsByRole />} />
+                      <Route path="/jobs/location/:location" element={<JobsByLocation />} />
+                      <Route path="/jobs/skill/:skill" element={<JobsBySkill />} />
+                      <Route path="/jobs/:role/:location" element={<SEOJobsRoleLocation />} />
+                      <Route path="/companies/location/:location" element={<SEOCompaniesLocation />} />
+                       <Route path="/posts/:id" element={<SEOPosts />} />
+                       
+                       {/* Blog Routes */}
+                       <Route path="/blog" element={<Blog />} />
+                       <Route path="/blog/:slug" element={<BlogPost />} />
+                       
+                       {/* Enhanced Hierarchical SEO Routes for 2M Pages */}
+                      <Route path="/jobs/:type/:location" element={<JobsByLocation />} />
+                      <Route path="/jobs/:type/:location/:role" element={<JobsByRole />} />
+                      <Route path="/jobs/remote/:role" element={<JobsByRole />} />
+                      <Route path="/jobs/skill/:skill/:location" element={<JobsBySkill />} />
+                      <Route path="/network/:category" element={<SEOPosts />} />
+                      <Route path="/network/:category/:topic" element={<SEOPosts />} />
+                      <Route path="/tools/:category" element={<JobsByRole />} />
+                      <Route path="/tools/:category/:toolName" element={<JobsByRole />} />
+                      <Route path="/tools/resume-builder/:template" element={<JobsByRole />} />
+                      <Route path="/services/:type" element={<JobsByRole />} />
+                      <Route path="/services/:type/:serviceName" element={<JobsByRole />} />
+                      <Route path="/services/resume-writing/:template" element={<JobsByRole />} />
+                      <Route path="/learning/:category" element={<JobsByRole />} />
+                      <Route path="/learning/:category/:courseName" element={<JobsByRole />} />
+                      <Route path="/learning/paths/:skill" element={<JobsByRole />} />
+                      <Route path="/colleges/:location" element={<SEOCompaniesLocation />} />
+                      <Route path="/colleges/:location/:collegeName" element={<SEOCompaniesLocation />} />
+                      <Route path="/colleges/:location/:field" element={<SEOCompaniesLocation />} />
+                      <Route path="/career-map/:industry" element={<JobsByRole />} />
+                      <Route path="/career-map/:industry/:path" element={<JobsByRole />} />
+                      <Route path="/career-map/progression/:role" element={<JobsByRole />} />
+                      <Route path="/companies/:location/:industry" element={<SEOCompaniesLocation />} />
+                      <Route path="/companies/size/:size/:location" element={<SEOCompaniesLocation />} />
+                       <Route path="/employer/resources/:topic" element={<JobsByRole />} />
+                       
+                       {/* Company Profile Route */}
+                       <Route path="/company/:slug" element={<CompanyDetail />} />
+                       
+                       {/* Enhanced SEO Demo Route */}
+                       <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />
+                      
+                      {/* Sitemap routes */}
+                      <Route path="/sitemap.xml" element={<SitemapRedirect />} />
+                      <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
+                      
+       {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
+                        </Routes>
                         </React.Suspense>
-                    </main>
-                    <FooterWrapper />
-                    <InstallPrompt />
-                    <IOSInstallPrompt />
-                  </div>
-                </MobileAppWrapper>
+                     </main>
+                     <FooterWrapper />
+                     <InstallPrompt />
+                     <InstallButton />
+                     <IOSInstallPrompt />
+                   </div>
+                 </MobileAppWrapper>
+                  <Analytics />
                 </CopilotProvider>
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
-                {/* </SecurityProvider> */}
-              </NotificationProvider>
-              </AuthProvider>
+              {/* </SecurityProvider> */}
+                  </NotificationProvider>
+                </AuthProvider>
               </AuthErrorBoundary>
-              </AnalyticsProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
+            </AnalyticsProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
       </TooltipProvider>
     </ErrorBoundary>
   );
 };
 
+// Initialize performance optimizations
 const AppWrapper = () => {
-  // Initialize performance optimizations once on startup
-  useEffect(() => {
+  React.useEffect(() => {
+    // Apply color scheme from localStorage
+    const savedColorScheme = localStorage.getItem('colorScheme');
+    if (savedColorScheme) {
+      document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+    }
+    
+    // Initialize performance optimizations for better Core Web Vitals
     initializePerformanceOptimizations();
-    // performanceOptimizer.initialize();
   }, []);
 
-  return (
-    <HelmetProvider>
-      <App />
-      <Analytics />
-    </HelmetProvider>
-  );
+  return <App />;
 };
 
 export default AppWrapper;

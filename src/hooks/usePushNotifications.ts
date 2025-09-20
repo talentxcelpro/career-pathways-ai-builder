@@ -99,36 +99,24 @@ export const usePushNotifications = () => {
           // Native mobile subscription handled in initializeNativePush
           setIsSubscribed(true);
         } else {
-          // Register service worker first
-          if ('serviceWorker' in navigator) {
-            try {
-              const registration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
-              });
-              console.log('SW registered:', registration);
-              
-              await navigator.serviceWorker.ready;
-              
-              // Create a simple web push subscription (without VAPID for now)
-              const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true
-              });
+          // Web push subscription
+          const registration = await navigator.serviceWorker.ready;
+          
+          // Generate VAPID keys or use existing ones
+          const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa40HI80NM9f40SawaN-F72YOFApNfUpVJ4LxoLHCkFCVRJfySpZ8_Q24eWBJA'; // Replace with your VAPID public key
+          
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+          });
 
-              // Register subscription with backend
-              const subscriptionData = JSON.stringify(subscription);
-              await registerPushToken(subscriptionData, 'web');
-              
-              setIsSubscribed(true);
-              toast.success('Push notifications enabled!');
-            } catch (swError) {
-              console.error('Service worker registration failed:', swError);
-              setIsSubscribed(true); // Still allow local notifications
-              toast.success('Local notifications enabled!');
-            }
-          }
+          // Register subscription with backend
+          const subscriptionData = JSON.stringify(subscription);
+          await registerPushToken(subscriptionData, 'web');
+          
+          setIsSubscribed(true);
         }
-      } else {
-        toast.error('Notification permission denied');
+        toast.success('Push notifications enabled!');
       }
     } catch (error) {
       console.error('Subscription error:', error);

@@ -8,7 +8,7 @@ import EmployerSettings from "../../pages/employer/Settings";
 import EmployerTeam from "../../pages/employer/Team";
 import TeamManagement from "../../pages/employer/TeamManagement";
 import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
-import ApplicationsManager from "../../pages/employer/ApplicationsManager";
+import EmployerApplications from "../../pages/employer/Applications";
 import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
 import AcceptInvitation from "../../pages/employer/AcceptInvitation";
 import { EmployerAccessGuard } from "../../components/employer/EmployerAccessGuard";
@@ -54,7 +54,7 @@ export const employerCoreRoutes = [
     title: "Applications",
     to: "/employer/applications",
     icon: <Users className="h-4 w-4" />,
-    page: <EmployerAccessGuard><ApplicationsManager /></EmployerAccessGuard>,
+    page: <EmployerAccessGuard><EmployerApplications /></EmployerAccessGuard>,
     requiresAuth: true,
     requiresEmployerAccess: true,
   },

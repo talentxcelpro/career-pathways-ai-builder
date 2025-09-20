@@ -1,16 +1,16 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
+  refreshSession: () => Promise<void>;
+  signInWithIdToken: (provider: string, token: string) => Promise<{ user: User; session: Session; } | { user: null; session: null; }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,7 +18,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Fail-safe: provide a non-throwing fallback to avoid crashing before provider mounts
+    if (import.meta.env?.DEV) {
+      console.warn('useAuth called outside AuthProvider - returning safe fallback');
+    }
+    return {
+      user: null,
+      session: null,
+      loading: true,
+      signOut: async () => {},
+      refreshSession: async () => {},
+      signInWithIdToken: async () => ({ user: null, session: null })
+    } as any;
   }
   return context;
 };
@@ -27,129 +38,214 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const refreshSession = async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.refreshSession();
+      if (error) throw error;
+      setSession(session);
+      setUser(session?.user ?? null);
+    } catch (error) {
+      console.error('Session refresh error:', error);
+    }
+  };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    let mounted = true;
+
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!mounted) return;
+
+        console.log('Auth state changed:', event, session?.user?.email);
+        console.log('Current URL:', window.location.href);
+        
+        // Synchronous state updates only
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
         
-        if (event === 'SIGNED_IN') {
-          toast.success('Welcome back!');
-        } else if (event === 'SIGNED_OUT') {
-          toast.success('Signed out successfully');
+        // Handle different auth events
+        if (event === 'SIGNED_OUT') {
+          console.log('User signed out, clearing data');
+          // Clear any cached data immediately
+          localStorage.clear();
+          sessionStorage.clear();
+          // Force redirect to index page after logout
+          setTimeout(() => {
+            if (mounted && window.location.pathname !== '/') {
+              console.log('Redirecting to home after signout');
+              navigate('/', { replace: true });
+            }
+          }, 0);
+        } else if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User signed in, session:', session);
+          // Check if we're on auth pages or home and redirect appropriately
+          setTimeout(() => {
+            if (mounted) {
+              const currentPath = window.location.pathname;
+              console.log('Current path after signin:', currentPath);
+              
+              // Get the intended subdomain path from localStorage or URL params
+              const subdomainPath = localStorage.getItem('subdomain_redirect') || 
+                                   new URLSearchParams(window.location.search).get('redirect') ||
+                                   '';
+              
+              // If on auth pages, redirect to onboarding first, then dashboard
+              if (currentPath.startsWith('/auth')) {
+                const onboardingUrl = subdomainPath 
+                  ? `/onboarding?flow=resume&type=candidate&redirect=${encodeURIComponent(subdomainPath)}`
+                  : '/onboarding?flow=resume&type=candidate';
+                navigate(onboardingUrl, { replace: true });
+              } else if (currentPath === '/') {
+                // Use subdomain path if available, otherwise default to network
+                const redirectPath = subdomainPath || '/network';
+                navigate(redirectPath, { replace: true });
+                
+                // Clear the stored redirect
+                localStorage.removeItem('subdomain_redirect');
+              }
+            }
+          }, 100); // Slightly longer delay to ensure navigation works
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed successfully');
+        }
+        
+        if (mounted) {
+          setLoading(false);
         }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signUp = async (email: string, password: string, userData: any = {}) => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: userData.fullName || '',
-            user_type: userData.userType || 'job_seeker'
+    // Check for existing session with better error handling
+    const initializeAuth = async () => {
+      try {
+        console.log('Initializing auth...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          // Don't clear session on network errors
+          if (!error.message.includes('network') && !error.message.includes('timeout')) {
+            localStorage.clear();
+            sessionStorage.clear();
+          }
+          if (mounted) {
+            setSession(null);
+            setUser(null);
+          }
+        } else if (mounted) {
+          console.log('Session found:', !!session, session?.user?.email);
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          // Validate session if it exists
+          if (session) {
+            const now = Math.floor(Date.now() / 1000);
+            const expiresAt = session.expires_at;
+            
+            if (expiresAt && now >= expiresAt) {
+              console.log('Session expired, clearing...');
+              await supabase.auth.signOut();
+              return;
+            }
+          }
+          
+          // Auto-redirect logic with timeout to prevent blocking
+          if (session?.user) {
+            const currentPath = window.location.pathname;
+            console.log('Auto-redirect check:', currentPath);
+            
+            if (currentPath === '/') {
+              setTimeout(() => {
+                if (mounted) {
+                  // Check for stored subdomain redirect
+                  const subdomainPath = localStorage.getItem('subdomain_redirect');
+                  const redirectPath = subdomainPath || '/network';
+                  console.log('Auto-redirecting to', redirectPath);
+                  navigate(redirectPath, { replace: true });
+                  
+                  // Clear the stored redirect
+                  if (subdomainPath) {
+                    localStorage.removeItem('subdomain_redirect');
+                  }
+                }
+              }, 100);
+            }
           }
         }
-      });
-
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          toast.error('An account with this email already exists. Please sign in instead.');
-        } else {
-          toast.error(error.message);
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setSession(null);
+          setUser(null);
         }
-      } else {
-        toast.success('Account created! Please check your email to verify your account.');
-      }
-
-      return { error };
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Invalid email or password. Please try again.');
-        } else if (error.message.includes('Email not confirmed')) {
-          toast.error('Please check your email and click the verification link before signing in.');
-        } else {
-          toast.error(error.message);
+      } finally {
+        if (mounted) {
+          setLoading(false);
         }
       }
+    };
 
-      return { error };
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-      return { error };
-    }
-  };
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+      // Clear state immediately
       setUser(null);
       setSession(null);
-    } catch (error: any) {
-      toast.error('Error signing out');
+      // Navigation will be handled by auth state change
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const resetPassword = async (email: string) => {
+  const signInWithIdToken = async (provider: string, token: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/reset-password`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: provider as any,
+        token,
       });
 
       if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success('Password reset email sent! Check your inbox.');
+        console.error('Error signing in with ID token:', error);
+        throw error;
       }
 
-      return { error };
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-      return { error };
+      // Session will be updated via auth state change
+      return data;
+    } catch (error) {
+      console.error('Error signing in with ID token:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const value: AuthContextType = {
+  const value = {
     user,
     session,
     loading,
-    signUp,
-    signIn,
     signOut,
-    resetPassword,
+    refreshSession,
+    signInWithIdToken
   };
 
   return (

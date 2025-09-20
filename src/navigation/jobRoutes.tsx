@@ -1,6 +1,5 @@
 import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap } from "lucide-react";
 import Jobs from "../pages/Jobs";
-import JobSearch from "../pages/JobSearch";
 import JobDetails from "../pages/jobs/JobDetails";
 import JobDetail from "../pages/JobDetail";
 import { JobRedirectHandler } from "../components/jobs/JobRedirectHandler";
@@ -27,14 +26,6 @@ export const jobRoutes = [
     to: "/jobs",
     icon: <Briefcase className="h-4 w-4" />,
     page: <Jobs />,
-    isPublic: true,
-    requiresAuth: false,
-  },
-  {
-    title: "Job Search",
-    to: "/search/jobs",
-    icon: <Briefcase className="h-4 w-4" />,
-    page: <JobSearch />,
     isPublic: true,
     requiresAuth: false,
   },
