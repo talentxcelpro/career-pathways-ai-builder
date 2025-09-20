@@ -39,6 +39,8 @@ import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
 import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
+import { AIContentSuggestion } from "@/components/ai/AIContentSuggestion";
+import { EngagementAnalytics } from "@/components/analytics/EngagementAnalytics";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
@@ -331,8 +333,19 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               />
             </div>
 
-            {/* Create Post */}
-            <EnhancedCreatePost onPostCreate={handlePostCreate} />
+            {/* Create Post with AI Assistant */}
+            <div className="space-y-4">
+              <EnhancedCreatePost onPostCreate={handlePostCreate} />
+              
+              {/* AI Content Suggestion */}
+              <AIContentSuggestion
+                userProfile={currentUserProfile}
+                onSuggestionApply={(suggestion) => {
+                  // This would integrate with the create post component
+                  console.log('AI Suggestion applied:', suggestion);
+                }}
+              />
+            </div>
 
             {/* Enhanced Network Posts Feed with Performance Optimizations */}
             <React.Suspense fallback={
@@ -365,6 +378,9 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             
             {/* Connection Requests */}
             <ConnectionRequests />
+            
+            {/* Engagement Analytics */}
+            <EngagementAnalytics className="mb-6" />
             
             {/* Connection Suggestions */}
             <OptimizedConnectionSuggestions showVirtualized={true} />
