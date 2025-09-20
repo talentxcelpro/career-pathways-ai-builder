@@ -9131,6 +9131,69 @@ export type Database = {
         }
         Relationships: []
       }
+      cv_database: {
+        Row: {
+          application_data: Json | null
+          cover_letter_url: string | null
+          created_at: string
+          email: string
+          expected_ctc: string | null
+          full_name: string
+          id: string
+          is_duplicate: boolean | null
+          location: string | null
+          notice_period: string | null
+          original_application_date: string | null
+          phone_number: string | null
+          resume_url: string | null
+          source_company: string | null
+          source_job_id: string | null
+          source_job_title: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          application_data?: Json | null
+          cover_letter_url?: string | null
+          created_at?: string
+          email: string
+          expected_ctc?: string | null
+          full_name: string
+          id?: string
+          is_duplicate?: boolean | null
+          location?: string | null
+          notice_period?: string | null
+          original_application_date?: string | null
+          phone_number?: string | null
+          resume_url?: string | null
+          source_company?: string | null
+          source_job_id?: string | null
+          source_job_title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          application_data?: Json | null
+          cover_letter_url?: string | null
+          created_at?: string
+          email?: string
+          expected_ctc?: string | null
+          full_name?: string
+          id?: string
+          is_duplicate?: boolean | null
+          location?: string | null
+          notice_period?: string | null
+          original_application_date?: string | null
+          phone_number?: string | null
+          resume_url?: string | null
+          source_company?: string | null
+          source_job_id?: string | null
+          source_job_title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       cv_files: {
         Row: {
           batch_id: string | null

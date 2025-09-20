@@ -13,6 +13,7 @@ import { validateStep, validateFileUpload } from './application-form/validation'
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { ScrapedJobSuccessModal } from './application-form/ScrapedJobSuccessModal';
 import { useCreateJobApplication } from '@/hooks/useJobApplications';
+import { incrementJobApplications } from '@/utils/supabaseHelpers';
 
 interface ComprehensiveJobApplicationFormProps {
   open: boolean;
@@ -352,7 +353,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         }
       };
 
-      // Use the TXC-enabled application hook instead of direct insertion
+      // Use the TXC-enabled application hook
       const applicationResult = await createApplication.mutateAsync({
         job_id: job.id,
         resume_url: resumeUrl,
@@ -371,9 +372,47 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
           yearsOfExperience: formData.yearsOfExperience,
           linkedinProfile: formData.linkedinProfile,
           portfolioWebsite: formData.portfolioWebsite,
-          coverLetterUrl: coverLetterUrl
+          coverLetterUrl: coverLetterUrl,
+          resumeUrl: resumeUrl
         }
       });
+
+      // Forward application to publisher with duplicate checking
+      try {
+        const forwardingResult = await supabase.functions.invoke('forward-application-to-publisher', {
+          body: {
+            job_id: job.id,
+            applicant_data: {
+              fullName: formData.fullName,
+              email: formData.email,
+              phoneNumber: formData.phoneNumber,
+              location: formData.location,
+              expectedCTC: formData.expectedCTC,
+              noticePeriod: formData.noticePeriod,
+              resume_url: resumeUrl,
+              coverLetterUrl: coverLetterUrl,
+              ...formData
+            }
+          }
+        });
+
+        if (forwardingResult.data?.success) {
+          console.log('✅ Application forwarded to publisher:', forwardingResult.data);
+        } else {
+          console.warn('⚠️ Application forwarding failed:', forwardingResult.error);
+        }
+      } catch (forwardingError) {
+        console.error('Error forwarding application:', forwardingError);
+        // Don't fail the entire process if forwarding fails
+      }
+
+      console.log('✅ Application submitted successfully:', applicationResult);
+      
+      // Update application count
+      incrementJobApplications(job.id).catch(console.error);
+      
+      setIsSubmitting(false);
+      setCurrentStep(5);
 
       // Also add to unified_candidates for CV database
       try {

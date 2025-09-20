@@ -54,7 +54,6 @@ export default function ApplyButton({ job, variant = "default", size = "default"
     try {
       await createApplication.mutateAsync({
         job_id: job.id,
-        bot_id: job.posted_by_bot,
         resume_url: applicationData.resumeUrl,
         redirect_url: job.source_url,
         application_data: applicationData
