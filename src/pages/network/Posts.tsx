@@ -41,6 +41,9 @@ import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
 import { AIContentSuggestion } from "@/components/ai/AIContentSuggestion";
 import { EngagementAnalytics } from "@/components/analytics/EngagementAnalytics";
+import { EnhancedErrorBoundary, NetworkStatusIndicator } from "@/components/polish/ErrorHandling";
+import { SEOPageWrapper } from "@/components/polish/SEOOptimizations";
+import { SkipNavigation, AriaLiveRegion } from "@/components/polish/AccessibilityEnhancements";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
@@ -174,8 +177,20 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
   const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+    <SEOPageWrapper
+      title="Professional Network Feed | Connect & Share | TalentXcel"
+      description="Join the professional conversation. Share insights, connect with industry experts, and advance your career through meaningful networking on TalentXcel."
+      keywords={['professional networking', 'career posts', 'industry insights', 'professional community', 'career growth']}
+      ogImage="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png"
+    >
+      <EnhancedErrorBoundary>
+        <SkipNavigation />
+        <AriaLiveRegion />
+        
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
+          <NetworkStatusIndicator />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         {/* Feed Content */}
 
         {/* Three Column Layout */}
@@ -542,7 +557,9 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
         isOpen={showModernMessenger}
         onClose={() => setShowModernMessenger(false)}
       />
-    </div>
+        </div>
+      </EnhancedErrorBoundary>
+    </SEOPageWrapper>
   );
 };
 

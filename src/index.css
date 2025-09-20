@@ -36,6 +36,9 @@
   }
 }
 
+/* Import polish styles */
+@import url('./styles/polish.css');
+
 /* Shimmer animation for skeleton loaders */
 @keyframes shimmer {
   0% {
