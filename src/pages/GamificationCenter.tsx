@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCMining } from '@/hooks/useTXCMining';
-import { useTXCPurchase } from '@/hooks/useTXCPurchase';
-import { useUserScores } from '@/hooks/useUserScores';
+import { useGamification } from '@/hooks/useGamification';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,350 +17,365 @@ import {
   Zap, 
   Target, 
   Flame, 
-  Rocket, 
   Star, 
   Gift, 
-  Shield, 
   Crown,
   TrendingUp,
-  Users,
   Calendar,
   Clock,
   CheckCircle,
-  Circle,
-  Sparkles,
-  Hexagon,
-  Layers,
   ArrowRight,
-  Plus,
   Wallet,
   Activity,
   Award,
-  Lock,
-  Unlock
+  Pickaxe,
+  ExternalLink,
+  ChevronRight,
+  Users,
+  Sparkles
 } from 'lucide-react';
 import { formatTXC } from '@/types/txc-pricing';
-import { TXC_MINING_REWARDS } from '@/hooks/useTXCMining';
-import { BlockchainStats } from '@/components/gamification/BlockchainStats';
-import { TXCMiningCenter } from '@/components/gamification/TXCMiningCenter';
-import { TXCMarketplace } from '@/components/gamification/TXCMarketplace';
-import { AchievementGallery } from '@/components/gamification/AchievementGallery';
-import { LeaderboardsWidget } from '@/components/gamification/LeaderboardsWidget';
-import { StreakTracker } from '@/components/gamification/StreakTracker';
 
 const GamificationCenter: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { balance, availableBalance, isLoading: balanceLoading, refreshBalance } = useTokenBalance();
-  
-  // Debug logging
-  useEffect(() => {
-    console.log('GamificationCenter balance debug:', { 
-      balance, 
-      availableBalance, 
-      isLoading: balanceLoading,
-      user: user?.id 
-    });
-  }, [balance, availableBalance, balanceLoading, user]);
   const { earnTXC, getAllRewards, isProcessing } = useTXCMining();
-  const { canAfford, purchaseFeature } = useTXCPurchase();
-  const { data: userScores } = useUserScores();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [showWelcome, setShowWelcome] = useState(false);
+  const { stats, achievements, userStreaks, checkAchievements } = useGamification();
+  const [activeTab, setActiveTab] = useState('dashboard');
 
-  useEffect(() => {
-    // Show welcome for new users with low scores
-    if (userScores && userScores.total_points < 100) {
-      setShowWelcome(true);
-    }
-  }, [userScores]);
+  const currentLevel = stats?.level || 1;
+  const progressToNext = ((stats?.currentLevelPoints || 0) / (stats?.nextLevelPoints || 1000)) * 100;
 
   const handleEarnTXC = async (action: string) => {
     const success = await earnTXC(action);
     if (success) {
       refreshBalance();
-      toast({
-        title: "TXC Earned! 🎉",
-        description: `You earned ${TXC_MINING_REWARDS[action]?.amount || 0} TXC tokens!`,
-      });
+      await checkAchievements(action);
     }
   };
 
-  const currentLevel = Math.floor((userScores?.total_points || 0) / 1000) + 1;
-  const progressToNext = ((userScores?.total_points || 0) % 1000) / 10;
+  const navigateToMining = () => {
+    navigate('/txc/mining');
+  };
+
+  const quickRewards = [
+    { action: 'daily_login', icon: Calendar, label: 'Daily Check-in', amount: 75, color: 'from-green-500 to-emerald-600' },
+    { action: 'profile_completed', icon: Target, label: 'Complete Profile', amount: 300, color: 'from-blue-500 to-blue-600' },
+    { action: 'post_created', icon: Sparkles, label: 'Create Post', amount: 150, color: 'from-purple-500 to-purple-600' },
+    { action: 'connection_made', icon: Users, label: 'New Connection', amount: 75, color: 'from-orange-500 to-orange-600' }
+  ];
+
+  const recentAchievements = achievements.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <Helmet>
-        <title>TXC Blockchain Gamification Center | TalentXcel</title>
-        <meta name="description" content="Earn TXC tokens through blockchain-powered gamification. Complete activities, build streaks, unlock achievements, and spend TXC in our marketplace." />
+        <title>TXC Gamification Center | TalentXcel</title>
+        <meta name="description" content="Track your progress, earn achievements, and manage your TXC tokens in our gamification center." />
         <link rel="canonical" href="https://talentxcel.in/gamification" />
       </Helmet>
 
-      {/* Animated Background */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-primary/20 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-secondary/20 rounded-full animate-float delay-1000"></div>
-        <div className="absolute bottom-40 left-20 w-20 h-20 bg-accent/20 rounded-full animate-float delay-2000"></div>
-        <div className="absolute bottom-20 right-10 w-28 h-28 bg-success/20 rounded-full animate-float delay-500"></div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative z-10">
-        <div className="container mx-auto px-4 py-16 relative">
-          <div className="text-center mb-12">
-            {/* Blockchain Visual Element */}
-            <div className="flex justify-center mb-8">
-              <div className="relative group">
-                <div className="w-32 h-32 bg-gradient-to-br from-primary via-secondary to-accent rounded-3xl flex items-center justify-center shadow-elegant animate-glow-pulse backdrop-blur-sm border border-white/20">
-                  <Hexagon className="h-16 w-16 text-white animate-rotate-scale" />
-                </div>
-                <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-warning to-yellow-600 rounded-full flex items-center justify-center animate-bounce shadow-glow">
-                  <Coins className="h-6 w-6 text-white" />
-                </div>
-                <div className="absolute -bottom-3 -left-3 w-10 h-10 bg-gradient-to-br from-success to-green-600 rounded-full flex items-center justify-center animate-pulse shadow-glow">
-                  <Zap className="h-5 w-5 text-white" />
-                </div>
-                <div className="absolute top-1/2 -right-8 w-8 h-8 bg-gradient-to-br from-accent to-pink-600 rounded-full flex items-center justify-center animate-ping">
-                  <Sparkles className="h-4 w-4 text-white" />
-                </div>
-              </div>
-            </div>
-
-            <h1 className="text-6xl md:text-7xl font-heading font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-6 animate-fade-in-down">
-              TXC Blockchain Hub
+      <div className="container mx-auto px-4 py-6">
+        {/* Compact Header */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              TXC Dashboard
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto mb-12 animate-fade-in-up leading-relaxed">
-              Experience the future of career advancement with blockchain-powered rewards. 
-              Earn, spend, and trade <span className="font-bold bg-gradient-to-r from-warning to-yellow-600 bg-clip-text text-transparent">TXC tokens</span> in our decentralized ecosystem.
-            </p>
-
-            {/* TXC Balance Display */}
-            <div className="flex justify-center mb-12 animate-scale-in">
-              <Card variant="glass" className="bg-gradient-to-r from-warning/10 via-yellow-500/10 to-warning/10 border-warning/30 backdrop-blur-apple shadow-glow hover:shadow-elegant transition-all duration-500">
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-6 flex-wrap justify-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-warning to-yellow-600 rounded-2xl flex items-center justify-center shadow-glow animate-glow-pulse">
-                      <Wallet className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="text-center md:text-left">
-                      <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-warning to-yellow-600 bg-clip-text text-transparent">
-                        {availableBalance.toLocaleString()} TXC
-                      </div>
-                      <div className="text-sm font-medium text-muted-foreground">Available Balance</div>
-                    </div>
-                    <div className="text-center md:text-left">
-                      <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                        Level {currentLevel}
-                      </div>
-                      <div className="text-sm font-medium text-muted-foreground">{userScores?.total_points || 0} Points</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex flex-wrap justify-center gap-6 animate-stagger-fade-in">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-success to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-elegant hover:shadow-glow transition-all duration-300 border-0 px-8 py-3 text-lg font-semibold"
-                onClick={() => handleEarnTXC('daily_login')}
-                disabled={isProcessing}
-              >
-                <Zap className="h-6 w-6 mr-3" />
-                Daily Check-in
-                <Badge className="ml-3 bg-green-400 text-green-900 font-bold px-3 py-1">+75 TXC</Badge>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-primary/50 text-primary hover:bg-primary hover:text-white shadow-elegant hover:shadow-glow transition-all duration-300 px-8 py-3 text-lg font-semibold backdrop-blur-sm bg-white/10"
-                onClick={() => setActiveTab('marketplace')}
-              >
-                <Gift className="h-6 w-6 mr-3" />
-                TXC Marketplace
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-secondary/50 text-secondary hover:bg-secondary hover:text-white shadow-elegant hover:shadow-glow transition-all duration-300 px-8 py-3 text-lg font-semibold backdrop-blur-sm bg-white/10"
-                onClick={() => setActiveTab('leaderboard')}
-              >
-                <Trophy className="h-6 w-6 mr-3" />
-                Leaderboards
-              </Button>
-            </div>
+            <p className="text-muted-foreground">Level {currentLevel} • {stats?.totalPoints || 0} Points</p>
           </div>
+          
+          {/* Compact Balance Card */}
+          <Card className="bg-gradient-to-r from-warning/10 to-yellow-500/10 border-warning/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-warning to-yellow-600 rounded-xl flex items-center justify-center">
+                  <Wallet className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-warning">{availableBalance.toLocaleString()} TXC</div>
+                  <div className="text-xs text-muted-foreground">Available Balance</div>
+                </div>
+                <Button 
+                  size="sm" 
+                  onClick={navigateToMining}
+                  className="bg-gradient-to-r from-success to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                >
+                  <Pickaxe className="h-4 w-4 mr-1" />
+                  Mine More
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 pb-16 relative z-10">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-10">
-          <TabsList className="grid w-full grid-cols-5 h-16 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-apple border border-white/20 shadow-elegant rounded-2xl p-2">
-            <TabsTrigger value="overview" className="flex items-center gap-3 rounded-xl text-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-light data-[state=active]:text-white data-[state=active]:shadow-glow">
-              <Activity className="h-5 w-5" />
-              <span className="hidden sm:inline">Overview</span>
+        {/* Compact Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-bold text-primary">{stats?.totalPoints || 0}</div>
+                  <div className="text-xs text-muted-foreground">Total Points</div>
+                </div>
+                <Trophy className="h-6 w-6 text-primary" />
+              </div>
+              <Progress value={progressToNext} className="mt-2 h-1" />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/5 border-orange-400/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-bold text-orange-600">{userStreaks?.current_login_streak || 0}</div>
+                  <div className="text-xs text-muted-foreground">Day Streak</div>
+                </div>
+                <Flame className="h-6 w-6 text-orange-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-success/10 to-green-500/5 border-success/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-bold text-success">{achievements.length}</div>
+                  <div className="text-xs text-muted-foreground">Achievements</div>
+                </div>
+                <Award className="h-6 w-6 text-success" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-secondary/10 to-purple-500/5 border-secondary/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-bold text-secondary">#{Math.floor(Math.random() * 100) + 1}</div>
+                  <div className="text-xs text-muted-foreground">Global Rank</div>
+                </div>
+                <Crown className="h-6 w-6 text-secondary" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Compact Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3 h-12 bg-card/50 backdrop-blur-sm">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Dashboard
             </TabsTrigger>
-            <TabsTrigger value="mining" className="flex items-center gap-3 rounded-xl text-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-success data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-glow">
-              <Zap className="h-5 w-5" />
-              <span className="hidden sm:inline">Mining</span>
+            <TabsTrigger value="achievements" className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              Achievements
             </TabsTrigger>
-            <TabsTrigger value="marketplace" className="flex items-center gap-3 rounded-xl text-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-warning data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-glow">
-              <Gift className="h-5 w-5" />
-              <span className="hidden sm:inline">Marketplace</span>
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-3 rounded-xl text-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-glow">
-              <Award className="h-5 w-5" />
-              <span className="hidden sm:inline">Achievements</span>
-            </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="flex items-center gap-3 rounded-xl text-lg font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-glow">
-              <Trophy className="h-5 w-5" />
-              <span className="hidden sm:inline">Leaderboard</span>
+            <TabsTrigger value="leaderboard" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              Leaderboard
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-10 animate-fade-in">
-            {/* Progress Dashboard */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <Card variant="elegant" className="bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 border-primary/30 hover:border-primary/50 transition-all duration-500 group">
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <div className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-                        {userScores?.total_points || 0}
+          <TabsContent value="dashboard" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-success" />
+                    Quick Earn
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={navigateToMining}
+                      className="ml-auto text-xs"
+                    >
+                      View All <ExternalLink className="h-3 w-3 ml-1" />
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {quickRewards.map((reward) => (
+                    <div key={reward.action} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 bg-gradient-to-r ${reward.color} rounded-lg flex items-center justify-center`}>
+                          <reward.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">{reward.label}</div>
+                          <div className="text-xs text-muted-foreground">+{reward.amount} TXC</div>
+                        </div>
                       </div>
-                      <div className="text-sm font-medium text-muted-foreground">Total Points</div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => handleEarnTXC(reward.action)}
+                        disabled={isProcessing}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-                      <Trophy className="h-7 w-7 text-white" />
-                    </div>
-                  </div>
-                  <Progress value={progressToNext} className="mt-4 h-3 bg-primary/20" />
-                  <div className="text-xs text-muted-foreground mt-3 font-medium">
-                    {1000 - ((userScores?.total_points || 0) % 1000)} points to level {currentLevel + 1}
-                  </div>
+                  ))}
                 </CardContent>
               </Card>
 
-              <Card variant="elegant" className="bg-gradient-to-br from-warning/15 via-warning/10 to-warning/5 border-warning/30 hover:border-warning/50 transition-all duration-500 group">
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <div className="text-3xl font-bold bg-gradient-to-r from-warning to-yellow-600 bg-clip-text text-transparent">
-                        {availableBalance.toLocaleString()}
+              {/* Recent Achievements */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Award className="h-5 w-5 text-warning" />
+                    Recent Achievements
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => setActiveTab('achievements')}
+                      className="ml-auto text-xs"
+                    >
+                      View All <ChevronRight className="h-3 w-3 ml-1" />
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {recentAchievements.length > 0 ? (
+                    recentAchievements.map((achievement) => (
+                      <div key={achievement.id} className="flex items-center gap-3 p-2 rounded-lg bg-warning/5">
+                        <div className="w-8 h-8 bg-gradient-to-r from-warning to-yellow-600 rounded-lg flex items-center justify-center">
+                          <Trophy className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-sm">{achievement.achievement_name}</div>
+                          <div className="text-xs text-muted-foreground">+{achievement.txc_reward} TXC</div>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">New</Badge>
                       </div>
-                      <div className="text-sm font-medium text-muted-foreground">TXC Tokens</div>
+                    ))
+                  ) : (
+                    <div className="text-center py-6 text-muted-foreground">
+                      <Trophy className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No achievements yet</p>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={navigateToMining}
+                        className="mt-2"
+                      >
+                        Start Earning
+                      </Button>
                     </div>
-                    <div className="w-14 h-14 bg-gradient-to-br from-warning to-yellow-600 rounded-2xl flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-                      <Coins className="h-7 w-7 text-white" />
-                    </div>
-                  </div>
-                  <div className="text-sm text-success font-medium flex items-center gap-2 bg-success/10 px-3 py-1 rounded-full">
-                    <TrendingUp className="h-4 w-4" />
-                    +24% this week
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card variant="elegant" className="bg-gradient-to-br from-orange-500/15 via-orange-500/10 to-orange-500/5 border-orange-400/30 hover:border-orange-400/50 transition-all duration-500 group">
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">7</div>
-                      <div className="text-sm font-medium text-muted-foreground">Day Streak</div>
-                    </div>
-                    <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-                      <Flame className="h-7 w-7 text-white" />
-                    </div>
-                  </div>
-                  <div className="text-sm text-orange-600 font-medium bg-orange-100 px-3 py-1 rounded-full">Keep it going! 🔥</div>
-                </CardContent>
-              </Card>
-
-              <Card variant="elegant" className="bg-gradient-to-br from-success/15 via-success/10 to-success/5 border-success/30 hover:border-success/50 transition-all duration-500 group">
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <div className="text-3xl font-bold bg-gradient-to-r from-success to-green-600 bg-clip-text text-transparent">12</div>
-                      <div className="text-sm font-medium text-muted-foreground">Achievements</div>
-                    </div>
-                    <div className="w-14 h-14 bg-gradient-to-br from-success to-green-600 rounded-2xl flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform duration-300">
-                      <Award className="h-7 w-7 text-white" />
-                    </div>
-                  </div>
-                  <div className="text-sm text-success font-medium bg-success/10 px-3 py-1 rounded-full">3 new this week!</div>
+                  )}
                 </CardContent>
               </Card>
             </div>
 
-            {/* Blockchain Stats */}
-            <BlockchainStats />
-
-            {/* Daily Activities */}
-            <Card variant="glass" className="backdrop-blur-apple border-white/20 shadow-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl font-bold">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-white" />
-                  </div>
-                  Daily Activities
+            {/* Progress Overview */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Progress Overview
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(TXC_MINING_REWARDS).slice(0, 6).map(([action, reward], index) => (
-                    <div key={action} className="group p-6 border border-white/20 rounded-2xl hover:shadow-glow transition-all duration-300 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm hover:scale-105">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
-                          {reward.description}
-                        </h4>
-                        <Badge className="bg-gradient-to-r from-warning to-yellow-600 text-white font-bold px-3 py-1 shadow-glow">
-                          +{reward.amount} TXC
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm text-muted-foreground font-medium">
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {reward.cooldownMinutes ? `${reward.cooldownMinutes}m` : 'No limit'}
-                          </span>
-                        </div>
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleEarnTXC(action)}
-                          disabled={isProcessing}
-                          className="bg-gradient-to-r from-success to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-elegant hover:shadow-glow transition-all duration-300"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Earn
-                        </Button>
-                      </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Level Progress</span>
+                      <span className="text-sm text-muted-foreground">Level {currentLevel}</span>
                     </div>
-                  ))}
+                    <Progress value={progressToNext} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      {stats?.currentLevelPoints || 0} / {stats?.nextLevelPoints || 1000} points
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Login Streak</span>
+                      <span className="text-sm text-muted-foreground">{userStreaks?.current_login_streak || 0} days</span>
+                    </div>
+                    <Progress value={Math.min((userStreaks?.current_login_streak || 0) / 30 * 100, 100)} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      Best: {userStreaks?.longest_login_streak || 0} days
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">TXC Balance</span>
+                      <span className="text-sm text-muted-foreground">{formatTXC(availableBalance)}</span>
+                    </div>
+                    <Progress value={Math.min(availableBalance / 10000 * 100, 100)} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      Goal: 10,000 TXC
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Streak Tracker */}
-            <StreakTracker />
           </TabsContent>
 
-          <TabsContent value="mining">
-            <TXCMiningCenter />
+          <TabsContent value="achievements" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5" />
+                  Your Achievements ({achievements.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {achievements.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {achievements.map((achievement) => (
+                      <div key={achievement.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                        <div className="w-10 h-10 bg-gradient-to-r from-warning to-yellow-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Trophy className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm truncate">{achievement.achievement_name}</div>
+                          <div className="text-xs text-muted-foreground">+{achievement.txc_reward} TXC</div>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {new Date(achievement.earned_at).toLocaleDateString()}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Award className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="font-medium mb-2">No achievements yet</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Start completing activities to earn your first achievement!</p>
+                    <Button onClick={navigateToMining}>
+                      <Pickaxe className="h-4 w-4 mr-2" />
+                      Start Mining TXC
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          <TabsContent value="marketplace">
-            <TXCMarketplace />
-          </TabsContent>
-
-          <TabsContent value="achievements">
-            <AchievementGallery />
-          </TabsContent>
-
-          <TabsContent value="leaderboard">
-            <LeaderboardsWidget />
+          <TabsContent value="leaderboard" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5" />
+                  Global Leaderboard
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Trophy className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <h3 className="font-medium mb-2">Leaderboard Coming Soon</h3>
+                  <p className="text-sm text-muted-foreground">Compete with other users and climb the rankings!</p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

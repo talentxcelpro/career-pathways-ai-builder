@@ -1,8 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { TXCMiningDashboard } from '@/components/txc/TXCMiningDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Coins, Zap, Trophy, Target, Gift, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Coins, Zap, Trophy, Target, Gift, Sparkles, BarChart3, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { formatTXC } from '@/types/txc-pricing';
@@ -10,6 +12,7 @@ import txcMascot from '@/assets/txc-mascot.jpg';
 
 const TXCMining: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { availableBalance } = useTokenBalance();
   
   return (
@@ -21,6 +24,30 @@ const TXCMining: React.FC = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Navigation Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate('/gamification')}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate('/gamification')}
+              className="flex items-center gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              View Progress
+            </Button>
+          </div>
+        </div>
+
         {/* Welcome Header with Mascot */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
