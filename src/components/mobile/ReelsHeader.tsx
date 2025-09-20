@@ -33,7 +33,7 @@ export const ReelsHeader: React.FC<ReelsHeaderProps> = ({
             <button
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeTab === 'following'
-                  ? 'bg-white text-black'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-white hover:text-white/80'
               }`}
               onClick={() => onTabChange('following')}
@@ -43,7 +43,7 @@ export const ReelsHeader: React.FC<ReelsHeaderProps> = ({
             <button
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeTab === 'explore'
-                  ? 'bg-white text-black'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-white hover:text-white/80'
               }`}
               onClick={() => onTabChange('explore')}
@@ -68,7 +68,7 @@ export const ReelsHeader: React.FC<ReelsHeaderProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full w-10 h-10 bg-black/20 text-white hover:bg-black/30"
+            className="rounded-full w-10 h-10 bg-black/20 text-white hover:bg-primary/20 hover:text-primary-foreground transition-colors"
             onClick={onSearch}
           >
             <Search className="w-5 h-5" />
@@ -79,12 +79,12 @@ export const ReelsHeader: React.FC<ReelsHeaderProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full w-10 h-10 bg-black/20 text-white hover:bg-black/30 relative"
+            className="rounded-full w-10 h-10 bg-black/20 text-white hover:bg-primary/20 hover:text-primary-foreground transition-colors relative"
             onClick={onMessages}
           >
             <MessageSquare className="w-5 h-5" />
             {messageCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 text-xs bg-blue-500 text-white border-0">
+              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 text-xs bg-accent text-accent-foreground border-0">
                 {messageCount > 99 ? '99+' : messageCount}
               </Badge>
             )}
