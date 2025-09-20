@@ -1,104 +1,67 @@
-import React, { useEffect, memo } from 'react';
-import { usePerformanceMonitoring, useLongTaskMonitoring, usePaintMetrics } from '@/hooks/usePerformanceMonitoring';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Activity, Clock, Eye, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useWebVitals } from '@/hooks/useWebVitals';
 
 interface PerformanceMonitorProps {
-  componentName?: string;
-  showMonitor?: boolean;
-  enableLongTaskMonitoring?: boolean;
+  children: React.ReactNode;
 }
 
-export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = memo(({
-  componentName = 'App',
-  showMonitor = process.env.NODE_ENV === 'development',
-  enableLongTaskMonitoring = true
-}) => {
-  const { getMetrics } = usePerformanceMonitoring({
-    componentName,
-    enableLogging: showMonitor
-  });
+export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ children }) => {
+  const { metrics } = useWebVitals();
+  const [sessionId] = useState(() => crypto.randomUUID());
 
-  const paintMetrics = usePaintMetrics();
-  
-  useLongTaskMonitoring(enableLongTaskMonitoring ? (duration) => {
-    console.warn(`Long task detected: ${duration}ms`);
-  } : undefined);
+  useEffect(() => {
+    const sendMetrics = async () => {
+      if (!metrics.lcp && !metrics.fid && !metrics.cls) return;
 
-  if (!showMonitor) return null;
-
-  const metrics = getMetrics();
-
-  return (
-    <Card className="fixed bottom-4 right-4 z-50 w-80 bg-black/80 backdrop-blur-sm text-white border-white/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Activity className="w-4 h-4" />
-          Performance Monitor
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="grid grid-cols-2 gap-2">
-          <div className="space-y-1">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span className="text-xs">Renders</span>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {metrics.renderCount}
-            </Badge>
-          </div>
-          
-          <div className="space-y-1">
-            <div className="flex items-center gap-1">
-              <Zap className="w-3 h-3" />
-              <span className="text-xs">Avg Time</span>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {metrics.averageRenderTime.toFixed(1)}ms
-            </Badge>
-          </div>
-        </div>
+      try {
+        // Get connection info
+        let connectionType = 'unknown';
+        let deviceMemory: number | undefined;
         
-        {paintMetrics.fcp && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1">
-              <Eye className="w-3 h-3" />
-              <span className="text-xs">FCP</span>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {paintMetrics.fcp.toFixed(0)}ms
-            </Badge>
-          </div>
-        )}
+        if ('connection' in navigator) {
+          connectionType = (navigator as any).connection?.effectiveType || 'unknown';
+        }
         
-        {paintMetrics.lcp && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1">
-              <Eye className="w-3 h-3" />
-              <span className="text-xs">LCP</span>
-            </div>
-            <Badge 
-              variant={paintMetrics.lcp > 4000 ? "destructive" : paintMetrics.lcp > 2500 ? "secondary" : "outline"}
-              className="text-xs"
-            >
-              {paintMetrics.lcp.toFixed(0)}ms
-            </Badge>
-          </div>
-        )}
-        
-        {metrics.memoryUsage && (
-          <div className="space-y-1">
-            <span className="text-xs">Memory</span>
-            <Badge variant="outline" className="text-xs">
-              {(metrics.memoryUsage / 1024 / 1024).toFixed(1)}MB
-            </Badge>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-});
+        if ('deviceMemory' in navigator) {
+          deviceMemory = (navigator as any).deviceMemory;
+        }
 
-PerformanceMonitor.displayName = 'PerformanceMonitor';
+        // Send to Supabase
+        await supabase
+          .from('performance_metrics')
+          .insert({
+            session_id: sessionId,
+            page_url: window.location.pathname,
+            lcp: metrics.lcp,
+            fid: metrics.fid,
+            cls: metrics.cls,
+            fcp: metrics.fcp,
+            ttfb: metrics.ttfb,
+            inp: metrics.inp,
+            connection_type: connectionType,
+            device_memory: deviceMemory
+          });
+
+        // Send to Google Analytics
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'web_vitals', {
+            custom_parameter_1: 'performance',
+            lcp: metrics.lcp ? Math.round(metrics.lcp) : null,
+            fid: metrics.fid ? Math.round(metrics.fid) : null,
+            cls: metrics.cls ? Math.round(metrics.cls * 1000) / 1000 : null,
+            ttfb: metrics.ttfb ? Math.round(metrics.ttfb) : null
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to send performance metrics:', error);
+      }
+    };
+
+    // Send metrics after 3 seconds to allow for measurement
+    const timer = setTimeout(sendMetrics, 3000);
+    return () => clearTimeout(timer);
+  }, [metrics, sessionId]);
+
+  return <>{children}</>;
+};

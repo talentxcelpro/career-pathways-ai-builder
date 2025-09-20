@@ -39,8 +39,6 @@ import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
 import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
-import { AIContentSuggestion } from "@/components/ai/AIContentSuggestion";
-import { EngagementAnalytics } from "@/components/analytics/EngagementAnalytics";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
@@ -333,42 +331,13 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               />
             </div>
 
-            {/* Create Post with AI Assistant */}
-            <div className="space-y-4">
-              <EnhancedCreatePost onPostCreate={handlePostCreate} />
-              
-              {/* AI Content Suggestion */}
-              <AIContentSuggestion
-                userProfile={currentUserProfile}
-                onSuggestionApply={(suggestion) => {
-                  // This would integrate with the create post component
-                  console.log('AI Suggestion applied:', suggestion);
-                }}
-              />
-            </div>
+            {/* Create Post */}
+            <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
-            {/* Enhanced Network Posts Feed with Performance Optimizations */}
-            <React.Suspense fallback={
-              <div className="space-y-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl p-6 animate-pulse">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                      </div>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-full"></div>
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            }>
+{/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
+            <div className="space-y-6">
               <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
-            </React.Suspense>
+            </div>
           </div>
 
           {/* Right Sidebar - Network Activity & Advertising */}
@@ -378,9 +347,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             
             {/* Connection Requests */}
             <ConnectionRequests />
-            
-            {/* Engagement Analytics */}
-            <EngagementAnalytics className="mb-6" />
             
             {/* Connection Suggestions */}
             <OptimizedConnectionSuggestions showVirtualized={true} />

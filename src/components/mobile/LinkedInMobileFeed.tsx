@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, memo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import VideoPlayer from '@/components/posts/VideoPlayer';
@@ -12,9 +12,6 @@ import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
 import { useQueryClient } from '@tanstack/react-query';
-import { VirtualizedList } from '@/components/performance/VirtualizedList';
-import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
-import { LazyComponentWrapper } from '@/components/performance/LazyComponentWrapper';
 
 interface LinkedInPost {
   id: string;
@@ -78,19 +75,7 @@ const LinkedInPostCard: React.FC<{
   onComment?: (postId: string) => void;
   onConnect?: (userId: string) => void;
   onApply?: (jobUrl: string) => void;
-}> = memo(({ post, onLike, onBookmark, onShare, onComment, onConnect, onApply }) => {
-  // Performance monitoring
-  const { markRenderStart, markRenderEnd } = usePerformanceMonitoring({
-    componentName: 'LinkedInPostCard',
-    enableLogging: process.env.NODE_ENV === 'development'
-  });
-
-  useEffect(() => {
-    markRenderStart();
-    const cleanup = () => markRenderEnd();
-    
-    return cleanup;
-  });
+}> = ({ post, onLike, onBookmark, onShare, onComment, onConnect, onApply }) => {
   const [isLiked, setIsLiked] = useState(post.stats.isLiked);
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
@@ -361,9 +346,9 @@ const LinkedInPostCard: React.FC<{
       )}
     </Card>
   );
-});
+};
 
-export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = memo(({ 
+export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({ 
   posts, 
   onLike, 
   onBookmark, 
@@ -374,35 +359,6 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = memo(({
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  
-  // Performance monitoring
-  const { markRenderStart, markRenderEnd } = usePerformanceMonitoring({
-    componentName: 'LinkedInMobileFeed',
-    enableLogging: process.env.NODE_ENV === 'development',
-    threshold: 100 // Higher threshold for feed components
-  });
-
-  useEffect(() => {
-    markRenderStart();
-    const cleanup = () => markRenderEnd();
-    
-    return cleanup;
-  });
-
-  // Virtualized rendering for large datasets
-  const renderPost = (post: LinkedInPost, index: number) => (
-    <LazyComponentWrapper key={post.id} enableIntersection={true}>
-      <LinkedInPostCard
-        post={post}
-        onLike={onLike}
-        onBookmark={onBookmark}
-        onShare={onShare}
-        onComment={onComment}
-        onConnect={onConnect}
-        onApply={onApply}
-      />
-    </LazyComponentWrapper>
-  );
 
   if (!user) {
     return (
@@ -432,22 +388,20 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = memo(({
           queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
         }} />
         
-        {/* Posts Feed with Performance Optimization */}
-        {posts.length > 10 ? (
-          <VirtualizedList
-            items={posts}
-            itemHeight={600}
-            containerHeight={window.innerHeight - 200}
-            renderItem={renderPost}
-            className="space-y-4"
-            overscan={3}
+        {/* Posts Feed */}
+        {posts.map((post) => (
+          <LinkedInPostCard
+            key={post.id}
+            post={post}
+            onLike={onLike}
+            onBookmark={onBookmark}
+            onShare={onShare}
+            onComment={onComment}
+            onConnect={onConnect}
+            onApply={onApply}
           />
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post) => renderPost(post, posts.indexOf(post)))}
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );
-});
+};
