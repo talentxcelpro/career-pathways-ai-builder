@@ -370,11 +370,11 @@ export function CareerPassportDashboard() {
                     await supabase.auth.signOut();
                     
                     // Force redirect to auth page
-                    window.location.href = '/auth/login';
+                    window.location.href = '/auth';
                   } catch (signOutError) {
                     console.error('Sign out error:', signOutError);
                     // Force redirect even if sign out fails
-                    window.location.href = '/auth/login';
+                    window.location.href = '/auth';
                   }
                 }}
                 className="mr-4"
@@ -383,7 +383,7 @@ export function CareerPassportDashboard() {
               </Button>
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/auth/login')}
+                onClick={() => navigate('/auth')}
               >
                 Sign In
               </Button>
