@@ -24,14 +24,36 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { userId, action, amount, description, metadata }: TXCMiningRequest = await req.json()
+    let requestData: TXCMiningRequest;
+    
+    try {
+      requestData = await req.json();
+    } catch (error) {
+      console.error('Failed to parse request body:', error);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON in request body' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
 
-    console.log(`Processing TXC mining for user: ${userId}, action: ${action}, amount: ${amount}`)
+    const { userId, action, amount, description, metadata } = requestData;
+
+    console.log(`Processing TXC mining for user: ${userId}, action: ${action}, amount: ${amount}`);
+    console.log('Full request data:', JSON.stringify(requestData, null, 2));
 
     // Validate input
-    if (!userId || !action || !amount || amount <= 0) {
+    if (!userId || !action || typeof amount !== 'number' || amount <= 0) {
+      console.error('Validation failed:', { userId, action, amount, description });
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid input parameters' }),
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid input parameters',
+          details: {
+            userId: !userId ? 'missing' : 'valid',
+            action: !action ? 'missing' : 'valid', 
+            amount: typeof amount !== 'number' ? 'not a number' : amount <= 0 ? 'not positive' : 'valid'
+          }
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
