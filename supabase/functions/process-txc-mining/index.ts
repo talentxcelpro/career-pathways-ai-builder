@@ -58,26 +58,31 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Check for recent duplicate transactions (idempotency) - more specific check
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+    // Check for recent duplicate transactions with stricter rules
+    const cooldownHours = action === 'daily_login' ? 24 : 1; // Daily login once per day, others once per hour
+    const cooldownTime = new Date(Date.now() - cooldownHours * 60 * 60 * 1000).toISOString()
+    
     const { data: recentTransaction } = await supabaseClient
       .from('txc_transactions')
-      .select('id')
+      .select('id, created_at')
       .eq('user_id', userId)
       .eq('transaction_type', 'mining')
-      .eq('description', description) // Check for same action description
-      .gte('created_at', fiveMinutesAgo)
+      .eq('description', description)
+      .gte('created_at', cooldownTime)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle()
 
     if (recentTransaction) {
-      console.log(`Duplicate transaction prevented for user ${userId}, action: ${action}, description: ${description}`)
+      console.log(`Duplicate transaction prevented for user ${userId}, action: ${action}, description: ${description}, last transaction: ${recentTransaction.created_at}`)
       return new Response(
         JSON.stringify({ 
-          success: true, 
-          message: 'Transaction already processed recently',
+          success: false, 
+          error: 'Transaction already processed recently',
           duplicate: true,
           amount: 0,
-          newBalance: null
+          newBalance: null,
+          cooldownHours: cooldownHours
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
