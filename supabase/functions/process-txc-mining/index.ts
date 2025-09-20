@@ -36,6 +36,29 @@ Deno.serve(async (req) => {
       )
     }
 
+    // Check for recent duplicate transactions (idempotency)
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+    const { data: recentTransaction } = await supabaseClient
+      .from('token_transactions')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('source', action)
+      .eq('transaction_type', 'mining')
+      .gte('processed_at', fiveMinutesAgo)
+      .maybeSingle()
+
+    if (recentTransaction) {
+      console.log(`Duplicate transaction prevented for user ${userId}, action: ${action}`)
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Transaction already processed recently',
+          duplicate: true 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Create transaction record
     const { error: txError } = await supabaseClient
       .from('token_transactions')
@@ -57,24 +80,39 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Update balance
-    const { data: balance } = await supabaseClient
+    // Get current balance first
+    const { data: currentBalance } = await supabaseClient
       .from('token_balances')
-      .select('*')
+      .select('available_balance, locked_balance, lifetime_earned')
       .eq('user_id', userId)
-      .single()
+      .eq('token_type', 'TXC')
+      .maybeSingle()
 
-    const newBalance = (balance?.available_balance || 0) + amount
-    const newLifetimeEarned = (balance?.lifetime_earned || 0) + amount
+    const newAvailableBalance = (currentBalance?.available_balance || 0) + amount
+    const newLifetimeEarned = (currentBalance?.lifetime_earned || 0) + amount
+    const lockedBalance = currentBalance?.locked_balance || 0
 
-    await supabaseClient
+    // Update balance using proper upsert with token_type
+    const { error: balanceError } = await supabaseClient
       .from('token_balances')
       .upsert({
         user_id: userId,
-        available_balance: newBalance,
-        locked_balance: balance?.locked_balance || 0,
-        lifetime_earned: newLifetimeEarned
+        token_type: 'TXC',
+        available_balance: newAvailableBalance,
+        locked_balance: lockedBalance,
+        lifetime_earned: newLifetimeEarned,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,token_type'
       })
+
+    if (balanceError) {
+      console.error('Error updating balance:', balanceError)
+      return new Response(
+        JSON.stringify({ success: false, error: 'Failed to update balance' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      )
+    }
 
     console.log(`TXC mining completed successfully: ${amount} tokens awarded`)
 
@@ -82,7 +120,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         amount: amount,
-        newBalance: newBalance,
+        newBalance: newAvailableBalance,
         message: `Successfully earned ${amount} TXC tokens!`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
