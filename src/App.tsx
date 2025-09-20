@@ -346,8 +346,9 @@ const App = () => {
                       <Route path="/companies/size/:size/:location" element={<SEOCompaniesLocation />} />
                        <Route path="/employer/resources/:topic" element={<JobsByRole />} />
                        
-                       {/* Company Profile Route */}
-                       <Route path="/company/:slug" element={<CompanyDetail />} />
+                        {/* Company Profile Routes */}
+                        <Route path="/company/:slug" element={<CompanyDetail />} />
+                        <Route path="/companies/:id" element={<CompanyDetail />} />
                        
                        {/* Enhanced SEO Demo Route */}
                        <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />

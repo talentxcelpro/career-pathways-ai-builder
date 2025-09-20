@@ -11,6 +11,7 @@ interface JobFilters {
   salary_max: number;
   is_remote: boolean;
   skills: string[];
+  company_id?: string;
 }
 
 export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'created_at') => {
@@ -94,6 +95,10 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
           countQuery = countQuery.eq('is_remote', true);
         }
 
+        if (filters.company_id) {
+          countQuery = countQuery.eq('company_id', filters.company_id);
+        }
+
         const { count: totalCount, error: countError } = await countQuery;
 
         if (countError) {
@@ -144,6 +149,10 @@ export const useJobsWithPagination = (filters: JobFilters, sortBy: string = 'cre
 
         if (filters.is_remote) {
           dataQuery = dataQuery.eq('is_remote', true);
+        }
+
+        if (filters.company_id) {
+          dataQuery = dataQuery.eq('company_id', filters.company_id);
         }
 
         const { data: jobs, error: dataError } = await dataQuery;

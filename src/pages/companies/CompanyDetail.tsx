@@ -106,9 +106,12 @@ const CompanyDetail = () => {
         query = query.eq('slug', identifier);
       }
 
-      const { data, error } = await query.single();
+      const { data, error } = await query.maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching company:', error);
+        throw error;
+      }
       return data;
     },
     enabled: !!identifier

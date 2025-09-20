@@ -35,23 +35,49 @@ import { QuickActions } from '@/components/jobs/QuickActions';
 const Jobs = () => {
   const navigate = useNavigate();
 
-  const [filters, setFilters] = useState({
-    search: '',
-    location: '',
-    employment_type: [] as string[],
-    experience_level: [] as string[],
-    salary_min: 0,
-    salary_max: 0,
-    is_remote: false,
-    skills: [] as string[],
-    department: [] as string[],
-    company_type: [] as string[],
-    work_mode: [] as string[],
-    industry: [] as string[],
-    role_category: [] as string[],
-    education: [] as string[],
-    posted_by: [] as string[],
-    freshness: [] as string[],
+  // Initialize filters from URL params and get company name if company ID is provided
+  const [filters, setFilters] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return {
+      search: urlParams.get('search') || '',
+      location: urlParams.get('location') || '',
+      employment_type: urlParams.get('employment_type')?.split(',').filter(Boolean) || [] as string[],
+      experience_level: urlParams.get('experience_level')?.split(',').filter(Boolean) || [] as string[],
+      salary_min: parseInt(urlParams.get('salary_min') || '0'),
+      salary_max: parseInt(urlParams.get('salary_max') || '0'),
+      is_remote: urlParams.get('is_remote') === 'true',
+      skills: urlParams.get('skills')?.split(',').filter(Boolean) || [] as string[],
+      department: urlParams.get('department')?.split(',').filter(Boolean) || [] as string[],
+      company_type: urlParams.get('company_type')?.split(',').filter(Boolean) || [] as string[],
+      work_mode: urlParams.get('work_mode')?.split(',').filter(Boolean) || [] as string[],
+      industry: urlParams.get('industry')?.split(',').filter(Boolean) || [] as string[],
+      company_id: urlParams.get('company') || '', // Add company filter
+      role_category: urlParams.get('role_category')?.split(',').filter(Boolean) || [] as string[],
+      education: urlParams.get('education')?.split(',').filter(Boolean) || [] as string[],
+      posted_by: urlParams.get('posted_by')?.split(',').filter(Boolean) || [] as string[],
+      freshness: urlParams.get('freshness')?.split(',').filter(Boolean) || [] as string[],
+    };
+  });
+
+  // Get company name if filtering by company
+  const { data: companyData } = useQuery({
+    queryKey: ['company-for-filter', filters.company_id],
+    queryFn: async () => {
+      if (!filters.company_id) return null;
+      
+      const { data, error } = await supabase
+        .from('companies')
+        .select('name')
+        .eq('id', filters.company_id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching company:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!filters.company_id
   });
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
@@ -295,6 +321,7 @@ const Jobs = () => {
       education: [],
       posted_by: [],
       freshness: [],
+      company_id: '',
     });
     refetch();
   };
@@ -318,6 +345,7 @@ const Jobs = () => {
         education: [],
         posted_by: [],
         freshness: [],
+        company_id: '',
       };
       setFilters(newFilters);
     } else {
