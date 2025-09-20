@@ -12,6 +12,7 @@ import { FormData, JobInfo, Resume } from './application-form/types';
 import { validateStep, validateFileUpload } from './application-form/validation';
 import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { ScrapedJobSuccessModal } from './application-form/ScrapedJobSuccessModal';
+import { useCreateJobApplication } from '@/hooks/useJobApplications';
 
 interface ComprehensiveJobApplicationFormProps {
   open: boolean;
@@ -26,6 +27,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
   const [hasApplied, setHasApplied] = useState(false);
   const [showScrapedJobSuccess, setShowScrapedJobSuccess] = useState(false);
   const { triggerApplicationConfirmationEmail } = useEmailAutomation();
+  const createApplication = useCreateJobApplication();
   const [formData, setFormData] = useState<FormData>({
     resumeSource: 'existing',
     selectedResumeId: '',
@@ -350,19 +352,29 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         }
       };
 
-      const { error } = await supabase
-        .from('enhanced_job_applications')
-        .insert(enhancedApplicationData);
-
-      if (error) {
-        if (error.code === '23505') { // Unique constraint violation
-          toast.error('You have already applied to this job');
-          setHasApplied(true);
-        } else {
-          throw error;
+      // Use the TXC-enabled application hook instead of direct insertion
+      await createApplication.mutateAsync({
+        job_id: job.id,
+        bot_id: job.posted_by,
+        resume_url: resumeUrl,
+        redirect_url: job.external_url,
+        application_data: {
+          fullName: formData.fullName,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          preferredCallTime: formData.preferredCallTime,
+          location: formData.location,
+          currentCTC: formData.currentCTC,
+          expectedCTC: formData.expectedCTC,
+          noticePeriod: formData.noticePeriod,
+          readyToRelocate: formData.readyToRelocate,
+          remoteWorkPreference: formData.remoteWorkPreference,
+          yearsOfExperience: formData.yearsOfExperience,
+          linkedinProfile: formData.linkedinProfile,
+          portfolioWebsite: formData.portfolioWebsite,
+          coverLetterUrl: coverLetterUrl
         }
-        return;
-      }
+      });
 
       // Also add to unified_candidates for CV database
       try {
