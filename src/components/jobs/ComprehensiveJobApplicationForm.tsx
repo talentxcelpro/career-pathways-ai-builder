@@ -353,7 +353,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         }
       };
 
-      // Use the TXC-enabled application hook
+      // Use the TXC-enabled application hook (now includes publisher forwarding)
       const applicationResult = await createApplication.mutateAsync({
         job_id: job.id,
         resume_url: resumeUrl,
@@ -371,39 +371,9 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
           yearsOfExperience: formData.yearsOfExperience,
           linkedinProfile: formData.linkedinProfile,
           portfolioWebsite: formData.portfolioWebsite,
-          coverLetterUrl: coverLetterUrl,
-          resumeUrl: resumeUrl
+          coverLetterUrl: coverLetterUrl
         }
       });
-
-      // Forward application to publisher with duplicate checking
-      try {
-        const forwardingResult = await supabase.functions.invoke('forward-application-to-publisher', {
-          body: {
-            job_id: job.id,
-            applicant_data: {
-              fullName: formData.fullName,
-              email: formData.email,
-              phoneNumber: formData.phoneNumber,
-              location: formData.location,
-              expectedCTC: formData.expectedCTC,
-              noticePeriod: formData.noticePeriod,
-              resume_url: resumeUrl,
-              coverLetterUrl: coverLetterUrl,
-              ...formData
-            }
-          }
-        });
-
-        if (forwardingResult.data?.success) {
-          console.log('✅ Application forwarded to publisher:', forwardingResult.data);
-        } else {
-          console.warn('⚠️ Application forwarding failed:', forwardingResult.error);
-        }
-      } catch (forwardingError) {
-        console.error('Error forwarding application:', forwardingError);
-        // Don't fail the entire process if forwarding fails
-      }
 
       console.log('✅ Application submitted successfully:', applicationResult);
       

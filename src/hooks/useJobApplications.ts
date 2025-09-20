@@ -57,17 +57,45 @@ export const useCreateJobApplication = () => {
       resume_url?: string;
       application_data?: any;
     }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Insert the job application
       const { data, error } = await supabase
         .from('job_applications')
         .insert({
           ...applicationData,
-          user_id: (await supabase.auth.getUser()).data.user?.id
+          user_id: userData.user.id
         })
         .select()
         .single();
 
       if (error) {
         throw new Error(error.message);
+      }
+
+      // Forward application to publisher immediately after successful insert
+      try {
+        const forwardingResult = await supabase.functions.invoke('forward-application-to-publisher', {
+          body: {
+            job_id: applicationData.job_id,
+            applicant_data: {
+              ...applicationData.application_data,
+              resume_url: applicationData.resume_url
+            }
+          }
+        });
+
+        if (forwardingResult.error) {
+          console.error('Application forwarding failed:', forwardingResult.error);
+        } else {
+          console.log('✅ Application forwarded to publisher:', forwardingResult.data);
+        }
+      } catch (forwardingError) {
+        console.error('Error forwarding application:', forwardingError);
+        // Don't fail the entire process if forwarding fails
       }
 
       return data;
