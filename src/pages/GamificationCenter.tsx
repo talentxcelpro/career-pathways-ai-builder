@@ -52,6 +52,16 @@ const GamificationCenter: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { balance, availableBalance, isLoading: balanceLoading, refreshBalance } = useTokenBalance();
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('GamificationCenter balance debug:', { 
+      balance, 
+      availableBalance, 
+      isLoading: balanceLoading,
+      user: user?.id 
+    });
+  }, [balance, availableBalance, balanceLoading, user]);
   const { earnTXC, getAllRewards, isProcessing } = useTXCMining();
   const { canAfford, purchaseFeature } = useTXCPurchase();
   const { data: userScores } = useUserScores();
