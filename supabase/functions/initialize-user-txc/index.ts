@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
     // Check if user already has TXC balance
     const { data: existingBalance } = await supabaseClient
       .from('user_txc_balances')
-      .select('balance, lifetime_earned')
+      .select('balance, total_earned')
       .eq('user_id', user.id)
       .maybeSingle()
 
@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
         JSON.stringify({
           success: true,
           balance: existingBalance.balance,
-          lifetime_earned: existingBalance.lifetime_earned,
+          lifetime_earned: existingBalance.total_earned,
           message: 'User already initialized'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
       .insert({
         user_id: user.id,
         balance: initialBonus,
-        lifetime_earned: initialBonus
+        total_earned: initialBonus
       })
 
     if (balanceError) {
