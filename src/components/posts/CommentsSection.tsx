@@ -109,7 +109,10 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({ postId, isOpen
     if (profile?.full_name && profile.full_name.trim()) {
       return profile.full_name;
     }
-    return 'Professional User';
+    if (profile?.display_name && profile.display_name.trim()) {
+      return profile.display_name;
+    }
+    return 'TalentXcel User';
   };
 
   const generateInitials = (profile: any) => {
