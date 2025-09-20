@@ -51,7 +51,7 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
             )
           `)
           .gt('total_points', 0)
-          .order('total_points', { ascending: false })
+          .order('rank', { ascending: true })
           .limit(50);
 
         if (usersError) {
@@ -71,16 +71,65 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
           .select('user_id')
           .in('user_id', userIds);
 
-        // Get user token balances
+        // Get user token balances from user_txc_balances
         const { data: balancesData } = await supabase
-          .from('token_balances')
-          .select('user_id, available_balance, lifetime_earned')
+          .from('user_txc_balances')
+          .select('user_id, balance, total_earned')
           .in('user_id', userIds);
+
+        // Get user streaks from real data
+        const { data: streaksData } = await supabase
+          .from('user_journey_tracking')
+          .select(`
+            user_id,
+            created_at,
+            event_type
+          `)
+          .in('user_id', userIds)
+          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+          .order('created_at', { ascending: false });
+
+        // Calculate streaks from real activity data
+        const calculateStreaks = (userId: string) => {
+          const userStreaks = streaksData?.filter(s => s.user_id === userId) || [];
+          if (userStreaks.length === 0) return { current: 0, longest: 0 };
+          
+          // Simple streak calculation based on daily activity
+          const dailyActivity = userStreaks.reduce((acc, activity) => {
+            const date = new Date(activity.created_at).toDateString();
+            acc[date] = true;
+            return acc;
+          }, {} as Record<string, boolean>);
+          
+          const sortedDates = Object.keys(dailyActivity).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+          
+          let currentStreak = 0;
+          let longestStreak = 0;
+          let tempStreak = 0;
+          
+          for (let i = 0; i < sortedDates.length; i++) {
+            const currentDate = new Date(sortedDates[i]);
+            const previousDate = i > 0 ? new Date(sortedDates[i - 1]) : null;
+            
+            if (!previousDate || (previousDate.getTime() - currentDate.getTime()) === 24 * 60 * 60 * 1000) {
+              tempStreak++;
+              if (i === 0) currentStreak = tempStreak;
+            } else {
+              tempStreak = 1;
+              if (i === 0) currentStreak = 1;
+            }
+            
+            longestStreak = Math.max(longestStreak, tempStreak);
+          }
+          
+          return { current: currentStreak, longest: longestStreak };
+        };
 
         // Process and combine data
         const leaderboardUsers: LeaderboardUser[] = usersData.map((userData, index) => {
           const achievementsCount = achievementsData?.filter(a => a.user_id === userData.user_id).length || 0;
           const userBalance = balancesData?.find(b => b.user_id === userData.user_id);
+          const streaks = calculateStreaks(userData.user_id);
           
           // Determine badge level based on points
           const getBadgeLevel = (points: number): 'bronze' | 'silver' | 'gold' | 'platinum' => {
@@ -95,37 +144,42 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
             full_name: (userData.profiles as any)?.full_name || 'Anonymous User',
             profile_picture_url: (userData.profiles as any)?.profile_picture_url,
             total_points: userData.total_points || 0,
-            current_streak: Math.floor(Math.random() * 30) + 1, // Mock streak data
-            longest_streak: Math.floor(Math.random() * 50) + 10,
+            current_streak: streaks.current,
+            longest_streak: streaks.longest,
             achievements_count: achievementsCount,
-            txc_balance: userBalance?.available_balance || 0,
+            txc_balance: userBalance?.balance || 0,
             rank: index + 1,
             badge_level: getBadgeLevel(userData.total_points || 0),
             last_activity: userData.last_updated || new Date().toISOString()
           };
         });
 
-        // Sort based on category
-        const sortedUsers = [...leaderboardUsers].sort((a, b) => {
-          switch (category) {
-            case 'points':
-              return b.total_points - a.total_points;
-            case 'streaks':
-              return b.current_streak - a.current_streak;
-            case 'achievements':
-              return b.achievements_count - a.achievements_count;
-            case 'txc':
-              return b.txc_balance - a.txc_balance;
-            default:
-              return b.total_points - a.total_points;
-          }
-        });
+        // Sort based on category, but use existing rank for points
+        let sortedUsers = [...leaderboardUsers];
+        
+        if (category === 'points') {
+          // For points, we already have the correct ranking from database
+          sortedUsers = sortedUsers.sort((a, b) => a.rank - b.rank);
+        } else {
+          // For other categories, sort and re-rank
+          sortedUsers = sortedUsers.sort((a, b) => {
+            switch (category) {
+              case 'streaks':
+                return b.current_streak - a.current_streak;
+              case 'achievements':
+                return b.achievements_count - a.achievements_count;
+              case 'txc':
+                return b.txc_balance - a.txc_balance;
+              default:
+                return b.total_points - a.total_points;
+            }
+          }).map((user, index) => ({
+            ...user,
+            rank: index + 1
+          }));
+        }
 
-        // Update ranks after sorting
-        const finalData = sortedUsers.map((user, index) => ({
-          ...user,
-          rank: index + 1
-        }));
+        const finalData = sortedUsers;
 
         console.log('Leaderboard data processed:', finalData.length, 'users');
         return finalData;
