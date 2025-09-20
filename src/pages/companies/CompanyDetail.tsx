@@ -72,12 +72,14 @@ const CompanyDetail = () => {
     queryFn: async () => {
       if (!identifier) return null;
 
+      console.log('🏢 Fetching company with identifier:', identifier);
+
       // Build query - try by slug first, then by ID
       let query = supabase
         .from('companies')
         .select(`
           *,
-          jobs(
+          jobs!inner(
             id,
             title,
             location,
@@ -92,26 +94,27 @@ const CompanyDetail = () => {
             skills_required,
             applications_count,
             views_count
-          ),
-          company_follows(
-            id,
-            user_id
           )
         `);
 
       // If it looks like a UUID, search by ID, otherwise by slug
       if (identifier.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+        console.log('🔍 Searching by ID:', identifier);
         query = query.eq('id', identifier);
       } else {
+        console.log('🔍 Searching by slug:', identifier);
         query = query.eq('slug', identifier);
       }
 
       const { data, error } = await query.maybeSingle();
 
       if (error) {
-        console.error('Error fetching company:', error);
-        throw error;
+        console.error('❌ Error fetching company:', error);
+        // Don't throw error, just return null
+        return null;
       }
+      
+      console.log('✅ Company fetched:', data?.name);
       return data;
     },
     enabled: !!identifier
