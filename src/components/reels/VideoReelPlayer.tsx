@@ -1,7 +1,4 @@
-
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface VideoReelPlayerProps {
@@ -10,7 +7,6 @@ interface VideoReelPlayerProps {
   isActive: boolean;
   onVideoLoad?: () => void;
   onTimeUpdate?: (currentTime: number) => void;
-  autoPlay?: boolean;
   muted?: boolean;
   className?: string;
 }
@@ -21,13 +17,10 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   isActive,
   onVideoLoad,
   onTimeUpdate,
-  autoPlay = true,
-  muted = false, // Default volume ON
+  muted = false,
   className
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -35,124 +28,73 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
     const video = videoRef.current;
     if (!video) return;
 
-    const handleLoadedData = () => {
-      setIsLoading(false);
-      onVideoLoad?.();
-    };
-
-    const handleError = () => {
-      setError(true);
-      setIsLoading(false);
-    };
-
-    const handleTimeUpdate = () => {
-      onTimeUpdate?.(video.currentTime);
-    };
-
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.addEventListener('error', handleError);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-
-    return () => {
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('error', handleError);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-    };
-  }, [onVideoLoad, onTimeUpdate]);
+    if (isActive) {
+      video.play().catch(() => {
+        // Handle autoplay restrictions
+        video.muted = true;
+        video.play().catch(() => setError(true));
+      });
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  }, [isActive]);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (isActive && autoPlay && !error) {
-      video.play().catch(() => setError(true));
-    } else {
-      video.pause();
-    }
-  }, [isActive, autoPlay, error]);
+    video.muted = muted;
+  }, [muted]);
 
-  const togglePlay = () => {
+  const handleLoadedData = () => {
+    setIsLoading(false);
+    onVideoLoad?.();
+  };
+
+  const handleTimeUpdate = () => {
     const video = videoRef.current;
-    if (!video || error) return;
-
-    if (isPlaying) {
-      video.pause();
-    } else {
-      video.play().catch(() => setError(true));
+    if (video) {
+      onTimeUpdate?.(video.currentTime);
     }
   };
 
+  const handleError = () => {
+    setIsLoading(false);
+    setError(true);
+  };
 
   if (error) {
     return (
-      <div className={cn(
-        "relative w-full h-full bg-background/90 flex items-center justify-center",
-        className
-      )}>
-        <div className="text-white text-center">
-          <div className="text-2xl mb-2">⚠️</div>
-          <p className="text-sm">Unable to load video</p>
+      <div className={cn("flex items-center justify-center bg-gray-900", className)}>
+        <div className="text-center text-white">
+          <p className="text-lg mb-2">😞</p>
+          <p className="text-sm">Failed to load video</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("relative w-full h-full group", className)}>
+    <div className={cn("relative", className)}>
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+      )}
+      
       <video
         ref={videoRef}
-        className="w-full h-full object-cover"
         src={videoUrl}
         poster={thumbnailUrl}
-        muted={muted}
+        className="w-full h-full object-cover"
         loop
         playsInline
-        preload="metadata"
-        onClick={togglePlay}
+        muted={muted}
+        onLoadedData={handleLoadedData}
+        onTimeUpdate={handleTimeUpdate}
+        onError={handleError}
       />
-
-      {isLoading && (
-        <div className="absolute inset-0 bg-background/90 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
-
-      {/* Play/Pause overlay */}
-      {!isPlaying && !isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-          <Button
-            variant="reels-overlay"
-            size="icon"
-            className="h-14 w-14"
-            onClick={togglePlay}
-          >
-            <Play className="h-7 w-7 fill-current" />
-          </Button>
-        </div>
-      )}
-
-      {/* Controls overlay - Only play/pause */}
-      <div className="absolute bottom-4 right-4 opacity-100 transition-opacity z-10">
-        <Button
-          variant="reels-overlay"
-          size="icon"
-          className="h-7 w-7"
-          onClick={togglePlay}
-        >
-          {isPlaying ? (
-            <Pause className="h-3.5 w-3.5" />
-          ) : (
-            <Play className="h-3.5 w-3.5 fill-current" />
-          )}
-        </Button>
-      </div>
     </div>
   );
 };
