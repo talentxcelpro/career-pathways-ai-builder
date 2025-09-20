@@ -10,7 +10,6 @@ import { AppleFooter } from './AppleFooter';
 import { NewsLatestWidget } from '@/components/news/NewsLatestWidget';
 
 export const LandingPage = () => {
-  console.log('LandingPage rendering');
   return (
     <div className="min-h-screen">
       <AppleHeroSection />
