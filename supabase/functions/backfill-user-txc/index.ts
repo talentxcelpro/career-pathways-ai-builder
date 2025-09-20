@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    console.log('Starting TXC backfill process for all users...')
+    console.log('🚀 Starting TXC backfill process for all users...')
 
     // Get all users from profiles table
     const { data: profiles, error: profilesError } = await supabaseClient

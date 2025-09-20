@@ -6,7 +6,7 @@ import { BotPostManager } from "../components/admin/BotPostManager";
 import TXCTokenManagement from "../pages/admin/TXCTokenManagement";
 import TXCAwardsAndBonuses from "../pages/admin/TXCAwardsAndBonuses";
 import TXCAnalytics from "../pages/admin/TXCAnalytics";
-import { TXCBackfill } from "../pages/admin/TXCBackfill";
+import TXCBackfill from "../pages/admin/TXCBackfill";
 import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
 import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
 import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";

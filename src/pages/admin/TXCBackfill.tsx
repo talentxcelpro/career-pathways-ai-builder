@@ -18,7 +18,7 @@ interface BackfillResult {
   }>;
 }
 
-export const TXCBackfill = () => {
+const TXCBackfill = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<BackfillResult | null>(null);
   const { toast } = useToast();
@@ -146,3 +146,5 @@ export const TXCBackfill = () => {
     </div>
   );
 };
+
+export default TXCBackfill;

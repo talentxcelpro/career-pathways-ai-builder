@@ -1,4 +1,4 @@
-import * as mammoth from 'mammoth';
+import mammoth from 'mammoth';
 
 /**
  * Shared utility for extracting text from resume files (PDF/DOC/DOCX)
