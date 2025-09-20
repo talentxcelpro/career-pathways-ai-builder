@@ -41,10 +41,9 @@ Deno.serve(async (req) => {
     const { data: recentTransaction } = await supabaseClient
       .from('token_transactions')
       .select('id')
-      .eq('user_id', userId)
-      .eq('source', action)
+      .eq('to_user_id', userId)
       .eq('transaction_type', 'mining')
-      .gte('processed_at', fiveMinutesAgo)
+      .gte('created_at', fiveMinutesAgo)
       .maybeSingle()
 
     if (recentTransaction) {
@@ -63,13 +62,16 @@ Deno.serve(async (req) => {
     const { error: txError } = await supabaseClient
       .from('token_transactions')
       .insert({
-        user_id: userId,
+        to_user_id: userId,
         transaction_type: 'mining',
         amount: amount,
         description: description,
-        source: action,
-        processed_at: new Date().toISOString(),
-        metadata: metadata || {}
+        token_type: 'TXC',
+        status: 'completed',
+        metadata: {
+          action: action,
+          ...metadata
+        }
       })
 
     if (txError) {
@@ -83,13 +85,12 @@ Deno.serve(async (req) => {
     // Get current balance first
     const { data: currentBalance } = await supabaseClient
       .from('token_balances')
-      .select('available_balance, locked_balance, lifetime_earned')
+      .select('balance, locked_balance')
       .eq('user_id', userId)
       .eq('token_type', 'TXC')
       .maybeSingle()
 
-    const newAvailableBalance = (currentBalance?.available_balance || 0) + amount
-    const newLifetimeEarned = (currentBalance?.lifetime_earned || 0) + amount
+    const newBalance = (currentBalance?.balance || 0) + amount
     const lockedBalance = currentBalance?.locked_balance || 0
 
     // Update balance using proper upsert with token_type
@@ -98,10 +99,9 @@ Deno.serve(async (req) => {
       .upsert({
         user_id: userId,
         token_type: 'TXC',
-        available_balance: newAvailableBalance,
+        balance: newBalance,
         locked_balance: lockedBalance,
-        lifetime_earned: newLifetimeEarned,
-        updated_at: new Date().toISOString()
+        last_updated: new Date().toISOString()
       }, {
         onConflict: 'user_id,token_type'
       })
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         amount: amount,
-        newBalance: newAvailableBalance,
+        newBalance: newBalance,
         message: `Successfully earned ${amount} TXC tokens!`
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
