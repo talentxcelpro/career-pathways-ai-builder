@@ -11,6 +11,7 @@ interface SimpleNetworkFeedProps {
 }
 
 export const SimpleNetworkFeed: React.FC<SimpleNetworkFeedProps> = ({ feedType }) => {
+  console.log('SimpleNetworkFeed rendering with feedType:', feedType);
   const { data: posts, isLoading, error } = useQuery({
     queryKey: ['simple-posts', feedType],
     queryFn: async () => {

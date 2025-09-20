@@ -10,6 +10,7 @@ interface SimpleReelsFeedProps {
 }
 
 export const SimpleReelsFeed: React.FC<SimpleReelsFeedProps> = ({ onUploadClick }) => {
+  console.log('SimpleReelsFeed rendering');
   const { data: reels, isLoading, error } = useQuery({
     queryKey: ['simple-reels'],
     queryFn: async () => {
