@@ -34,6 +34,13 @@ import ResumeTemplates from "../pages/ResumeTemplates";
 
 export const coreRoutes = [
   {
+    title: "Resume Builder - New",
+    to: "/resume/new",
+    page: <TalentXcelResumeBuilder />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
     title: "Resume Builder",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
