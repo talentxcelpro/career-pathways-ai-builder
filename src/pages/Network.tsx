@@ -152,37 +152,19 @@ const Network = () => {
 
           <TabsContent value="feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <Posts feedType="all" />
-              </React.Suspense>
+              <Posts feedType="all" />
             </div>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <Posts feedType="connections" />
-              </React.Suspense>
+              <Posts feedType="connections" />
             </div>
           </TabsContent>
 
           <TabsContent value="trending" className="mt-0">
             <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <Posts feedType="trending" />
-              </React.Suspense>
+              <Posts feedType="trending" />
             </div>
           </TabsContent>
 

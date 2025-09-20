@@ -363,27 +363,9 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             </div>
 
             {/* Enhanced Network Posts Feed with Performance Optimizations */}
-            <React.Suspense fallback={
-              <div className="space-y-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl p-6 animate-pulse">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                      </div>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-full"></div>
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            }>
+            <div className="space-y-4">
               <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
-            </React.Suspense>
+            </div>
           </div>
 
           {/* Right Sidebar - Network Activity & Advertising */}

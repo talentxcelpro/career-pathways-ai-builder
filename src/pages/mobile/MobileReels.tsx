@@ -34,11 +34,13 @@ export const MobileReels = () => {
       </div>
 
       {/* Performance Optimized Reels Feed */}
-      <PerformantReelsFeed 
-        enablePerformanceMonitoring={true}
-        className="h-full"
-        onUploadClick={() => setShowUploadModal(true)}
-      />
+      <div className="h-full">
+        <PerformantReelsFeed 
+          enablePerformanceMonitoring={true}
+          className="h-full"
+          onUploadClick={() => setShowUploadModal(true)}
+        />
+      </div>
 
       {/* Mobile Bottom Navigation */}
       <div className="absolute bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-t border-white/20">
