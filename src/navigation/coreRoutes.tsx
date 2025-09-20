@@ -31,6 +31,14 @@ import Careers from "../pages/Careers";
 import Security from "../pages/Security"; 
 import Api from "../pages/Api";
 import ResumeTemplates from "../pages/ResumeTemplates";
+import Feed from "../pages/Feed";
+import SmartFeed from "../pages/SmartFeed";
+import Trending from "../pages/Trending";
+import Connections from "../pages/Connections";
+import Discover from "../pages/Discover";
+import AIConnect from "../pages/AIConnect";
+import News from "../pages/News";
+import LiveEvents from "../pages/LiveEvents";
 
 export const coreRoutes = [
   {
@@ -209,6 +217,66 @@ export const coreRoutes = [
     title: "Public Tools",
     to: "/public-tools",
     page: <div className="min-h-screen bg-background"><div className="container mx-auto"><div className="p-4">{/* PublicTools content will be imported */}</div></div></div>,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Feed",
+    to: "/feed",
+    page: <Feed />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Smart Feed",
+    to: "/smart-feed",
+    page: <SmartFeed />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Trending",
+    to: "/trending",
+    page: <Trending />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Connections",
+    to: "/connections",
+    page: <Connections />,
+    requiresAuth: true,
+  },
+  {
+    title: "Discover",
+    to: "/discover",
+    page: <Discover />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Analytics",
+    to: "/analytics",
+    page: <div className="p-4"><MobileAnalytics /></div>,
+    requiresAuth: true,
+  },
+  {
+    title: "AI Connect",
+    to: "/ai-connect",
+    page: <AIConnect />,
+    requiresAuth: true,
+  },
+  {
+    title: "News",
+    to: "/news",
+    page: <News />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Live Events",
+    to: "/live-events",
+    page: <LiveEvents />,
     isPublic: true,
     requiresAuth: false,
   },
