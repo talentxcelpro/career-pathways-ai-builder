@@ -13,6 +13,8 @@ const Index = () => {
   const [disableOneTap, setDisableOneTap] = useState(false);
   const enableTestSend = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('send_emails') === '1';
 
+  console.log('Index page rendering:', { authChecked, isLoggedIn, disableOneTap });
+
   // Detect iOS Safari to avoid potential One Tap issues
   useEffect(() => {
     try {
