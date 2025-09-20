@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
+import { PerformantReelsFeed } from '@/components/performance/PerformantReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
 import { Button } from '@/components/ui/button';
 import { Plus, Home, Search, User } from 'lucide-react';
@@ -33,8 +33,10 @@ export const MobileReels = () => {
         </div>
       </div>
 
-      {/* Infinite Reels Feed */}
-      <InfiniteReelsFeed 
+      {/* Performance Optimized Reels Feed */}
+      <PerformantReelsFeed 
+        enablePerformanceMonitoring={true}
+        className="h-full"
         onUploadClick={() => setShowUploadModal(true)}
       />
 

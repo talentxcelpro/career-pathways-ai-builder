@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { NetworkPostCard } from './NetworkPostCard';
 import { NewPostsBanner } from './NewPostsBanner';
 import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
@@ -8,18 +8,35 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { getCustomStorageUrl } from '@/utils/storage';
+import { NetworkFeedLoadingGrid, ProgressiveLoader } from '@/components/performance/EnhancedLoadingStates';
+import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
+import { LazyComponentWrapper } from '@/components/performance/LazyComponentWrapper';
 
 interface EnhancedNetworkPostsFeedProps {
   feedType: 'all' | 'connections' | 'trending';
   searchTerm?: string;
 }
 
-export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> = ({
+export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> = memo(({
   feedType,
   searchTerm
 }) => {
   const [openComments, setOpenComments] = React.useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  
+  // Performance monitoring
+  const { markRenderStart, markRenderEnd } = usePerformanceMonitoring({
+    componentName: 'EnhancedNetworkPostsFeed',
+    enableLogging: process.env.NODE_ENV === 'development',
+    threshold: 150 // Network feeds should be fast
+  });
+
+  useEffect(() => {
+    markRenderStart();
+    const cleanup = () => markRenderEnd();
+    
+    return cleanup;
+  });
   
   
   const {
@@ -121,7 +138,7 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
           isConnected={false}
           onRefresh={() => {}}
         />
-        <LoadingSkeleton />
+        <NetworkFeedLoadingGrid count={4} />
       </div>
     );
   }
@@ -167,17 +184,32 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
         onRefresh={() => refetch()}
       />
 
-      {/* Posts Feed */}
-      <div className="space-y-6">
-        {posts.map((post) => (
-          <NetworkPostCard
-            key={post.id}
-            post={post}
-            openComments={openComments}
-            onCommentClick={handleCommentClick}
-          />
-        ))}
-      </div>
+      {/* Posts Feed with Progressive Loading */}
+      <ProgressiveLoader
+        isLoading={false}
+        loadingComponent={<NetworkFeedLoadingGrid count={2} />}
+        enableFadeIn={true}
+      >
+        <div className="space-y-6">
+          {posts.map((post) => (
+            <LazyComponentWrapper 
+              key={post.id} 
+              enableIntersection={true}
+              fallback={
+                <div className="h-96 bg-card/50 rounded-xl animate-pulse flex items-center justify-center">
+                  <div className="text-muted-foreground text-sm">Loading post...</div>
+                </div>
+              }
+            >
+              <NetworkPostCard
+                post={post}
+                openComments={openComments}
+                onCommentClick={handleCommentClick}
+              />
+            </LazyComponentWrapper>
+          ))}
+        </div>
+      </ProgressiveLoader>
 
       {/* Enhanced Infinite Scroll Trigger */}
       <div ref={loadMoreRef} className="flex justify-center py-8">
@@ -228,4 +260,4 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
       </div>
     </div>
   );
-};
+});
