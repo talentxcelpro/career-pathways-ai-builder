@@ -56,7 +56,6 @@ export const useCreateJobApplication = () => {
   return useMutation({
     mutationFn: async (applicationData: {
       job_id: string;
-      bot_id?: string;
       resume_url?: string;
       redirect_url?: string;
       application_data?: any;
