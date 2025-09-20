@@ -39,7 +39,7 @@ import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
 import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
-import { AIContentSuggestion } from "@/components/ai/AIContentSuggestion";
+import { SimpleNetworkFeed } from "@/components/network/SimpleNetworkFeed";
 import { EngagementAnalytics } from "@/components/analytics/EngagementAnalytics";
 import { EnhancedErrorBoundary, NetworkStatusIndicator } from "@/components/polish/ErrorHandling";
 import { SEOPageWrapper } from "@/components/polish/SEOOptimizations";
@@ -348,23 +348,14 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               />
             </div>
 
-            {/* Create Post with AI Assistant */}
+            {/* Create Post */}
             <div className="space-y-4">
               <EnhancedCreatePost onPostCreate={handlePostCreate} />
-              
-              {/* AI Content Suggestion */}
-              <AIContentSuggestion
-                userProfile={currentUserProfile}
-                onSuggestionApply={(suggestion) => {
-                  // This would integrate with the create post component
-                  console.log('AI Suggestion applied:', suggestion);
-                }}
-              />
             </div>
 
-            {/* Enhanced Network Posts Feed with Performance Optimizations */}
+            {/* Simple Network Posts Feed */}
             <div className="space-y-4">
-              <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
+              <SimpleNetworkFeed feedType={feedFilter} />
             </div>
           </div>
 
