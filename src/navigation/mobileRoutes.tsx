@@ -14,7 +14,7 @@ import ReferAndEarn from "../pages/ReferAndEarn";
 
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Jobs", to: "/mobile/jobs", page: <MobileJobs /> },
-  { title: "Mobile Reels", to: "/mobile/reels", page: <MobileReelsPage /> },
+  { title: "Mobile Reels", to: "/mobile/reels", page: <React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense> },
   { title: "Mobile Network", to: "/mobile/network", page: <MobileNetwork /> },
   { title: "Mobile Profile", to: "/mobile/profile", page: <MobileProfile /> },
   { title: "Mobile Notifications", to: "/mobile/notifications", page: <MobileNotifications /> },

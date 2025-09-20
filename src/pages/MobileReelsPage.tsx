@@ -1,8 +1,9 @@
 import React from 'react';
-import { MobileReels } from '@/pages/mobile/MobileReels';
 
-const MobileReelsPage = () => {
-  return <MobileReels />;
-};
+const MobileReelsPage = React.lazy(() => 
+  import('@/pages/mobile/MobileReels').then(module => ({
+    default: module.MobileReels
+  }))
+);
 
 export default MobileReelsPage;
