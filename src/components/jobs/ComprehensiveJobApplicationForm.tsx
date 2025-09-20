@@ -353,7 +353,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       };
 
       // Use the TXC-enabled application hook instead of direct insertion
-      await createApplication.mutateAsync({
+      const applicationResult = await createApplication.mutateAsync({
         job_id: job.id,
         bot_id: job.posted_by,
         resume_url: resumeUrl,
@@ -403,6 +403,9 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       }
 
       
+      // Application was successful - the hook already shows the success toast with TXC earning
+      setHasApplied(true);
+      
       // Check if this is a scraped job (has is_scraped flag or external_url)
       const isScrapedJob = (job.external_url && job.external_url.trim() !== '');
       
@@ -410,7 +413,6 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
         // Show scraped job success modal instead of regular toast
         setShowScrapedJobSuccess(true);
       } else {
-        toast.success('Application submitted successfully!');
         onOpenChange(false);
       }
       
