@@ -46,6 +46,7 @@ import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
 import { GoogleOneTapLogin } from "./components/auth/GoogleOneTapLogin";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
+import { GlobalTXCBanner } from "./components/gamification/GlobalTXCBanner";
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
 import ToolsHub from './pages/tools/ToolsHub';
@@ -193,6 +194,7 @@ const App = () => {
                 <MobileAppWrapper>
                   <div className="min-h-screen flex flex-col">
                     <OfflineIndicator />
+                    <GlobalTXCBanner />
                     <Navbar />
                     <main className="flex-1">
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>

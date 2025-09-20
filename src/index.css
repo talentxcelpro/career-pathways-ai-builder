@@ -934,9 +934,21 @@ img.loaded {
     box-shadow: var(--shadow-elegant);
   }
   
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
-  }
+    .shadow-glow {
+      box-shadow: var(--shadow-glow);
+    }
+    
+    .shadow-career-coin {
+      box-shadow: var(--shadow-career-coin);
+    }
+    
+    .gradient-career-coin {
+      background: var(--gradient-career-coin);
+    }
+    
+    .gradient-engagement {
+      background: var(--gradient-engagement);
+    }
   
   .shadow-brand {
     box-shadow: var(--shadow-brand);
