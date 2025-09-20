@@ -19,13 +19,18 @@ export const useTokenBalance = () => {
       if (!user?.id) return null;
 
       try {
+        console.log('Fetching token balance for user:', user.id);
+        
         // First initialize user TXC if needed
-        await supabase.functions.invoke('initialize-user-txc');
+        const initResult = await supabase.functions.invoke('initialize-user-txc');
+        console.log('Initialization result:', initResult);
 
         // Then get the balance
         const { data, error } = await supabase.functions.invoke('get-token-balance', {
           body: { userId: user.id }
         });
+        
+        console.log('Token balance response:', data, error);
 
         if (error) {
           console.error('Error fetching token balance:', error);
