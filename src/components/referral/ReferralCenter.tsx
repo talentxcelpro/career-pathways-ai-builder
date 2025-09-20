@@ -271,65 +271,85 @@ const ReferralCenter: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Referral Tiers */}
-        <Card className="lg:col-span-2 group relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5"></div>
-          <CardHeader className="relative">
-            <CardTitle className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg">
-                <Trophy className="h-5 w-5 text-primary" />
-              </div>
-              <span className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                Referral Rewards Tiers
-              </span>
+        {/* Compact Referral Tiers */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Trophy className="h-4 w-4 text-primary" />
+              Referral Reward Tiers
             </CardTitle>
-            <p className="text-muted-foreground">Unlock higher rewards as you refer more friends</p>
+            <p className="text-xs text-muted-foreground">Every friend you refer gets you closer to unlocking premium features and exclusive AI-powered career tools.</p>
           </CardHeader>
-          <CardContent className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl"></div>
-                <div className="relative p-6 bg-background/30 backdrop-blur-sm rounded-xl border border-border/20 text-center hover-scale">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full mb-4">
-                    <span className="text-2xl font-bold text-primary">1-5</span>
+          <CardContent className="pt-0">
+            <div className="space-y-2">
+              {/* Tier Row 1 */}
+              <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <span className="text-xs font-bold text-primary">5</span>
                   </div>
-                  <div className="text-sm text-muted-foreground mb-3">Referrals</div>
-                  <Badge variant="outline" className="bg-background/50 mb-3 flex items-center gap-1">
-                    <Coins className="h-3 w-3 text-yellow-500" />
-                    1,000 TXC each
-                  </Badge>
-                  <p className="text-xs text-muted-foreground font-medium">Starter Bonus</p>
+                  <div>
+                    <p className="text-sm font-medium">Early Access to Paid Tools</p>
+                    <p className="text-xs text-muted-foreground">Friends</p>
+                  </div>
                 </div>
+                <Badge variant="secondary" className="text-xs">Locked</Badge>
               </div>
-              
-              <div className="group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-xl"></div>
-                <div className="relative p-6 bg-background/30 backdrop-blur-sm rounded-xl border-2 border-secondary/20 text-center hover-scale">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-full mb-4">
-                    <span className="text-2xl font-bold text-secondary">6-15</span>
+
+              {/* Tier Row 2 */}
+              <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
+                    <span className="text-xs font-bold text-secondary">25</span>
                   </div>
-                  <div className="text-sm text-muted-foreground mb-3">Referrals</div>
-                  <Badge className="bg-secondary mb-3 flex items-center gap-1">
-                    <Coins className="h-3 w-3 text-white" />
-                    1,500 TXC each
-                  </Badge>
-                  <p className="text-xs text-muted-foreground font-medium">Super Referrer</p>
+                  <div>
+                    <p className="text-sm font-medium">1-Month Pro Upgrade</p>
+                    <p className="text-xs text-muted-foreground">Friends</p>
+                  </div>
                 </div>
+                <Badge variant="secondary" className="text-xs">Locked</Badge>
               </div>
-              
-              <div className="group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 rounded-xl"></div>
-                <div className="relative p-6 bg-background/30 backdrop-blur-sm rounded-xl border-2 border-accent/20 text-center hover-scale">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-accent/20 via-primary/15 to-secondary/20 rounded-full mb-4">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">16+</span>
+
+              {/* Tier Row 3 */}
+              <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <span className="text-xs font-bold text-accent">100</span>
                   </div>
-                  <div className="text-sm text-muted-foreground mb-3">Referrals</div>
-                  <Badge variant="secondary" className="bg-gradient-to-r from-accent/20 to-primary/20 border-accent/30 mb-3 flex items-center gap-1">
-                    <Coins className="h-3 w-3 text-yellow-600" />
-                    2,000 TXC each
-                  </Badge>
-                  <p className="text-xs text-muted-foreground font-medium">Elite Ambassador</p>
+                  <div>
+                    <p className="text-sm font-medium">2-Month Pro Membership</p>
+                    <p className="text-xs text-muted-foreground">Friends</p>
+                  </div>
                 </div>
+                <Badge variant="secondary" className="text-xs">Locked</Badge>
+              </div>
+
+              {/* Tier Row 4 */}
+              <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <span className="text-xs font-bold text-primary">300</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">3-Month Pro Membership</p>
+                    <p className="text-xs text-muted-foreground">Friends</p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-xs">Locked</Badge>
+              </div>
+
+              {/* Tier Row 5 */}
+              <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">400</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">4-Month Pro + Bonus AI Tools</p>
+                    <p className="text-xs text-muted-foreground">Friends</p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-xs">Locked</Badge>
               </div>
             </div>
           </CardContent>
