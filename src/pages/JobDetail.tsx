@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
+import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
 
 const JobDetail = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
@@ -41,6 +42,7 @@ const JobDetail = () => {
   const [hasApplied, setHasApplied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [triedRedirect, setTriedRedirect] = useState(false);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
 
   // Get current user
   useEffect(() => {
@@ -253,34 +255,27 @@ const JobDetail = () => {
     }
   }, [job]);
 
-  // Apply to job mutation
-  const applyMutation = useMutation({
-    mutationFn: async () => {
-      if (!currentUser) throw new Error('Please login to apply');
-      if (!job) throw new Error('Job not found');
-
-      const { error } = await supabase
+  // Check if user has applied using the proper useQuery
+  const { data: applicationExists } = useQuery({
+    queryKey: ['user-application', job?.id, currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser || !job) return false;
+      
+      const { data, error } = await supabase
         .from('job_applications')
-        .insert({
-          job_id: job.id,
-          user_id: currentUser.id,
-          application_data: {
-            applied_via: 'talentxcel',
-            source_page: 'job_detail'
-          }
-        });
-
-      if (error) throw error;
+        .select('id')
+        .eq('job_id', job.id)
+        .eq('user_id', currentUser.id)
+        .single();
+      
+      return !!data;
     },
-    onSuccess: () => {
-      setHasApplied(true);
-      toast.success('Application submitted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['job-detail', slugOrId] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to apply');
-    }
+    enabled: !!currentUser && !!job
   });
+
+  useEffect(() => {
+    setHasApplied(!!applicationExists);
+  }, [applicationExists]);
 
   // Save job mutation
   const saveMutation = useMutation({
@@ -319,7 +314,7 @@ const JobDetail = () => {
       toast.error('Please login to apply for jobs');
       return;
     }
-    applyMutation.mutate();
+    setShowApplicationForm(true);
   };
 
   const handleSave = () => {
@@ -541,15 +536,13 @@ const JobDetail = () => {
                   <Button
                     className="w-full"
                     onClick={handleApply}
-                    disabled={hasApplied || applyMutation.isPending}
+                    disabled={hasApplied}
                   >
                     {hasApplied ? (
                       <>
                         <CheckCircle className="h-4 w-4 mr-2" />
                         Applied
                       </>
-                    ) : applyMutation.isPending ? (
-                      'Applying...'
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
@@ -657,6 +650,20 @@ const JobDetail = () => {
           </div>
         </div>
       </div>
+      
+      <ComprehensiveJobApplicationForm
+        open={showApplicationForm}
+        onOpenChange={setShowApplicationForm}
+        job={job ? {
+          id: job.id,
+          title: job.title,
+          companies: job.companies,
+          skills_required: job.skills_required,
+          external_url: job.external_url,
+          posted_by: job.posted_by,
+          company_name: job.company_name
+        } : null}
+      />
       
       <BrandedFooter />
       </div>
