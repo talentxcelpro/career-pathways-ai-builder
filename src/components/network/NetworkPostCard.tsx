@@ -17,7 +17,7 @@ import { getCustomStorageUrl } from "@/utils/storage";
 import { ReshareButton } from './ReshareButton';
 import { useProfileViews } from '@/hooks/useProfileViews';
 import { Eye } from 'lucide-react';
-import { ContentEmbed } from '@/components/embeds';
+import { ContentEmbed } from '@/components/embeds/ContentEmbed';
 
 interface NetworkPost {
   id: string;
