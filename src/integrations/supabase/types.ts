@@ -26084,6 +26084,96 @@ export type Database = {
         }
         Relationships: []
       }
+      txc_currency_rules: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          rule_key: string
+          rule_type: string
+          rule_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          rule_key: string
+          rule_type: string
+          rule_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          rule_key?: string
+          rule_type?: string
+          rule_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      txc_fraud_detection: {
+        Row: {
+          created_at: string
+          details: Json
+          detection_type: string
+          id: string
+          resolved_at: string | null
+          risk_score: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          detection_type: string
+          id?: string
+          resolved_at?: string | null
+          risk_score?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          detection_type?: string
+          id?: string
+          resolved_at?: string | null
+          risk_score?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      txc_rate_limits: {
+        Row: {
+          action_count: number
+          action_type: string
+          created_at: string
+          id: string
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          action_count?: number
+          action_type: string
+          created_at?: string
+          id?: string
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          action_count?: number
+          action_type?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       txc_transaction_history: {
         Row: {
           amount: number
@@ -26154,6 +26244,42 @@ export type Database = {
           id?: string
           reference_id?: string | null
           transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      txc_user_balances: {
+        Row: {
+          available_balance: number
+          created_at: string
+          daily_earned_today: number
+          last_daily_reset: string
+          lifetime_earned: number
+          lifetime_spent: number
+          locked_balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_balance?: number
+          created_at?: string
+          daily_earned_today?: number
+          last_daily_reset?: string
+          lifetime_earned?: number
+          lifetime_spent?: number
+          locked_balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_balance?: number
+          created_at?: string
+          daily_earned_today?: number
+          last_daily_reset?: string
+          lifetime_earned?: number
+          lifetime_spent?: number
+          locked_balance?: number
           updated_at?: string
           user_id?: string
         }
@@ -29090,6 +29216,15 @@ export type Database = {
         Args: { employer_uuid: string; recipient_count: number }
         Returns: boolean
       }
+      check_txc_rate_limit: {
+        Args: {
+          p_action_type: string
+          p_max_per_day?: number
+          p_max_per_hour?: number
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       check_user_subscription: {
         Args: { user_uuid: string }
         Returns: {
@@ -30171,6 +30306,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      update_txc_balance_secure: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_metadata?: Json
+          p_transaction_type: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       update_upload_progress: {
         Args: {
           error_msg?: string
@@ -30264,6 +30409,10 @@ export type Database = {
           session_id: string
           user_id: string
         }[]
+      }
+      validate_txc_purchase: {
+        Args: { p_cost: number; p_feature_id: string; p_user_id: string }
+        Returns: Json
       }
       validate_user_input: {
         Args: { input_text: string; input_type?: string; max_length?: number }
