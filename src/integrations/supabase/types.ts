@@ -27900,6 +27900,7 @@ export type Database = {
           last_updated: string | null
           networking_score: number | null
           profile_completion_score: number | null
+          rank: number | null
           skills_score: number | null
           total_points: number | null
           user_id: string
@@ -27912,6 +27913,7 @@ export type Database = {
           last_updated?: string | null
           networking_score?: number | null
           profile_completion_score?: number | null
+          rank?: number | null
           skills_score?: number | null
           total_points?: number | null
           user_id: string
@@ -27924,6 +27926,7 @@ export type Database = {
           last_updated?: string | null
           networking_score?: number | null
           profile_completion_score?: number | null
+          rank?: number | null
           skills_score?: number | null
           total_points?: number | null
           user_id?: string
@@ -29106,6 +29109,10 @@ export type Database = {
         }
         Returns: Json
       }
+      award_global_txc_rewards: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       award_joining_bonus: {
         Args: { p_user_id: string }
         Returns: boolean
@@ -30278,6 +30285,10 @@ export type Database = {
           p_response_time?: number
           p_success: boolean
         }
+        Returns: undefined
+      }
+      update_all_user_rankings: {
+        Args: Record<PropertyKey, never>
         Returns: undefined
       }
       update_content_score: {
