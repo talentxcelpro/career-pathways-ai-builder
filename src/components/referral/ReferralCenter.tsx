@@ -21,7 +21,7 @@ const ReferralCenter: React.FC = () => {
 
   const completedReferrals = referrals.filter(r => r.status === 'completed');
   const pendingReferrals = referrals.filter(r => r.status === 'pending');
-  const totalTXCEarned = completedReferrals.reduce((sum, ref) => sum + ref.txc_reward, 0);
+  const totalTXCEarned = completedReferrals.reduce((sum, ref) => sum + (ref.reward_amount || 0), 0);
 
   const handleGenerateCode = async () => {
     if (!myReferralCode) {
@@ -250,7 +250,7 @@ const ReferralCenter: React.FC = () => {
                         {referral.status}
                       </Badge>
                       {referral.status === 'completed' && (
-                        <Badge variant="outline">+{referral.txc_reward} TXC</Badge>
+                        <Badge variant="outline">+{referral.reward_amount || 0} TXC</Badge>
                       )}
                     </div>
                   </div>

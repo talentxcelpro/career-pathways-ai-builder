@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
+import { useReferralContests } from '@/hooks/useReferralContests';
 import { 
   Trophy, 
   Clock, 
@@ -73,8 +74,38 @@ const mockContests: ContestData[] = [
 
 export const ReferralContest: React.FC = () => {
   const { referralData } = useReferralSystem();
-  const [contests, setContests] = useState<ContestData[]>(mockContests);
+  const { contests: realContests, loading, getUserContestProgress } = useReferralContests();
   const [selectedContest, setSelectedContest] = useState<string | null>(null);
+  const [userProgress, setUserProgress] = useState<Record<string, number>>({});
+
+  // Convert real contests to display format
+  const contests: ContestData[] = realContests.map(contest => ({
+    id: contest.id,
+    title: contest.title,
+    description: contest.description,
+    targetReferrals: contest.target_referrals,
+    timeLeft: Math.max(0, (new Date(contest.end_date).getTime() - Date.now()) / (1000 * 60 * 60)),
+    prize: contest.prize_description,
+    participants: contest.current_participants || 0,
+    currentUserProgress: userProgress[contest.id] || 0,
+    status: new Date(contest.end_date).getTime() - Date.now() < 24 * 60 * 60 * 1000 ? 'ending_soon' : 'active',
+    type: contest.contest_type
+  }));
+
+  // Fetch user progress for all contests
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const progressMap: Record<string, number> = {};
+      for (const contest of realContests) {
+        progressMap[contest.id] = await getUserContestProgress(contest.id);
+      }
+      setUserProgress(progressMap);
+    };
+
+    if (realContests.length > 0) {
+      fetchProgress();
+    }
+  }, [realContests, getUserContestProgress]);
 
   const formatTimeLeft = (hours: number) => {
     if (hours < 1) {

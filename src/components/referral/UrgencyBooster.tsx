@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
+import { useReferralContests } from '@/hooks/useReferralContests';
 import { 
   Clock, 
   Zap, 
@@ -73,8 +74,22 @@ const mockOffers: UrgencyOffer[] = [
 
 export const UrgencyBooster: React.FC = () => {
   const { referralData, copyReferralLink } = useReferralSystem();
-  const [offers, setOffers] = useState<UrgencyOffer[]>(mockOffers);
+  const { urgencyOffers: realOffers, loading } = useReferralContests();
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null);
+
+  // Convert real offers to display format  
+  const offers: UrgencyOffer[] = realOffers.map(offer => ({
+    id: offer.id,
+    title: offer.title,
+    description: offer.description,
+    multiplier: offer.multiplier,
+    timeLeft: Math.max(0, (new Date(offer.expires_at).getTime() - Date.now()) / (1000 * 60)),
+    minReferrals: offer.min_referrals,
+    maxClaims: offer.max_claims,
+    currentClaims: offer.current_claims,
+    type: offer.offer_type,
+    animation: offer.offer_type === 'flash_bonus' ? 'pulse' : offer.offer_type === 'streak_multiplier' ? 'bounce' : 'glow'
+  }));
 
   const formatTimeLeft = (minutes: number) => {
     if (minutes < 60) {
@@ -214,7 +229,8 @@ export const UrgencyBooster: React.FC = () => {
                   <LiveTimer 
                     timeLeft={offer.timeLeft} 
                     onExpire={() => {
-                      setOffers(prev => prev.filter(o => o.id !== offer.id));
+                      // Offer expired - in real app, this would update the database
+                      console.log(`Offer ${offer.id} expired`);
                     }}
                   />
                 </div>
