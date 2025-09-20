@@ -6,6 +6,7 @@ import { BotPostManager } from "../components/admin/BotPostManager";
 import TXCTokenManagement from "../pages/admin/TXCTokenManagement";
 import TXCAwardsAndBonuses from "../pages/admin/TXCAwardsAndBonuses";
 import TXCAnalytics from "../pages/admin/TXCAnalytics";
+import { TXCBackfill } from "../pages/admin/TXCBackfill";
 import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
 import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
 import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";
@@ -422,6 +423,13 @@ export const adminRoutes = [
     to: "/admin/txc-awards",
     icon: <Coins className="h-4 w-4" />,
     page: <TXCAwardsAndBonuses />,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Backfill System",
+    to: "/admin/txc-backfill",
+    icon: <Coins className="h-4 w-4" />,
+    page: <TXCBackfill />,
     requiresAuth: true,
   },
   {
