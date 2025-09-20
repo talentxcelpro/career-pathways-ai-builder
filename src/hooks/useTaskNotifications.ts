@@ -1,134 +1,79 @@
-import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { usePushNotifications } from './usePushNotifications';
-import { formatTXC } from '@/types/txc-pricing';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useTaskNotifications = () => {
   const { user } = useAuth();
-  const { isSubscribed, permission } = usePushNotifications();
-
-  const sendTaskReminderNotification = async (taskTitle: string, reward: number) => {
-    if (!user || permission !== 'granted') return;
-
-    try {
-      // Send local notification
-      if ('serviceWorker' in navigator && 'Notification' in window) {
-        new Notification('Complete Your Daily Task! 🎯', {
-          body: `Don't forget to ${taskTitle} and earn ${formatTXC(reward)} TXC tokens!`,
-          icon: '/favicon.ico',
-          badge: '/favicon.ico',
-          tag: 'task-reminder',
-          requireInteraction: true
-        });
-      }
-
-      // Send push notification via backend
-      if (isSubscribed) {
-        const response = await supabase.functions.invoke('send-push-notification', {
-          body: {
-            user_id: user.id,
-            title: 'Complete Your Daily Task! 🎯',
-            body: `Don't forget to ${taskTitle} and earn ${formatTXC(reward)} TXC tokens!`,
-            action_url: '/gamification',
-            trigger_type: 'task_reminder',
-            priority: 'normal'
-          }
-        });
-        
-        if (response.error) {
-          console.error('Push notification error:', response.error);
-        } else {
-          console.log('Push notification sent successfully:', response.data);
-        }
-      }
-    } catch (error) {
-      console.error('Error sending task reminder notification:', error);
-    }
-  };
 
   const sendTaskCompletionNotification = async (taskTitle: string, reward: number) => {
-    if (!user || permission !== 'granted') return;
+    if (!user?.id) return;
 
     try {
-      // Send local notification
-      if ('serviceWorker' in navigator && 'Notification' in window) {
-        new Notification('Task Completed! 🎉', {
-          body: `Great job! You earned ${formatTXC(reward)} TXC for ${taskTitle}`,
-          icon: '/favicon.ico',
-          badge: '/favicon.ico',
-          tag: 'task-completed'
-        });
-      }
+      // Create notification for task completion
+      await supabase.rpc('create_notification', {
+        p_user_id: user.id,
+        p_type: 'task_completed',
+        p_title: 'Task Completed! 🎉',
+        p_message: `You completed "${taskTitle}" and earned ${reward} TXC tokens!`,
+        p_module: 'gamification',
+        p_related_id: null,
+        p_link: '/gamification',
+        p_priority: 'medium',
+        p_icon: 'check-circle'
+      });
 
-      // Send push notification via backend
-      if (isSubscribed) {
-        const response = await supabase.functions.invoke('send-push-notification', {
-          body: {
-            user_id: user.id,
-            title: 'Task Completed! 🎉',
-            body: `Great job! You earned ${formatTXC(reward)} TXC for ${taskTitle}`,
-            action_url: '/gamification',
-            trigger_type: 'task_completed',
-            priority: 'normal'
-          }
-        });
-        
-        if (response.error) {
-          console.error('Push notification error:', response.error);
-        } else {
-          console.log('Task completion notification sent:', response.data);
-        }
-      }
+      console.log('Task completion notification sent');
     } catch (error) {
-      console.error('Error sending task completion notification:', error);
+      console.error('Error sending task notification:', error);
     }
   };
 
-  const sendDailyTaskReminders = async () => {
-    if (!user || permission !== 'granted') return;
+  const sendAchievementNotification = async (achievementTitle: string, points: number) => {
+    if (!user?.id) return;
 
     try {
-      const dailyTasks = [
-        { title: 'Apply to Jobs', reward: 90 },
-        { title: 'Update Profile', reward: 300 },
-        { title: 'Community Engagement', reward: 150 }
-      ];
+      await supabase.rpc('create_notification', {
+        p_user_id: user.id,
+        p_type: 'achievement_unlocked',
+        p_title: 'Achievement Unlocked! 🏆',
+        p_message: `Congratulations! You earned "${achievementTitle}" for ${points} points!`,
+        p_module: 'gamification',
+        p_related_id: null,
+        p_link: '/gamification',
+        p_priority: 'high',
+        p_icon: 'trophy'
+      });
 
-      for (const task of dailyTasks) {
-        setTimeout(() => {
-          sendTaskReminderNotification(task.title, task.reward);
-        }, Math.random() * 5000); // Random delay to avoid spam
-      }
+      console.log('Achievement notification sent');
     } catch (error) {
-      console.error('Error sending daily task reminders:', error);
+      console.error('Error sending achievement notification:', error);
     }
   };
 
-  // Set up daily reminders
-  useEffect(() => {
-    if (!user || permission !== 'granted') return;
+  const sendStreakNotification = async (streakType: string, count: number) => {
+    if (!user?.id) return;
 
-    // Send reminders at specific times (10 AM, 2 PM, 6 PM)
-    const now = new Date();
-    const reminderTimes = [10, 14, 18]; // Hours in 24-hour format
-    
-    reminderTimes.forEach(hour => {
-      const reminderTime = new Date();
-      reminderTime.setHours(hour, 0, 0, 0);
-      
-      if (reminderTime > now) {
-        const timeUntilReminder = reminderTime.getTime() - now.getTime();
-        setTimeout(() => {
-          sendDailyTaskReminders();
-        }, timeUntilReminder);
-      }
-    });
-  }, [user, permission, isSubscribed]);
+    try {
+      await supabase.rpc('create_notification', {
+        p_user_id: user.id,
+        p_type: 'streak_milestone',
+        p_title: 'Streak Milestone! 🔥',
+        p_message: `Amazing! You've maintained a ${count}-day ${streakType} streak!`,
+        p_module: 'gamification',
+        p_related_id: null,
+        p_link: '/gamification',
+        p_priority: 'medium',
+        p_icon: 'flame'
+      });
+
+      console.log('Streak notification sent');
+    } catch (error) {
+      console.error('Error sending streak notification:', error);
+    }
+  };
 
   return {
-    sendTaskReminderNotification,
     sendTaskCompletionNotification,
-    sendDailyTaskReminders
+    sendAchievementNotification,
+    sendStreakNotification
   };
 };

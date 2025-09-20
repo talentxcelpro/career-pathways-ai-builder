@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
 
 interface LeaderboardUser {
   id: string;
@@ -28,10 +29,11 @@ interface LeaderboardUser {
   total_points: number;
   current_streak: number;
   longest_streak: number;
-  communities_joined: number;
   achievements_count: number;
+  txc_balance: number;
   rank: number;
   badge_level: 'bronze' | 'silver' | 'gold' | 'platinum';
+  last_activity: string;
 }
 
 interface LeaderboardCategory {
@@ -58,11 +60,11 @@ const LEADERBOARD_CATEGORIES: LeaderboardCategory[] = [
     color: 'text-orange-600'
   },
   {
-    key: 'communities',
-    title: 'Community Champions',
-    icon: Users,
-    description: 'Most active community members',
-    color: 'text-purple-600'
+    key: 'txc',
+    title: 'TXC Leaders',
+    icon: Zap,
+    description: 'Highest TXC token earners',
+    color: 'text-yellow-600'
   },
   {
     key: 'achievements',
@@ -91,108 +93,18 @@ export const LeaderboardsWidget: React.FC = () => {
     }
   });
 
-  const { data: leaderboardData, isLoading } = useQuery({
-    queryKey: ['leaderboard', activeCategory, timeFilter],
-    queryFn: async () => {
-      // Mock data for demonstration - in real implementation, this would query actual tables
-      const mockUsers: LeaderboardUser[] = [
-        {
-          id: '1',
-          full_name: 'Rajesh Kumar',
-          avatar_url: '/api/placeholder/40/40',
-          total_points: 2450,
-          current_streak: 28,
-          longest_streak: 45,
-          communities_joined: 8,
-          achievements_count: 12,
-          rank: 1,
-          badge_level: 'platinum'
-        },
-        {
-          id: '2',
-          full_name: 'Priya Sharma',
-          avatar_url: '/api/placeholder/40/40',
-          total_points: 2280,
-          current_streak: 22,
-          longest_streak: 35,
-          communities_joined: 6,
-          achievements_count: 10,
-          rank: 2,
-          badge_level: 'gold'
-        },
-        {
-          id: '3',
-          full_name: 'Amit Patel',
-          avatar_url: '/api/placeholder/40/40',
-          total_points: 2100,
-          current_streak: 18,
-          longest_streak: 30,
-          communities_joined: 5,
-          achievements_count: 8,
-          rank: 3,
-          badge_level: 'gold'
-        },
-        {
-          id: '4',
-          full_name: 'Sneha Gupta',
-          avatar_url: '/api/placeholder/40/40',
-          total_points: 1950,
-          current_streak: 15,
-          longest_streak: 25,
-          communities_joined: 4,
-          achievements_count: 7,
-          rank: 4,
-          badge_level: 'silver'
-        },
-        {
-          id: '5',
-          full_name: 'Rohit Singh',
-          avatar_url: '/api/placeholder/40/40',
-          total_points: 1820,
-          current_streak: 12,
-          longest_streak: 22,
-          communities_joined: 3,
-          achievements_count: 6,
-          rank: 5,
-          badge_level: 'silver'
-        }
-      ];
+  // Import real leaderboard hook
+  const { 
+    leaderboardData: realLeaderboardData, 
+    userRanking: realUserRanking,
+    isLoading: realIsLoading,
+    error: leaderboardError
+  } = useRealLeaderboard(activeCategory, timeFilter);
 
-      // Sort based on active category
-      const sortedUsers = [...mockUsers].sort((a, b) => {
-        switch (activeCategory) {
-          case 'points':
-            return b.total_points - a.total_points;
-          case 'streaks':
-            return b.current_streak - a.current_streak;
-          case 'communities':
-            return b.communities_joined - a.communities_joined;
-          case 'achievements':
-            return b.achievements_count - a.achievements_count;
-          default:
-            return b.total_points - a.total_points;
-        }
-      });
+  const leaderboardData = realLeaderboardData;
+  const isLoading = realIsLoading;
 
-      return sortedUsers.map((user, index) => ({ ...user, rank: index + 1 }));
-    }
-  });
-
-  const { data: userRanking } = useQuery({
-    queryKey: ['user-ranking', activeCategory, currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser) return null;
-      
-      // Mock user ranking data
-      return {
-        rank: 15,
-        total_users: 1247,
-        percentile: 88,
-        points_to_next: 150
-      };
-    },
-    enabled: !!currentUser
-  });
+  const userRanking = realUserRanking;
 
   const getBadgeColor = (level: string) => {
     switch (level) {
@@ -217,7 +129,7 @@ export const LeaderboardsWidget: React.FC = () => {
     switch (activeCategory) {
       case 'points': return user.total_points.toLocaleString();
       case 'streaks': return `${user.current_streak} days`;
-      case 'communities': return `${user.communities_joined} communities`;
+      case 'txc': return `${user.txc_balance.toLocaleString()} TXC`;
       case 'achievements': return `${user.achievements_count} badges`;
       default: return user.total_points.toLocaleString();
     }
@@ -337,9 +249,9 @@ export const LeaderboardsWidget: React.FC = () => {
                     {getRankIcon(user.rank)}
                   </div>
 
-                  {/* Avatar */}
+                   {/* Avatar */}
                   <Avatar>
-                    <AvatarImage src={user.avatar_url} />
+                    <AvatarImage src={user.profile_picture_url} />
                     <AvatarFallback>
                       {user.full_name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
@@ -357,7 +269,7 @@ export const LeaderboardsWidget: React.FC = () => {
                       )}
                     </div>
                     <p className="text-sm text-gray-600">
-                      {user.achievements_count} achievements • {user.communities_joined} communities
+                      {user.achievements_count} achievements • {user.txc_balance.toLocaleString()} TXC
                     </p>
                   </div>
 
