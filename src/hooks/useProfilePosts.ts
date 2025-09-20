@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTXCMining } from './useTXCMining';
+import { useTokenBalance } from './useTokenBalance';
 
 export interface ProfilePost {
   id: string;
@@ -27,6 +29,8 @@ export interface ProfilePost {
 
 export function useProfilePosts(userId: string) {
   const queryClient = useQueryClient();
+  const { earnTXC } = useTXCMining();
+  const { refreshBalance } = useTokenBalance();
 
   // Get posts for a user's profile (both their own posts and posts visible to them)
   const { data: profilePosts, isLoading } = useQuery({
@@ -127,11 +131,25 @@ export function useProfilePosts(userId: string) {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Earn TXC for creating a post
+      try {
+        const earned = await earnTXC('post_created');
+        if (earned) {
+          await refreshBalance();
+          toast.success('🎉 Post created! +150 TXC earned!');
+        } else {
+          toast.success('Post created successfully!');
+        }
+      } catch (error) {
+        console.error('Error earning TXC:', error);
+        toast.success('Post created successfully!');
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
       queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      toast.success('Post created successfully!');
+      queryClient.invalidateQueries({ queryKey: ['token-balance'] });
     },
     onError: (error) => {
       toast.error('Failed to create post');

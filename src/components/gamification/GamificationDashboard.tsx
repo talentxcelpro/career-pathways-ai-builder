@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Trophy, 
   Zap, 
@@ -37,6 +38,35 @@ export const GamificationDashboard: React.FC = () => {
   const { balance, availableBalance, refreshBalance } = useTokenBalance();
   const txcIntegration = useTXCIntegration();
   const [recentEarning, setRecentEarning] = useState<number | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Fetch user profile
+  const fetchUserProfile = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('full_name, first_name')
+      .eq('id', user.id)
+      .single();
+    
+    setUserProfile(data);
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [user]);
+
+  // Refresh balance every 5 seconds for real-time updates
+  useEffect(() => {
+    if (!user) return;
+    
+    const balanceInterval = setInterval(() => {
+      refreshBalance();
+    }, 5000);
+
+    return () => clearInterval(balanceInterval);
+  }, [user, refreshBalance]);
 
   // Auto-earn TXC for engagement
   useEffect(() => {
@@ -181,7 +211,7 @@ export const GamificationDashboard: React.FC = () => {
                   Pro
                 </Badge>
               </div>
-              <p className="text-white/80">Welcome back, champion!</p>
+              <p className="text-white/80">Welcome back, {userProfile?.full_name || userProfile?.first_name || 'Champion'}!</p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{stats.currentXP}</div>
