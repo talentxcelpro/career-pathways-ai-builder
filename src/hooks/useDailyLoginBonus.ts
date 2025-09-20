@@ -26,7 +26,7 @@ export const useDailyLoginBonus = () => {
           .eq('transaction_type', 'mining')
           .eq('description', 'Daily login bonus')
           .gte('created_at', `${today}T00:00:00.000Z`)
-          .single();
+          .maybeSingle();
 
         if (!todayBonus) {
           // Try to earn daily login bonus

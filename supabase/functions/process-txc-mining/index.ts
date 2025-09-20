@@ -58,23 +58,26 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Check for recent duplicate transactions (idempotency)
+    // Check for recent duplicate transactions (idempotency) - more specific check
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
     const { data: recentTransaction } = await supabaseClient
       .from('txc_transactions')
       .select('id')
       .eq('user_id', userId)
       .eq('transaction_type', 'mining')
+      .eq('description', description) // Check for same action description
       .gte('created_at', fiveMinutesAgo)
       .maybeSingle()
 
     if (recentTransaction) {
-      console.log(`Duplicate transaction prevented for user ${userId}, action: ${action}`)
+      console.log(`Duplicate transaction prevented for user ${userId}, action: ${action}, description: ${description}`)
       return new Response(
         JSON.stringify({ 
           success: true, 
           message: 'Transaction already processed recently',
-          duplicate: true 
+          duplicate: true,
+          amount: 0,
+          newBalance: null
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
