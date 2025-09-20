@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContentEmbed } from '@/components/embeds/ContentEmbed';
+import { ContentEmbed } from '@/components/embeds';
 
 interface LinkPreviewProps {
   url: string;

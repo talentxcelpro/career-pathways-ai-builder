@@ -48,12 +48,10 @@ export function useCareerPassport() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: careerPassport, isLoading: passportLoading, error: passportError } = useQuery({
+  const { data: careerPassport, isLoading: passportLoading } = useQuery({
     queryKey: ['career-passport', user?.id],
     queryFn: async () => {
-      if (!user?.id) {
-        throw new Error('Authentication required');
-      }
+      if (!user?.id) return null;
       
       const { data, error } = await supabase
         .from('career_passport')
@@ -62,11 +60,6 @@ export function useCareerPassport() {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        // Check if it's an auth error
-        if (error.message?.includes('JWT') || error.message?.includes('auth')) {
-          throw new Error('Authentication session expired. Please sign in again.');
-        }
-        
         // Create initial passport if doesn't exist
         const { data: newPassport, error: createError } = await supabase
           .from('career_passport')
@@ -89,33 +82,19 @@ export function useCareerPassport() {
           .select()
           .single();
         
-        if (createError) {
-          if (createError.message?.includes('JWT') || createError.message?.includes('auth')) {
-            throw new Error('Authentication session expired. Please sign in again.');
-          }
-          throw createError;
-        }
+        if (createError) throw createError;
         return newPassport as CareerPassport;
       }
       
       return data as CareerPassport;
     },
     enabled: !!user?.id,
-    retry: (failureCount, error) => {
-      // Don't retry authentication errors
-      if (error.message?.includes('Authentication')) {
-        return false;
-      }
-      return failureCount < 3;
-    }
   });
 
-  const { data: achievements, isLoading: achievementsLoading, error: achievementsError } = useQuery({
+  const { data: achievements, isLoading: achievementsLoading } = useQuery({
     queryKey: ['career-achievements', user?.id],
     queryFn: async () => {
-      if (!user?.id) {
-        throw new Error('Authentication required');
-      }
+      if (!user?.id) return [];
       
       const { data, error } = await supabase
         .from('career_achievements')
@@ -123,21 +102,10 @@ export function useCareerPassport() {
         .eq('user_id', user.id)
         .order('earned_at', { ascending: false });
 
-      if (error) {
-        if (error.message?.includes('JWT') || error.message?.includes('auth')) {
-          throw new Error('Authentication session expired. Please sign in again.');
-        }
-        throw error;
-      }
+      if (error) throw error;
       return data as CareerAchievement[];
     },
     enabled: !!user?.id,
-    retry: (failureCount, error) => {
-      if (error.message?.includes('Authentication')) {
-        return false;
-      }
-      return failureCount < 3;
-    }
   });
 
   const { data: journeyEvents, isLoading: journeyLoading } = useQuery({
@@ -240,16 +208,11 @@ export function useCareerPassport() {
     return null;
   };
 
-  const hasAuthError = passportError?.message?.includes('Authentication') || 
-                      achievementsError?.message?.includes('Authentication');
-
   return {
     careerPassport,
     achievements,
     journeyEvents,
     isLoading: passportLoading || achievementsLoading || journeyLoading,
-    error: passportError || achievementsError,
-    hasAuthError,
     trackJourneyEvent,
     updateCareerPassport,
     getCompletionBreakdown,

@@ -263,7 +263,7 @@ const App = () => {
                           <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                           <Route path="/@:username" element={<CareerPassportDashboard />} />
                          <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
-                          <Route path="/mobile/reels" element={<ProtectedRoute><React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense></ProtectedRoute>} />
+                          <Route path="/mobile/reels" element={<ProtectedRoute><MobileReelsPage /></ProtectedRoute>} />
                            <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />
                        <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                        <Route path="/resume/new" element={<ResumeNew />} />

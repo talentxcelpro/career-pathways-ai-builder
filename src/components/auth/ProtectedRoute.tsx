@@ -30,16 +30,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     
     if (expiresAt && now >= expiresAt) {
       console.log('Session expired in ProtectedRoute');
-      // Clear expired session data
-      localStorage.clear();
-      sessionStorage.clear();
-      return <Navigate to="/auth/login" state={{ from: location, reason: 'expired' }} replace />;
+      return <Navigate to="/" state={{ from: location, reason: 'expired' }} replace />;
     }
   }
 
-  // Redirect to auth if no user or session
+  // Redirect to login if no user or session
   if (!user || !session) {
-    return <Navigate to="/auth/login" state={{ from: location, reason: 'unauthorized' }} replace />;
+    return <Navigate to="/" state={{ from: location, reason: 'unauthorized' }} replace />;
   }
 
   return <>{children}</>;

@@ -8,7 +8,7 @@ import {
   Briefcase, GraduationCap, Code, Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { templateList } from './templates/index';
+import { templateList } from './templates';
 
 interface AppleInspiredTemplateGalleryProps {
   onTemplateSelect: (templateId: string) => void;

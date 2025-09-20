@@ -1,7 +1,7 @@
 import React from "react";
 import { NavItem } from "../types/nav-item";
 import { MobileJobs } from "../pages/mobile/MobileJobs";
-import MobileReelsPage from "../pages/MobileReelsPage";
+import { MobileReels } from "../pages/mobile/MobileReels";
 import { MobileNetwork } from "../pages/mobile/MobileNetwork";
 import { MobileProfile } from "../pages/mobile/MobileProfile";
 import { MobileNotifications } from "../components/mobile/MobileNotifications";
@@ -14,7 +14,7 @@ import ReferAndEarn from "../pages/ReferAndEarn";
 
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Jobs", to: "/mobile/jobs", page: <MobileJobs /> },
-  { title: "Mobile Reels", to: "/mobile/reels", page: <React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense> },
+  { title: "Mobile Reels", to: "/mobile/reels", page: <MobileReels /> },
   { title: "Mobile Network", to: "/mobile/network", page: <MobileNetwork /> },
   { title: "Mobile Profile", to: "/mobile/profile", page: <MobileProfile /> },
   { title: "Mobile Notifications", to: "/mobile/notifications", page: <MobileNotifications /> },

@@ -26,7 +26,7 @@ import { ResumePreview } from "./ResumePreview";
 import { ATSOptimizationPanel } from "./ATSOptimizationPanel";
 import { AIResumeEnhancer } from "./AIResumeEnhancer";
 import { VersionHistory } from "./VersionHistory";
-import { templateList } from "./templates/index";
+import { templateList } from "./templates";
 import { toast } from 'sonner';
 
 interface ComprehensiveResumeBuilderProps {

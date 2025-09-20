@@ -11,7 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { templateList } from "./templates/index";
+import { templateList } from "./templates";
 import { toast } from 'sonner';
 
 // Import file processing libraries
