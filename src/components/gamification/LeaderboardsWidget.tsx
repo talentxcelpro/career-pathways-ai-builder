@@ -23,6 +23,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { useUnifiedGamification } from '@/hooks/useUnifiedGamification';
 import { useToast } from '@/hooks/use-toast';
 
 interface LeaderboardUser {
@@ -90,6 +91,7 @@ export const LeaderboardsWidget: React.FC = () => {
   const { toast } = useToast();
   const { availableBalance } = useTokenBalance();
   const txcIntegration = useTXCIntegration();
+  const { globalRankings, userRanking: unifiedUserRanking } = useUnifiedGamification();
 
   const { data: currentUser } = useQuery({
     queryKey: ['current-user-leaderboard'],
@@ -99,7 +101,7 @@ export const LeaderboardsWidget: React.FC = () => {
     }
   });
 
-  // Import real leaderboard hook
+  // Use unified gamification data when available, fallback to real leaderboard hook
   const { 
     leaderboardData: realLeaderboardData, 
     userRanking: realUserRanking,
@@ -107,10 +109,9 @@ export const LeaderboardsWidget: React.FC = () => {
     error: leaderboardError
   } = useRealLeaderboard(activeCategory, timeFilter);
 
-  const leaderboardData = realLeaderboardData;
+  const leaderboardData = globalRankings?.length ? globalRankings : realLeaderboardData;
   const isLoading = realIsLoading;
-
-  const userRanking = realUserRanking;
+  const userRanking = unifiedUserRanking || realUserRanking;
 
   const getBadgeColor = (level: string) => {
     switch (level) {
@@ -167,15 +168,15 @@ export const LeaderboardsWidget: React.FC = () => {
                 <div className="text-xs text-gray-600">Your Rank</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{userRanking.percentile}%</div>
+                <div className="text-2xl font-bold text-green-600">{(userRanking as any)?.percentile || 85}%</div>
                 <div className="text-xs text-gray-600">Percentile</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{userRanking.points_to_next}</div>
-                <div className="text-xs text-gray-600">Points to Next</div>
+                <div className="text-2xl font-bold text-blue-600">{(userRanking as any)?.total_points || (userRanking as any)?.points || 0}</div>
+                <div className="text-xs text-gray-600">Total Points</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{availableBalance?.toLocaleString() || 0}</div>
+                <div className="text-2xl font-bold text-green-600">{((userRanking as any)?.txc_balance || availableBalance || 0).toLocaleString()}</div>
                 <div className="text-xs text-gray-600">Your TXC</div>
               </div>
             </div>
@@ -257,25 +258,25 @@ export const LeaderboardsWidget: React.FC = () => {
 
                    {/* Avatar */}
                   <Avatar>
-                    <AvatarImage src={user.profile_picture_url} />
+                    <AvatarImage src={user.profiles?.profile_picture_url || user.profile_picture_url} />
                     <AvatarFallback>
-                      {user.full_name.split(' ').map(n => n[0]).join('')}
+                      {(user.profiles?.full_name || user.full_name || 'U').split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
 
                   {/* User Info */}
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{user.full_name}</h4>
-                      <Badge className={getBadgeColor(user.badge_level)}>
-                        {user.badge_level}
+                      <h4 className="font-semibold">{user.profiles?.full_name || user.full_name || 'Anonymous'}</h4>
+                      <Badge className={getBadgeColor(user.badge_level || 'bronze')}>
+                        {user.badge_level || 'bronze'}
                       </Badge>
-                      {user.id === currentUser?.id && (
+                      {user.user_id === currentUser?.id && (
                         <Badge variant="outline" className="text-xs">You</Badge>
                       )}
                     </div>
                     <p className="text-sm text-gray-600">
-                      {user.achievements_count} achievements • {user.txc_balance.toLocaleString()} TXC
+                      {user.achievements_count || 0} achievements • {user.txc_balance?.toLocaleString() || 0} TXC
                     </p>
                   </div>
 

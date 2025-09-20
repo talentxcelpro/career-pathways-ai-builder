@@ -21,6 +21,7 @@ import {
 import { useUserBadges } from '@/hooks/useUserScores';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { useUnifiedGamification } from '@/hooks/useUnifiedGamification';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
@@ -53,87 +54,49 @@ export const AchievementsSection: React.FC = () => {
   const { data: userBadges } = useUserBadges();
   const { availableBalance } = useTokenBalance();
   const txcIntegration = useTXCIntegration();
+  const { 
+    achievements: unifiedAchievements, 
+    userAchievements, 
+    triggerConnectionMade, 
+    triggerJobApplied 
+  } = useUnifiedGamification();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showEarnedOnly, setShowEarnedOnly] = useState(false);
   const [celebratingAchievement, setCelebratingAchievement] = useState<string | null>(null);
 
-  // Mock achievements data with entertainment styling
-  const achievements: Achievement[] = [
-    {
-      id: '1',
-      name: 'First Steps',
-      description: 'Complete your profile setup',
-      icon: Star,
-      rarity: 'common',
-      category: 'career',
-      points: 100,
-      progress: 100,
-      maxProgress: 100,
-      earned: true,
-      earnedAt: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Streak Master',
-      description: 'Maintain a 7-day login streak',
-      icon: Flame,
-      rarity: 'rare',
-      category: 'engagement',
-      points: 500,
-      progress: 7,
-      maxProgress: 7,
-      earned: true,
-      earnedAt: '2024-01-22'
-    },
-    {
-      id: '3',
-      name: 'Social Butterfly',
-      description: 'Connect with 10 professionals',
-      icon: Users,
-      rarity: 'rare',
-      category: 'social',
-      points: 750,
-      progress: 8,
-      maxProgress: 10,
-      earned: false
-    },
-    {
-      id: '4',
-      name: 'Job Hunter',
-      description: 'Apply to 5 job positions',
-      icon: Briefcase,
-      rarity: 'epic',
-      category: 'career',
-      points: 1000,
-      progress: 3,
-      maxProgress: 5,
-      earned: false
-    },
-    {
-      id: '5',
-      name: 'TXC Millionaire',
-      description: 'Earn 10,000 TXC tokens',
-      icon: Zap,
-      rarity: 'legendary',
-      category: 'special',
-      points: 5000,
-      progress: availableBalance || 0,
-      maxProgress: 10000,
-      earned: (availableBalance || 0) >= 10000
-    },
-    {
-      id: '6',
-      name: 'Legendary',
-      description: 'Reach top 10 on leaderboard',
-      icon: Crown,
-      rarity: 'legendary',
-      category: 'special',
-      points: 10000,
-      progress: 42,
-      maxProgress: 10,
-      earned: false
-    }
-  ];
+  // Process unified achievements data
+  const achievements: Achievement[] = (unifiedAchievements || []).map(achievement => {
+    const userAchievement = userAchievements?.find(ua => ua.achievement_id === achievement.id);
+    
+    // Map icon names to components
+    const getIconComponent = (iconName: string) => {
+      const iconMap: { [key: string]: React.ElementType } = {
+        'star': Star,
+        'flame': Flame,
+        'users': Users,
+        'briefcase': Briefcase,
+        'zap': Zap,
+        'crown': Crown,
+        'trophy': Trophy,
+        'target': Target
+      };
+      return iconMap[iconName] || Star;
+    };
+
+    return {
+      id: achievement.id,
+      name: achievement.title,
+      description: achievement.description,
+      icon: getIconComponent(achievement.icon),
+      rarity: achievement.rarity,
+      category: achievement.category,
+      points: achievement.points,
+      progress: userAchievement?.progress || 0,
+      maxProgress: achievement.requirement,
+      earned: userAchievement?.is_completed || false,
+      earnedAt: userAchievement?.completed_at || undefined
+    };
+  });
 
   const getRarityConfig = (rarity: string) => {
     switch (rarity) {
@@ -272,19 +235,21 @@ export const AchievementsSection: React.FC = () => {
                   : 'bg-gray-50 border-gray-200 opacity-75'
               } ${celebratingAchievement === achievement.id ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}
               onClick={async () => {
-                if (!achievement.earned && achievement.progress && achievement.maxProgress) {
-                  // Simulate progress for demo
-                  if (achievement.id === '3') {
+                if (!achievement.earned && achievement.progress !== undefined && achievement.maxProgress) {
+                  // Trigger actual achievement progress
+                  if (achievement.category === 'social') {
+                    await triggerConnectionMade();
                     await txcIntegration.triggerConnectionMade();
                     toast({
                       title: "Progress Made! 🚀",
-                      description: `${achievement.name}: ${achievement.progress + 1}/${achievement.maxProgress}`,
+                      description: `${achievement.name}: Working towards completion!`,
                     });
-                  } else if (achievement.id === '4') {
+                  } else if (achievement.category === 'career') {
+                    await triggerJobApplied();
                     await txcIntegration.triggerJobApplied();
                     toast({
                       title: "Progress Made! 💼",
-                      description: `${achievement.name}: ${achievement.progress + 1}/${achievement.maxProgress}`,
+                      description: `${achievement.name}: Working towards completion!`,
                     });
                   }
                 }

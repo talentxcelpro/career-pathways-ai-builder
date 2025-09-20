@@ -23,6 +23,7 @@ import { useUserScores } from '@/hooks/useUserScores';
 import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { useUnifiedGamification } from '@/hooks/useUnifiedGamification';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +39,7 @@ export const GamificationDashboard: React.FC = () => {
   const { userRanking } = useRealLeaderboard();
   const { balance, availableBalance, refreshBalance } = useTokenBalance();
   const txcIntegration = useTXCIntegration();
+  const { userRanking: unifiedUserRanking, userAchievements, triggerProfileCompleted } = useUnifiedGamification();
   const [recentEarning, setRecentEarning] = useState<number | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   
@@ -89,19 +91,20 @@ export const GamificationDashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [user, txcIntegration]);
 
-  // Enhanced stats with real-time TXC balance
+  // Enhanced stats with real-time TXC balance and unified gamification
   const stats = {
-    level: Math.floor((userScores?.total_points || 0) / 1000) + 1,
-    currentXP: (userScores?.total_points || 0) % 1000,
+    level: Math.floor((unifiedUserRanking?.total_points || userScores?.total_points || 0) / 1000) + 1,
+    currentXP: (unifiedUserRanking?.total_points || userScores?.total_points || 0) % 1000,
     nextLevelXP: 1000,
-    streak: 7,
+    streak: unifiedUserRanking?.current_streak || 7,
     longestStreak: 15,
     weeklyGoal: 5000,
     weeklyProgress: 3200,
-    rank: userRanking?.rank || 42,
+    rank: unifiedUserRanking?.rank || userRanking?.rank || 42,
     totalUsers: userRanking?.total_users || 1250,
     percentile: userRanking?.percentile || 85,
-    txcBalance: availableBalance || 0
+    txcBalance: unifiedUserRanking?.txc_balance || availableBalance || 0,
+    achievementsEarned: unifiedUserRanking?.achievements_count || userAchievements?.filter(a => a.is_completed).length || 0
   };
 
   const quickStats = [
@@ -320,6 +323,7 @@ export const GamificationDashboard: React.FC = () => {
           variant="outline"
           className="h-16"
           onClick={async () => {
+            await triggerProfileCompleted();
             await txcIntegration.triggerProfileCompleted();
             toast({
               title: "TXC Earned! 🎉",
