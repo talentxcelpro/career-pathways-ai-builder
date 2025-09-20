@@ -25916,6 +25916,45 @@ export type Database = {
         }
         Relationships: []
       }
+      txc_transaction_history: {
+        Row: {
+          amount: number
+          balance_after: number
+          category: string
+          created_at: string | null
+          description: string
+          id: string
+          metadata: Json | null
+          reference_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          category: string
+          created_at?: string | null
+          description: string
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          category?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       txc_transactions: {
         Row: {
           activity_type: string | null
@@ -28739,6 +28778,10 @@ export type Database = {
         }
         Returns: Json
       }
+      award_joining_bonus: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       award_tokens: {
         Args: {
           p_amount: number
@@ -29672,6 +29715,18 @@ export type Database = {
       process_successful_referral: {
         Args: { p_referee_id: string; p_referral_code: string }
         Returns: undefined
+      }
+      process_txc_transaction: {
+        Args: {
+          p_amount: number
+          p_category?: string
+          p_description: string
+          p_metadata?: Json
+          p_reference_id?: string
+          p_transaction_type: string
+          p_user_id: string
+        }
+        Returns: boolean
       }
       publish_engagement_event: {
         Args: {
