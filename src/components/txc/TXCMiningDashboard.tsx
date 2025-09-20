@@ -56,12 +56,12 @@ export const TXCMiningDashboard: React.FC = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Available TXC</p>
                 <p className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  {formatTXC(Math.max(availableBalance, 500))}
+                  {formatTXC(availableBalance)}
                 </p>
-                {availableBalance < 500 && (
+                {availableBalance > 1000 && (
                   <div className="flex items-center gap-1 mt-1">
                     <Sparkles className="h-3 w-3 text-green-500" />
-                    <span className="text-xs text-green-600 font-medium">+500 Welcome Bonus!</span>
+                    <span className="text-xs text-green-600 font-medium">Great progress!</span>
                   </div>
                 )}
               </div>

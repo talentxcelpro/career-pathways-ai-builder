@@ -18,17 +18,25 @@ export const useTokenBalance = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      // Use the edge function to get token balance
-      const { data, error } = await supabase.functions.invoke('get-token-balance', {
-        body: { userId: user.id }
-      });
+      try {
+        // First initialize user TXC if needed
+        await supabase.functions.invoke('initialize-user-txc');
 
-      if (error) {
-        console.error('Error fetching token balance:', error);
+        // Then get the balance
+        const { data, error } = await supabase.functions.invoke('get-token-balance', {
+          body: { userId: user.id }
+        });
+
+        if (error) {
+          console.error('Error fetching token balance:', error);
+          return null;
+        }
+
+        return data?.balance || null;
+      } catch (error) {
+        console.error('Error in token balance fetch:', error);
         return null;
       }
-
-      return data?.balance || null;
     },
     enabled: !!user?.id,
     refetchInterval: 30000, // Refetch every 30 seconds

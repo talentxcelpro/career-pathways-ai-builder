@@ -31,9 +31,9 @@ const TXCMining: React.FC = () => {
                 className="w-24 h-24 rounded-full shadow-lg border-4 border-primary/20"
               />
               <div className="absolute -top-2 -right-2">
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold animate-bounce">
+                <div className="bg-gradient-to-r from-primary to-secondary text-white text-xs px-2 py-1 rounded-full font-bold animate-bounce">
                   <Sparkles className="h-3 w-3 inline mr-1" />
-                  NEW
+                  EARN
                 </div>
               </div>
             </div>
@@ -50,12 +50,12 @@ const TXCMining: React.FC = () => {
               <h2 className="text-xl font-semibold text-primary">Great news, {user?.user_metadata?.full_name || 'Explorer'}!</h2>
             </div>
             <p className="text-lg text-muted-foreground mb-4">
-              You already have <span className="font-bold text-primary">{formatTXC(Math.max(availableBalance, 500))}</span> TXC in your account! 
-              {availableBalance < 500 && " Plus, you've earned a 500 TXC welcome bonus! 🎁"}
+              Your current TXC balance: <span className="font-bold text-primary">{formatTXC(availableBalance)}</span> TXC tokens! 
+              {availableBalance > 0 && " Keep earning more by completing activities! 🎁"}
             </p>
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-4 py-2 rounded-lg">
               <Coins className="h-5 w-5 text-primary" />
-              <span className="font-semibold">Minimum Balance Guaranteed: {formatTXC(500)}</span>
+              <span className="font-semibold">Active Mining Rewards Available!</span>
             </div>
           </div>
           
