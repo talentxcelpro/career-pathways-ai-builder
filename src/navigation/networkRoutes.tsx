@@ -29,7 +29,7 @@ import ArticleDetail from "../pages/network/ArticleDetail";
 import MyNetwork from "../pages/network/MyNetwork";
 import Discover from "../pages/network/Discover";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
-// import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
+import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
 import { MobileNetwork } from "../pages/mobile/MobileNetwork";
 
 export const networkRoutes = [
@@ -38,6 +38,7 @@ export const networkRoutes = [
     to: "/network",
     icon: <Users className="h-4 w-4" />,
     page: <NetworkMain />,
+    isPublic: true,
     requiresAuth: true,
   },
   {
@@ -52,6 +53,7 @@ export const networkRoutes = [
     title: "Mobile Network",
     to: "/mobile/network",
     page: <MobileNetwork />,
+    isPublic: true,
     requiresAuth: true,
   },
   {
@@ -175,9 +177,9 @@ export const networkRoutes = [
     to: "/network/suggestions",
     page: <Suggestions />,
   },
-  // {
-  //   title: "Mobile Network Analysis",
-  //   to: "/network/mobile-analysis",
-  //   page: <div>Mobile Network Analysis</div>,
-  // },
+  {
+    title: "Mobile Network Analysis",
+    to: "/network/mobile-analysis",
+    page: <ComprehensiveMobileNetworkAnalysis />,
+  },
 ];

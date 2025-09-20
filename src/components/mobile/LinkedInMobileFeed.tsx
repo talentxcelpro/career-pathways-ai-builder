@@ -15,8 +15,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { VirtualizedList } from '@/components/performance/VirtualizedList';
 import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
 import { LazyComponentWrapper } from '@/components/performance/LazyComponentWrapper';
-import { EnhancedPostActions, EngagementMetrics } from '@/components/polish/MicroInteractions';
-import { RetryWrapper } from '@/components/polish/ErrorHandling';
 
 interface LinkedInPost {
   id: string;
@@ -291,31 +289,55 @@ const LinkedInPostCard: React.FC<{
         </div>
       )}
 
-      {/* Enhanced Action Buttons with Micro-interactions */}
-      <EnhancedPostActions
-        postId={post.id}
-        isLiked={isLiked}
-        isBookmarked={isBookmarked}
-        likesCount={likesCount}
-        commentsCount={post.stats.comments}
-        sharesCount={post.stats.shares}
-        onLike={handleLike}
-        onComment={() => onComment?.(post.id)}
-        onShare={() => onShare?.(post.id)}
-        onBookmark={handleBookmark}
-        className="px-5 py-4"
-      />
+      {/* Action Buttons */}
+      <div className="px-5 py-4">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200",
+              isLiked && "text-blue-600 bg-blue-50"
+            )}
+            onClick={handleLike}
+          >
+            <ThumbsUp className={cn("w-4 h-4", isLiked && "fill-current")} />
+            <span className="text-sm font-medium">Like</span>
+          </Button>
 
-      {/* Engagement Metrics */}
-      {(post.stats.likes > 10 || post.stats.comments > 5) && (
-        <div className="px-5 pb-4">
-          <EngagementMetrics
-            views={post.stats.likes * 10} // Estimated views
-            engagement={Math.round((post.stats.likes + post.stats.comments) / Math.max(post.stats.likes * 10, 1) * 100)}
-            reach={post.stats.shares * 50} // Estimated reach
-          />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
+            onClick={() => onComment?.(post.id)}
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="text-sm font-medium">Comment</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
+            onClick={() => onShare?.(post.id)}
+          >
+            <Share className="w-4 h-4" />
+            <span className="text-sm font-medium">Share</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200",
+              isBookmarked && "text-amber-600 bg-amber-50"
+            )}
+            onClick={handleBookmark}
+          >
+            <Bookmark className={cn("w-4 h-4", isBookmarked && "fill-current")} />
+          </Button>
         </div>
-      )}
+      </div>
 
       {/* Top Comment Preview */}
       {post.engagement?.topComment && (
@@ -400,14 +422,8 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = memo(({
   }
 
   return (
-    <RetryWrapper
-      onRetry={async () => {
-        queryClient.invalidateQueries({ queryKey: ['posts'] });
-      }}
-      error={posts.length === 0 ? new Error('No posts available') : null}
-    >
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
-        <div className="max-w-2xl mx-auto pt-4 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
+      <div className="max-w-2xl mx-auto pt-4 pb-20">
         {/* Create Post Section */}
         <MobileCreatePost onPostCreate={() => {
           // Refresh the posts data without reloading the page
@@ -431,8 +447,7 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = memo(({
             {posts.map((post) => renderPost(post, posts.indexOf(post)))}
           </div>
         )}
-        </div>
       </div>
-    </RetryWrapper>
+    </div>
   );
 });

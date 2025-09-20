@@ -39,11 +39,8 @@ import { useSmartFeedPreferences } from "@/hooks/useSmartFeedPreferences";
 import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPostsFeed";
 import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
-import { SimpleNetworkFeed } from "@/components/network/SimpleNetworkFeed";
+import { AIContentSuggestion } from "@/components/ai/AIContentSuggestion";
 import { EngagementAnalytics } from "@/components/analytics/EngagementAnalytics";
-import { EnhancedErrorBoundary, NetworkStatusIndicator } from "@/components/polish/ErrorHandling";
-import { SEOPageWrapper } from "@/components/polish/SEOOptimizations";
-import { SkipNavigation, AriaLiveRegion } from "@/components/polish/AccessibilityEnhancements";
 
 
 const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
@@ -177,20 +174,8 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
   const missingFields = currentUserProfile ? getMissingProfileFields(currentUserProfile) : [];
 
   return (
-    <SEOPageWrapper
-      title="Professional Network Feed | Connect & Share | TalentXcel"
-      description="Join the professional conversation. Share insights, connect with industry experts, and advance your career through meaningful networking on TalentXcel."
-      keywords={['professional networking', 'career posts', 'industry insights', 'professional community', 'career growth']}
-      ogImage="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png"
-    >
-      <EnhancedErrorBoundary>
-        <SkipNavigation />
-        <AriaLiveRegion />
-        
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
-          <NetworkStatusIndicator />
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         {/* Feed Content */}
 
         {/* Three Column Layout */}
@@ -348,15 +333,42 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
               />
             </div>
 
-            {/* Create Post */}
+            {/* Create Post with AI Assistant */}
             <div className="space-y-4">
               <EnhancedCreatePost onPostCreate={handlePostCreate} />
+              
+              {/* AI Content Suggestion */}
+              <AIContentSuggestion
+                userProfile={currentUserProfile}
+                onSuggestionApply={(suggestion) => {
+                  // This would integrate with the create post component
+                  console.log('AI Suggestion applied:', suggestion);
+                }}
+              />
             </div>
 
-            {/* Simple Network Posts Feed */}
-            <div className="space-y-4">
-              <SimpleNetworkFeed feedType={feedFilter} />
-            </div>
+            {/* Enhanced Network Posts Feed with Performance Optimizations */}
+            <React.Suspense fallback={
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl p-6 animate-pulse">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }>
+              <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
+            </React.Suspense>
           </div>
 
           {/* Right Sidebar - Network Activity & Advertising */}
@@ -530,9 +542,7 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
         isOpen={showModernMessenger}
         onClose={() => setShowModernMessenger(false)}
       />
-        </div>
-      </EnhancedErrorBoundary>
-    </SEOPageWrapper>
+    </div>
   );
 };
 
