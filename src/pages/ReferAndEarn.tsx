@@ -115,60 +115,59 @@ const ReferAndEarn: React.FC = () => {
       {/* Hero Section */}
       <section className="pt-12 pb-8 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Logo and Title */}
-          <div className="mb-8">
-            <div className="flex justify-center mb-6">
+          {/* Professional Header with Small Text */}
+          <div className="mb-12">
+            <div className="flex justify-center mb-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-lg animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-xl rounded-2xl p-4 border border-border/30">
+                <div className="relative bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
                   <img 
                     src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                     alt="TalentXcel" 
-                    className="h-12 w-12 rounded-lg shadow-lg"
+                    className="h-8 w-8 rounded-md"
                   />
                 </div>
               </div>
             </div>
             
-            {/* TXC Hero Display */}
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="flex items-center gap-3 bg-gradient-to-r from-yellow-400/20 via-yellow-500/20 to-yellow-600/20 backdrop-blur-sm rounded-full px-8 py-4 border border-yellow-400/30 shadow-xl">
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                  <Coins className="h-6 w-6 text-white font-bold" />
-                </div>
-                <span className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">TXC</span>
-                <span className="text-xl text-muted-foreground font-medium">Rewards</span>
-              </div>
+            <div className="mb-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-2">
+                Referral Program
+              </p>
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-3">
+                Refer & Earn Professional Benefits
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Invite colleagues to TalentXcel and unlock premium career tools, priority support, and exclusive AI features.
+              </p>
             </div>
             
-            <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4 animate-fade-in">
-              Refer Friends & Unlock <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Pro Access</span>
-            </h1>
-            <h2 className="text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Share TalentXcel with your network and unlock premium AI career tools while earning 
-              <span className="font-bold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent"> TXC tokens</span>
-            </h2>
+            {/* Professional TXC Rewards Badge */}
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full px-4 py-2 border border-blue-200">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                <Coins className="h-3 w-3 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-blue-700">TXC Rewards</span>
+              <span className="text-xs text-blue-600">Active</span>
+            </div>
           </div>
           
-          {/* Stats Card */}
+          {/* Professional Stats Overview */}
           {referralData && (
-            <div className="max-w-md mx-auto mb-8">
-              <Card className="gradient-card shadow-elegant border-primary/20">
+            <div className="max-w-lg mx-auto mb-10">
+              <Card className="bg-white border border-gray-200 shadow-sm">
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
+                  <div className="grid grid-cols-3 gap-6">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{referralData.successful_referrals}</div>
-                      <div className="text-sm text-muted-foreground">Friends Referred</div>
+                      <div className="text-2xl font-bold text-gray-900">{referralData.successful_referrals}</div>
+                      <div className="text-xs text-muted-foreground font-medium">Referrals</div>
                     </div>
-                    <div className="w-px h-12 bg-border"></div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-brand-green">Tier {referralData.current_tier || 1}</div>
-                      <div className="text-sm text-muted-foreground">Current Level</div>
+                    <div className="text-center border-l border-r border-gray-200">
+                      <div className="text-2xl font-bold text-blue-600">Tier {referralData.current_tier || 1}</div>
+                      <div className="text-xs text-muted-foreground font-medium">Current</div>
                     </div>
-                    <div className="w-px h-12 bg-border"></div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange">Pro</div>
-                      <div className="text-sm text-muted-foreground">Benefits</div>
+                      <div className="text-2xl font-bold text-green-600">Active</div>
+                      <div className="text-xs text-muted-foreground font-medium">Status</div>
                     </div>
                   </div>
                 </CardContent>
@@ -176,11 +175,10 @@ const ReferAndEarn: React.FC = () => {
             </div>
           )}
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <TouchButton 
-              size="xl" 
-              variant="primary"
+          {/* Professional CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Button 
+              size="lg" 
               onClick={() => {
                 triggerHaptic('success');
                 if (referralData?.referral_code) {
@@ -189,37 +187,36 @@ const ReferAndEarn: React.FC = () => {
                   document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="bg-gradient-to-r from-primary via-secondary to-accent text-white shadow-2xl hover:shadow-3xl transform hover:scale-105"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 text-sm font-medium"
             >
-              <Zap className="w-5 h-5 mr-2" />
-              {referralData?.referral_code ? 'Copy Referral Link' : 'Get Started Now'}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </TouchButton>
+              <Share2 className="w-4 h-4 mr-2" />
+              {referralData?.referral_code ? 'Copy Referral Link' : 'Start Referring'}
+            </Button>
             
-            <TouchButton 
+            <Button 
               size="lg" 
-              variant="floating"
+              variant="outline"
               onClick={() => {
                 triggerHaptic('light');
                 document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="border-primary/30 hover:bg-primary/10 hover:border-primary/50"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2.5 text-sm font-medium"
             >
-              <Star className="w-5 h-5 mr-2 text-yellow-500" />
-              View TXC Rewards
-            </TouchButton>
+              <Trophy className="w-4 h-4 mr-2" />
+              View Rewards
+            </Button>
             
-            <TouchButton 
+            <Button 
               size="lg" 
               variant="ghost"
-              onClick={() => triggerHaptic('medium')}
-              className="border-accent/30 hover:bg-accent/10"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-6 py-2.5 text-sm font-medium"
+              asChild
             >
-              <Link to="/pro/subscription" className="flex items-center">
-                <Crown className="w-5 h-5 mr-2 text-yellow-600" />
+              <Link to="/pro/subscription">
+                <Crown className="w-4 h-4 mr-2" />
                 Upgrade to Pro
               </Link>
-            </TouchButton>
+            </Button>
           </div>
         </div>
       </section>
