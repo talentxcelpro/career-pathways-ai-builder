@@ -6873,8 +6873,10 @@ export type Database = {
           created_at: string
           description: string | null
           email: string | null
+          employee_count_range: string | null
           employees_count: number | null
           featured: boolean | null
+          founded_year: number | null
           founding_year: number | null
           headquarters_location: string | null
           id: string
@@ -6882,6 +6884,7 @@ export type Database = {
           is_active: boolean | null
           is_verified: boolean | null
           keywords: string[] | null
+          location: string | null
           logo_url: string | null
           meta_description: string | null
           meta_title: string | null
@@ -6891,6 +6894,7 @@ export type Database = {
           profile_completion_score: number | null
           rejection_reason: string | null
           revenue_range: string | null
+          size_range: string | null
           slug: string | null
           social_media: Json | null
           state: string | null
@@ -6916,8 +6920,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          employee_count_range?: string | null
           employees_count?: number | null
           featured?: boolean | null
+          founded_year?: number | null
           founding_year?: number | null
           headquarters_location?: string | null
           id?: string
@@ -6925,6 +6931,7 @@ export type Database = {
           is_active?: boolean | null
           is_verified?: boolean | null
           keywords?: string[] | null
+          location?: string | null
           logo_url?: string | null
           meta_description?: string | null
           meta_title?: string | null
@@ -6934,6 +6941,7 @@ export type Database = {
           profile_completion_score?: number | null
           rejection_reason?: string | null
           revenue_range?: string | null
+          size_range?: string | null
           slug?: string | null
           social_media?: Json | null
           state?: string | null
@@ -6959,8 +6967,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           email?: string | null
+          employee_count_range?: string | null
           employees_count?: number | null
           featured?: boolean | null
+          founded_year?: number | null
           founding_year?: number | null
           headquarters_location?: string | null
           id?: string
@@ -6968,6 +6978,7 @@ export type Database = {
           is_active?: boolean | null
           is_verified?: boolean | null
           keywords?: string[] | null
+          location?: string | null
           logo_url?: string | null
           meta_description?: string | null
           meta_title?: string | null
@@ -6977,6 +6988,7 @@ export type Database = {
           profile_completion_score?: number | null
           rejection_reason?: string | null
           revenue_range?: string | null
+          size_range?: string | null
           slug?: string | null
           social_media?: Json | null
           state?: string | null
