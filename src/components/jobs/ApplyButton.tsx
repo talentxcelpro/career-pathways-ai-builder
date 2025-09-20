@@ -55,7 +55,6 @@ export default function ApplyButton({ job, variant = "default", size = "default"
       await createApplication.mutateAsync({
         job_id: job.id,
         resume_url: applicationData.resumeUrl,
-        redirect_url: job.source_url,
         application_data: applicationData
       });
 

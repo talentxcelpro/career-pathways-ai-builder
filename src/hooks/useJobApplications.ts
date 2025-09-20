@@ -7,10 +7,8 @@ export interface JobApplication {
   id: string;
   user_id: string;
   job_id: string;
-  bot_id?: string;
   applied_at: string;
   resume_url?: string;
-  redirect_url?: string;
   status: string;
   application_data: any;
   created_at: string;
@@ -57,7 +55,6 @@ export const useCreateJobApplication = () => {
     mutationFn: async (applicationData: {
       job_id: string;
       resume_url?: string;
-      redirect_url?: string;
       application_data?: any;
     }) => {
       const { data, error } = await supabase

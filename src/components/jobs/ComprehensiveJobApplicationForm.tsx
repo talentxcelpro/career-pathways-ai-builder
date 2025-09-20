@@ -357,7 +357,6 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       const applicationResult = await createApplication.mutateAsync({
         job_id: job.id,
         resume_url: resumeUrl,
-        redirect_url: job.external_url,
         application_data: {
           fullName: formData.fullName,
           email: formData.email,
