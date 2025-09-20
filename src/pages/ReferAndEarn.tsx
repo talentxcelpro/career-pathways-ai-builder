@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
 import { ReferralDashboard } from '@/components/referral/ReferralDashboard';
+import { ReferralContest } from '@/components/referral/ReferralContest';
+import { UrgencyBooster } from '@/components/referral/UrgencyBooster';
+import { SocialGameHub } from '@/components/referral/SocialGameHub';
 import { SocialShare } from '@/components/shared/SocialShare';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { TouchButton } from '@/components/mobile/TouchButton';
@@ -308,6 +311,27 @@ const ReferAndEarn: React.FC = () => {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Urgency Boosters */}
+      <section className="py-16 px-4 bg-card/30">
+        <div className="max-w-6xl mx-auto">
+          <UrgencyBooster />
+        </div>
+      </section>
+
+      {/* Contests */}
+      <section className="py-16 px-4 gradient-hero">
+        <div className="max-w-6xl mx-auto">
+          <ReferralContest />
+        </div>
+      </section>
+
+      {/* Social Game Hub */}
+      <section className="py-16 px-4 bg-card/30">
+        <div className="max-w-6xl mx-auto">
+          <SocialGameHub />
         </div>
       </section>
 
