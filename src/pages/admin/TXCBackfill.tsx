@@ -24,15 +24,32 @@ const TXCBackfill = () => {
   const { toast } = useToast();
 
   const handleBackfill = async () => {
+    console.log('🚀 Starting TXC backfill process...');
     setIsProcessing(true);
+    
     try {
-      const { data, error } = await supabase.functions.invoke('backfill-user-txc');
+      // Check authentication first
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('You must be logged in to perform this action');
+      }
+      
+      console.log('📡 Invoking backfill-user-txc function...');
+      const { data, error } = await supabase.functions.invoke('backfill-user-txc', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      console.log('📊 Function response:', { data, error });
 
       if (error) {
+        console.error('❌ Function error:', error);
         throw new Error(error.message);
       }
 
       if (data?.success) {
+        console.log('✅ Backfill completed successfully:', data.statistics);
         setResults(data.statistics);
         toast({
           title: "TXC Backfill Completed! 🎉",
@@ -40,10 +57,11 @@ const TXCBackfill = () => {
           variant: "default"
         });
       } else {
+        console.error('❌ Backfill failed:', data);
         throw new Error(data?.error || 'Backfill failed');
       }
     } catch (error) {
-      console.error('Backfill error:', error);
+      console.error('❌ Backfill error:', error);
       toast({
         title: "Backfill Failed",
         description: error instanceof Error ? error.message : 'Unknown error occurred',
