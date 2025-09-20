@@ -66,7 +66,7 @@ export function CareerPassportDashboard() {
   // Determine the actual user ID to use
   const targetUserId = userId || resolvedUserId || user?.id;
   
-  const { careerPassport, achievements, isLoading, getCompletionBreakdown, getNextMilestone, trackJourneyEvent, updateCareerPassport } = useCareerPassport();
+  const { careerPassport, achievements, isLoading, error, hasAuthError, getCompletionBreakdown, getNextMilestone, trackJourneyEvent, updateCareerPassport } = useCareerPassport();
   const { data: userScores } = useUserScores(targetUserId);
   const navigate = useNavigate();
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
@@ -335,8 +335,54 @@ export function CareerPassportDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Authentication Error */}
+        {hasAuthError && (
+          <div className="text-center py-12">
+            <Alert className="mb-6 max-w-md mx-auto">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                We encountered an authentication error. This usually happens when your session has expired or there's a cache issue.
+              </AlertDescription>
+            </Alert>
+            <div className="space-y-4">
+              <Button 
+                onClick={async () => {
+                  try {
+                    // Try to refresh session first
+                    const { data: { session }, error } = await supabase.auth.refreshSession();
+                    if (session && !error) {
+                      // Session refreshed successfully, reload the page
+                      window.location.reload();
+                      return;
+                    }
+                  } catch (refreshError) {
+                    console.error('Session refresh failed:', refreshError);
+                  }
+                  
+                  // If refresh fails, sign out and redirect to auth
+                  try {
+                    await supabase.auth.signOut();
+                  } catch (signOutError) {
+                    console.error('Sign out error:', signOutError);
+                  }
+                  window.location.href = '/auth';
+                }}
+                className="mr-4"
+              >
+                Try Again
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/')}
+              >
+                Go to Home
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Show sign-in prompt for unauthenticated users */}
-        {!user && (
+        {!user && !hasAuthError && (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-muted-foreground mb-4">
               Sign In Required
@@ -351,7 +397,7 @@ export function CareerPassportDashboard() {
           </div>
         )}
 
-        {(isLoading || publicLoading || usernameLoading) ? (
+        {(isLoading || publicLoading || usernameLoading) && !hasAuthError ? (
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -372,7 +418,7 @@ export function CareerPassportDashboard() {
               </CardContent>
             </Card>
           </div>
-        ) : displayData.profile ? (
+        ) : displayData.profile && !hasAuthError ? (
           <div className="space-y-8">
             {/* Enhanced QR Generator for own profile */}
             {!isPublicView && displayData.isOwner && (
@@ -394,7 +440,7 @@ export function CareerPassportDashboard() {
               publicPassport={isPublicView ? publicPassportData : undefined}
             />
           </div>
-        ) : (
+        ) : !hasAuthError ? (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-muted-foreground mb-4">
               Career Passport Not Found
@@ -409,7 +455,7 @@ export function CareerPassportDashboard() {
               </Button>
             )}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
