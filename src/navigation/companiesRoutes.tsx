@@ -12,13 +12,13 @@ export const companiesRoutes = [
   },
   {
     title: "Company Detail by Slug",
-    to: "/:slug",
+    to: "/company/:slug",
     page: <CompanyDetail />,
     isPublic: true,
     requiresAdminAccess: false,
   },
   {
-    title: "Company Detail by ID",
+    title: "Company Detail by ID", 
     to: "/companies/:id",
     page: <CompanyDetail />,
     isPublic: true,
