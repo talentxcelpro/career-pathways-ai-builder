@@ -147,6 +147,18 @@ const txcTokenItems = [
     url: '/admin/txc-analytics',
     icon: BarChart3,
     description: 'Token economics & usage analytics'
+  },
+  {
+    title: 'TXC Store',
+    url: '/admin/txc-store',
+    icon: ShoppingCart,
+    description: 'Feature marketplace & TXC purchases'
+  },
+  {
+    title: 'TXC Spending History',
+    url: '/admin/txc-spending',
+    icon: Receipt,
+    description: 'Purchase analytics & spending patterns'
   }
 ];
 

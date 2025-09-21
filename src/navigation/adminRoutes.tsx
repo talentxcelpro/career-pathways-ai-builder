@@ -7,6 +7,8 @@ import TXCTokenManagement from "../pages/admin/TXCTokenManagement";
 import TXCAwardsAndBonuses from "../pages/admin/TXCAwardsAndBonuses";
 import TXCAnalytics from "../pages/admin/TXCAnalytics";
 import TXCBackfill from "../pages/admin/TXCBackfill";
+import TXCStore from "../pages/admin/TXCStore";
+import TXCSpendingHistory from "../pages/admin/TXCSpendingHistory";
 import LinkedInBulkUpload from "../pages/admin/LinkedInBulkUpload";
 import LinkedInJobScraper from "../pages/admin/LinkedInJobScraper";
 import LinkedInAnalytics from "../pages/admin/LinkedInAnalytics";
@@ -437,6 +439,20 @@ export const adminRoutes = [
     to: "/admin/txc-analytics",
     icon: <BarChart3 className="h-4 w-4" />,
     page: <TXCAnalytics />,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Store",
+    to: "/admin/txc-store",
+    icon: <Coins className="h-4 w-4" />,
+    page: <TXCStore />,
+    requiresAuth: true,
+  },
+  {
+    title: "TXC Spending History",
+    to: "/admin/txc-spending",
+    icon: <Coins className="h-4 w-4" />,
+    page: <TXCSpendingHistory />,
     requiresAuth: true,
   },
   {
