@@ -1,5 +1,5 @@
 
-// Currency utility functions for INR formatting
+// Currency utility functions for TXC token formatting
 export const formatCurrency = (amount: number | null | undefined): string => {
   if (!amount) return "Not specified";
   
@@ -33,7 +33,7 @@ export const formatSalaryRange = (
         // Convert from crores to reasonable LPA (divide by 100)
         const reasonableMin = Math.max(3, Math.min(min / 100, 50));
         const reasonableMax = Math.max(reasonableMin + 5, Math.min(max / 100, 80));
-        return `₹${reasonableMin.toFixed(0)}-${reasonableMax.toFixed(0)} LPA`;
+        return `${reasonableMin.toFixed(0)}-${reasonableMax.toFixed(0)} TXC`;
       }
     }
     return salaryRange;
@@ -78,9 +78,9 @@ export const formatSalaryRange = (
     return formatCurrency(amount);
   };
   
-  if (min && max) return `₹${formatAmount(min)} - ${formatAmount(max)}`;
-  if (min) return `₹${formatAmount(min)}+`;
-  return `Up to ₹${formatAmount(max)}`;
+  if (min && max) return `${formatAmount(min)} - ${formatAmount(max)} TXC`;
+  if (min) return `${formatAmount(min)}+ TXC`;
+  return `Up to ${formatAmount(max)} TXC`;
 };
 
 // Normalize salary to annual for comparison
