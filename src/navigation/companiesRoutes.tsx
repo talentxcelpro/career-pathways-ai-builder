@@ -1,6 +1,6 @@
 
 import Companies from "../pages/Companies";
-import CompanyDetail from "../pages/companies/CompanyDetail";
+import { CompanyDetailPage } from "../components/performance/LazyRoutes";
 
 export const companiesRoutes = [
   {
@@ -13,14 +13,14 @@ export const companiesRoutes = [
   {
     title: "Company Detail by Slug",
     to: "/company/:slug",
-    page: <CompanyDetail />,
+    page: <CompanyDetailPage />,
     isPublic: true,
     requiresAdminAccess: false,
   },
   {
     title: "Company Detail by ID", 
     to: "/companies/:id",
-    page: <CompanyDetail />,
+    page: <CompanyDetailPage />,
     isPublic: true,
     requiresAdminAccess: false,
   },

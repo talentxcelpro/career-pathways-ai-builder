@@ -1,6 +1,6 @@
 
 import { User } from "lucide-react";
-import Profile from "../pages/Profile";
+import { ProfilePage } from "../components/performance/LazyRoutes";
 import ProfileEdit from "../pages/profile/ProfileEdit";
 import ProfileResume from "../pages/profile/ProfileResume";
 import ProfileCoverLetter from "../pages/profile/ProfileCoverLetter";
@@ -60,7 +60,7 @@ export const profileRoutes = [
     title: "Profile",
     to: "/profile",
     icon: <User className="h-4 w-4" />,
-    page: <Profile />,
+    page: <ProfilePage />,
     requiresAuth: true,
   },
   {

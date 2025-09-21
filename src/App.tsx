@@ -25,6 +25,7 @@ import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { initializePerformanceOptimizations } from "@/utils/performanceOptimizer";
+import { initBundleOptimizations } from "@/utils/bundleOptimizer";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
 import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
@@ -155,6 +156,11 @@ const publicRoutes = [
 ];
 
 const App = () => {
+  // Initialize performance optimizations on app start
+  React.useEffect(() => {
+    initBundleOptimizations();
+  }, []);
+
   // Check if this is a subdomain - simplified as fallback only
   const hostname = window.location.hostname;
   const isSubdomain = hostname.includes('.talentxcel.in') && hostname !== 'talentxcel.in';

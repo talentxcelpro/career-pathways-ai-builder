@@ -1,7 +1,6 @@
 
 import { Users, Coins } from "lucide-react";
-import NetworkMain from "../pages/Network";
-import NetworkPage from "../pages/NetworkPage";
+import { NetworkPage } from "../components/performance/LazyRoutes";
 import People from "../pages/network/People";
 import Posts from "../pages/network/Posts";
 import PostDetail from "../pages/network/PostDetail";
@@ -37,7 +36,7 @@ export const networkRoutes = [
     title: "Network",
     to: "/network",
     icon: <Users className="h-4 w-4" />,
-    page: <NetworkMain />,
+    page: <NetworkPage />,
     isPublic: true,
     requiresAuth: true,
   },
