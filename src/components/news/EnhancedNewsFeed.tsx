@@ -10,6 +10,17 @@ import { EnhancedNewsCard } from "./EnhancedNewsCard";
 import { NewsHeroSection } from "./NewsHeroSection";
 import { TrendingCarousel } from "./TrendingCarousel";
 import { LoadingSkeleton } from "./LoadingSkeleton";
+import { InfiniteNewsFeed } from "./InfiniteNewsFeed";
+import { PersonalizedDashboard } from "@/components/analytics/PersonalizedDashboard";
+import { ContentAnalyticsDashboard } from "@/components/analytics/ContentAnalyticsDashboard";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { MobileNewsFeed } from "@/components/mobile/TouchOptimizedComponents";
+import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
+import { useNewsArticles } from "@/hooks/useNewsArticles";
+import { EnhancedNewsCard } from "./EnhancedNewsCard";
+import { NewsHeroSection } from "./NewsHeroSection";
+import { TrendingCarousel } from "./TrendingCarousel";
+import { LoadingSkeleton } from "./LoadingSkeleton";
 import { 
   Search, 
   Filter, 
@@ -22,7 +33,10 @@ import {
   Globe,
   Users,
   Eye,
-  Flame
+  Flame,
+  BarChart3,
+  Brain,
+  Smartphone
 } from 'lucide-react';
 
 interface EnhancedNewsFeedProps {
@@ -36,6 +50,8 @@ export const EnhancedNewsFeed: React.FC<EnhancedNewsFeedProps> = ({
   maxItems = 20,
   showHero = true
 }) => {
+  const { isMobile } = useMobileDetection();
+  const [viewMode, setViewMode] = useState<'standard' | 'infinite' | 'analytics' | 'insights'>('infinite');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState<'latest' | 'trending' | 'engagement'>('latest');
@@ -117,6 +133,45 @@ export const EnhancedNewsFeed: React.FC<EnhancedNewsFeedProps> = ({
           </Button>
         </CardContent>
       </Card>
+    );
+  }
+
+  // Mobile optimized view
+  if (isMobile && variant === 'full') {
+    return (
+      <AccessibilityProvider>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4">
+            <h2 className="text-lg font-semibold">Career News</h2>
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === 'infinite' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('infinite')}
+              >
+                <Smartphone className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'analytics' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('analytics')}
+              >
+                <BarChart3 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          
+          {viewMode === 'infinite' && (
+            <MobileNewsFeed articles={filteredArticles} />
+          )}
+          
+          {viewMode === 'analytics' && (
+            <div className="p-4">
+              <PersonalizedDashboard />
+            </div>
+          )}
+        </div>
+      </AccessibilityProvider>
     );
   }
 
@@ -278,7 +333,8 @@ export const EnhancedNewsFeed: React.FC<EnhancedNewsFeedProps> = ({
             </Button>
           </CardContent>
         </Card>
-      )}
-    </div>
+        )}
+      </div>
+    </AccessibilityProvider>
   );
 };
