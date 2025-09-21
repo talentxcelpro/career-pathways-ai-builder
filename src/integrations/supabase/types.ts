@@ -29741,6 +29741,10 @@ export type Database = {
           title: string
         }[]
       }
+      get_current_user_or_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_due_agents: {
         Args: Record<PropertyKey, never>
         Returns: {
