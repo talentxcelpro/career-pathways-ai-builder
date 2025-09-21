@@ -1,4 +1,4 @@
-import { Award, QrCode, BarChart3, Users, Shield, Trophy } from "lucide-react";
+import { Award, QrCode, BarChart3, Users, Shield, Trophy, Map } from "lucide-react";
 import CareerPassportDashboard from "../pages/passport/CareerPassportDashboard";
 import PassportRouteHandler from "@/components/passport/PassportRouteHandler";
 import PublicPassportView from "../pages/PublicPassportView";
@@ -7,6 +7,7 @@ import CareerIntelligenceDashboard from "../pages/CareerIntelligenceDashboard";
 import InstantNetworkingSystem from "../pages/InstantNetworkingSystem";
 import { SkillsVerificationCenter } from "../pages/SkillsVerificationCenter";
 import DynamicAchievementSystem from "../pages/DynamicAchievementSystem";
+import InteractiveCareerRoadmapBuilder from "../pages/InteractiveCareerRoadmapBuilder";
 export const passportRoutes = [
   {
     title: "Career Passport",
@@ -66,6 +67,14 @@ export const passportRoutes = [
     to: "/achievements",
     icon: <Trophy className="h-4 w-4" />,
     page: <DynamicAchievementSystem />,
+    isPublic: false,
+    requiresAdminAccess: false,
+  },
+  {
+    title: "Roadmap Builder",
+    to: "/roadmap-builder", 
+    icon: <Map className="h-4 w-4" />,
+    page: <InteractiveCareerRoadmapBuilder />,
     isPublic: false,
     requiresAdminAccess: false,
   },

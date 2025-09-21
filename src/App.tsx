@@ -92,6 +92,7 @@ import CareerIntelligenceDashboard from "./pages/CareerIntelligenceDashboard";
 import InstantNetworkingSystem from "./pages/InstantNetworkingSystem";
 import { SkillsVerificationCenter } from "./pages/SkillsVerificationCenter";
 import DynamicAchievementSystem from "./pages/DynamicAchievementSystem";
+import InteractiveCareerRoadmapBuilder from "./pages/InteractiveCareerRoadmapBuilder";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
@@ -272,6 +273,7 @@ const App = () => {
                             <Route path="/instant-networking" element={<ProtectedRoute><InstantNetworkingSystem /></ProtectedRoute>} />
                              <Route path="/skills-verification" element={<ProtectedRoute><SkillsVerificationCenter /></ProtectedRoute>} />
                              <Route path="/achievements" element={<ProtectedRoute><DynamicAchievementSystem /></ProtectedRoute>} />
+                             <Route path="/roadmap-builder" element={<ProtectedRoute><InteractiveCareerRoadmapBuilder /></ProtectedRoute>} />
                          <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                           <Route path="/mobile/reels" element={<ProtectedRoute><React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense></ProtectedRoute>} />
                            <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />
