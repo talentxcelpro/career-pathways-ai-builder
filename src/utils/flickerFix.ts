@@ -8,9 +8,8 @@ export class FlickerFix {
     // Only critical CSS to prevent major layout shifts
     const style = document.createElement('style');
     style.textContent = `
-      /* Minimal flicker prevention */
+      /* Minimal flicker prevention - removed opacity hide */
       body {
-        opacity: 0;
         transition: opacity 0.15s ease-in;
       }
       
