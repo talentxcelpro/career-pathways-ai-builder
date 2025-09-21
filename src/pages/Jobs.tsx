@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Search, Brain, Filter, TrendingUp, Building, MapPin, Zap } from 'lucide-react';
+import { Search, Brain, Filter, TrendingUp, Building, MapPin, Zap, FileText } from 'lucide-react';
 import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { JobsBanner } from '@/components/jobs/JobsBanner';
 import { TopCompaniesHiring } from '@/components/jobs/TopCompaniesHiring';
@@ -29,8 +29,8 @@ import { SearchFilters } from '@/services/aiSearchService';
 import { SocialPagination } from '@/components/ui/social-pagination';
 import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
 import { SmartJobMatchingBar } from '@/components/jobs/SmartJobMatchingBar';
-import { JobCard } from '@/components/jobs/JobCard';
-import { QuickActions } from '@/components/jobs/QuickActions';
+import { AppleJobCard } from '@/components/jobs/AppleJobCard';
+import { TempJobsHeader } from '@/components/jobs/TempJobsHeader';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -592,12 +592,12 @@ const Jobs = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {featuredJobs.slice(0, 4).map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  onSave={handleSaveJob}
-                  isSaved={savedJobs.includes(job.id)}
-                />
+                  <AppleJobCard
+                    key={job.id}
+                    job={job}
+                    onSave={handleSaveJob}
+                    isSaved={savedJobs.includes(job.id)}
+                  />
               ))}
             </div>
           </div>
@@ -652,12 +652,12 @@ const Jobs = () => {
             {/* Enhanced Job Cards Grid */}
             <div className="grid grid-cols-1 gap-4">
               {regularJobs.map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  onSave={handleSaveJob}
-                  isSaved={savedJobs.includes(job.id)}
-                />
+                    <AppleJobCard
+                      key={job.id}
+                      job={job}
+                      onSave={handleSaveJob}
+                      isSaved={savedJobs.includes(job.id)}
+                    />
               ))}
             </div>
 
