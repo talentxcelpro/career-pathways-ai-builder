@@ -9,13 +9,12 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    hmr: mode === 'development' ? { port: 8080 } : false,
   },
   plugins: [
     react({
-      // Reduce memory usage during development
       devTarget: mode === 'development' ? 'es2020' : 'esnext'
     }),
-    // Disable heavy plugins during development builds
     mode === 'production' && componentTagger(),
     mode === 'production' && visualizer({
       filename: 'dist/bundle-analysis.html',
@@ -35,21 +34,34 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) return 'react';
-            if (id.includes('@radix-ui')) return 'ui';
-            if (id.includes('@supabase') || id.includes('@tanstack')) return 'data';
+            // Ultra-aggressive chunking for global media competition
+            if (id.includes('react') || id.includes('react-dom')) return 'react-core';
+            if (id.includes('@radix-ui')) return 'ui-primitives';
+            if (id.includes('@supabase')) return 'supabase-client';
+            if (id.includes('@tanstack')) return 'query-client';
             if (id.includes('lucide-react')) return 'icons';
-            return 'vendor';
+            if (id.includes('framer-motion')) return 'animations';
+            if (id.includes('@vercel')) return 'vercel-sdk';
+            return 'vendor-misc';
           }
+          // Route-based chunking
+          if (id.includes('/pages/')) {
+            const route = id.split('/pages/')[1].split('/')[0];
+            return `page-${route}`;
+          }
+          if (id.includes('/components/performance/')) return 'performance-tools';
+          if (id.includes('/components/seo/')) return 'seo-tools';
         }
-      }
+      },
+      external: mode === 'development' ? [] : [],
     },
     target: 'es2022',
     minify: 'terser',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-    assetsInlineLimit: 4096,
-    cssCodeSplit: false
+    chunkSizeWarningLimit: 500, // Stricter limits
+    assetsInlineLimit: 8192, // Inline more small assets
+    cssCodeSplit: true, // Enable CSS chunking for better caching
+    reportCompressedSize: false, // Skip size analysis in dev
   },
   optimizeDeps: {
     include: [
@@ -58,12 +70,15 @@ export default defineConfig(({ mode }) => ({
       'react-router-dom',
       '@supabase/supabase-js',
       '@tanstack/react-query',
-      'lucide-react'
+      'lucide-react',
+      'framer-motion',
+      'zustand',
+      'react-hook-form'
     ],
-    // Exclude heavy packages from optimization to save memory
     exclude: mode === 'development' ? [
       'mammoth', 'pdfjs-dist', 'docx', 'tesseract.js', '@huggingface/transformers'
-    ] : []
+    ] : [],
+    force: mode === 'production' // Force re-optimization in production
   },
   // Additional memory optimizations for development
   esbuild: mode === 'development' ? {

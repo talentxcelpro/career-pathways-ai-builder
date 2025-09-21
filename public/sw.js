@@ -1,301 +1,114 @@
-// Enhanced Service Worker with proper push notification handling
-const CACHE_NAME = 'talentxcel-v4';
-const urlsToCache = [
-  '/offline.html',
+// TalentXcel Service Worker - Ultra Fast & Offline-First
+const CACHE_NAME = 'talentxcel-v1';
+const STATIC_CACHE = 'talentxcel-static-v1';
+const DYNAMIC_CACHE = 'talentxcel-dynamic-v1';
+
+// Critical resources to cache immediately
+const CRITICAL_ASSETS = [
+  '/',
   '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/sounds/notification.mp3'
+  '/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png',
+  'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZ.woff2'
 ];
 
-// Install event
-self.addEventListener('install', event => {
+// Network-first strategy for API calls
+const API_ENDPOINTS = [
+  '/api/',
+  'https://dthlgsnakhoftinssokm.supabase.co/'
+];
+
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+    caches.open(STATIC_CACHE)
+      .then((cache) => cache.addAll(CRITICAL_ASSETS))
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate event
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating...');
   event.waitUntil(
-    caches.keys().then(cacheNames => Promise.all(
-      cacheNames.map(cacheName => cacheName !== CACHE_NAME && caches.delete(cacheName))
-    ))
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((cacheName) => cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE)
+          .map((cacheName) => caches.delete(cacheName))
+      );
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch event with robust strategies to prevent stale HTML/JS mismatch
 self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  const url = new URL(req.url);
+  const { request } = event;
+  const url = new URL(request.url);
 
-  // Skip cross-origin
-  if (url.origin !== self.location.origin) return;
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
 
-  // Network-first for navigations/HTML to avoid cached old index.html
-  if (req.mode === 'navigate' || req.destination === 'document' || (req.headers.get('accept') || '').includes('text/html')) {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
-          return res;
-        })
-        .catch(async () => {
-          const cached = await caches.match(req);
-          return cached || caches.match('/offline.html');
-        })
-    );
+  // Handle API requests with network-first strategy
+  if (API_ENDPOINTS.some(endpoint => request.url.includes(endpoint))) {
+    event.respondWith(networkFirstStrategy(request));
     return;
   }
 
-  // Cache-first for static assets; fallback to network
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req).then((res) => {
-        if (req.method === 'GET' && url.origin === self.location.origin && !url.pathname.startsWith('/api')) {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
-        }
-        return res;
-      }).catch(() => caches.match('/offline.html'));
-    })
-  );
-});
-
-// Enhanced Push notification event with proper parsing
-self.addEventListener('push', event => {
-  console.log('Push event received:', event);
-  
-  let notificationData = {
-    title: 'TalentXcel',
-    body: 'You have a new notification',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    tag: 'default',
-    priority: 'normal',
-    url: '/',
-    requireInteraction: false,
-    silent: false
-  };
-
-  // Parse push data if available
-  if (event.data) {
-    try {
-      const data = event.data.json();
-      notificationData = { ...notificationData, ...data };
-    } catch (error) {
-      console.error('Error parsing push data:', error);
-      notificationData.body = event.data.text();
-    }
-  }
-
-  // Enhanced notification options with rich formatting
-  const options = {
-    body: notificationData.body,
-    icon: notificationData.icon || '/icon-192.png',
-    badge: notificationData.badge || '/icon-192.png',
-    image: notificationData.image,
-    vibrate: notificationData.vibrate || [200, 100, 200],
-    sound: notificationData.sound || '/sounds/notification.mp3',
-    tag: notificationData.tag,
-    renotify: true,
-    requireInteraction: notificationData.priority === 'high',
-    silent: notificationData.silent || false,
-    timestamp: Date.now(),
-    data: {
-      url: notificationData.url || '/',
-      notification_id: notificationData.notification_id,
-      user_id: notificationData.user_id,
-      type: notificationData.type,
-      dateOfArrival: Date.now(),
-      rich_content: notificationData.rich_content,
-      actions: notificationData.actions,
-      ...notificationData.data
-    },
-    actions: getNotificationActions(notificationData.type, notificationData.actions)
-  };
-
-  function getNotificationActions(type, customActions) {
-    if (customActions && customActions.length > 0) {
-      return customActions;
-    }
-    
-    // Default actions based on notification type
-    switch (type) {
-      case 'profile_completion_reminder':
-        return [
-          {
-            action: 'complete',
-            title: '✨ Complete Profile',
-            icon: '/icon-192.png'
-          },
-          {
-            action: 'dismiss',
-            title: 'Later',
-            icon: '/icon-192.png'
-          }
-        ];
-      case 'job_match':
-        return [
-          {
-            action: 'view_job',
-            title: '💼 View Job',
-            icon: '/icon-192.png'
-          },
-          {
-            action: 'dismiss',
-            title: 'Dismiss',
-            icon: '/icon-192.png'
-          }
-        ];
-      case 'welcome':
-        return [
-          {
-            action: 'explore',
-            title: '🚀 Get Started',
-            icon: '/icon-192.png'
-          },
-          {
-            action: 'dismiss',
-            title: 'OK',
-            icon: '/icon-192.png'
-          }
-        ];
-      default:
-        return [
-          {
-            action: 'view',
-            title: 'View',
-            icon: '/icon-192.png'
-          },
-          {
-            action: 'dismiss',
-            title: 'Dismiss',
-            icon: '/icon-192.png'
-          }
-        ];
-    }
-  }
-
-  // Show notification
-  event.waitUntil(
-    self.registration.showNotification(notificationData.title, options)
-  );
-
-  // Send to all clients for real-time updates
-  event.waitUntil(
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'PUSH_NOTIFICATION_RECEIVED',
-          data: notificationData
-        });
-      });
-    })
-  );
-});
-
-// Enhanced notification click event
-self.addEventListener('notificationclick', event => {
-  console.log('Notification clicked:', event);
-  
-  event.notification.close();
-
-  const data = event.notification.data;
-  const action = event.action;
-
-  if (action === 'dismiss') {
+  // Handle static assets with cache-first strategy
+  if (request.destination === 'image' || request.destination === 'font' || request.destination === 'style') {
+    event.respondWith(cacheFirstStrategy(request));
     return;
   }
 
-  // Handle different actions with specific URLs
-  let targetUrl = data.url || '/';
-  
-  switch (action) {
-    case 'complete':
-      targetUrl = '/profile';
-      break;
-    case 'view_job':
-      targetUrl = '/jobs';
-      break;
-    case 'explore':
-      targetUrl = '/jobs';
-      break;
-    default:
-      targetUrl = data.url || '/';
+  // Handle navigation with network-first, fallback to cache
+  if (request.mode === 'navigate') {
+    event.respondWith(navigationStrategy(request));
+    return;
   }
-  
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window' })
-      .then(clients => {
-        // Check if there's already a window/tab open with this URL
-        for (let client of clients) {
-          if (client.url.includes(targetUrl.split('/')[1]) && 'focus' in client) {
-            return client.focus();
-          }
-        }
-        
-        // If no existing window, open a new one
-        if (self.clients.openWindow) {
-          return self.clients.openWindow(targetUrl);
-        }
-      })
-  );
 
-  // Mark notification as clicked in backend
-  if (data.notification_id) {
-    event.waitUntil(
-      fetch('/api/notifications/clicked', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          notification_id: data.notification_id,
-          action: action || 'click'
-        })
-      }).catch(err => console.error('Failed to track notification click:', err))
-    );
-  }
+  // Default: network-first strategy
+  event.respondWith(networkFirstStrategy(request));
 });
 
-// Background sync for offline notifications
-self.addEventListener('sync', event => {
-  if (event.tag === 'background-sync-notifications') {
-    event.waitUntil(
-      syncNotifications()
-    );
-  }
-});
-
-async function syncNotifications() {
+// Network-first strategy for dynamic content
+async function networkFirstStrategy(request) {
   try {
-    // Sync any pending notifications when back online
-    const response = await fetch('/api/notifications/sync');
-    const notifications = await response.json();
-    
-    // Show any missed notifications
-    notifications.forEach(notification => {
-      self.registration.showNotification(notification.title, {
-        body: notification.body,
-        icon: '/icon-192.png',
-        tag: notification.id,
-        data: notification.data
-      });
-    });
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
   } catch (error) {
-    console.error('Failed to sync notifications:', error);
+    const cacheResponse = await caches.match(request);
+    return cacheResponse || new Response('Offline', { status: 503 });
   }
 }
 
-// Message handling from main thread
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+// Cache-first strategy for static assets
+async function cacheFirstStrategy(request) {
+  const cacheResponse = await caches.match(request);
+  if (cacheResponse) {
+    return cacheResponse;
   }
-});
+
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    return new Response('Asset not available', { status: 404 });
+  }
+}
+
+// Navigation strategy with fallback
+async function navigationStrategy(request) {
+  try {
+    const networkResponse = await fetch(request);
+    return networkResponse;
+  } catch (error) {
+    const cacheResponse = await caches.match('/');
+    return cacheResponse || new Response('Offline', { status: 503 });
+  }
+}
