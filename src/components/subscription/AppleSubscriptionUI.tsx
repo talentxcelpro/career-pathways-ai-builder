@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTXCPurchase } from '@/hooks/useTXCPurchase';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   Crown, 
   Check, 
@@ -20,6 +21,12 @@ import {
   Coins
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { SubscriptionSkeleton } from './SubscriptionSkeleton';
+
+// Lazy load mobile component for performance
+const MobileSubscriptionUI = lazy(() => 
+  import('./MobileSubscriptionUI').then(module => ({ default: module.MobileSubscriptionUI }))
+);
 
 interface SubscriptionTier {
   id: string;
@@ -46,10 +53,23 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
   const { toast } = useToast();
   const navigate = useNavigate();
   const { canAfford, purchaseWithTXC } = useTXCPurchase();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [currentTier, setCurrentTier] = useState<string | null>(null);
   const [subscribing, setSubscribing] = useState<string | null>(null);
+
+  // Mobile optimization: Return mobile component for small screens
+  if (isMobile) {
+    return (
+      <Suspense fallback={<SubscriptionSkeleton isMobile />}>
+        <MobileSubscriptionUI onSuccess={() => {
+          refreshBalance();
+          setTimeout(() => navigate('/pro'), 1000);
+        }} />
+      </Suspense>
+    );
+  }
 
   useEffect(() => {
     loadSubscriptionData();
@@ -143,7 +163,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         throw new Error(`Insufficient TXC balance. You need ${selectedTier.price_monthly.toLocaleString()} TXC but only have ${availableBalance.toLocaleString()} TXC.`);
       }
 
-      // Process TXC purchase for subscription
+      // Process TXC purchase for subscription with enhanced metadata
       const success = await purchaseWithTXC({
         featureId: 'pro_subscription',
         cost: selectedTier.price_monthly,
@@ -151,7 +171,10 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         metadata: { 
           packageType: tierName,
           planId: selectedTier.id,
-          isSubscription: true
+          isSubscription: true,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString(),
+          source: 'web_subscription_page'
         }
       });
 
@@ -229,18 +252,7 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
   };
 
   if (loading) {
-    return (
-      <div className="w-full">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded-lg w-1/3"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-64 bg-gray-200 rounded-2xl"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <SubscriptionSkeleton />;
   }
 
   const containerVariants = {

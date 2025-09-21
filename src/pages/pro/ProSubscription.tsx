@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { AppleSubscriptionUI } from '@/components/subscription/AppleSubscriptionUI';
+import { OfflineNotice } from '@/components/subscription/OfflineNotice';
 
 
 export const ProSubscription: React.FC = () => {
@@ -41,6 +42,9 @@ export const ProSubscription: React.FC = () => {
           </div>
         </div>
 
+        {/* Offline Notice */}
+        <OfflineNotice />
+        
         {/* Apple-inspired Subscription UI */}
         <AppleSubscriptionUI />
       </div>

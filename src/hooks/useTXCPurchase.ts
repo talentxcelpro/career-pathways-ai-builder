@@ -51,35 +51,81 @@ export const useTXCPurchase = () => {
         featureId: options.featureId,
         cost: options.cost,
         isSubscription,
-        metadata: options.metadata
+        metadata: options.metadata,
+        requestBody: 'will be logged next'
       });
 
-      // Prepare request body based on endpoint
+      // Prepare request body based on endpoint with proper validation
       const requestBody = isSubscription ? {
         purchaseType: 'subscription',
         planName: options.metadata?.packageType || options.description,
         cost: options.cost,
         description: options.description,
-        metadata: options.metadata || {}
+        metadata: {
+          userId: user.id,
+          userEmail: user.email,
+          timestamp: new Date().toISOString(),
+          ...(options.metadata || {})
+        }
       } : {
         featureId: options.featureId,
         customCost: options.cost,
         customDescription: options.description,
-        metadata: options.metadata || {}
+        metadata: {
+          userId: user.id,
+          userEmail: user.email,
+          timestamp: new Date().toISOString(),
+          ...(options.metadata || {})
+        }
       };
 
+      console.log('Request body:', requestBody);
+
       let data, error;
+      let attemptCount = 0;
+      const maxAttempts = 3;
       
-      try {
-        const response = await supabase.functions.invoke(endpoint, {
-          body: requestBody
-        });
-        data = response.data;
-        error = response.error;
-      } catch (invokeError) {
-        console.error('Function invoke failed:', invokeError);
+      while (attemptCount < maxAttempts) {
+        try {
+          console.log(`Attempt ${attemptCount + 1}/${maxAttempts} for endpoint: ${endpoint}`);
+          
+          const response = await supabase.functions.invoke(endpoint, {
+            body: requestBody,
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'TalentXcel-Web-Client'
+            }
+          });
+          
+          console.log('Raw response:', response);
+          data = response.data;
+          error = response.error;
+          
+          if (!error && data) {
+            break; // Success, exit retry loop
+          }
+          
+          if (error) {
+            console.error(`Attempt ${attemptCount + 1} failed with error:`, error);
+          }
+          
+        } catch (invokeError) {
+          console.error(`Attempt ${attemptCount + 1} invoke failed:`, invokeError);
+          error = invokeError;
+        }
         
-        // Fallback: try the other endpoint if the primary fails
+        attemptCount++;
+        
+        if (attemptCount < maxAttempts) {
+          console.log(`Waiting 1s before retry attempt ${attemptCount + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+      
+      // If all attempts failed, try fallback endpoint
+      if (error || !data) {
+        console.log('All primary attempts failed, trying fallback...');
+        
         const fallbackEndpoint = isSubscription ? 'process-txc-purchase' : 'txc-unified-purchase';
         console.log(`Trying fallback endpoint: ${fallbackEndpoint}`);
         
@@ -90,23 +136,43 @@ export const useTXCPurchase = () => {
             cost: options.cost,
             description: options.description,
             planName: options.metadata?.packageType || options.description,
-            metadata: options.metadata || {}
+            metadata: {
+              userId: user.id,
+              userEmail: user.email,
+              timestamp: new Date().toISOString(),
+              fallbackAttempt: true,
+              ...(options.metadata || {})
+            }
           } : {
             purchaseType: 'feature',
             featureId: options.featureId,
             cost: options.cost,
             description: options.description,
-            metadata: options.metadata || {}
+            metadata: {
+              userId: user.id,
+              userEmail: user.email,
+              timestamp: new Date().toISOString(),
+              fallbackAttempt: true,
+              ...(options.metadata || {})
+            }
           };
           
+          console.log('Fallback request body:', fallbackBody);
+          
           const fallbackResponse = await supabase.functions.invoke(fallbackEndpoint, {
-            body: fallbackBody
+            body: fallbackBody,
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'TalentXcel-Web-Client-Fallback'
+            }
           });
+          
+          console.log('Fallback response:', fallbackResponse);
           data = fallbackResponse.data;
           error = fallbackResponse.error;
         } catch (fallbackError) {
           console.error('Fallback also failed:', fallbackError);
-          throw new Error(`Both primary and fallback endpoints failed. Please try again later.`);
+          throw new Error(`Both primary and fallback endpoints failed. Primary error: ${error?.message || 'Unknown'}, Fallback error: ${fallbackError}`);
         }
       }
 
