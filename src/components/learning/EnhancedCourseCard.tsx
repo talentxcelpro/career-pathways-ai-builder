@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Star, Clock, Users, Play, BookOpen, Heart, Share2 } from 'lucide-react';
+import { Star, Clock, Users, Play, BookOpen, Heart, Share2, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Course {
@@ -31,7 +31,7 @@ interface EnhancedCourseCardProps {
   showProgress?: boolean;
 }
 
-export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = ({
+export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
   course,
   isEnrolled,
   onEnroll,
@@ -39,27 +39,43 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = ({
   showProgress = false
 }) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
-  const formatPrice = (price: number, isFree: boolean) => {
+  const formatPrice = useCallback((price: number, isFree: boolean) => {
     if (isFree || price === 0) return "Free";
     return `₹${price.toLocaleString('en-IN')}`;
-  };
+  }, []);
 
-  const getDifficultyColor = (level: string) => {
+  const getDifficultyConfig = useCallback((level: string) => {
     switch (level) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'beginner': 
+        return { 
+          className: 'bg-success/10 text-success border-success/20', 
+          label: 'Beginner',
+          icon: '🌱'
+        };
+      case 'intermediate': 
+        return { 
+          className: 'bg-warning/10 text-warning border-warning/20', 
+          label: 'Intermediate',
+          icon: '⚡'
+        };
+      case 'advanced': 
+        return { 
+          className: 'bg-destructive/10 text-destructive border-destructive/20', 
+          label: 'Advanced',
+          icon: '🚀'
+        };
+      default: 
+        return { 
+          className: 'bg-muted text-muted-foreground', 
+          label: level,
+          icon: '📚'
+        };
     }
-  };
+  }, []);
 
-  const truncatedDescription = course.description?.length > 120 
-    ? course.description.substring(0, 120) + '...'
-    : course.description;
-
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     if (navigator.share) {
       navigator.share({
         title: course.title,
@@ -69,48 +85,72 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = ({
     } else {
       navigator.clipboard.writeText(window.location.origin + `/learning/${course.id}`);
     }
-  };
+  }, [course.title, course.description, course.id]);
+
+  const handleEnroll = useCallback(() => {
+    onEnroll(course.id);
+  }, [onEnroll, course.id]);
+
+  const handleLike = useCallback(() => {
+    setIsLiked(prev => !prev);
+  }, []);
+
+  const difficultyConfig = getDifficultyConfig(course.difficulty_level);
+  const truncatedDescription = course.description?.length > 100 
+    ? course.description.substring(0, 100) + '...'
+    : course.description;
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-sm hover:shadow-xl">
-      <div className="relative">
-        {course.thumbnail_url ? (
+    <Card className="group overflow-hidden border-0 shadow-card hover:shadow-elegant transition-all duration-500 hover:scale-[1.02] bg-gradient-card backdrop-blur-apple">
+      <div className="relative overflow-hidden">
+        {/* Course Image */}
+        {course.thumbnail_url && !imageError ? (
           <img
             src={course.thumbnail_url}
             alt={course.title}
-            className="w-full h-48 object-cover rounded-t-lg"
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={() => setImageError(true)}
+            loading="lazy"
           />
         ) : (
-          <div className="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500 rounded-t-lg flex items-center justify-center">
-            <BookOpen className="h-12 w-12 text-white" />
+          <div className="w-full h-48 bg-gradient-ai flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-ai-violet/30 to-primary/10"></div>
+            <BookOpen className="h-12 w-12 text-white relative z-10" />
           </div>
         )}
         
-        {/* Overlay actions */}
-        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Floating Action Buttons */}
+        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
           <Button
             size="sm"
-            variant="secondary"
-            className="bg-white/80 hover:bg-white"
-            onClick={() => setIsLiked(!isLiked)}
+            className="bg-white/90 hover:bg-white text-gray-700 rounded-full w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
+            onClick={handleLike}
           >
-            <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+            <Heart className={`h-4 w-4 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
           </Button>
           <Button
-            size="sm"
-            variant="secondary"
-            className="bg-white/80 hover:bg-white"
+            size="sm" 
+            className="bg-white/90 hover:bg-white text-gray-700 rounded-full w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
             onClick={handleShare}
           >
             <Share2 className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* Quick play button for enrolled courses */}
+        {/* Course Category Badge */}
+        {course.category && (
+          <div className="absolute top-4 left-4">
+            <Badge className="bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm">
+              {course.category}
+            </Badge>
+          </div>
+        )}
+
+        {/* Quick Play Overlay for Enrolled Courses */}
         {isEnrolled && (
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-t-lg">
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 backdrop-blur-sm">
             <Link to={`/learning/${course.id}`}>
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90">
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 rounded-full shadow-lg">
                 <Play className="h-5 w-5 mr-2" />
                 Continue Learning
               </Button>
@@ -119,112 +159,102 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = ({
         )}
       </div>
 
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between mb-2">
-          <Badge variant="secondary" className={getDifficultyColor(course.difficulty_level)}>
-            {course.difficulty_level}
+      <CardHeader className="pb-3 space-y-3">
+        {/* Difficulty and Rating */}
+        <div className="flex items-center justify-between">
+          <Badge className={`${difficultyConfig.className} text-xs font-medium px-3 py-1`}>
+            <span className="mr-1">{difficultyConfig.icon}</span>
+            {difficultyConfig.label}
           </Badge>
-          {course.category && (
-            <Badge variant="outline" className="text-xs">
-              {course.category}
-            </Badge>
-          )}
+          <div className="flex items-center space-x-1">
+            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+            <span className="text-sm font-medium text-foreground">{course.rating}</span>
+          </div>
         </div>
         
-        <CardTitle className="text-lg leading-tight group-hover:text-blue-600 transition-colors">
-          <Link to={`/learning/${course.id}`} className="hover:underline">
+        {/* Course Title */}
+        <CardTitle className="text-lg font-heading leading-tight group-hover:text-primary transition-colors">
+          <Link to={`/learning/${course.id}`} className="hover:underline line-clamp-2">
             {course.title}
           </Link>
         </CardTitle>
         
-        <CardDescription className="text-sm">
-          {showFullDescription ? course.description : truncatedDescription}
-          {course.description?.length > 120 && (
-            <button
-              onClick={() => setShowFullDescription(!showFullDescription)}
-              className="text-blue-600 hover:text-blue-800 ml-1 text-xs font-medium"
-            >
-              {showFullDescription ? 'Show less' : 'Read more'}
-            </button>
-          )}
+        {/* Description */}
+        <CardDescription className="text-sm text-muted-foreground line-clamp-2">
+          {truncatedDescription}
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <div className="space-y-4">
-          {/* Course metadata */}
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-1" />
-              {course.duration_hours}h
-            </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-1" />
-              {course.enrolled_count}
-            </div>
-            <div className="flex items-center">
-              <Star className="h-4 w-4 mr-1 text-yellow-500" />
-              {course.rating}
-            </div>
+      <CardContent className="pt-0 space-y-4">
+        {/* Course Metadata */}
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-1.5" />
+            <span>{course.duration_hours}h</span>
           </div>
+          <div className="flex items-center">
+            <Users className="h-4 w-4 mr-1.5" />
+            <span>{course.enrolled_count.toLocaleString()}</span>
+          </div>
+        </div>
 
-          {/* Instructor */}
-          <p className="text-sm text-gray-600">
-            by <span className="font-medium text-gray-900">{course.instructor_name}</span>
-          </p>
+        {/* Instructor */}
+        <p className="text-sm text-muted-foreground">
+          by <span className="font-medium text-foreground">{course.instructor_name}</span>
+        </p>
 
-          {/* Skills preview */}
-          {course.skills_taught && course.skills_taught.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {course.skills_taught.slice(0, 3).map((skill, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {skill}
-                </Badge>
-              ))}
-              {course.skills_taught.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{course.skills_taught.length - 3} more
-                </Badge>
-              )}
-            </div>
-          )}
-
-          {/* Progress bar for enrolled courses */}
-          {showProgress && isEnrolled && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Progress</span>
-                <span className="font-medium">{userProgress}%</span>
-              </div>
-              <Progress value={userProgress} className="h-2" />
-            </div>
-          )}
-
-          {/* Price and action */}
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-lg font-bold text-green-600">
-              {formatPrice(course.price, course.is_free)}
-            </div>
-            
-            {isEnrolled ? (
-              <Link to={`/learning/${course.id}`}>
-                <Button variant="outline" size="sm">
-                  <Play className="h-4 w-4 mr-1" />
-                  Continue
-                </Button>
-              </Link>
-            ) : (
-              <Button 
-                onClick={() => onEnroll(course.id)}
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Enroll Now
-              </Button>
+        {/* Skills Preview */}
+        {course.skills_taught && course.skills_taught.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {course.skills_taught.slice(0, 2).map((skill, index) => (
+              <Badge key={index} variant="outline" className="text-xs bg-muted/50">
+                {skill}
+              </Badge>
+            ))}
+            {course.skills_taught.length > 2 && (
+              <Badge variant="outline" className="text-xs bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20">
+                <Sparkles className="h-3 w-3 mr-1" />
+                +{course.skills_taught.length - 2} more
+              </Badge>
             )}
           </div>
+        )}
+
+        {/* Progress Bar for Enrolled Courses */}
+        {showProgress && isEnrolled && (
+          <div className="space-y-2 bg-muted/30 rounded-lg p-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Progress</span>
+              <span className="font-medium text-foreground">{userProgress}%</span>
+            </div>
+            <Progress value={userProgress} className="h-2" />
+          </div>
+        )}
+
+        {/* Price and Action */}
+        <div className="flex items-center justify-between pt-2">
+          <div className={`text-lg font-bold ${course.is_free || course.price === 0 ? 'text-success' : 'text-foreground'}`}>
+            {formatPrice(course.price, course.is_free)}
+          </div>
+          
+          {isEnrolled ? (
+            <Link to={`/learning/${course.id}`}>
+              <Button variant="outline" size="sm" className="rounded-full">
+                <Play className="h-4 w-4 mr-1.5" />
+                Continue
+              </Button>
+            </Link>
+          ) : (
+            <Button 
+              onClick={handleEnroll}
+              size="sm"
+              className="bg-primary hover:bg-primary/90 rounded-full px-6"
+            >
+              Enroll Now
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
   );
-};
+});
