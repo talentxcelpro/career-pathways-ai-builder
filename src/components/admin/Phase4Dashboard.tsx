@@ -195,7 +195,7 @@ export const Phase4Dashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-6">
-          <PerformanceDashboard isAdmin={true} />
+          <PerformanceDashboard />
         </TabsContent>
 
         <TabsContent value="seo" className="space-y-6">

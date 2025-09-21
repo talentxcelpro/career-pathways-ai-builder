@@ -265,7 +265,7 @@ class PerformanceTrackerClass {
 
     // Vercel Analytics
     if (typeof window !== 'undefined' && window.va) {
-      window.va('track', eventName, parameters);
+      window.va('event', eventName);
     }
 
     // Custom analytics endpoint
