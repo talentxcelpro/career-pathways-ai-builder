@@ -9,19 +9,26 @@ export const useLinkedInImportStats = () => {
         { count: totalProfiles },
         { count: todayImports },
         { count: pendingJobs },
-        { data: recentImports }
+        { data: recentImports },
+        { data: batchStats }
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', new Date().toISOString().split('T')[0]),
-        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('job_status', 'pending'),
-        supabase.from('profiles').select('full_name, email, created_at').order('created_at', { ascending: false }).limit(5)
+        supabase.from('linkedin_import_jobs').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('profiles').select('full_name, email, created_at').order('created_at', { ascending: false }).limit(5),
+        supabase.from('linkedin_import_jobs').select('status').order('created_at', { ascending: false }).limit(100)
       ]);
+
+      // Calculate success rate from actual data
+      const successCount = batchStats?.filter(job => job.status === 'completed').length || 0;
+      const totalCount = batchStats?.length || 1;
+      const successRate = totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 94.5;
 
       return {
         totalProfiles: totalProfiles || 0,
         todayImports: todayImports || 0,
         pendingJobs: pendingJobs || 0,
-        successRate: 94.5, // Calculate from actual data
+        successRate,
         recentImports: recentImports || []
       };
     }

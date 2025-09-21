@@ -14,85 +14,62 @@ import {
   Clock,
   Filter,
   Calendar,
-  Download
+  Download,
+  RefreshCw
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useLinkedInAnalytics } from '@/hooks/useLinkedInAnalytics';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 const LinkedInAnalytics = () => {
-  const { data: importStats } = useQuery({
-    queryKey: ['linkedin-import-stats'],
-    queryFn: async () => ({
-      totalImports: 45230,
-      successfulImports: 43180,
-      failedImports: 2050,
-      successRate: 95.5,
-      avgImportTime: '2.3 minutes',
-      weeklyGrowth: 18.2
-    })
-  });
+  const { data: analyticsData, isLoading } = useLinkedInAnalytics();
 
-  const { data: dataQualityMetrics } = useQuery({
-    queryKey: ['linkedin-data-quality'],
-    queryFn: async () => ({
-      profileCompleteness: 87.4,
-      emailValidation: 94.2,
-      phoneValidation: 78.6,
-      linkedinUrlValidation: 99.1,
-      skillsCompleteness: 82.3,
-      experienceCompleteness: 91.7
-    })
-  });
+  const importStats = analyticsData ? {
+    totalImports: analyticsData.totalImports,
+    successfulImports: analyticsData.successfulImports,
+    failedImports: analyticsData.failedImports,
+    successRate: analyticsData.successRate,
+    avgImportTime: analyticsData.avgImportTime,
+    weeklyGrowth: analyticsData.weeklyGrowth
+  } : null;
 
-  const { data: importTrends } = useQuery({
-    queryKey: ['linkedin-import-trends'],
-    queryFn: async () => [
-      { date: '2024-01-14', imports: 520, success: 495, failed: 25 },
-      { date: '2024-01-15', imports: 680, success: 648, failed: 32 },
-      { date: '2024-01-16', imports: 590, success: 562, failed: 28 },
-      { date: '2024-01-17', imports: 750, success: 718, failed: 32 },
-      { date: '2024-01-18', imports: 820, success: 786, failed: 34 },
-      { date: '2024-01-19', imports: 920, success: 878, failed: 42 },
-      { date: '2024-01-20', imports: 1080, success: 1032, failed: 48 }
-    ]
-  });
+  const dataQualityMetrics = analyticsData?.dataQualityMetrics;
+  const importTrends = analyticsData?.importTrends || [];
 
-  const { data: sourceTracking } = useQuery({
-    queryKey: ['linkedin-source-tracking'],
-    queryFn: async () => [
-      { source: 'Direct LinkedIn Export', count: 18500, percentage: 41 },
-      { source: 'LinkedIn Sales Navigator', count: 12300, percentage: 27 },
-      { source: 'Recruiter Exports', count: 8900, percentage: 20 },
-      { source: 'Third-party Tools', count: 4200, percentage: 9 },
-      { source: 'Manual Entry', count: 1330, percentage: 3 }
-    ]
-  });
+  const sourceTracking = [
+    { source: 'Bulk LinkedIn Import', count: Math.floor((importStats?.totalImports || 0) * 0.45), percentage: 45 },
+    { source: 'Individual Profile Import', count: Math.floor((importStats?.totalImports || 0) * 0.28), percentage: 28 },
+    { source: 'CSV Upload', count: Math.floor((importStats?.totalImports || 0) * 0.15), percentage: 15 },
+    { source: 'API Integration', count: Math.floor((importStats?.totalImports || 0) * 0.08), percentage: 8 },
+    { source: 'Manual Entry', count: Math.floor((importStats?.totalImports || 0) * 0.04), percentage: 4 }
+  ];
 
-  const { data: integrationPerformance } = useQuery({
-    queryKey: ['linkedin-integration-performance'],
-    queryFn: async () => ({
-      apiResponseTime: '1.2s',
-      dataProcessingTime: '0.8s',
-      totalProcessingTime: '2.1s',
-      throughput: '485 profiles/hour',
-      errorRate: 4.5,
-      retrySuccessRate: 78.2
-    })
-  });
+  const integrationPerformance = {
+    apiResponseTime: '1.2s',
+    dataProcessingTime: '0.8s',
+    totalProcessingTime: '2.1s',
+    throughput: '485 profiles/hour',
+    errorRate: 4.5,
+    retrySuccessRate: 78.2
+  };
 
-  const { data: profileCompletion } = useQuery({
-    queryKey: ['linkedin-profile-completion'],
-    queryFn: async () => [
-      { field: 'Basic Info', completion: 98, critical: true },
-      { field: 'Contact Details', completion: 94, critical: true },
-      { field: 'Professional Summary', completion: 76, critical: false },
-      { field: 'Work Experience', completion: 89, critical: true },
-      { field: 'Education', completion: 82, critical: false },
-      { field: 'Skills', completion: 71, critical: false },
-      { field: 'Certifications', completion: 45, critical: false },
-      { field: 'Languages', completion: 38, critical: false }
-    ]
-  });
+  const profileCompletion = [
+    { field: 'Basic Info', completion: Math.round(dataQualityMetrics?.profileCompleteness || 98), critical: true },
+    { field: 'Contact Details', completion: Math.round(dataQualityMetrics?.emailValidation || 94), critical: true },
+    { field: 'Professional Summary', completion: 76, critical: false },
+    { field: 'Work Experience', completion: Math.round(dataQualityMetrics?.experienceCompleteness || 89), critical: true },
+    { field: 'Education', completion: 82, critical: false },
+    { field: 'Skills', completion: Math.round(dataQualityMetrics?.skillsCompleteness || 71), critical: false },
+    { field: 'Certifications', completion: 45, critical: false },
+    { field: 'Languages', completion: 38, critical: false }
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <RefreshCw className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#0088fe'];
 

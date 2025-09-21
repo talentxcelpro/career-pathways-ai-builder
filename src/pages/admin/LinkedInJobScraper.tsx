@@ -21,91 +21,49 @@ import {
   Filter,
   Target,
   TrendingUp,
-  Calendar
+  Calendar,
+  RefreshCw
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useLinkedInScrapingAnalytics } from '@/hooks/useLinkedInAnalytics';
 
 const LinkedInJobScraper = () => {
-  const { data: scraperStats } = useQuery({
-    queryKey: ['linkedin-scraper-stats'],
-    queryFn: async () => ({
-      totalJobsScraped: 45230,
-      activeScrapeJobs: 8,
-      successRate: 94.2,
-      avgScrapingTime: '4.5 hours',
-      dailyScrapedJobs: 1240,
-      weeklyGrowth: 15.3
-    })
-  });
+  const { data: scrapingData, isLoading } = useLinkedInScrapingAnalytics();
 
-  const { data: activeScrapeJobs } = useQuery({
-    queryKey: ['active-scrape-jobs'],
-    queryFn: async () => [
-      {
-        id: '1',
-        name: 'Tech Jobs - Bangalore',
-        query: 'Software Engineer Bangalore',
-        status: 'running',
-        progress: 65,
-        found: 156,
-        lastRun: '2024-01-20T10:30:00Z',
-        nextRun: '2024-01-20T16:00:00Z'
-      },
-      {
-        id: '2',
-        name: 'Marketing Roles - Mumbai',
-        query: 'Marketing Manager Mumbai',
-        status: 'completed',
-        progress: 100,
-        found: 89,
-        lastRun: '2024-01-20T08:00:00Z',
-        nextRun: '2024-01-21T08:00:00Z'
-      },
-      {
-        id: '3',
-        name: 'Data Science Jobs',
-        query: 'Data Scientist Python',
-        status: 'failed',
-        progress: 25,
-        found: 34,
-        lastRun: '2024-01-20T06:00:00Z',
-        nextRun: '2024-01-20T18:00:00Z'
-      },
-      {
-        id: '4',
-        name: 'Remote Opportunities',
-        query: 'Remote Developer India',
-        status: 'scheduled',
-        progress: 0,
-        found: 0,
-        lastRun: null,
-        nextRun: '2024-01-20T14:00:00Z'
-      }
-    ]
-  });
+  const scraperStats = scrapingData ? {
+    totalJobsScraped: scrapingData.totalJobsScraped,
+    activeScrapeJobs: scrapingData.activeScrapeJobs,
+    successRate: scrapingData.successRate,
+    avgScrapingTime: scrapingData.avgScrapingTime,
+    dailyScrapedJobs: scrapingData.dailyScrapedJobs,
+    weeklyGrowth: scrapingData.weeklyGrowth
+  } : null;
 
-  const { data: scrapingTargets } = useQuery({
-    queryKey: ['scraping-targets'],
-    queryFn: async () => [
-      { id: '1', name: 'Technology Sector', keywords: ['Software Engineer', 'Developer', 'DevOps'], enabled: true },
-      { id: '2', name: 'Marketing & Sales', keywords: ['Marketing Manager', 'Sales Executive', 'Digital Marketing'], enabled: true },
-      { id: '3', name: 'Finance & Banking', keywords: ['Financial Analyst', 'Accountant', 'Investment Banking'], enabled: false },
-      { id: '4', name: 'Healthcare', keywords: ['Nurse', 'Doctor', 'Healthcare Admin'], enabled: true },
-      { id: '5', name: 'Education', keywords: ['Teacher', 'Professor', 'Training Specialist'], enabled: false }
-    ]
-  });
+  const activeScrapeJobs = scrapingData?.scrapingJobs || [];
 
-  const { data: performanceMetrics } = useQuery({
-    queryKey: ['scraper-performance'],
-    queryFn: async () => ({
-      avgJobsPerHour: 285,
-      dataAccuracy: 96.8,
-      duplicateRate: 4.2,
-      processingSpeed: '1.2s per job',
-      systemLoad: 68,
-      errorRate: 2.1
-    })
-  });
+  const scrapingTargets = [
+    { id: '1', name: 'Technology Sector', keywords: ['Software Engineer', 'Developer', 'DevOps'], enabled: true },
+    { id: '2', name: 'Marketing & Sales', keywords: ['Marketing Manager', 'Sales Executive', 'Digital Marketing'], enabled: true },
+    { id: '3', name: 'Finance & Banking', keywords: ['Financial Analyst', 'Accountant', 'Investment Banking'], enabled: false },
+    { id: '4', name: 'Healthcare', keywords: ['Nurse', 'Doctor', 'Healthcare Admin'], enabled: true },
+    { id: '5', name: 'Education', keywords: ['Teacher', 'Professor', 'Training Specialist'], enabled: false }
+  ];
+
+  const performanceMetrics = {
+    avgJobsPerHour: 285,
+    dataAccuracy: 96.8,
+    duplicateRate: 4.2,
+    processingSpeed: '1.2s per job',
+    systemLoad: 68,
+    errorRate: 2.1
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <RefreshCw className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
