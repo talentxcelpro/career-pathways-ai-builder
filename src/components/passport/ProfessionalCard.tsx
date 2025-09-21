@@ -19,6 +19,11 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({
   isOwner = false,
   className = ""
 }) => {
+  // Prevent rendering if profile is not available
+  if (!profile || !profile.id) {
+    return null;
+  }
+  
   const profileUrl = `${window.location.origin}/passport/public/${profile.username || profile.id}`;
   const currentDate = new Date().toLocaleDateString();
   const uniqueId = `TX-${profile.id.slice(0, 8).toUpperCase()}`;
