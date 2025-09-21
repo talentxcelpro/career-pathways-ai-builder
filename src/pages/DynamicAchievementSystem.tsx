@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useAchievements } from '@/hooks/useAchievements';
+import { useRealTimeActivities } from '@/hooks/useRealTimeActivities';
 import { 
   Trophy, 
   Target, 
@@ -21,14 +23,16 @@ import { GamificationElements } from '@/components/achievements/GamificationElem
 
 export default function DynamicAchievementSystem() {
   const [activeSection, setActiveSection] = useState('overview');
+  const { achievements, totalPoints, level, loading } = useAchievements();
+  const { activities } = useRealTimeActivities();
 
   const quickStats = {
-    totalAchievements: 12,
-    unlockedAchievements: 8,
-    totalPoints: 2450,
-    currentLevel: 12,
-    currentStreak: 15,
-    weeklyRank: 4
+    totalAchievements: 20, // Total possible achievements
+    unlockedAchievements: achievements.length || 0,
+    totalPoints: totalPoints || 0,
+    currentLevel: level || 1,
+    currentStreak: 15, // This would come from a streak tracking system
+    weeklyRank: Math.max(1, 10 - Math.floor(totalPoints / 500)) // Calculate rank based on points
   };
 
   const recentActivities = [

@@ -5272,6 +5272,9 @@ export type Database = {
           last_activity_at: string | null
           learning_progress: Json | null
           market_competitiveness_score: number | null
+          profile_views_count: number | null
+          qr_code_scans_count: number | null
+          qr_code_url: string | null
           recommendation_engine_data: Json | null
           resumes_count: number | null
           skills_verified_count: number | null
@@ -5291,6 +5294,9 @@ export type Database = {
           last_activity_at?: string | null
           learning_progress?: Json | null
           market_competitiveness_score?: number | null
+          profile_views_count?: number | null
+          qr_code_scans_count?: number | null
+          qr_code_url?: string | null
           recommendation_engine_data?: Json | null
           resumes_count?: number | null
           skills_verified_count?: number | null
@@ -5310,6 +5316,9 @@ export type Database = {
           last_activity_at?: string | null
           learning_progress?: Json | null
           market_competitiveness_score?: number | null
+          profile_views_count?: number | null
+          qr_code_scans_count?: number | null
+          qr_code_url?: string | null
           recommendation_engine_data?: Json | null
           resumes_count?: number | null
           skills_verified_count?: number | null
@@ -15507,6 +15516,42 @@ export type Database = {
         }
         Relationships: []
       }
+      module_progress: {
+        Row: {
+          achievements_unlocked: Json | null
+          completion_percentage: number | null
+          created_at: string | null
+          id: string
+          last_accessed: string | null
+          module_name: string
+          time_spent_minutes: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          achievements_unlocked?: Json | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          last_accessed?: string | null
+          module_name: string
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          achievements_unlocked?: Json | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          last_accessed?: string | null
+          module_name?: string
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       monitoring_alerts: {
         Row: {
           alert_data: Json | null
@@ -16685,6 +16730,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_analytics: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          module_name: string | null
+          session_id: string
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          module_name?: string | null
+          session_id: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          module_name?: string | null
+          session_id?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       platform_metrics: {
         Row: {
@@ -18951,6 +19029,36 @@ export type Database = {
           project_title?: string | null
           technologies_used?: string[] | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      public_passport_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          passport_owner_id: string
+          referrer_url: string | null
+          view_source: string | null
+          viewer_ip: unknown | null
+          viewer_user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          passport_owner_id: string
+          referrer_url?: string | null
+          view_source?: string | null
+          viewer_ip?: unknown | null
+          viewer_user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          passport_owner_id?: string
+          referrer_url?: string | null
+          view_source?: string | null
+          viewer_ip?: unknown | null
+          viewer_user_agent?: string | null
         }
         Relationships: []
       }
@@ -29944,12 +30052,20 @@ export type Database = {
         Args: { post_id: string }
         Returns: undefined
       }
+      increment_profile_view_count: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       increment_profile_views: {
         Args: {
           profile_user_id: string
           viewer_agent?: string
           viewer_ip?: unknown
         }
+        Returns: undefined
+      }
+      increment_qr_scan_count: {
+        Args: { p_user_id: string }
         Returns: undefined
       }
       increment_reel_view: {
@@ -30275,6 +30391,14 @@ export type Database = {
       track_outreach_usage: {
         Args: { email_count: number; employer_uuid: string }
         Returns: undefined
+      }
+      track_passport_view: {
+        Args: {
+          p_passport_owner_id: string
+          p_referrer_url?: string
+          p_view_source?: string
+        }
+        Returns: string
       }
       track_public_post_view: {
         Args: {

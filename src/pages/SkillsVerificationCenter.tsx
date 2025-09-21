@@ -8,6 +8,7 @@ import { SkillAssessment } from '@/components/skills/SkillAssessment';
 import { SkillBadges } from '@/components/skills/SkillBadges';
 import { PeerVerification } from '@/components/skills/PeerVerification';
 import { useLearningProgress } from '@/hooks/useLearningProgress';
+import { useSkillVerifications } from '@/hooks/useSkillVerifications';
 import { 
   Brain, 
   Award, 
@@ -25,15 +26,16 @@ export const SkillsVerificationCenter: React.FC = () => {
   const [activeAssessment, setActiveAssessment] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState('overview');
   const { progress } = useLearningProgress();
+  const { skills, loading } = useSkillVerifications();
 
-  // Mock skills data
+  // Real skills data from database
   const skillsStats = {
-    totalSkills: 24,
-    verifiedSkills: 8,
-    pendingVerifications: 3,
-    averageScore: 82,
-    topSkills: ['React.js', 'TypeScript', 'Node.js', 'Python'],
-    improvementAreas: ['AWS', 'Docker', 'GraphQL']
+    totalSkills: skills.length || 0,
+    verifiedSkills: skills.filter(s => s.verification_status === 'verified').length || 0,
+    pendingVerifications: skills.filter(s => s.verification_status === 'pending').length || 0,
+    averageScore: skills.length > 0 ? Math.round(skills.reduce((sum, s) => sum + s.verification_score, 0) / skills.length) : 0,
+    topSkills: skills.filter(s => s.verification_status === 'verified').slice(0, 4).map(s => s.skill_name),
+    improvementAreas: skills.filter(s => s.verification_status === 'pending' || s.verification_score < 70).slice(0, 3).map(s => s.skill_name)
   };
 
   const handleStartAssessment = (skill: string) => {

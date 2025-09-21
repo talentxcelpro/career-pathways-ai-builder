@@ -22,13 +22,19 @@ import { RealTimeCareerDashboard } from '@/components/analytics/RealTimeCareerDa
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { useToast } from '@/hooks/use-toast';
+import { useCareerMetrics } from '@/hooks/useCareerMetrics';
+import { useAchievements } from '@/hooks/useAchievements';
 
 const CareerIntelligenceDashboard: React.FC = () => {
   const { user } = useAuth();
   const { profile } = useProfile();
   const { toast } = useToast();
+  const { careerScore, growthRate, marketRank, opportunities, loading: metricsLoading } = useCareerMetrics();
+  const { achievements, totalPoints, loading: achievementsLoading } = useAchievements();
   const [refreshInterval, setRefreshInterval] = useState(30); // seconds
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  
+  const loading = metricsLoading || achievementsLoading;
 
   // Auto-refresh data
   useEffect(() => {
@@ -146,41 +152,51 @@ const CareerIntelligenceDashboard: React.FC = () => {
             <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <Target className="h-5 w-5 text-primary" />
-                      <span className="text-sm font-medium">Career Score</span>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-sm font-medium">Career Score</span>
+                      </div>
+                      <div className="text-2xl font-bold text-primary">
+                        {loading ? '...' : `${careerScore}/100`}
+                      </div>
+                      <Badge variant="secondary" className="mt-1">
+                        {careerScore >= 80 ? 'Elite Tier' : careerScore >= 60 ? 'Professional' : 'Growing'}
+                      </Badge>
                     </div>
-                    <div className="text-2xl font-bold text-primary">85/100</div>
-                    <Badge variant="secondary" className="mt-1">Elite Tier</Badge>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <TrendingUp className="h-5 w-5 text-green-600" />
-                      <span className="text-sm font-medium">Growth Rate</span>
+                    
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <TrendingUp className="h-5 w-5 text-green-600" />
+                        <span className="text-sm font-medium">Growth Rate</span>
+                      </div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {loading ? '...' : `+${growthRate}%`}
+                      </div>
+                      <Badge variant="secondary" className="mt-1">This Month</Badge>
                     </div>
-                    <div className="text-2xl font-bold text-green-600">+23%</div>
-                    <Badge variant="secondary" className="mt-1">This Month</Badge>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <Users className="h-5 w-5 text-blue-600" />
-                      <span className="text-sm font-medium">Market Rank</span>
+                    
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Users className="h-5 w-5 text-blue-600" />
+                        <span className="text-sm font-medium">Market Rank</span>
+                      </div>
+                      <div className="text-2xl font-bold text-blue-600">
+                        {loading ? '...' : `Top ${marketRank}%`}
+                      </div>
+                      <Badge variant="secondary" className="mt-1">In Your Field</Badge>
                     </div>
-                    <div className="text-2xl font-bold text-blue-600">Top 15%</div>
-                    <Badge variant="secondary" className="mt-1">In Your Field</Badge>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <Zap className="h-5 w-5 text-yellow-600" />
-                      <span className="text-sm font-medium">Opportunities</span>
+                    
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Zap className="h-5 w-5 text-yellow-600" />
+                        <span className="text-sm font-medium">Opportunities</span>
+                      </div>
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {loading ? '...' : opportunities}
+                      </div>
+                      <Badge variant="secondary" className="mt-1">AI Matched</Badge>
                     </div>
-                    <div className="text-2xl font-bold text-yellow-600">12</div>
-                    <Badge variant="secondary" className="mt-1">AI Matched</Badge>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -234,35 +250,51 @@ const CareerIntelligenceDashboard: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        <div className="p-4 border border-blue-200 rounded-lg bg-blue-50/50">
-                          <h3 className="font-semibold text-blue-900 mb-2">
-                            🎯 Skill Development Priority
-                          </h3>
-                          <p className="text-sm text-blue-800">
-                            Focus on advancing your TypeScript skills to Senior level. 
-                            Market demand shows 34% higher salary potential.
-                          </p>
-                        </div>
+                        {loading ? (
+                          <div className="text-center py-8">
+                            <p className="text-muted-foreground">Loading AI insights...</p>
+                          </div>
+                        ) : careerScore < 70 ? (
+                          <div className="p-4 border border-blue-200 rounded-lg bg-blue-50/50">
+                            <h3 className="font-semibold text-blue-900 mb-2">
+                              🎯 Career Score Improvement
+                            </h3>
+                            <p className="text-sm text-blue-800">
+                              Your career score is {careerScore}/100. Complete skills assessments and update your profile to improve your score.
+                            </p>
+                          </div>
+                        ) : null}
                         
-                        <div className="p-4 border border-green-200 rounded-lg bg-green-50/50">
-                          <h3 className="font-semibold text-green-900 mb-2">
-                            📈 Career Opportunity
-                          </h3>
-                          <p className="text-sm text-green-800">
-                            Your profile matches 92% with Senior Frontend roles. 
-                            Consider applying to positions at tech companies.
-                          </p>
-                        </div>
+                        {loading ? null : growthRate < 10 ? (
+                          <div className="p-4 border border-green-200 rounded-lg bg-green-50/50">
+                            <h3 className="font-semibold text-green-900 mb-2">
+                              📈 Growth Acceleration
+                            </h3>
+                            <p className="text-sm text-green-800">
+                              Your growth rate is below average. Consider upskilling or expanding your network.
+                            </p>
+                          </div>
+                        ) : null}
                         
-                        <div className="p-4 border border-purple-200 rounded-lg bg-purple-50/50">
-                          <h3 className="font-semibold text-purple-900 mb-2">
-                            🌟 Network Expansion
-                          </h3>
-                          <p className="text-sm text-purple-800">
-                            Connect with 5 more professionals in your field to 
-                            reach the top 10% networking tier.
-                          </p>
-                        </div>
+                        {loading ? null : achievements.length < 3 ? (
+                          <div className="p-4 border border-purple-200 rounded-lg bg-purple-50/50">
+                            <h3 className="font-semibold text-purple-900 mb-2">
+                              🌟 Achievement Gap
+                            </h3>
+                            <p className="text-sm text-purple-800">
+                              You have {achievements.length} achievements. Unlock more to boost your profile visibility.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="p-4 border border-green-200 rounded-lg bg-green-50/50">
+                            <h3 className="font-semibold text-green-900 mb-2">
+                              🎉 Great Progress!
+                            </h3>
+                            <p className="text-sm text-green-800">
+                              You're doing well with {totalPoints} points and {achievements.length} achievements!
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
