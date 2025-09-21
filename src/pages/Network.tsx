@@ -19,7 +19,6 @@ import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper, Trophy, Gift } from "lucide-react";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
-import '@/utils/applePerformance';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";

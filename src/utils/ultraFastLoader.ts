@@ -96,12 +96,12 @@ export const optimizeImages = () => {
   images.forEach((img, index) => {
     const htmlImg = img as HTMLImageElement;
     // First 3 images eager, rest lazy
-    htmlImg.loading = index < 3 ? 'eager' : 'lazy';
+    (htmlImg as any).loading = index < 3 ? 'eager' : 'lazy';
     htmlImg.decoding = 'async';
     
     // Add fetch priority for hero images
     if (index === 0) {
-      htmlImg.fetchPriority = 'high';
+      (htmlImg as any).fetchPriority = 'high';
     }
   });
 

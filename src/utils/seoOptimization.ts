@@ -139,8 +139,8 @@ export const preloadCriticalResources = () => {
   // Load hero image with high priority instead of preloading
   const heroImage = document.querySelector('img[src*="711de76d-0f05-4939-b8b5-4acd21eb3119"]') as HTMLImageElement;
   if (heroImage) {
-    heroImage.fetchPriority = 'high';
-    heroImage.loading = 'eager';
+    (heroImage as any).fetchPriority = 'high';
+    (heroImage as any).loading = 'eager';
   }
 };
 

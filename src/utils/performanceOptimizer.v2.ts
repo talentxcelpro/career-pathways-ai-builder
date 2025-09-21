@@ -39,7 +39,7 @@ class PerformanceOptimizer {
     heroLink.rel = 'preload';
     heroLink.href = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
     heroLink.as = 'image';
-    heroLink.fetchPriority = 'high';
+    (heroLink as any).fetchPriority = 'high';
     document.head.appendChild(heroLink);
 
     // Preload critical font
@@ -61,7 +61,7 @@ class PerformanceOptimizer {
     images.forEach((img, index) => {
       const htmlImg = img as HTMLImageElement;
       // First 2 images load eagerly (above fold)
-      htmlImg.loading = index < 2 ? 'eager' : 'lazy';
+      (htmlImg as any).loading = index < 2 ? 'eager' : 'lazy';
       htmlImg.decoding = 'async';
     });
   }

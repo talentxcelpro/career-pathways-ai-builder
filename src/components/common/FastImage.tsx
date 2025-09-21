@@ -136,9 +136,9 @@ export const FastImage: React.FC<FastImageProps> = ({
       <img
         src={error ? fallback : optimizedSrc}
         alt={alt}
-        loading={loading}
+        {...{ loading } as any}
         decoding="async"
-        fetchPriority={loading === 'eager' ? 'high' : 'auto'}
+        {...{ fetchPriority: loading === 'eager' ? 'high' : 'auto' } as any}
         crossOrigin="anonymous"
         referrerPolicy="no-referrer"
         className={cn(
