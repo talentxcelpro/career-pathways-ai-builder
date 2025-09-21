@@ -3,37 +3,35 @@ import { createRoot } from 'react-dom/client'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AppWrapper } from './AppWrapper.tsx'
 
-import './utils/resourcePreloader'
-import './utils/performanceBudget'
-import './utils/serviceWorker'
-import './utils/imageOptimizer'
-import './utils/criticalCSS'
-import './utils/layoutStability'
-import './utils/networkOptimization'
 import './index.css'
 
-// Phase 4: Initialize performance optimizations
+// Ultra-fast initialization - only critical optimizations
 if (typeof window !== 'undefined') {
-  // Dynamic imports to avoid blocking initial load
-  Promise.all([
-    import('./utils/performanceOptimizer'),
-    import('./utils/bundleOptimizer'),
-    import('./utils/lazyLoading')
-  ]).then(([
-    { initializePerformanceOptimizations },
-    { initializeBundleOptimization },
-    { initializeLazyLoading }
-  ]) => {
-    try {
-      initializePerformanceOptimizations();
-      initializeBundleOptimization();
-      initializeLazyLoading();
-    } catch (error) {
-      console.warn('Performance initialization failed:', error);
-    }
-  }).catch(error => {
-    console.warn('Failed to load performance modules:', error);
-  });
+  // Immediate critical optimizations
+  const criticalInit = () => {
+    // Preload critical font
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'preload';
+    fontLink.href = 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZ.woff2';
+    fontLink.as = 'font';
+    fontLink.type = 'font/woff2';
+    fontLink.crossOrigin = 'anonymous';
+    document.head.appendChild(fontLink);
+    
+    // Enable instant page loads with prefetch
+    document.addEventListener('mouseover', (e) => {
+      const link = (e.target as Element)?.closest('a[href]') as HTMLAnchorElement;
+      if (link?.hostname === location.hostname && !link.dataset.prefetched) {
+        const prefetchLink = document.createElement('link');
+        prefetchLink.rel = 'prefetch';
+        prefetchLink.href = link.href;
+        document.head.appendChild(prefetchLink);
+        link.dataset.prefetched = 'true';
+      }
+    }, { passive: true });
+  };
+  
+  criticalInit();
 }
 
 createRoot(document.getElementById("root")!).render(

@@ -34,40 +34,22 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Dynamic chunking to reduce memory usage
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui';
-            }
-            if (id.includes('mammoth') || id.includes('pdfjs-dist') || id.includes('docx')) {
-              return 'pdf-tools';
-            }
-            if (id.includes('tesseract') || id.includes('transformers')) {
-              return 'ai-tools';
-            }
-            if (id.includes('recharts')) {
-              return 'charts';
-            }
-            if (id.includes('framer-motion')) {
-              return 'animations';
-            }
-            if (id.includes('@supabase') || id.includes('@tanstack') || id.includes('react-router')) {
-              return 'libs';
-            }
+            if (id.includes('react') || id.includes('react-dom')) return 'react';
+            if (id.includes('@radix-ui')) return 'ui';
+            if (id.includes('@supabase') || id.includes('@tanstack')) return 'data';
+            if (id.includes('lucide-react')) return 'icons';
             return 'vendor';
           }
         }
-      },
-      maxParallelFileOps: 1 // Further reduce parallel operations
+      }
     },
-    target: 'es2020', // Less aggressive target for better compatibility
-    minify: false, // Disable minification for development builds
+    target: 'es2022',
+    minify: 'terser',
     sourcemap: false,
-    chunkSizeWarningLimit: 2000,
-    assetsInlineLimit: 2048
+    chunkSizeWarningLimit: 1000,
+    assetsInlineLimit: 4096,
+    cssCodeSplit: false
   },
   optimizeDeps: {
     include: [
