@@ -148,34 +148,34 @@ export const LearningNavigation: React.FC = () => {
           const isActive = location.pathname === item.href;
           
           return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:scale-105 ${
-                isActive
-                  ? `${bgColor} text-white shadow-lg`
-                  : 'bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 shadow-sm border border-gray-100'
-              }`}
-            >
-              <IconComponent className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-700'}`} />
-              <div className="flex-1 min-w-0">
-                <span className="font-medium text-sm">{item.title}</span>
-                <p className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500'} truncate`}>
-                  {item.description}
-                </p>
-              </div>
-              {item.badge && (
-                <Badge 
-                  variant={isActive ? "secondary" : "outline"} 
-                  className={`text-xs ${
-                    isActive 
-                      ? 'bg-white/20 text-white border-white/30' 
-                      : 'bg-gray-100 text-gray-600 border-gray-200'
-                  }`}
-                >
-                  {item.badge}
-                </Badge>
-              )}
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:scale-105 ${
+                  isActive
+                    ? `bg-primary text-white shadow-lg`
+                    : 'bg-card hover:bg-muted/50 text-foreground hover:text-foreground shadow-sm border'
+                }`}
+              >
+                <IconComponent className={`h-5 w-5 ${isActive ? 'text-white' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                <div className="flex-1 min-w-0">
+                  <span className="font-medium text-sm">{item.title}</span>
+                  <p className={`text-xs ${isActive ? 'text-white/80' : 'text-muted-foreground'} truncate`}>
+                    {item.description}
+                  </p>
+                </div>
+                {item.badge && (
+                  <Badge 
+                    variant={isActive ? "secondary" : "outline"} 
+                    className={`text-xs ${
+                      isActive 
+                        ? 'bg-white/20 text-white border-white/30' 
+                        : 'bg-muted text-muted-foreground border-border'
+                    }`}
+                  >
+                    {item.badge}
+                  </Badge>
+                )}
             </Link>
           );
         })}
@@ -184,7 +184,7 @@ export const LearningNavigation: React.FC = () => {
   );
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-white to-blue-50 border-b border-gray-200 shadow-sm">
+    <div className="bg-background border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* Mobile Horizontal Scroll */}
@@ -200,11 +200,11 @@ export const LearningNavigation: React.FC = () => {
                   to={item.href}
                   className={`flex-shrink-0 flex flex-col items-center space-y-2 px-4 py-3 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 shadow-sm border border-gray-100'
+                      ? 'bg-primary text-white shadow-lg'
+                      : 'bg-card text-foreground hover:bg-muted/50 shadow-sm border'
                   }`}
                 >
-                  <IconComponent className={`h-6 w-6 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <IconComponent className={`h-6 w-6 ${isActive ? 'text-white' : 'text-muted-foreground'}`} />
                   <span className="text-xs font-medium text-center whitespace-nowrap">{item.title}</span>
                   {item.badge && (
                     <Badge 
@@ -212,7 +212,7 @@ export const LearningNavigation: React.FC = () => {
                       className={`text-xs ${
                         isActive 
                           ? 'bg-white/20 text-white border-white/30' 
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       {item.badge}
@@ -247,23 +247,23 @@ export const LearningNavigation: React.FC = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
+        <div className="mt-8 pt-6 border-t border-border">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="text-2xl font-bold text-blue-600">1,200+</div>
-              <div className="text-xs text-gray-600">Courses</div>
+            <div className="bg-card rounded-lg p-4 shadow-sm border">
+              <div className="text-2xl font-bold text-primary">1,200+</div>
+              <div className="text-xs text-muted-foreground">Courses</div>
             </div>
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="text-2xl font-bold text-green-600">50K+</div>
-              <div className="text-xs text-gray-600">Learners</div>
+            <div className="bg-card rounded-lg p-4 shadow-sm border">
+              <div className="text-2xl font-bold text-brand-green">50K+</div>
+              <div className="text-xs text-muted-foreground">Learners</div>
             </div>
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="text-2xl font-bold text-purple-600">94%</div>
-              <div className="text-xs text-gray-600">Success Rate</div>
+            <div className="bg-card rounded-lg p-4 shadow-sm border">
+              <div className="text-2xl font-bold text-success">94%</div>
+              <div className="text-xs text-muted-foreground">Success Rate</div>
             </div>
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-              <div className="text-2xl font-bold text-orange-600">180+</div>
-              <div className="text-xs text-gray-600">Countries</div>
+            <div className="bg-card rounded-lg p-4 shadow-sm border">
+              <div className="text-2xl font-bold text-warning">180+</div>
+              <div className="text-xs text-muted-foreground">Countries</div>
             </div>
           </div>
         </div>

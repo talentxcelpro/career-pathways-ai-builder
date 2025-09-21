@@ -41,7 +41,7 @@ export const LearningHeader: React.FC = () => {
   return (
     <>
       {/* Main Header */}
-      <header className="bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 text-white">
+      <header className="bg-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             
