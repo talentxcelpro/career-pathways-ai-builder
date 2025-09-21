@@ -15092,6 +15092,33 @@ export type Database = {
         }
         Relationships: []
       }
+      linkedin_analytics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_date: string
+          metric_name: string
+          metric_value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_name: string
+          metric_value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_name?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
       linkedin_import_batches: {
         Row: {
           batch_name: string
@@ -15102,6 +15129,8 @@ export type Database = {
           id: string
           processed_records: number
           status: string
+          successful_imports: number | null
+          tokens_awarded: number | null
           total_records: number
           updated_at: string | null
           uploaded_by: string | null
@@ -15115,6 +15144,8 @@ export type Database = {
           id?: string
           processed_records?: number
           status?: string
+          successful_imports?: number | null
+          tokens_awarded?: number | null
           total_records?: number
           updated_at?: string | null
           uploaded_by?: string | null
@@ -15128,9 +15159,113 @@ export type Database = {
           id?: string
           processed_records?: number
           status?: string
+          successful_imports?: number | null
+          tokens_awarded?: number | null
           total_records?: number
           updated_at?: string | null
           uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      linkedin_import_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          failed_imports: number
+          filename: string
+          id: string
+          processed_records: number
+          status: string
+          successful_imports: number
+          tokens_awarded: number
+          total_records: number
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          failed_imports?: number
+          filename: string
+          id?: string
+          processed_records?: number
+          status?: string
+          successful_imports?: number
+          tokens_awarded?: number
+          total_records?: number
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          failed_imports?: number
+          filename?: string
+          id?: string
+          processed_records?: number
+          status?: string
+          successful_imports?: number
+          tokens_awarded?: number
+          total_records?: number
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      linkedin_scraping_jobs: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          employment_type: string | null
+          experience_level: string | null
+          id: string
+          is_processed: boolean
+          job_description: string | null
+          job_title: string
+          job_url: string
+          location: string | null
+          processing_status: string | null
+          salary_range: string | null
+          scraped_at: string
+          skills_required: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          employment_type?: string | null
+          experience_level?: string | null
+          id?: string
+          is_processed?: boolean
+          job_description?: string | null
+          job_title: string
+          job_url: string
+          location?: string | null
+          processing_status?: string | null
+          salary_range?: string | null
+          scraped_at?: string
+          skills_required?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          employment_type?: string | null
+          experience_level?: string | null
+          id?: string
+          is_processed?: boolean
+          job_description?: string | null
+          job_title?: string
+          job_url?: string
+          location?: string | null
+          processing_status?: string | null
+          salary_range?: string | null
+          scraped_at?: string
+          skills_required?: string[] | null
+          updated_at?: string
         }
         Relationships: []
       }

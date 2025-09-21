@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTokenBalance } from './useTokenBalance';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { getTXCPrice } from '@/types/txc-pricing';
+import { useTokenBalance } from './useTokenBalance';
+import { toast } from 'sonner';
 
-export interface TXCPurchase {
+interface PurchaseOptions {
   featureId: string;
   cost: number;
   description: string;
@@ -13,125 +11,63 @@ export interface TXCPurchase {
 }
 
 export const useTXCPurchase = () => {
-  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const { availableBalance, refreshBalance } = useTokenBalance();
-  const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
 
-  const canAfford = (cost: number): boolean => {
+  const canAfford = (cost: number) => {
     return availableBalance >= cost;
   };
 
-  const purchaseWithTXC = async (purchase: TXCPurchase): Promise<boolean> => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to make a purchase.",
-        variant: "destructive"
-      });
+  const purchaseWithTXC = async (options: PurchaseOptions): Promise<boolean> => {
+    if (!canAfford(options.cost)) {
+      toast.error(`Insufficient TXC balance. You need ${options.cost} TXC but only have ${availableBalance} TXC.`);
       return false;
     }
 
-    if (!canAfford(purchase.cost)) {
-      toast({
-        title: "Insufficient TXC Balance",
-        description: `You need ${purchase.cost.toLocaleString()} TXC but only have ${availableBalance.toLocaleString()} TXC available.`,
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    setIsProcessing(true);
-
+    setIsLoading(true);
+    
     try {
-      // Call edge function to process TXC purchase
-      const { data, error } = await supabase.functions.invoke('process-txc-purchase', {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please log in to continue');
+        return false;
+      }
+
+      // Use the feature purchase endpoint for individual features, or process-txc-purchase for subscriptions
+      const endpoint = options.featureId === 'pro_subscription' ? 'process-txc-purchase' : 'txc-feature-purchase';
+      
+      const { data, error } = await supabase.functions.invoke(endpoint, {
         body: {
           userId: user.id,
-          featureId: purchase.featureId,
-          cost: purchase.cost,
-          description: purchase.description,
-          metadata: purchase.metadata || {}
+          featureId: options.featureId,
+          cost: options.cost,
+          description: options.description,
+          metadata: options.metadata || {}
         }
       });
 
-      if (error) {
-        console.error('TXC purchase error:', error);
-        toast({
-          title: "Purchase Failed",
-          description: error.message || "Unable to process your purchase. Please try again.",
-          variant: "destructive"
-        });
-        return false;
-      }
+      if (error) throw error;
 
-      if (data?.success) {
-        toast({
-          title: "Purchase Successful!",
-          description: `You have successfully purchased ${purchase.description} for ${purchase.cost.toLocaleString()} TXC.`,
-          variant: "default"
-        });
-        
-        // Refresh balance to show updated amount
+      if (data.success) {
+        toast.success(`Purchase successful! ${options.cost} TXC spent.`);
         refreshBalance();
         return true;
       } else {
-        toast({
-          title: "Purchase Failed",
-          description: data?.error || "Unable to process your purchase.",
-          variant: "destructive"
-        });
-        return false;
+        throw new Error(data.error || 'Purchase failed');
       }
     } catch (error) {
       console.error('TXC purchase error:', error);
-      toast({
-        title: "Purchase Failed",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
+      toast.error(error.message || 'Purchase failed. Please try again.');
       return false;
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
-  };
-
-  const purchaseFeature = async (featureId: string, description?: string, metadata?: Record<string, any>): Promise<boolean> => {
-    const cost = getTXCPrice(featureId);
-    
-    if (cost === 0) {
-      toast({
-        title: "Invalid Feature",
-        description: "This feature is not available for purchase.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    return purchaseWithTXC({
-      featureId,
-      cost,
-      description: description || `${featureId} feature`,
-      metadata
-    });
-  };
-
-  const getRequiredTXC = (featureId: string): number => {
-    return getTXCPrice(featureId);
-  };
-
-  const getRemainingTXCNeeded = (featureId: string): number => {
-    const required = getTXCPrice(featureId);
-    return Math.max(0, required - availableBalance);
   };
 
   return {
-    purchaseWithTXC,
-    purchaseFeature,
     canAfford,
-    getRequiredTXC,
-    getRemainingTXCNeeded,
-    isProcessing,
+    purchaseWithTXC,
+    isLoading,
     availableBalance
   };
 };
