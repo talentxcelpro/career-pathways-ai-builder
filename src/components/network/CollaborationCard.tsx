@@ -58,17 +58,13 @@ export const CollaborationCard: React.FC = () => {
   const [newOpportunity, setNewOpportunity] = useState({
     title: '',
     description: '',
-    project_type: 'side-project' as const,
-    skills_required: [] as string[],
-    time_commitment: 'part-time' as const,
-    duration_months: 6,
-    is_paid: false,
-    compensation_type: 'unpaid' as const,
-    compensation_amount: '',
-    location_type: 'remote' as const,
+    collaboration_type: 'side-project',
+    skills_needed: [] as string[],
+    time_commitment: 'part-time',
+    compensation_type: 'unpaid',
+    remote_ok: true,
     location: '',
-    looking_for_roles: [] as string[],
-    project_stage: 'idea' as const
+    tags: [] as string[]
   });
   const [skillInput, setSkillInput] = useState('');
   const [roleInput, setRoleInput] = useState('');
@@ -102,27 +98,23 @@ export const CollaborationCard: React.FC = () => {
     setNewOpportunity({
       title: '',
       description: '',
-      project_type: 'side-project',
-      skills_required: [],
+      collaboration_type: 'side-project',
+      skills_needed: [],
       time_commitment: 'part-time',
-      duration_months: 6,
-      is_paid: false,
       compensation_type: 'unpaid',
-      compensation_amount: '',
-      location_type: 'remote',
+      remote_ok: true,
       location: '',
-      looking_for_roles: [],
-      project_stage: 'idea'
+      tags: []
     });
     setSkillInput('');
     setRoleInput('');
   };
 
   const addSkill = () => {
-    if (skillInput.trim() && !newOpportunity.skills_required.includes(skillInput.trim())) {
+    if (skillInput.trim() && !newOpportunity.skills_needed.includes(skillInput.trim())) {
       setNewOpportunity(prev => ({
         ...prev,
-        skills_required: [...prev.skills_required, skillInput.trim()]
+        skills_needed: [...prev.skills_needed, skillInput.trim()]
       }));
       setSkillInput('');
     }
@@ -131,24 +123,24 @@ export const CollaborationCard: React.FC = () => {
   const removeSkill = (skill: string) => {
     setNewOpportunity(prev => ({
       ...prev,
-      skills_required: prev.skills_required.filter(s => s !== skill)
+      skills_needed: prev.skills_needed.filter(s => s !== skill)
     }));
   };
 
-  const addRole = () => {
-    if (roleInput.trim() && !newOpportunity.looking_for_roles.includes(roleInput.trim())) {
+  const addTag = () => {
+    if (roleInput.trim() && !newOpportunity.tags.includes(roleInput.trim())) {
       setNewOpportunity(prev => ({
         ...prev,
-        looking_for_roles: [...prev.looking_for_roles, roleInput.trim()]
+        tags: [...prev.tags, roleInput.trim()]
       }));
       setRoleInput('');
     }
   };
 
-  const removeRole = (role: string) => {
+  const removeTag = (tag: string) => {
     setNewOpportunity(prev => ({
       ...prev,
-      looking_for_roles: prev.looking_for_roles.filter(r => r !== role)
+      tags: prev.tags.filter(t => t !== tag)
     }));
   };
 
@@ -259,18 +251,18 @@ export const CollaborationCard: React.FC = () => {
                           </p>
 
                           <div className="flex flex-wrap gap-2 mb-3">
-                            <Badge className={`text-xs ${getProjectTypeColor(opportunity.project_type)}`}>
+                            <Badge className={`text-xs ${getProjectTypeColor(opportunity.collaboration_type)}`}>
                               <Rocket className="h-3 w-3 mr-1" />
-                              {opportunity.project_type.replace('-', ' ')}
+                              {opportunity.collaboration_type?.replace('-', ' ') || 'Unknown'}
                             </Badge>
-                            <Badge className={`text-xs ${getProjectStageColor(opportunity.project_stage)}`}>
-                              {opportunity.project_stage}
+                            <Badge className={`text-xs ${getStatusColor(opportunity.status)}`}>
+                              {opportunity.status}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
                               <Clock className="h-3 w-3 mr-1" />
                               {opportunity.time_commitment}
                             </Badge>
-                            {opportunity.is_paid && (
+                            {opportunity.compensation_type !== 'unpaid' && (
                               <Badge variant="outline" className="text-xs">
                                 <DollarSign className="h-3 w-3 mr-1" />
                                 Paid
@@ -278,20 +270,20 @@ export const CollaborationCard: React.FC = () => {
                             )}
                             <Badge variant="outline" className="text-xs">
                               <MapPin className="h-3 w-3 mr-1" />
-                              {opportunity.location_type}
+                              {opportunity.remote_ok ? 'Remote' : opportunity.location || 'Location TBD'}
                             </Badge>
                           </div>
 
-                          {opportunity.skills_required.length > 0 && (
+                          {opportunity.skills_needed && opportunity.skills_needed.length > 0 && (
                             <div className="flex flex-wrap gap-1 mb-3">
-                              {opportunity.skills_required.slice(0, 4).map((skill, index) => (
+                              {opportunity.skills_needed.slice(0, 4).map((skill, index) => (
                                 <Badge key={index} variant="outline" className="text-xs bg-accent/50">
                                   {skill}
                                 </Badge>
                               ))}
-                              {opportunity.skills_required.length > 4 && (
+                              {opportunity.skills_needed.length > 4 && (
                                 <Badge variant="outline" className="text-xs">
-                                  +{opportunity.skills_required.length - 4} more
+                                  +{opportunity.skills_needed.length - 4} more
                                 </Badge>
                               )}
                             </div>
@@ -433,8 +425,8 @@ export const CollaborationCard: React.FC = () => {
                     <div key={opportunity.id} className="p-4 border rounded-lg">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-semibold">{opportunity.title}</h4>
-                        <Badge className={`text-xs ${getProjectStageColor(opportunity.project_stage)}`}>
-                          {opportunity.project_stage}
+                        <Badge className={`text-xs ${getStatusColor(opportunity.status)}`}>
+                          {opportunity.status}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mb-3">{opportunity.description}</p>
@@ -442,7 +434,7 @@ export const CollaborationCard: React.FC = () => {
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Users className="h-3 w-3" />
-                          <span>{opportunity.application_count || 0} applications</span>
+                          <span>{opportunity.applications_count || 0} applications</span>
                         </div>
                         <span>{new Date(opportunity.created_at).toLocaleDateString()}</span>
                       </div>
@@ -572,10 +564,10 @@ export const CollaborationCard: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label>Project Type</Label>
+                        <Label>Collaboration Type</Label>
                         <Select 
-                          value={newOpportunity.project_type} 
-                          onValueChange={(value: any) => setNewOpportunity(prev => ({ ...prev, project_type: value }))}
+                          value={newOpportunity.collaboration_type} 
+                          onValueChange={(value: any) => setNewOpportunity(prev => ({ ...prev, collaboration_type: value }))}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -592,19 +584,20 @@ export const CollaborationCard: React.FC = () => {
                       </div>
 
                       <div>
-                        <Label>Project Stage</Label>
+                        <Label>Status</Label>
                         <Select 
-                          value={newOpportunity.project_stage} 
-                          onValueChange={(value: any) => setNewOpportunity(prev => ({ ...prev, project_stage: value }))}
+                          value="open" 
+                          onValueChange={() => {}}
+                          disabled
                         >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="idea">Idea</SelectItem>
-                            <SelectItem value="mvp">MVP</SelectItem>
-                            <SelectItem value="beta">Beta</SelectItem>
-                            <SelectItem value="launched">Launched</SelectItem>
+                            <SelectItem value="open">Open</SelectItem>
+                            <SelectItem value="in-progress">In Progress</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="paused">Paused</SelectItem>
                             <SelectItem value="growth">Growth</SelectItem>
                           </SelectContent>
                         </Select>
@@ -623,7 +616,7 @@ export const CollaborationCard: React.FC = () => {
                         <Button type="button" onClick={addSkill} size="sm">Add</Button>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {newOpportunity.skills_required.map((skill) => (
+                        {newOpportunity.skills_needed.map((skill) => (
                           <Badge key={skill} variant="secondary" className="cursor-pointer" onClick={() => removeSkill(skill)}>
                             {skill} ×
                           </Badge>
@@ -651,18 +644,17 @@ export const CollaborationCard: React.FC = () => {
                       </div>
 
                       <div>
-                        <Label>Location Type</Label>
+                        <Label>Remote Work</Label>
                         <Select 
-                          value={newOpportunity.location_type} 
-                          onValueChange={(value: any) => setNewOpportunity(prev => ({ ...prev, location_type: value }))}
+                          value={newOpportunity.remote_ok ? "yes" : "no"} 
+                          onValueChange={(value: any) => setNewOpportunity(prev => ({ ...prev, remote_ok: value === "yes" }))}
                         >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="remote">Remote</SelectItem>
-                            <SelectItem value="hybrid">Hybrid</SelectItem>
-                            <SelectItem value="on-site">On-site</SelectItem>
+                            <SelectItem value="yes">Yes (Remote)</SelectItem>
+                            <SelectItem value="no">No (On-site)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -671,8 +663,8 @@ export const CollaborationCard: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="is_paid"
-                        checked={newOpportunity.is_paid}
-                        onCheckedChange={(checked) => setNewOpportunity(prev => ({ ...prev, is_paid: !!checked }))}
+                        checked={newOpportunity.compensation_type !== "unpaid"}
+                        onCheckedChange={(checked) => setNewOpportunity(prev => ({ ...prev, compensation_type: checked ? "paid" : "unpaid" }))}
                       />
                       <Label htmlFor="is_paid">This is a paid opportunity</Label>
                     </div>

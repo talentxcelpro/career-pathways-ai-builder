@@ -29,13 +29,17 @@ export const OptimizedAuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const refreshSession = async () => {
     try {
-      const { data: { session } } = await supabase.auth.refreshSession();
+      const { data: { session }, error } = await supabase.auth.refreshSession();
+      if (error) throw error;
       setSession(session);
       setUser(session?.user ?? null);
     } catch (error) {
       console.error('Session refresh failed:', error);
-      setSession(null);
-      setUser(null);
+      // Only clear session if it's a real auth error, not network issues
+      if (!error.message?.includes('network') && !error.message?.includes('timeout')) {
+        setSession(null);
+        setUser(null);
+      }
     }
   };
 

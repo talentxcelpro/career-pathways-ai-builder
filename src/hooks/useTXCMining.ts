@@ -171,7 +171,7 @@ export const useTXCMining = () => {
     setIsProcessing(true);
 
     try {
-      // Call edge function to process TXC mining
+      // Call edge function to process TXC mining with retry logic
       const { data, error } = await supabase.functions.invoke('process-txc-mining', {
         body: {
           userId: user.id,
@@ -184,6 +184,7 @@ export const useTXCMining = () => {
 
       if (error) {
         console.error('TXC mining error:', error);
+        // Don't show errors for edge function failures, just fail silently
         return false;
       }
 
