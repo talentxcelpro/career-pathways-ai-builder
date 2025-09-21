@@ -20,12 +20,12 @@ import {
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { IndianMobileOptimizations } from '@/components/mobile/IndianMobileOptimizations';
-import { PWAFeatures } from '@/components/mobile/PWAFeatures';
+
 
 export const MobileIndianMarket = () => {
   const { user } = useAuth();
   const [selectedCity, setSelectedCity] = useState('');
-  const [showPWAFeatures, setShowPWAFeatures] = useState(false);
+  
 
   // Tier 2/3 cities with job counts
   const tier2Cities = [
@@ -173,7 +173,6 @@ export const MobileIndianMarket = () => {
             <Button 
               size="sm" 
               variant="outline"
-              onClick={() => setShowPWAFeatures(!showPWAFeatures)}
             >
               <Languages className="h-4 w-4" />
             </Button>
@@ -187,18 +186,6 @@ export const MobileIndianMarket = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6 max-w-md space-y-6">
-        {/* PWA Features Toggle */}
-        {showPWAFeatures && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Mobile App Features</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PWAFeatures />
-            </CardContent>
-          </Card>
-        )}
-
         {/* Quick Search */}
         <Card>
           <CardContent className="p-4">

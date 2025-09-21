@@ -5,7 +5,7 @@ import { FeaturesSection } from './FeaturesSection';
 import { WhyTalentXcel } from './WhyTalentXcel';
 import { CTABanner } from './CTABanner';
 import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
-import { MobileAppPreview } from './MobileAppPreview';
+
 import { AppleFooter } from './AppleFooter';
 
 // Lazy load news widget for faster initial load
@@ -43,7 +43,7 @@ export const LandingPage = () => {
           </div>
         </div>
       </div>
-      <MobileAppPreview />
+      
       <AppleFooter />
     </div>
   );
