@@ -77,10 +77,10 @@ export const TXCLeaderboard: React.FC<LeaderboardProps> = ({ className = '' }) =
         .rpc('get_txc_activity_leaderboard');
 
       if (balanceData) {
-        const formattedBalance = balanceData.map((item, index) => ({
+        const formattedBalance = balanceData.map((item: any, index) => ({
           user_id: item.user_id,
-          full_name: item.profiles.full_name || 'Anonymous',
-          profile_picture_url: item.profiles.profile_picture_url,
+          full_name: item.profiles?.full_name || 'Anonymous',
+          profile_picture_url: item.profiles?.profile_picture_url,
           balance: item.balance,
           total_earned: item.total_earned,
           transactions_count: 0,
@@ -90,10 +90,10 @@ export const TXCLeaderboard: React.FC<LeaderboardProps> = ({ className = '' }) =
       }
 
       if (earningsData) {
-        const formattedEarnings = earningsData.map((item, index) => ({
+        const formattedEarnings = earningsData.map((item: any, index) => ({
           user_id: item.user_id,
-          full_name: item.profiles.full_name || 'Anonymous',
-          profile_picture_url: item.profiles.profile_picture_url,
+          full_name: item.profiles?.full_name || 'Anonymous',
+          profile_picture_url: item.profiles?.profile_picture_url,
           balance: item.balance,
           total_earned: item.total_earned,
           transactions_count: 0,

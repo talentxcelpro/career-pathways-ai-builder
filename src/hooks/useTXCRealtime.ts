@@ -90,22 +90,22 @@ export const useTXCRealtime = () => {
       txcChannel
         .on('presence', { event: 'sync' }, () => {
           const newState = txcChannel.presenceState();
-          const users = Object.values(newState).flat() as TXCUserPresence[];
+          const users = Object.values(newState).flat() as unknown as TXCUserPresence[];
           setOnlineUsers(users);
         })
         .on('presence', { event: 'join' }, ({ newPresences }) => {
-          const joinedUsers = newPresences as TXCUserPresence[];
-          joinedUsers.forEach(user => {
-            if (user.user_id !== user.id) {
-              toast.success(`${user.username} joined TXC activities`);
+          const joinedUsers = newPresences as unknown as TXCUserPresence[];
+          joinedUsers.forEach(presenceUser => {
+            if (presenceUser.user_id !== user.id) {
+              toast.success(`${presenceUser.username} joined TXC activities`);
             }
           });
         })
         .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-          const leftUsers = leftPresences as TXCUserPresence[];
-          leftUsers.forEach(user => {
-            if (user.user_id !== user.id) {
-              toast.info(`${user.username} left TXC activities`);
+          const leftUsers = leftPresences as unknown as TXCUserPresence[];
+          leftUsers.forEach(presenceUser => {
+            if (presenceUser.user_id !== user.id) {
+              toast.info(`${presenceUser.username} left TXC activities`);
             }
           });
         });
