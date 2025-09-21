@@ -6605,12 +6605,17 @@ export type Database = {
       }
       colleges: {
         Row: {
+          acceptance_rate: number | null
           accreditation_grade: string | null
+          act_range_high: number | null
+          act_range_low: number | null
           address: string | null
           affiliation: string | null
           ai_match_keywords: string[] | null
           ai_summary: string | null
+          application_deadline: string | null
           average_fees_per_year: number | null
+          average_gpa: number | null
           average_package: number | null
           campus_size_acres: number | null
           city: string | null
@@ -6623,6 +6628,7 @@ export type Database = {
           email: string | null
           established_year: number | null
           featured: boolean | null
+          graduation_rate: number | null
           highest_package: number | null
           hostels_available: boolean | null
           id: string
@@ -6640,14 +6646,21 @@ export type Database = {
           placement_percentage: number | null
           postal_code: string | null
           premium_expires_at: string | null
+          programs_offered: string[] | null
           ranking_national: number | null
           ranking_nirf: number | null
+          ranking_regional: number | null
           recognition: string[] | null
+          sat_range_high: number | null
+          sat_range_low: number | null
           scholarship_available: boolean | null
           slug: string | null
           state: string | null
+          student_population: number | null
           total_faculty: number | null
           total_students: number | null
+          tuition_in_state: number | null
+          tuition_out_state: number | null
           updated_at: string
           verification_status: string | null
           verified_at: string | null
@@ -6655,12 +6668,17 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          acceptance_rate?: number | null
           accreditation_grade?: string | null
+          act_range_high?: number | null
+          act_range_low?: number | null
           address?: string | null
           affiliation?: string | null
           ai_match_keywords?: string[] | null
           ai_summary?: string | null
+          application_deadline?: string | null
           average_fees_per_year?: number | null
+          average_gpa?: number | null
           average_package?: number | null
           campus_size_acres?: number | null
           city?: string | null
@@ -6673,6 +6691,7 @@ export type Database = {
           email?: string | null
           established_year?: number | null
           featured?: boolean | null
+          graduation_rate?: number | null
           highest_package?: number | null
           hostels_available?: boolean | null
           id?: string
@@ -6690,14 +6709,21 @@ export type Database = {
           placement_percentage?: number | null
           postal_code?: string | null
           premium_expires_at?: string | null
+          programs_offered?: string[] | null
           ranking_national?: number | null
           ranking_nirf?: number | null
+          ranking_regional?: number | null
           recognition?: string[] | null
+          sat_range_high?: number | null
+          sat_range_low?: number | null
           scholarship_available?: boolean | null
           slug?: string | null
           state?: string | null
+          student_population?: number | null
           total_faculty?: number | null
           total_students?: number | null
+          tuition_in_state?: number | null
+          tuition_out_state?: number | null
           updated_at?: string
           verification_status?: string | null
           verified_at?: string | null
@@ -6705,12 +6731,17 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          acceptance_rate?: number | null
           accreditation_grade?: string | null
+          act_range_high?: number | null
+          act_range_low?: number | null
           address?: string | null
           affiliation?: string | null
           ai_match_keywords?: string[] | null
           ai_summary?: string | null
+          application_deadline?: string | null
           average_fees_per_year?: number | null
+          average_gpa?: number | null
           average_package?: number | null
           campus_size_acres?: number | null
           city?: string | null
@@ -6723,6 +6754,7 @@ export type Database = {
           email?: string | null
           established_year?: number | null
           featured?: boolean | null
+          graduation_rate?: number | null
           highest_package?: number | null
           hostels_available?: boolean | null
           id?: string
@@ -6740,14 +6772,21 @@ export type Database = {
           placement_percentage?: number | null
           postal_code?: string | null
           premium_expires_at?: string | null
+          programs_offered?: string[] | null
           ranking_national?: number | null
           ranking_nirf?: number | null
+          ranking_regional?: number | null
           recognition?: string[] | null
+          sat_range_high?: number | null
+          sat_range_low?: number | null
           scholarship_available?: boolean | null
           slug?: string | null
           state?: string | null
+          student_population?: number | null
           total_faculty?: number | null
           total_students?: number | null
+          tuition_in_state?: number | null
+          tuition_out_state?: number | null
           updated_at?: string
           verification_status?: string | null
           verified_at?: string | null
