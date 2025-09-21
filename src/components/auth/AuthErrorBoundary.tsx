@@ -24,15 +24,17 @@ export class AuthErrorBoundary extends Component<Props, State> {
   }
 
   private handleRetry = () => {
-    // Clear potentially corrupted auth data
+    // Clear all potentially corrupted auth data
+    localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
     localStorage.removeItem('supabase.auth.token');
+    localStorage.removeItem('secure_session');
     sessionStorage.clear();
     
     // Reset error state
     this.setState({ hasError: false, error: undefined });
     
-    // Force reload to reinitialize auth
-    window.location.href = '/';
+    // Force reload to reinitialize auth completely
+    window.location.reload();
   };
 
   public render() {

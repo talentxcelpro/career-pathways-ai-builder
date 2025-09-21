@@ -12,6 +12,7 @@ import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
 import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import SubdomainGateway from "@/pages/SubdomainGateway";
 // import { AIProvider } from "./contexts/AIContext";
@@ -186,7 +187,8 @@ const App = () => {
               <AnalyticsProvider>
               <AuthErrorBoundary>
                 <AuthProvider>
-                  <NotificationProvider>
+                  <AuthErrorRecovery>
+                    <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
                 {/* <RealtimeProvider showToasts={false}> */}
@@ -396,7 +398,8 @@ const App = () => {
                 {/* </RealtimeProvider> */}
                 {/* </AIProvider> */}
               {/* </SecurityProvider> */}
-                  </NotificationProvider>
+                    </NotificationProvider>
+                  </AuthErrorRecovery>
                 </AuthProvider>
               </AuthErrorBoundary>
             </AnalyticsProvider>

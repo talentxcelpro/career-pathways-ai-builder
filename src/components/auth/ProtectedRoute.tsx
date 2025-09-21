@@ -23,17 +23,26 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  // Validate session isn't expired
+  // Validate session isn't expired with better error handling
   if (session) {
-    const now = Math.floor(Date.now() / 1000);
-    const expiresAt = session.expires_at;
-    
-    if (expiresAt && now >= expiresAt) {
-      console.log('Session expired in ProtectedRoute');
-      // Clear expired session data
-      localStorage.clear();
+    try {
+      const now = Math.floor(Date.now() / 1000);
+      const expiresAt = session.expires_at;
+      
+      if (expiresAt && now >= expiresAt) {
+        console.log('Session expired in ProtectedRoute');
+        // Clear all auth-related storage
+        localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+        localStorage.removeItem('secure_session');
+        sessionStorage.clear();
+        return <Navigate to="/auth/login" state={{ from: location, reason: 'expired' }} replace />;
+      }
+    } catch (error) {
+      console.error('Session validation error:', error);
+      // Clear corrupted session data
+      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
       sessionStorage.clear();
-      return <Navigate to="/auth/login" state={{ from: location, reason: 'expired' }} replace />;
+      return <Navigate to="/auth/login" state={{ from: location, reason: 'error' }} replace />;
     }
   }
 

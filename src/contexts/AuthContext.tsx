@@ -43,11 +43,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshSession = async () => {
     try {
       const { data: { session }, error } = await supabase.auth.refreshSession();
-      if (error) throw error;
+      if (error) {
+        // Handle session refresh failure gracefully
+        if (error.message?.includes('refresh_token_not_found') || error.message?.includes('invalid_refresh_token')) {
+          console.warn('Refresh token invalid, clearing session');
+          await signOut();
+          return;
+        }
+        throw error;
+      }
       setSession(session);
       setUser(session?.user ?? null);
     } catch (error) {
       console.error('Session refresh error:', error);
+      // Clear potentially corrupted session data
+      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+      sessionStorage.clear();
     }
   };
 
@@ -109,12 +120,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         authSubscription = subscription;
 
-        // Check for existing session
+        // Check for existing session with retry logic
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
+          // Clear corrupted session data
+          localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+          sessionStorage.clear();
         } else if (mounted) {
+          // Validate session isn't expired
+          if (session?.expires_at) {
+            const now = Math.floor(Date.now() / 1000);
+            if (now >= session.expires_at) {
+              console.warn('Session expired during initialization');
+              await supabase.auth.signOut();
+              return;
+            }
+          }
           setSession(session);
           setUser(session?.user ?? null);
           
