@@ -42,6 +42,7 @@ import { EnhancedFilters } from '@/components/colleges/enhanced/EnhancedFilters'
 import { updateMetaTags } from '@/utils/metaTags';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ImageWithFallback } from '@/components/common/ImageWithFallback';
+import { CollegeInsightsDashboard } from '@/components/colleges/enhanced/CollegeInsightsDashboard';
 
 const EnhancedColleges = () => {
   const navigate = useNavigate();
@@ -174,12 +175,13 @@ const EnhancedColleges = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        {/* Header */}
+      {/* Header */}
         <div className="mb-8">
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-foreground mb-3">Discover Your Perfect College</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              Find verified colleges across India with comprehensive data on programs, placements, reviews, and direct admission guidance.
+              Find verified colleges across India with comprehensive data on programs, placements, reviews, and direct admission guidance. 
+              Explore {colleges?.length || 0}+ colleges with detailed analytics and insights.
             </p>
             
             {/* Action Buttons */}
@@ -201,20 +203,12 @@ const EnhancedColleges = () => {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {stats.map((stat, index) => (
-              <Card key={index} className="text-center">
-                <CardContent className="p-4">
-                  <div className={`inline-flex p-2 rounded-lg ${stat.color} mb-2`}>
-                    <stat.icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Analytics Dashboard */}
+          {colleges && colleges.length > 0 && (
+            <div className="mb-8">
+              <CollegeInsightsDashboard colleges={colleges} />
+            </div>
+          )}
         </div>
 
         {/* Search and Filters */}
