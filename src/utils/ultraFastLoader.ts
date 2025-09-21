@@ -2,6 +2,15 @@
  * Ultra-fast loading optimizations for instant page loads
  */
 
+// Browser compatibility polyfill for requestIdleCallback
+const safeRequestIdleCallback = (callback: () => void) => {
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    return window.requestIdleCallback(callback);
+  }
+  // Fallback to setTimeout with minimal delay
+  return setTimeout(callback, 1);
+};
+
 // Critical resource prefetching
 export const prefetchCriticalResources = () => {
   if (typeof document === 'undefined') return;
@@ -68,7 +77,7 @@ export const enableInstantNavigation = () => {
   }, { rootMargin: '100px' });
 
   // Observe all internal links
-  requestIdleCallback(() => {
+  safeRequestIdleCallback(() => {
     document.querySelectorAll('a[href]').forEach(link => {
       const anchor = link as HTMLAnchorElement;
       if (anchor.hostname === location.hostname) {
@@ -175,7 +184,7 @@ export const initUltraFastLoading = () => {
 
   // Post-load optimizations
   window.addEventListener('load', () => {
-    requestIdleCallback(() => {
+    safeRequestIdleCallback(() => {
       optimizeMemory();
     });
   });
