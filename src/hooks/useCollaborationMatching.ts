@@ -8,23 +8,20 @@ export interface CollaborationOpportunity {
   id: string;
   title: string;
   description: string;
-  project_type: 'startup' | 'side-project' | 'content' | 'research' | 'freelance' | 'open-source';
-  skills_required: string[];
-  time_commitment: 'part-time' | 'full-time' | 'flexible' | 'weekend';
-  duration_months?: number;
-  is_paid: boolean;
-  compensation_type?: 'equity' | 'revenue-share' | 'hourly' | 'project-based' | 'unpaid';
-  compensation_amount?: string;
-  location_type: 'remote' | 'hybrid' | 'on-site';
+  collaboration_type: string; // actual column name
+  skills_needed: string[]; // actual column name  
+  time_commitment?: string;
+  compensation_type?: string;
+  remote_ok?: boolean; // actual column name
   location?: string;
-  team_size?: number;
-  looking_for_roles: string[];
-  project_stage: 'idea' | 'mvp' | 'beta' | 'launched' | 'growth';
+  max_collaborators?: number;
+  tags?: string[];
+  applications_count?: number;
+  status: 'open' | 'in-progress' | 'completed' | 'paused';
   created_by: string;
   created_at: string;
-  status: 'open' | 'in-progress' | 'completed' | 'paused';
+  expires_at?: string;
   creator_profile?: any;
-  application_count?: number;
   matchScore?: number;
   matchReasons?: string[];
 }
@@ -150,19 +147,19 @@ export const useCollaborationMatching = () => {
     let score = 0;
     const reasons: string[] = [];
 
-    // Skills match (high importance)
-    if (userProfile.skills && opportunity.skills_required) {
+    // Skills match (high importance) - using actual column name
+    if (userProfile.skills && opportunity.skills_needed) {
       const skillMatches = userProfile.skills.filter((skill: string) =>
-        opportunity.skills_required.some(reqSkill => 
+        opportunity.skills_needed.some(reqSkill => 
           skill.toLowerCase().includes(reqSkill.toLowerCase()) ||
           reqSkill.toLowerCase().includes(skill.toLowerCase())
         )
       );
       
       if (skillMatches.length > 0) {
-        const skillScore = (skillMatches.length / opportunity.skills_required.length) * 50;
+        const skillScore = (skillMatches.length / opportunity.skills_needed.length) * 50;
         score += skillScore;
-        reasons.push(`${skillMatches.length}/${opportunity.skills_required.length} skills match`);
+        reasons.push(`${skillMatches.length}/${opportunity.skills_needed.length} skills match`);
       }
     }
 
@@ -181,8 +178,8 @@ export const useCollaborationMatching = () => {
       }
     }
 
-    // Location compatibility
-    if (opportunity.location_type === 'remote') {
+    // Location compatibility - using actual column  
+    if (opportunity.remote_ok) {
       score += 15;
       reasons.push('Remote work');
     } else if (userProfile.location && opportunity.location) {
@@ -193,14 +190,13 @@ export const useCollaborationMatching = () => {
       }
     }
 
-    // Career stage and project stage alignment
-    if (userProfile.career_stage && opportunity.project_stage) {
-      const careerLevel = getCareerStageLevel(userProfile.career_stage);
-      const projectComplexity = getProjectComplexity(opportunity.project_stage);
-      
-      if (Math.abs(careerLevel - projectComplexity) <= 1) {
-        score += 15;
-        reasons.push('Suitable project level');
+    // Collaboration type appeal
+    if (userProfile.career_goals) {
+      const goalText = userProfile.career_goals.join(' ').toLowerCase();
+      const collabType = opportunity.collaboration_type.toLowerCase();
+      if (goalText.includes(collabType) || collabType.includes('startup') || collabType.includes('project')) {
+        score += 20;
+        reasons.push('Relevant collaboration type');
       }
     }
 
@@ -210,8 +206,8 @@ export const useCollaborationMatching = () => {
       reasons.push('Flexible commitment');
     }
 
-    // Compensation preference
-    if (opportunity.is_paid) {
+    // Compensation preference  
+    if (opportunity.compensation_type && opportunity.compensation_type !== 'unpaid') {
       score += 10;
       reasons.push('Paid opportunity');
     }
@@ -221,22 +217,9 @@ export const useCollaborationMatching = () => {
     reasons.push('Open opportunity');
 
     // Boost score for opportunities with flexible requirements
-    if (opportunity.skills_required.length <= 3) {
+    if (opportunity.skills_needed && opportunity.skills_needed.length <= 3) {
       score += 5;
       reasons.push('Accessible requirements');
-    }
-
-    // Project type appeal (based on career goals)
-    if (userProfile.career_goals) {
-      const goalText = userProfile.career_goals.join(' ').toLowerCase();
-      if (goalText.includes('startup') && opportunity.project_type === 'startup') {
-        score += 20;
-        reasons.push('Startup opportunity');
-      }
-      if (goalText.includes('side project') && opportunity.project_type === 'side-project') {
-        score += 15;
-        reasons.push('Side project');
-      }
     }
 
     return {
