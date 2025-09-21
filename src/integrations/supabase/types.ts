@@ -12560,6 +12560,431 @@ export type Database = {
         }
         Relationships: []
       }
+      hub_analytics: {
+        Row: {
+          created_at: string | null
+          hub_id: string
+          id: string
+          metric_data: Json | null
+          metric_name: string
+          metric_value: number | null
+          period_end: string | null
+          period_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hub_id: string
+          id?: string
+          metric_data?: Json | null
+          metric_name: string
+          metric_value?: number | null
+          period_end?: string | null
+          period_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hub_id?: string
+          id?: string
+          metric_data?: Json | null
+          metric_name?: string
+          metric_value?: number | null
+          period_end?: string | null
+          period_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_analytics_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: false
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_content: {
+        Row: {
+          author_name: string | null
+          content: string | null
+          content_type: string
+          created_at: string | null
+          engagement_score: number | null
+          hub_id: string
+          id: string
+          is_featured: boolean | null
+          metadata: Json | null
+          published_at: string | null
+          source_platform: string | null
+          source_url: string | null
+          tags: Json | null
+          title: string | null
+        }
+        Insert: {
+          author_name?: string | null
+          content?: string | null
+          content_type: string
+          created_at?: string | null
+          engagement_score?: number | null
+          hub_id: string
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          published_at?: string | null
+          source_platform?: string | null
+          source_url?: string | null
+          tags?: Json | null
+          title?: string | null
+        }
+        Update: {
+          author_name?: string | null
+          content?: string | null
+          content_type?: string
+          created_at?: string | null
+          engagement_score?: number | null
+          hub_id?: string
+          id?: string
+          is_featured?: boolean | null
+          metadata?: Json | null
+          published_at?: string | null
+          source_platform?: string | null
+          source_url?: string | null
+          tags?: Json | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_content_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: false
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_events: {
+        Row: {
+          agenda: Json | null
+          capacity: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_time: string | null
+          event_type: string
+          hub_id: string
+          id: string
+          is_free: boolean | null
+          is_virtual: boolean | null
+          location: string | null
+          meeting_url: string | null
+          registration_count: number | null
+          registration_required: boolean | null
+          speakers: Json | null
+          start_time: string
+          tags: Json | null
+          ticket_price: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          agenda?: Json | null
+          capacity?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_type: string
+          hub_id: string
+          id?: string
+          is_free?: boolean | null
+          is_virtual?: boolean | null
+          location?: string | null
+          meeting_url?: string | null
+          registration_count?: number | null
+          registration_required?: boolean | null
+          speakers?: Json | null
+          start_time: string
+          tags?: Json | null
+          ticket_price?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          agenda?: Json | null
+          capacity?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_type?: string
+          hub_id?: string
+          id?: string
+          is_free?: boolean | null
+          is_virtual?: boolean | null
+          location?: string | null
+          meeting_url?: string | null
+          registration_count?: number | null
+          registration_required?: boolean | null
+          speakers?: Json | null
+          start_time?: string
+          tags?: Json | null
+          ticket_price?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_events_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: false
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_members: {
+        Row: {
+          created_at: string | null
+          department: string | null
+          hub_id: string
+          id: string
+          is_public: boolean | null
+          join_date: string | null
+          member_type: string
+          metadata: Json | null
+          relationship_proof: string | null
+          role: string | null
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          department?: string | null
+          hub_id: string
+          id?: string
+          is_public?: boolean | null
+          join_date?: string | null
+          member_type: string
+          metadata?: Json | null
+          relationship_proof?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          department?: string | null
+          hub_id?: string
+          id?: string
+          is_public?: boolean | null
+          join_date?: string | null
+          member_type?: string
+          metadata?: Json | null
+          relationship_proof?: string | null
+          role?: string | null
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_members_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: false
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_opportunities: {
+        Row: {
+          application_count: number | null
+          created_at: string | null
+          created_by: string | null
+          deadline: string | null
+          description: string | null
+          external_url: string | null
+          hub_id: string
+          id: string
+          is_featured: boolean | null
+          is_remote: boolean | null
+          location: string | null
+          metadata: Json | null
+          opportunity_type: string
+          requirements: Json | null
+          salary_range: string | null
+          skills_required: Json | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          application_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          external_url?: string | null
+          hub_id: string
+          id?: string
+          is_featured?: boolean | null
+          is_remote?: boolean | null
+          location?: string | null
+          metadata?: Json | null
+          opportunity_type: string
+          requirements?: Json | null
+          salary_range?: string | null
+          skills_required?: Json | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          application_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          external_url?: string | null
+          hub_id?: string
+          id?: string
+          is_featured?: boolean | null
+          is_remote?: boolean | null
+          location?: string | null
+          metadata?: Json | null
+          opportunity_type?: string
+          requirements?: Json | null
+          salary_range?: string | null
+          skills_required?: Json | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_opportunities_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: false
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_projects: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          external_url: string | null
+          hub_id: string
+          id: string
+          is_team_based: boolean | null
+          max_participants: number | null
+          participant_count: number | null
+          prize_details: string | null
+          project_deadline: string | null
+          project_type: string
+          registration_deadline: string | null
+          requirements: string | null
+          status: string | null
+          tags: Json | null
+          timeline: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          external_url?: string | null
+          hub_id: string
+          id?: string
+          is_team_based?: boolean | null
+          max_participants?: number | null
+          participant_count?: number | null
+          prize_details?: string | null
+          project_deadline?: string | null
+          project_type: string
+          registration_deadline?: string | null
+          requirements?: string | null
+          status?: string | null
+          tags?: Json | null
+          timeline?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          external_url?: string | null
+          hub_id?: string
+          id?: string
+          is_team_based?: boolean | null
+          max_participants?: number | null
+          participant_count?: number | null
+          prize_details?: string | null
+          project_deadline?: string | null
+          project_type?: string
+          registration_deadline?: string | null
+          requirements?: string | null
+          status?: string | null
+          tags?: Json | null
+          timeline?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_projects_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: false
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hub_stats: {
+        Row: {
+          active_projects: number | null
+          hub_id: string
+          id: string
+          last_updated: string | null
+          open_roles: number | null
+          total_applications: number | null
+          upcoming_events: number | null
+          verified_members: number | null
+        }
+        Insert: {
+          active_projects?: number | null
+          hub_id: string
+          id?: string
+          last_updated?: string | null
+          open_roles?: number | null
+          total_applications?: number | null
+          upcoming_events?: number | null
+          verified_members?: number | null
+        }
+        Update: {
+          active_projects?: number | null
+          hub_id?: string
+          id?: string
+          last_updated?: string | null
+          open_roles?: number | null
+          total_applications?: number | null
+          upcoming_events?: number | null
+          verified_members?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_stats_hub_id_fkey"
+            columns: ["hub_id"]
+            isOneToOne: true
+            referencedRelation: "organization_hubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       industries: {
         Row: {
           created_at: string | null
@@ -16322,6 +16747,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      organization_hubs: {
+        Row: {
+          banner_url: string | null
+          contact_info: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          dynamic_tagline: string | null
+          employee_count_range: string | null
+          founded_year: number | null
+          hub_type: string
+          id: string
+          industry: string | null
+          is_active: boolean | null
+          location: string | null
+          logo_url: string | null
+          name: string
+          settings: Json | null
+          slug: string
+          social_feeds: Json | null
+          updated_at: string | null
+          verification_status: string | null
+          website_url: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          contact_info?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          dynamic_tagline?: string | null
+          employee_count_range?: string | null
+          founded_year?: number | null
+          hub_type?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          settings?: Json | null
+          slug: string
+          social_feeds?: Json | null
+          updated_at?: string | null
+          verification_status?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          contact_info?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          dynamic_tagline?: string | null
+          employee_count_range?: string | null
+          founded_year?: number | null
+          hub_type?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          settings?: Json | null
+          slug?: string
+          social_feeds?: Json | null
+          updated_at?: string | null
+          verification_status?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
       }
       organization_members: {
         Row: {
