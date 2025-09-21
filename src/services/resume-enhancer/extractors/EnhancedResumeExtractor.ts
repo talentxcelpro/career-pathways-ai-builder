@@ -1,6 +1,6 @@
 import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent';
 import { supabase } from "@/integrations/supabase/client";
-import mammoth from 'mammoth';
+import * as mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
 

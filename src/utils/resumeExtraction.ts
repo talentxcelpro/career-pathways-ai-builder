@@ -1,6 +1,6 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
-import mammoth from 'mammoth';
+import * as mammoth from 'mammoth';
 import type { Resume, ResumePersonalInfo, ResumeExperience, ResumeEducation, ResumeSkill, ExtractionResult } from '@/types/resume';
 
 // Set the worker source for PDF.js

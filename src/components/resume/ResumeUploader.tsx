@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ExtractionResult } from '@/types/resume';
-import mammoth from 'mammoth';
+import * as mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
 import { useAIService } from '@/hooks/useAIService';
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';

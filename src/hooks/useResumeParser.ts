@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import mammoth from 'mammoth';
+import * as mammoth from 'mammoth';
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 // pdfjs-dist ESM build
 // @ts-ignore - pdfjs typing path
