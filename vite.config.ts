@@ -34,88 +34,40 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Aggressive code splitting for 2-3G optimization
+          // Dynamic chunking to reduce memory usage
           if (id.includes('node_modules')) {
-            // Core React chunk - highest priority
             if (id.includes('react') || id.includes('react-dom')) {
-              return 'react';
+              return 'vendor';
             }
-            
-            // UI libraries - separate chunk
-            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
+            if (id.includes('@radix-ui')) {
               return 'ui';
             }
-            
-            // Heavy tools - separate chunks
             if (id.includes('mammoth') || id.includes('pdfjs-dist') || id.includes('docx')) {
               return 'pdf-tools';
             }
-            if (id.includes('tesseract') || id.includes('@huggingface/transformers')) {
+            if (id.includes('tesseract') || id.includes('transformers')) {
               return 'ai-tools';
             }
-            
-            // Charts and animations - lazy load
-            if (id.includes('recharts') || id.includes('d3')) {
+            if (id.includes('recharts')) {
               return 'charts';
             }
             if (id.includes('framer-motion')) {
               return 'animations';
             }
-            
-            // Data and routing
-            if (id.includes('@supabase')) {
-              return 'supabase';
+            if (id.includes('@supabase') || id.includes('@tanstack') || id.includes('react-router')) {
+              return 'libs';
             }
-            if (id.includes('@tanstack/react-query')) {
-              return 'query';
-            }
-            if (id.includes('react-router')) {
-              return 'router';
-            }
-            
-            // Form libraries
-            if (id.includes('react-hook-form') || id.includes('@hookform')) {
-              return 'forms';
-            }
-            
-            // Analytics and monitoring
-            if (id.includes('@vercel') || id.includes('analytics')) {
-              return 'analytics';
-            }
-            
             return 'vendor';
-          }
-          
-          // Split app code by feature
-          if (id.includes('/pages/admin/')) {
-            return 'admin';
-          }
-          if (id.includes('/pages/resume/')) {
-            return 'resume';
-          }
-          if (id.includes('/pages/ai/') || id.includes('/components/ai/')) {
-            return 'ai-features';
-          }
-          if (id.includes('/components/passport/')) {
-            return 'passport';
-          }
-          if (id.includes('/pages/mobile/') || id.includes('/components/mobile/')) {
-            return 'mobile';
           }
         }
       },
-      maxParallelFileOps: mode === 'production' ? 4 : 1
+      maxParallelFileOps: 1 // Further reduce parallel operations
     },
-    target: 'es2020',
-    minify: mode === 'production' ? 'terser' : false,
+    target: 'es2020', // Less aggressive target for better compatibility
+    minify: false, // Disable minification for development builds
     sourcemap: false,
-    chunkSizeWarningLimit: 1000, // Stricter warning for 2-3G
-    assetsInlineLimit: 1024, // Smaller inline limit
-    // Additional optimizations for slow networks
-    reportCompressedSize: false,
-    modulePreload: {
-      polyfill: true
-    }
+    chunkSizeWarningLimit: 2000,
+    assetsInlineLimit: 2048
   },
   optimizeDeps: {
     include: [
