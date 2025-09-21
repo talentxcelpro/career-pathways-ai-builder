@@ -9,6 +9,7 @@ import { LiveEventsFeed } from "@/components/network/LiveEventsFeed";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
+import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnectAI";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
@@ -229,7 +230,7 @@ const Network = () => {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               }>
-                <SmartConnectAI />
+                <EnhancedSmartConnectAI />
               </React.Suspense>
             </div>
           </TabsContent>

@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Mail, AlertTriangle } from 'lucide-react';
-import { useProfileCompletion, getCompletionColor, getCompletionBgColor } from '@/hooks/useProfileCompletion';
 
 interface ProfileCompletionBarProps {
   user: any;
@@ -12,12 +11,48 @@ interface ProfileCompletionBarProps {
   compact?: boolean;
 }
 
+// Helper function to calculate completion from user data
+const calculateUserCompletion = (user: any) => {
+  if (!user) return { percentage: 0, completedCount: 0, totalCount: 8 };
+  
+  let completed = 0;
+  const total = 8;
+  
+  if (user.full_name) completed++;
+  if (user.title) completed++;
+  if (user.about && user.about.length > 50) completed++;
+  if (user.profile_picture_url) completed++;
+  if (user.skills && user.skills.length > 0) completed++;
+  if (user.company) completed++;
+  if (user.location) completed++;
+  if (user.linkedin_url) completed++;
+  
+  return {
+    percentage: Math.round((completed / total) * 100),
+    completedCount: completed,
+    totalCount: total
+  };
+};
+
 export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
   user,
   onSendReminder,
   compact = false
 }) => {
-  const { percentage, criteria, completedCount, totalCount } = useProfileCompletion(user);
+  const { percentage, completedCount, totalCount } = calculateUserCompletion(user);
+  
+  // Helper functions for styling
+  const getCompletionColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+  
+  const getCompletionBgColor = (score: number) => {
+    if (score >= 80) return 'bg-green-100';
+    if (score >= 60) return 'bg-yellow-100';
+    return 'bg-red-100';
+  };
 
   const getProgressColor = (percentage: number): string => {
     if (percentage <= 25) return 'bg-red-500';
@@ -27,14 +62,14 @@ export const ProfileCompletionBar: React.FC<ProfileCompletionBarProps> = ({
 
   const getMissingCriteria = () => {
     const missing: string[] = [];
-    if (!criteria.basicInfo) missing.push('Basic Info');
-    if (!criteria.professionalInfo) missing.push('Professional Info');
-    if (!criteria.aboutSection) missing.push('About Section');
-    if (!criteria.socialLinks) missing.push('Social Links');
-    if (!criteria.skills) missing.push('Skills');
-    if (!criteria.workExperience) missing.push('Work Experience');
-    if (!criteria.profileImages) missing.push('Profile Images');
-    if (!criteria.resume) missing.push('Resume');
+    if (!user?.full_name) missing.push('Full Name');
+    if (!user?.title) missing.push('Job Title');
+    if (!user?.about || user.about.length < 50) missing.push('About Section');
+    if (!user?.profile_picture_url) missing.push('Profile Picture');
+    if (!user?.skills || user.skills.length === 0) missing.push('Skills');
+    if (!user?.company) missing.push('Company');
+    if (!user?.location) missing.push('Location');
+    if (!user?.linkedin_url) missing.push('LinkedIn Profile');
     return missing;
   };
 

@@ -1,100 +1,183 @@
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
-interface ProfileCompletionCriteria {
-  basicInfo: boolean;
-  professionalInfo: boolean;
-  aboutSection: boolean;
-  socialLinks: boolean;
-  skills: boolean;
-  workExperience: boolean;
-  profileImages: boolean;
-  resume: boolean;
+export interface ProfileCompletionSuggestion {
+  field: string;
+  label: string;
+  description: string;
+  priority: 'high' | 'medium' | 'low';
+  icon: string;
 }
 
-interface CompletionResult {
-  percentage: number;
-  criteria: ProfileCompletionCriteria;
-  completedCount: number;
-  totalCount: number;
-}
+export const useProfileCompletion = () => {
+  const { user } = useAuth();
+  const [completionScore, setCompletionScore] = useState(0);
+  const [suggestions, setSuggestions] = useState<ProfileCompletionSuggestion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-export const useProfileCompletion = (user: any): CompletionResult => {
-  return useMemo(() => {
-    if (!user) {
-      return {
-        percentage: 0,
-        criteria: {
-          basicInfo: false,
-          professionalInfo: false,
-          aboutSection: false,
-          socialLinks: false,
-          skills: false,
-          workExperience: false,
-          profileImages: false,
-          resume: false,
-        },
-        completedCount: 0,
-        totalCount: 8,
-      };
+  useEffect(() => {
+    if (user?.id) {
+      checkProfileCompletion();
+    }
+  }, [user?.id]);
+
+  const checkProfileCompletion = async () => {
+    if (!user?.id) return;
+
+    setIsLoading(true);
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      const score = calculateCompletionScore(profile);
+      const missingSuggestions = generateSuggestions(profile);
+
+      setCompletionScore(score);
+      setSuggestions(missingSuggestions);
+    } catch (error) {
+      console.error('Error checking profile completion:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const calculateCompletionScore = (profile: any): number => {
+    let score = 0;
+    const totalFields = 12; // Total weighted fields
+
+    // Essential fields (higher weight)
+    if (profile.full_name) score += 2;
+    if (profile.title) score += 2;
+    if (profile.about) score += 2;
+    if (profile.profile_picture_url) score += 1;
+
+    // Career fields
+    if (profile.career_goals && profile.career_goals.length > 0) score += 1;
+    if (profile.career_interests && profile.career_interests.length > 0) score += 1;
+    if (profile.career_stage) score += 1;
+
+    // Professional fields
+    if (profile.skills && profile.skills.length > 0) score += 1;
+    if (profile.company) score += 1;
+    if (profile.location) score += 1;
+    if (profile.industry) score += 1;
+
+    // Contact fields
+    if (profile.linkedin_url) score += 1;
+
+    return Math.round((score / totalFields) * 100);
+  };
+
+  const generateSuggestions = (profile: any): ProfileCompletionSuggestion[] => {
+    const suggestions: ProfileCompletionSuggestion[] = [];
+
+    if (!profile.title) {
+      suggestions.push({
+        field: 'title',
+        label: 'Professional Title',
+        description: 'Add your current job title to help others understand your role',
+        priority: 'high',
+        icon: 'briefcase'
+      });
     }
 
-    const criteria: ProfileCompletionCriteria = {
-      // Basic Info (name, email, phone, location)
-      basicInfo: !!(user.full_name && user.email && user.phone && user.location),
-      
-      // Professional Info (title, company, industry, experience)
-      professionalInfo: !!(user.title && user.current_company && user.industry && user.experience_years),
-      
-      // About Section (about text and headline)
-      aboutSection: !!(user.about && user.headline),
-      
-      // Social Links (at least 2 of: LinkedIn, GitHub, Portfolio, Website)
-      socialLinks: [user.linkedin_url, user.github_url, user.portfolio_url, user.website]
-        .filter(Boolean).length >= 2,
-      
-      // Skills (at least 3 skills)
-      skills: !!(user.skills && Array.isArray(user.skills) && user.skills.length >= 3),
-      
-      // Work Experience (has work experience data)
-      workExperience: !!(user.work_experiences && 
-        typeof user.work_experiences === 'object' && 
-        Object.keys(user.work_experiences).length > 0),
-      
-      // Profile Images (profile picture and banner/cover)
-      profileImages: !!(user.profile_picture_url && 
-        (user.banner_url || user.cover_image_url)),
-      
-      // Resume (has resume uploaded)
-      resume: !!user.resume_url,
-    };
+    if (!profile.about || profile.about.length < 50) {
+      suggestions.push({
+        field: 'about',
+        label: 'Professional Summary',
+        description: 'Write a brief summary about yourself and your career aspirations',
+        priority: 'high',
+        icon: 'user'
+      });
+    }
 
-    const completedCount = Object.values(criteria).filter(Boolean).length;
-    const totalCount = Object.keys(criteria).length;
-    const percentage = Math.round((completedCount / totalCount) * 100);
+    if (!profile.career_goals || profile.career_goals.length === 0) {
+      suggestions.push({
+        field: 'career_goals',
+        label: 'Career Goals',
+        description: 'Define your career aspirations to get better connections',
+        priority: 'high',
+        icon: 'target'
+      });
+    }
 
-    return {
-      percentage,
-      criteria,
-      completedCount,
-      totalCount,
-    };
-  }, [user]);
-};
+    if (!profile.career_interests || profile.career_interests.length === 0) {
+      suggestions.push({
+        field: 'career_interests',
+        label: 'Professional Interests',
+        description: 'Add your areas of professional interest',
+        priority: 'medium',
+        icon: 'heart'
+      });
+    }
 
-export const getCompletionLevel = (percentage: number): 'low' | 'medium' | 'high' => {
-  if (percentage <= 25) return 'low';
-  if (percentage <= 75) return 'medium';
-  return 'high';
-};
+    if (!profile.skills || profile.skills.length < 3) {
+      suggestions.push({
+        field: 'skills',
+        label: 'Skills & Expertise',
+        description: 'List your key skills to match with relevant professionals',
+        priority: 'medium',
+        icon: 'zap'
+      });
+    }
 
-export const getCompletionColor = (percentage: number): string => {
-  if (percentage <= 25) return 'text-red-600';
-  if (percentage <= 75) return 'text-orange-600';
-  return 'text-green-600';
-};
+    if (!profile.company) {
+      suggestions.push({
+        field: 'company',
+        label: 'Current Company',
+        description: 'Add your current workplace for better networking',
+        priority: 'medium',
+        icon: 'building'
+      });
+    }
 
-export const getCompletionBgColor = (percentage: number): string => {
-  if (percentage <= 25) return 'bg-red-100';
-  if (percentage <= 75) return 'bg-orange-100';
-  return 'bg-green-100';
+    if (!profile.location) {
+      suggestions.push({
+        field: 'location',
+        label: 'Location',
+        description: 'Add your location to connect with nearby professionals',
+        priority: 'medium',
+        icon: 'map-pin'
+      });
+    }
+
+    if (!profile.profile_picture_url) {
+      suggestions.push({
+        field: 'profile_picture',
+        label: 'Profile Picture',
+        description: 'Add a professional photo to make a great first impression',
+        priority: 'low',
+        icon: 'camera'
+      });
+    }
+
+    if (!profile.linkedin_url) {
+      suggestions.push({
+        field: 'linkedin_url',
+        label: 'LinkedIn Profile',
+        description: 'Link your LinkedIn profile for extended networking',
+        priority: 'low',
+        icon: 'linkedin'
+      });
+    }
+
+    // Sort by priority
+    return suggestions.sort((a, b) => {
+      const priorityOrder = { high: 3, medium: 2, low: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+  };
+
+  return {
+    completionScore,
+    suggestions,
+    isLoading,
+    refreshCompletion: checkProfileCompletion
+  };
 };
