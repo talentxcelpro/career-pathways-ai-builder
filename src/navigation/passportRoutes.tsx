@@ -8,6 +8,7 @@ import InstantNetworkingSystem from "../pages/InstantNetworkingSystem";
 import { SkillsVerificationCenter } from "../pages/SkillsVerificationCenter";
 import DynamicAchievementSystem from "../pages/DynamicAchievementSystem";
 import InteractiveCareerRoadmapBuilder from "../pages/InteractiveCareerRoadmapBuilder";
+import { CompletedCareerIntelligenceSystem } from "../pages/CompletedCareerIntelligenceSystem";
 export const passportRoutes = [
   {
     title: "Career Passport",
@@ -77,5 +78,12 @@ export const passportRoutes = [
     page: <InteractiveCareerRoadmapBuilder />,
     isPublic: false,
     requiresAdminAccess: false,
+  },
+  {
+    title: "Complete Intelligence",
+    to: "/complete-intelligence",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <CompletedCareerIntelligenceSystem />,
+    requiresAuth: true,
   },
 ];
