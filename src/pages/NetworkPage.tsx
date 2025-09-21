@@ -31,7 +31,9 @@ import {
   Building,
   GraduationCap,
   Award,
-  Clock
+  Clock,
+  Trophy,
+  Gift
 } from 'lucide-react';
 
 interface NetworkProfile {
@@ -429,7 +431,7 @@ const NetworkPage = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           {/* Tab Navigation */}
           <div className="flex items-center justify-between mb-6">
-            <TabsList className="grid grid-cols-4 w-fit">
+            <TabsList className="grid grid-cols-6 w-fit">
               <TabsTrigger value="discover" className="flex items-center gap-2">
                 <Search className="w-4 h-4" />
                 <span className="hidden sm:inline">Discover</span>
@@ -445,6 +447,14 @@ const NetworkPage = () => {
               <TabsTrigger value="messages" className="flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />
                 <span className="hidden sm:inline">Messages</span>
+              </TabsTrigger>
+              <TabsTrigger value="gamification" className="flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                <span className="hidden sm:inline">Gamification</span>
+              </TabsTrigger>
+              <TabsTrigger value="refer-earn" className="flex items-center gap-2">
+                <Gift className="w-4 h-4" />
+                <span className="hidden sm:inline">Refer & Earn</span>
               </TabsTrigger>
             </TabsList>
 
@@ -604,6 +614,84 @@ const NetworkPage = () => {
                     <MessageCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-slate-900 mb-2">No messages yet</h3>
                     <p className="text-slate-600">Start a conversation with your connections</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="gamification">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-yellow-500" />
+                    Gamification Center
+                  </CardTitle>
+                  <CardDescription>Level up your career with achievements, badges, and rewards</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="text-center p-4 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg border">
+                      <div className="text-2xl font-bold text-yellow-600">Level 5</div>
+                      <div className="text-sm text-slate-600">Your Level</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border">
+                      <div className="text-2xl font-bold text-blue-600">1,250</div>
+                      <div className="text-sm text-slate-600">Total Points</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border">
+                      <div className="text-2xl font-bold text-green-600">12</div>
+                      <div className="text-sm text-slate-600">Badges Earned</div>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <Button 
+                      onClick={() => navigate('/gamification')}
+                      className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                    >
+                      <Trophy className="w-4 h-4 mr-2" />
+                      Visit Gamification Center
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="refer-earn">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Gift className="w-5 h-5 text-purple-500" />
+                    Refer & Earn
+                  </CardTitle>
+                  <CardDescription>Invite friends and colleagues to join TalentXcel and earn rewards</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border">
+                      <div className="text-2xl font-bold text-purple-600">5</div>
+                      <div className="text-sm text-slate-600">Successful Referrals</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border">
+                      <div className="text-2xl font-bold text-green-600">$125</div>
+                      <div className="text-sm text-slate-600">Rewards Earned</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border">
+                      <div className="text-2xl font-bold text-blue-600">15</div>
+                      <div className="text-sm text-slate-600">Pending Invites</div>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <Button 
+                      onClick={() => navigate('/refer-and-earn')}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    >
+                      <Gift className="w-4 h-4 mr-2" />
+                      Start Referring
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
