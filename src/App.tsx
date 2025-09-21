@@ -90,6 +90,7 @@ import AIEnhancement from "./pages/resume/AIEnhancement";
 import QRNetworking from "./pages/QRNetworking";
 import CareerIntelligenceDashboard from "./pages/CareerIntelligenceDashboard";
 import InstantNetworkingSystem from "./pages/InstantNetworkingSystem";
+import { SkillsVerificationCenter } from "./pages/SkillsVerificationCenter";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
 import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
@@ -265,9 +266,10 @@ const App = () => {
                              <Route path="/passport/:userId" element={<FastPassportRedirect />} />
                            <Route path="/passport/:username" element={<CareerPassportDashboard />} />
                            <Route path="/@:username" element={<CareerPassportDashboard />} />
-                           <Route path="/qr-networking" element={<ProtectedRoute><QRNetworking /></ProtectedRoute>} />
-                           <Route path="/career-intelligence-dashboard" element={<ProtectedRoute><CareerIntelligenceDashboard /></ProtectedRoute>} />
-                           <Route path="/instant-networking" element={<ProtectedRoute><InstantNetworkingSystem /></ProtectedRoute>} />
+                            <Route path="/qr-networking" element={<ProtectedRoute><QRNetworking /></ProtectedRoute>} />
+                            <Route path="/career-intelligence-dashboard" element={<ProtectedRoute><CareerIntelligenceDashboard /></ProtectedRoute>} />
+                            <Route path="/instant-networking" element={<ProtectedRoute><InstantNetworkingSystem /></ProtectedRoute>} />
+                            <Route path="/skills-verification" element={<ProtectedRoute><SkillsVerificationCenter /></ProtectedRoute>} />
                          <Route path="/dashboard" element={<ProtectedRoute><UnifiedDashboard /></ProtectedRoute>} />
                           <Route path="/mobile/reels" element={<ProtectedRoute><React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense></ProtectedRoute>} />
                            <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />

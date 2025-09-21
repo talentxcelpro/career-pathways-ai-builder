@@ -230,7 +230,7 @@ export function TalentGraph() {
         >
           ← Back to Talent Graph
         </Button>
-        <SkillAssessment onComplete={() => setShowAssessment(false)} />
+        <SkillAssessment skill="React.js" onComplete={() => setShowAssessment(false)} />
       </div>
     );
   }
