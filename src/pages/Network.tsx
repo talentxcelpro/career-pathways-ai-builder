@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNavigate } from 'react-router-dom';
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { NewsFeed } from "@/components/news/NewsFeed";
@@ -16,7 +15,7 @@ import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EmailTestButton } from "@/components/EmailTestButton";
 import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
-import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper, Trophy, Gift } from "lucide-react";
+import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper } from "lucide-react";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
@@ -34,7 +33,6 @@ import { LiveEventCard } from "@/components/network/LiveEventCard";
 const Network = () => {
   const { isMobile } = useMobileDetection();
   const { user } = useAuth();
-  const navigate = useNavigate();
   
   const {
     posts,
@@ -115,24 +113,6 @@ const Network = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        {/* Quick Action Buttons */}
-        <div className="flex gap-2 mb-4">
-          <button 
-            onClick={() => navigate('/gamification')}
-            className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium"
-          >
-            <Trophy className="w-4 h-4" />
-            Gamification
-          </button>
-          <button 
-            onClick={() => navigate('/refer-and-earn')}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium"
-          >
-            <Gift className="w-4 h-4" />
-            Refer & Earn
-          </button>
-        </div>
-
         <Tabs defaultValue="feed" className="w-full">
           <TabsList className="grid w-full grid-cols-8 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
             <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
@@ -278,7 +258,6 @@ const Network = () => {
               </React.Suspense>
             </div>
           </TabsContent>
-
         </Tabs>
       </div>
       
