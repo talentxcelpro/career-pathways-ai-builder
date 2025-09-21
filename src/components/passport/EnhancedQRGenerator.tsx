@@ -176,14 +176,14 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
         </p>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">{/* Reduced spacing from space-y-6 to space-y-4 */}
         {qrCode ? (
-          <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-3">{/* Reduced spacing from space-y-4 to space-y-3 */}
             {/* QR Code with TalentXcel branding */}
-            <div className="relative p-6 bg-white rounded-lg shadow-lg border-2 border-primary/20">
+            <div className="relative p-4 bg-white rounded-lg shadow-lg border-2 border-primary/20">{/* Reduced padding from p-6 to p-4 */}
               <QRCodeSVG
                 value={qrCode}
-                size={200}
+                size={180}
                 bgColor="#ffffff"
                 fgColor="#1a365d"
                 level="H"
@@ -199,7 +199,7 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
             </div>
 
             {/* Profile info */}
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-1">{/* Reduced spacing from space-y-2 to space-y-1 */}
               <h3 className="font-semibold text-lg">{profileData.full_name}</h3>
               {profileData.title && (
                 <Badge variant="secondary">{profileData.title}</Badge>
@@ -258,7 +258,7 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
             </div>
           </div>
         ) : (
-          <div className="text-center py-8">
+          <div className="text-center py-4">{/* Reduced padding from py-8 to py-4 */}
             <Button
               onClick={generateQRCode}
               disabled={isGenerating}

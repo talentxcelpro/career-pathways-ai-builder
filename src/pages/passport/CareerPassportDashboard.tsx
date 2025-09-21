@@ -336,7 +336,7 @@ export function CareerPassportDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4">{/* Reduced padding from py-8 to py-4 */}
         {/* Authentication Error */}
         {hasAuthError && (
           <div className="text-center py-12">
@@ -431,10 +431,10 @@ export function CareerPassportDashboard() {
             </Card>
           </div>
         ) : displayData.profile && !hasAuthError ? (
-          <div className="space-y-8">
+          <div className="space-y-4">{/* Reduced spacing from space-y-8 to space-y-4 */}
             {/* Enhanced QR Generator for own profile */}
             {!isPublicView && displayData.isOwner && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{/* Reduced gap from gap-6 to gap-4 */}
                 <EnhancedQRGenerator profileData={displayData.profile} />
                 <ProfessionalCard 
                   profile={displayData.profile} 
