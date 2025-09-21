@@ -1,0 +1,169 @@
+-- Add more colleges to reach 40 total with comprehensive data
+INSERT INTO colleges (
+  name, slug, college_type, address, city, state, zip_code, country, 
+  phone, website, email, description, founded_year, accreditation,
+  student_population, acceptance_rate, graduation_rate, tuition_in_state, 
+  tuition_out_state, average_gpa, sat_range_low, sat_range_high, 
+  act_range_low, act_range_high, application_deadline, ranking_national,
+  ranking_regional, programs_offered, campus_size, student_faculty_ratio,
+  retention_rate, employment_rate, average_salary, research_funding,
+  endowment, diversity_index, sustainability_rating, safety_rating,
+  sports_division, notable_alumni, campus_housing, online_programs,
+  international_students, financial_aid_percentage, is_active
+) VALUES
+-- Additional prestigious universities
+('University of Chicago', 'university-of-chicago', 'Private Research University', '5801 S Ellis Ave', 'Chicago', 'IL', '60637', 'USA', '(773) 702-1234', 'https://www.uchicago.edu', 'admissions@uchicago.edu', 'A prestigious private research university known for economics and liberal arts.', 1890, 'Higher Learning Commission', 17000, 7.2, 95.0, NULL, 59298, 4.0, 1470, 1570, 33, 35, '2024-01-02', 6, NULL, ARRAY['Economics', 'Political Science', 'Physics', 'Mathematics'], 217, 5, 99.0, 94.0, 85000, 850000000, 8200000000, 8.5, 'A-', 9.2, 'NCAA Division III', ARRAY['Barack Obama', 'Milton Friedman'], true, false, 18, 85, true),
+
+('Northwestern University', 'northwestern-university', 'Private Research University', '633 Clark St', 'Evanston', 'IL', '60208', 'USA', '(847) 491-3741', 'https://www.northwestern.edu', 'ugadmission@northwestern.edu', 'A highly selective private research university with strong programs in journalism and business.', 1851, 'Higher Learning Commission', 22000, 9.1, 97.0, NULL, 58701, 4.0, 1450, 1560, 33, 35, '2024-01-01', 9, NULL, ARRAY['Journalism', 'Business', 'Engineering', 'Medicine'], 240, 6, 98.0, 95.0, 87000, 920000000, 14100000000, 8.7, 'A', 9.5, 'NCAA Division I', ARRAY['Stephen Colbert', 'George McGovern'], true, true, 16, 88, true),
+
+('Duke University', 'duke-university', 'Private Research University', '2138 Campus Dr', 'Durham', 'NC', '27708', 'USA', '(919) 684-3214', 'https://www.duke.edu', 'askduke@duke.edu', 'Elite private research university with renowned medical and law schools.', 1838, 'Southern Association of Colleges and Schools', 16000, 8.2, 96.0, NULL, 58031, 4.0, 1470, 1570, 33, 35, '2024-01-02', 10, NULL, ARRAY['Medicine', 'Law', 'Business', 'Engineering'], 8709, 6, 98.0, 96.0, 86000, 780000000, 12400000000, 8.6, 'A', 9.4, 'NCAA Division I', ARRAY['Melinda Gates', 'Richard Nixon'], true, true, 15, 87, true),
+
+('Dartmouth College', 'dartmouth-college', 'Private Liberal Arts College', '1 Rope Ferry Rd', 'Hanover', 'NH', '03755', 'USA', '(603) 646-2875', 'https://www.dartmouth.edu', 'admissions.office@dartmouth.edu', 'Ivy League liberal arts college known for outdoor programs and strong alumni network.', 1769, 'New England Commission of Higher Education', 6500, 8.8, 95.0, NULL, 57638, 4.0, 1440, 1560, 32, 35, '2024-01-01', 12, NULL, ARRAY['Liberal Arts', 'Business', 'Engineering', 'Medicine'], 269, 7, 98.0, 95.0, 84000, 420000000, 7900000000, 8.4, 'A-', 9.3, 'NCAA Division I', ARRAY['Timothy Geithner', 'Mindy Kaling'], true, false, 13, 86, true),
+
+('Vanderbilt University', 'vanderbilt-university', 'Private Research University', '2201 West End Ave', 'Nashville', 'TN', '37235', 'USA', '(615) 322-2561', 'https://www.vanderbilt.edu', 'admissions@vanderbilt.edu', 'Private research university known for music, medicine, and strong academic programs.', 1873, 'Southern Association of Colleges and Schools', 13500, 11.2, 93.0, NULL, 52070, 3.9, 1430, 1560, 32, 35, '2024-01-01', 14, NULL, ARRAY['Music', 'Medicine', 'Education', 'Engineering'], 333, 7, 97.0, 93.0, 82000, 540000000, 6900000000, 8.2, 'A', 9.1, 'NCAA Division I', ARRAY['Al Gore', 'Amy Grant'], true, true, 12, 84, true),
+
+-- Top state universities
+('University of Virginia', 'university-of-virginia', 'Public Research University', '1827 University Ave', 'Charlottesville', 'VA', '22904', 'USA', '(434) 982-3200', 'https://www.virginia.edu', 'undergradadmission@virginia.edu', 'Historic public research university founded by Thomas Jefferson.', 1819, 'Southern Association of Colleges and Schools', 25000, 26.0, 95.0, 17091, 51940, 4.0, 1370, 1520, 31, 34, '2024-01-15', 25, 2, ARRAY['Business', 'Law', 'Medicine', 'Engineering'], 1682, 15, 97.0, 93.0, 75000, 380000000, 13400000000, 7.8, 'A', 8.9, 'NCAA Division I', ARRAY['Edgar Allan Poe', 'Tina Fey'], true, true, 11, 82, true),
+
+('University of North Carolina at Chapel Hill', 'unc-chapel-hill', 'Public Research University', '103 South Bldg', 'Chapel Hill', 'NC', '27599', 'USA', '(919) 966-3621', 'https://www.unc.edu', 'unchelp@admissions.unc.edu', 'Premier public research university with strong programs across all disciplines.', 1789, 'Southern Association of Colleges and Schools', 30000, 22.6, 91.0, 8980, 36000, 4.0, 1330, 1500, 29, 33, '2024-01-15', 28, 5, ARRAY['Journalism', 'Business', 'Public Health', 'Medicine'], 729, 13, 96.0, 91.0, 73000, 420000000, 4200000000, 7.6, 'A-', 8.7, 'NCAA Division I', ARRAY['Michael Jordan', 'Andy Griffith'], true, true, 9, 79, true),
+
+('University of Wisconsin-Madison', 'uw-madison', 'Public Research University', '500 Lincoln Dr', 'Madison', 'WI', '53706', 'USA', '(608) 262-3961', 'https://www.wisc.edu', 'onwisconsin@admissions.wisc.edu', 'Top-tier public research university known for research and school spirit.', 1848, 'Higher Learning Commission', 48000, 53.9, 87.0, 10720, 38630, 3.8, 1370, 1520, 28, 32, '2024-02-01', 35, 8, ARRAY['Engineering', 'Business', 'Agriculture', 'Medicine'], 936, 17, 95.0, 87.0, 68000, 1200000000, 3400000000, 7.2, 'A', 8.5, 'NCAA Division I', ARRAY['Frank Lloyd Wright', 'Joan Cusack'], true, true, 8, 76, true),
+
+('University of Washington', 'university-of-washington', 'Public Research University', '1410 NE Campus Pkwy', 'Seattle', 'WA', '98195', 'USA', '(206) 543-9686', 'https://www.washington.edu', 'askuwadm@uw.edu', 'Leading public research university with strong STEM programs and beautiful campus.', 1861, 'Northwest Commission on Colleges and Universities', 47000, 52.9, 84.0, 11745, 39906, 3.8, 1220, 1470, 27, 33, '2024-11-15', 40, 1, ARRAY['Computer Science', 'Medicine', 'Engineering', 'Business'], 703, 19, 94.0, 85.0, 71000, 1800000000, 7400000000, 7.4, 'A-', 8.6, 'NCAA Division I', ARRAY['Bill Gates Sr.', 'Kenny G'], true, true, 15, 78, true),
+
+-- Liberal arts colleges
+('Williams College', 'williams-college', 'Private Liberal Arts College', '880 Main St', 'Williamstown', 'MA', '01267', 'USA', '(413) 597-2211', 'https://www.williams.edu', 'admission@williams.edu', 'Elite liberal arts college known for small classes and outdoor recreation.', 1793, 'New England Commission of Higher Education', 2000, 13.2, 95.0, NULL, 59550, 4.0, 1430, 1560, 32, 35, '2024-01-01', 1, NULL, ARRAY['Liberal Arts', 'Economics', 'Art History', 'Psychology'], 450, 7, 99.0, 95.0, 78000, 45000000, 3000000000, 8.3, 'A', 9.2, 'NCAA Division III', ARRAY['James Garfield', 'Erin Burnett'], true, false, 8, 85, true),
+
+('Amherst College', 'amherst-college', 'Private Liberal Arts College', '220 South Pleasant St', 'Amherst', 'MA', '01002', 'USA', '(413) 542-2328', 'https://www.amherst.edu', 'admission@amherst.edu', 'Prestigious liberal arts college with open curriculum and need-blind admissions.', 1821, 'New England Commission of Higher Education', 1800, 11.1, 95.0, NULL, 58640, 4.0, 1420, 1570, 32, 35, '2024-01-01', 2, NULL, ARRAY['Liberal Arts', 'Economics', 'Political Science', 'English'], 1000, 8, 98.0, 96.0, 79000, 38000000, 2800000000, 8.5, 'A', 9.3, 'NCAA Division III', ARRAY['Calvin Coolidge', 'David Foster Wallace'], true, false, 9, 87, true),
+
+('Swarthmore College', 'swarthmore-college', 'Private Liberal Arts College', '500 College Ave', 'Swarthmore', 'PA', '19081', 'USA', '(610) 328-8300', 'https://www.swarthmore.edu', 'admissions@swarthmore.edu', 'Highly selective liberal arts college known for academic rigor and social responsibility.', 1864, 'Middle States Commission on Higher Education', 1650, 8.7, 94.0, NULL, 56500, 4.0, 1430, 1560, 32, 35, '2024-01-01', 3, NULL, ARRAY['Liberal Arts', 'Engineering', 'Political Science', 'Biology'], 425, 8, 98.0, 94.0, 77000, 42000000, 2300000000, 8.6, 'A', 9.1, 'NCAA Division III', ARRAY['Michael Dukakis', 'Jonathan Franzen'], true, false, 10, 86, true),
+
+-- Technical institutes
+('California Institute of Technology', 'caltech', 'Private Research University', '1200 E California Blvd', 'Pasadena', 'CA', '91125', 'USA', '(626) 395-6811', 'https://www.caltech.edu', 'ugadmissions@caltech.edu', 'Elite STEM-focused institute known for groundbreaking research and small size.', 1891, 'WASC Senior College and University Commission', 2200, 6.4, 92.0, NULL, 58680, 4.0, 1530, 1600, 35, 36, '2024-01-03', 9, NULL, ARRAY['Engineering', 'Physics', 'Chemistry', 'Biology'], 124, 3, 97.0, 92.0, 95000, 380000000, 3800000000, 7.9, 'A', 9.0, 'NCAA Division III', ARRAY['Gordon Moore', 'Kip Thorne'], true, false, 27, 88, true),
+
+('Carnegie Mellon University', 'carnegie-mellon', 'Private Research University', '5000 Forbes Ave', 'Pittsburgh', 'PA', '15213', 'USA', '(412) 268-2082', 'https://www.cmu.edu', 'undergraduate-admissions@andrew.cmu.edu', 'Top research university known for computer science, engineering, and drama.', 1900, 'Middle States Commission on Higher Education', 14500, 17.3, 89.0, NULL, 58924, 3.9, 1470, 1570, 33, 35, '2024-01-01', 26, NULL, ARRAY['Computer Science', 'Engineering', 'Drama', 'Business'], 144, 10, 96.0, 89.0, 89000, 420000000, 2100000000, 7.8, 'A-', 8.8, 'NCAA Division III', ARRAY['Andy Warhol', 'Randy Pausch'], true, true, 38, 84, true),
+
+-- Additional diverse universities
+('Emory University', 'emory-university', 'Private Research University', '201 Dowman Dr', 'Atlanta', 'GA', '30322', 'USA', '(404) 727-6036', 'https://www.emory.edu', 'admission@emory.edu', 'Research university known for medicine, business, and liberal arts programs.', 1836, 'Southern Association of Colleges and Schools', 14500, 16.2, 91.0, NULL, 53868, 3.9, 1350, 1520, 30, 34, '2024-01-01', 21, NULL, ARRAY['Medicine', 'Business', 'Liberal Arts', 'Public Health'], 631, 9, 95.0, 91.0, 76000, 380000000, 8000000000, 8.1, 'A', 8.9, 'NCAA Division III', ARRAY['Jimmy Carter', 'Salman Rushdie'], true, true, 19, 83, true),
+
+('Wake Forest University', 'wake-forest', 'Private Research University', '1834 Wake Forest Rd', 'Winston-Salem', 'NC', '27109', 'USA', '(336) 758-5201', 'https://www.wfu.edu', 'admissions@wfu.edu', 'Private university known for small classes and strong alumni network.', 1834, 'Southern Association of Colleges and Schools', 8500, 28.1, 89.0, NULL, 56420, 3.8, 1290, 1460, 29, 33, '2024-01-15', 27, NULL, ARRAY['Business', 'Liberal Arts', 'Medicine', 'Law'], 340, 10, 94.0, 89.0, 74000, 180000000, 1900000000, 7.7, 'A-', 8.6, 'NCAA Division I', ARRAY['Arnold Palmer', 'Tim Duncan'], true, true, 6, 81, true),
+
+('Tulane University', 'tulane-university', 'Private Research University', '6823 St Charles Ave', 'New Orleans', 'LA', '70118', 'USA', '(504) 865-5731', 'https://www.tulane.edu', 'undergrad.admission@tulane.edu', 'Research university known for public health, business, and vibrant campus culture.', 1834, 'Southern Association of Colleges and Schools', 13500, 11.5, 84.0, NULL, 58090, 3.7, 1350, 1500, 30, 34, '2024-01-15', 42, NULL, ARRAY['Public Health', 'Business', 'Liberal Arts', 'Medicine'], 110, 8, 91.0, 84.0, 72000, 210000000, 1800000000, 7.9, 'A-', 8.4, 'NCAA Division I', ARRAY['John Kennedy Toole', 'Lisa P. Jackson'], true, true, 12, 80, true),
+
+-- More state universities
+('University of Georgia', 'university-of-georgia', 'Public Research University', '210 S Jackson St', 'Athens', 'GA', '30602', 'USA', '(706) 542-8776', 'https://www.uga.edu', 'adm-info@uga.edu', 'Major public research university with strong programs in journalism and business.', 1785, 'Southern Association of Colleges and Schools', 38000, 45.5, 85.0, 12080, 31120, 4.0, 1270, 1450, 28, 32, '2024-01-15', 47, 13, ARRAY['Journalism', 'Business', 'Agriculture', 'Veterinary Medicine'], 2758, 17, 94.0, 85.0, 65000, 180000000, 1400000000, 7.3, 'A-', 8.3, 'NCAA Division I', ARRAY['Alton Brown', 'Ryan Seacrest'], true, true, 7, 77, true),
+
+('University of Florida', 'university-of-florida', 'Public Research University', '201 Criser Hall', 'Gainesville', 'FL', '32611', 'USA', '(352) 392-1365', 'https://www.ufl.edu', 'webrequests@admissions.ufl.edu', 'Top public research university known for academics, athletics, and value.', 1853, 'Southern Association of Colleges and Schools', 52000, 31.1, 88.0, 6380, 28658, 4.0, 1330, 1470, 29, 33, '2024-03-01', 29, 6, ARRAY['Engineering', 'Business', 'Medicine', 'Journalism'], 2000, 18, 96.0, 88.0, 68000, 850000000, 2400000000, 7.5, 'A', 8.5, 'NCAA Division I', ARRAY['Marco Rubio', 'Tim Tebow'], true, true, 8, 75, true),
+
+('Ohio State University', 'ohio-state-university', 'Public Research University', '281 W Lane Ave', 'Columbus', 'OH', '43210', 'USA', '(614) 292-3980', 'https://www.osu.edu', 'askabuckeye@osu.edu', 'Large public research university with comprehensive programs and strong athletics.', 1870, 'Higher Learning Commission', 65000, 54.0, 84.0, 11936, 32061, 3.8, 1240, 1450, 27, 32, '2024-02-01', 53, 15, ARRAY['Engineering', 'Business', 'Medicine', 'Agriculture'], 1665, 19, 93.0, 84.0, 64000, 1100000000, 6800000000, 7.1, 'A-', 8.2, 'NCAA Division I', ARRAY['Jesse Owens', 'Jack Nicklaus'], true, true, 12, 73, true),
+
+('University of Illinois at Urbana-Champaign', 'uiuc', 'Public Research University', '601 E John St', 'Champaign', 'IL', '61820', 'USA', '(217) 333-0302', 'https://illinois.edu', 'admissions@illinois.edu', 'Premier public research university particularly known for engineering and computer science.', 1867, 'Higher Learning Commission', 50000, 59.7, 85.0, 16004, 33686, 3.9, 1310, 1500, 27, 33, '2024-01-05', 41, 11, ARRAY['Engineering', 'Computer Science', 'Business', 'Agriculture'], 4552, 20, 94.0, 85.0, 69000, 650000000, 3100000000, 7.2, 'A', 8.4, 'NCAA Division I', ARRAY['Roger Ebert', 'Marc Andreessen'], true, true, 22, 74, true),
+
+('University of Texas at Austin', 'ut-austin', 'Public Research University', '110 Inner Campus Dr', 'Austin', 'TX', '78712', 'USA', '(512) 475-7399', 'https://www.utexas.edu', 'admissions@austin.utexas.edu', 'Flagship public research university with strong programs across all disciplines.', 1883, 'Southern Association of Colleges and Schools', 51000, 31.8, 81.0, 11448, 40032, 3.8, 1230, 1470, 27, 33, '2024-12-01', 38, 9, ARRAY['Engineering', 'Business', 'Liberal Arts', 'Communications'], 437, 18, 95.0, 81.0, 67000, 700000000, 31000000000, 7.4, 'A-', 8.3, 'NCAA Division I', ARRAY['Matthew McConaughey', 'Michael Dell'], true, true, 9, 72, true),
+
+-- More specialized institutions
+('Reed College', 'reed-college', 'Private Liberal Arts College', '3203 SE Woodstock Blvd', 'Portland', 'OR', '97202', 'USA', '(503) 777-7511', 'https://www.reed.edu', 'admission@reed.edu', 'Highly academic liberal arts college known for intellectual rigor and thesis requirement.', 1908, 'Northwest Commission on Colleges and Universities', 1500, 30.8, 78.0, NULL, 61284, 3.9, 1370, 1520, 31, 34, '2024-01-15', 90, NULL, ARRAY['Liberal Arts', 'Psychology', 'Biology', 'English'], 116, 9, 87.0, 78.0, 48000, 28000000, 680000000, 8.2, 'B+', 8.7, 'NCAA Division III', ARRAY['Steve Jobs', 'Gary Snyder'], true, false, 4, 89, true),
+
+('Middlebury College', 'middlebury-college', 'Private Liberal Arts College', '14 Old Chapel Rd', 'Middlebury', 'VT', '05753', 'USA', '(802) 443-3000', 'https://www.middlebury.edu', 'admissions@middlebury.edu', 'Elite liberal arts college known for languages, environmental studies, and writing.', 1800, 'New England Commission of Higher Education', 2500, 17.0, 94.0, NULL, 58792, 3.9, 1350, 1530, 31, 34, '2024-01-01', 7, NULL, ARRAY['Liberal Arts', 'Languages', 'Environmental Studies', 'Economics'], 350, 8, 96.0, 94.0, 76000, 52000000, 1300000000, 8.0, 'A', 8.9, 'NCAA Division III', ARRAY['Ron Brown', 'Julia Alvarez'], true, false, 11, 84, true),
+
+('Bowdoin College', 'bowdoin-college', 'Private Liberal Arts College', '255 Maine St', 'Brunswick', 'ME', '04011', 'USA', '(207) 725-3100', 'https://www.bowdoin.edu', 'admissions@bowdoin.edu', 'Prestigious liberal arts college with test-optional admissions and strong academics.', 1794, 'New England Commission of Higher Education', 1800, 10.9, 95.0, NULL, 56350, 3.9, 1370, 1520, 31, 34, '2024-01-01', 5, NULL, ARRAY['Liberal Arts', 'Government', 'Economics', 'Environmental Studies'], 207, 9, 97.0, 95.0, 75000, 38000000, 1900000000, 8.1, 'A', 8.8, 'NCAA Division III', ARRAY['Franklin Pierce', 'Joan Benoit'], true, false, 6, 85, true),
+
+('Colby College', 'colby-college', 'Private Liberal Arts College', '4000 Mayflower Hill', 'Waterville', 'ME', '04901', 'USA', '(207) 859-4828', 'https://www.colby.edu', 'admissions@colby.edu', 'Liberal arts college known for environmental programs and outdoor recreation.', 1813, 'New England Commission of Higher Education', 2000, 12.2, 87.0, NULL, 58595, 3.8, 1330, 1500, 30, 34, '2024-01-01', 17, NULL, ARRAY['Liberal Arts', 'Environmental Studies', 'Economics', 'Biology'], 714, 10, 94.0, 87.0, 71000, 35000000, 1000000000, 7.9, 'A-', 8.6, 'NCAA Division III', ARRAY['Doris Kearns Goodwin', 'Annie Proulx'], true, false, 7, 82, true),
+
+('Grinnell College', 'grinnell-college', 'Private Liberal Arts College', '1115 8th Ave', 'Grinnell', 'IA', '50112', 'USA', '(641) 269-3600', 'https://www.grinnell.edu', 'admission@grinnell.edu', 'Liberal arts college known for social justice, self-governance, and generous financial aid.', 1846, 'Higher Learning Commission', 1700, 20.5, 86.0, NULL, 56216, 3.8, 1350, 1520, 31, 34, '2024-01-15', 19, NULL, ARRAY['Liberal Arts', 'Political Science', 'Biology', 'Psychology'], 120, 9, 92.0, 86.0, 69000, 42000000, 2300000000, 8.3, 'A-', 8.5, 'NCAA Division III', ARRAY['Harry Hopkins', 'Robert Noyce'], true, false, 16, 88, true),
+
+-- Insert analytics data for all these new colleges
+INSERT INTO college_analytics (
+  college_id, total_applications, total_admissions, total_enrolled,
+  applications_last_30_days, admissions_last_30_days, enrolled_last_30_days,
+  average_processing_time, top_programs, monthly_trends, demographic_breakdown
+)
+SELECT 
+  c.id,
+  -- Generate realistic application numbers based on college size and selectivity
+  CASE 
+    WHEN c.student_population < 3000 THEN ROUND((RANDOM() * 15000 + 5000)::numeric, 0)
+    WHEN c.student_population < 10000 THEN ROUND((RANDOM() * 25000 + 15000)::numeric, 0)
+    WHEN c.student_population < 30000 THEN ROUND((RANDOM() * 40000 + 25000)::numeric, 0)
+    ELSE ROUND((RANDOM() * 60000 + 40000)::numeric, 0)
+  END as total_applications,
+  
+  -- Calculate admissions based on acceptance rate
+  ROUND(
+    CASE 
+      WHEN c.student_population < 3000 THEN (RANDOM() * 15000 + 5000) * (c.acceptance_rate / 100)
+      WHEN c.student_population < 10000 THEN (RANDOM() * 25000 + 15000) * (c.acceptance_rate / 100)
+      WHEN c.student_population < 30000 THEN (RANDOM() * 40000 + 25000) * (c.acceptance_rate / 100)
+      ELSE (RANDOM() * 60000 + 40000) * (c.acceptance_rate / 100)
+    END::numeric, 0
+  ) as total_admissions,
+  
+  -- Calculate enrolled (typically 25-35% of admitted students)
+  ROUND(
+    (CASE 
+      WHEN c.student_population < 3000 THEN (RANDOM() * 15000 + 5000) * (c.acceptance_rate / 100)
+      WHEN c.student_population < 10000 THEN (RANDOM() * 25000 + 15000) * (c.acceptance_rate / 100)
+      WHEN c.student_population < 30000 THEN (RANDOM() * 40000 + 25000) * (c.acceptance_rate / 100)
+      ELSE (RANDOM() * 60000 + 40000) * (c.acceptance_rate / 100)
+    END * (RANDOM() * 0.15 + 0.25))::numeric, 0
+  ) as total_enrolled,
+  
+  -- Recent activity (last 30 days)
+  ROUND((RANDOM() * 500 + 100)::numeric, 0) as applications_last_30_days,
+  ROUND((RANDOM() * 150 + 30)::numeric, 0) as admissions_last_30_days,
+  ROUND((RANDOM() * 50 + 10)::numeric, 0) as enrolled_last_30_days,
+  
+  -- Average processing time (14-45 days)
+  ROUND((RANDOM() * 31 + 14)::numeric, 0) as average_processing_time,
+  
+  -- Top programs from the college's programs_offered
+  c.programs_offered[1:3] as top_programs,
+  
+  -- Monthly trends (12 months of data)
+  ARRAY[
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0),
+    ROUND((RANDOM() * 2000 + 500)::numeric, 0)
+  ]::integer[] as monthly_trends,
+  
+  -- Demographic breakdown
+  jsonb_build_object(
+    'by_state', jsonb_build_object(
+      'in_state', ROUND((RANDOM() * 40 + 30)::numeric, 1),
+      'out_state', ROUND((RANDOM() * 40 + 30)::numeric, 1),
+      'international', ROUND((RANDOM() * 20 + 5)::numeric, 1)
+    ),
+    'by_gender', jsonb_build_object(
+      'male', ROUND((RANDOM() * 20 + 40)::numeric, 1),
+      'female', ROUND((RANDOM() * 20 + 40)::numeric, 1),
+      'other', ROUND((RANDOM() * 5 + 1)::numeric, 1)
+    ),
+    'by_ethnicity', jsonb_build_object(
+      'white', ROUND((RANDOM() * 30 + 40)::numeric, 1),
+      'asian', ROUND((RANDOM() * 25 + 10)::numeric, 1),
+      'hispanic', ROUND((RANDOM() * 20 + 8)::numeric, 1),
+      'black', ROUND((RANDOM() * 15 + 5)::numeric, 1),
+      'other', ROUND((RANDOM() * 10 + 5)::numeric, 1)
+    )
+  ) as demographic_breakdown
+
+FROM colleges c 
+WHERE c.name IN (
+  'University of Chicago', 'Northwestern University', 'Duke University', 'Dartmouth College',
+  'Vanderbilt University', 'University of Virginia', 'University of North Carolina at Chapel Hill',
+  'University of Wisconsin-Madison', 'University of Washington', 'Williams College', 'Amherst College',
+  'Swarthmore College', 'California Institute of Technology', 'Carnegie Mellon University',
+  'Emory University', 'Wake Forest University', 'Tulane University', 'University of Georgia',
+  'University of Florida', 'Ohio State University', 'University of Illinois at Urbana-Champaign',
+  'University of Texas at Austin', 'Reed College', 'Middlebury College', 'Bowdoin College',
+  'Colby College', 'Grinnell College'
+);
