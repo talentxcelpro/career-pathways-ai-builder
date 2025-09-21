@@ -21,50 +21,22 @@ import {
   Save
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const TXCAwardsAndBonuses = () => {
-  const { data: bonusSettings } = useQuery({
-    queryKey: ['txc-bonus-settings'],
-    queryFn: async () => [
-      { id: '1', activity: 'Daily Login', amount: 75, enabled: true, cooldown: '24h' },
-      { id: '2', activity: 'Create Post', amount: 150, enabled: true, cooldown: '1h' },
-      { id: '3', activity: 'Connect with Someone', amount: 75, enabled: true, cooldown: '1h' },
-      { id: '4', activity: 'Complete Profile', amount: 300, enabled: true, cooldown: '24h' },
-      { id: '5', activity: 'Create Resume', amount: 225, enabled: true, cooldown: '4h' },
-      { id: '6', activity: 'Apply to Job', amount: 90, enabled: true, cooldown: '1h' },
-      { id: '7', activity: 'Give Recommendation', amount: 120, enabled: true, cooldown: '2h' },
-      { id: '8', activity: 'Add Skills', amount: 60, enabled: true, cooldown: '3h' },
-      { id: '9', activity: 'Complete Course', amount: 600, enabled: true, cooldown: '1h' },
-      { id: '10', activity: 'Provide Feedback', amount: 45, enabled: true, cooldown: '1h' },
-      { id: '11', activity: 'Social Activity Bonus', amount: 300, enabled: true, cooldown: '7d' },
-      { id: '12', activity: 'Refer Friend', amount: 1000, enabled: true, cooldown: 'none' },
-      { id: '13', activity: 'Like Post', amount: 20, enabled: true, cooldown: 'none' },
-      { id: '14', activity: 'Comment on Post', amount: 20, enabled: true, cooldown: 'none' },
-      { id: '15', activity: 'Post Article', amount: 500, enabled: true, cooldown: '4h' }
-    ]
+  const { data: bonusData, isLoading } = useQuery({
+    queryKey: ['txc-bonus-config'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('txc-bonus-config');
+      if (error) throw error;
+      return data;
+    },
+    refetchInterval: 60000 // Refresh every minute
   });
 
-  const { data: specialBonuses } = useQuery({
-    queryKey: ['txc-special-bonuses'],
-    queryFn: async () => [
-      { id: '1', name: 'Welcome Bonus', amount: 500, description: 'One-time bonus for new users', type: 'welcome' },
-      { id: '2', name: 'Weekly Streak', amount: 250, description: 'Login 7 days in a row', type: 'streak' },
-      { id: '3', name: 'Profile Champion', amount: 400, description: '100% profile completion', type: 'achievement' },
-      { id: '4', name: 'Networking Master', amount: 350, description: 'Connect with 50 professionals', type: 'achievement' },
-      { id: '5', name: 'Job Hunter', amount: 300, description: 'Apply to 25 jobs', type: 'achievement' }
-    ]
-  });
-
-  const { data: recentAwards } = useQuery({
-    queryKey: ['txc-recent-awards'],
-    queryFn: async () => [
-      { id: '1', user: 'Rajesh Kumar', activity: 'Daily Login Streak (7 days)', amount: 250, timestamp: '2024-01-20T10:30:00Z', type: 'streak' },
-      { id: '2', user: 'Priya Sharma', activity: 'Welcome Bonus', amount: 500, timestamp: '2024-01-20T09:15:00Z', type: 'welcome' },
-      { id: '3', user: 'Amit Singh', activity: 'Profile Champion', amount: 400, timestamp: '2024-01-20T08:45:00Z', type: 'achievement' },
-      { id: '4', user: 'Neha Gupta', activity: 'Networking Master', amount: 350, timestamp: '2024-01-20T08:20:00Z', type: 'achievement' },
-      { id: '5', user: 'Vikram Patel', activity: 'Job Hunter', amount: 300, timestamp: '2024-01-19T17:30:00Z', type: 'achievement' }
-    ]
-  });
+  const bonusSettings = bonusData?.bonusSettings || [];
+  const specialBonuses = bonusData?.specialBonuses || [];
+  const recentAwards = bonusData?.recentAwards || [];
 
   const getBadgeVariant = (type: string) => {
     switch (type) {
@@ -83,6 +55,14 @@ const TXCAwardsAndBonuses = () => {
     if (activity.includes('Recommend')) return Heart;
     return Star;
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Settings className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

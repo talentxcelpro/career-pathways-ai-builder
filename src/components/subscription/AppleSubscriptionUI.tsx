@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTXCPurchase } from '@/hooks/useTXCPurchase';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Crown, 
   Check, 
@@ -15,7 +16,8 @@ import {
   ArrowRight,
   Shield,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Coins
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -39,10 +41,11 @@ interface AppleSubscriptionUIProps {
 }
 
 export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compact = false }) => {
+  const { user } = useAuth();
+  const { availableBalance, refreshBalance } = useTokenBalance();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { canAfford, purchaseWithTXC } = useTXCPurchase();
-  const { availableBalance } = useTokenBalance();
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [currentTier, setCurrentTier] = useState<string | null>(null);

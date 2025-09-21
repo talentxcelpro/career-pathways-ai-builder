@@ -22,13 +22,25 @@ export const useTXCTokenStats = () => {
       const dailyTransactions = transactions?.length || 0;
       const avgBalance = totalHolders > 0 ? circulatingSupply / totalHolders : 0;
 
+      // Calculate weekly growth from historical data
+      const lastWeekTransactions = await supabase
+        .from('txc_transactions')
+        .select('amount')
+        .gte('created_at', new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString())
+        .lt('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .gt('amount', 0);
+
+      const thisWeekVolume = transactions?.reduce((sum, tx) => sum + (tx.amount || 0), 0) || 0;
+      const lastWeekVolume = lastWeekTransactions.data?.reduce((sum, tx) => sum + (tx.amount || 0), 0) || 0;
+      const weeklyGrowth = lastWeekVolume > 0 ? ((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100 : 0;
+
       return {
         totalSupply,
         circulatingSupply,
         totalHolders,
         avgBalance: Math.round(avgBalance),
         dailyTransactions,
-        weeklyGrowth: 12.5 // Calculate from historical data
+        weeklyGrowth: Math.round(weeklyGrowth * 100) / 100
       };
     }
   });

@@ -16,67 +16,32 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
 
 const TXCAnalytics = () => {
-  const { data: tokenEconomics } = useQuery({
-    queryKey: ['txc-token-economics'],
-    queryFn: async () => ({
-      totalEarned: 12500000,
-      totalSpent: 2100000,
-      circulationRate: 84.5,
-      averageBalance: 1480,
-      economicHealth: 92,
-      inflationRate: 2.3
-    })
+  const { data: analyticsData, isLoading } = useQuery({
+    queryKey: ['txc-analytics'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('txc-analytics');
+      if (error) throw error;
+      return data;
+    },
+    refetchInterval: 30000 // Refresh every 30 seconds
   });
 
-  const { data: usageAnalytics } = useQuery({
-    queryKey: ['txc-usage-analytics'],
-    queryFn: async () => ({
-      dailyActiveEarners: 3245,
-      weeklyGrowth: 12.5,
-      topActivities: [
-        { activity: 'Daily Login', percentage: 32, earnings: 485000 },
-        { activity: 'Post Creation', percentage: 28, earnings: 420000 },
-        { activity: 'Job Applications', percentage: 20, earnings: 300000 },
-        { activity: 'Connections', percentage: 12, earnings: 180000 },
-        { activity: 'Profile Updates', percentage: 8, earnings: 120000 }
-      ]
-    })
-  });
+  const tokenEconomics = analyticsData?.tokenEconomics;
+  const usageAnalytics = analyticsData?.usageAnalytics;
+  const earningsChart = analyticsData?.earningsChart;
+  const distributionData = analyticsData?.distributionData;
+  const roi_metrics = analyticsData?.roiMetrics;
 
-  const { data: earningsChart } = useQuery({
-    queryKey: ['txc-earnings-chart'],
-    queryFn: async () => [
-      { date: '2024-01-14', earnings: 45000, users: 2100 },
-      { date: '2024-01-15', earnings: 52000, users: 2300 },
-      { date: '2024-01-16', earnings: 48000, users: 2200 },
-      { date: '2024-01-17', earnings: 58000, users: 2500 },
-      { date: '2024-01-18', earnings: 61000, users: 2700 },
-      { date: '2024-01-19', earnings: 67000, users: 2900 },
-      { date: '2024-01-20', earnings: 72000, users: 3200 }
-    ]
-  });
-
-  const { data: distributionData } = useQuery({
-    queryKey: ['txc-distribution-data'],
-    queryFn: async () => [
-      { name: 'Daily Activities', value: 45, color: '#8884d8' },
-      { name: 'Social Engagement', value: 25, color: '#82ca9d' },
-      { name: 'Professional Activities', value: 20, color: '#ffc658' },
-      { name: 'Bonuses & Rewards', value: 10, color: '#ff7300' }
-    ]
-  });
-
-  const { data: roi_metrics } = useQuery({
-    queryKey: ['txc-roi-metrics'],
-    queryFn: async () => [
-      { metric: 'User Engagement', value: '+34%', trend: 'up', description: 'Increased platform activity' },
-      { metric: 'Retention Rate', value: '+28%', trend: 'up', description: 'Users staying longer' },
-      { metric: 'Feature Adoption', value: '+45%', trend: 'up', description: 'More features being used' },
-      { metric: 'Time on Platform', value: '+22%', trend: 'up', description: 'Extended session duration' }
-    ]
-  });
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Activity className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
 

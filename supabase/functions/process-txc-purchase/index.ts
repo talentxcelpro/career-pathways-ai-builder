@@ -8,59 +8,50 @@ const corsHeaders = {
 interface Database {
   public: {
     Tables: {
-      token_balances: {
+      user_txc_balances: {
         Row: {
           user_id: string
           balance: number
-          locked_balance: number
-          token_type: string
-          last_updated: string
+          total_earned: number
+          created_at: string
+          updated_at: string
+        }
+        Update: {
+          balance?: number
+          total_earned?: number
+          updated_at?: string
         }
       }
-      token_transactions: {
+      txc_transactions: {
         Row: {
           id: string
-          from_user_id: string | null
-          to_user_id: string | null
-          transaction_type: string
+          user_id: string
           amount: number
-          token_type: string
+          transaction_type: string
           description: string
-          reference_id: string | null
-          reference_type: string | null
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          amount: number
+          transaction_type: string
+          description: string
+        }
+      }
+      pro_subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          plan_name: string
           status: string
-          metadata: any
           created_at: string
-        }
-        Insert: {
-          from_user_id?: string | null
-          to_user_id?: string | null
-          transaction_type: string
-          amount: number
-          token_type?: string
-          description: string
-          reference_id?: string | null
-          reference_type?: string | null
-          status?: string
-          metadata?: any
-        }
-      }
-      user_features: {
-        Row: {
-          id: string
-          user_id: string
-          feature_id: string
-          is_active: boolean
           expires_at: string | null
-          metadata: any
-          created_at: string
         }
         Insert: {
           user_id: string
-          feature_id: string
-          is_active?: boolean
+          plan_name: string
+          status?: string
           expires_at?: string | null
-          metadata?: any
         }
       }
     }
@@ -91,7 +82,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    const { userId, featureId, cost, description, metadata = {} } = await req.json()
+    const { userId, featureId, cost, description, planName, metadata = {} } = await req.json()
 
     // Validate inputs
     if (!userId || !featureId || !cost || cost <= 0) {
@@ -113,10 +104,9 @@ Deno.serve(async (req) => {
 
     // Get current balance
     const { data: balance, error: balanceError } = await supabaseClient
-      .from('token_balances')
+      .from('user_txc_balances')
       .select('*')
       .eq('user_id', userId)
-      .eq('token_type', 'TXC')
       .single()
 
     if (balanceError) {
@@ -144,13 +134,12 @@ Deno.serve(async (req) => {
 
     // Update balance
     const { error: updateError } = await supabaseClient
-      .from('token_balances')
+      .from('user_txc_balances')
       .update({
         balance: newBalance,
-        last_updated: new Date().toISOString()
+        updated_at: new Date().toISOString()
       })
       .eq('user_id', userId)
-      .eq('token_type', 'TXC')
 
     if (updateError) {
       console.error('Error updating balance:', updateError)
@@ -162,22 +151,12 @@ Deno.serve(async (req) => {
 
     // Record transaction
     const { error: txError } = await supabaseClient
-      .from('token_transactions')
+      .from('txc_transactions')
       .insert({
-        from_user_id: userId,
-        to_user_id: null, // System purchase
+        user_id: userId,
+        amount: -cost, // Negative for spending
         transaction_type: 'purchase',
-        amount: cost,
-        token_type: 'TXC',
-        description: description,
-        reference_id: featureId,
-        reference_type: 'feature_purchase',
-        status: 'completed',
-        metadata: {
-          ...metadata,
-          purchased_at: new Date().toISOString(),
-          feature_id: featureId
-        }
+        description: description || `Purchased ${featureId}`
       })
 
     if (txError) {
@@ -186,38 +165,23 @@ Deno.serve(async (req) => {
       // In production, you'd want proper transaction handling
     }
 
-    // Grant feature access (if applicable)
-    if (featureId.startsWith('profile_') || featureId.startsWith('job_') || featureId.includes('monthly')) {
-      let expiresAt: string | null = null
+    // Grant feature access - specifically handle subscription purchases
+    if (featureId === 'pro_subscription' && planName) {
+      const expiry = new Date()
+      expiry.setMonth(expiry.getMonth() + 1) // 1 month subscription
       
-      // Set expiration for time-limited features
-      if (featureId.includes('monthly')) {
-        const expiry = new Date()
-        expiry.setMonth(expiry.getMonth() + 1)
-        expiresAt = expiry.toISOString()
-      } else if (featureId.startsWith('job_')) {
-        const expiry = new Date()
-        expiry.setDate(expiry.getDate() + 30) // Default job posting duration
-        expiresAt = expiry.toISOString()
-      }
-
-      const { error: featureError } = await supabaseClient
-        .from('user_features')
+      const { error: subscriptionError } = await supabaseClient
+        .from('pro_subscriptions')
         .insert({
           user_id: userId,
-          feature_id: featureId,
-          is_active: true,
-          expires_at: expiresAt,
-          metadata: {
-            purchased_with_txc: true,
-            cost_paid: cost,
-            ...metadata
-          }
+          plan_name: planName,
+          status: 'active',
+          expires_at: expiry.toISOString()
         })
 
-      if (featureError) {
-        console.error('Error granting feature access:', featureError)
-        // Don't fail the purchase, just log the error
+      if (subscriptionError) {
+        console.error('Error creating subscription:', subscriptionError)
+        // Don't fail the purchase, but note the issue
       }
     }
 
