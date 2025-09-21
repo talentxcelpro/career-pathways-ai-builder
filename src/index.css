@@ -459,17 +459,17 @@ img.loaded {
     --popover-foreground: 220 15% 20%;
 
     /* TalentXcel Sky Blue Brand Colors */
-    --primary: 197 71% 52%; /* Sky blue #0ea5e9 */
+    --primary: 197 100% 50%; /* Pure sky blue #0EA5E9 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 197 71% 65%;
-    --primary-lighter: 197 71% 85%;
+    --primary-light: 198 93% 60%; /* Lighter sky blue */
+    --primary-lighter: 199 100% 85%; /* Very light sky blue */
 
-    --brand-green: 173 58% 46%; /* Complementary teal #14b8a6 */
+    --brand-green: 173 76% 42%; /* Vibrant teal #0D9488 */
     --brand-green-foreground: 0 0% 100%;
-    --brand-green-light: 173 58% 60%;
-    --brand-green-lighter: 173 58% 85%;
+    --brand-green-light: 174 83% 52%;
+    --brand-green-lighter: 175 100% 85%;
 
-    --secondary: 199 89% 48%; /* Lighter sky blue #0284c7 */
+    --secondary: 200 100% 45%; /* Deep sky blue #0284C7 */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 10% 96%;

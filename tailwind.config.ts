@@ -34,7 +34,12 @@ export default {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
 					light: 'hsl(var(--primary-light))',
-					lighter: 'hsl(var(--primary-lighter))'
+					lighter: 'hsl(var(--primary-lighter))',
+					50: 'hsl(199 100% 95%)',
+					100: 'hsl(198 100% 85%)',
+					500: 'hsl(var(--primary))',
+					600: 'hsl(196 100% 40%)',
+					700: 'hsl(195 100% 35%)'
 				},
 				'brand-green': {
 					DEFAULT: 'hsl(var(--brand-green))',
