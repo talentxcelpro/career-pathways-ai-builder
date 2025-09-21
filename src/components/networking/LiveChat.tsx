@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useMessaging } from '@/hooks/useMessaging';
 
 interface Message {
   id: string;
@@ -53,142 +54,30 @@ export const LiveChat: React.FC<LiveChatProps> = ({
   onContactSelect
 }) => {
   const { toast } = useToast();
+  const { contacts, messages, isLoading, fetchMessages, sendMessage } = useMessaging();
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [contacts] = useState<ChatContact[]>([
-    {
-      id: '1',
-      name: 'Sarah Chen',
-      title: 'Senior React Developer',
-      company: 'Google',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b789?w=150',
-      isOnline: true,
-      lastSeen: new Date(),
-      unreadCount: 2,
-      lastMessage: 'That sounds like a great opportunity!'
-    },
-    {
-      id: '2',
-      name: 'Marcus Rodriguez',
-      title: 'Tech Lead',
-      company: 'Meta',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
-      isOnline: true,
-      lastSeen: new Date(Date.now() - 300000),
-      unreadCount: 0,
-      lastMessage: 'Let me know if you have any questions'
-    },
-    {
-      id: '3',
-      name: 'Emily Johnson',
-      title: 'Frontend Engineer',
-      company: 'Stripe',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
-      isOnline: false,
-      lastSeen: new Date(Date.now() - 3600000),
-      unreadCount: 1,
-      lastMessage: 'Thanks for connecting!'
-    }
-  ]);
 
   const [activeContact, setActiveContact] = useState<ChatContact | null>(
-    selectedContact || contacts[0]
+    selectedContact || (contacts.length > 0 ? contacts[0] : null)
   );
 
-  // Sample messages for the active chat
   useEffect(() => {
     if (activeContact) {
-      setMessages([
-        {
-          id: '1',
-          senderId: activeContact.id,
-          senderName: activeContact.name,
-          content: 'Hi! Thanks for connecting. I saw your profile and was impressed by your React expertise.',
-          timestamp: new Date(Date.now() - 3600000),
-          status: 'read',
-          type: 'text'
-        },
-        {
-          id: '2',
-          senderId: 'current-user',
-          senderName: 'You',
-          content: 'Thank you! I\'d love to learn more about your experience at ' + activeContact.company + '. How did you transition into your current role?',
-          timestamp: new Date(Date.now() - 3000000),
-          status: 'read',
-          type: 'text'
-        },
-        {
-          id: '3',
-          senderId: activeContact.id,
-          senderName: activeContact.name,
-          content: 'Great question! I actually started as a frontend developer and gradually took on more technical leadership responsibilities...',
-          timestamp: new Date(Date.now() - 1800000),
-          status: 'read',
-          type: 'text'
-        },
-        {
-          id: '4',
-          senderId: 'current-user',
-          senderName: 'You',
-          content: 'That\'s exactly the path I\'m interested in! Would you be open to a quick call sometime this week?',
-          timestamp: new Date(Date.now() - 900000),
-          status: 'delivered',
-          type: 'text'
-        }
-      ]);
+      fetchMessages(activeContact.id);
     }
-  }, [activeContact]);
+  }, [activeContact, fetchMessages]);
 
-  const handleSendMessage = () => {
+  useEffect(() => {
+    if (contacts.length > 0 && !activeContact) {
+      setActiveContact(contacts[0]);
+    }
+  }, [contacts, activeContact]);
+
+  const handleSendMessage = async () => {
     if (!message.trim() || !activeContact) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      senderId: 'current-user',
-      senderName: 'You',
-      content: message,
-      timestamp: new Date(),
-      status: 'sent',
-      type: 'text'
-    };
-
-    setMessages(prev => [...prev, newMessage]);
+    await sendMessage(activeContact.id, message);
     setMessage('');
-
-    // Simulate delivery and read status updates
-    setTimeout(() => {
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === newMessage.id 
-            ? { ...msg, status: 'delivered' as const }
-            : msg
-        )
-      );
-    }, 1000);
-
-    setTimeout(() => {
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === newMessage.id 
-            ? { ...msg, status: 'read' as const }
-            : msg
-        )
-      );
-    }, 3000);
-
-    // Simulate response
-    setTimeout(() => {
-      const response: Message = {
-        id: (Date.now() + 1).toString(),
-        senderId: activeContact.id,
-        senderName: activeContact.name,
-        content: "Absolutely! I'd be happy to chat. How about Thursday at 3 PM?",
-        timestamp: new Date(),
-        status: 'sent',
-        type: 'text'
-      };
-      setMessages(prev => [...prev, response]);
-    }, 5000);
   };
 
   const handleContactSelect = (contact: ChatContact) => {

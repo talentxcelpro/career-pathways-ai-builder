@@ -20,6 +20,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useSmartRecommendations } from '@/hooks/useSmartRecommendations';
 
 interface SmartRecommendation {
   id: string;
@@ -55,112 +56,7 @@ interface NetworkingInsight {
 }
 
 export const SmartNetworkingRecommendations: React.FC = () => {
-  const [recommendations] = useState<SmartRecommendation[]>([
-    {
-      id: '1',
-      type: 'skill_match',
-      profile: {
-        id: '1',
-        name: 'Alex Thompson',
-        title: 'Senior TypeScript Developer',
-        company: 'Microsoft',
-        location: 'Seattle, WA',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'
-      },
-      score: 94,
-      reason: 'Perfect TypeScript expertise match for your career goals',
-      benefits: ['TypeScript mastery', 'Microsoft ecosystem insights', 'Senior developer perspective'],
-      matchFactors: {
-        skills: 95,
-        experience: 88,
-        location: 75,
-        interests: 92
-      },
-      timing: 'immediate',
-      confidence: 94
-    },
-    {
-      id: '2',
-      type: 'career_path',
-      profile: {
-        id: '2',
-        name: 'Maria Garcia',
-        title: 'Engineering Manager',
-        company: 'Spotify',
-        location: 'Remote',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b789?w=150'
-      },
-      score: 89,
-      reason: 'Successful transition from IC to management role',
-      benefits: ['Leadership transition insights', 'Team management skills', 'Remote work expertise'],
-      matchFactors: {
-        skills: 85,
-        experience: 95,
-        location: 100,
-        interests: 78
-      },
-      timing: 'this_week',
-      confidence: 89
-    },
-    {
-      id: '3',
-      type: 'trending',
-      profile: {
-        id: '3',
-        name: 'David Chen',
-        title: 'AI/ML Engineer',
-        company: 'OpenAI',
-        location: 'San Francisco, CA',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'
-      },
-      score: 86,
-      reason: 'Trending AI skills alignment with your interests',
-      benefits: ['AI/ML expertise', 'Cutting-edge tech experience', 'Future-ready skills'],
-      matchFactors: {
-        skills: 78,
-        experience: 82,
-        location: 85,
-        interests: 98
-      },
-      timing: 'this_month',
-      confidence: 86
-    }
-  ]);
-
-  const [insights] = useState<NetworkingInsight[]>([
-    {
-      title: 'Expand in AI/ML Network',
-      description: 'AI professionals are 40% more likely to respond this month',
-      action: 'Connect with 3 AI engineers',
-      priority: 'high',
-      category: 'skills',
-      icon: <Brain className="h-4 w-4" />
-    },
-    {
-      title: 'Local Tech Meetup Tonight',
-      description: '12 recommended connections will attend React SF meetup',
-      action: 'View attendee list',
-      priority: 'high',
-      category: 'events',
-      icon: <Calendar className="h-4 w-4" />
-    },
-    {
-      title: 'Skill Gap Opportunity',
-      description: 'TypeScript experts in your network can mentor you',
-      action: 'Request skill mentorship',
-      priority: 'medium',
-      category: 'skills',
-      icon: <Target className="h-4 w-4" />
-    },
-    {
-      title: 'Second-Degree Connections',
-      description: '25 potential connections through mutual contacts',
-      action: 'Get introductions',
-      priority: 'medium',
-      category: 'connections',
-      icon: <Users className="h-4 w-4" />
-    }
-  ]);
+  const { recommendations, insights, networkingScore, isLoading } = useSmartRecommendations();
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -220,26 +116,26 @@ export const SmartNetworkingRecommendations: React.FC = () => {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-primary">87/100</div>
-              <Badge className="bg-green-100 text-green-800">+12 this week</Badge>
+              <div className="text-3xl font-bold text-primary">{networkingScore}/100</div>
+              <Badge className="bg-green-100 text-green-800">AI Powered</Badge>
             </div>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-lg font-semibold">23</div>
+              <div className="text-lg font-semibold">{recommendations.length}</div>
               <div className="text-sm text-muted-foreground">Smart Matches</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold">94%</div>
+              <div className="text-lg font-semibold">{Math.round(networkingScore * 0.95)}%</div>
               <div className="text-sm text-muted-foreground">Response Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold">156</div>
+              <div className="text-lg font-semibold">{Math.floor(networkingScore * 2)}</div>
               <div className="text-sm text-muted-foreground">Active Connections</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold">8.2</div>
+              <div className="text-lg font-semibold">{(networkingScore / 10).toFixed(1)}</div>
               <div className="text-sm text-muted-foreground">Avg Match Score</div>
             </div>
           </div>
