@@ -448,56 +448,56 @@ img.loaded {
 
 @layer base {
   :root {
-    /* TalentXcel Enhanced Color Palette - Bright & Vibrant */
-    --background: 0 0% 98%;
-    --foreground: 220 25% 5%; /* Much darker for excellent contrast */
+    /* TalentXcel Professional Color Palette - Muted & Professional */
+    --background: 0 0% 99%;
+    --foreground: 220 15% 15%; /* Professional dark text */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%; /* Much darker for excellent contrast */
+    --card-foreground: 220 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%; /* Much darker for excellent contrast */
+    --popover-foreground: 220 15% 20%;
 
-    /* TalentXcel Brand Colors - Ultra Bright & Vibrant */
-    --primary: 220 100% 45%; /* Bright electric blue #0066FF */
+    /* TalentXcel Brand Colors - Professional & Muted */
+    --primary: 215 25% 27%; /* Professional navy blue #394B59 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 220 100% 55%;
-    --primary-lighter: 220 100% 85%;
+    --primary-light: 215 25% 40%;
+    --primary-lighter: 215 25% 85%;
 
-    --brand-green: 140 80% 45%; /* Vibrant emerald green #20C65A */
+    --brand-green: 150 30% 40%; /* Muted professional green */
     --brand-green-foreground: 0 0% 100%;
-    --brand-green-light: 140 80% 60%;
-    --brand-green-lighter: 140 80% 85%;
+    --brand-green-light: 150 30% 55%;
+    --brand-green-lighter: 150 30% 85%;
 
-    --secondary: 260 100% 50%; /* Bright purple #7C3AED */
+    --secondary: 220 15% 45%; /* Muted slate blue */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 94%;
-    --muted-foreground: 220 25% 25%; /* Much darker for excellent contrast */
+    --muted: 220 10% 96%;
+    --muted-foreground: 220 15% 45%;
 
-    --accent: 340 100% 50%; /* Bright pink/magenta #FF0080 */
+    --accent: 25 60% 55%; /* Warm professional orange */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 100% 55%;
+    --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 140 80% 45%;
+    --success: 150 30% 40%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 35 100% 50%;
+    --warning: 35 70% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --info: 220 100% 55%;
+    --info: 215 25% 40%;
     --info-foreground: 0 0% 100%;
 
-    --border: 220 20% 85%;
-    --input: 220 20% 92%;
-    --ring: 220 100% 45%;
+    --border: 220 10% 90%;
+    --input: 220 10% 95%;
+    --ring: 215 25% 27%;
 
-    /* TalentXcel Professional Typography System */
-    --radius: 12px;
+    /* Professional Typography System */
+    --radius: 8px;
     --font-primary: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-heading: 'Poppins', 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 
     /* Premium Shadows & Effects */
     --shadow-card: 0 2px 8px hsl(var(--muted) / 0.15);
