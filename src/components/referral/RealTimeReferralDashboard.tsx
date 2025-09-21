@@ -60,15 +60,70 @@ export const RealTimeReferralDashboard: React.FC = () => {
   const referralLink = getReferralLink();
 
   return (
-    <div className="w-full space-y-6">
-      {/* Header */}
-      <div className="text-center">
+    <div className="w-full space-y-4 md:space-y-6">
+      {/* Mobile Header */}
+      <div className="text-center block md:hidden">
+        <h2 className="text-lg font-bold text-foreground mb-1">Dashboard</h2>
+        <p className="text-sm text-muted-foreground">Track your progress</p>
+      </div>
+
+      {/* Desktop Header */}
+      <div className="text-center hidden md:block">
         <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
         <p className="text-muted-foreground">Track your progress and share your success</p>
       </div>
 
-      {/* Real Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Mobile Stats Cards - Horizontal Scroll */}
+      <div className="block md:hidden">
+        <div className="flex gap-3 overflow-x-auto pb-3 -mx-4 px-4">
+          <Card className="min-w-[120px] flex-shrink-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3">
+              <CardTitle className="text-xs font-medium">Referrals</CardTitle>
+              <Users className="h-3 w-3 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <div className="text-lg font-bold">{stats.totalReferrals}</div>
+              <p className="text-xs text-muted-foreground">Total clicks</p>
+            </CardContent>
+          </Card>
+
+          <Card className="min-w-[120px] flex-shrink-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3">
+              <CardTitle className="text-xs font-medium">Success</CardTitle>
+              <CheckCircle className="h-3 w-3 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <div className="text-lg font-bold text-green-600">{stats.successfulReferrals}</div>
+              <p className="text-xs text-muted-foreground">Joined</p>
+            </CardContent>
+          </Card>
+
+          <Card className="min-w-[120px] flex-shrink-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3">
+              <CardTitle className="text-xs font-medium">Rate</CardTitle>
+              <TrendingUp className="h-3 w-3 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <div className="text-lg font-bold text-primary">{stats.conversionRate.toFixed(1)}%</div>
+              <p className="text-xs text-muted-foreground">Success</p>
+            </CardContent>
+          </Card>
+
+          <Card className="min-w-[120px] flex-shrink-0">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-3">
+              <CardTitle className="text-xs font-medium">Rewards</CardTitle>
+              <Gift className="h-3 w-3 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <div className="text-lg font-bold text-yellow-600">{stats.totalRewards}</div>
+              <p className="text-xs text-muted-foreground">TXC</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Desktop Stats Cards - Grid */}
+      <div className="hidden md:grid md:grid-cols-4 md:gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
@@ -114,93 +169,93 @@ export const RealTimeReferralDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Progress Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
+      {/* Compact Progress Section */}
+      <Card className="bg-white/50 backdrop-blur border-primary/10">
+        <CardHeader className="pb-2 p-4">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <TrendingUp className="h-4 w-4" />
             Progress to Next Reward
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 p-4 pt-0">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Progress ({tierProgress.current} / {tierProgress.next})</span>
               <span>{Math.round(tierProgress.progress)}%</span>
             </div>
-            <Progress value={tierProgress.progress} className="h-3" />
+            <Progress value={tierProgress.progress} className="h-2" />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             You need <strong>{tierProgress.remaining} more successful referrals</strong> to unlock your next reward!
           </p>
         </CardContent>
       </Card>
 
-      {/* Referral Link Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Share2 className="h-5 w-5" />
+      {/* Compact Referral Link Section */}
+      <Card className="bg-white/50 backdrop-blur border-primary/10">
+        <CardHeader className="pb-2 p-4">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Share2 className="h-4 w-4" />
             Your Referral Link
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
+        <CardContent className="space-y-3 p-4 pt-0">
+          <div className="flex items-center space-x-2 p-2 bg-muted rounded-lg">
             <input
               type="text"
               value={referralLink}
               readOnly
-              className="flex-1 bg-transparent border-none outline-none text-sm"
+              className="flex-1 bg-transparent border-none outline-none text-xs"
             />
             <Button 
               size="sm" 
               variant="outline" 
               onClick={() => copyReferralLink()}
-              className="flex-shrink-0"
+              className="flex-shrink-0 h-7 px-2"
             >
-              <Copy className="h-4 w-4 mr-1" />
+              <Copy className="h-3 w-3 mr-1" />
               Copy
             </Button>
           </div>
 
-          {/* Social Sharing Buttons */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-sm">Share on Social Media</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {/* Mobile Social Sharing - 2x2 Grid */}
+          <div className="space-y-2">
+            <h4 className="font-semibold text-xs">Share on Social</h4>
+            <div className="grid grid-cols-2 gap-2">
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => shareOnPlatform('whatsapp')}
-                className="justify-start"
+                className="justify-start h-8 text-xs"
               >
-                <MessageCircle className="h-4 w-4 mr-2 text-green-600" />
+                <MessageCircle className="h-3 w-3 mr-1 text-green-600" />
                 WhatsApp
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => shareOnPlatform('linkedin')}
-                className="justify-start"
+                className="justify-start h-8 text-xs"
               >
-                <Linkedin className="h-4 w-4 mr-2 text-blue-600" />
+                <Linkedin className="h-3 w-3 mr-1 text-blue-600" />
                 LinkedIn
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => shareOnPlatform('twitter')}
-                className="justify-start"
+                className="justify-start h-8 text-xs"
               >
-                <Twitter className="h-4 w-4 mr-2 text-blue-400" />
+                <Twitter className="h-3 w-3 mr-1 text-blue-400" />
                 Twitter
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigator.share?.({ title: 'Join TalentXcel', url: referralLink })}
-                className="justify-start"
+                className="justify-start h-8 text-xs"
               >
-                <Send className="h-4 w-4 mr-2 text-blue-500" />
+                <Send className="h-3 w-3 mr-1 text-blue-500" />
                 Share
               </Button>
             </div>
@@ -208,35 +263,35 @@ export const RealTimeReferralDashboard: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Recent Activity & Achievements */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Recent Activities */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+      {/* Recent Activity & Achievements - Mobile Simplified */}
+      <div className="grid grid-cols-1 gap-4">
+        {/* Recent Activities - Mobile */}
+        <Card className="bg-white/50 backdrop-blur border-primary/10">
+          <CardHeader className="pb-2 p-4">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4" />
               Recent Activity
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {activities.slice(0, 5).map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{activity.description}</p>
+          <CardContent className="p-4 pt-0">
+            <div className="space-y-2">
+              {activities.slice(0, 3).map((activity) => (
+                <div key={activity.id} className="flex items-center justify-between py-1.5 border-b last:border-b-0">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">{activity.description}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(activity.timestamp).toLocaleDateString()}
                     </p>
                   </div>
                   {activity.reward && (
-                    <Badge variant="default" className="text-xs">
+                    <Badge variant="default" className="text-xs h-5">
                       +{activity.reward} TXC
                     </Badge>
                   )}
                 </div>
               ))}
               {activities.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">
+                <p className="text-xs text-muted-foreground text-center py-3">
                   No activity yet. Start sharing your link!
                 </p>
               )}
@@ -244,28 +299,28 @@ export const RealTimeReferralDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Achievements */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
+        {/* Achievements - Mobile */}
+        <Card className="bg-white/50 backdrop-blur border-primary/10">
+          <CardHeader className="pb-2 p-4">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Award className="h-4 w-4" />
               Achievements
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {achievements.slice(0, 4).map((achievement) => (
-                <div key={achievement.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <div className="flex items-center gap-3">
-                    <span className={`text-lg ${achievement.unlocked ? '' : 'grayscale opacity-50'}`}>
+          <CardContent className="p-4 pt-0">
+            <div className="space-y-2">
+              {achievements.slice(0, 3).map((achievement) => (
+                <div key={achievement.id} className="flex items-center justify-between py-1.5 border-b last:border-b-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${achievement.unlocked ? '' : 'grayscale opacity-50'}`}>
                       {achievement.icon}
                     </span>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{achievement.title}</p>
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 bg-gray-200 rounded-full h-1.5">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium truncate">{achievement.title}</p>
+                      <div className="flex items-center gap-1">
+                        <div className="w-16 bg-gray-200 rounded-full h-1">
                           <div 
-                            className="bg-primary h-1.5 rounded-full transition-all"
+                            className="bg-primary h-1 rounded-full transition-all"
                             style={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
                           />
                         </div>
@@ -276,7 +331,7 @@ export const RealTimeReferralDashboard: React.FC = () => {
                     </div>
                   </div>
                   {achievement.unlocked && (
-                    <Badge variant="default" className="text-xs bg-green-500">
+                    <Badge variant="default" className="text-xs h-4 px-1">
                       ✓
                     </Badge>
                   )}
@@ -287,19 +342,19 @@ export const RealTimeReferralDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Current Streak */}
+      {/* Current Streak - Mobile Compact */}
       {stats.currentStreak > 0 && (
         <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-500 rounded-full">
-                <Flame className="h-5 w-5 text-white" />
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-orange-500 rounded-full">
+                <Flame className="h-3 w-3 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-orange-700">
+                <h3 className="font-bold text-orange-700 text-sm">
                   🔥 {stats.currentStreak} Day Streak!
                 </h3>
-                <p className="text-sm text-orange-600">
+                <p className="text-xs text-orange-600">
                   You're on fire! Keep referring to maintain your streak.
                 </p>
               </div>

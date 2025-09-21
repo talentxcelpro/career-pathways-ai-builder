@@ -112,61 +112,58 @@ const ReferAndEarn: React.FC = () => {
 
   return (
     <div className="min-h-screen gradient-subtle">
-      {/* Hero Section */}
-      <section className="pt-12 pb-8 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          {/* Professional Header with Small Text */}
-          <div className="mb-12">
-            <div className="flex justify-center mb-4">
-              <div className="relative">
-                <div className="relative bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-                  <img 
-                    src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                    alt="TalentXcel" 
-                    className="h-8 w-8 rounded-md"
-                  />
-                </div>
+      {/* Mobile-Optimized Hero Section */}
+      <section className="pt-6 pb-4 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Compact Header */}
+          <div className="mb-6">
+            <div className="flex justify-center mb-3">
+              <div className="relative bg-white rounded-lg p-2 border border-gray-200 shadow-sm">
+                <img 
+                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  alt="TalentXcel" 
+                  className="h-6 w-6 rounded-md"
+                />
               </div>
             </div>
             
-            <div className="mb-6">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-2">
+            <div className="mb-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">
                 Referral Program
               </p>
-              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-3">
-                Refer & Earn Professional Benefits
+              <h1 className="text-xl md:text-3xl font-bold text-foreground mb-2">
+                Refer & Earn Benefits
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Invite colleagues to TalentXcel and unlock premium career tools, priority support, and exclusive AI features.
+              <p className="text-xs md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Invite colleagues and unlock premium career tools, priority support, and AI features.
               </p>
             </div>
             
-            {/* Professional TXC Rewards Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full px-4 py-2 border border-blue-200">
-              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                <Coins className="h-3 w-3 text-white" />
+            {/* Compact TXC Badge */}
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full px-3 py-1.5 border border-blue-200">
+              <div className="w-4 h-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                <Coins className="h-2.5 w-2.5 text-white" />
               </div>
-              <span className="text-sm font-semibold text-blue-700">TXC Rewards</span>
-              <span className="text-xs text-blue-600">Active</span>
+              <span className="text-xs font-semibold text-blue-700">TXC Rewards</span>
             </div>
           </div>
           
-          {/* Professional Stats Overview */}
+          {/* Compact Stats Overview */}
           {referralData && (
-            <div className="max-w-lg mx-auto mb-10">
+            <div className="max-w-sm mx-auto mb-6">
               <Card className="bg-white border border-gray-200 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-3 gap-6">
+                <CardContent className="p-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{referralData.successful_referrals}</div>
+                      <div className="text-lg font-bold text-gray-900">{referralData.successful_referrals}</div>
                       <div className="text-xs text-muted-foreground font-medium">Referrals</div>
                     </div>
                     <div className="text-center border-l border-r border-gray-200">
-                      <div className="text-2xl font-bold text-blue-600">Tier {referralData.current_tier || 1}</div>
+                      <div className="text-lg font-bold text-blue-600">Tier {referralData.current_tier || 1}</div>
                       <div className="text-xs text-muted-foreground font-medium">Current</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">Active</div>
+                      <div className="text-lg font-bold text-green-600">Active</div>
                       <div className="text-xs text-muted-foreground font-medium">Status</div>
                     </div>
                   </div>
@@ -175,10 +172,10 @@ const ReferAndEarn: React.FC = () => {
             </div>
           )}
 
-          {/* Professional CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          {/* Compact CTA Buttons */}
+          <div className="flex flex-col gap-2 justify-center items-center">
             <Button 
-              size="lg" 
+              size="sm" 
               onClick={() => {
                 triggerHaptic('success');
                 if (referralData?.referral_code) {
@@ -187,122 +184,122 @@ const ReferAndEarn: React.FC = () => {
                   document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 text-sm font-medium"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-sm font-medium w-full max-w-xs"
             >
               <Share2 className="w-4 h-4 mr-2" />
               {referralData?.referral_code ? 'Copy Referral Link' : 'Start Referring'}
             </Button>
             
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => {
-                triggerHaptic('light');
-                document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2.5 text-sm font-medium"
-            >
-              <Trophy className="w-4 h-4 mr-2" />
-              View Rewards
-            </Button>
-            
-            <Button 
-              size="lg" 
-              variant="ghost"
-              className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-6 py-2.5 text-sm font-medium"
-              asChild
-            >
-              <Link to="/pro/subscription">
-                <Crown className="w-4 h-4 mr-2" />
-                Upgrade to Pro
-              </Link>
-            </Button>
+            <div className="flex gap-2 w-full max-w-xs">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  triggerHaptic('light');
+                  document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-xs font-medium flex-1"
+              >
+                <Trophy className="w-3 h-3 mr-1" />
+                Rewards
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="ghost"
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-4 py-2 text-xs font-medium flex-1"
+                asChild
+              >
+                <Link to="/pro/subscription">
+                  <Crown className="w-3 h-3 mr-1" />
+                  Pro
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Reward Tiers Section */}
-      <section id="rewards" className="py-16 px-4 gradient-hero">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <Trophy className="w-8 h-8 text-primary mr-3" />
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                Referral Reward Tiers
+      {/* Compact Reward Tiers Section */}
+      <section id="rewards" className="py-8 px-4 gradient-hero">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center mb-2">
+              <Trophy className="w-6 h-6 text-primary mr-2" />
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                Reward Tiers
               </h2>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Every friend you refer gets you closer to unlocking premium features and exclusive AI-powered career tools.
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+              Every friend you refer unlocks premium features and AI-powered career tools.
             </p>
           </div>
 
           <div className="overflow-x-auto">
-            <div className="min-w-full">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                {rewardTiers.map((tier, index) => {
-                  const Icon = tier.icon;
-                  const isUnlocked = referralData && referralData.successful_referrals >= tier.friends;
-                  
-                  return (
-                    <Card key={index} className={`relative transition-smooth hover:scale-105 ${
-                      isUnlocked 
-                        ? 'gradient-card shadow-glow ring-2 ring-primary/50' 
-                        : 'bg-card/50 opacity-75 hover:opacity-90'
-                    }`}>
-                      <CardHeader className="text-center pb-2">
-                        <div className={`w-16 h-16 rounded-full ${tier.color} flex items-center justify-center mx-auto mb-3 shadow-elegant`}>
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                        <div className="text-3xl font-bold text-primary mb-1">{tier.friends}</div>
-                        <div className="text-sm text-muted-foreground font-medium">Friends</div>
-                      </CardHeader>
-                      <CardContent className="text-center pt-0">
-                        <div className="font-semibold text-foreground mb-3 text-sm leading-tight">{tier.reward}</div>
-                        {isUnlocked ? (
-                          <Badge className="bg-brand-green text-white border-0 shadow-sm">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Unlocked
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="border-primary/30 text-primary">
-                            <Target className="w-3 h-3 mr-1" />
-                            Locked
-                          </Badge>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+            <div className="flex gap-2 md:grid md:grid-cols-5 md:gap-3 pb-4 md:pb-0">
+              {rewardTiers.map((tier, index) => {
+                const Icon = tier.icon;
+                const isUnlocked = referralData && referralData.successful_referrals >= tier.friends;
+                
+                return (
+                  <Card key={index} className={`min-w-[140px] md:min-w-0 relative transition-smooth hover:scale-105 ${
+                    isUnlocked 
+                      ? 'gradient-card shadow-glow ring-2 ring-primary/50' 
+                      : 'bg-card/50 opacity-75 hover:opacity-90'
+                  }`}>
+                    <CardHeader className="text-center pb-1 p-3">
+                      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full ${tier.color} flex items-center justify-center mx-auto mb-2 shadow-elegant`}>
+                        <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                      </div>
+                      <div className="text-xl md:text-2xl font-bold text-primary mb-1">{tier.friends}</div>
+                      <div className="text-xs text-muted-foreground font-medium">Friends</div>
+                    </CardHeader>
+                    <CardContent className="text-center pt-0 p-3">
+                      <div className="font-semibold text-foreground mb-2 text-xs leading-tight">{tier.reward}</div>
+                      {isUnlocked ? (
+                        <Badge className="bg-brand-green text-white border-0 shadow-sm text-xs">
+                          <CheckCircle className="w-2 h-2 mr-1" />
+                          Unlocked
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                          <Target className="w-2 h-2 mr-1" />
+                          Locked
+                        </Badge>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pro Features Section */}
-      <section className="py-16 px-4 bg-card/30">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center mb-4">
-              <Zap className="w-8 h-8 text-primary mr-3" />
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+      {/* Compact Pro Features Section */}
+      <section className="py-8 px-4 bg-card/30">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center mb-2">
+              <Zap className="w-6 h-6 text-primary mr-2" />
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">
                 What You'll Unlock
               </h2>
             </div>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Premium AI-powered features to accelerate your career growth
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {proFeatures.map((feature, index) => (
               <Card key={index} className="gradient-card border-primary/10 hover:shadow-elegant transition-smooth">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="p-1 bg-brand-green/10 rounded-full">
-                      <CheckCircle className="w-4 h-4 text-brand-green flex-shrink-0" />
+                <CardContent className="p-3">
+                  <div className="flex items-start space-x-2">
+                    <div className="p-0.5 bg-brand-green/10 rounded-full mt-0.5">
+                      <CheckCircle className="w-3 h-3 text-brand-green flex-shrink-0" />
                     </div>
-                    <span className="text-foreground font-medium text-sm leading-relaxed">{feature}</span>
+                    <span className="text-foreground font-medium text-xs leading-relaxed">{feature}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -311,87 +308,114 @@ const ReferAndEarn: React.FC = () => {
         </div>
       </section>
 
-      {/* Urgency Boosters */}
-      <section className="py-16 px-4 bg-card/30">
-        <div className="max-w-6xl mx-auto">
-          <UrgencyBooster />
-        </div>
-      </section>
-
-      {/* Contests */}
-      <section className="py-16 px-4 gradient-hero">
-        <div className="max-w-6xl mx-auto">
-          <ReferralContest />
-        </div>
-      </section>
-
-      {/* Social Game Hub */}
-      <section className="py-16 px-4 bg-card/30">
-        <div className="max-w-6xl mx-auto">
-          <SocialGameHub />
-        </div>
-      </section>
-
-      {/* Referral Dashboard */}
-      {referralData && (
-        <section id="dashboard" className="py-16 px-4 gradient-hero">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
-              <p className="text-muted-foreground">Track your progress and share your referral link</p>
-            </div>
-            <RealTimeReferralDashboard />
+      {/* Mobile-Optimized Sections - Show only on mobile */}
+      <div className="block md:hidden">
+        {/* Compact Urgency Boosters */}
+        <section className="py-6 px-4 bg-card/30">
+          <div className="max-w-2xl mx-auto">
+            <UrgencyBooster />
           </div>
         </section>
-      )}
 
-      {/* CTA Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+        {/* Mobile Referral Dashboard */}
+        {referralData && (
+          <section id="dashboard" className="py-6 px-4 gradient-hero">
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-4">
+                <h2 className="text-lg font-bold text-foreground mb-1">Your Dashboard</h2>
+                <p className="text-sm text-muted-foreground">Track progress and share your link</p>
+              </div>
+              <RealTimeReferralDashboard />
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Desktop Sections - Hidden on mobile */}
+      <div className="hidden md:block">
+        {/* Urgency Boosters */}
+        <section className="py-16 px-4 bg-card/30">
+          <div className="max-w-6xl mx-auto">
+            <UrgencyBooster />
+          </div>
+        </section>
+
+        {/* Contests */}
+        <section className="py-16 px-4 gradient-hero">
+          <div className="max-w-6xl mx-auto">
+            <ReferralContest />
+          </div>
+        </section>
+
+        {/* Social Game Hub */}
+        <section className="py-16 px-4 bg-card/30">
+          <div className="max-w-6xl mx-auto">
+            <SocialGameHub />
+          </div>
+        </section>
+
+        {/* Referral Dashboard */}
+        {referralData && (
+          <section id="dashboard" className="py-16 px-4 gradient-hero">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
+                <p className="text-muted-foreground">Track your progress and share your referral link</p>
+              </div>
+              <RealTimeReferralDashboard />
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Compact CTA Section */}
+      <section className="py-8 px-4">
+        <div className="max-w-3xl mx-auto text-center">
           <Card className="gradient-primary shadow-glow border-0 text-white">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-center mb-4">
-                <div className="p-3 bg-white/20 rounded-full mr-4">
-                  <Sparkles className="w-8 h-8 text-white" />
+            <CardContent className="p-6 md:p-8">
+              <div className="flex items-center justify-center mb-3">
+                <div className="p-2 bg-white/20 rounded-full mr-3">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl font-bold text-white">
                   Ready to Start Earning?
                 </h2>
               </div>
-              <p className="text-lg text-white/90 mb-8 leading-relaxed max-w-2xl mx-auto">
-                Join thousands of professionals who are already earning Pro access by sharing TalentXcel. 
-                It takes just 30 seconds to get your personalized referral link and start inviting your network.
+              <p className="text-sm md:text-base text-white/90 mb-6 leading-relaxed max-w-xl mx-auto">
+                Join thousands earning Pro access by sharing TalentXcel. Get your referral link in 30 seconds.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-col gap-3 justify-center items-center">
                 <Button 
-                  size="lg" 
+                  size="sm" 
                   variant="secondary" 
-                  className="bg-white text-primary hover:bg-white/90 font-semibold text-lg px-8 py-4"
+                  className="bg-white text-primary hover:bg-white/90 font-semibold text-sm px-6 py-3 w-full max-w-xs"
                   onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  <Share2 className="w-5 h-5 mr-2" />
+                  <Share2 className="w-4 h-4 mr-2" />
                   Start Referring Now
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="ghost" 
-                  className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4"
-                  onClick={() => document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  View All Rewards
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4"
-                  asChild
-                >
-                  <Link to="/pro/subscription">
-                    <Crown className="w-5 h-5 mr-2" />
-                    Go Pro Now
-                  </Link>
-                </Button>
+                <div className="flex gap-2 w-full max-w-xs">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1"
+                    onClick={() => document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    View Rewards
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1"
+                    asChild
+                  >
+                    <Link to="/pro/subscription">
+                      <Crown className="w-3 h-3 mr-1" />
+                      Go Pro
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
