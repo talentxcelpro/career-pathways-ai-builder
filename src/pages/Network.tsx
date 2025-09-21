@@ -29,6 +29,7 @@ import { MobileLayout } from "@/components/mobile/MobileLayout";
 import { UserPresence } from "@/components/realtime/UserPresence";
 import { VideoCallButton } from "@/components/network/VideoCallButton";
 import { LiveEventCard } from "@/components/network/LiveEventCard";
+import { GoogleOneTapStatus } from "@/components/auth/GoogleOneTapStatus";
 
 
 const Network = () => {
@@ -119,6 +120,13 @@ const Network = () => {
   // Desktop interface
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+      {/* One Tap Sign In Status - Show at top for guest users */}
+      {!user && (
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 pt-4">
+          <GoogleOneTapStatus />
+        </div>
+      )}
+      
       {/* Main Content with Tabs */}
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-1">
         <Tabs defaultValue="feed" className="w-full">
