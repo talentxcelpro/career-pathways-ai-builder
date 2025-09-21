@@ -17,12 +17,21 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
   },
-  build: {
-    target: 'es2020',
-    sourcemap: false,
+  define: {
+    global: "globalThis",
   },
   optimizeDeps: {
-    include: ['react', 'react-dom'],
+    include: [
+      'react', 
+      'react-dom', 
+      'react/jsx-runtime',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-dialog'
+    ],
+    exclude: [],
+    force: true,
   },
 }));
