@@ -130,8 +130,36 @@ const AIResumeBuilder = () => {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-3 py-3">
+            {/* Mobile Layout */}
+            <div className="flex flex-col gap-3 md:hidden">
+              <div className="flex items-center justify-between">
+                <h1 className="text-lg font-bold flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  AI Builder
+                </h1>
+                <Badge variant={atsScore.overallScore >= 80 ? "default" : "secondary"} className="text-xs">
+                  {atsScore.overallScore}% ATS
+                </Badge>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={handleSave}>
+                  <Save className="h-3 w-3 mr-1" />
+                  Save
+                </Button>
+                <Button variant="outline" size="sm" className="flex-1 text-xs">
+                  <Eye className="h-3 w-3 mr-1" />
+                  View
+                </Button>
+                <Button size="sm" className="flex-1 text-xs" onClick={() => handleExport('pdf')}>
+                  <Download className="h-3 w-3 mr-1" />
+                  Export
+                </Button>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden md:flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                   <Sparkles className="h-6 w-6 text-primary" />
@@ -179,20 +207,20 @@ const AIResumeBuilder = () => {
 
         {/* Builder Mode Selector */}
         <div className="border-b">
-          <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="max-w-7xl mx-auto px-3 py-3">
             <Tabs value={builderMode} onValueChange={(value) => setBuilderMode(value as any)}>
-              <TabsList className="grid w-full max-w-md grid-cols-3">
-                <TabsTrigger value="guided" className="gap-2">
-                  <FileText className="h-4 w-4" />
-                  Guided
+              <TabsList className="grid w-full grid-cols-3 h-9">
+                <TabsTrigger value="guided" className="gap-1 text-xs px-2">
+                  <FileText className="h-3 w-3" />
+                  <span className="hidden sm:inline">Guided</span>
                 </TabsTrigger>
-                <TabsTrigger value="freestyle" className="gap-2">
-                  <Zap className="h-4 w-4" />
-                  Freestyle
+                <TabsTrigger value="freestyle" className="gap-1 text-xs px-2">
+                  <Zap className="h-3 w-3" />
+                  <span className="hidden sm:inline">Freestyle</span>
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  AI Chat
+                <TabsTrigger value="chat" className="gap-1 text-xs px-2">
+                  <MessageSquare className="h-3 w-3" />
+                  <span className="hidden sm:inline">AI Chat</span>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -238,8 +266,8 @@ const AIResumeBuilder = () => {
           )}
         </div>
 
-        {/* ATS Insights Sidebar */}
-        <div className="fixed right-4 top-1/2 -translate-y-1/2 w-80 z-20">
+        {/* ATS Insights - Mobile Bottom Sheet & Desktop Sidebar */}
+        <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 w-72 z-20">
           <Card className="shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -251,19 +279,19 @@ const AIResumeBuilder = () => {
               {/* Score Breakdown */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Keyword Density</span>
+                  <span className="text-sm">Keywords</span>
                   <span className="text-sm font-medium">{atsScore.keywordDensity}%</span>
                 </div>
                 <Progress value={atsScore.keywordDensity} className="h-2" />
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Formatting</span>
+                  <span className="text-sm">Format</span>
                   <span className="text-sm font-medium">{atsScore.formatting}%</span>
                 </div>
                 <Progress value={atsScore.formatting} className="h-2" />
 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Section Structure</span>
+                  <span className="text-sm">Structure</span>
                   <span className="text-sm font-medium">{atsScore.sections}%</span>
                 </div>
                 <Progress value={atsScore.sections} className="h-2" />
@@ -272,9 +300,9 @@ const AIResumeBuilder = () => {
               {/* Suggestions */}
               {atsScore.suggestions.length > 0 && (
                 <div>
-                  <h4 className="font-medium mb-2">Suggestions</h4>
+                  <h4 className="font-medium mb-2 text-sm">Tips</h4>
                   <div className="space-y-2">
-                    {atsScore.suggestions.slice(0, 3).map((suggestion, index) => (
+                    {atsScore.suggestions.slice(0, 2).map((suggestion, index) => (
                       <div key={index} className="text-xs p-2 bg-muted rounded text-muted-foreground">
                         {suggestion}
                       </div>
@@ -287,13 +315,33 @@ const AIResumeBuilder = () => {
               <div className="space-y-2">
                 <Button size="sm" variant="outline" className="w-full text-xs">
                   <Zap className="h-3 w-3 mr-2" />
-                  AI Enhance Section
+                  AI Enhance
                 </Button>
                 <Button size="sm" variant="outline" className="w-full text-xs">
                   <FileText className="h-3 w-3 mr-2" />
-                  Generate Content
+                  Generate
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Mobile ATS Score - Fixed bottom */}
+        <div className="lg:hidden fixed bottom-4 left-4 right-4 z-20">
+          <Card className="shadow-lg bg-card/95 backdrop-blur-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">ATS Score</span>
+                <Badge variant={atsScore.overallScore >= 80 ? "default" : "secondary"} className="text-xs">
+                  {atsScore.overallScore}%
+                </Badge>
+              </div>
+              <Progress value={atsScore.overallScore} className="h-2 mb-2" />
+              {atsScore.suggestions.length > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  {atsScore.suggestions[0]}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

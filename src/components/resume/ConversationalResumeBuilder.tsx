@@ -598,21 +598,21 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-8">
-        <div className="grid lg:grid-cols-7 gap-8">
+      <div className="max-w-7xl mx-auto p-3 md:p-8">
+        <div className="grid lg:grid-cols-7 gap-4 md:gap-8">
           {/* Left Sidebar - Form + Tools */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="lg:col-span-3 space-y-4 md:space-y-8">
             {/* Resume Builder Form */}
-            <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-lg shadow-black/5 rounded-2xl">
-              <CardHeader className="border-b border-gray-100 p-8">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-3 text-xl font-semibold">
-                    <Edit className="h-6 w-6 text-blue-600" />
+            <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-lg shadow-black/5 rounded-xl md:rounded-2xl">
+              <CardHeader className="border-b border-gray-100 p-4 md:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2 md:gap-3 text-lg md:text-xl font-semibold">
+                    <Edit className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
                     Resume Details
                   </CardTitle>
                   
                   <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                    <SelectTrigger className="w-56 rounded-xl border-gray-200">
+                    <SelectTrigger className="w-full sm:w-48 md:w-56 rounded-xl border-gray-200 text-sm">
                       <SelectValue placeholder="Choose template" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
@@ -620,7 +620,7 @@ ${resumeData.certifications.map(cert => `• ${cert.name} - ${cert.issuer} (${ce
                         <SelectItem key={key} value={key} className="rounded-lg">
                           <div className="flex items-center gap-3">
                             <div className={`w-3 h-3 rounded-full bg-${template.color}-500`}></div>
-                            <span className="font-medium">{template.name}</span>
+                            <span className="font-medium text-sm">{template.name}</span>
                           </div>
                         </SelectItem>
                       ))}
