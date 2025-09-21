@@ -316,8 +316,18 @@ export const MentorMatchingCard: React.FC = () => {
               ) : !isLoadingMentors ? (
                 <div className="text-center py-8">
                   <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-muted-foreground">No mentor matches found</p>
-                  <p className="text-sm text-muted-foreground">Update your profile to get better matches</p>
+                  <p className="text-muted-foreground">Finding perfect mentors...</p>
+                  <p className="text-sm text-muted-foreground">
+                    Complete your career goals and interests in your profile for better matches
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-3"
+                    onClick={() => window.location.href = '/profile'}
+                  >
+                    Complete Profile
+                  </Button>
                 </div>
               ) : null}
             </div>

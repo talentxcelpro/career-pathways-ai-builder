@@ -26402,6 +26402,33 @@ export type Database = {
         }
         Relationships: []
       }
+      txc_analytics: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          txc_amount: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          txc_amount?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          txc_amount?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       txc_currency_rules: {
         Row: {
           created_at: string
@@ -26461,6 +26488,111 @@ export type Database = {
           resolved_at?: string | null
           risk_score?: number
           status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      txc_leaderboard_cache: {
+        Row: {
+          computed_at: string | null
+          display_data: Json
+          expires_at: string | null
+          id: string
+          leaderboard_type: string
+          rank_position: number
+          user_id: string
+        }
+        Insert: {
+          computed_at?: string | null
+          display_data: Json
+          expires_at?: string | null
+          id?: string
+          leaderboard_type: string
+          rank_position: number
+          user_id: string
+        }
+        Update: {
+          computed_at?: string | null
+          display_data?: Json
+          expires_at?: string | null
+          id?: string
+          leaderboard_type?: string
+          rank_position?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      txc_mining_rewards: {
+        Row: {
+          activity_data: Json | null
+          base_amount: number
+          claimed_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          final_amount: number
+          id: string
+          multiplier: number | null
+          reward_type: string
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          base_amount: number
+          claimed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          final_amount: number
+          id?: string
+          multiplier?: number | null
+          reward_type: string
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          base_amount?: number
+          claimed_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          final_amount?: number
+          id?: string
+          multiplier?: number | null
+          reward_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      txc_purchases: {
+        Row: {
+          cost: number
+          created_at: string
+          expires_at: string | null
+          feature_id: string
+          feature_type: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cost: number
+          created_at?: string
+          expires_at?: string | null
+          feature_id: string
+          feature_type: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          expires_at?: string | null
+          feature_id?: string
+          feature_type?: string
+          id?: string
+          status?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -29522,6 +29654,10 @@ export type Database = {
         Args: { p_time_period: string; p_topic: string; p_topic_type: string }
         Returns: number
       }
+      calculate_txc_mining_reward: {
+        Args: { activity_type: string; base_amount: number; user_uuid: string }
+        Returns: number
+      }
       can_apply_to_job: {
         Args: { job_uuid: string }
         Returns: boolean
@@ -30111,6 +30247,21 @@ export type Database = {
           usage_count: number
         }[]
       }
+      get_txc_activity_leaderboard: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          balance: number
+          full_name: string
+          profile_picture_url: string
+          total_earned: number
+          transactions_count: number
+          user_id: string
+        }[]
+      }
+      get_txc_user_analytics: {
+        Args: { user_uuid: string }
+        Returns: Json
+      }
       get_unified_analytics: {
         Args:
           | Record<PropertyKey, never>
@@ -30448,6 +30599,10 @@ export type Database = {
       refresh_session: {
         Args: { p_new_expires_at: string; p_token: string }
         Returns: boolean
+      }
+      refresh_txc_leaderboard_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       reject_company_access_request: {
         Args: { reason?: string; request_id: string }

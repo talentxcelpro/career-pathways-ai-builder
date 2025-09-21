@@ -93,8 +93,9 @@ export const useCollaborationMatching = () => {
         };
       });
 
-      // Sort by match score and return top matches
+      // Sort by match score and return top matches (more lenient threshold)
       return scoredOpportunities
+        .filter(opp => (opp.matchScore || 0) > 10) // Lower threshold
         .sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0))
         .slice(0, 20);
     },
@@ -213,6 +214,16 @@ export const useCollaborationMatching = () => {
     if (opportunity.is_paid) {
       score += 10;
       reasons.push('Paid opportunity');
+    }
+
+    // Add base compatibility score for all opportunities
+    score += 10;
+    reasons.push('Open opportunity');
+
+    // Boost score for opportunities with flexible requirements
+    if (opportunity.skills_required.length <= 3) {
+      score += 5;
+      reasons.push('Accessible requirements');
     }
 
     // Project type appeal (based on career goals)

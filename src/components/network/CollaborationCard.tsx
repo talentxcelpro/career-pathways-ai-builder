@@ -407,7 +407,15 @@ export const CollaborationCard: React.FC = () => {
                 <div className="text-center py-8">
                   <Network className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                   <p className="text-muted-foreground">No collaboration opportunities found</p>
-                  <p className="text-sm text-muted-foreground">Be the first to create one!</p>
+                  <p className="text-sm text-muted-foreground mb-3">Be the first to create one!</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setActiveTab('create')}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Opportunity
+                  </Button>
                 </div>
               ) : null}
             </div>

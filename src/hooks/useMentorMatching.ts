@@ -95,7 +95,7 @@ export const useMentorMatching = () => {
             total_mentorships: Math.floor(Math.random() * 10) + 5
           };
         })
-        .filter(match => match.matchScore > 30 && canBeMentor(currentUserProfile, match))
+        .filter(match => match.matchScore > 15 && canBeMentor(currentUserProfile, match))
         .sort((a, b) => b.matchScore - a.matchScore)
         .slice(0, 15) || [];
 
@@ -142,7 +142,7 @@ export const useMentorMatching = () => {
       }
     }
 
-    // Career stage compatibility (mentor should be more senior)
+    // Career stage compatibility (more flexible matching)
     if (mentee.career_stage && potentialMentor.career_stage) {
       const menteeStage = getCareerStageLevel(mentee.career_stage);
       const mentorStage = getCareerStageLevel(potentialMentor.career_stage);
@@ -150,6 +150,12 @@ export const useMentorMatching = () => {
       if (mentorStage > menteeStage) {
         score += 35;
         reasons.push('Senior career level');
+      } else if (mentorStage === menteeStage) {
+        score += 20;
+        reasons.push('Peer mentoring');
+      } else if (Math.abs(mentorStage - menteeStage) === 1) {
+        score += 15;
+        reasons.push('Similar experience level');
       }
     }
 
@@ -172,13 +178,25 @@ export const useMentorMatching = () => {
       }
     }
 
-    // Title relevance
+    // Title relevance (more lenient)
     if (mentee.title && potentialMentor.title) {
       const titleSimilarity = calculateTextSimilarity(mentee.title, potentialMentor.title);
-      if (titleSimilarity > 0.3) {
-        score += Math.floor(titleSimilarity * 20);
+      if (titleSimilarity > 0.1) {
+        score += Math.floor(titleSimilarity * 25);
         reasons.push('Relevant experience');
       }
+    }
+
+    // Add fallback scoring for users with minimal profile data
+    if (!mentee.industry && !mentee.career_interests) {
+      score += 20;
+      reasons.push('General mentorship match');
+    }
+
+    // Boost score if potential mentor has mentoring experience
+    if (potentialMentor.is_mentor) {
+      score += 15;
+      reasons.push('Experienced mentor');
     }
 
     return {
@@ -205,7 +223,8 @@ export const useMentorMatching = () => {
     const menteeLevel = getCareerStageLevel(mentee.career_stage);
     const mentorLevel = getCareerStageLevel(potentialMentor.career_stage);
     
-    return mentorLevel > menteeLevel;
+    // Allow peer mentoring and same-level mentoring for broader matches
+    return mentorLevel >= menteeLevel || Math.abs(mentorLevel - menteeLevel) <= 1;
   };
 
   const calculateTextSimilarity = (text1: string, text2: string): number => {
