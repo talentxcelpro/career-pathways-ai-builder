@@ -1,9 +1,10 @@
-import { Award, QrCode, BarChart3 } from "lucide-react";
+import { Award, QrCode, BarChart3, Users } from "lucide-react";
 import CareerPassportDashboard from "../pages/passport/CareerPassportDashboard";
 import PassportRouteHandler from "@/components/passport/PassportRouteHandler";
 import PublicPassportView from "../pages/PublicPassportView";
 import QRNetworking from "../pages/QRNetworking";
 import CareerIntelligenceDashboard from "../pages/CareerIntelligenceDashboard";
+import InstantNetworkingSystem from "../pages/InstantNetworkingSystem";
 export const passportRoutes = [
   {
     title: "Career Passport",
@@ -42,6 +43,13 @@ export const passportRoutes = [
     to: "/career-intelligence-dashboard",
     icon: <BarChart3 className="h-4 w-4" />,
     page: <CareerIntelligenceDashboard />,
+    requiresAuth: true,
+  },
+  {
+    title: "Instant Networking",
+    to: "/instant-networking",
+    icon: <Users className="h-4 w-4" />,
+    page: <InstantNetworkingSystem />,
     requiresAuth: true,
   },
 ];
