@@ -10,6 +10,11 @@ interface PurchaseOptions {
   metadata?: Record<string, any>;
 }
 
+// Legacy function signature for backward compatibility
+interface LegacyPurchaseFunction {
+  (featureId: string, description: string, metadata?: Record<string, any>): Promise<boolean>;
+}
+
 export const useTXCPurchase = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { availableBalance, refreshBalance } = useTokenBalance();
@@ -64,10 +69,22 @@ export const useTXCPurchase = () => {
     }
   };
 
+  // Legacy wrapper function for backward compatibility
+  const purchaseFeature: LegacyPurchaseFunction = async (featureId: string, description: string, metadata?: Record<string, any>) => {
+    return purchaseWithTXC({
+      featureId,
+      cost: 0, // Cost will be determined by the backend based on featureId
+      description,
+      metadata
+    });
+  };
+
   return {
     canAfford,
     purchaseWithTXC,
+    purchaseFeature,
     isLoading,
+    isProcessing: isLoading, // Alias for backward compatibility
     availableBalance
   };
 };

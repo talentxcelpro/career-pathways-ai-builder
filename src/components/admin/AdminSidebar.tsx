@@ -44,7 +44,9 @@ import {
   Gift,
   Linkedin,
   DollarSign,
-  Factory
+  Factory,
+  ShoppingCart,
+  Receipt
 } from 'lucide-react';
 import {
   Sidebar,
