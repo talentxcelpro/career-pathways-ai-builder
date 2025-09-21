@@ -31,6 +31,7 @@ export const learningRoutes = [
     icon: <BookOpen className="h-4 w-4" />,
     page: <LearningHub />,
     isPublic: true,
+    requiresAuth: false,
     requiresAdminAccess: false,
   },
   {

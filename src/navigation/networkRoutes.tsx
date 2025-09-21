@@ -37,7 +37,7 @@ export const networkRoutes = [
     to: "/network",
     icon: <Users className="h-4 w-4" />,
     page: <NetworkPage />,
-    isPublic: true,
+    isPublic: false,
     requiresAuth: true,
   },
   {
@@ -52,7 +52,7 @@ export const networkRoutes = [
     title: "Mobile Network",
     to: "/mobile/network",
     page: <MobileNetwork />,
-    isPublic: true,
+    isPublic: false,
     requiresAuth: true,
   },
   {
