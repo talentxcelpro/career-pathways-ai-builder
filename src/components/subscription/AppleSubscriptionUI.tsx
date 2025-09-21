@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { SubscriptionSkeleton } from './SubscriptionSkeleton';
+import { NetworkError } from './NetworkError';
 
 // Lazy load mobile component for performance
 const MobileSubscriptionUI = lazy(() => 
@@ -58,6 +59,8 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [currentTier, setCurrentTier] = useState<string | null>(null);
   const [subscribing, setSubscribing] = useState<string | null>(null);
+  const [networkError, setNetworkError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Mobile optimization: Return mobile component for small screens
   if (isMobile) {
@@ -135,8 +138,11 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
     }
   };
 
-  const handleSubscribe = async (tierName: string) => {
+  const handleSubscribe = async (tierName: string, isRetry: boolean = false) => {
     setSubscribing(tierName);
+    if (!isRetry) {
+      setNetworkError(null);
+    }
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -215,13 +221,33 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
     } catch (error) {
       console.error('Subscription error:', error);
-      toast({
-        title: "Purchase Failed", 
-        description: error instanceof Error ? error.message : "There was an error processing your purchase. Please try again or earn more TXC tokens.",
-        variant: "destructive",
-      });
+      
+      // Check if it's a network error
+      const isNetworkError = error instanceof Error && (
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('NetworkError') ||
+        error.message.includes('Request timed out') ||
+        error.message.includes('Network connectivity issue')
+      );
+
+      if (isNetworkError) {
+        setNetworkError(error.message);
+        setRetryCount(prev => prev + 1);
+      } else {
+        toast({
+          title: "Purchase Failed", 
+          description: error instanceof Error ? error.message : "There was an error processing your purchase. Please try again or earn more TXC tokens.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setSubscribing(null);
+    }
+  };
+
+  const handleRetry = () => {
+    if (subscribing) {
+      handleSubscribe(subscribing, true);
     }
   };
 
@@ -270,6 +296,14 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
 
   return (
     <div className="w-full">
+      {/* Network Error Alert */}
+      {networkError && (
+        <NetworkError
+          onRetry={handleRetry}
+          isRetrying={!!subscribing}
+        />
+      )}
+      
       {/* Enhanced Header with reduced top spacing */}
       <motion.div 
         className="text-center mb-8 relative"

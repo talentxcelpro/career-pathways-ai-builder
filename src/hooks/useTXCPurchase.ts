@@ -83,111 +83,165 @@ export const useTXCPurchase = () => {
 
       let data, error;
       let attemptCount = 0;
-      const maxAttempts = 3;
+      const maxAttempts = 2; // Reduced from 3 for faster feedback
       
       while (attemptCount < maxAttempts) {
         try {
           console.log(`Attempt ${attemptCount + 1}/${maxAttempts} for endpoint: ${endpoint}`);
           
-          const response = await supabase.functions.invoke(endpoint, {
+          // Add timeout to prevent hanging requests
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Request timeout')), 10000)
+          );
+          
+          const requestPromise = supabase.functions.invoke(endpoint, {
             body: requestBody,
             headers: {
               'Content-Type': 'application/json',
-              'User-Agent': 'TalentXcel-Web-Client'
+              'User-Agent': 'TalentXcel-Web-Client',
+              'X-Request-ID': `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
             }
           });
           
+          const response = await Promise.race([requestPromise, timeoutPromise]) as any;
           console.log('Raw response:', response);
           data = response.data;
           error = response.error;
           
-          if (!error && data) {
+          if (!error && data?.success) {
+            console.log('Success on attempt', attemptCount + 1);
             break; // Success, exit retry loop
           }
           
           if (error) {
             console.error(`Attempt ${attemptCount + 1} failed with error:`, error);
+            // If it's a network error, try again, otherwise break
+            if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+              console.log('Network error detected, will retry...');
+            } else {
+              console.log('Non-network error, breaking retry loop');
+              break;
+            }
           }
           
-        } catch (invokeError) {
+        } catch (invokeError: any) {
           console.error(`Attempt ${attemptCount + 1} invoke failed:`, invokeError);
-          error = invokeError;
+          
+          // Handle timeout and network errors
+          if (invokeError.message?.includes('Request timeout')) {
+            console.log('Request timed out');
+            error = { message: 'Request timed out. Please try again.' };
+          } else if (invokeError.message?.includes('Failed to fetch')) {
+            console.log('Network connectivity issue detected');
+            error = { message: 'Network connectivity issue. Please check your connection and try again.' };
+          } else {
+            error = invokeError;
+          }
         }
         
         attemptCount++;
         
         if (attemptCount < maxAttempts) {
-          console.log(`Waiting 1s before retry attempt ${attemptCount + 1}`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          console.log(`Waiting 2s before retry attempt ${attemptCount + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
       
-      // If all attempts failed, try fallback endpoint
-      if (error || !data) {
-        console.log('All primary attempts failed, trying fallback...');
-        
-        const fallbackEndpoint = isSubscription ? 'process-txc-purchase' : 'txc-unified-purchase';
-        console.log(`Trying fallback endpoint: ${fallbackEndpoint}`);
+      // If all attempts failed, try fallback approach using direct database operations
+      if (error || !data?.success) {
+        console.log('All primary attempts failed, trying direct database approach...');
         
         try {
-          const fallbackBody = isSubscription ? {
-            userId: user.id,
-            featureId: 'pro_subscription',
-            cost: options.cost,
-            description: options.description,
-            planName: options.metadata?.packageType || options.description,
-            metadata: {
-              userId: user.id,
-              userEmail: user.email,
-              timestamp: new Date().toISOString(),
-              fallbackAttempt: true,
-              ...(options.metadata || {})
-            }
-          } : {
-            purchaseType: 'feature',
-            featureId: options.featureId,
-            cost: options.cost,
-            description: options.description,
-            metadata: {
-              userId: user.id,
-              userEmail: user.email,
-              timestamp: new Date().toISOString(),
-              fallbackAttempt: true,
-              ...(options.metadata || {})
-            }
+          // Direct subscription creation using database functions
+          const subscriptionData = {
+            user_id: user.id,
+            email: user.email || '',
+            subscribed: true,
+            subscription_plan: options.metadata?.packageType || options.description,
+            subscription_tier: options.metadata?.packageType || options.description,
+            status: 'active',
+            subscription_start: new Date().toISOString(),
+            subscription_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            last_payment_date: new Date().toISOString(),
+            amount: options.cost,
+            currency: 'TXC',
+            updated_at: new Date().toISOString(),
           };
-          
-          console.log('Fallback request body:', fallbackBody);
-          
-          const fallbackResponse = await supabase.functions.invoke(fallbackEndpoint, {
-            body: fallbackBody,
-            headers: {
-              'Content-Type': 'application/json',
-              'User-Agent': 'TalentXcel-Web-Client-Fallback'
-            }
-          });
-          
-          console.log('Fallback response:', fallbackResponse);
-          data = fallbackResponse.data;
-          error = fallbackResponse.error;
+
+          // Try to create subscription directly
+          const { error: subscriptionError } = await supabase
+            .from('subscribers')
+            .upsert(subscriptionData, { onConflict: 'user_id' });
+
+          if (subscriptionError) {
+            throw new Error(`Database subscription creation failed: ${subscriptionError.message}`);
+          }
+
+          // Try to update TXC balance directly
+          const { data: balanceData, error: balanceError } = await supabase
+            .from('user_txc_balances')
+            .select('balance')
+            .eq('user_id', user.id)
+            .single();
+
+          if (balanceError || !balanceData) {
+            throw new Error('Unable to access TXC balance for direct update');
+          }
+
+          if (balanceData.balance < options.cost) {
+            throw new Error(`Insufficient TXC balance: ${balanceData.balance} available, ${options.cost} required`);
+          }
+
+          const newBalance = balanceData.balance - options.cost;
+          const { error: updateError } = await supabase
+            .from('user_txc_balances')
+            .update({ 
+              balance: newBalance,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id);
+
+          if (updateError) {
+            throw new Error(`TXC balance update failed: ${updateError.message}`);
+          }
+
+          // Record transaction
+          const { error: txError } = await supabase
+            .from('txc_transactions')
+            .insert({
+              user_id: user.id,
+              amount: -options.cost,
+              transaction_type: 'purchase',
+              description: `Fallback: ${options.description}`
+            });
+
+          if (txError) {
+            console.warn('Transaction logging failed:', txError);
+          }
+
+          console.log('Direct database fallback successful');
+          data = { success: true, message: 'Subscription activated via fallback method', newBalance };
+          error = null;
+
         } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError);
-          throw new Error(`Both primary and fallback endpoints failed. Primary error: ${error?.message || 'Unknown'}, Fallback error: ${fallbackError}`);
+          console.error('Direct database fallback also failed:', fallbackError);
+          throw new Error(`Edge Function unavailable and database fallback failed. Error: ${fallbackError instanceof Error ? fallbackError.message : 'Unknown error'}. Please try again later or contact support.`);
         }
       }
 
       if (error) {
-        console.error('Edge Function error:', error);
-        throw new Error(`Edge Function error: ${error.message}`);
+        console.error('Final error:', error);
+        throw new Error(`Transaction failed: ${error.message || 'Unknown error'}`);
       }
 
       if (data?.success) {
+        console.log('Purchase completed successfully:', data);
         toast.success(`Purchase successful! ${options.cost} TXC spent.`);
         refreshBalance();
         return true;
       } else {
-        console.error('Purchase failed:', data);
-        throw new Error(data?.error || 'Purchase failed - no success response');
+        console.error('Purchase failed - no success response:', data);
+        throw new Error(data?.error || data?.message || 'Purchase failed - please try again or contact support');
       }
     } catch (error) {
       console.error('TXC purchase error:', error);
