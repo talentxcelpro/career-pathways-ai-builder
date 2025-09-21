@@ -20,6 +20,9 @@ import QuickLearningPage from "../pages/learning/QuickLearningPage";
 import CommunityLearning from "../pages/learning/CommunityLearning";
 import LearningSearch from "../pages/learning/LearningSearch";
 import LearningAnalyticsPage from "../pages/learning/LearningAnalyticsPage";
+import { LearningJobPipelineDashboard } from "../pages/LearningJobPipelineDashboard";
+import { SmartLearningSystem } from "../pages/SmartLearningSystem";
+import { CompanyPartnershipPortal } from "../pages/CompanyPartnershipPortal";
 
 export const learningRoutes = [
   {
@@ -153,6 +156,27 @@ export const learningRoutes = [
     title: "Certificates",
     to: "/learning/certificates",
     page: <Certificates />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Pipeline Dashboard",
+    to: "/learning/pipeline",
+    page: <LearningJobPipelineDashboard />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Learning System",
+    to: "/learning/system",
+    page: <SmartLearningSystem />,
+    isPublic: false,
+    requiresAdminAccess: true,
+  },
+  {
+    title: "Company Portal",
+    to: "/learning/company-portal",
+    page: <CompanyPartnershipPortal />,
     isPublic: false,
     requiresAdminAccess: true,
   },
