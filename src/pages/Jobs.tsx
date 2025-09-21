@@ -30,7 +30,7 @@ import { SocialPagination } from '@/components/ui/social-pagination';
 import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
 import { SmartJobMatchingBar } from '@/components/jobs/SmartJobMatchingBar';
 import { AppleJobCard } from '@/components/jobs/AppleJobCard';
-import { TempJobsHeader } from '@/components/jobs/TempJobsHeader';
+import { QuickActions } from '@/components/jobs/QuickActions';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -359,40 +359,14 @@ const Jobs = () => {
     refetch();
   };
 
-  const TagButton = ({ label, isActive = false }: { label: string; isActive?: boolean }) => (
-    <button
-      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-        isActive 
-          ? 'bg-[#1E2A78] text-white' 
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-      }`}
-      onClick={() => handleCategoryClick(label.split(' ')[1] || label)}
-    >
-      {label}
-    </button>
-  );
-
-  const tagSuggestions = [
-    'Remote Jobs',
-    '10+ LPA',
-    'MNCs',
-    'Top Startups',
-    'Walk-ins Today',
-    'React Developer',
-    'Data Scientist',
-    'Product Manager'
-  ];
-
-
   return (
     <div className="min-h-screen bg-background">
       <OfflineIndicator />
       
-
-      {/* Header with TalentXcel branding */}
+      {/* Apple-style header */}
       <div className="bg-background/80 backdrop-blur-xl border-b border-border/20 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="flex items-center justify-between mb-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
@@ -412,7 +386,7 @@ const Jobs = () => {
             </div>
           </div>
           
-          {/* Apple-style compact search */}
+          {/* Compact search */}
           <div className="flex gap-2 items-center max-w-4xl mx-auto mt-3">
             <div className="flex-1">
               <div className="relative">
@@ -427,160 +401,39 @@ const Jobs = () => {
                     }
                   }}
                   onKeyDown={(e) => {
-                     if (e.key === 'Enter') {
-                       refetch();
-                     }
-                   }}
-                   className="pl-8 h-9 text-apple-caption border-border/30 focus:ring-1 focus:ring-primary/30 rounded-xl"
-                 />
-               </div>
-             </div>
-             
-             <Select 
-               value={experienceLevel} 
-               onValueChange={(value) => {
-                 setExperienceLevel(value);
-                 setFilters(prev => ({ 
-                   ...prev, 
-                   experience_level: value === 'all' ? [] : [value] 
-                 }));
-                 setTimeout(() => refetch(), 100);
-               }}
-             >
-               <SelectTrigger className="h-9 w-32 text-apple-caption border-border/30 rounded-xl">
-                 <SelectValue placeholder="Experience" />
-               </SelectTrigger>
-               <SelectContent>
-                 <SelectItem value="all">All Experience</SelectItem>
-                 <SelectItem value="Entry level">Entry Level</SelectItem>
-                 <SelectItem value="Mid level">Mid Level</SelectItem>
-                 <SelectItem value="Senior level">Senior Level</SelectItem>
-                 <SelectItem value="Executive">Executive</SelectItem>
-               </SelectContent>
-             </Select>
-           </div>
-         </div>
-       </div>
-                  <SelectContent className="bg-white border shadow-lg z-50">
-                    <SelectItem value="all">All Experience</SelectItem>
-                    <SelectItem value="entry">Fresher (0-1y)</SelectItem>
-                    <SelectItem value="junior">Junior (1-3y)</SelectItem>
-                    <SelectItem value="mid">Mid-level (3-6y)</SelectItem>
-                    <SelectItem value="senior">Senior (6+y)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="min-w-[120px]">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Location"
-                    value={filters.location}
-                    onChange={(e) => {
-                      setFilters(prev => ({ ...prev, location: e.target.value }));
-                      // Auto-search on typing for better UX
-                      if (e.target.value.length > 2) {
-                        setTimeout(() => refetch(), 500);
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        refetch();
-                      }
-                    }}
-                    className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-              </div>
-              
-              <label className="flex items-center gap-2 cursor-pointer min-w-[80px]">
-                <input
-                  type="checkbox"
-                  checked={filters.is_remote}
-                  onChange={(e) => {
-                    setFilters(prev => ({ ...prev, is_remote: e.target.checked }));
-                    setTimeout(() => refetch(), 100);
+                    if (e.key === 'Enter') {
+                      refetch();
+                    }
                   }}
-                  className="w-4 h-4 text-primary accent-primary"
+                  className="pl-8 h-9 text-apple-caption border-border/30 focus:ring-1 focus:ring-primary/30 rounded-xl"
                 />
-                <span className="text-sm text-gray-700">Remote</span>
-              </label>
+              </div>
             </div>
-            
-            <Button 
-              size="sm" 
-              className="h-9 px-4 bg-[#1E2A78] hover:bg-[#1E2A78]/90 text-white text-sm whitespace-nowrap"
-              onClick={() => {
-                console.log('Search clicked, current filters:', filters);
-                refetch();
-                toast.success('🔍 Searching for jobs...');
-              }}
-            >
-              <Search className="h-4 w-4 mr-1" />
-              Search
-            </Button>
           </div>
-          
-          {/* 3. Focused CTA */}
-          <div className="text-center mt-3">
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="text-sm font-medium border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white transition-all duration-200"
-              onClick={() => {
-                if (!currentUser) {
-                  toast.error('Please login to use AI matching');
-                  return;
-                }
-                // Enhanced AI matching
-                setFilters(prev => ({
-                  ...prev,
-                  search: 'AI recommended jobs for me',
-                  skills: [],
-                  department: [],
-                  role_category: []
-                }));
-                refetch();
-                toast.success('🧠 AI is finding your perfect matches!');
-              }}
-            >
-              <Brain className="h-4 w-4 mr-1" />
-              🧠 Let AI Match Me to Jobs
-            </Button>
-          </div>
-          
         </div>
       </div>
 
-      {/* Main Content - Clean Layout */}
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* Personal Career Dashboard for logged-in users - Only show if user wants it */}
         {currentUser && (
           <div className="mb-6">
-            <PersonalCareerDashboard 
-              user={currentUser}
-              savedJobsCount={savedJobs.length}
-              appliedJobsCount={0}
-              profileViews={0} 
+            <PersonalCareerDashboard />
+          </div>
+        )}
+
+        {/* Smart Job Matching Bar */}
+        {currentUser && (
+          <div className="mb-6">
+            <SmartJobMatchingBar 
+              onFiltersChange={handleFiltersChange}
+              onSearch={refetch}
             />
           </div>
         )}
-        
-        {/* Smart AI Job Matching Bar - Keep this */}
-        <div className="mb-6">
-          <SmartJobMatchingBar 
-            currentUser={currentUser}
-            onFiltersChange={handleFiltersChange}
-            onSearch={refetch}
-          />
-        </div>
 
-        {/* Quick Actions */}
-        <QuickActions currentUser={currentUser} />
-
-        {/* Featured Jobs Section with Enhanced Cards */}
+        {/* Featured Jobs Section */}
         {featuredJobs.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
@@ -592,22 +445,31 @@ const Jobs = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {featuredJobs.slice(0, 4).map((job) => (
-                  <AppleJobCard
-                    key={job.id}
-                    job={job}
-                    onSave={handleSaveJob}
-                    isSaved={savedJobs.includes(job.id)}
-                  />
+                <AppleJobCard
+                  key={job.id}
+                  job={job}
+                  onSave={handleSaveJob}
+                  isSaved={savedJobs.includes(job.id)}
+                />
               ))}
             </div>
           </div>
         )}
 
+        {/* Search Filters */}
+        <div className="mb-6">
+          <ComprehensiveJobFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
 
-        {/* Main Content */}
+        {/* Main Jobs Section */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
+          {/* Sidebar with Quick Actions and Live Filters */}
+          <div className="lg:col-span-1 space-y-6">
+            <QuickActions />
             <LiveJobFilters
               filters={filters}
               onFiltersChange={handleFiltersChange}
@@ -616,33 +478,13 @@ const Jobs = () => {
             />
           </div>
 
-          {/* Jobs Content */}
+          {/* Jobs List */}
           <div className="lg:col-span-3">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
-                <p className="text-sm text-gray-600">Find your perfect match from {totalCount.toLocaleString()} active positions</p>
-                {totalPages > 1 && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Page {currentPage} of {totalPages} • Showing {regularJobs.length} jobs
-                  </p>
-                )}
-              </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Sort by:</span>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-40 h-8 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="posted_at">Latest Jobs</SelectItem>
-                      <SelectItem value="salary_max">Highest Salary</SelectItem>
-                      <SelectItem value="views_count">Most Viewed</SelectItem>
-                      <SelectItem value="applications_count">Trending</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {companyData?.name ? `Jobs at ${companyData.name}` : 'All Jobs'}
+                </h2>
                 <Badge variant="secondary" className="text-sm font-medium">
                   {totalCount.toLocaleString()} jobs
                 </Badge>
@@ -652,121 +494,62 @@ const Jobs = () => {
             {/* Enhanced Job Cards Grid */}
             <div className="grid grid-cols-1 gap-4">
               {regularJobs.map((job) => (
-                    <AppleJobCard
-                      key={job.id}
-                      job={job}
-                      onSave={handleSaveJob}
-                      isSaved={savedJobs.includes(job.id)}
-                    />
+                <AppleJobCard
+                  key={job.id}
+                  job={job}
+                  onSave={handleSaveJob}
+                  isSaved={savedJobs.includes(job.id)}
+                />
               ))}
             </div>
 
             {/* Loading State */}
             {isLoading && (
-              <div className="grid grid-cols-1 gap-6">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-gray-100 rounded-lg p-6 animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
-                    <div className="h-20 bg-gray-200 rounded"></div>
-                  </div>
-                ))}
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             )}
 
-            {/* Empty State */}
-            {!isLoading && regularJobs.length === 0 && (
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex justify-center">
+                <SocialPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalCount={totalCount}
+                  onPageChange={goToPage}
+                />
+              </div>
+            )}
+
+            {/* No jobs found state */}
+            {!isLoading && sortedJobs.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  No jobs match your criteria
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Try adjusting your filters or search terms to find more opportunities
-                </p>
-                <Button onClick={handleClearFilters}>
-                  Clear All Filters
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs found</h3>
+                <p className="text-gray-600 mb-6">Try adjusting your filters or search terms.</p>
+                <Button 
+                  onClick={handleClearFilters}
+                  variant="outline"
+                  className="bg-white"
+                >
+                  Clear all filters
                 </Button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Pagination - Always Show When Multiple Pages */}
-        {totalPages > 1 && (
-          <div className="bg-white border-t border-gray-200 px-4 py-6 sm:px-6 mt-8">
-            <div className="flex justify-between items-center">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <Button
-                  variant="outline"
-                  onClick={() => goToPage(currentPage - 1)}
-                  disabled={currentPage <= 1}
-                  className="text-sm"
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => goToPage(currentPage + 1)}
-                  disabled={currentPage >= totalPages}
-                  className="text-sm"
-                >
-                  Next
-                </Button>
-              </div>
-              
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing{' '}
-                    <span className="font-medium">{((currentPage - 1) * 20) + 1}</span>{' '}
-                    to{' '}
-                    <span className="font-medium">
-                      {Math.min(currentPage * 20, totalCount)}
-                    </span>{' '}
-                    of{' '}
-                    <span className="font-medium">{totalCount}</span>{' '}
-                    jobs
-                  </p>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <SocialPagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalCount={totalCount}
-                    onPageChange={goToPage}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Auto-refresh indicator */}
+        <AutoRefreshIndicator 
+          lastRefresh={lastRefresh} 
+          isConnected={isConnected}
+        />
 
-        {/* Load More for Additional Results */}
-        {hasMore && totalPages > 1 && (
-          <div className="flex justify-center mt-4 mb-8">
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => goToPage(currentPage + 1)}
-              className="flex items-center gap-2 text-sm"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary"></div>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <TrendingUp className="h-4 w-4" />
-                  Load More Jobs
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+        {/* Data Freshness indicator */}
+        <DataFreshness 
+          lastUpdated={lastRefresh}
+        />
       </div>
 
       {/* Bottom Content */}
