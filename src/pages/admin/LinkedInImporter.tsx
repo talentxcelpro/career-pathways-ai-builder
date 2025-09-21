@@ -19,6 +19,7 @@ import { useLinkedInImportStats, useLinkedInJobScraping } from '@/hooks/useLinke
 import { ProtectedAdminRoute } from '@/components/admin/ProtectedAdminRoute';
 import { AdvancedLinkedInImporter } from '@/components/admin/AdvancedLinkedInImporter';
 import { LinkedInImportManager } from '@/components/admin/LinkedInImportManager';
+import { DataQualityManager } from '@/components/admin/DataQualityManager';
 
 const LinkedInImporter = () => {
   const { data: importStats, isLoading: statsLoading } = useLinkedInImportStats();
@@ -213,54 +214,7 @@ const LinkedInImporter = () => {
         </TabsContent>
 
         <TabsContent value="quality" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Quality Monitoring</CardTitle>
-              <CardDescription>
-                Monitor and improve the quality of imported LinkedIn data
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <h3 className="font-medium">High Quality Profiles</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-green-600">85.2%</p>
-                    <p className="text-sm text-muted-foreground">Complete profile data</p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                      <h3 className="font-medium">Issues Detected</h3>
-                    </div>
-                    <p className="text-2xl font-bold text-yellow-600">127</p>
-                    <p className="text-sm text-muted-foreground">Profiles needing review</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="font-medium">Common Issues</h3>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span>Missing profile pictures</span>
-                      <span>45 profiles</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Incomplete work history</span>
-                      <span>32 profiles</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Invalid email addresses</span>
-                      <span>28 profiles</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <DataQualityManager />
         </TabsContent>
       </Tabs>
     </div>

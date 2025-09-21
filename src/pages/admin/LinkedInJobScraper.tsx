@@ -25,6 +25,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useLinkedInScrapingAnalytics } from '@/hooks/useLinkedInAnalytics';
+import { SmartJobScrapingControls } from '@/components/admin/SmartJobScrapingControls';
 
 const LinkedInJobScraper = () => {
   const { data: scrapingData, isLoading } = useLinkedInScrapingAnalytics();
@@ -149,13 +150,18 @@ const LinkedInJobScraper = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="jobs" className="space-y-4">
+      <Tabs defaultValue="smart-controls" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="smart-controls">Smart Controls</TabsTrigger>
           <TabsTrigger value="jobs">Active Jobs</TabsTrigger>
           <TabsTrigger value="targets">Scraping Targets</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="settings">Configuration</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="smart-controls" className="space-y-4">
+          <SmartJobScrapingControls />
+        </TabsContent>
 
         <TabsContent value="jobs" className="space-y-4">
           <div className="flex justify-between items-center">
