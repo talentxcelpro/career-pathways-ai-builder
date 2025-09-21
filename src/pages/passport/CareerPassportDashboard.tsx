@@ -79,14 +79,25 @@ export function CareerPassportDashboard() {
 
   useEffect(() => {
     const initializeView = async () => {
+      console.log('CareerPassport: Initializing view', { 
+        user: user?.id, 
+        targetUserId, 
+        username, 
+        usernameError,
+        isLoading,
+        hasAuthError 
+      });
+      
       // Handle username error
       if (username && usernameError) {
+        console.log('CareerPassport: Username error, navigating to 404');
         navigate('/404');
         return;
       }
       
       // Check if viewing someone else's passport (public view)
       if (targetUserId && targetUserId !== user?.id) {
+        console.log('CareerPassport: Public view for user', targetUserId);
         setIsPublicView(true);
         await loadPublicPassportData(targetUserId);
         if (user?.id) {
@@ -94,84 +105,91 @@ export function CareerPassportDashboard() {
         }
       } else if (user?.id) {
         // Load own profile data
+        console.log('CareerPassport: Loading own profile');
         setIsPublicView(false);
         await loadPublicProfile();
+      } else {
+        console.log('CareerPassport: No user authenticated, user state:', user);
       }
     };
 
-    const checkConnectionStatus = async (targetUserId: string) => {
-      if (!user?.id) return;
+    // Only initialize if not loading username
+    if (!usernameLoading) {
+      console.log('CareerPassport: Starting initialization, usernameLoading:', usernameLoading);
+      initializeView();
+    }
+  }, [user?.id, targetUserId, username, usernameError, usernameLoading]);
+
+  const checkConnectionStatus = async (targetUserId: string) => {
+    if (!user?.id) return;
+    
+    try {
+      const { data } = await supabase
+        .from('connections')
+        .select('status')
+        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
+        .single();
       
-      try {
-        const { data } = await supabase
-          .from('connections')
-          .select('status')
-          .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
-          .single();
-        
-        if (data) {
-          setConnectionStatus(data.status);
-        }
-      } catch (error) {
-        console.error('Error checking connection status:', error);
+      if (data) {
+        setConnectionStatus(data.status);
       }
-    };
+    } catch (error) {
+      console.error('Error checking connection status:', error);
+    }
+  };
 
-    const loadPublicProfile = async () => {
-      try {
-        const { data } = await supabase
-          .from('public_profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (data) {
-          setPublicProfile(data);
-        }
-      } catch (error) {
-        console.error('Error loading public profile:', error);
+  const loadPublicProfile = async () => {
+    try {
+      const { data } = await supabase
+        .from('public_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (data) {
+        setPublicProfile(data);
       }
-    };
+    } catch (error) {
+      console.error('Error loading public profile:', error);
+    }
+  };
 
-    const loadPublicPassportData = async (targetUserId: string) => {
-      setPublicLoading(true);
-      try {
-        // Fetch public profile data
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('id, full_name, headline, location, profile_picture_url, talentxcel_id')
-          .eq('id', targetUserId)
-          .single();
+  const loadPublicPassportData = async (targetUserId: string) => {
+    setPublicLoading(true);
+    try {
+      // Fetch public profile data
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, full_name, headline, location, profile_picture_url, talentxcel_id')
+        .eq('id', targetUserId)
+        .single();
 
-        // Fetch public career passport data
-        const { data: passportData } = await supabase
-          .from('career_passport')
-          .select('completion_percentage, career_readiness_score, market_competitiveness_score, resumes_count, jobs_applied_count, certifications_count, connections_count')
-          .eq('user_id', targetUserId)
-          .single();
+      // Fetch public career passport data
+      const { data: passportData } = await supabase
+        .from('career_passport')
+        .select('completion_percentage, career_readiness_score, market_competitiveness_score, resumes_count, jobs_applied_count, certifications_count, connections_count')
+        .eq('user_id', targetUserId)
+        .single();
 
-        // Fetch public achievements
-        const { data: achievementsData } = await supabase
-          .from('career_achievements')
-          .select('achievement_type, achievement_title, achievement_description, points_awarded, earned_at')
-          .eq('user_id', targetUserId)
-          .eq('is_public', true)
-          .limit(5);
+      // Fetch public achievements
+      const { data: achievementsData } = await supabase
+        .from('career_achievements')
+        .select('achievement_type, achievement_title, achievement_description, points_awarded, earned_at')
+        .eq('user_id', targetUserId)
+        .eq('is_public', true)
+        .limit(5);
 
-        setPublicPassportData({
-          profile: profileData,
-          passport: passportData,
-          achievements: achievementsData || []
-        });
-      } catch (error) {
-        console.error('Error loading public passport:', error);
-      } finally {
-        setPublicLoading(false);
-      }
-    };
-
-    initializeView();
-  }, [targetUserId, user?.id, username, usernameError, navigate]);
+      setPublicPassportData({
+        profile: profileData,
+        passport: passportData,
+        achievements: achievementsData || []
+      });
+    } catch (error) {
+      console.error('Error loading public passport:', error);
+    } finally {
+      setPublicLoading(false);
+    }
+  };
 
   // Set QR code URL when public profile is updated
   useEffect(() => {
