@@ -65,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let mounted = true;
     let authSubscription: any = null;
+    let initTimeout: NodeJS.Timeout;
 
     // Initialize auth session and listener
     const initializeAuth = async () => {
@@ -74,102 +75,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           (event, session) => {
             if (!mounted) return;
 
-            // Minimal logging to reduce console spam
-            if (event === 'SIGNED_OUT' || event === 'SIGNED_IN') {
-              console.log('Auth:', event, !!session);
-            }
-            
             // Synchronous state updates only
             setSession(session);
             setUser(session?.user ?? null);
-            
-            // Handle auth events with reduced redirects
-            if (event === 'SIGNED_OUT') {
-              // Only clear auth-related storage, not all storage
-              localStorage.removeItem('supabase.auth.token');
-              localStorage.removeItem('subdomain_redirect');
-              
-              // Only redirect if not already on home page
-              if (window.location.pathname !== '/') {
-                setTimeout(() => {
-                  if (mounted) {
-                    navigate('/', { replace: true });
-                  }
-                }, 100);
-              }
-            } else if (event === 'SIGNED_IN' && session?.user) {
-              // Reduced auto-redirect logic
-              const currentPath = window.location.pathname;
-              
-              if (currentPath.startsWith('/auth') || currentPath === '/') {
-                setTimeout(() => {
-                  if (mounted) {
-                    const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
-                    navigate(redirectPath, { replace: true });
-                    localStorage.removeItem('subdomain_redirect');
-                  }
-                }, 150);
-              }
-            }
-            
-            if (mounted) {
-              setLoading(false);
-            }
+            setLoading(false);
           }
         );
         
         authSubscription = subscription;
 
-        // Check for existing session with retry logic
+        // Check for existing session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
-          // Clear corrupted session data
           localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
           sessionStorage.clear();
-        } else if (mounted) {
-          // Validate session isn't expired
-          if (session?.expires_at) {
-            const now = Math.floor(Date.now() / 1000);
-            if (now >= session.expires_at) {
-              console.warn('Session expired during initialization');
-              await supabase.auth.signOut();
-              return;
-            }
-          }
+        }
+        
+        if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
-          
-          // Auto-redirect for authenticated users on home page
-          if (session?.user && window.location.pathname === '/') {
-            setTimeout(() => {
-              if (mounted) {
-                const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
-                navigate(redirectPath, { replace: true });
-                localStorage.removeItem('subdomain_redirect');
-              }
-            }, 100);
-          }
+          setLoading(false);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
-      } finally {
         if (mounted) {
           setLoading(false);
         }
       }
     };
 
+    // Add timeout to prevent infinite loading
+    initTimeout = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn('Auth initialization timeout, setting loading to false');
+        setLoading(false);
+      }
+    }, 5000);
+
     initializeAuth();
 
     return () => {
       mounted = false;
+      clearTimeout(initTimeout);
       if (authSubscription) {
         authSubscription.unsubscribe();
       }
     };
-  }, [navigate]);
+  }, [navigate, loading]);
 
   const signOut = async () => {
     try {

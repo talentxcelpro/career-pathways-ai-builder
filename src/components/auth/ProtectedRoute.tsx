@@ -11,24 +11,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading, session } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while checking auth with timeout
+  // Show loading spinner while checking auth
   if (loading) {
-    // Add timeout to prevent infinite loading
-    React.useEffect(() => {
-      const timer = setTimeout(() => {
-        console.warn('Auth check taking too long, redirecting to login');
-        window.location.href = '/auth/login';
-      }, 10000); // 10 second timeout
-      
-      return () => clearTimeout(timer);
-    }, []);
-
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="text-muted-foreground">Checking authentication...</p>
-          <p className="text-xs text-muted-foreground/60">This should only take a moment</p>
         </div>
       </div>
     );
