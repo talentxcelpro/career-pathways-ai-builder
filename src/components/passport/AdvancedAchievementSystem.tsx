@@ -28,6 +28,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 
+interface LeaderboardUser {
+  user_id: string;
+  total_points: number;
+  profiles: {
+    full_name: string;
+    profile_picture_url?: string;
+  };
+}
+
 interface Achievement {
   id: string;
   user_id: string;
@@ -384,39 +393,45 @@ function AchievementCard({ achievement, shareUrl }: {
 }
 
 function AchievementLeaderboard() {
-  // Mock data for development
-  const mockLeaderboard = [
-    {
-      user_id: '1',
-      total_points: 2500,
-      profiles: {
-        full_name: 'Sarah Wilson',
-        profile_picture_url: '/placeholder.svg'
-      }
-    },
-    {
-      user_id: '2',
-      total_points: 2200,
-      profiles: {
-        full_name: 'Michael Chen',
-        profile_picture_url: '/placeholder.svg'
-      }
-    },
-    {
-      user_id: '3',
-      total_points: 1800,
-      profiles: {
-        full_name: 'Emma Rodriguez',
-        profile_picture_url: '/placeholder.svg'
-      }
-    }
-  ];
-
-  const { data: leaderboard = mockLeaderboard } = useQuery({
+  const { data: leaderboard = [] } = useQuery<LeaderboardUser[]>({
     queryKey: ['achievement-leaderboard'],
     queryFn: async () => {
-      // For development, return mock data
-      return mockLeaderboard;
+      try {
+        const { data, error } = await supabase
+          .from('career_achievements')
+          .select(`
+            user_id,
+            profiles!inner(full_name, profile_picture_url),
+            points_awarded
+          `)
+          .eq('is_public', true)
+          .order('points_awarded', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+
+        // Aggregate points by user
+        const userPoints = data?.reduce((acc: Record<string, LeaderboardUser>, achievement: any) => {
+          const userId = achievement.user_id;
+          if (!acc[userId]) {
+            acc[userId] = {
+              user_id: userId,
+              total_points: 0,
+              profiles: achievement.profiles
+            };
+          }
+          acc[userId].total_points += achievement.points_awarded || 0;
+          return acc;
+        }, {});
+
+        // Convert to array and sort by total points
+        return Object.values(userPoints || {})
+          .sort((a, b) => b.total_points - a.total_points)
+          .slice(0, 5);
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        return [];
+      }
     },
   });
 
