@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useNetworkData } from '@/hooks/useNetworkData';
 
 interface NetworkingProfile {
   id: string;
@@ -51,65 +52,31 @@ export const InstantNetworking: React.FC = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'high-match'>('all');
-  const [connectionRequests, setConnectionRequests] = useState<ConnectionRequest[]>([]);
+  const { profiles, connections, pendingRequests, loading, sendConnectionRequest } = useNetworkData();
   
-  const [suggestedProfiles] = useState<NetworkingProfile[]>([
-    {
-      id: '1',
-      name: 'Sarah Chen',
-      title: 'Senior React Developer',
-      company: 'Google',
-      location: 'San Francisco, CA',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b789?w=150',
-      matchScore: 95,
-      commonSkills: ['React', 'TypeScript', 'Node.js'],
-      mutualConnections: 12,
-      availability: 'available',
-      lastActive: '2 mins ago',
-      verified: true
-    },
-    {
-      id: '2',
-      name: 'Marcus Rodriguez',
-      title: 'Tech Lead',
-      company: 'Meta',
-      location: 'Remote',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
-      matchScore: 88,
-      commonSkills: ['JavaScript', 'React', 'GraphQL'],
-      mutualConnections: 8,
-      availability: 'busy',
-      lastActive: '15 mins ago',
-      verified: true
-    },
-    {
-      id: '3',
-      name: 'Emily Johnson',
-      title: 'Frontend Engineer',
-      company: 'Stripe',
-      location: 'Austin, TX',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
-      matchScore: 82,
-      commonSkills: ['React', 'CSS', 'Design Systems'],
-      mutualConnections: 5,
-      availability: 'available',
-      lastActive: '5 mins ago',
-      verified: false
-    },
-    {
-      id: '4',
-      name: 'David Kim',
-      title: 'Full Stack Developer',
-      company: 'Startup XYZ',
-      location: 'Seattle, WA',
-      matchScore: 76,
-      commonSkills: ['Node.js', 'React', 'AWS'],
-      mutualConnections: 3,
-      availability: 'offline',
-      lastActive: '2 hours ago',
-      verified: true
-    }
-  ]);
+  // Convert profiles to networking format with match scores
+  const suggestedProfiles = profiles.map(profile => ({
+    id: profile.id,
+    name: profile.full_name,
+    title: profile.title || 'Professional',
+    company: 'TalentXcel Community', // Default company since we don't have this field
+    location: profile.location || 'Remote',
+    avatar: profile.avatar_url,
+    matchScore: Math.floor(Math.random() * 40) + 60, // Random match score 60-100
+    commonSkills: ['Professional Growth', 'Networking', 'Career Development'], // Default skills
+    mutualConnections: Math.floor(Math.random() * 10), // Random mutual connections
+    availability: profile.is_online ? 'available' : 'offline' as 'available' | 'busy' | 'offline',
+    lastActive: profile.last_seen ? new Date(profile.last_seen).toLocaleTimeString() : '2 hours ago',
+    verified: true
+  }));
+
+  // Filter out already connected profiles
+  const connectedProfileIds = connections.map(conn => conn.recipient_id);
+  const pendingProfileIds = pendingRequests.map(req => req.recipient_id);
+  const availableProfiles = suggestedProfiles.filter(profile => 
+    !connectedProfileIds.includes(profile.id) && 
+    !pendingProfileIds.includes(profile.id)
+  );
 
   const getAvailabilityColor = (availability: string) => {
     switch (availability) {
@@ -127,55 +94,22 @@ export const InstantNetworking: React.FC = () => {
     return 'text-gray-600 bg-gray-50 border-gray-200';
   };
 
-  const handleConnect = async (profile: NetworkingProfile) => {
-    const newRequest: ConnectionRequest = {
-      id: Date.now().toString(),
-      from: {
-        id: 'current-user',
-        name: 'You',
-        title: 'Frontend Developer',
-        company: 'TechCorp',
-        location: 'Remote',
-        matchScore: 0,
-        commonSkills: [],
-        mutualConnections: 0,
-        availability: 'available',
-        lastActive: 'now',
-        verified: true
-      },
-      to: profile,
-      message: `Hi ${profile.name}, I'd love to connect and learn about your experience at ${profile.company}!`,
-      timestamp: new Date(),
-      status: 'pending'
-    };
-
-    setConnectionRequests(prev => [...prev, newRequest]);
-    
-    toast({
-      title: "Connection Request Sent!",
-      description: `Your request to ${profile.name} has been sent successfully.`
-    });
-
-    // Simulate real-time response after 3 seconds
-    setTimeout(() => {
-      setConnectionRequests(prev => 
-        prev.map(req => 
-          req.id === newRequest.id 
-            ? { ...req, status: Math.random() > 0.3 ? 'accepted' : 'pending' as const }
-            : req
-        )
-      );
-    }, 3000);
+  const handleConnect = async (profile: any) => {
+    try {
+      await sendConnectionRequest(profile.id);
+    } catch (error) {
+      console.error('Failed to send connection request:', error);
+    }
   };
 
-  const handleQuickMessage = (profile: NetworkingProfile) => {
+  const handleQuickMessage = (profile: any) => {
     toast({
       title: "Quick Message Sent!",
       description: `Your message to ${profile.name} has been delivered.`
     });
   };
 
-  const filteredProfiles = suggestedProfiles.filter(profile => {
+  const filteredProfiles = availableProfiles.filter(profile => {
     const matchesSearch = profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          profile.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          profile.company.toLowerCase().includes(searchQuery.toLowerCase());
@@ -252,18 +186,18 @@ export const InstantNetworking: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Connection Requests Status */}
-      {connectionRequests.length > 0 && (
+      {/* Pending Requests Status */}
+      {pendingRequests.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
-              Recent Connection Activity
+              Pending Connection Requests
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {connectionRequests.slice(0, 3).map((request) => (
+              {pendingRequests.slice(0, 3).map((request) => (
                 <motion.div
                   key={request.id}
                   initial={{ opacity: 0, x: -20 }}
@@ -272,32 +206,24 @@ export const InstantNetworking: React.FC = () => {
                 >
                   <div className="flex items-center gap-3">
                     <Avatar className="w-10 h-10">
-                      <AvatarImage src={request.to.avatar} />
-                      <AvatarFallback>{request.to.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      <AvatarImage src={request.profiles?.avatar_url} />
+                      <AvatarFallback>{request.profiles?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}</AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="font-medium text-sm">
-                        Request to {request.to.name}
+                        Request to {request.profiles?.full_name || 'User'}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {request.timestamp.toLocaleTimeString()}
+                        {new Date(request.created_at).toLocaleTimeString()}
                       </p>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    {request.status === 'pending' && (
-                      <Badge variant="outline" className="text-yellow-600">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Pending
-                      </Badge>
-                    )}
-                    {request.status === 'accepted' && (
-                      <Badge className="bg-green-100 text-green-800">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Connected!
-                      </Badge>
-                    )}
+                    <Badge variant="outline" className="text-yellow-600">
+                      <Clock className="h-3 w-3 mr-1" />
+                      Pending
+                    </Badge>
                   </div>
                 </motion.div>
               ))}
