@@ -99,30 +99,9 @@ export class CriticalCSSManager {
   static removeUnusedCSS(): void {
     if (typeof document === 'undefined') return;
 
-    // This is a simplified version - in production, you'd use tools like PurgeCSS
-    const unusedSelectors = [
-      '.unused-class',
-      '.debug-mode',
-      '.development-only'
-    ];
-
-    const styleSheets = Array.from(document.styleSheets);
-    styleSheets.forEach(sheet => {
-      try {
-        const rules = Array.from(sheet.cssRules || []);
-        rules.forEach((rule, index) => {
-          if (rule.type === CSSRule.STYLE_RULE) {
-            const styleRule = rule as CSSStyleRule;
-            if (unusedSelectors.some(selector => styleRule.selectorText?.includes(selector))) {
-              sheet.deleteRule(index);
-            }
-          }
-        });
-      } catch (e) {
-        // Cross-origin stylesheets can't be accessed
-        console.warn('Cannot access stylesheet:', e);
-      }
-    });
+    // Skip CSS optimization to avoid security errors with cross-origin stylesheets
+    // In production, use build-time tools like PurgeCSS instead
+    console.log('CSS optimization skipped (build-time optimization recommended)');
   }
 
   // Initialize all optimizations
