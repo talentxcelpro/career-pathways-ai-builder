@@ -399,7 +399,7 @@ const App = () => {
 
 // Initialize performance optimizations
 const AppWrapper = () => {
-  React.useEffect(() => {
+  useEffect(() => {
     // Apply color scheme from localStorage
     const savedColorScheme = localStorage.getItem('colorScheme');
     if (savedColorScheme) {
