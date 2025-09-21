@@ -4,10 +4,126 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Upload } from 'lucide-react';
+import { 
+  Download, Zap, Plane, FileText, Upload, Target, PenTool, 
+  Video, Globe, TrendingUp, BarChart3, Users, BookOpen, 
+  Sparkles, CheckCircle, ArrowRight, Star, Brain, Shield,
+  MessageSquare, Coffee, Calendar, Award
+} from 'lucide-react';
 import resumePreview from '@/assets/resume-preview-ai.png';
 
 const ResumeNew: React.FC = () => {
+  const tools = [
+    {
+      title: "Template Gallery",
+      description: "Choose from 50+ professional resume templates designed by experts",
+      badge: "🔥 Most Popular",
+      badgeColor: "bg-orange-500",
+      stat: "50+ Templates",
+      icon: <FileText className="h-5 w-5" />,
+      href: "/resume/templates"
+    },
+    {
+      title: "Upload & Parse",
+      description: "Upload your existing resume and let AI extract and improve the content",
+      badge: "AI Powered",
+      badgeColor: "bg-blue-500",
+      stat: "AI Powered",
+      icon: <Upload className="h-5 w-5" />,
+      href: "/resume/upload"
+    },
+    {
+      title: "AI Resume Builder",
+      description: "Build your resume from scratch with AI assistance and smart suggestions",
+      badge: "🔥 Most Popular",
+      badgeColor: "bg-orange-500",
+      stat: "Most Popular",
+      icon: <Sparkles className="h-5 w-5" />,
+      href: "/resume/builder"
+    },
+    {
+      title: "ATS Optimizer",
+      description: "Check and optimize your resume for Applicant Tracking Systems",
+      badge: "95% Pass Rate",
+      badgeColor: "bg-green-500",
+      stat: "95% Pass Rate",
+      icon: <Target className="h-5 w-5" />,
+      href: "/resume/ats-check"
+    },
+    {
+      title: "Cover Letter AI",
+      description: "Generate personalized cover letters that match your resume perfectly",
+      badge: "New",
+      badgeColor: "bg-purple-500",
+      stat: "AI Generated",
+      icon: <PenTool className="h-5 w-5" />,
+      href: "/cover-letter/builder"
+    },
+    {
+      title: "Interview Prep",
+      description: "Practice with AI-powered mock interviews tailored to your industry",
+      badge: "AI Trainer",
+      badgeColor: "bg-cyan-500",
+      stat: "Mock Interviews",
+      icon: <Video className="h-5 w-5" />,
+      href: "/interview/prep"
+    },
+    {
+      title: "LinkedIn Optimizer",
+      description: "Optimize your LinkedIn profile to attract recruiters and opportunities",
+      badge: "Pro Feature",
+      badgeColor: "bg-blue-600",
+      stat: "3x More Views",
+      icon: <Globe className="h-5 w-5" />,
+      href: "/linkedin/optimizer"
+    },
+    {
+      title: "Salary Negotiator",
+      description: "Get data-driven insights and scripts for successful salary negotiations",
+      badge: "Premium",
+      badgeColor: "bg-emerald-500",
+      stat: "15% Avg Increase",
+      icon: <TrendingUp className="h-5 w-5" />,
+      href: "/salary/negotiator"
+    },
+    {
+      title: "Career Analytics",
+      description: "Track your job search progress and get actionable insights",
+      badge: "Analytics",
+      badgeColor: "bg-indigo-500",
+      stat: "Success Metrics",
+      icon: <BarChart3 className="h-5 w-5" />,
+      href: "/career/analytics"
+    },
+    {
+      title: "Networking Assistant",
+      description: "Build professional relationships with AI-powered networking strategies",
+      badge: "Smart Connect",
+      badgeColor: "bg-pink-500",
+      stat: "Network Growth",
+      icon: <Users className="h-5 w-5" />,
+      href: "/networking/assistant"
+    },
+    {
+      title: "Skills Assessment",
+      description: "Identify skill gaps and get personalized learning recommendations",
+      badge: "Skill Builder",
+      badgeColor: "bg-amber-500",
+      stat: "Gap Analysis",
+      icon: <BookOpen className="h-5 w-5" />,
+      href: "/skills/assessment"
+    },
+    {
+      title: "Job Matcher AI",
+      description: "Get AI-powered job recommendations based on your profile and preferences",
+      badge: "Smart Match",
+      badgeColor: "bg-violet-500",
+      stat: "Perfect Matches",
+      icon: <Brain className="h-5 w-5" />,
+      href: "/jobs/ai-matcher"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       <Helmet>
@@ -89,7 +205,7 @@ const ResumeNew: React.FC = () => {
         </div>
 
         {/* Trust Indicators */}
-        <div className="text-center mt-16">
+        <div className="text-center mt-16 mb-20">
           <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -107,6 +223,52 @@ const ResumeNew: React.FC = () => {
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
               <span>Used by 100k+ Professionals</span>
             </div>
+          </div>
+        </div>
+
+        {/* Complete Career Toolkit - 12 Tools Grid */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Complete Career Toolkit
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Everything you need to accelerate your career journey with AI-powered tools
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {tools.map((tool, index) => (
+              <Link key={index} to={tool.href} className="group">
+                <Card className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border/50 hover:border-primary/20 bg-card/50 backdrop-blur-sm">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        {tool.icon}
+                      </div>
+                      <Badge className={`${tool.badgeColor} text-white text-xs px-2 py-1`}>
+                        {tool.badge}
+                      </Badge>
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {tool.title}
+                    </h3>
+                    
+                    <p className="text-sm text-muted-foreground mb-4 flex-grow leading-relaxed">
+                      {tool.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                      <span className="text-xs font-medium text-primary">
+                        {tool.stat}
+                      </span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
