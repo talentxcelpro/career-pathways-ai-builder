@@ -101,7 +101,11 @@ export const Navbar = () => {
   };
 
   const mainNavItems = [
-    { to: "/network", label: "Network" },
+    { to: "/network", label: "Feed" },
+    { to: "/dashboard", label: "Dashboard" },
+    { to: "/network", label: "My Network" },
+    { to: "/gamification", label: "Gamification" },
+    { to: "/refer-and-earn", label: "Refer & Earn" },
     { to: "/jobs", label: "Jobs" },
     { to: "/employer", label: "Employer" },
     { to: "/companies", label: "Companies" },
