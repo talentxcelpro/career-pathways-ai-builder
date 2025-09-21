@@ -33,7 +33,7 @@ export const useJobsOptimized = (
   mode: 'pagination' | 'infinite' = 'pagination'
 ): OptimizedJobsResult => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 200;
+  const pageSize = 20; // Better pagination experience with smaller page size
   const prefetchTimeoutRef = useRef<NodeJS.Timeout>();
 
   // For infinite scroll mode

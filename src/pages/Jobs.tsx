@@ -620,13 +620,34 @@ const Jobs = () => {
 
           {/* Jobs Content */}
           <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">All Job Opportunities</h2>
-                <p className="text-sm text-gray-600">Find your perfect match from {totalCount} active positions</p>
+                <p className="text-sm text-gray-600">Find your perfect match from {totalCount.toLocaleString()} active positions</p>
+                {totalPages > 1 && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Page {currentPage} of {totalPages} • Showing {regularJobs.length} jobs
+                  </p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{totalCount} jobs found</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Sort by:</span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-40 h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="posted_at">Latest Jobs</SelectItem>
+                      <SelectItem value="salary_max">Highest Salary</SelectItem>
+                      <SelectItem value="views_count">Most Viewed</SelectItem>
+                      <SelectItem value="applications_count">Trending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Badge variant="secondary" className="text-sm font-medium">
+                  {totalCount.toLocaleString()} jobs
+                </Badge>
               </div>
             </div>
 
@@ -673,30 +694,79 @@ const Jobs = () => {
           </div>
         </div>
 
-        {/* Infinite Scroll Load More */}
-        {hasMore && !isLoading && (
-          <div className="flex justify-center mt-8">
-            <Button 
-              variant="outline" 
-              size="lg"
-              onClick={() => goToPage(currentPage + 1)}
-              className="flex items-center gap-2"
-            >
-              <TrendingUp className="h-4 w-4" />
-              Load More Jobs
-            </Button>
+        {/* Pagination - Always Show When Multiple Pages */}
+        {totalPages > 1 && (
+          <div className="bg-white border-t border-gray-200 px-4 py-6 sm:px-6 mt-8">
+            <div className="flex justify-between items-center">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <Button
+                  variant="outline"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                  className="text-sm"
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                  className="text-sm"
+                >
+                  Next
+                </Button>
+              </div>
+              
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Showing{' '}
+                    <span className="font-medium">{((currentPage - 1) * 20) + 1}</span>{' '}
+                    to{' '}
+                    <span className="font-medium">
+                      {Math.min(currentPage * 20, totalCount)}
+                    </span>{' '}
+                    of{' '}
+                    <span className="font-medium">{totalCount}</span>{' '}
+                    jobs
+                  </p>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <SocialPagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalCount={totalCount}
+                    onPageChange={goToPage}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Pagination Fallback */}
-        {totalPages > 1 && !hasMore && (
-          <div className="flex justify-center mt-8">
-            <SocialPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              onPageChange={goToPage}
-            />
+        {/* Load More for Additional Results */}
+        {hasMore && totalPages > 1 && (
+          <div className="flex justify-center mt-4 mb-8">
+            <Button 
+              variant="secondary" 
+              size="sm"
+              onClick={() => goToPage(currentPage + 1)}
+              className="flex items-center gap-2 text-sm"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary"></div>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="h-4 w-4" />
+                  Load More Jobs
+                </>
+              )}
+            </Button>
           </div>
         )}
       </div>
