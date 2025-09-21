@@ -53,13 +53,32 @@ export const optimizeImages = () => {
   });
 };
 
-// Initialize all optimizations
+// Initialize all optimizations with error handling
 export const init = () => {
-  instantOptimizations();
-  enableInstantNavigation();
-  
-  // Defer non-critical optimizations
-  requestIdleCallback(() => {
-    optimizeImages();
-  });
+  try {
+    instantOptimizations();
+    enableInstantNavigation();
+    
+    // Defer non-critical optimizations with fallback
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => {
+        try {
+          optimizeImages();
+        } catch (error) {
+          console.warn('Image optimization failed:', error);
+        }
+      });
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(() => {
+        try {
+          optimizeImages();
+        } catch (error) {
+          console.warn('Image optimization failed:', error);
+        }
+      }, 100);
+    }
+  } catch (error) {
+    console.warn('Performance optimization failed:', error);
+  }
 };

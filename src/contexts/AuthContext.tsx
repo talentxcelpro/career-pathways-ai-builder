@@ -53,134 +53,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let mounted = true;
+    let authSubscription: any = null;
 
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!mounted) return;
-
-        console.log('Auth state changed:', event, session?.user?.email);
-        console.log('Current URL:', window.location.href);
-        
-        // Synchronous state updates only
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Handle different auth events
-        if (event === 'SIGNED_OUT') {
-          console.log('User signed out, clearing data');
-          // Clear any cached data immediately
-          localStorage.clear();
-          sessionStorage.clear();
-          // Force redirect to index page after logout
-          setTimeout(() => {
-            if (mounted && window.location.pathname !== '/') {
-              console.log('Redirecting to home after signout');
-              navigate('/', { replace: true });
-            }
-          }, 0);
-        } else if (event === 'SIGNED_IN' && session?.user) {
-          console.log('User signed in, session:', session);
-          // Check if we're on auth pages or home and redirect appropriately
-          setTimeout(() => {
-            if (mounted) {
-              const currentPath = window.location.pathname;
-              console.log('Current path after signin:', currentPath);
-              
-              // Get the intended subdomain path from localStorage or URL params
-              const subdomainPath = localStorage.getItem('subdomain_redirect') || 
-                                   new URLSearchParams(window.location.search).get('redirect') ||
-                                   '';
-              
-              // If on auth pages, redirect to onboarding first, then dashboard
-              if (currentPath.startsWith('/auth')) {
-                const onboardingUrl = subdomainPath 
-                  ? `/onboarding?flow=resume&type=candidate&redirect=${encodeURIComponent(subdomainPath)}`
-                  : '/onboarding?flow=resume&type=candidate';
-                navigate(onboardingUrl, { replace: true });
-              } else if (currentPath === '/') {
-                // Use subdomain path if available, otherwise default to network
-                const redirectPath = subdomainPath || '/network';
-                navigate(redirectPath, { replace: true });
-                
-                // Clear the stored redirect
-                localStorage.removeItem('subdomain_redirect');
-              }
-            }
-          }, 100); // Slightly longer delay to ensure navigation works
-        } else if (event === 'TOKEN_REFRESHED') {
-          console.log('Token refreshed successfully');
-        }
-        
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    );
-
-    // Check for existing session with better error handling
+    // Initialize auth session and listener
     const initializeAuth = async () => {
       try {
-        console.log('Initializing auth...');
+        // Set up auth state listener first
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          (event, session) => {
+            if (!mounted) return;
+
+            // Minimal logging to reduce console spam
+            if (event === 'SIGNED_OUT' || event === 'SIGNED_IN') {
+              console.log('Auth:', event, !!session);
+            }
+            
+            // Synchronous state updates only
+            setSession(session);
+            setUser(session?.user ?? null);
+            
+            // Handle auth events with reduced redirects
+            if (event === 'SIGNED_OUT') {
+              // Only clear auth-related storage, not all storage
+              localStorage.removeItem('supabase.auth.token');
+              localStorage.removeItem('subdomain_redirect');
+              
+              // Only redirect if not already on home page
+              if (window.location.pathname !== '/') {
+                setTimeout(() => {
+                  if (mounted) {
+                    navigate('/', { replace: true });
+                  }
+                }, 100);
+              }
+            } else if (event === 'SIGNED_IN' && session?.user) {
+              // Reduced auto-redirect logic
+              const currentPath = window.location.pathname;
+              
+              if (currentPath.startsWith('/auth') || currentPath === '/') {
+                setTimeout(() => {
+                  if (mounted) {
+                    const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
+                    navigate(redirectPath, { replace: true });
+                    localStorage.removeItem('subdomain_redirect');
+                  }
+                }, 150);
+              }
+            }
+            
+            if (mounted) {
+              setLoading(false);
+            }
+          }
+        );
+        
+        authSubscription = subscription;
+
+        // Check for existing session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
-          // Don't clear session on network errors
-          if (!error.message.includes('network') && !error.message.includes('timeout')) {
-            localStorage.clear();
-            sessionStorage.clear();
-          }
-          if (mounted) {
-            setSession(null);
-            setUser(null);
-          }
         } else if (mounted) {
-          console.log('Session found:', !!session, session?.user?.email);
           setSession(session);
           setUser(session?.user ?? null);
           
-          // Validate session if it exists
-          if (session) {
-            const now = Math.floor(Date.now() / 1000);
-            const expiresAt = session.expires_at;
-            
-            if (expiresAt && now >= expiresAt) {
-              console.log('Session expired, clearing...');
-              await supabase.auth.signOut();
-              return;
-            }
-          }
-          
-          // Auto-redirect logic with timeout to prevent blocking
-          if (session?.user) {
-            const currentPath = window.location.pathname;
-            console.log('Auto-redirect check:', currentPath);
-            
-            if (currentPath === '/') {
-              setTimeout(() => {
-                if (mounted) {
-                  // Check for stored subdomain redirect
-                  const subdomainPath = localStorage.getItem('subdomain_redirect');
-                  const redirectPath = subdomainPath || '/network';
-                  console.log('Auto-redirecting to', redirectPath);
-                  navigate(redirectPath, { replace: true });
-                  
-                  // Clear the stored redirect
-                  if (subdomainPath) {
-                    localStorage.removeItem('subdomain_redirect');
-                  }
-                }
-              }, 100);
-            }
+          // Auto-redirect for authenticated users on home page
+          if (session?.user && window.location.pathname === '/') {
+            setTimeout(() => {
+              if (mounted) {
+                const redirectPath = localStorage.getItem('subdomain_redirect') || '/network';
+                navigate(redirectPath, { replace: true });
+                localStorage.removeItem('subdomain_redirect');
+              }
+            }, 100);
           }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
-        if (mounted) {
-          setSession(null);
-          setUser(null);
-        }
       } finally {
         if (mounted) {
           setLoading(false);
@@ -192,7 +142,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
   }, [navigate]);
 
