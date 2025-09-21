@@ -7464,6 +7464,63 @@ export type Database = {
         }
         Relationships: []
       }
+      company_hiring_metrics: {
+        Row: {
+          avg_salary_offered: number | null
+          avg_time_to_hire_days: number | null
+          candidates_hired: number | null
+          candidates_interviewed: number | null
+          candidates_screened: number | null
+          company_id: string
+          created_at: string | null
+          cultural_fit_score: number | null
+          hiring_cost: number | null
+          hiring_request_id: string | null
+          id: string
+          period_end: string
+          period_start: string
+          satisfaction_rating: number | null
+          skill_match_accuracy: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_salary_offered?: number | null
+          avg_time_to_hire_days?: number | null
+          candidates_hired?: number | null
+          candidates_interviewed?: number | null
+          candidates_screened?: number | null
+          company_id: string
+          created_at?: string | null
+          cultural_fit_score?: number | null
+          hiring_cost?: number | null
+          hiring_request_id?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          satisfaction_rating?: number | null
+          skill_match_accuracy?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_salary_offered?: number | null
+          avg_time_to_hire_days?: number | null
+          candidates_hired?: number | null
+          candidates_interviewed?: number | null
+          candidates_screened?: number | null
+          company_id?: string
+          created_at?: string | null
+          cultural_fit_score?: number | null
+          hiring_cost?: number | null
+          hiring_request_id?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          satisfaction_rating?: number | null
+          skill_match_accuracy?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       company_integrations: {
         Row: {
           api_credentials: Json | null
@@ -15522,6 +15579,51 @@ export type Database = {
           },
         ]
       }
+      learning_progress_analytics: {
+        Row: {
+          completion_rate: number | null
+          course_id: string | null
+          created_at: string | null
+          engagement_score: number | null
+          id: string
+          learning_velocity: number | null
+          module_id: string | null
+          quiz_score: number | null
+          recorded_at: string | null
+          struggle_points: Json | null
+          time_spent_minutes: number | null
+          user_id: string
+        }
+        Insert: {
+          completion_rate?: number | null
+          course_id?: string | null
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          learning_velocity?: number | null
+          module_id?: string | null
+          quiz_score?: number | null
+          recorded_at?: string | null
+          struggle_points?: Json | null
+          time_spent_minutes?: number | null
+          user_id: string
+        }
+        Update: {
+          completion_rate?: number | null
+          course_id?: string | null
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          learning_velocity?: number | null
+          module_id?: string | null
+          quiz_score?: number | null
+          recorded_at?: string | null
+          struggle_points?: Json | null
+          time_spent_minutes?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           content_id: string
@@ -17453,6 +17555,51 @@ export type Database = {
           responded_at?: string | null
           status?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      placement_success_metrics: {
+        Row: {
+          company_id: string | null
+          course_id: string | null
+          created_at: string | null
+          feedback_rating: number | null
+          id: string
+          placement_date: string
+          position_title: string
+          salary_offered: number | null
+          success_score: number | null
+          time_to_placement_days: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_id?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          feedback_rating?: number | null
+          id?: string
+          placement_date: string
+          position_title: string
+          salary_offered?: number | null
+          success_score?: number | null
+          time_to_placement_days?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_id?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          feedback_rating?: number | null
+          id?: string
+          placement_date?: string
+          position_title?: string
+          salary_offered?: number | null
+          success_score?: number | null
+          time_to_placement_days?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -22083,6 +22230,48 @@ export type Database = {
         }
         Relationships: []
       }
+      roi_dashboard_metrics: {
+        Row: {
+          calculation_date: string | null
+          company_id: string | null
+          cost_investment: number | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          revenue_generated: number | null
+          time_period: string
+          user_id: string | null
+        }
+        Insert: {
+          calculation_date?: string | null
+          company_id?: string | null
+          cost_investment?: number | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          revenue_generated?: number | null
+          time_period: string
+          user_id?: string | null
+        }
+        Update: {
+          calculation_date?: string | null
+          company_id?: string | null
+          cost_investment?: number | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          revenue_generated?: number | null
+          time_period?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           created_at: string | null
@@ -25078,6 +25267,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      skill_progression_analytics: {
+        Row: {
+          assessment_scores: Json | null
+          created_at: string | null
+          current_level: number | null
+          id: string
+          initial_level: number | null
+          learning_path: string | null
+          milestone_achieved: boolean | null
+          progression_rate: number | null
+          skill_name: string
+          target_level: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assessment_scores?: Json | null
+          created_at?: string | null
+          current_level?: number | null
+          id?: string
+          initial_level?: number | null
+          learning_path?: string | null
+          milestone_achieved?: boolean | null
+          progression_rate?: number | null
+          skill_name: string
+          target_level?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assessment_scores?: Json | null
+          created_at?: string | null
+          current_level?: number | null
+          id?: string
+          initial_level?: number | null
+          learning_path?: string | null
+          milestone_achieved?: boolean | null
+          progression_rate?: number | null
+          skill_name?: string
+          target_level?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       skill_recommendations: {
         Row: {
@@ -28151,6 +28385,45 @@ export type Database = {
           },
         ]
       }
+      user_engagement_analytics: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          device_type: string | null
+          duration_seconds: number | null
+          id: string
+          interaction_data: Json | null
+          page_path: string
+          session_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          device_type?: string | null
+          duration_seconds?: number | null
+          id?: string
+          interaction_data?: Json | null
+          page_path: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          device_type?: string | null
+          duration_seconds?: number | null
+          id?: string
+          interaction_data?: Json | null
+          page_path?: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_engagement_metrics: {
         Row: {
           content_quality_avg: number | null
@@ -30267,6 +30540,10 @@ export type Database = {
           skill_gaps: Json
         }[]
       }
+      calculate_placement_success_rate: {
+        Args: { company_uuid: string }
+        Returns: number
+      }
       calculate_profile_completion_percentage: {
         Args: {
           profile_record: Database["public"]["Tables"]["profiles"]["Row"]
@@ -31374,6 +31651,16 @@ export type Database = {
           user_uuid: string
         }
         Returns: undefined
+      }
+      track_user_engagement: {
+        Args: {
+          p_action_type: string
+          p_duration_seconds?: number
+          p_interaction_data?: Json
+          p_page_path: string
+          p_user_id: string
+        }
+        Returns: string
       }
       track_user_journey: {
         Args: {
