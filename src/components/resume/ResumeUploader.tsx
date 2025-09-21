@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ExtractionResult } from '@/types/resume';
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import * as pdfjsLib from 'pdfjs-dist';
 import { useAIService } from '@/hooks/useAIService';
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';
@@ -84,6 +84,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
   const parseDOCX = async (file: File): Promise<string> => {
     try {
+      const mammoth = await import('mammoth');
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       return result.value;

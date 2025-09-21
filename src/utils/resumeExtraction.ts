@@ -1,6 +1,6 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import type { Resume, ResumePersonalInfo, ResumeExperience, ResumeEducation, ResumeSkill, ExtractionResult } from '@/types/resume';
 
 // Set the worker source for PDF.js
@@ -76,6 +76,7 @@ export class ResumeExtractor {
   }
 
   private async extractTextFromDOCX(file: File): Promise<string> {
+    const mammoth = await import('mammoth');
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });
     return result.value;

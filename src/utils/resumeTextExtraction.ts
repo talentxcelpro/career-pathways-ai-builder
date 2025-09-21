@@ -1,4 +1,4 @@
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 
 /**
  * Shared utility for extracting text from resume files (PDF/DOC/DOCX)
@@ -39,6 +39,7 @@ export const extractTextFromFile = async (file: File): Promise<string> => {
   try {
     // Handle Word documents
     if (type.includes('word') || type.includes('doc')) {
+      const mammoth = await import('mammoth');
       const arrayBuffer = await file.arrayBuffer();
       const { value } = await mammoth.extractRawText({ arrayBuffer });
       return value || '';

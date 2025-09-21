@@ -15,7 +15,7 @@ import { templateList } from "./templates/index";
 import { toast } from 'sonner';
 
 // Import file processing libraries
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import * as pdfjsLib from 'pdfjs-dist';
 import { configurePDFWorker } from '@/utils/pdfWorkerConfig';
 import { EnhancedResumeProcessor } from '@/services/enhancedResumeProcessor';

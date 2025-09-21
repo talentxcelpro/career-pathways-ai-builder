@@ -1,6 +1,6 @@
 import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent';
 import { supabase } from "@/integrations/supabase/client";
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import * as pdfjsLib from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
 
@@ -223,6 +223,7 @@ export class EnhancedResumeExtractor {
   private async extractFromDOCX(file: File): Promise<string> {
     console.log('📄 Extracting from DOCX...');
     
+    const mammoth = await import('mammoth');
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });
     return result.value;

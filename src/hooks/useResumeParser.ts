@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
 // pdfjs-dist ESM build
 // @ts-ignore - pdfjs typing path
@@ -199,6 +199,7 @@ const legacyToEditor = (legacy: ResumeJSON): EditorResume => {
 
 export const useResumeParser = () => {
   const parseDocx = useCallback(async (file: File): Promise<ResumeJSON> => {
+    const mammoth = await import('mammoth');
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });
     return naiveParse(result.value || '');

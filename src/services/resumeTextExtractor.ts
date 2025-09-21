@@ -4,7 +4,7 @@
  */
 
 import * as pdfjsLib from 'pdfjs-dist';
-import * as mammoth from 'mammoth';
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import Tesseract from 'tesseract.js';
 import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
 
@@ -154,6 +154,7 @@ export class ResumeTextExtractor {
   private async extractFromDOCX(file: File): Promise<string> {
     try {
       console.log('Starting enhanced DOCX extraction with mammoth...');
+      const mammoth = await import('mammoth');
       const arrayBuffer = await file.arrayBuffer();
       
       // Extract both raw text and structured content
