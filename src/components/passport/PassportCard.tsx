@@ -50,12 +50,12 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
   }, [userProfile?.talentxcel_id, currentUser]);
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white border-0 overflow-hidden">
+    <Card className="w-full max-w-sm sm:max-w-md mx-auto bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white border-0 overflow-hidden animate-scale-in">
       {/* Header */}
-      <div className="p-6 pb-4">
-        <div className="flex justify-between items-start mb-4">
+      <div className="p-4 sm:p-6 pb-3 sm:pb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0 mb-4">
           <div>
-            <h2 className="text-xl font-bold text-orange-400 mb-1">
+            <h2 className="text-lg sm:text-xl font-bold text-orange-400 mb-1">
               TalentXcel Career Passport
             </h2>
             <div className="flex items-center text-red-400 text-sm">
@@ -63,16 +63,16 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
               Career Builder
             </div>
           </div>
-          <div className="text-right text-sm">
+          <div className="text-left sm:text-right text-sm">
             <div className="text-gray-300">Unique ID</div>
-            <div className="text-orange-400 font-mono">{uniqueId}</div>
+            <div className="text-orange-400 font-mono text-xs sm:text-sm">{uniqueId}</div>
           </div>
         </div>
 
         {/* User Info Section */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-4 sm:mb-6">
+          <div className="flex items-center space-x-3 flex-1">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative flex-shrink-0">
               {userProfile?.profile_picture_url || userProfile?.profile_photo_url ? (
                 <img 
                   src={userProfile.profile_picture_url || userProfile.profile_photo_url} 
@@ -81,52 +81,52 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
                 />
               ) : (
-                <span className="text-2xl font-bold text-white">
+                <span className="text-lg sm:text-2xl font-bold text-white">
                   {userProfile?.full_name?.charAt(0) || 'U'}
                 </span>
               )}
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-purple-600 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">✓</span>
               </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-white">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base sm:text-lg font-semibold text-white truncate">
                 {userProfile?.full_name || 'TalentXcel Pro'}
               </h3>
-              <p className="text-orange-300 text-sm">
+              <p className="text-orange-300 text-xs sm:text-sm line-clamp-1">
                 {userProfile?.headline || 'Transforming Businesses and Lives'}
               </p>
-              <div className="flex items-center text-yellow-300 text-sm">
+              <div className="flex items-center text-yellow-300 text-xs sm:text-sm">
                 <span className="mr-1">🇮🇳</span>
-                {userProfile?.location || 'India'}
+                <span className="truncate">{userProfile?.location || 'India'}</span>
               </div>
             </div>
           </div>
-          <div className="bg-white p-2 rounded">
-            <QRCodeSVG value={profileUrl} size={64} />
+          <div className="bg-white p-2 rounded self-center sm:self-start flex-shrink-0">
+            <QRCodeSVG value={profileUrl} size={48} className="sm:w-16 sm:h-16" />
           </div>
         </div>
 
         {/* Career Readiness Score */}
-        <div className="text-center mb-6">
-          <div className="text-4xl font-bold text-orange-400 mb-1">
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="text-3xl sm:text-4xl font-bold text-orange-400 mb-1">
             {insights.career_readiness_score}%
           </div>
           <div className="text-gray-300 text-sm">Career Ready</div>
         </div>
 
         {/* Market Metrics */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-gray-300 text-sm mb-1">Market Rank</div>
-            <div className="text-white font-semibold">
+            <div className="text-gray-300 text-xs sm:text-sm mb-1">Market Rank</div>
+            <div className="text-white font-semibold text-sm sm:text-base">
               {insights.industry_percentile > 0 ? `${insights.industry_percentile}th percentile` : 'Not ranked'}
             </div>
             <div className="text-gray-400 text-xs">vs peers</div>
           </div>
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-gray-300 text-sm mb-1">Competitiveness</div>
-            <div className="text-white font-semibold">
+            <div className="text-gray-300 text-xs sm:text-sm mb-1">Competitiveness</div>
+            <div className="text-white font-semibold text-sm sm:text-base">
               {insights.market_competitiveness_score}%
             </div>
             <div className="text-gray-400 text-xs">Score</div>
@@ -134,27 +134,27 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
         </div>
 
         {/* Activity Metrics */}
-        <div className="grid grid-cols-4 gap-2 mb-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-400">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
+          <div className="text-center p-2 sm:p-0">
+            <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.resumes_count}
             </div>
             <div className="text-gray-300 text-xs">Resumes</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-400">
+          <div className="text-center p-2 sm:p-0">
+            <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.jobs_applied_count}
             </div>
             <div className="text-gray-300 text-xs">Jobs Applied</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-400">
+          <div className="text-center p-2 sm:p-0">
+            <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.certifications_count}
             </div>
             <div className="text-gray-300 text-xs">Certifications</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-400">
+          <div className="text-center p-2 sm:p-0">
+            <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.connections_count}
             </div>
             <div className="text-gray-300 text-xs">Connections</div>

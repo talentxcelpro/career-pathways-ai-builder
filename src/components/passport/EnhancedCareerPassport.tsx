@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { MobileCareerPassportSkeleton } from '@/components/ui/loading-skeleton';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useRealTimeAchievements } from '@/hooks/useRealTimeAchievements';
 import { PassportCard } from './PassportCard';
@@ -89,7 +90,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
   }, [metrics, isOwner, triggerAchievementCheck]);
 
   if (isLoading) {
-    return <CareerPassportSkeleton />;
+    return <MobileCareerPassportSkeleton />;
   }
 
   if (error) {
@@ -183,7 +184,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
 
               {/* Real-time Metrics Grid */}
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-fade-in">
                     <MetricCard
                       icon={<FileText className="w-4 h-4" />}
                       label="Resumes"
@@ -215,7 +216,7 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
                 </div>
 
                 {/* AI-Powered Scores */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
                     <ScoreCard
                       title="Career Readiness"
                       score={viewInsights.career_readiness_score}
@@ -310,25 +311,29 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
         />
 
         {/* Enhanced Features Tabs */}
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden animate-scale-in">
           <Tabs defaultValue="achievements" className="w-full">
             <div className="border-b">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="achievements" className="flex items-center gap-2 text-xs">
+              <TabsList className="grid w-full grid-cols-4 h-auto p-1">
+                <TabsTrigger value="achievements" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
                   <Trophy className="w-3 h-3" />
-                  Achievements
+                  <span className="hidden sm:inline">Achievements</span>
+                  <span className="sm:hidden">Awards</span>
                 </TabsTrigger>
-                <TabsTrigger value="analytics" className="flex items-center gap-2 text-xs">
+                <TabsTrigger value="analytics" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
                   <BarChart3 className="w-3 h-3" />
-                  Analytics
+                  <span className="hidden sm:inline">Analytics</span>
+                  <span className="sm:hidden">Stats</span>
                 </TabsTrigger>
-                <TabsTrigger value="ai-insights" className="flex items-center gap-2 text-xs">
+                <TabsTrigger value="ai-insights" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
                   <Brain className="w-3 h-3" />
-                  AI Insights
+                  <span className="hidden sm:inline">AI Insights</span>
+                  <span className="sm:hidden">AI</span>
                 </TabsTrigger>
-                <TabsTrigger value="social" className="flex items-center gap-2 text-xs">
+                <TabsTrigger value="social" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs p-2 sm:p-3">
                   <Share2 className="w-3 h-3" />
-                  Social
+                  <span className="hidden sm:inline">Social</span>
+                  <span className="sm:hidden">Share</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -391,15 +396,15 @@ function MetricCard({ icon, label, value, color, onClick }: {
 
   return (
     <Card 
-      className={`cursor-pointer transition-all hover:shadow-md ${onClick ? 'hover:scale-105' : ''}`}
+      className={`cursor-pointer transition-all hover:shadow-md hover-scale ${onClick ? 'hover:scale-105' : ''} animate-fade-in`}
       onClick={onClick}
     >
-      <CardContent className="p-3 text-center">
-        <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full mb-1 ${colorClasses[color as keyof typeof colorClasses]}`}>
+      <CardContent className="p-2 sm:p-3 text-center">
+        <div className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full mb-1 ${colorClasses[color as keyof typeof colorClasses]}`}>
           {icon}
         </div>
-        <div className="text-xl font-bold">{value}</div>
-        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="text-lg sm:text-xl font-bold text-foreground mb-1">{value}</div>
+        <div className="text-xs text-muted-foreground truncate">{label}</div>
       </CardContent>
     </Card>
   );
@@ -411,20 +416,26 @@ function ScoreCard({ title, score, description, icon }: {
   description: string;
   icon: React.ReactNode;
 }) {
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center">
+    <Card className="transition-all hover:shadow-md hover-scale animate-fade-in">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center space-x-2">
             {icon}
-            <h3 className="text-sm font-semibold ml-2">{title}</h3>
+            <h3 className="font-medium text-sm">{title}</h3>
           </div>
-          <Badge variant="secondary" className="text-sm px-2 py-1">
+          <div className={`text-xl sm:text-2xl font-bold ${getScoreColor(score)}`}>
             {score}%
-          </Badge>
+          </div>
         </div>
-        <Progress value={score} className="mb-2 h-2" />
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p className="text-xs text-muted-foreground line-clamp-2">{description}</p>
+        <Progress value={score} className="h-2 mt-2" />
       </CardContent>
     </Card>
   );

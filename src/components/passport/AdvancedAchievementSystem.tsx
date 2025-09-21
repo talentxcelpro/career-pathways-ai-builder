@@ -410,8 +410,11 @@ function AchievementLeaderboard() {
 
         if (error) throw error;
 
+        // Return empty array if no data
+        if (!data || data.length === 0) return [];
+
         // Aggregate points by user
-        const userPoints = data?.reduce((acc: Record<string, LeaderboardUser>, achievement: any) => {
+        const userPoints = data.reduce((acc: Record<string, LeaderboardUser>, achievement: any) => {
           const userId = achievement.user_id;
           if (!acc[userId]) {
             acc[userId] = {
