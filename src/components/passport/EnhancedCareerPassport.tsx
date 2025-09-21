@@ -66,17 +66,17 @@ export function EnhancedCareerPassport({ userId, userProfile, isOwner = true, pu
   const viewInsights = (!isOwner && publicPassport?.passport) ? {
     career_readiness_score: publicPassport.passport.career_readiness_score || 0,
     market_competitiveness_score: publicPassport.passport.market_competitiveness_score || 0,
-    industry_percentile: 0,
+    industry_percentile: publicPassport.passport.industry_percentile || 0,
     strengths: [],
     improvement_areas: [],
     next_actions: [],
     ai_recommendations: [],
   } : {
-    career_readiness_score: 0,
-    market_competitiveness_score: 0,
-    industry_percentile: 0,
-    strengths: [],
-    improvement_areas: [],
+    career_readiness_score: viewMetrics?.profileCompletion || 0,
+    market_competitiveness_score: Math.min((viewMetrics?.jobApplications || 0) * 10 + (viewMetrics?.connections || 0) * 5, 100),
+    industry_percentile: Math.min((viewMetrics?.skillsAdded || 0) * 20 + (viewMetrics?.coursesCompleted || 0) * 15, 95),
+    strengths: viewMetrics?.profileCompletion > 80 ? ['Complete Profile', 'Active User'] : [],
+    improvement_areas: viewMetrics?.profileCompletion < 50 ? ['Complete Profile'] : [],
     next_actions: [],
     ai_recommendations: [],
   };
