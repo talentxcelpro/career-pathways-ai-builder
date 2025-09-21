@@ -209,5 +209,5 @@ export const initAppleOptimizations = () => {
   }
 };
 
-// Auto-initialize
-initAppleOptimizations();
+// Export for manual initialization  
+// initAppleOptimizations();

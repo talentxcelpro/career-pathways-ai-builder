@@ -264,23 +264,4 @@
   }
 }
 
-/* Apple-style font weights */
-.font-apple-light {
-  font-weight: 300;
-}
-
-.font-apple-regular {
-  font-weight: 400;
-}
-
-.font-apple-medium {
-  font-weight: 500;
-}
-
-.font-apple-semibold {
-  font-weight: 600;
-}
-
-.font-apple-bold {
-  font-weight: 700;
-}
+/* Apple-style font weights - removed to avoid conflicts with index.css */

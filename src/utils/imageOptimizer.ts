@@ -142,5 +142,5 @@ export class ImageOptimizer {
   }
 }
 
-// Auto-initialize
-ImageOptimizer.init();
+// Export for manual initialization
+// ImageOptimizer.init();

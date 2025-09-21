@@ -145,5 +145,5 @@ export const initApplePerformance = () => {
   }
 };
 
-// Auto-initialize
-initApplePerformance();
+// Export for manual initialization
+// initApplePerformance();

@@ -151,5 +151,5 @@ export const initInstantLoader = () => {
   }
 };
 
-// Auto-initialize
-initInstantLoader();
+// Export for manual initialization
+// initInstantLoader();
