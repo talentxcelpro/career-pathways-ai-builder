@@ -4,6 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { NewsFeed } from "@/components/news/NewsFeed";
+import { EnhancedNewsFeed } from "@/components/news/EnhancedNewsFeed";
+import { LiveEventsFeed } from "@/components/network/LiveEventsFeed";
 import { ConnectionSuggestions } from "@/components/network/ConnectionSuggestions";
 import { NetworkStats } from "@/components/network/NetworkStats";
 import { SmartConnectAI } from "@/components/network/SmartConnectAI";
@@ -239,7 +241,19 @@ const Network = () => {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               }>
-                <NewsFeed />
+                <EnhancedNewsFeed showHero={true} />
+              </React.Suspense>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="live-events" className="mt-0">
+            <div className="space-y-6 text-gray-900">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <LiveEventsFeed />
               </React.Suspense>
             </div>
           </TabsContent>
