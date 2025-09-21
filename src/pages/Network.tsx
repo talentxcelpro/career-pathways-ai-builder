@@ -116,46 +116,46 @@ const Network = () => {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8">
-            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+          <TabsList className="flex w-full bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8 overflow-x-auto">
+            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline">Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <Sparkles className="w-3 h-3" />
               <span className="hidden sm:inline">Smart Feed</span>
             </TabsTrigger>
             <button
               onClick={() => navigate('/gamification')}
-              className="flex items-center gap-1 bg-transparent hover:bg-primary/10 rounded-sm transition-all text-xs py-1 px-1.5 text-foreground hover:text-primary"
+              className="flex items-center gap-1 bg-transparent hover:bg-primary/10 rounded-sm transition-all text-xs py-1 px-2 text-foreground hover:text-primary whitespace-nowrap"
             >
               <Trophy className="w-3 h-3" />
               <span className="hidden sm:inline">Gamification</span>
             </button>
             <button
               onClick={() => navigate('/refer-and-earn')}
-              className="flex items-center gap-1 bg-transparent hover:bg-primary/10 rounded-sm transition-all text-xs py-1 px-1.5 text-foreground hover:text-primary"
+              className="flex items-center gap-1 bg-transparent hover:bg-primary/10 rounded-sm transition-all text-xs py-1 px-2 text-foreground hover:text-primary whitespace-nowrap"
             >
               <Gift className="w-3 h-3" />
               <span className="hidden sm:inline">Refer & Earn</span>
             </button>
-            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <Users className="w-3 h-3" />
               <span className="hidden sm:inline">Connections</span>
             </TabsTrigger>
-            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <UserPlus className="w-3 h-3" />
               <span className="hidden sm:inline">Discover</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <TrendingUp className="w-3 h-3" />
               <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <Sparkles className="w-3 h-3" />
               <span className="hidden sm:inline">AI Connect</span>
             </TabsTrigger>
-            <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-1.5">
+            <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
               <Newspaper className="w-3 h-3" />
               <span className="hidden sm:inline">News</span>
             </TabsTrigger>
