@@ -89,9 +89,9 @@ const Learning = () => {
         
         <div className="relative px-8 py-16 lg:px-16 lg:py-24">
           <div className="max-w-4xl mx-auto text-center text-white">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-apple px-4 py-2 rounded-full mb-6">
-              <Sparkles className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">AI-Powered Learning</span>
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-apple apple-padding-sm apple-rounded-xl mb-6">
+              <Sparkles className="card-icon-sm mr-2" />
+              <span className="text-body-small font-medium">AI-Powered Learning</span>
             </div>
             
             <h1 className="text-display font-heading leading-tight mb-6">
@@ -106,12 +106,12 @@ const Learning = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 rounded-2xl px-8 py-6 text-body font-semibold shadow-elegant group">
-                <BookOpen className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 apple-rounded-xl apple-padding-lg text-body font-semibold shadow-elegant group">
+                <BookOpen className="icon-md mr-2 group-hover:scale-110 transition-transform" />
                 Explore Courses
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-2xl px-8 py-6">
-                <Target className="h-5 w-5 mr-2" />
+              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 apple-rounded-xl apple-padding-lg">
+                <Target className="icon-md mr-2" />
                 View Learning Paths
               </Button>
             </div>
@@ -124,16 +124,16 @@ const Learning = () => {
         <Card variant="glass" className="group hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-subheading font-medium">Active Courses</CardTitle>
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <BookOpen className="h-5 w-5 text-primary" />
+            <div className="apple-padding-sm bg-primary/10 apple-rounded-md">
+              <BookOpen className="card-icon-md text-primary" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-headline font-bold text-foreground">{getAllCourses.data?.length || 0}</div>
             <p className="text-caption text-muted-foreground">Ready to start learning</p>
             <div className="flex items-center mt-2">
-              <Badge variant="glow" className="text-xs">
-                <Zap className="h-3 w-3 mr-1" />
+              <Badge variant="glow" className="text-caption">
+                <Zap className="card-icon-sm mr-1" />
                 Live
               </Badge>
             </div>
@@ -143,16 +143,16 @@ const Learning = () => {
         <Card variant="glass" className="group hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-subheading font-medium">Learning Paths</CardTitle>
-            <div className="p-2 bg-ai-violet/10 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-ai-violet-dark" />
+            <div className="apple-padding-sm bg-ai-violet/10 apple-rounded-md">
+              <TrendingUp className="card-icon-md text-ai-violet-dark" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-headline font-bold text-foreground">{getAllLearningPaths.data?.length || 0}</div>
             <p className="text-caption text-muted-foreground">Guided career journeys</p>
             <div className="flex items-center mt-2">
-              <Badge className="text-xs bg-ai-violet/10 text-ai-violet-dark">
-                <Sparkles className="h-3 w-3 mr-1" />
+              <Badge className="text-caption bg-ai-violet/10 text-ai-violet-dark">
+                <Sparkles className="card-icon-sm mr-1" />
                 AI-Curated
               </Badge>
             </div>
@@ -162,15 +162,15 @@ const Learning = () => {
         <Card variant="glass" className="group hover:scale-105 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-subheading font-medium">Community</CardTitle>
-            <div className="p-2 bg-success/10 rounded-lg">
-              <Users className="h-5 w-5 text-success" />
+            <div className="apple-padding-sm bg-success/10 apple-rounded-md">
+              <Users className="card-icon-md text-success" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-headline font-bold text-foreground">10,000+</div>
             <p className="text-caption text-muted-foreground">Active learners</p>
             <div className="flex items-center mt-2">
-              <Badge variant="success" className="text-xs">
+              <Badge variant="success" className="text-caption">
                 Growing
               </Badge>
             </div>
@@ -210,7 +210,7 @@ const Learning = () => {
       />
 
       {/* Modern Quick Actions */}
-      <div className="mt-12 bg-gradient-glass backdrop-blur-apple rounded-3xl p-8 border border-glass-border">
+      <div className="mt-12 bg-gradient-glass backdrop-blur-apple apple-rounded-xl apple-padding-lg border border-glass-border">
         <div className="text-center mb-8">
           <h2 className="text-title font-heading text-foreground mb-2">Take Your Learning Further</h2>
           <p className="text-body text-muted-foreground">Explore specialized tools and resources designed for your success</p>
@@ -251,9 +251,9 @@ const Learning = () => {
             return (
               <Link key={index} to={item.to}>
                 <Card className="group hover:scale-105 transition-all duration-300 border-0 shadow-card hover:shadow-elegant">
-                  <CardContent className="p-6">
-                    <div className={`inline-flex p-3 rounded-2xl bg-gradient-to-r ${item.gradient} mb-4`}>
-                      <IconComponent className="h-6 w-6 text-white" />
+                  <CardContent className="apple-padding-md">
+                    <div className={`inline-flex apple-padding-sm apple-rounded-xl bg-gradient-to-r ${item.gradient} mb-4`}>
+                      <IconComponent className="hero-icon text-white" />
                     </div>
                     <h3 className="font-heading text-subheading text-foreground mb-1">{item.title}</h3>
                     <p className="text-caption text-muted-foreground">{item.subtitle}</p>

@@ -21,24 +21,24 @@ export const AppleHeroSection = () => {
             <div className="space-y-6">
               {/* Globe Icon with semantic colors */}
               <div className="flex justify-center lg:justify-start mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary via-primary to-accent rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">
+                <div className="w-[clamp(3rem,4vw,4rem)] h-[clamp(3rem,4vw,4rem)] bg-gradient-to-br from-primary via-primary to-accent rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary/60 to-accent/80 rounded-full"></div>
-                  <div className="absolute top-2 left-2 w-3 h-4 bg-accent rounded-full opacity-80"></div>
-                  <div className="absolute top-4 right-3 w-2 h-3 bg-accent rounded-full opacity-60"></div>
-                  <div className="absolute bottom-3 left-4 w-4 h-2 bg-accent rounded-full opacity-70"></div>
-                  <div className="absolute bottom-2 right-2 w-2 h-2 bg-accent rounded-full opacity-50"></div>
-                  <div className="absolute top-1 left-2 w-4 h-4 bg-primary-foreground/30 rounded-full blur-sm"></div>
+                  <div className="absolute top-2 left-2 w-[clamp(0.5rem,0.75vw,0.75rem)] h-[clamp(0.75rem,1vw,1rem)] bg-accent rounded-full opacity-80"></div>
+                  <div className="absolute top-4 right-3 w-[clamp(0.375rem,0.5vw,0.5rem)] h-[clamp(0.5rem,0.75vw,0.75rem)] bg-accent rounded-full opacity-60"></div>
+                  <div className="absolute bottom-3 left-4 w-[clamp(0.75rem,1vw,1rem)] h-[clamp(0.375rem,0.5vw,0.5rem)] bg-accent rounded-full opacity-70"></div>
+                  <div className="absolute bottom-2 right-2 w-[clamp(0.375rem,0.5vw,0.5rem)] h-[clamp(0.375rem,0.5vw,0.5rem)] bg-accent rounded-full opacity-50"></div>
+                  <div className="absolute top-1 left-2 w-[clamp(0.75rem,1vw,1rem)] h-[clamp(0.75rem,1vw,1rem)] bg-primary-foreground/30 rounded-full blur-sm"></div>
                 </div>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-light tracking-tight text-foreground leading-[1.1]">
+              <h1 className="text-display font-heading tracking-tight text-foreground leading-[1.1]">
                 Powering Global
                 <span className="block font-medium bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                   Career Growth
                 </span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-body-large text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 Your all-in-one platform for networking, skill-building, and discovering career opportunities tailored to your unique journey.
               </p>
             </div>
@@ -48,10 +48,10 @@ export const AppleHeroSection = () => {
               <AuthDialog>
                 <Button 
                   size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground apple-rounded-xl apple-padding-lg text-body font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
                   Get Started Free
-                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="ml-2 icon-sm group-hover:translate-x-1 transition-transform" />
                 </Button>
               </AuthDialog>
             </div>
@@ -63,16 +63,16 @@ export const AppleHeroSection = () => {
               </p>
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-sm">
                 <div className="text-center">
-                  <div className="text-2xl font-semibold text-foreground">10K+</div>
-                  <div className="text-muted-foreground">Professionals</div>
+                  <div className="text-headline font-semibold text-foreground">10K+</div>
+                  <div className="text-caption text-muted-foreground">Professionals</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-semibold text-foreground">1K+</div>
-                  <div className="text-muted-foreground">Businesses</div>
+                  <div className="text-headline font-semibold text-foreground">1K+</div>
+                  <div className="text-caption text-muted-foreground">Businesses</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-semibold text-foreground">95%</div>
-                  <div className="text-muted-foreground">Success Rate</div>
+                  <div className="text-headline font-semibold text-foreground">95%</div>
+                  <div className="text-caption text-muted-foreground">Success Rate</div>
                 </div>
               </div>
             </div>

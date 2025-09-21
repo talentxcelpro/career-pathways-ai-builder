@@ -115,7 +115,7 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         ) : (
           <div className="w-full h-48 bg-gradient-ai flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-ai-violet/30 to-primary/10"></div>
-            <BookOpen className="h-12 w-12 text-white relative z-10" />
+            <BookOpen className="hero-icon text-white relative z-10" />
           </div>
         )}
         
@@ -123,17 +123,17 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
           <Button
             size="sm"
-            className="bg-white/90 hover:bg-white text-gray-700 rounded-full w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
+            className="bg-white/90 hover:bg-white text-gray-700 apple-rounded-md w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
             onClick={handleLike}
           >
-            <Heart className={`h-4 w-4 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+            <Heart className={`card-icon-sm transition-colors ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
           </Button>
           <Button
             size="sm" 
-            className="bg-white/90 hover:bg-white text-gray-700 rounded-full w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
+            className="bg-white/90 hover:bg-white text-gray-700 apple-rounded-md w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
             onClick={handleShare}
           >
-            <Share2 className="h-4 w-4" />
+            <Share2 className="card-icon-sm" />
           </Button>
         </div>
 
@@ -150,8 +150,8 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         {isEnrolled && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 backdrop-blur-sm">
             <Link to={`/learning/${course.id}`}>
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 rounded-full shadow-lg">
-                <Play className="h-5 w-5 mr-2" />
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 apple-rounded-xl shadow-lg">
+                <Play className="icon-md mr-2" />
                 Continue Learning
               </Button>
             </Link>
@@ -173,33 +173,33 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         </div>
         
         {/* Course Title */}
-        <CardTitle className="text-lg font-heading leading-tight group-hover:text-primary transition-colors">
+        <CardTitle className="text-subheading font-heading leading-tight group-hover:text-primary transition-colors">
           <Link to={`/learning/${course.id}`} className="hover:underline line-clamp-2">
             {course.title}
           </Link>
         </CardTitle>
         
         {/* Description */}
-        <CardDescription className="text-sm text-muted-foreground line-clamp-2">
+        <CardDescription className="text-body-small text-muted-foreground line-clamp-2">
           {truncatedDescription}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="pt-0 space-y-4">
         {/* Course Metadata */}
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-4 text-caption text-muted-foreground">
           <div className="flex items-center">
-            <Clock className="h-4 w-4 mr-1.5" />
+            <Clock className="card-icon-sm mr-1.5" />
             <span>{course.duration_hours}h</span>
           </div>
           <div className="flex items-center">
-            <Users className="h-4 w-4 mr-1.5" />
+            <Users className="card-icon-sm mr-1.5" />
             <span>{course.enrolled_count.toLocaleString()}</span>
           </div>
         </div>
 
         {/* Instructor */}
-        <p className="text-sm text-muted-foreground">
+        <p className="text-body-small text-muted-foreground">
           by <span className="font-medium text-foreground">{course.instructor_name}</span>
         </p>
 
@@ -207,13 +207,13 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         {course.skills_taught && course.skills_taught.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {course.skills_taught.slice(0, 2).map((skill, index) => (
-              <Badge key={index} variant="outline" className="text-xs bg-muted/50">
+              <Badge key={index} variant="outline" className="text-caption bg-muted/50">
                 {skill}
               </Badge>
             ))}
             {course.skills_taught.length > 2 && (
-              <Badge variant="outline" className="text-xs bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20">
-                <Sparkles className="h-3 w-3 mr-1" />
+              <Badge variant="outline" className="text-caption bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20">
+                <Sparkles className="card-icon-sm mr-1" />
                 +{course.skills_taught.length - 2} more
               </Badge>
             )}
@@ -222,8 +222,8 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
 
         {/* Progress Bar for Enrolled Courses */}
         {showProgress && isEnrolled && (
-          <div className="space-y-2 bg-muted/30 rounded-lg p-3">
-            <div className="flex justify-between text-sm">
+          <div className="space-y-2 bg-muted/30 apple-rounded-md apple-padding-sm">
+            <div className="flex justify-between text-body-small">
               <span className="text-muted-foreground">Progress</span>
               <span className="font-medium text-foreground">{userProgress}%</span>
             </div>
@@ -233,14 +233,14 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
 
         {/* Price and Action */}
         <div className="flex items-center justify-between pt-2">
-          <div className={`text-lg font-bold ${course.is_free || course.price === 0 ? 'text-success' : 'text-foreground'}`}>
+          <div className={`text-subheading font-bold ${course.is_free || course.price === 0 ? 'text-success' : 'text-foreground'}`}>
             {formatPrice(course.price, course.is_free)}
           </div>
           
           {isEnrolled ? (
             <Link to={`/learning/${course.id}`}>
-              <Button variant="outline" size="sm" className="rounded-full">
-                <Play className="h-4 w-4 mr-1.5" />
+              <Button variant="outline" size="sm" className="apple-rounded-xl">
+                <Play className="card-icon-sm mr-1.5" />
                 Continue
               </Button>
             </Link>
@@ -248,7 +248,7 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
             <Button 
               onClick={handleEnroll}
               size="sm"
-              className="bg-primary hover:bg-primary/90 rounded-full px-6"
+              className="bg-primary hover:bg-primary/90 apple-rounded-xl px-6"
             >
               Enroll Now
             </Button>

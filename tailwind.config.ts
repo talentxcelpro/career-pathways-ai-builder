@@ -136,23 +136,56 @@ export default {
 				}
 			},
 			fontSize: {
-				// Apple-inspired crispy typography scale
-				'display': ['3.5rem', { lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.04em' }],      // 56px - Ultra crispy
-				'headline': ['2.75rem', { lineHeight: '1.15', fontWeight: '600', letterSpacing: '-0.03em' }],   // 44px - Crispy large
-				'title': ['2.25rem', { lineHeight: '1.2', fontWeight: '600', letterSpacing: '-0.02em' }],       // 36px - Crispy
-				'subtitle': ['1.75rem', { lineHeight: '1.25', fontWeight: '500', letterSpacing: '-0.015em' }],  // 28px - Semi-crispy
-				'subheading': ['1.5rem', { lineHeight: '1.3', fontWeight: '500', letterSpacing: '-0.01em' }],   // 24px - Clean
+				// Apple-inspired responsive typography that scales automatically
+				'display': [
+					'clamp(2rem, 5vw, 4rem)', 
+					{ lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.04em' }
+				],
+				'headline': [
+					'clamp(1.75rem, 4vw, 3rem)', 
+					{ lineHeight: '1.15', fontWeight: '600', letterSpacing: '-0.03em' }
+				],
+				'title': [
+					'clamp(1.5rem, 3vw, 2.5rem)', 
+					{ lineHeight: '1.2', fontWeight: '600', letterSpacing: '-0.02em' }
+				],
+				'subtitle': [
+					'clamp(1.25rem, 2.5vw, 2rem)', 
+					{ lineHeight: '1.25', fontWeight: '500', letterSpacing: '-0.015em' }
+				],
+				'subheading': [
+					'clamp(1.125rem, 2vw, 1.75rem)', 
+					{ lineHeight: '1.3', fontWeight: '500', letterSpacing: '-0.01em' }
+				],
 				
-				// Apple-style body text - optimized for readability
-				'body-large': ['1.25rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '-0.005em' }], // 20px - Larger readable
-				'body': ['1.125rem', { lineHeight: '1.55', fontWeight: '400', letterSpacing: '0' }],             // 18px - Perfect reading
-				'body-small': ['1rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }],           // 16px - Standard
-				'caption': ['0.875rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.01em' }],     // 14px - Small but crispy
+				// Apple-style responsive body text
+				'body-large': [
+					'clamp(1rem, 1.5vw, 1.375rem)', 
+					{ lineHeight: '1.5', fontWeight: '400', letterSpacing: '-0.005em' }
+				],
+				'body': [
+					'clamp(0.875rem, 1.25vw, 1.125rem)', 
+					{ lineHeight: '1.55', fontWeight: '400', letterSpacing: '0' }
+				],
+				'body-small': [
+					'clamp(0.75rem, 1vw, 1rem)', 
+					{ lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }
+				],
+				'caption': [
+					'clamp(0.625rem, 0.875vw, 0.875rem)', 
+					{ lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.01em' }
+				],
 				
-				// Legacy support with Apple improvements
-				'heading-xl': ['1.75rem', { lineHeight: '1.25', fontWeight: '600', letterSpacing: '-0.015em' }], // 28px
-				'heading-lg': ['1.5rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '-0.01em' }],    // 24px
-				'heading-md': ['1.25rem', { lineHeight: '1.35', fontWeight: '500', letterSpacing: '-0.005em' }], // 20px
+				// Apple system responsive sizing
+				'xs': ['clamp(0.625rem, 0.75vw, 0.75rem)', { lineHeight: '1.4' }],
+				'sm': ['clamp(0.75rem, 0.875vw, 0.875rem)', { lineHeight: '1.5' }],
+				'base': ['clamp(0.875rem, 1vw, 1rem)', { lineHeight: '1.5' }],
+				'lg': ['clamp(1rem, 1.125vw, 1.125rem)', { lineHeight: '1.5' }],
+				'xl': ['clamp(1.125rem, 1.25vw, 1.25rem)', { lineHeight: '1.4' }],
+				'2xl': ['clamp(1.25rem, 1.5vw, 1.5rem)', { lineHeight: '1.3' }],
+				'3xl': ['clamp(1.5rem, 2vw, 1.875rem)', { lineHeight: '1.25' }],
+				'4xl': ['clamp(1.875rem, 2.5vw, 2.25rem)', { lineHeight: '1.2' }],
+				'5xl': ['clamp(2.25rem, 3vw, 3rem)', { lineHeight: '1.1' }],
 			},
 			letterSpacing: {
 				'tighter': '-0.04em', // Apple ultra-tight for displays
@@ -207,6 +240,13 @@ export default {
 			},
 			spacing: {
 				'18': '4.5rem',
+				// Apple-inspired responsive icon sizes
+				'icon-xs': 'clamp(0.75rem, 1vw, 1rem)',     // 12-16px
+				'icon-sm': 'clamp(1rem, 1.25vw, 1.25rem)',  // 16-20px  
+				'icon-md': 'clamp(1.25rem, 1.5vw, 1.5rem)', // 20-24px
+				'icon-lg': 'clamp(1.5rem, 2vw, 2rem)',      // 24-32px
+				'icon-xl': 'clamp(2rem, 2.5vw, 2.5rem)',    // 32-40px
+				'icon-2xl': 'clamp(2.5rem, 3vw, 3rem)',     // 40-48px
 			},
 			keyframes: {
 				// Accordion Animations

@@ -116,15 +116,15 @@ export const LearningNavigation: React.FC = memo(() => {
             ? 'bg-white/20' 
             : 'bg-primary/10 group-hover:bg-primary/15'
         }`}>
-          <IconComponent className={`h-4 w-4 ${
+          <IconComponent className={`nav-icon ${
             isActive 
               ? 'text-white' 
               : 'text-primary group-hover:text-primary'
           }`} />
         </div>
         <div className="flex-1 min-w-0">
-          <span className="font-medium text-sm">{item.title}</span>
-          <p className={`text-xs ${
+          <span className="font-medium text-body-small">{item.title}</span>
+          <p className={`text-caption ${
             isActive 
               ? 'text-white/80' 
               : 'text-muted-foreground'
@@ -135,7 +135,7 @@ export const LearningNavigation: React.FC = memo(() => {
         {item.badge && (
           <Badge 
             variant={isActive ? "secondary" : "outline"} 
-            className={`text-xs ${
+            className={`text-caption ${
               isActive 
                 ? 'bg-white/20 text-white border-white/30' 
                 : 'bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20'
@@ -172,15 +172,15 @@ export const LearningNavigation: React.FC = memo(() => {
                   <div className={`p-2 rounded-xl ${
                     isActive ? 'bg-white/20' : 'bg-primary/10'
                   }`}>
-                    <IconComponent className={`h-5 w-5 ${
+                    <IconComponent className={`nav-icon-mobile ${
                       isActive ? 'text-white' : 'text-primary'
                     }`} />
                   </div>
-                  <span className="text-xs font-medium text-center whitespace-nowrap">{item.title}</span>
+                  <span className="text-caption font-medium text-center whitespace-nowrap">{item.title}</span>
                   {item.badge && (
                     <Badge 
                       variant="secondary" 
-                      className={`text-xs ${
+                      className={`text-caption ${
                         isActive 
                           ? 'bg-white/20 text-white' 
                           : 'bg-ai-violet/10 text-ai-violet-dark'
@@ -201,7 +201,7 @@ export const LearningNavigation: React.FC = memo(() => {
             
             {/* Core Learning */}
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-4">
+              <h3 className="text-caption font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-4">
                 Core Learning
               </h3>
               <div className="space-y-2">
@@ -213,7 +213,7 @@ export const LearningNavigation: React.FC = memo(() => {
 
             {/* Career Tools */}
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-4">
+              <h3 className="text-caption font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-4">
                 Career Tools
               </h3>
               <div className="space-y-2">
@@ -229,21 +229,21 @@ export const LearningNavigation: React.FC = memo(() => {
         {/* Quick Stats - Simplified */}
         <div className="mt-8 pt-6 border-t border-glass-border">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="bg-gradient-card backdrop-blur-apple rounded-2xl p-4 shadow-card border border-glass-border">
-              <div className="text-2xl font-bold text-primary">300+</div>
-              <div className="text-xs text-muted-foreground">Courses</div>
+            <div className="bg-gradient-card backdrop-blur-apple apple-rounded-lg apple-padding-md shadow-card border border-glass-border">
+              <div className="text-headline font-bold text-primary">300+</div>
+              <div className="text-caption text-muted-foreground">Courses</div>
             </div>
-            <div className="bg-gradient-card backdrop-blur-apple rounded-2xl p-4 shadow-card border border-glass-border">
-              <div className="text-2xl font-bold text-ai-violet-dark">50K+</div>
-              <div className="text-xs text-muted-foreground">Learners</div>
+            <div className="bg-gradient-card backdrop-blur-apple apple-rounded-lg apple-padding-md shadow-card border border-glass-border">
+              <div className="text-headline font-bold text-ai-violet-dark">50K+</div>
+              <div className="text-caption text-muted-foreground">Learners</div>
             </div>
-            <div className="bg-gradient-card backdrop-blur-apple rounded-2xl p-4 shadow-card border border-glass-border">
-              <div className="text-2xl font-bold text-success">94%</div>
-              <div className="text-xs text-muted-foreground">Success Rate</div>
+            <div className="bg-gradient-card backdrop-blur-apple apple-rounded-lg apple-padding-md shadow-card border border-glass-border">
+              <div className="text-headline font-bold text-success">94%</div>
+              <div className="text-caption text-muted-foreground">Success Rate</div>
             </div>
-            <div className="bg-gradient-card backdrop-blur-apple rounded-2xl p-4 shadow-card border border-glass-border">
-              <div className="text-2xl font-bold text-warning">180+</div>
-              <div className="text-xs text-muted-foreground">Countries</div>
+            <div className="bg-gradient-card backdrop-blur-apple apple-rounded-lg apple-padding-md shadow-card border border-glass-border">
+              <div className="text-headline font-bold text-warning">180+</div>
+              <div className="text-caption text-muted-foreground">Countries</div>
             </div>
           </div>
         </div>
