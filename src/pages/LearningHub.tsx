@@ -35,7 +35,8 @@ import {
   Camera,
   Wrench
 } from 'lucide-react';
-import { courseCategories, getFeaturedCourses, getTotalCoursesCount, getCategoryCounts } from '@/data/coursesData';
+import { useCourses, useCourseCategories } from '@/hooks/useCourses';
+import { CourseGrid } from '@/components/learning/CourseGrid';
 
 const industryIcons = {
   'technology': Code,
@@ -77,7 +78,7 @@ const courseDurations = [
 
 const learningStats = [
   { label: 'Active Learners', value: '50,000+', icon: Users, color: 'text-primary' },
-  { label: 'Courses Available', value: `${getTotalCoursesCount()}+`, icon: BookOpen, color: 'text-brand-green' },
+  { label: 'Courses Available', value: '300+', icon: BookOpen, color: 'text-brand-green' },
   { label: 'Success Rate', value: '94%', icon: CheckCircle, color: 'text-success' },
   { label: 'Countries', value: '180+', icon: Globe, color: 'text-info' }
 ];
@@ -85,13 +86,13 @@ const learningStats = [
 export default function LearningHub() {
   const { displayName, streakDays } = useCurrentUserProfile();
   const [searchQuery, setSearchQuery] = useState('');
-  const featuredCourses = getFeaturedCourses(9);
-  const categoryCounts = getCategoryCounts();
+  const { courses: featuredCourses, isLoading } = useCourses({ limit: 9 });
+  const { data: categories } = useCourseCategories();
   
   React.useEffect(() => {
     updateMetaTags({
       title: 'TalentXcel Learning Hub | Professional Skills Development',
-      description: `Master industry-relevant skills with our comprehensive learning platform. Choose from ${getTotalCoursesCount()}+ courses across technology, business, healthcare, and more.`
+      description: `Master industry-relevant skills with our comprehensive learning platform. Choose from 300+ courses across technology, business, healthcare, and more.`
     });
   }, []);
 
@@ -126,7 +127,7 @@ export default function LearningHub() {
             </h1>
             
             <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform your career with {getTotalCoursesCount()}+ industry-leading courses across multiple domains. 
+              Transform your career with 300+ industry-leading courses across multiple domains. 
               From quick skills to expert certifications - your learning journey starts here.
             </p>
 
@@ -214,11 +215,10 @@ export default function LearningHub() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {courseCategories.map((category) => {
-              const categoryKey = category.id;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {categories?.map((category) => {
+              const categoryKey = category.name.toLowerCase().replace(/\s+/g, '');
               const IconComponent = industryIcons[categoryKey as keyof typeof industryIcons] || Code;
-              const courseCount = categoryCounts[categoryKey] || 0;
               
               return (
                 <Card key={category.id} className="group overflow-hidden border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
@@ -226,17 +226,16 @@ export default function LearningHub() {
                     <IconComponent className="h-10 w-10 text-primary group-hover:scale-110 transition-transform" />
                     <div className="absolute top-3 right-3">
                       <Badge className="bg-primary/20 text-primary border-0 text-xs">
-                        {courseCount}
+                        {category.course_count || 0}
                       </Badge>
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="text-lg font-bold text-foreground mb-2">{category.title}</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-2">{category.name}</h3>
                     <p className="text-muted-foreground mb-3 text-sm leading-relaxed">
-                      {category.subcategories.slice(0, 3).join(', ')}
-                      {category.subcategories.length > 3 && ` +${category.subcategories.length - 3} more`}
+                      {category.description}
                     </p>
-                    <Link to={`/learning/courses?category=${category.id}`}>
+                    <Link to={`/learning/courses?category=${category.name}`}>
                       <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
                         Explore
                         <ArrowRight className="h-3 w-3 ml-2" />
@@ -259,100 +258,11 @@ export default function LearningHub() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredCourses.map((course) => (
-            <Card key={course.id} className="group overflow-hidden border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="relative overflow-hidden">
-                <img 
-                  src={course.thumbnail} 
-                  alt={course.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 flex gap-2">
-                  {course.trending && (
-                    <Badge className="bg-accent text-white text-xs">
-                      🔥 Trending
-                    </Badge>
-                  )}
-                  {course.certified && (
-                    <Badge className="bg-success text-white text-xs">
-                      <Award className="h-3 w-3 mr-1" />
-                      Certified
-                    </Badge>
-                  )}
-                </div>
-                <div className="absolute top-3 right-3">
-                  <Badge className="bg-card/90 text-foreground font-semibold">
-                    {course.price}
-                  </Badge>
-                </div>
-                {course.originalPrice && (
-                  <div className="absolute top-9 right-3">
-                    <Badge variant="outline" className="bg-card/90 text-muted-foreground line-through text-xs">
-                      {course.originalPrice}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex items-center">
-                    <Star className="h-4 w-4 text-accent fill-current" />
-                    <span className="text-sm font-medium ml-1">{course.rating}</span>
-                  </div>
-                  <span className="text-muted-foreground">•</span>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="h-4 w-4 mr-1" />
-                    {course.students.toLocaleString()}
-                  </div>
-                  <span className="text-muted-foreground">•</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {course.subcategory}
-                  </Badge>
-                </div>
-                
-                <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{course.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">by {course.instructor}</p>
-                
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {course.tags.slice(0, 3).map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {course.tags.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{course.tags.length - 3} more
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {course.duration}
-                  </div>
-                  <div className="flex items-center">
-                    <BarChart3 className="h-4 w-4 mr-1" />
-                    {course.level}
-                  </div>
-                </div>
-
-                <Link to={`/learning/courses/${course.id}`}>
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
-                    Start Learning
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
+        <CourseGrid limit={9} />
         <div className="text-center mt-12">
           <Link to="/learning/courses">
             <Button size="lg" variant="outline" className="px-8 py-4 rounded-lg">
-              View All {getTotalCoursesCount()} Courses
+              View All 300+ Courses
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>

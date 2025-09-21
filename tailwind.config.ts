@@ -43,8 +43,8 @@ export default {
 					lighter: 'hsl(var(--brand-green-lighter))'
 				},
 				secondary: {
-					DEFAULT: 'hsl(260, 100%, 50%)', // Bright purple #7C3AED
-					foreground: 'hsl(0, 0%, 100%)'
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -67,8 +67,8 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(340, 100%, 50%)', // Bright pink/magenta #FF0080
-					foreground: 'hsl(0, 0%, 100%)'
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',

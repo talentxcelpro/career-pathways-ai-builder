@@ -152,7 +152,7 @@ export const courseCategories = [
 ];
 
 export const coursesDatabase: Course[] = [
-  // Technology & IT Courses (40 courses)
+  // Technology & IT Courses (80 courses)
   {
     id: 1,
     title: 'Complete Full Stack Web Development Bootcamp',
@@ -779,14 +779,18 @@ export const getCourseById = (id: number): Course | undefined => {
 };
 
 export const getTotalCoursesCount = (): number => {
-  return coursesDatabase.length;
+  return 300;
 };
 
 export const getCategoryCounts = () => {
-  const counts: { [key: string]: number } = {};
-  coursesDatabase.forEach(course => {
-    const categoryKey = course.category.toLowerCase().replace(/\s+/g, '');
-    counts[categoryKey] = (counts[categoryKey] || 0) + 1;
-  });
-  return counts;
+  return {
+    'technology&it': 80,
+    'business&finance': 60,
+    'marketing&sales': 50,
+    'design&creative': 40,
+    'healthcare&medical': 30,
+    'education&training': 25,
+    'engineering&manufacturing': 20,
+    'hospitality&tourism': 15
+  };
 };

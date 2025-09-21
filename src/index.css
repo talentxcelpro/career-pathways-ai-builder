@@ -458,24 +458,24 @@ img.loaded {
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 20%;
 
-    /* TalentXcel Brand Colors - Professional & Muted */
-    --primary: 215 25% 27%; /* Professional navy blue #394B59 */
+    /* TalentXcel Sky Blue Brand Colors */
+    --primary: 197 71% 52%; /* Sky blue #0ea5e9 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 215 25% 40%;
-    --primary-lighter: 215 25% 85%;
+    --primary-light: 197 71% 65%;
+    --primary-lighter: 197 71% 85%;
 
-    --brand-green: 150 30% 40%; /* Muted professional green */
+    --brand-green: 173 58% 46%; /* Complementary teal #14b8a6 */
     --brand-green-foreground: 0 0% 100%;
-    --brand-green-light: 150 30% 55%;
-    --brand-green-lighter: 150 30% 85%;
+    --brand-green-light: 173 58% 60%;
+    --brand-green-lighter: 173 58% 85%;
 
-    --secondary: 220 15% 45%; /* Muted slate blue */
+    --secondary: 199 89% 48%; /* Lighter sky blue #0284c7 */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 10% 96%;
     --muted-foreground: 220 15% 45%;
 
-    --accent: 25 60% 55%; /* Warm professional orange */
+    --accent: 38 92% 50%; /* Vibrant orange accent #ff8500 */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 60% 50%;
