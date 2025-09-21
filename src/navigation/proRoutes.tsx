@@ -10,7 +10,8 @@ import ProSubscriptionPolicy from "../pages/pro/ProSubscriptionPolicy";
 import ProSetup from "../pages/pro/ProSetup";
 import ProLeads from "../pages/pro/ProLeads";
 import ProAITools from "../pages/pro/ProAITools";
-import { Settings } from "lucide-react";
+import { TXCDiagnostics } from "../pages/pro/TXCDiagnostics";
+import { Settings, Activity } from "lucide-react";
 
 export const proRoutes: NavItem[] = [
   {
@@ -79,5 +80,12 @@ export const proRoutes: NavItem[] = [
     to: "/pro/subscription-policy",
     page: <ProSubscriptionPolicy />,
     requiresAuth: false
+  },
+  {
+    title: "TXC Diagnostics",
+    to: "/pro/diagnostics",
+    page: <TXCDiagnostics />,
+    icon: <Activity className="h-4 w-4" />,
+    requiresAuth: true
   }
 ];

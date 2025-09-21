@@ -38,31 +38,58 @@ export const useTXCPurchase = () => {
         return false;
       }
 
-      // Use the feature purchase endpoint for individual features, or process-txc-purchase for subscriptions
-      const endpoint = options.featureId === 'pro_subscription' ? 'process-txc-purchase' : 'txc-feature-purchase';
+      // Enhanced routing logic for subscriptions
+      const isSubscription = options.featureId === 'pro_subscription' || 
+                           options.metadata?.packageType || 
+                           ['Pro Starter', 'Pro Business', 'Pro Elite'].some(plan => 
+                             options.featureId.includes(plan) || options.description.includes(plan)
+                           );
+
+      const endpoint = isSubscription ? 'process-txc-purchase' : 'txc-feature-purchase';
       
-      const { data, error } = await supabase.functions.invoke(endpoint, {
-        body: {
-          userId: user.id,
-          featureId: options.featureId,
-          cost: options.cost,
-          description: options.description,
-          metadata: options.metadata || {}
-        }
+      console.log(`TXC Purchase: ${endpoint}`, {
+        featureId: options.featureId,
+        cost: options.cost,
+        isSubscription,
+        metadata: options.metadata
       });
 
-      if (error) throw error;
+      // Prepare request body based on endpoint
+      const requestBody = isSubscription ? {
+        userId: user.id,
+        featureId: 'pro_subscription',
+        cost: options.cost,
+        description: options.description,
+        planName: options.metadata?.packageType || options.description,
+        metadata: options.metadata || {}
+      } : {
+        featureId: options.featureId,
+        customCost: options.cost,
+        customDescription: options.description,
+        metadata: options.metadata || {}
+      };
 
-      if (data.success) {
+      const { data, error } = await supabase.functions.invoke(endpoint, {
+        body: requestBody
+      });
+
+      if (error) {
+        console.error('Edge Function error:', error);
+        throw new Error(`Edge Function error: ${error.message}`);
+      }
+
+      if (data?.success) {
         toast.success(`Purchase successful! ${options.cost} TXC spent.`);
         refreshBalance();
         return true;
       } else {
-        throw new Error(data.error || 'Purchase failed');
+        console.error('Purchase failed:', data);
+        throw new Error(data?.error || 'Purchase failed - no success response');
       }
     } catch (error) {
       console.error('TXC purchase error:', error);
-      toast.error(error.message || 'Purchase failed. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Purchase failed. Please try again.';
+      toast.error(errorMessage);
       return false;
     } finally {
       setIsLoading(false);

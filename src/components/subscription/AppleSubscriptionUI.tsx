@@ -143,12 +143,16 @@ export const AppleSubscriptionUI: React.FC<AppleSubscriptionUIProps> = ({ compac
         throw new Error(`Insufficient TXC balance. You need ${selectedTier.price_monthly.toLocaleString()} TXC but only have ${availableBalance.toLocaleString()} TXC.`);
       }
 
-      // Process TXC purchase
+      // Process TXC purchase for subscription
       const success = await purchaseWithTXC({
-        featureId: selectedTier.id,
+        featureId: 'pro_subscription',
         cost: selectedTier.price_monthly,
         description: `${tierName} subscription`,
-        metadata: { packageType: tierName }
+        metadata: { 
+          packageType: tierName,
+          planId: selectedTier.id,
+          isSubscription: true
+        }
       });
 
       if (success) {
