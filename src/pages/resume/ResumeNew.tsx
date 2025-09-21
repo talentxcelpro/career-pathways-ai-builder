@@ -30,7 +30,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-blue-500",
       stat: "AI Powered",
       icon: <Upload className="h-5 w-5" />,
-      href: "/resume/upload"
+      href: "/resume-builder/upload-enhanced"
     },
     {
       title: "AI Resume Builder",
@@ -48,7 +48,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-green-500",
       stat: "95% Pass Rate",
       icon: <Target className="h-5 w-5" />,
-      href: "/resume/ats-check"
+      href: "/tools/resume-check"
     },
     {
       title: "Cover Letter AI",
@@ -57,7 +57,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-purple-500",
       stat: "AI Generated",
       icon: <PenTool className="h-5 w-5" />,
-      href: "/cover-letter/builder"
+      href: "/tools/cover-letter"
     },
     {
       title: "Interview Prep",
@@ -66,7 +66,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-cyan-500",
       stat: "Mock Interviews",
       icon: <Video className="h-5 w-5" />,
-      href: "/interview/prep"
+      href: "/tools/interview-prep"
     },
     {
       title: "LinkedIn Optimizer",
@@ -75,34 +75,16 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-blue-600",
       stat: "3x More Views",
       icon: <Globe className="h-5 w-5" />,
-      href: "/linkedin/optimizer"
+      href: "/tools/profile-optimizer"
     },
     {
-      title: "Salary Negotiator",
-      description: "Get data-driven insights and scripts for successful salary negotiations",
-      badge: "Premium",
+      title: "Salary Analyzer",
+      description: "Get data-driven insights for successful salary negotiations",
+      badge: "Market Data",
       badgeColor: "bg-emerald-500",
-      stat: "15% Avg Increase",
+      stat: "Real-time Data",
       icon: <TrendingUp className="h-5 w-5" />,
-      href: "/salary/negotiator"
-    },
-    {
-      title: "Career Analytics",
-      description: "Track your job search progress and get actionable insights",
-      badge: "Analytics",
-      badgeColor: "bg-indigo-500",
-      stat: "Success Metrics",
-      icon: <BarChart3 className="h-5 w-5" />,
-      href: "/career/analytics"
-    },
-    {
-      title: "Networking Assistant",
-      description: "Build professional relationships with AI-powered networking strategies",
-      badge: "Smart Connect",
-      badgeColor: "bg-pink-500",
-      stat: "Network Growth",
-      icon: <Users className="h-5 w-5" />,
-      href: "/networking/assistant"
+      href: "/tools/salary-analyzer"
     },
     {
       title: "Skills Assessment",
@@ -111,7 +93,7 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-amber-500",
       stat: "Gap Analysis",
       icon: <BookOpen className="h-5 w-5" />,
-      href: "/skills/assessment"
+      href: "/tools/skill-assessor"
     },
     {
       title: "Job Matcher AI",
@@ -120,7 +102,25 @@ const ResumeNew: React.FC = () => {
       badgeColor: "bg-violet-500",
       stat: "Perfect Matches",
       icon: <Brain className="h-5 w-5" />,
-      href: "/jobs/ai-matcher"
+      href: "/tools/job-matcher"
+    },
+    {
+      title: "Career Analytics",
+      description: "Track your job search progress and get actionable insights",
+      badge: "Analytics",
+      badgeColor: "bg-indigo-500",
+      stat: "Success Metrics",
+      icon: <BarChart3 className="h-5 w-5" />,
+      href: "/career-goals"
+    },
+    {
+      title: "Networking Assistant",
+      description: "Build professional relationships with AI-powered networking strategies",
+      badge: "Smart Connect",
+      badgeColor: "bg-pink-500",
+      stat: "Network Growth",
+      icon: <Users className="h-5 w-5" />,
+      href: "/network"
     }
   ];
 
