@@ -32,6 +32,7 @@ import MobileSearch from "./pages/mobile/MobileSearch";
 import NotificationsPage from "./pages/NotificationsPage";
 import TalentXcelServices from "./pages/TalentXcelServices";
 import FeedEmbeds from "./pages/FeedEmbeds";
+import LinkedInToolsHub from "./pages/admin/LinkedInToolsHub";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -106,6 +107,18 @@ export const servicesRoutes = [
   }
 ];
 
+// LinkedIn Tools Hub route
+export const linkedInToolsRoutes = [
+  {
+    title: "LinkedIn Tools Hub",
+    to: "/admin/linkedin-tools",
+    icon: "linkedin",
+    page: <LinkedInToolsHub />,
+    description: "Advanced LinkedIn data management and automation",
+    requiresAdminAccess: true
+  }
+];
+
 export const navItems = [
   ...publicRoutes,
   ...coreRoutes,
@@ -137,6 +150,7 @@ export const navItems = [
   ...aiAgentRoutes,
   ...campaignRoutes,
   ...embedRoutes,
+  ...linkedInToolsRoutes,
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,
