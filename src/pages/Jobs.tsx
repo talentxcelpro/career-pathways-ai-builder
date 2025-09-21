@@ -390,79 +390,77 @@ const Jobs = () => {
       
 
       {/* Header with TalentXcel branding */}
-      <div className="bg-gradient-to-r from-[#1E2A78]/10 to-[#28C76F]/10 border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between mb-4">
+      <div className="bg-background/80 backdrop-blur-xl border-b border-border/20 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg"
+                className="h-8 w-8 rounded-lg"
               />
               <div className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-[#1E2A78]" />
-                <h1 className="text-xl font-bold text-[#1E2A78] font-display">
-                  Your AI Career Companion – Smart Job Discovery
+                <Brain className="icon-apple-sm text-primary" />
+                <h1 className="text-apple-body font-apple-semibold text-foreground">
+                  AI Career Discovery
                 </h1>
               </div>
-              <div className="hidden md:flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <Filter className="h-4 w-4 text-[#28C76F]" />
-                  <span>AI Matching</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Building className="h-4 w-4 text-[#28C76F]" />
-                  <span>Smart Recommendations</span>
-                </div>
-              </div>
             </div>
-            <div className="bg-gradient-to-r from-[#28C76F]/10 to-[#1E2A78]/10 text-[#1E2A78] px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-              <Zap className="h-3 w-3 text-[#28C76F]" />
-              {totalCount.toLocaleString()} Jobs • AI-Matched
+            <div className="bg-muted/50 text-foreground px-3 py-1 rounded-full text-apple-small font-apple-medium flex items-center gap-1">
+              <Zap className="icon-apple-xs text-primary" />
+              {totalCount.toLocaleString()} Jobs
             </div>
           </div>
           
-          {/* 2. Condensed Search Bar (Single Row) */}
-          <div className="flex flex-col lg:flex-row gap-2 items-center max-w-5xl mx-auto">
-            <div className="flex-1 flex gap-2 w-full overflow-x-auto">
-              <div className="flex-1 min-w-[200px]">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Skills / Designations / Companies"
-                    value={filters.search}
-                    onChange={(e) => {
-                      setFilters(prev => ({ ...prev, search: e.target.value }));
-                      // Auto-search on typing for better UX
-                      if (e.target.value.length > 2) {
-                        setTimeout(() => refetch(), 500);
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        refetch();
-                      }
-                    }}
-                    className="pl-9 h-9 text-sm border-gray-200 focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-              </div>
-              
-              <div className="min-w-[140px]">
-                <Select 
-                  value={experienceLevel} 
-                  onValueChange={(value) => {
-                    setExperienceLevel(value);
-                    setFilters(prev => ({ 
-                      ...prev, 
-                      experience_level: value === 'all' ? [] : [value] 
-                    }));
-                    setTimeout(() => refetch(), 100);
+          {/* Apple-style compact search */}
+          <div className="flex gap-2 items-center max-w-4xl mx-auto mt-3">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 icon-apple-xs text-muted-foreground" />
+                <Input
+                  placeholder="Search jobs, skills, companies"
+                  value={filters.search}
+                  onChange={(e) => {
+                    setFilters(prev => ({ ...prev, search: e.target.value }));
+                    if (e.target.value.length > 2) {
+                      setTimeout(() => refetch(), 500);
+                    }
                   }}
-                >
-                  <SelectTrigger className="h-9 text-sm border-gray-200">
-                    <SelectValue placeholder="Experience ⌄" />
-                  </SelectTrigger>
+                  onKeyDown={(e) => {
+                     if (e.key === 'Enter') {
+                       refetch();
+                     }
+                   }}
+                   className="pl-8 h-9 text-apple-caption border-border/30 focus:ring-1 focus:ring-primary/30 rounded-xl"
+                 />
+               </div>
+             </div>
+             
+             <Select 
+               value={experienceLevel} 
+               onValueChange={(value) => {
+                 setExperienceLevel(value);
+                 setFilters(prev => ({ 
+                   ...prev, 
+                   experience_level: value === 'all' ? [] : [value] 
+                 }));
+                 setTimeout(() => refetch(), 100);
+               }}
+             >
+               <SelectTrigger className="h-9 w-32 text-apple-caption border-border/30 rounded-xl">
+                 <SelectValue placeholder="Experience" />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="all">All Experience</SelectItem>
+                 <SelectItem value="Entry level">Entry Level</SelectItem>
+                 <SelectItem value="Mid level">Mid Level</SelectItem>
+                 <SelectItem value="Senior level">Senior Level</SelectItem>
+                 <SelectItem value="Executive">Executive</SelectItem>
+               </SelectContent>
+             </Select>
+           </div>
+         </div>
+       </div>
                   <SelectContent className="bg-white border shadow-lg z-50">
                     <SelectItem value="all">All Experience</SelectItem>
                     <SelectItem value="entry">Fresher (0-1y)</SelectItem>

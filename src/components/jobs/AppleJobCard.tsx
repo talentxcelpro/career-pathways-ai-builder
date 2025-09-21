@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +36,7 @@ interface JobCardProps {
   showCompany?: boolean;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ 
+export const AppleJobCard: React.FC<JobCardProps> = ({ 
   job, 
   onSave, 
   isSaved = false, 
@@ -46,7 +45,6 @@ export const JobCard: React.FC<JobCardProps> = ({
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    // Use seo_slug if available, fallback to id for compatibility
     const jobPath = (job as any).seo_slug || job.id;
     navigate(`/jobs/${jobPath}`);
   };

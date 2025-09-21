@@ -77,72 +77,72 @@ export const MobileHeader = () => {
 
   return (
     <>
-      <header className="bg-gradient-card/80 backdrop-blur-apple border-b border-border/50 sticky top-0 z-40 md:hidden shadow-elegant animate-fade-in-down">
-        <div className="flex items-center justify-between px-4 py-2 h-14">
+      <header className="bg-background/90 backdrop-blur-xl border-b border-border/30 sticky top-0 z-40 md:hidden shadow-apple">
+        <div className="flex items-center justify-between px-4 py-2 h-12">
           {/* Left - Menu Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
+            className="p-2 hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="icon-apple-sm" />
           </Button>
 
-          {/* Center - TalentXcel Logo */}
-          <div className="flex-1 flex justify-center items-center space-x-2 animate-scale-in">
+          {/* Center - Compact TalentXcel Logo */}
+          <div className="flex-1 flex justify-center items-center space-x-2">
             <img 
               src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
               alt="TalentXcel" 
-              className="h-6 w-6 rounded-sm transition-transform duration-300 hover:scale-105"
+              className="h-5 w-5 rounded-sm transition-apple hover:scale-105"
             />
-            <span className="text-lg font-bold text-slate-900">TalentXcel</span>
+            <span className="text-apple-body font-apple-bold text-foreground">TalentXcel</span>
           </div>
 
-          {/* Right - Actions */}
-          <div className="flex items-center space-x-1 animate-slide-in-right">
+          {/* Right - Compact Actions */}
+          <div className="flex items-center space-x-1">
             {/* Search */}
             <Button 
               variant="ghost" 
               size="sm" 
-              className="p-2 hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
+              className="p-2 hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg"
               onClick={() => navigate('/mobile/search')}
             >
-              <Search className="h-5 w-5" />
+              <Search className="icon-apple-sm" />
             </Button>
 
             {/* Messages */}
             <Button 
               variant="ghost" 
               size="sm" 
-              className="p-2 relative hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl"
+              className="p-2 hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg"
               onClick={() => navigate('/network/messages')}
             >
-              <MessageSquare className="h-5 w-5" />
+              <MessageSquare className="icon-apple-sm" />
             </Button>
 
             {/* Notifications */}
             <Link to="/network/notifications">
-              <Button variant="ghost" size="sm" className="p-2 relative hover:scale-110 transition-all duration-300 hover:bg-gradient-brand-soft rounded-xl">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="sm" className="p-2 relative hover:scale-105 transition-apple hover:bg-muted/50 rounded-lg">
+                <Bell className="icon-apple-sm" />
                 {unreadCount > 0 && (
                   <Badge 
-                    variant="glow"
-                    className="absolute -top-1 -right-1 h-4 w-4 p-0 text-[10px] min-w-[16px] flex items-center justify-center animate-bounce-in"
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-3 w-3 p-0 text-[9px] min-w-[12px] flex items-center justify-center animate-pulse"
                   >
-                    {unreadCount > 99 ? '99+' : unreadCount}
+                    {unreadCount > 9 ? '9+' : unreadCount}
                   </Badge>
                 )}
               </Button>
             </Link>
 
             {/* Profile */}
-            <Link to="/profile" className="hover:scale-110 transition-all duration-300">
+            <Link to="/profile" className="hover:scale-105 transition-apple">
               <UserAvatar
                 src={profile?.profile_picture_url}
                 userName={profile?.full_name}
                 size="sm"
-                className="ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300"
+                className="ring-1 ring-border/30 hover:ring-primary/30 transition-apple"
               />
             </Link>
           </div>

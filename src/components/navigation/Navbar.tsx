@@ -157,38 +157,38 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="bg-white shadow-sm border-b sticky top-0 z-50 mb-4">
+    <nav className="bg-background/80 backdrop-blur-xl shadow-apple border-b border-border/20 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo */}
+        <div className="flex justify-between h-12">
+          {/* Apple-style compact logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-8 w-8 rounded-sm"
+                className="h-6 w-6 rounded-sm"
               />
-              <span className="text-xl font-bold text-slate-900 md:hidden">TalentXcel</span>
+              <span className="text-apple-body font-apple-bold text-foreground">TalentXcel</span>
             </Link>
           </div>
 
           {user ? (
             <>
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-3 flex-wrap">
+              {/* Apple-style compact navigation */}
+              <div className="hidden md:flex items-center gap-1">
                 {visibleNavItems.map((item) => {
                   const isActive = isCurrentPath(item.to);
                   return (
                     <Link
                       key={item.label}
                       to={item.to}
-                      className={`flex items-center space-x-1 px-2 py-1 rounded-md text-sm font-medium transition-colors
+                      className={`px-3 py-1.5 rounded-lg text-apple-caption font-apple-medium transition-apple
                         ${isActive 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                          ? 'bg-primary/10 text-primary' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                         }`}
                     >
-                      <span>{item.label}</span>
+                      {item.label}
                     </Link>
                   );
                 })}
