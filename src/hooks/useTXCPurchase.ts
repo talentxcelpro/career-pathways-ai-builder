@@ -45,7 +45,7 @@ export const useTXCPurchase = () => {
                              options.featureId.includes(plan) || options.description.includes(plan)
                            );
 
-      const endpoint = isSubscription ? 'process-txc-purchase' : 'txc-feature-purchase';
+      const endpoint = isSubscription ? 'txc-unified-purchase' : 'txc-feature-purchase';
       
       console.log(`TXC Purchase: ${endpoint}`, {
         featureId: options.featureId,
@@ -56,11 +56,10 @@ export const useTXCPurchase = () => {
 
       // Prepare request body based on endpoint
       const requestBody = isSubscription ? {
-        userId: user.id,
-        featureId: 'pro_subscription',
+        purchaseType: 'subscription',
+        planName: options.metadata?.packageType || options.description,
         cost: options.cost,
         description: options.description,
-        planName: options.metadata?.packageType || options.description,
         metadata: options.metadata || {}
       } : {
         featureId: options.featureId,
@@ -69,9 +68,47 @@ export const useTXCPurchase = () => {
         metadata: options.metadata || {}
       };
 
-      const { data, error } = await supabase.functions.invoke(endpoint, {
-        body: requestBody
-      });
+      let data, error;
+      
+      try {
+        const response = await supabase.functions.invoke(endpoint, {
+          body: requestBody
+        });
+        data = response.data;
+        error = response.error;
+      } catch (invokeError) {
+        console.error('Function invoke failed:', invokeError);
+        
+        // Fallback: try the other endpoint if the primary fails
+        const fallbackEndpoint = isSubscription ? 'process-txc-purchase' : 'txc-unified-purchase';
+        console.log(`Trying fallback endpoint: ${fallbackEndpoint}`);
+        
+        try {
+          const fallbackBody = isSubscription ? {
+            userId: user.id,
+            featureId: 'pro_subscription',
+            cost: options.cost,
+            description: options.description,
+            planName: options.metadata?.packageType || options.description,
+            metadata: options.metadata || {}
+          } : {
+            purchaseType: 'feature',
+            featureId: options.featureId,
+            cost: options.cost,
+            description: options.description,
+            metadata: options.metadata || {}
+          };
+          
+          const fallbackResponse = await supabase.functions.invoke(fallbackEndpoint, {
+            body: fallbackBody
+          });
+          data = fallbackResponse.data;
+          error = fallbackResponse.error;
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError);
+          throw new Error(`Both primary and fallback endpoints failed. Please try again later.`);
+        }
+      }
 
       if (error) {
         console.error('Edge Function error:', error);
