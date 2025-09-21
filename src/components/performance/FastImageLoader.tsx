@@ -43,10 +43,9 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
   const imgRef = useRef<HTMLImageElement>(null);
 
   // Intersection observer for lazy loading
-  const { isIntersecting } = useIntersectionObserver({
-    element: imgRef.current,
+  const isIntersecting = useIntersectionObserver(imgRef, {
     threshold,
-    freezeOnceVisible: true
+    rootMargin: '50px'
   });
 
   useEffect(() => {

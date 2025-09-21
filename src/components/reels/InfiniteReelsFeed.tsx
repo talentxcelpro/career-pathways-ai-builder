@@ -5,7 +5,7 @@ import { useReelsData } from '@/hooks/useReelsData';
 import { ReelCard } from './ReelCard';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, RefreshCw } from 'lucide-react';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { useIntersectionObserverCallback } from '@/hooks/useIntersectionObserver';
 
 interface InfiniteReelsFeedProps {
   onUploadClick: () => void;
@@ -26,7 +26,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
 
   // Load more reels when approaching the end
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  useIntersectionObserver(loadMoreRef, 
+  useIntersectionObserverCallback(loadMoreRef,
     useCallback(() => {
       if (hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
