@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
 import { useAuth } from '@/contexts/AuthContext';
 import { MobileLayout } from '@/components/mobile/MobileLayout';
 import { useToast } from '@/hooks/use-toast';
@@ -25,7 +24,7 @@ export const MobileNetwork = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Enhanced infinite query for better performance
+  // Use the existing infinite network feed hook
   const {
     data,
     fetchNextPage,
@@ -33,42 +32,15 @@ export const MobileNetwork = () => {
     isFetchingNextPage,
     isLoading,
     refetch
-  } = useInfiniteQuery({
-    queryKey: ['enhanced-network-feed', user?.id],
-    queryFn: async ({ pageParam = 0 }) => {
-      const limit = 10;
-      const offset = pageParam * limit;
+  } = useInfiniteNetworkFeed({ type: 'all' });
 
-      // Fetch posts with enhanced performance
-      const { data: postsData, error } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          content,
-          headline,
-          post_type,
-          media_urls,
-          created_at,
-          author_id,
-          likes_count,
-          comments_count,
-          shares_count,
-          profiles!posts_author_id_fkey(
-            id,
-            full_name,
-            profile_picture_url,
-            headline,
-            current_company
-          )
-        `)
-        .eq('is_public', true)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      if (error) throw error;
-
-      return (postsData || []).map((post: any) => ({
+  // Transform network posts to mobile format
+  const allPosts = useMemo(() => {
+    if (!data?.pages) return [];
+    
+    return data.pages
+      .flatMap(page => page.data)
+      .map((post: any) => ({
         id: post.id,
         type: (post.post_type === 'job_posting' ? 'job' : 'content') as 'job' | 'content',
         title: post.headline || post.content?.split('\n')[0] || 'Professional Update',
@@ -89,29 +61,6 @@ export const MobileNetwork = () => {
           avatar: post.profiles?.profile_picture_url
         }
       }));
-    },
-    getNextPageParam: (lastPage, pages) => {
-      if (lastPage.length < 10) return undefined;
-      return pages.length;
-    },
-    initialPageParam: 0,
-    enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000 // 10 minutes
-  });
-
-  // Fast memoized posts calculation
-  const allPosts = useMemo(() => {
-    if (!data?.pages) return [];
-    
-    return data.pages
-      .flat()
-      .sort((a, b) => {
-        // Sort by engagement score for trending effect
-        const aScore = a.interactions.interested + a.interactions.comments;
-        const bScore = b.interactions.interested + b.interactions.comments;
-        return bScore - aScore;
-      });
   }, [data]);
 
   const formatTimeAgo = (dateString: string) => {
@@ -125,13 +74,12 @@ export const MobileNetwork = () => {
     return `${diffInDays}d`;
   };
 
-  // Auto-load more when scrolled near bottom
-  const handleScroll = React.useCallback((e: any) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasNextPage && !isFetchingNextPage) {
+  // Manual load more (no auto-scroll loading)
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  };
 
   // Pull to refresh functionality
   const handleRefresh = async () => {
@@ -200,7 +148,7 @@ export const MobileNetwork = () => {
           </Card>
         </div>
         
-        <ScrollArea className="h-[calc(100vh-180px)]" onScrollCapture={handleScroll}>
+        <ScrollArea className="h-[calc(100vh-180px)]">
           <div className="pb-20">
             {/* Networking Stats */}
             <MobileNetworkingStats />
@@ -223,13 +171,40 @@ export const MobileNetwork = () => {
               </div>
             ))}
             
-            {/* Loading indicator */}
-            {isFetchingNextPage && (
-              <div className="flex justify-center p-4">
-                <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+            {/* Load More Button */}
+            {hasNextPage && (
+              <div className="flex justify-center py-8 px-4">
+                <Button 
+                  onClick={handleLoadMore}
+                  disabled={isFetchingNextPage}
+                  className="w-full max-w-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl h-12 font-medium shadow-lg transition-all duration-200"
+                >
+                  {isFetchingNextPage ? (
+                    <div className="flex items-center gap-3">
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      <span>Loading more posts...</span>
+                    </div>
+                  ) : (
+                    <span>Load More Posts</span>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* End of Feed Message */}
+            {!hasNextPage && allPosts.length > 0 && (
+              <div className="text-center py-8 px-4">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mx-4 shadow-sm border border-gray-100">
+                  <div className="text-2xl mb-2">🎉</div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">You're all caught up!</h3>
+                  <p className="text-gray-600 text-sm">
+                    You've seen all the latest posts from your network
+                  </p>
+                </div>
               </div>
             )}
             
+            {/* Empty State */}
             {allPosts.length === 0 && !isLoading && (
               <div className="p-8 text-center">
                 <p className="text-gray-600">Welcome to your Network Feed!</p>
