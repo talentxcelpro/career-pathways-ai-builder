@@ -21,7 +21,6 @@ import { UserBadges } from '@/components/gamification/UserBadges';
 import { QRCodeGenerator } from '@/components/passport/QRCodeGenerator';
 import EnhancedQRGenerator from '@/components/passport/EnhancedQRGenerator';
 import ProfessionalCard from '@/components/passport/ProfessionalCard';
-import { DigitalPassportCard } from '@/components/passport/DigitalPassportCard';
 import { CareerQRCard } from '@/components/qr/CareerQRCard';
 import { QRScanner } from '@/components/qr/QRScanner';
 import { 
@@ -435,17 +434,12 @@ export function CareerPassportDashboard() {
           <div className="space-y-4">{/* Reduced spacing from space-y-8 to space-y-4 */}
             {/* Enhanced QR Generator for own profile */}
             {!isPublicView && displayData.isOwner && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{/* Reduced gap from gap-6 to gap-4 */}
                 <EnhancedQRGenerator profileData={displayData.profile} />
                 <ProfessionalCard 
                   profile={displayData.profile} 
                   careerPassport={displayData.passport}
                   isOwner={true}
-                />
-                <DigitalPassportCard 
-                  profile={displayData.profile}
-                  careerPassport={displayData.passport}
-                  qrCodeUrl={qrCodeUrl}
                 />
               </div>
             )}
