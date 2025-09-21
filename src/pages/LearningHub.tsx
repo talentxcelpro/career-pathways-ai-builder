@@ -88,7 +88,7 @@ export default function LearningHub() {
       </section>
 
       {/* New Pipeline Features */}
-      <section className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+      <section className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
         <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
           <div className="text-3xl mb-2">🔗</div>
           <h3 className="font-semibold">Pipeline Dashboard</h3>
@@ -108,6 +108,13 @@ export default function LearningHub() {
           <h3 className="font-semibold">Company Portal</h3>
           <Link to="/learning/company-portal">
             <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enter</button>
+          </Link>
+        </div>
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">📊</div>
+          <h3 className="font-semibold">Advanced Analytics</h3>
+          <Link to="/learning/analytics-advanced">
+            <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">View Data</button>
           </Link>
         </div>
       </section>
