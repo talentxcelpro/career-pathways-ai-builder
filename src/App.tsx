@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import * as React from "react";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +20,7 @@ import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
 import { BundleErrorFallback } from "./components/BundleErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import { HelmetProvider } from 'react-helmet-async';
+import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
@@ -175,7 +177,8 @@ const App = () => {
   }
 
   return (
-    <ErrorBoundary FallbackComponent={BundleErrorFallback}>
+    <ReactErrorBoundary>
+      <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <TooltipProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter>
@@ -400,20 +403,31 @@ const App = () => {
         </QueryClientProvider>
       </TooltipProvider>
     </ErrorBoundary>
+  </ReactErrorBoundary>
   );
 };
 
-// Initialize performance optimizations
+// Initialize performance optimizations - Wrapped with error boundary to prevent React hook issues
 const AppWrapper = () => {
-  useEffect(() => {
-    // Apply color scheme from localStorage
-    const savedColorScheme = localStorage.getItem('colorScheme');
-    if (savedColorScheme) {
-      document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+  // Add null check for React to prevent "Cannot read properties of null" error
+  if (typeof React === 'undefined' || React === null) {
+    console.error('React is not properly loaded');
+    return <div>Loading application...</div>;
+  }
+
+  React.useEffect(() => {
+    try {
+      // Apply color scheme from localStorage
+      const savedColorScheme = localStorage.getItem('colorScheme');
+      if (savedColorScheme) {
+        document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+      }
+      
+      // Initialize performance optimizations for better Core Web Vitals
+      initializePerformanceOptimizations();
+    } catch (error) {
+      console.error('Error in AppWrapper useEffect:', error);
     }
-    
-    // Initialize performance optimizations for better Core Web Vitals
-    initializePerformanceOptimizations();
   }, []);
 
   return <App />;
