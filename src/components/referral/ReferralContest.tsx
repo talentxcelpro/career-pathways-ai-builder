@@ -33,52 +33,13 @@ interface ContestData {
   type: 'weekly' | 'monthly' | 'special';
 }
 
-const mockContests: ContestData[] = [
-  {
-    id: '1',
-    title: '🔥 Week Warrior Challenge',
-    description: 'Top 10 referrers this week win exclusive TXC bonuses!',
-    targetReferrals: 10,
-    timeLeft: 18,
-    prize: '5,000 TXC + Pro Badge',
-    participants: 234,
-    currentUserProgress: 3,
-    status: 'ending_soon',
-    type: 'weekly'
-  },
-  {
-    id: '2', 
-    title: '🚀 Monthly Mega Contest',
-    description: 'Refer 25 friends this month and unlock legendary rewards!',
-    targetReferrals: 25,
-    timeLeft: 168,
-    prize: '3-Month Pro + AI Tools',
-    participants: 1247,
-    currentUserProgress: 7,
-    status: 'active',
-    type: 'monthly'
-  },
-  {
-    id: '3',
-    title: '⚡ Speed Referral Blitz',
-    description: 'First 50 to reach 5 referrals in 24 hours win big!',
-    targetReferrals: 5,
-    timeLeft: 6,
-    prize: '2,500 TXC + Speed Badge',
-    participants: 89,
-    currentUserProgress: 2,
-    status: 'ending_soon',
-    type: 'special'
-  }
-];
-
 export const ReferralContest: React.FC = () => {
   const { referralData } = useReferralSystem();
   const { contests: realContests, loading, getUserContestProgress } = useReferralContests();
   const [selectedContest, setSelectedContest] = useState<string | null>(null);
   const [userProgress, setUserProgress] = useState<Record<string, number>>({});
 
-  // Convert real contests to display format
+  // Use real contests only
   const contests: ContestData[] = realContests.map(contest => ({
     id: contest.id,
     title: contest.title,
@@ -264,15 +225,17 @@ export const ReferralContest: React.FC = () => {
                     <div className="grid grid-cols-1 gap-3">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Your Rank:</span>
-                        <Badge variant="secondary">#42</Badge>
+                        <Badge variant="secondary">Calculating...</Badge>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Top Score:</span>
-                        <span className="font-bold">15 referrals</span>
+                        <span className="text-muted-foreground">Your Progress:</span>
+                        <span className="font-bold">{contest.currentUserProgress} referrals</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Win Rate:</span>
-                        <span className="font-bold text-green-600">12%</span>
+                        <span className="text-muted-foreground">Completion:</span>
+                        <span className="font-bold text-primary">
+                          {Math.round((contest.currentUserProgress / contest.targetReferrals) * 100)}%
+                        </span>
                       </div>
                     </div>
                     
@@ -305,13 +268,13 @@ export const ReferralContest: React.FC = () => {
         <CardContent>
           <div className="space-y-3">
             {[
-              { rank: 1, name: 'Sarah K.', referrals: 15, badge: '👑' },
-              { rank: 2, name: 'Mike R.', referrals: 12, badge: '🥈' },
-              { rank: 3, name: 'Lisa M.', referrals: 10, badge: '🥉' },
-              { rank: 42, name: 'You', referrals: referralData?.successful_referrals || 0, badge: '🎯' }
-            ].map((user) => (
+              { rank: 1, name: 'Top Referrer', referrals: 15, badge: '👑' },
+              { rank: 2, name: 'Second Place', referrals: 12, badge: '🥈' },
+              { rank: 3, name: 'Third Place', referrals: 10, badge: '🥉' },
+              { rank: '?', name: 'You', referrals: referralData?.successful_referrals || 0, badge: '🎯' }
+            ].map((user, index) => (
               <div 
-                key={user.rank}
+                key={`user-${index}`}
                 className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                   user.name === 'You' 
                     ? 'bg-primary/10 ring-2 ring-primary/30 scale-105' 
@@ -320,9 +283,9 @@ export const ReferralContest: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                    user.rank <= 3 ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white' : 'bg-muted'
+                    typeof user.rank === 'number' && user.rank <= 3 ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white' : 'bg-muted'
                   }`}>
-                    {user.rank <= 3 ? user.badge : user.rank}
+                    {typeof user.rank === 'number' && user.rank <= 3 ? user.badge : user.rank}
                   </div>
                   <div>
                     <div className="font-semibold flex items-center gap-2">

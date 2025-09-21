@@ -33,51 +33,12 @@ interface UrgencyOffer {
   animation: 'pulse' | 'bounce' | 'glow';
 }
 
-const mockOffers: UrgencyOffer[] = [
-  {
-    id: '1',
-    title: '⚡ Flash TXC Multiplier',
-    description: 'Next 3 referrals earn 3x TXC!',
-    multiplier: 3,
-    timeLeft: 45,
-    minReferrals: 1,
-    maxClaims: 50,
-    currentClaims: 23,
-    type: 'flash_bonus',
-    animation: 'pulse'
-  },
-  {
-    id: '2',
-    title: '🔥 Hot Streak Bonus',
-    description: 'Get 5 referrals in 2 hours for 5,000 TXC bonus!',
-    multiplier: 1,
-    timeLeft: 87,
-    minReferrals: 5,
-    maxClaims: 20,
-    currentClaims: 7,
-    type: 'streak_multiplier',
-    animation: 'bounce'
-  },
-  {
-    id: '3',
-    title: '⏰ Last Chance Pro Boost',
-    description: '2 referrals = Instant 1-week Pro access!',
-    multiplier: 1,
-    timeLeft: 23,
-    minReferrals: 2,
-    maxClaims: 15,
-    currentClaims: 12,
-    type: 'limited_time',
-    animation: 'glow'
-  }
-];
-
 export const UrgencyBooster: React.FC = () => {
   const { referralData, copyReferralLink } = useReferralSystem();
   const { urgencyOffers: realOffers, loading } = useReferralContests();
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null);
 
-  // Convert real offers to display format  
+  // Use real offers only  
   const offers: UrgencyOffer[] = realOffers.map(offer => ({
     id: offer.id,
     title: offer.title,

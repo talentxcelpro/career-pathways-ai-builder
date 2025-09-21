@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
-import { ReferralDashboard } from '@/components/referral/ReferralDashboard';
+import { RealTimeReferralDashboard } from '@/components/referral/RealTimeReferralDashboard';
 import { ReferralContest } from '@/components/referral/ReferralContest';
 import { UrgencyBooster } from '@/components/referral/UrgencyBooster';
 import { SocialGameHub } from '@/components/referral/SocialGameHub';
@@ -340,7 +340,7 @@ const ReferAndEarn: React.FC = () => {
               <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
               <p className="text-muted-foreground">Track your progress and share your referral link</p>
             </div>
-            <ReferralDashboard />
+            <RealTimeReferralDashboard />
           </div>
         </section>
       )}

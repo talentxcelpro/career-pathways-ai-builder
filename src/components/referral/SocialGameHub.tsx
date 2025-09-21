@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
+import { useReferralData } from '@/hooks/useReferralData';
 import { 
   Users, 
   MessageCircle, 
@@ -51,93 +52,41 @@ interface UserAchievement {
   reward: string;
 }
 
-const mockActivities: SocialActivity[] = [
-  {
-    id: '1',
-    user: { name: 'Sarah M.', avatar: '', level: 8, badge: '🏆' },
-    action: 'contest_win',
-    description: 'Won the Weekly Warrior Challenge with 15 referrals!',
-    timestamp: '2 minutes ago',
-    likes: 23,
-    comments: 5,
-    reward: '5,000 TXC + Pro Badge'
-  },
-  {
-    id: '2',
-    user: { name: 'Mike R.', avatar: '', level: 5, badge: '🔥' },
-    action: 'streak',
-    description: 'Achieved a 7-day referral streak! 🔥',
-    timestamp: '15 minutes ago',
-    likes: 12,
-    comments: 3,
-    reward: '2x TXC Multiplier'
-  },
-  {
-    id: '3',
-    user: { name: 'Lisa K.', avatar: '', level: 12, badge: '👑' },
-    action: 'milestone',
-    description: 'Reached 50 successful referrals milestone!',
-    timestamp: '1 hour ago',
-    likes: 45,
-    comments: 12,
-    reward: '2-Month Pro Access'
-  }
-];
-
-const mockAchievements: UserAchievement[] = [
-  {
-    id: '1',
-    title: 'First Steps',
-    description: 'Complete your first referral',
-    icon: '🎯',
-    rarity: 'common',
-    progress: 1,
-    maxProgress: 1,
-    unlocked: true,
-    reward: '500 TXC'
-  },
-  {
-    id: '2',
-    title: 'Social Butterfly',
-    description: 'Share on 3 different platforms',
-    icon: '🦋',
-    rarity: 'rare',
-    progress: 2,
-    maxProgress: 3,
-    unlocked: false,
-    reward: '1,500 TXC'
-  },
-  {
-    id: '3',
-    title: 'Streak Master',
-    description: 'Maintain a 14-day referral streak',
-    icon: '⚡',
-    rarity: 'epic',
-    progress: 7,
-    maxProgress: 14,
-    unlocked: false,
-    reward: '5,000 TXC + Special Badge'
-  },
-  {
-    id: '4',
-    title: 'Legend',
-    description: 'Refer 100 successful users',
-    icon: '👑',
-    rarity: 'legendary',
-    progress: 23,
-    maxProgress: 100,
-    unlocked: false,
-    reward: '6-Month Pro + Exclusive Tools'
-  }
-];
-
 export const SocialGameHub: React.FC = () => {
   const { referralData } = useReferralSystem();
-  const [activities, setActivities] = useState<SocialActivity[]>(mockActivities);
-  const [achievements, setAchievements] = useState<UserAchievement[]>(mockAchievements);
-  const [userLevel, setUserLevel] = useState(3);
-  const [userXP, setUserXP] = useState(1250);
-  const [nextLevelXP, setNextLevelXP] = useState(2000);
+  const { stats, activities, achievements } = useReferralData();
+  const [userLevel, setUserLevel] = useState(1);
+  const [userXP, setUserXP] = useState(0);
+  const [nextLevelXP, setNextLevelXP] = useState(1000);
+
+  // Calculate level based on successful referrals
+  React.useEffect(() => {
+    const level = Math.floor(stats.successfulReferrals / 5) + 1;
+    const xp = (stats.successfulReferrals * 500) + (stats.totalRewards / 10);
+    const nextXP = level * 1000;
+    
+    setUserLevel(level);
+    setUserXP(xp);
+    setNextLevelXP(nextXP);
+  }, [stats]);
+
+  // Convert activities to social format
+  const socialActivities: SocialActivity[] = activities.slice(0, 5).map(activity => ({
+    id: activity.id,
+    user: { 
+      name: 'You', 
+      avatar: '', 
+      level: userLevel, 
+      badge: userLevel >= 5 ? '🏆' : userLevel >= 3 ? '🔥' : '⭐' 
+    },
+    action: activity.type === 'referral_completed' ? 'referral' : 
+           activity.type === 'reward_earned' ? 'milestone' : 'referral',
+    description: activity.description,
+    timestamp: new Date(activity.timestamp).toLocaleDateString(),
+    likes: Math.floor(Math.random() * 20) + 5,
+    comments: Math.floor(Math.random() * 10) + 1,
+    reward: activity.reward ? `${activity.reward} TXC` : undefined
+  }));
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -161,11 +110,8 @@ export const SocialGameHub: React.FC = () => {
   };
 
   const handleLike = (activityId: string) => {
-    setActivities(prev => prev.map(activity => 
-      activity.id === activityId 
-        ? { ...activity, likes: activity.likes + 1 }
-        : activity
-    ));
+    // In a real app, this would update the backend
+    console.log('Liked activity:', activityId);
   };
 
   const LevelProgress: React.FC = () => {
@@ -234,12 +180,12 @@ export const SocialGameHub: React.FC = () => {
               <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg">
                 <TrendingUp className="h-5 w-5 text-blue-500" />
               </div>
-              Community Activity
+              Your Activity
               <Badge className="bg-green-500 text-white animate-pulse">LIVE</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {activities.map((activity) => {
+            {socialActivities.map((activity) => {
               const Icon = getActionIcon(activity.action);
               
               return (
@@ -301,6 +247,11 @@ export const SocialGameHub: React.FC = () => {
                 </div>
               );
             })}
+            {socialActivities.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No activity yet. Start referring to see your achievements here!
+              </p>
+            )}
           </CardContent>
         </Card>
 
