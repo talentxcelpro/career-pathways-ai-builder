@@ -7563,6 +7563,54 @@ export type Database = {
         }
         Relationships: []
       }
+      company_learning_programs: {
+        Row: {
+          budget: number | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          current_participants: number | null
+          description: string | null
+          duration_weeks: number | null
+          id: string
+          max_participants: number | null
+          program_name: string
+          status: string | null
+          target_skills: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          budget?: number | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          duration_weeks?: number | null
+          id?: string
+          max_participants?: number | null
+          program_name: string
+          status?: string | null
+          target_skills?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          budget?: number | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          duration_weeks?: number | null
+          id?: string
+          max_participants?: number | null
+          program_name?: string
+          status?: string | null
+          target_skills?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       company_media_library: {
         Row: {
           alt_text: string | null
@@ -11743,6 +11791,90 @@ export type Database = {
           },
         ]
       }
+      forum_posts: {
+        Row: {
+          content: string
+          created_at: string | null
+          forum_id: string
+          id: string
+          is_locked: boolean | null
+          is_pinned: boolean | null
+          like_count: number | null
+          post_type: string | null
+          reply_count: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          forum_id: string
+          id?: string
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          like_count?: number | null
+          post_type?: string | null
+          reply_count?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          forum_id?: string
+          id?: string
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          like_count?: number | null
+          post_type?: string | null
+          reply_count?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      forum_replies: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_solution: boolean | null
+          like_count: number | null
+          parent_reply_id: string | null
+          post_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_solution?: boolean | null
+          like_count?: number | null
+          parent_reply_id?: string | null
+          post_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_solution?: boolean | null
+          like_count?: number | null
+          parent_reply_id?: string | null
+          post_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       function_alerts: {
         Row: {
           alert_type: string
@@ -15404,6 +15536,45 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_forums: {
+        Row: {
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          member_count: number | null
+          post_count: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          member_count?: number | null
+          post_count?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          member_count?: number | null
+          post_count?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       learning_job_applications: {
         Row: {
           application_id: string | null
@@ -15483,6 +15654,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learning_modules: {
+        Row: {
+          content: Json | null
+          course_id: string | null
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_required: boolean | null
+          module_type: string
+          order_index: number | null
+          prerequisites: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          content?: Json | null
+          course_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_required?: boolean | null
+          module_type: string
+          order_index?: number | null
+          prerequisites?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: Json | null
+          course_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_required?: boolean | null
+          module_type?: string
+          order_index?: number | null
+          prerequisites?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       learning_paths: {
         Row: {
@@ -15620,6 +15836,60 @@ export type Database = {
           recorded_at?: string | null
           struggle_points?: Json | null
           time_spent_minutes?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          is_viewed: boolean | null
+          metadata: Json | null
+          priority: number | null
+          reasoning: string | null
+          recommendation_type: string
+          target_id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          metadata?: Json | null
+          priority?: number | null
+          reasoning?: string | null
+          recommendation_type: string
+          target_id: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_viewed?: boolean | null
+          metadata?: Json | null
+          priority?: number | null
+          reasoning?: string | null
+          recommendation_type?: string
+          target_id?: string
+          title?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -16111,6 +16381,42 @@ export type Database = {
           status?: string
           target_audience?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      mentorship_connections: {
+        Row: {
+          created_at: string | null
+          expertise_areas: Json | null
+          goals: string | null
+          id: string
+          meeting_frequency: string | null
+          mentee_id: string
+          mentor_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expertise_areas?: Json | null
+          goals?: string | null
+          id?: string
+          meeting_frequency?: string | null
+          mentee_id: string
+          mentor_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expertise_areas?: Json | null
+          goals?: string | null
+          id?: string
+          meeting_frequency?: string | null
+          mentee_id?: string
+          mentor_id?: string
+          status?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -16719,6 +17025,45 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      offline_content: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string | null
+          download_progress: number | null
+          download_status: string | null
+          downloaded_at: string | null
+          expires_at: string | null
+          file_size_mb: number | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          download_progress?: number | null
+          download_status?: string | null
+          downloaded_at?: string | null
+          expires_at?: string | null
+          file_size_mb?: number | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          download_progress?: number | null
+          download_status?: string | null
+          downloaded_at?: string | null
+          expires_at?: string | null
+          file_size_mb?: number | null
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -19915,6 +20260,39 @@ export type Database = {
           },
         ]
       }
+      program_enrollments: {
+        Row: {
+          completed_at: string | null
+          enrolled_at: string | null
+          enrollment_status: string | null
+          id: string
+          performance_score: number | null
+          program_id: string
+          progress_percentage: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          enrolled_at?: string | null
+          enrollment_status?: string | null
+          id?: string
+          performance_score?: number | null
+          program_id: string
+          progress_percentage?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          enrolled_at?: string | null
+          enrollment_status?: string | null
+          id?: string
+          performance_score?: number | null
+          program_id?: string
+          progress_percentage?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           created_at: string | null
@@ -20187,6 +20565,48 @@ export type Database = {
           status?: string
           title?: string
           trigger_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          id: string
+          is_read: boolean | null
+          is_sent: boolean | null
+          message: string
+          notification_type: string
+          scheduled_at: string | null
+          sent_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          is_sent?: boolean | null
+          message: string
+          notification_type: string
+          scheduled_at?: string | null
+          sent_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          is_sent?: boolean | null
+          message?: string
+          notification_type?: string
+          scheduled_at?: string | null
+          sent_at?: string | null
+          title?: string
           user_id?: string
         }
         Relationships: []
@@ -27988,6 +28408,48 @@ export type Database = {
           },
         ]
       }
+      user_assessments: {
+        Row: {
+          answers: Json | null
+          assessment_id: string
+          attempt_number: number | null
+          feedback: string | null
+          graded_at: string | null
+          id: string
+          score: number | null
+          started_at: string | null
+          status: string | null
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          answers?: Json | null
+          assessment_id: string
+          attempt_number?: number | null
+          feedback?: string | null
+          graded_at?: string | null
+          id?: string
+          score?: number | null
+          started_at?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          answers?: Json | null
+          assessment_id?: string
+          attempt_number?: number | null
+          feedback?: string | null
+          graded_at?: string | null
+          id?: string
+          score?: number | null
+          started_at?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_name: string
@@ -28870,6 +29332,48 @@ export type Database = {
           metadata?: Json | null
           reason?: string | null
           target_user_id?: string
+        }
+        Relationships: []
+      }
+      user_module_progress: {
+        Row: {
+          attempts: number | null
+          completion_date: string | null
+          created_at: string | null
+          id: string
+          module_id: string
+          progress_percentage: number | null
+          score: number | null
+          status: string | null
+          time_spent_minutes: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          module_id: string
+          progress_percentage?: number | null
+          score?: number | null
+          status?: string | null
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          module_id?: string
+          progress_percentage?: number | null
+          score?: number | null
+          status?: string | null
+          time_spent_minutes?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -30885,6 +31389,10 @@ export type Database = {
       generate_vanity_url_suggestions: {
         Args: { base_name: string }
         Returns: string[]
+      }
+      generate_verification_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_agent_by_role: {
         Args: { p_role: string }
