@@ -11298,6 +11298,38 @@ export type Database = {
         }
         Relationships: []
       }
+      event_registrations: {
+        Row: {
+          event_id: string
+          id: string
+          registered_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          id?: string
+          registered_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          id?: string
+          registered_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "live_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_rsvps: {
         Row: {
           event_id: string | null
@@ -15341,6 +15373,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      live_events: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          difficulty_level: string
+          duration_minutes: number
+          event_type: string
+          event_url: string | null
+          host_id: string
+          id: string
+          is_live: boolean
+          max_participants: number | null
+          participant_count: number
+          price: number | null
+          registration_required: boolean
+          scheduled_at: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number
+          event_type: string
+          event_url?: string | null
+          host_id: string
+          id?: string
+          is_live?: boolean
+          max_participants?: number | null
+          participant_count?: number
+          price?: number | null
+          registration_required?: boolean
+          scheduled_at: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number
+          event_type?: string
+          event_url?: string | null
+          host_id?: string
+          id?: string
+          is_live?: boolean
+          max_participants?: number | null
+          participant_count?: number
+          price?: number | null
+          registration_required?: boolean
+          scheduled_at?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       market_insights: {
         Row: {
@@ -29842,6 +29937,10 @@ export type Database = {
         }
         Returns: string
       }
+      decrement_event_participants: {
+        Args: { event_id: string }
+        Returns: undefined
+      }
       decrement_post_likes: {
         Args: { post_id: string }
         Returns: undefined
@@ -30324,6 +30423,10 @@ export type Database = {
         Args:
           | { batch_id: string; success?: boolean }
           | { batch_id: string; success?: boolean }
+        Returns: undefined
+      }
+      increment_event_participants: {
+        Args: { event_id: string }
         Returns: undefined
       }
       increment_job_applications: {
