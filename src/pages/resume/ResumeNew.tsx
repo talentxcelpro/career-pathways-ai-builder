@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -123,177 +124,191 @@ const ResumeNew: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gray-50">
       <Helmet>
         <title>Complete TalentXcel Career Toolkit | AI Resume Builder & Career Tools</title>
         <meta name="description" content="Everything you need to build, optimize, and land your next role with AI. Complete career toolkit with resume builder, ATS optimizer, interview prep, and more." />
         <link rel="canonical" href="https://talentxcel.in/resume/new" />
       </Helmet>
       
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        {/* Hero Section */}
-        <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-          {/* Left Side - Content */}
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 leading-tight">
-                Complete TalentXcel Career Toolkit
-              </h1>
-              
-              <p className="text-xl text-slate-600 leading-relaxed">
-                Everything you need to build, optimize, and land your next role with AI
-              </p>
+      {/* Apple-style Navigation */}
+      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="text-2xl font-semibold text-gray-900">
+              TalentXcel
+            </Link>
+            <div className="flex items-center space-x-8">
+              <Link to="/resume/builder" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Resume Builder
+              </Link>
+              <Link to="/resume/templates" className="text-gray-600 hover:text-gray-900 transition-colors">
+                Templates
+              </Link>
+              <Link to="/auth/login" className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                Sign In
+              </Link>
             </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+          </div>
+        </div>
+      </nav>
+      
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* Apple-style Hero Section */}
+        <div className="text-center mb-20">
+          <h1 className="text-6xl font-semibold text-gray-900 mb-6 tracking-tight">
+            Complete Career Toolkit.
+          </h1>
+          <p className="text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Everything you need to build, optimize, and land your next role with AI.
+          </p>
+          
+          {/* Apple-style CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/resume/builder">
               <Button 
                 size="lg"
-                className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => window.location.href = '/resume/builder'}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Start Building Resume
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              
+            </Link>
+            
+            <Link to="/resume/upload">
               <Button 
                 variant="outline"
                 size="lg"
-                className="border-slate-300 text-slate-700 hover:bg-white px-8 py-6 text-lg font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
-                onClick={() => window.location.href = '/resume/upload'}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-medium rounded-full transition-all duration-300"
               >
                 Upload Existing Resume
               </Button>
-            </div>
+            </Link>
           </div>
+        </div>
 
-          {/* Right Side - Resume Preview */}
-          <div className="relative">
-            <div className="relative max-w-md mx-auto">
-              <img
-                src={resumePreview}
-                alt="Professional resume preview showing Alex Johnson's resume with ATS optimization"
-                className="w-full h-auto rounded-lg shadow-2xl"
-              />
-              
-              {/* Floating Badges */}
-              <div className="absolute -left-4 top-1/4 transform -translate-y-1/2">
-                <Badge className="bg-green-500 text-white px-4 py-2 text-sm font-semibold rounded-full shadow-lg">
-                  ATS Optimized
-                </Badge>
+        {/* Apple-style Feature Preview */}
+        <div className="mb-24">
+          <div className="relative max-w-4xl mx-auto">
+            <img
+              src={resumePreview}
+              alt="Professional resume preview showing Alex Johnson's resume with ATS optimization"
+              className="w-full h-auto rounded-2xl shadow-2xl"
+            />
+            
+            {/* Floating Apple-style Badges */}
+            <div className="absolute -left-8 top-1/4 transform -translate-y-1/2 hidden lg:block">
+              <div className="bg-green-500 text-white px-6 py-3 text-sm font-semibold rounded-full shadow-lg backdrop-blur-sm">
+                ATS Optimized
               </div>
-              
-              <div className="absolute -right-4 top-1/3 transform -translate-y-1/2">
-                <Badge className="bg-blue-500 text-white px-4 py-2 text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
-                  <Zap className="h-4 w-4" />
-                  AI-Power
-                </Badge>
-              </div>
-              
-              <div className="absolute -right-4 bottom-1/4 transform translate-y-1/2">
-                <Badge className="bg-green-600 text-white px-4 py-2 text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
-                  Hired at Top
-                  <Plane className="h-4 w-4" />
-                </Badge>
+            </div>
+            
+            <div className="absolute -right-8 top-1/3 transform -translate-y-1/2 hidden lg:block">
+              <div className="bg-blue-500 text-white px-6 py-3 text-sm font-semibold rounded-full shadow-lg backdrop-blur-sm flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                AI-Powered
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tools Grid */}
-        <div className="space-y-12">
+        {/* Apple-style Tools Grid */}
+        <div className="space-y-16">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">
-              Professional Career Tools
+            <h2 className="text-5xl font-semibold text-gray-900 mb-6 tracking-tight">
+              Professional Career Tools.
             </h2>
-            <p className="text-xl text-slate-600">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Complete suite of AI-powered tools to accelerate your career
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {tools.map((tool, index) => (
-              <Card 
-                key={index} 
-                className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border-slate-200 hover:border-blue-300"
-                onClick={() => window.location.href = tool.href}
-              >
-                <CardContent className="p-6 space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
-                      {tool.icon}
+              <Link key={index} to={tool.href}>
+                <Card className="group hover:shadow-xl transition-all duration-500 cursor-pointer hover:-translate-y-2 border-0 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden">
+                  <CardContent className="p-8 space-y-6">
+                    <div className="flex items-start justify-between">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                        {tool.icon}
+                      </div>
+                      <Badge className={`${tool.badgeColor} text-white text-xs px-3 py-1 rounded-full font-medium`}>
+                        {tool.badge}
+                      </Badge>
                     </div>
-                    <Badge className={`${tool.badgeColor} text-white text-xs px-2 py-1`}>
-                      {tool.badge}
-                    </Badge>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
-                      {tool.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 mt-2 line-clamp-2">
-                      {tool.description}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-sm font-medium text-blue-600">
-                      {tool.stat}
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
-                  </div>
-                </CardContent>
-              </Card>
+                    
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-3">
+                        {tool.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {tool.description}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-4">
+                      <span className="text-sm font-medium text-blue-600">
+                        {tool.stat}
+                      </span>
+                      <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
 
-        {/* Bottom CTA Section */}
-        <div className="mt-20 text-center bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-12 text-white">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <h2 className="text-3xl font-bold">
-              Ready to Transform Your Career?
+        {/* Apple-style Bottom CTA Section */}
+        <div className="mt-32 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 rounded-3xl p-16 text-white relative overflow-hidden">
+          <div className="relative z-10 max-w-4xl mx-auto space-y-8">
+            <h2 className="text-5xl font-semibold tracking-tight">
+              Ready to transform your career?
             </h2>
-            <p className="text-xl text-blue-100">
+            <p className="text-xl text-blue-100 leading-relaxed">
               Join thousands of professionals who've accelerated their careers with TalentXcel
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-              <Button 
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => window.location.href = '/resume/builder'}
-              >
-                <Star className="mr-2 h-5 w-5" />
-                Start Free Now
-              </Button>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
+              <Link to="/resume/builder">
+                <Button 
+                  size="lg"
+                  className="bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <Star className="mr-2 h-5 w-5" />
+                  Start Free Now
+                </Button>
+              </Link>
               
-              <Button 
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-6 text-lg font-semibold rounded-lg transition-all duration-300"
-                onClick={() => window.location.href = '/resume/templates'}
-              >
-                Explore Templates
-              </Button>
+              <Link to="/resume/templates">
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-10 py-4 text-lg font-semibold rounded-full transition-all duration-300"
+                >
+                  Explore Templates
+                </Button>
+              </Link>
             </div>
             
-            <div className="flex items-center justify-center space-x-8 text-sm text-blue-200 pt-6">
-              <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 mr-2" />
+            <div className="flex items-center justify-center space-x-12 text-blue-200 pt-8">
+              <div className="flex items-center text-lg">
+                <CheckCircle className="h-5 w-5 mr-3" />
                 Free to start
               </div>
-              <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 mr-2" />
+              <div className="flex items-center text-lg">
+                <CheckCircle className="h-5 w-5 mr-3" />
                 No credit card required
               </div>
-              <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 mr-2" />
+              <div className="flex items-center text-lg">
+                <CheckCircle className="h-5 w-5 mr-3" />
                 Join 10,000+ users
               </div>
             </div>
           </div>
+          
+          {/* Apple-style background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-1"></div>
         </div>
       </div>
     </div>

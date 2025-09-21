@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import VideoPlayer from '@/components/posts/VideoPlayer';
@@ -79,6 +80,7 @@ const LinkedInPostCard: React.FC<{
   onConnect?: (userId: string) => void;
   onApply?: (jobUrl: string) => void;
 }> = ({ post, onLike, onBookmark, onShare, onComment, onConnect, onApply }) => {
+  const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(post.stats.isLiked);
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
@@ -109,8 +111,8 @@ const LinkedInPostCard: React.FC<{
         <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3 flex-1">
               <button
-                onClick={() => window.location.href = `/user/${post.user.id}`}
                 className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
+                onClick={() => navigate(`/user/${post.user.id}`)}
               >
                 <Avatar className="w-12 h-12 ring-2 ring-white shadow-lg hover:ring-blue-200 transition-all cursor-pointer">
                   <AvatarImage src={post.user.avatar} alt={post.user.name} />
@@ -122,8 +124,8 @@ const LinkedInPostCard: React.FC<{
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => window.location.href = `/user/${post.user.id}`}
                     className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded text-left"
+                    onClick={() => navigate(`/user/${post.user.id}`)}
                   >
                     <h3 className="font-semibold text-gray-900 text-sm truncate hover:text-blue-600 transition-colors">
                       {post.user.name}
