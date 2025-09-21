@@ -11,6 +11,8 @@ import { MobileSearch } from "../pages/mobile/MobileSearch";
 import { MobilePassport } from "../pages/mobile/MobilePassport";
 import GamificationCenter from "../pages/GamificationCenter";
 import ReferAndEarn from "../pages/ReferAndEarn";
+import { MobileHubs } from "../pages/mobile/MobileHubs";
+import { MobileHub } from "../pages/mobile/MobileHub";
 
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Jobs", to: "/mobile/jobs", page: <MobileJobs /> },
@@ -27,4 +29,6 @@ export const mobileRoutes: NavItem[] = [
   { title: "Mobile Passport", to: "/mobile/passport/:userId", page: <MobilePassport /> },
   { title: "Mobile Gamification", to: "/mobile/gamification", page: <GamificationCenter /> },
   { title: "Mobile Referral", to: "/mobile/refer-and-earn", page: <ReferAndEarn /> },
+  { title: "Mobile Hubs", to: "/mobile/hubs", page: <MobileHubs /> },
+  { title: "Mobile Hub Detail", to: "/mobile/hubs/:slug", page: <MobileHub /> },
 ];
