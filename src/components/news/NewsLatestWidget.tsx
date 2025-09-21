@@ -13,7 +13,7 @@ export const NewsLatestWidget: React.FC = () => {
       const { data, error } = await supabase
         .from('news_articles')
         .select('id, title, summary, slug, published_at, category, image_url')
-        .eq('status', 'published')
+        .eq('published_status', 'published')
         .order('published_at', { ascending: false })
         .limit(3);
 
@@ -69,6 +69,9 @@ export const NewsLatestWidget: React.FC = () => {
                       src={article.image_url} 
                       alt={article.title}
                       className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                      loading="lazy"
+                      decoding="async"
+                      style={{ contentVisibility: 'auto', containIntrinsicSize: '64px 64px' }}
                     />
                   )}
                   <div className="flex-1 min-w-0">

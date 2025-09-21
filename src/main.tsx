@@ -4,6 +4,8 @@ import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AppWrapper } from './AppWrapper.tsx'
 
 import './index.css'
+import './utils/ultraFastLoader'
+import './utils/instantLoader'
 
 // Ensure React is globally available
 (window as any).React = React;

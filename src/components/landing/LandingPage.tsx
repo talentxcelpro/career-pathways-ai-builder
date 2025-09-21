@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { AppleHeroSection } from './AppleHeroSection';
 import { FeaturesSection } from './FeaturesSection';
 import { WhyTalentXcel } from './WhyTalentXcel';
@@ -7,7 +7,11 @@ import { CTABanner } from './CTABanner';
 import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
 import { MobileAppPreview } from './MobileAppPreview';
 import { AppleFooter } from './AppleFooter';
-import { NewsLatestWidget } from '@/components/news/NewsLatestWidget';
+
+// Lazy load news widget for faster initial load
+const NewsLatestWidget = React.lazy(() => 
+  import('@/components/news/NewsLatestWidget').then(module => ({ default: module.NewsLatestWidget }))
+);
 
 export const LandingPage = () => {
   return (
@@ -21,7 +25,21 @@ export const LandingPage = () => {
             <CTABanner />
           </div>
           <div className="lg:col-span-1">
-            <NewsLatestWidget />
+            <Suspense fallback={
+              <div className="bg-card rounded-lg p-4 h-48 animate-pulse">
+                <div className="h-4 bg-muted rounded w-24 mb-4"></div>
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i}>
+                      <div className="h-3 bg-muted rounded w-3/4 mb-2"></div>
+                      <div className="h-2 bg-muted rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            }>
+              <NewsLatestWidget />
+            </Suspense>
           </div>
         </div>
       </div>
