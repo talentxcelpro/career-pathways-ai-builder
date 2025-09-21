@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useLinkedInImportStats, useLinkedInJobScraping } from '@/hooks/useLinkedInData';
 import { ProtectedAdminRoute } from '@/components/admin/ProtectedAdminRoute';
+import { AdvancedLinkedInImporter } from '@/components/admin/AdvancedLinkedInImporter';
+import { LinkedInImportManager } from '@/components/admin/LinkedInImportManager';
 
 const LinkedInImporter = () => {
   const { data: importStats, isLoading: statsLoading } = useLinkedInImportStats();
@@ -94,69 +96,21 @@ const LinkedInImporter = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="import" className="space-y-4">
+      <Tabs defaultValue="advanced" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="import">Profile Import</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced Import</TabsTrigger>
+          <TabsTrigger value="manager">Import Manager</TabsTrigger>
           <TabsTrigger value="scraping">Job Scraping</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="quality">Data Quality</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="import" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Profile Imports</CardTitle>
-                <CardDescription>
-                  Latest LinkedIn profiles imported to the platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {importStats?.recentImports?.map((profile, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Linkedin className="h-5 w-5 text-blue-600" />
-                        <div>
-                          <p className="font-medium">{profile.full_name || 'Anonymous User'}</p>
-                          <p className="text-sm text-muted-foreground">{profile.email}</p>
-                        </div>
-                      </div>
-                      <Badge variant="outline">
-                        {new Date(profile.created_at).toLocaleDateString()}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+        <TabsContent value="advanced" className="space-y-4">
+          <AdvancedLinkedInImporter />
+        </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Import Controls</CardTitle>
-                <CardDescription>
-                  Manage LinkedIn import processes
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button className="w-full">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Start Bulk Import
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Sync Existing Profiles
-                </Button>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Import Progress</span>
-                    <span>85%</span>
-                  </div>
-                  <Progress value={85} className="w-full" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="manager" className="space-y-4">
+          <LinkedInImportManager />
         </TabsContent>
 
         <TabsContent value="scraping" className="space-y-4">
