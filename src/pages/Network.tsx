@@ -19,6 +19,7 @@ import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper, Trophy, Gift } from "lucide-react";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
+import '@/utils/applePerformance';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
@@ -120,50 +121,50 @@ const Network = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
       {/* Main Content with Tabs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-1">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="flex w-full bg-card/80 backdrop-blur-sm border shadow-sm rounded-md p-0.5 mb-0 h-8 overflow-x-auto">
-            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+          <TabsList className="flex w-full bg-card/90 backdrop-blur-md border-0 shadow-apple rounded-apple p-0.5 mb-1 h-7 overflow-x-auto">
+            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <MessageSquare className="w-3 h-3" />
-              <span className="hidden sm:inline">Feed</span>
+              <span className="hidden sm:inline text-xs">Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+            <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <Sparkles className="w-3 h-3" />
-              <span className="hidden sm:inline">Smart Feed</span>
+              <span className="hidden sm:inline text-xs">Smart Feed</span>
             </TabsTrigger>
             <button
               onClick={() => navigate('/gamification')}
-              className="flex items-center gap-1 bg-transparent hover:bg-primary/10 rounded-sm transition-all text-xs py-1 px-2 text-foreground hover:text-primary whitespace-nowrap"
+              className="flex items-center gap-1 bg-transparent hover:bg-primary/8 rounded-apple-sm transition-apple text-xs py-1 px-2 text-foreground hover:text-primary whitespace-nowrap font-apple-medium"
             >
               <Trophy className="w-3 h-3" />
-              <span className="hidden sm:inline">Gamification</span>
+              <span className="hidden sm:inline text-xs">Gamification</span>
             </button>
             <button
               onClick={() => navigate('/refer-and-earn')}
-              className="flex items-center gap-1 bg-transparent hover:bg-primary/10 rounded-sm transition-all text-xs py-1 px-2 text-foreground hover:text-primary whitespace-nowrap"
+              className="flex items-center gap-1 bg-transparent hover:bg-primary/8 rounded-apple-sm transition-apple text-xs py-1 px-2 text-foreground hover:text-primary whitespace-nowrap font-apple-medium"
             >
               <Gift className="w-3 h-3" />
-              <span className="hidden sm:inline">Refer & Earn</span>
+              <span className="hidden sm:inline text-xs">Refer & Earn</span>
             </button>
-            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+            <TabsTrigger value="connections" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <Users className="w-3 h-3" />
-              <span className="hidden sm:inline">Connections</span>
+              <span className="hidden sm:inline text-xs">Connections</span>
             </TabsTrigger>
-            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+            <TabsTrigger value="discover" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <UserPlus className="w-3 h-3" />
-              <span className="hidden sm:inline">Discover</span>
+              <span className="hidden sm:inline text-xs">Discover</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+            <TabsTrigger value="analytics" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <TrendingUp className="w-3 h-3" />
-              <span className="hidden sm:inline">Analytics</span>
+              <span className="hidden sm:inline text-xs">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+            <TabsTrigger value="ai-connect" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <Sparkles className="w-3 h-3" />
-              <span className="hidden sm:inline">AI Connect</span>
+              <span className="hidden sm:inline text-xs">AI Connect</span>
             </TabsTrigger>
-            <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm transition-all text-xs py-1 px-2 whitespace-nowrap">
+            <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <Newspaper className="w-3 h-3" />
-              <span className="hidden sm:inline">News</span>
+              <span className="hidden sm:inline text-xs">News</span>
             </TabsTrigger>
           </TabsList>
 

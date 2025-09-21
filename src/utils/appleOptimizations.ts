@@ -144,22 +144,68 @@ export const enableInstantTransitions = () => {
   }, { passive: true });
 };
 
+// Ultra-fast Apple-style image preloading
+export const preloadCriticalImages = () => {
+  if (typeof document === 'undefined') return;
+  
+  const criticalImages = [
+    '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
+    // Add more critical images here
+  ];
+  
+  criticalImages.forEach(src => {
+    const img = new Image();
+    img.fetchPriority = 'high';
+    img.loading = 'eager';
+    img.src = src;
+  });
+};
+
+// Apple-style content prefetching
+export const enableSmartPrefetch = () => {
+  if (typeof document === 'undefined') return;
+  
+  const prefetchedUrls = new Set<string>();
+  
+  // Intersection Observer for aggressive prefetching
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const link = entry.target.closest('a[href]') as HTMLAnchorElement;
+        if (link && !prefetchedUrls.has(link.href)) {
+          const prefetch = document.createElement('link');
+          prefetch.rel = 'prefetch';
+          prefetch.href = link.href;
+          document.head.appendChild(prefetch);
+          prefetchedUrls.add(link.href);
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  // Observe all links
+  document.querySelectorAll('a[href]').forEach(link => observer.observe(link));
+};
+
 // Initialize all Apple-style optimizations
 export const initAppleOptimizations = () => {
-  // Immediate optimizations
+  // Immediate optimizations (blocking)
   preloadAppleStyleResources();
+  preloadCriticalImages();
   
-  // DOM ready optimizations
+  // DOM ready optimizations (non-blocking)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       optimizeImagesAppleStyle();
       enableAppleStyleInteractions();
       enableInstantTransitions();
+      enableSmartPrefetch();
     });
   } else {
     optimizeImagesAppleStyle();
     enableAppleStyleInteractions();
     enableInstantTransitions();
+    enableSmartPrefetch();
   }
 };
 
