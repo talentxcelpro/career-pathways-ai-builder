@@ -21,6 +21,8 @@ import { UserBadges } from '@/components/gamification/UserBadges';
 import { QRCodeGenerator } from '@/components/passport/QRCodeGenerator';
 import EnhancedQRGenerator from '@/components/passport/EnhancedQRGenerator';
 import ProfessionalCard from '@/components/passport/ProfessionalCard';
+import { CareerQRCard } from '@/components/qr/CareerQRCard';
+import { QRScanner } from '@/components/qr/QRScanner';
 import { 
   QrCode, 
   Share2, 

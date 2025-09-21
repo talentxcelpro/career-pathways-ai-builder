@@ -1,7 +1,8 @@
-import { Award } from "lucide-react";
+import { Award, QrCode } from "lucide-react";
 import CareerPassportDashboard from "../pages/passport/CareerPassportDashboard";
 import PassportRouteHandler from "@/components/passport/PassportRouteHandler";
 import PublicPassportView from "../pages/PublicPassportView";
+import QRNetworking from "../pages/QRNetworking";
 export const passportRoutes = [
   {
     title: "Career Passport",
@@ -27,5 +28,12 @@ export const passportRoutes = [
     page: <PublicPassportView />,
     isPublic: true,
     requiresAuth: false,
+  },
+  {
+    title: "QR Networking",
+    to: "/qr-networking",
+    icon: <QrCode className="h-4 w-4" />,
+    page: <QRNetworking />,
+    requiresAuth: true,
   },
 ];
