@@ -27,33 +27,21 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["react", "react-dom"]
+    dedupe: ["react", "react-dom"],
   },
   build: {
     rollupOptions: {
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            // Ultra-aggressive chunking for global media competition
-            if (id.includes('react') || id.includes('react-dom')) return 'react-core';
-            if (id.includes('@radix-ui')) return 'ui-primitives';
-            if (id.includes('@supabase')) return 'supabase-client';
-            if (id.includes('@tanstack')) return 'query-client';
-            if (id.includes('lucide-react')) return 'icons';
-            if (id.includes('framer-motion')) return 'animations';
-            if (id.includes('@vercel')) return 'vercel-sdk';
-            return 'vendor-misc';
+            // Conservative chunking to avoid React import issues
+            if (id.includes('react') || id.includes('react-dom')) return 'react-vendor';
+            if (id.includes('@radix-ui')) return 'ui-vendor';
+            if (id.includes('@supabase')) return 'api-vendor';
+            return 'vendor';
           }
-          // Route-based chunking
-          if (id.includes('/pages/')) {
-            const route = id.split('/pages/')[1].split('/')[0];
-            return `page-${route}`;
-          }
-          if (id.includes('/components/performance/')) return 'performance-tools';
-          if (id.includes('/components/seo/')) return 'seo-tools';
         }
       },
-      external: mode === 'development' ? [] : [],
     },
     target: 'es2022',
     minify: 'terser',
@@ -69,16 +57,9 @@ export default defineConfig(({ mode }) => ({
       'react-dom',
       'react-router-dom',
       '@supabase/supabase-js',
-      '@tanstack/react-query',
-      'lucide-react',
-      'framer-motion',
-      'zustand',
-      'react-hook-form'
+      '@tanstack/react-query'
     ],
-    exclude: mode === 'development' ? [
-      'mammoth', 'pdfjs-dist', 'docx', 'tesseract.js', '@huggingface/transformers'
-    ] : [],
-    force: mode === 'production' // Force re-optimization in production
+    force: false // Don't force optimization
   },
   // Additional memory optimizations for development
   esbuild: mode === 'development' ? {
