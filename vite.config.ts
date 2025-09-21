@@ -34,40 +34,88 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Dynamic chunking to reduce memory usage
+          // Aggressive code splitting for 2-3G optimization
           if (id.includes('node_modules')) {
+            // Core React chunk - highest priority
             if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor';
+              return 'react';
             }
-            if (id.includes('@radix-ui')) {
+            
+            // UI libraries - separate chunk
+            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
               return 'ui';
             }
+            
+            // Heavy tools - separate chunks
             if (id.includes('mammoth') || id.includes('pdfjs-dist') || id.includes('docx')) {
               return 'pdf-tools';
             }
-            if (id.includes('tesseract') || id.includes('transformers')) {
+            if (id.includes('tesseract') || id.includes('@huggingface/transformers')) {
               return 'ai-tools';
             }
-            if (id.includes('recharts')) {
+            
+            // Charts and animations - lazy load
+            if (id.includes('recharts') || id.includes('d3')) {
               return 'charts';
             }
             if (id.includes('framer-motion')) {
               return 'animations';
             }
-            if (id.includes('@supabase') || id.includes('@tanstack') || id.includes('react-router')) {
-              return 'libs';
+            
+            // Data and routing
+            if (id.includes('@supabase')) {
+              return 'supabase';
             }
+            if (id.includes('@tanstack/react-query')) {
+              return 'query';
+            }
+            if (id.includes('react-router')) {
+              return 'router';
+            }
+            
+            // Form libraries
+            if (id.includes('react-hook-form') || id.includes('@hookform')) {
+              return 'forms';
+            }
+            
+            // Analytics and monitoring
+            if (id.includes('@vercel') || id.includes('analytics')) {
+              return 'analytics';
+            }
+            
             return 'vendor';
+          }
+          
+          // Split app code by feature
+          if (id.includes('/pages/admin/')) {
+            return 'admin';
+          }
+          if (id.includes('/pages/resume/')) {
+            return 'resume';
+          }
+          if (id.includes('/pages/ai/') || id.includes('/components/ai/')) {
+            return 'ai-features';
+          }
+          if (id.includes('/components/passport/')) {
+            return 'passport';
+          }
+          if (id.includes('/pages/mobile/') || id.includes('/components/mobile/')) {
+            return 'mobile';
           }
         }
       },
-      maxParallelFileOps: 1 // Further reduce parallel operations
+      maxParallelFileOps: mode === 'production' ? 4 : 1
     },
-    target: 'es2020', // Less aggressive target for better compatibility
-    minify: false, // Disable minification for development builds
+    target: 'es2020',
+    minify: mode === 'production' ? 'terser' : false,
     sourcemap: false,
-    chunkSizeWarningLimit: 2000,
-    assetsInlineLimit: 2048
+    chunkSizeWarningLimit: 1000, // Stricter warning for 2-3G
+    assetsInlineLimit: 1024, // Smaller inline limit
+    // Additional optimizations for slow networks
+    reportCompressedSize: false,
+    modulePreload: {
+      polyfill: true
+    }
   },
   optimizeDeps: {
     include: [
