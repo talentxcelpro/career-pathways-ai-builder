@@ -11,10 +11,10 @@ export default {
 	prefix: "",
 	theme: {
 		fontFamily: {
-			sans: ['Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-			heading: ['Poppins', 'Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-			display: ['Poppins', 'Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-			mono: ['SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'monospace'],
+			sans: ['SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+			heading: ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+			display: ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+			mono: ['SF Mono', 'Monaco', 'Menlo', 'Roboto Mono', 'Source Code Pro', 'monospace'],
 		},
 		container: {
 			center: true,
@@ -31,21 +31,28 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
+					DEFAULT: 'hsl(var(--primary))', // Apple Blue
 					foreground: 'hsl(var(--primary-foreground))',
 					light: 'hsl(var(--primary-light))',
 					lighter: 'hsl(var(--primary-lighter))',
-					50: 'hsl(199 100% 95%)',
-					100: 'hsl(198 100% 85%)',
+					50: 'hsl(212 100% 95%)',
+					100: 'hsl(212 100% 85%)',
 					500: 'hsl(var(--primary))',
-					600: 'hsl(196 100% 40%)',
-					700: 'hsl(195 100% 35%)'
+					600: 'hsl(212 100% 40%)',
+					700: 'hsl(212 100% 35%)'
 				},
-				'brand-green': {
-					DEFAULT: 'hsl(var(--brand-green))',
-					foreground: 'hsl(var(--brand-green-foreground))',
-					light: 'hsl(var(--brand-green-light))',
-					lighter: 'hsl(var(--brand-green-lighter))'
+				// AI-inspired violet colors
+				'ai-violet': {
+					DEFAULT: 'hsl(var(--ai-violet))',
+					medium: 'hsl(var(--ai-violet-medium))',
+					dark: 'hsl(var(--ai-violet-dark))',
+					foreground: 'hsl(var(--ai-violet-foreground))',
+					50: 'hsl(251 91% 98%)',
+					100: 'hsl(251 91% 95%)',
+					300: 'hsl(251 91% 73%)',
+					500: 'hsl(251 91% 50%)',
+					600: 'hsl(251 91% 40%)',
+					700: 'hsl(251 91% 30%)'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -93,65 +100,66 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Apple-inspired dark text colors
+				// Apple-inspired text colors
 				text: {
-					primary: 'hsl(0, 0%, 10%)', // #1a1a1a - Primary dark text
-					secondary: 'hsl(0, 0%, 29%)', // #4a4a4a - Secondary dark text
-					tertiary: 'hsl(0, 0%, 50%)', // #808080 - Tertiary dark text
+					primary: 'hsl(210, 11%, 15%)', // Apple's neutral dark
+					secondary: 'hsl(215, 20%, 65%)', // Apple's secondary text
+					tertiary: 'hsl(215, 16%, 47%)', // Apple's tertiary text
 				},
-				// Glass effect backgrounds
+				// Apple glass effect backgrounds
 				glass: {
-					light: 'hsl(0, 0%, 100%, 0.8)', // White with 80% opacity
-					dark: 'hsl(0, 0%, 0%, 0.05)', // Black with 5% opacity
+					light: 'hsl(0, 0%, 100%, 0.8)', // Frosted glass light
+					dark: 'hsl(0, 0%, 0%, 0.05)', // Subtle dark overlay
+					violet: 'hsl(251, 91%, 95%, 0.8)', // AI violet glass
 				},
-				// Highlight colors
+				// Apple system colors
 				orange: {
-					DEFAULT: 'hsl(35, 100%, 63%)', // #FFB84C
-					50: 'hsl(35, 100%, 95%)',
-					100: 'hsl(35, 100%, 90%)',
-					500: 'hsl(35, 100%, 63%)',
-					600: 'hsl(35, 100%, 55%)',
+					DEFAULT: 'hsl(35, 91%, 62%)', // Apple Orange
+					50: 'hsl(35, 91%, 95%)',
+					100: 'hsl(35, 91%, 90%)',
+					500: 'hsl(35, 91%, 62%)',
+					600: 'hsl(35, 91%, 55%)',
 				},
 				green: {
-					DEFAULT: 'hsl(152, 60%, 57%)', // #57CC99
-					50: 'hsl(152, 60%, 95%)',
-					100: 'hsl(152, 60%, 90%)',
-					500: 'hsl(152, 60%, 57%)',
-					600: 'hsl(152, 60%, 50%)',
+					DEFAULT: 'hsl(120, 60%, 50%)', // Apple Green
+					50: 'hsl(120, 60%, 95%)',
+					100: 'hsl(120, 60%, 90%)',
+					500: 'hsl(120, 60%, 50%)',
+					600: 'hsl(120, 60%, 45%)',
 				},
 				red: {
-					DEFAULT: 'hsl(0, 79%, 70%)', // #FF6B6B
-					50: 'hsl(0, 79%, 95%)',
-					100: 'hsl(0, 79%, 90%)',
-					500: 'hsl(0, 79%, 70%)',
-					600: 'hsl(0, 79%, 60%)',
+					DEFAULT: 'hsl(0, 84%, 60%)', // Apple Red
+					50: 'hsl(0, 84%, 95%)',
+					100: 'hsl(0, 84%, 90%)',
+					500: 'hsl(0, 84%, 60%)',
+					600: 'hsl(0, 84%, 55%)',
 				}
 			},
 			fontSize: {
-				// Display & Headlines
-				'display': ['3rem', { lineHeight: '1.2', fontWeight: '800', letterSpacing: '-0.02em' }],      // 48px
-				'headline': ['2.25rem', { lineHeight: '1.25', fontWeight: '700', letterSpacing: '-0.015em' }],   // 36px
-				'title': ['1.875rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '-0.01em' }],    // 30px
-				'subtitle': ['1.5rem', { lineHeight: '1.375', fontWeight: '600', letterSpacing: '0' }],       // 24px
-				'subheading': ['1.25rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0' }],      // 20px
+				// Apple-inspired crispy typography scale
+				'display': ['3.5rem', { lineHeight: '1.1', fontWeight: '700', letterSpacing: '-0.04em' }],      // 56px - Ultra crispy
+				'headline': ['2.75rem', { lineHeight: '1.15', fontWeight: '600', letterSpacing: '-0.03em' }],   // 44px - Crispy large
+				'title': ['2.25rem', { lineHeight: '1.2', fontWeight: '600', letterSpacing: '-0.02em' }],       // 36px - Crispy
+				'subtitle': ['1.75rem', { lineHeight: '1.25', fontWeight: '500', letterSpacing: '-0.015em' }],  // 28px - Semi-crispy
+				'subheading': ['1.5rem', { lineHeight: '1.3', fontWeight: '500', letterSpacing: '-0.01em' }],   // 24px - Clean
 				
-				// Body Text
-				'body-large': ['1.125rem', { lineHeight: '1.6', fontWeight: '400', letterSpacing: '0' }],     // 18px
-				'body': ['1rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }],               // 16px
-				'body-small': ['0.875rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }],     // 14px
-				'caption': ['0.75rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.025em' }],   // 12px
+				// Apple-style body text - optimized for readability
+				'body-large': ['1.25rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '-0.005em' }], // 20px - Larger readable
+				'body': ['1.125rem', { lineHeight: '1.55', fontWeight: '400', letterSpacing: '0' }],             // 18px - Perfect reading
+				'body-small': ['1rem', { lineHeight: '1.5', fontWeight: '400', letterSpacing: '0' }],           // 16px - Standard
+				'caption': ['0.875rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.01em' }],     // 14px - Small but crispy
 				
-				// Legacy support
-				'heading-xl': ['1.5rem', { lineHeight: '1.375', fontWeight: '600' }],   // 24px
-				'heading-lg': ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],   // 18px
-				'heading-md': ['1rem', { lineHeight: '1.4', fontWeight: '500' }],       // 16px
+				// Legacy support with Apple improvements
+				'heading-xl': ['1.75rem', { lineHeight: '1.25', fontWeight: '600', letterSpacing: '-0.015em' }], // 28px
+				'heading-lg': ['1.5rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '-0.01em' }],    // 24px
+				'heading-md': ['1.25rem', { lineHeight: '1.35', fontWeight: '500', letterSpacing: '-0.005em' }], // 20px
 			},
 			letterSpacing: {
-				'tighter': '-0.05em',
-				'tight': '-0.025em',
-				'normal': '0',
-				'wide': '0.025em',
-				'wider': '0.05em',
+				'tighter': '-0.04em', // Apple ultra-tight for displays
+				'tight': '-0.02em',   // Apple tight for headings
+				'normal': '0',        // Standard
+				'wide': '0.01em',     // Slightly open for readability
+				'wider': '0.025em',   // Open for small text
 			},
 			lineHeight: {
 				'tight': '1.25',
@@ -161,12 +169,15 @@ export default {
 				'loose': '2',
 			},
 			fontWeight: {
-				'light': '300',
-				'normal': '400',
-				'medium': '500',
-				'semibold': '600',
-				'bold': '700',
-				'extrabold': '800',
+				'ultralight': '100', // Apple ultralight
+				'thin': '200',       // Apple thin
+				'light': '300',      // Apple light
+				'normal': '400',     // Apple regular
+				'medium': '500',     // Apple medium
+				'semibold': '600',   // Apple semibold
+				'bold': '700',       // Apple bold
+				'heavy': '800',      // Apple heavy
+				'black': '900',      // Apple black
 			},
 			borderRadius: {
 				DEFAULT: 'var(--radius)',
