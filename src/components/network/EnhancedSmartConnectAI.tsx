@@ -25,6 +25,8 @@ import {
 import { useEnhancedConnectionSuggestions } from '@/hooks/useEnhancedConnectionSuggestions';
 import { Link } from 'react-router-dom';
 import { ProfileCompletionPrompt } from './ProfileCompletionPrompt';
+import { MentorMatchingCard } from './MentorMatchingCard';
+import { CollaborationCard } from './CollaborationCard';
 
 type FilterType = 'all' | 'skill_match' | 'location_match' | 'industry_match' | 'title_match';
 
@@ -339,49 +341,13 @@ export const EnhancedSmartConnectAI: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Coming Soon Features */}
+      {/* Enhanced AI Features */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Mentor Matching */}
-        <Card className="border-dashed border-2 border-muted-foreground/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-muted-foreground">
-              <TrendingUp className="h-5 w-5" />
-              AI Mentor Matching
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-6">
-              <div className="p-3 bg-muted/50 rounded-full w-fit mx-auto mb-3">
-                <GraduationCap className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">Coming Soon</p>
-              <p className="text-xs text-muted-foreground">
-                AI-powered mentor recommendations based on career stage and goals
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <MentorMatchingCard />
 
         {/* Collaboration Opportunities */}
-        <Card className="border-dashed border-2 border-muted-foreground/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-muted-foreground">
-              <Briefcase className="h-5 w-5" />
-              Project Collaboration
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-6">
-              <div className="p-3 bg-muted/50 rounded-full w-fit mx-auto mb-3">
-                <Network className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">Coming Soon</p>
-              <p className="text-xs text-muted-foreground">
-                Find collaborators for projects, startups, and content creation
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <CollaborationCard />
       </div>
     </div>
   );

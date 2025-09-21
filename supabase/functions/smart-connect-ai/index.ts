@@ -33,7 +33,7 @@ serve(async (req) => {
       );
     }
 
-    const { currentUser, potentialMatch } = await req.json();
+    const { currentUser, potentialMatch, matchType = 'connection' } = await req.json();
     
     if (!currentUser || !potentialMatch) {
       return new Response(
@@ -47,7 +47,29 @@ serve(async (req) => {
 
     console.log('Generating AI insight for connection');
 
-    const systemPrompt = `You are a professional networking AI assistant. Analyze two professional profiles and provide a concise, actionable insight about why they should connect and how they could benefit each other professionally.
+    const systemPrompt = matchType === 'mentor' 
+      ? `You are a mentorship AI assistant. Analyze a potential mentor-mentee pairing and provide insights about how they could work together for professional growth.
+
+Focus on:
+- How the mentor's experience aligns with mentee's goals
+- Knowledge transfer opportunities
+- Career guidance potential
+- Skill development areas
+- Industry insights mentor can share
+
+Keep the response under 100 words and make it actionable.`
+      : matchType === 'collaboration'
+      ? `You are a collaboration AI assistant. Analyze two professionals for project collaboration potential.
+
+Focus on:
+- Complementary skills and expertise
+- Shared project interests
+- Collaboration synergies
+- How they can achieve mutual goals
+- Project success potential
+
+Keep the response under 100 words and make it compelling.`
+      : `You are a professional networking AI assistant. Analyze two professional profiles and provide a concise, actionable insight about why they should connect and how they could benefit each other professionally.
 
 Focus on:
 - Shared interests or goals
