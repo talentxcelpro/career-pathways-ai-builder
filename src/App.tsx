@@ -403,7 +403,7 @@ const App = () => {
                         </Routes>
                         </React.Suspense>
                      </main>
-                     <FooterWrapper />
+                     
                      <InstallPrompt />
                      <InstallButton />
                      <IOSInstallPrompt />

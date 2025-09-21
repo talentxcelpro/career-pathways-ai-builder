@@ -43,8 +43,6 @@ export const LandingPage = () => {
           </div>
         </div>
       </div>
-      
-      <AppleFooter />
     </div>
   );
 };
