@@ -58,6 +58,14 @@ import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
 import PublicJobSearch from './pages/tools/PublicJobSearch';
 import PublicMarketInsights from './pages/tools/PublicMarketInsights';
 import PublicInterviewPrep from './pages/tools/PublicInterviewPrep';
+import ResumeChecker from './pages/tools/ResumeChecker';
+import CoverLetterGenerator from './pages/tools/CoverLetterGenerator';
+import InterviewPrep from './pages/tools/InterviewPrep';
+import { ProfileOptimizer } from './pages/tools/ProfileOptimizer';
+import SalaryAnalyzer from './pages/tools/SalaryAnalyzer';
+import SkillAssessor from './pages/tools/SkillAssessor';
+import JobMatcher from './pages/tools/JobMatcher';
+import ResumeTemplates from './pages/ResumeTemplates';
 import { ResumeEditorPage as ResumeEdit } from './pages/resume/ResumeEditorPage';
 import ResumeBuilderV2 from './pages/resume/ResumeBuilderV2';
 import UnifiedDashboard from './pages/UnifiedDashboard';
@@ -293,7 +301,8 @@ const App = () => {
                            <Route path="/mobile/passport" element={<ProtectedRoute><MobilePassport /></ProtectedRoute>} />
                        <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
                        <Route path="/resume/new" element={<ResumeNew />} />
-                       <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
+                        <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
+                        <Route path="/resume/templates" element={<ResumeTemplates />} />
                         <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                         <Route path="/resume/ai-enhancement" element={<ProtectedRoute><AIEnhancement /></ProtectedRoute>} />
                         <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
@@ -323,6 +332,13 @@ const App = () => {
                         
                         {/* Tools Routes */}
                         <Route path="/tools" element={<ToolsHub />} />
+                        <Route path="/tools/resume-check" element={<ResumeChecker />} />
+                        <Route path="/tools/cover-letter" element={<CoverLetterGenerator />} />
+                        <Route path="/tools/interview-prep" element={<InterviewPrep />} />
+                        <Route path="/tools/profile-optimizer" element={<ProfileOptimizer />} />
+                        <Route path="/tools/salary-analyzer" element={<SalaryAnalyzer />} />
+                        <Route path="/tools/skill-assessor" element={<SkillAssessor />} />
+                        <Route path="/tools/job-matcher" element={<JobMatcher />} />
                         <Route path="/public/resume-builder" element={<PublicResumeBuilder />} />
                         <Route path="/public/jobs" element={<PublicJobSearch />} />
                         <Route path="/public/market-insights" element={<PublicMarketInsights />} />
