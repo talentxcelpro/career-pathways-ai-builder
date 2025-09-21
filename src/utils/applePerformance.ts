@@ -28,7 +28,8 @@ export const applyInstantOptimizations = () => {
     criticalLinks.forEach((link, index) => {
       const htmlLink = link as HTMLLinkElement;
       if (index === 0) {
-        htmlLink.fetchPriority = 'high';
+        // TypeScript-safe way to set fetchPriority
+        (htmlLink as any).fetchPriority = 'high';
       }
     });
 

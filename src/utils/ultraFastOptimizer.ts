@@ -48,7 +48,7 @@ export const optimizeImages = () => {
   const images = document.querySelectorAll('img:not([loading])');
   images.forEach((img, index) => {
     const htmlImg = img as HTMLImageElement;
-    htmlImg.loading = index < 2 ? 'eager' : 'lazy';
+    (htmlImg as any).loading = index < 2 ? 'eager' : 'lazy';
     htmlImg.decoding = 'async';
   });
 };

@@ -8,8 +8,8 @@ export const preloadAppleStyleResources = () => {
 
   // Preload hero image with highest priority
   const heroImg = new Image();
-  heroImg.fetchPriority = 'high';
-  heroImg.loading = 'eager';
+  (heroImg as any).fetchPriority = 'high';
+  (heroImg as any).loading = 'eager';
   heroImg.src = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
 
   // Preload critical fonts
@@ -50,11 +50,11 @@ export const optimizeImagesAppleStyle = () => {
     
     // Hero images get highest priority
     if (htmlImg.src.includes('hero') || index === 0) {
-      htmlImg.fetchPriority = 'high';
-      htmlImg.loading = 'eager';
+      (htmlImg as any).fetchPriority = 'high';
+      (htmlImg as any).loading = 'eager';
     } else {
-      htmlImg.fetchPriority = 'low';
-      htmlImg.loading = 'lazy';
+      (htmlImg as any).fetchPriority = 'low';
+      (htmlImg as any).loading = 'lazy';
     }
     
     htmlImg.decoding = 'async';
@@ -71,7 +71,7 @@ export const optimizeImagesAppleStyle = () => {
         });
       }, { threshold: 0.1 });
       
-      if (htmlImg.loading === 'lazy') {
+      if (htmlImg.getAttribute('loading') === 'lazy') {
         htmlImg.style.opacity = '0';
         htmlImg.style.transition = 'opacity 0.3s ease-out';
         observer.observe(htmlImg);
@@ -155,8 +155,8 @@ export const preloadCriticalImages = () => {
   
   criticalImages.forEach(src => {
     const img = new Image();
-    img.fetchPriority = 'high';
-    img.loading = 'eager';
+    (img as any).fetchPriority = 'high';
+    (img as any).loading = 'eager';
     img.src = src;
   });
 };
