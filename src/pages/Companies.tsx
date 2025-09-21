@@ -101,7 +101,7 @@ const Companies = () => {
               className="h-12 w-12 rounded-lg"
             />
             <div>
-              <h1 className="text-3xl font-bold text-[#1E2A78] mb-1 font-display">
+            <h1 className="text-2xl font-bold text-[#1E2A78] mb-1 font-display">
                 Discover Top Companies Hiring Now
               </h1>
               <p className="text-text-secondary">

@@ -150,7 +150,7 @@ export const LearningNavigation: React.FC = memo(() => {
 
   return (
     <div className="bg-gradient-glass backdrop-blur-apple border-b border-glass-border shadow-card">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         
         {/* Mobile Horizontal Scroll */}
         <div className="lg:hidden">
@@ -227,7 +227,7 @@ export const LearningNavigation: React.FC = memo(() => {
         </div>
 
         {/* Quick Stats - Simplified */}
-        <div className="mt-8 pt-6 border-t border-glass-border">
+        <div className="mt-4 pt-4 border-t border-glass-border">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div className="bg-gradient-card backdrop-blur-apple apple-rounded-lg apple-padding-md shadow-card border border-glass-border">
               <div className="text-headline font-bold text-primary">300+</div>

@@ -166,8 +166,8 @@ export default function LearningHub() {
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
           <div className="space-y-6">
-            <h1 className="text-4xl lg:text-5xl font-bold text-foreground">
-              Welcome back,<br />TalentXcel Pro!
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+              Welcome back, TalentXcel Pro!
             </h1>
             <p className="text-lg text-muted-foreground">
               Continue your journey to master new skills and advance your career.
@@ -258,7 +258,7 @@ export default function LearningHub() {
         {/* Career Paths Section */}
         <div className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Choose a path. Advance your future.</h2>
+            <h2 className="text-2xl font-bold mb-4">Choose a path. Advance your future.</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -365,7 +365,7 @@ export default function LearningHub() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Why learn with TalentXcel?</h2>
+              <h2 className="text-2xl font-bold mb-6">Why learn with TalentXcel?</h2>
               <div className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -395,7 +395,7 @@ export default function LearningHub() {
         {/* CTA Section */}
         <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Your career transformation starts today.</h2>
+            <h2 className="text-xl font-bold mb-4">Your career transformation starts today.</h2>
             <div className="flex justify-center gap-4">
               <Button variant="secondary" size="lg">
                 Start Learning for Free
