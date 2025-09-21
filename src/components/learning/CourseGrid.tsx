@@ -29,8 +29,8 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
 
   const { displayName } = useCurrentUserProfile();
   const { courses, isLoading } = useCourses({
-    category: category || undefined,
-    difficulty: difficulty || undefined,
+    category: category && category !== 'all' ? category : undefined,
+    difficulty: difficulty && difficulty !== 'all' ? difficulty : undefined,
     search: search || undefined,
     limit
   });
@@ -95,12 +95,12 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
           />
         </div>
         <div className="flex gap-2">
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? '' : value)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="Technology & IT">Technology & IT</SelectItem>
               <SelectItem value="Business & Finance">Business & Finance</SelectItem>
               <SelectItem value="Marketing & Sales">Marketing & Sales</SelectItem>
@@ -111,12 +111,12 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
               <SelectItem value="Hospitality & Tourism">Hospitality & Tourism</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={difficulty} onValueChange={setDifficulty}>
+          <Select value={difficulty} onValueChange={(value) => setDifficulty(value === 'all' ? '' : value)}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Level" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Levels</SelectItem>
+              <SelectItem value="all">All Levels</SelectItem>
               <SelectItem value="beginner">Beginner</SelectItem>
               <SelectItem value="intermediate">Intermediate</SelectItem>
               <SelectItem value="advanced">Advanced</SelectItem>
