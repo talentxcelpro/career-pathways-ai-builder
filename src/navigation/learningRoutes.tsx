@@ -164,20 +164,20 @@ export const learningRoutes = [
     to: "/learning/pipeline",
     page: <LearningJobPipelineDashboard />,
     isPublic: false,
-    requiresAdminAccess: true,
+    requiresAdminAccess: false,
   },
   {
     title: "Learning System",
     to: "/learning/system",
     page: <SmartLearningSystem />,
     isPublic: false,
-    requiresAdminAccess: true,
+    requiresAdminAccess: false,
   },
   {
     title: "Company Portal",
     to: "/learning/company-portal",
     page: <CompanyPartnershipPortal />,
     isPublic: false,
-    requiresAdminAccess: true,
+    requiresAdminAccess: false,
   },
 ];

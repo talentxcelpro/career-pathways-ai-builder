@@ -87,6 +87,31 @@ export default function LearningHub() {
         </div>
       </section>
 
+      {/* New Pipeline Features */}
+      <section className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">🔗</div>
+          <h3 className="font-semibold">Pipeline Dashboard</h3>
+          <Link to="/learning/pipeline">
+            <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Access</button>
+          </Link>
+        </div>
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">🧠</div>
+          <h3 className="font-semibold">Smart Learning</h3>
+          <Link to="/learning/system">
+            <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Explore</button>
+          </Link>
+        </div>
+        <div className="p-6 border rounded-lg shadow-sm text-center hover:shadow-md">
+          <div className="text-3xl mb-2">🏢</div>
+          <h3 className="font-semibold">Company Portal</h3>
+          <Link to="/learning/company-portal">
+            <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enter</button>
+          </Link>
+        </div>
+      </section>
+
       {/* Learning Paths */}
       <section className="max-w-5xl mx-auto mt-14 text-center">
         <h2 className="text-2xl font-bold">Choose a path. Advance your future.</h2>
