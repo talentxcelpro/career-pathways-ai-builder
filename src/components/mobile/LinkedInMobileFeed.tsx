@@ -65,6 +65,9 @@ interface LinkedInMobileFeedProps {
   onComment?: (postId: string) => void;
   onConnect?: (userId: string) => void;
   onApply?: (jobUrl: string) => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  onLoadMore?: () => void;
 }
 
 const LinkedInPostCard: React.FC<{
@@ -355,7 +358,10 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
   onShare, 
   onComment, 
   onConnect, 
-  onApply 
+  onApply,
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  onLoadMore
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -386,6 +392,7 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
           queryClient.invalidateQueries({ queryKey: ['posts'] });
           queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
           queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
+          queryClient.invalidateQueries({ queryKey: ['linkedInMobilePosts'] });
         }} />
         
         {/* Posts Feed */}
@@ -401,6 +408,53 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
             onApply={onApply}
           />
         ))}
+
+        {/* Load More Section */}
+        {hasNextPage && (
+          <div className="flex justify-center py-8 px-4">
+            <Button 
+              onClick={onLoadMore}
+              disabled={isFetchingNextPage}
+              className="w-full max-w-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl h-12 font-medium shadow-lg transition-all duration-200"
+            >
+              {isFetchingNextPage ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Loading more posts...</span>
+                </div>
+              ) : (
+                <span>Load More Posts</span>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* End of Feed Message */}
+        {!hasNextPage && posts.length > 0 && (
+          <div className="text-center py-8 px-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mx-4 shadow-sm border border-gray-100">
+              <div className="text-2xl mb-2">🎉</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">You're all caught up!</h3>
+              <p className="text-gray-600 text-sm">
+                You've seen all the latest posts from your network
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {posts.length === 0 && !isFetchingNextPage && (
+          <div className="text-center py-12 px-4">
+            <div className="bg-white rounded-3xl p-8 shadow-xl max-w-sm mx-auto border border-gray-100">
+              <div className="text-4xl mb-4">📱</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No posts yet</h3>
+              <p className="text-gray-600 mb-6">Connect with professionals to see posts from your network</p>
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl h-12 font-medium">
+                Discover People
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

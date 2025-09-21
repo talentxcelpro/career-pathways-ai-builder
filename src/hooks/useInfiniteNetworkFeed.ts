@@ -44,7 +44,7 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
   return useInfiniteQuery({
     queryKey: ['network-feed', filters],
     queryFn: async ({ pageParam = 0 }) => {
-      const limit = 10;
+      const limit = 20;
       const offset = pageParam * limit;
 
       let query = supabase

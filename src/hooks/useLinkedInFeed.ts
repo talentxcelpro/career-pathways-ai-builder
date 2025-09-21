@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 interface LinkedInPost {
   id: string;
@@ -51,11 +51,21 @@ export const useLinkedInFeed = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch real posts from Supabase
-  const { data: posts = [], isLoading: loading, error } = useQuery({
+  // Use infinite query for proper pagination
+  const {
+    data,
+    isLoading: loading,
+    error,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useInfiniteQuery({
     queryKey: ['linkedInMobilePosts'],
-    queryFn: async () => {
-      if (!user) return [];
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!user) return { posts: [], nextPage: undefined };
+
+      const limit = 20; // Posts per page
+      const offset = pageParam * limit;
 
       // Fetch posts with related data
       const { data: postsData, error: postsError } = await supabase
@@ -69,7 +79,7 @@ export const useLinkedInFeed = () => {
         .eq('visibility', 'public')
         .eq('is_deleted', false)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .range(offset, offset + limit - 1);
 
       if (postsError) throw postsError;
 
@@ -178,10 +188,19 @@ export const useLinkedInFeed = () => {
         };
       });
 
-      return transformedPosts;
+      return {
+        posts: transformedPosts,
+        nextPage: postsData.length === limit ? pageParam + 1 : undefined,
+        hasMore: postsData.length === limit
+      };
     },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0,
     enabled: !!user
   });
+
+  // Flatten all posts from all pages
+  const posts = data?.pages.flatMap(page => page.posts) || [];
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -328,6 +347,9 @@ export const useLinkedInFeed = () => {
     posts,
     loading,
     error: error?.message || null,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
     handleLike,
     handleBookmark,
     handleShare,

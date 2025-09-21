@@ -40,6 +40,9 @@ const Network = () => {
     posts,
     loading,
     error,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
     handleLike,
     handleBookmark,
     handleShare,
@@ -105,6 +108,9 @@ const Network = () => {
           onComment={handleComment}
           onConnect={handleConnect}
           onApply={handleApply}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          onLoadMore={fetchNextPage}
         />
       </MobileLayout>
     );
