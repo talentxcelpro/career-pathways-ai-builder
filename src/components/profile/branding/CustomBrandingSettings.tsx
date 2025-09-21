@@ -11,7 +11,7 @@ import { CustomThemeSettings } from './CustomThemeSettings';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
+// TXC-based branding - no subscription modal needed
 import { useState } from 'react';
 
 export const CustomBrandingSettings: React.FC = () => {
@@ -74,10 +74,10 @@ export const CustomBrandingSettings: React.FC = () => {
             </Button>
           </div>
           
-          <SubscriptionModal 
-            isOpen={showUpgradeModal} 
-            onClose={() => setShowUpgradeModal(false)} 
-          />
+            {/* TXC-based upgrade - redirect to TXC pricing */}
+            <Button onClick={() => window.location.href = '/txc/pricing'}>
+              View TXC Pricing
+            </Button>
         </CardContent>
       </Card>
     );

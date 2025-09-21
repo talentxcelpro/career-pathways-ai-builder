@@ -34,12 +34,12 @@ import ToolsManagement from "../pages/admin/ToolsManagement";
 import CompaniesManagement from "../pages/admin/CompaniesManagement";
 import LearningManagement from "../pages/admin/LearningManagement";
 import CareerMapManagement from "../pages/admin/CareerMapManagement";
-import PricingPayments from "../pages/admin/PricingPayments";
+// Removed traditional pricing - using TXC only
 import AnalyticsReports from "../pages/admin/AnalyticsReports";
 import SecurityLogs from "../pages/admin/SecurityLogs";
 import SecurityMonitoring from "../components/admin/SecurityMonitoring";
 import CreateCourse from "../pages/admin/learning/CreateCourse";
-import CreatePlan from "../pages/admin/pricing/CreatePlan";
+// Removed traditional pricing plans - using TXC only
 import EmailAutomationPage from "../pages/admin/EmailAutomation";
 import AIMLTrainingCenter from "../pages/admin/AIMLTrainingCenter";
 import AdminAIManagement from "../pages/AdminAIManagement";
@@ -189,13 +189,7 @@ export const adminRoutes = [
     page: <AnalyticsReports />,
     requiresAuth: true,
   },
-  {
-    title: "Pricing & Payments",
-    to: "/admin/payments",
-    icon: <CreditCard className="h-4 w-4" />,
-    page: <PricingPayments />,
-    requiresAuth: true,
-  },
+  // Removed traditional pricing & payments - using TXC only
   {
     title: "Security Monitoring",
     to: "/admin/security",
@@ -273,13 +267,7 @@ export const adminRoutes = [
     page: <CreateCourse />,
     requiresAuth: true,
   },
-  {
-    title: "Create Pricing Plan",
-    to: "/admin/pricing/create",
-    icon: <Plus className="h-4 w-4" />,
-    page: <CreatePlan />,
-    requiresAuth: true,
-  },
+  // Removed traditional pricing plan creation - using TXC only
   {
     title: "SEO Management",
     to: "/admin/seo",

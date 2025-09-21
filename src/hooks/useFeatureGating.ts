@@ -1,90 +1,71 @@
-import { useSubscription } from './useSubscription';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { useTokenBalance } from './useTokenBalance';
 
 export const useFeatureGating = () => {
-  const { hasFeatureAccess, getSubscriptionTier, isActive } = useSubscription();
+  const { availableBalance } = useTokenBalance();
   const { toast } = useToast();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const checkFeatureAccess = (featureName: string, showUpgradePrompt = true): boolean => {
-    if (!isActive()) {
-      if (showUpgradePrompt) {
-        toast({
-          title: "Pro Feature",
-          description: "This feature requires a Pro subscription. Upgrade to continue.",
-          variant: "destructive",
-        });
-        setShowUpgradeModal(true);
-      }
-      return false;
-    }
-
-    const access = hasFeatureAccess(featureName);
-    if (!access && showUpgradePrompt) {
+    // All features are available through TXC tokens
+    if (showUpgradePrompt) {
       toast({
-        title: "Feature Not Available",
-        description: "This feature is not available in your current plan. Please upgrade.",
-        variant: "destructive",
+        title: "TXC Feature",
+        description: "This feature uses TXC tokens. Check TXC pricing for costs.",
+        variant: "default",
       });
-      setShowUpgradeModal(true);
     }
-
-    return access;
+    return true;
   };
 
   const getServiceLimit = (): number => {
-    const tier = getSubscriptionTier();
-    if (tier === 'Pro Starter') return 5;
-    if (tier === 'Pro Business' || tier === 'Pro Elite') return -1; // Unlimited
-    return 0; // Free tier
+    // No limits with TXC system - users pay per usage
+    return -1; // Unlimited
   };
 
   const canAddService = (currentCount: number): boolean => {
-    const limit = getServiceLimit();
-    if (limit === -1) return true; // Unlimited
-    return currentCount < limit;
+    // Always true with TXC system
+    return true;
   };
 
   const getSupportLevel = (): 'email' | 'priority' | '24/7' => {
-    const tier = getSubscriptionTier();
-    if (tier === 'Pro Elite') return '24/7';
-    if (tier === 'Pro Business') return 'priority';
-    return 'email';
+    // Support based on TXC token purchases
+    return availableBalance > 50000 ? '24/7' : availableBalance > 25000 ? 'priority' : 'email';
   };
 
   const hasAnalyticsAccess = (): boolean => {
-    return hasFeatureAccess('Basic analytics') || 
-           hasFeatureAccess('Advanced analytics') || 
-           hasFeatureAccess('Full analytics suite');
+    // Analytics available through TXC purchase
+    return true;
   };
 
   const getAnalyticsLevel = (): 'basic' | 'advanced' | 'full' => {
-    if (hasFeatureAccess('Full analytics suite')) return 'full';
-    if (hasFeatureAccess('Advanced analytics')) return 'advanced';
-    return 'basic';
+    // All levels available through TXC
+    return availableBalance > 50000 ? 'full' : availableBalance > 25000 ? 'advanced' : 'basic';
   };
 
   const hasCustomBranding = (): boolean => {
-    return hasFeatureAccess('Custom branding');
+    // Available through TXC purchase
+    return true;
   };
 
   const hasVanityURL = (): boolean => {
-    return hasFeatureAccess('Vanity URLs');
+    // Available through TXC purchase
+    return true;
   };
 
   const hasVideoBio = (): boolean => {
-    return hasFeatureAccess('Video bio');
+    // Available through TXC purchase
+    return true;
   };
 
   const hasLeadGeneration = (): boolean => {
-    return hasFeatureAccess('Lead generation tools') || 
-           hasFeatureAccess('Advanced lead generation');
+    // Available through TXC purchase
+    return true;
   };
 
   const getLeadGenerationLevel = (): 'basic' | 'advanced' => {
-    if (hasFeatureAccess('Advanced lead generation')) return 'advanced';
-    return 'basic';
+    return availableBalance > 25000 ? 'advanced' : 'basic';
   };
 
   return {
@@ -101,7 +82,7 @@ export const useFeatureGating = () => {
     getLeadGenerationLevel,
     showUpgradeModal,
     setShowUpgradeModal,
-    tier: getSubscriptionTier(),
-    isActive: isActive()
+    tier: 'TXC Token System',
+    isActive: true // Always active with TXC system
   };
 };

@@ -2,13 +2,13 @@
 import React from 'react';
 import EnhancedServiceForm from '@/components/marketplace/EnhancedServiceForm';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/hooks/useSubscription';
+// TXC-based system - no subscription needed
 import { useFeatureGating } from '@/hooks/useFeatureGating';
 import { SubscriptionGate } from '@/components/subscription/SubscriptionGate';
 
 export default function PostService() {
   const { user } = useAuth();
-  const { subscription, isActive } = useSubscription();
+  // TXC system allows all users to create services
   const { checkFeatureAccess, canAddService, getServiceLimit } = useFeatureGating();
 
   // Check if user has access to create services
@@ -16,7 +16,7 @@ export default function PostService() {
   const serviceLimit = getServiceLimit();
   
   // For now, we'll allow free users to create 1 service and paid users unlimited
-  const canCreateService = user && (isActive() || !subscription);
+  const canCreateService = !!user; // TXC system allows all users
 
   if (!user) {
     return (
@@ -29,27 +29,7 @@ export default function PostService() {
     );
   }
 
-  if (!canCreateService) {
-    return (
-      <SubscriptionGate
-        title="Become a Service Provider"
-        description="Unlock the ability to create and manage professional services on TalentXcel"
-        feature="service creation"
-        currentTier={subscription?.subscription_plans?.name || 'Free'}
-        requiredTier="Pro"
-        benefits={[
-          "Create unlimited services",
-          "Featured service listings",
-          "Advanced service analytics",
-          "Priority customer support",
-          "Custom service branding",
-          "Portfolio showcase",
-          "Direct client messaging",
-          "Revenue tracking & reports"
-        ]}
-      />
-    );
-  }
+  // TXC system allows service creation for all users
 
   return (
     <div className="min-h-screen bg-background">
@@ -59,16 +39,12 @@ export default function PostService() {
           <p className="text-muted-foreground mt-2">
             Set up your professional service and start connecting with clients
           </p>
-          {subscription && (
-            <div className="mt-4">
-              <p className="text-sm text-muted-foreground">
-                Current Plan: <span className="font-semibold text-primary">{subscription.subscription_plans.name}</span>
-                {serviceLimit > 0 && (
-                  <span className="ml-2">• Service Limit: {serviceLimit}</span>
-                )}
-              </p>
-            </div>
-          )}
+          <div className="mt-4">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-primary">TXC Token System</span>
+              <span className="ml-2">• Unlimited Services Available</span>
+            </p>
+          </div>
         </div>
         
         <EnhancedServiceForm 

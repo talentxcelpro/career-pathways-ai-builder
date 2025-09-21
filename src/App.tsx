@@ -96,6 +96,7 @@ import InstantNetworkingSystem from "./pages/InstantNetworkingSystem";
 import { SkillsVerificationCenter } from "./pages/SkillsVerificationCenter";
 import DynamicAchievementSystem from "./pages/DynamicAchievementSystem";
 import InteractiveCareerRoadmapBuilder from "./pages/InteractiveCareerRoadmapBuilder";
+import Services from "./pages/Services";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";

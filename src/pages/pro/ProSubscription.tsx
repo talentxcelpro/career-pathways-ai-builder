@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Link } from 'react-router-dom';
-import { AppleSubscriptionUI } from '@/components/subscription/AppleSubscriptionUI';
+// TXC-based system - no Apple subscription needed
 import { OfflineNotice } from '@/components/subscription/OfflineNotice';
 
 
@@ -45,8 +45,16 @@ export const ProSubscription: React.FC = () => {
         {/* Offline Notice */}
         <OfflineNotice />
         
-        {/* Apple-inspired Subscription UI */}
-        <AppleSubscriptionUI />
+        {/* TXC Token System - Redirect to TXC pricing */}
+        <div className="text-center py-16">
+          <h2 className="text-3xl font-bold mb-4">TXC Token System</h2>
+          <p className="text-muted-foreground mb-8">
+            We now use TalentXcel Coins (TXC) for all services. No subscriptions needed!
+          </p>
+          <Button onClick={() => window.location.href = '/txc/pricing'} size="lg">
+            View TXC Pricing
+          </Button>
+        </div>
       </div>
     </div>
   );
