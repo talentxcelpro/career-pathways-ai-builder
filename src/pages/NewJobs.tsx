@@ -350,7 +350,7 @@ const Jobs = () => {
                       <SelectItem value="entry">Fresher (0-1 years)</SelectItem>
                       <SelectItem value="junior">Junior (1-3 years)</SelectItem>
                       <SelectItem value="mid">Mid-level (3-6 years)</SelectItem>
-                      <SelectItem value="senior">Senior (6+ years)</SelectItem>
+                      <SelectItem value="senior">Senior (6 plus years)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
