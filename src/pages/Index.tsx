@@ -26,17 +26,30 @@ const Index = () => {
   }, []);
   // Fast auth check - optimized for instant loading
   useEffect(() => {
+    console.log('🔍 Starting auth check...');
+    
     // Set up auth listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔐 Auth state changed:', event, !!session);
       setIsLoggedIn(!!session);
       setAuthChecked(true);
     });
 
     // Then check existing session
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
-      setAuthChecked(true);
+      try {
+        console.log('👤 Checking existing user session...');
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          console.warn('⚠️ Auth check error:', error);
+        }
+        console.log('✅ Auth check complete:', !!user);
+        setIsLoggedIn(!!user);
+        setAuthChecked(true);
+      } catch (err) {
+        console.error('❌ Auth check failed:', err);
+        setAuthChecked(true); // Still mark as checked to prevent infinite loading
+      }
     };
     checkUser();
 
@@ -45,7 +58,20 @@ const Index = () => {
 
   // Redirect logged-in users after auth check completes
   if (authChecked && isLoggedIn) {
+    console.log('🚀 Redirecting logged-in user to /network');
     return <Navigate to="/network" replace />;
+  }
+
+  // Show loading state while checking auth
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading TalentXcel...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
