@@ -259,7 +259,6 @@ export const InfiniteNewsFeed: React.FC<InfiniteNewsFeedProps> = ({
             variant="full"
             isSaved={savedArticles.has(article.id)}
             onSave={() => handleSaveArticle(article.id)}
-            LazyImage={LazyImage}
           />
         ))}
       </div>

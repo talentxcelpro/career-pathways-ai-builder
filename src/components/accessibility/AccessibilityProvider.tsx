@@ -203,7 +203,7 @@ export const AccessibleCard: React.FC<{
 }> = ({ children, title, description, onClick, className = '' }) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
-  const handleKeydown = (e: KeyboardEvent) => {
+  const handleKeydown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (onClick && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       onClick();

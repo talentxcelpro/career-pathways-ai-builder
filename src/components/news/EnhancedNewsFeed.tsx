@@ -16,14 +16,8 @@ import { ContentAnalyticsDashboard } from "@/components/analytics/ContentAnalyti
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { MobileNewsFeed } from "@/components/mobile/TouchOptimizedComponents";
 import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
-import { useNewsArticles } from "@/hooks/useNewsArticles";
-import { EnhancedNewsCard } from "./EnhancedNewsCard";
-import { NewsHeroSection } from "./NewsHeroSection";
-import { TrendingCarousel } from "./TrendingCarousel";
-import { LoadingSkeleton } from "./LoadingSkeleton";
 import { 
   Search, 
-  Filter, 
   TrendingUp, 
   Clock, 
   Star,
@@ -201,138 +195,195 @@ export const EnhancedNewsFeed: React.FC<EnhancedNewsFeedProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Hero Section */}
-      {showHero && featuredArticle && (
-        <NewsHeroSection 
-          article={featuredArticle}
-          isSaved={savedArticles.has(featuredArticle.id)}
-          onSave={() => handleSaveArticle(featuredArticle.id)}
-        />
-      )}
-
-      {/* Trending Carousel */}
-      {trendingArticles.length > 0 && (
-        <TrendingCarousel 
-          articles={trendingArticles}
-          savedArticles={savedArticles}
-          onSave={handleSaveArticle}
-        />
-      )}
-
-      {/* Search and Filters */}
-      <Card className="border-0 shadow-md bg-gradient-to-r from-card via-card to-muted/30">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              Career News & Insights
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-primary/10">
-                <Eye className="w-3 h-3 mr-1" />
-                {filteredArticles.length} articles
-              </Badge>
-              <Button
-                onClick={() => refetch()}
-                variant="ghost"
-                size="sm"
-                className="hover:bg-primary/10"
-              >
-                Refresh
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search articles, topics, or companies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-background/50 border-primary/20 focus:border-primary/40"
-            />
-          </div>
-
-          {/* Category Filters */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              return (
+    <AccessibilityProvider>
+      <div className="space-y-6" role="main" aria-label="News and insights content">
+        {/* View Mode Selector */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Career News & Insights</h2>
+              <div className="flex gap-2">
                 <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  variant={viewMode === 'infinite' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`
-                    ${selectedCategory === category.id 
-                      ? `${category.color} text-white border-0 shadow-lg` 
-                      : 'hover:bg-primary/10'
-                    }
-                    transition-all duration-200
-                  `}
+                  onClick={() => setViewMode('infinite')}
+                  aria-label="Infinite scroll view"
                 >
-                  <Icon className="w-3 h-3 mr-1" />
-                  {category.label}
+                  <Eye className="w-4 h-4 mr-1" />
+                  Feed
                 </Button>
-              );
-            })}
-          </div>
-
-          {/* Sort Options */}
-          <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
-            <TabsList className="grid w-full grid-cols-3 bg-muted/50">
-              <TabsTrigger value="latest" className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                Latest
-              </TabsTrigger>
-              <TabsTrigger value="trending" className="flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
-                Trending
-              </TabsTrigger>
-              <TabsTrigger value="engagement" className="flex items-center gap-1">
-                <Star className="w-3 h-3" />
-                Top Rated
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </CardContent>
-      </Card>
-
-      {/* Articles Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredArticles.map((article) => (
-          <EnhancedNewsCard
-            key={article.id}
-            article={article}
-            variant="full"
-            isSaved={savedArticles.has(article.id)}
-            onSave={() => handleSaveArticle(article.id)}
-          />
-        ))}
-      </div>
-
-      {/* Load More */}
-      {filteredArticles.length === 0 && (
-        <Card className="border-dashed border-2">
-          <CardContent className="text-center py-12">
-            <div className="text-muted-foreground">
-              No articles found matching your criteria
+                <Button
+                  variant={viewMode === 'analytics' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('analytics')}
+                  aria-label="Personal analytics view"
+                >
+                  <Brain className="w-4 h-4 mr-1" />
+                  Insights
+                </Button>
+                <Button
+                  variant={viewMode === 'insights' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('insights')}
+                  aria-label="Content analytics view"
+                >
+                  <BarChart3 className="w-4 h-4 mr-1" />
+                  Analytics
+                </Button>
+              </div>
             </div>
-            <Button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory('all');
-              }}
-              variant="outline"
-              className="mt-4"
-            >
-              Clear Filters
-            </Button>
           </CardContent>
         </Card>
+
+        {/* Content based on view mode */}
+        {viewMode === 'infinite' && (
+          <InfiniteNewsFeed
+            category={selectedCategory}
+            searchQuery={searchQuery}
+            sortBy={sortBy}
+            pageSize={maxItems}
+          />
+        )}
+
+        {viewMode === 'analytics' && <PersonalizedDashboard />}
+        
+        {viewMode === 'insights' && <ContentAnalyticsDashboard />}
+
+        {viewMode === 'standard' && (
+          <>
+            {/* Hero Section */}
+            {showHero && featuredArticle && (
+              <NewsHeroSection 
+                article={featuredArticle}
+                isSaved={savedArticles.has(featuredArticle.id)}
+                onSave={() => handleSaveArticle(featuredArticle.id)}
+              />
+            )}
+
+            {/* Trending Carousel */}
+            {trendingArticles.length > 0 && (
+              <TrendingCarousel 
+                articles={trendingArticles}
+                savedArticles={savedArticles}
+                onSave={handleSaveArticle}
+              />
+            )}
+
+            {/* Search and Filters */}
+            <Card className="border-0 shadow-md bg-gradient-to-r from-card via-card to-muted/30">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    Career News & Insights
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-primary/10">
+                      <Eye className="w-3 h-3 mr-1" />
+                      {filteredArticles.length} articles
+                    </Badge>
+                    <Button
+                      onClick={() => refetch()}
+                      variant="ghost"
+                      size="sm"
+                      className="hover:bg-primary/10"
+                    >
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search articles, topics, or companies..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-background/50 border-primary/20 focus:border-primary/40"
+                  />
+                </div>
+
+                {/* Category Filters */}
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((category) => {
+                    const Icon = category.icon;
+                    return (
+                      <Button
+                        key={category.id}
+                        variant={selectedCategory === category.id ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`
+                          ${selectedCategory === category.id 
+                            ? `${category.color} text-white border-0 shadow-lg` 
+                            : 'hover:bg-primary/10'
+                          }
+                          transition-all duration-200
+                        `}
+                      >
+                        <Icon className="w-3 h-3 mr-1" />
+                        {category.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                {/* Sort Options */}
+                <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+                  <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+                    <TabsTrigger value="latest" className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      Latest
+                    </TabsTrigger>
+                    <TabsTrigger value="trending" className="flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3" />
+                      Trending
+                    </TabsTrigger>
+                    <TabsTrigger value="engagement" className="flex items-center gap-1">
+                      <Star className="w-3 h-3" />
+                      Top Rated
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </CardContent>
+            </Card>
+
+            {/* Articles Grid */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredArticles.map((article) => (
+                <EnhancedNewsCard
+                  key={article.id}
+                  article={article}
+                  variant="full"
+                  isSaved={savedArticles.has(article.id)}
+                  onSave={() => handleSaveArticle(article.id)}
+                />
+              ))}
+            </div>
+
+            {/* Empty State */}
+            {filteredArticles.length === 0 && (
+              <Card className="border-dashed border-2">
+                <CardContent className="text-center py-12">
+                  <div className="text-muted-foreground">
+                    No articles found matching your criteria
+                  </div>
+                  <Button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory('all');
+                    }}
+                    variant="outline"
+                    className="mt-4"
+                  >
+                    Clear Filters
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
       </div>
     </AccessibilityProvider>
