@@ -6,6 +6,7 @@ import { AppWrapper } from './AppWrapper.tsx'
 import './index.css'
 import './utils/ultraFastLoader'
 import './utils/instantLoader'
+import './utils/appleOptimizations'
 
 // Ensure React is globally available
 (window as any).React = React;

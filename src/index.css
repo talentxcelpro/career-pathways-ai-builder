@@ -1195,3 +1195,42 @@ img.loaded {
 .animate-fadeInScale {
   animation: fadeInScale 0.2s ease-out;
 }
+
+/* Apple-inspired responsive typography */
+.text-apple-hero { @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl; }
+.text-apple-large { @apply text-lg sm:text-xl md:text-2xl lg:text-3xl; }
+.text-apple-subtitle { @apply text-base sm:text-lg md:text-xl lg:text-2xl; }
+.text-apple-body { @apply text-sm sm:text-base md:text-lg; }
+.text-apple-caption { @apply text-xs sm:text-sm md:text-base; }
+.text-apple-small { @apply text-xs sm:text-xs md:text-sm; }
+
+/* Apple-inspired responsive font weights */
+.font-apple-thin { @apply font-thin; }
+.font-apple-light { @apply font-light; }
+.font-apple-regular { @apply font-normal; }
+.font-apple-medium { @apply font-medium; }
+.font-apple-semibold { @apply font-semibold; }
+.font-apple-bold { @apply font-bold; }
+
+/* Apple-inspired responsive icon sizes */
+.icon-apple-xs { @apply h-3 w-3 sm:h-4 sm:w-4; }
+.icon-apple-sm { @apply h-4 w-4 sm:h-5 sm:w-5; }
+.icon-apple-md { @apply h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7; }
+.icon-apple-lg { @apply h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8; }
+.icon-apple-xl { @apply h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10; }
+.icon-apple-2xl { @apply h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12; }
+
+/* Apple-style shadows and effects */
+.shadow-apple { @apply shadow-lg shadow-primary/5; }
+.shadow-apple-lg { @apply shadow-xl shadow-primary/10; }
+.shadow-apple-xl { @apply shadow-2xl shadow-primary/15; }
+
+/* Performance optimizations */
+.gpu-accelerated { 
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Smooth Apple-like animations */
+.transition-apple { @apply transition-all duration-300 ease-out; }
+.transition-apple-slow { @apply transition-all duration-700 ease-out; }
