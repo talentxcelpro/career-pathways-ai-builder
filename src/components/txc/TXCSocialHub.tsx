@@ -3,7 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TXCLeaderboard } from './TXCLeaderboard';
 import { TXCLiveActivity } from './TXCLiveActivity';
-import { Trophy, Activity, Users, TrendingUp } from 'lucide-react';
+import { TXCMiningDashboard } from './TXCMiningDashboard';
+// import TXCAdvancedAnalytics from './TXCAdvancedAnalytics';
+import TXCMobileOptimized from './TXCMobileOptimized';
+import TXCSecurityManager from './TXCSecurityManager';
+import TXCSystemStatus from './TXCSystemStatus';
+import { Trophy, Activity, Users, TrendingUp, Zap, BarChart3, Shield, Server } from 'lucide-react';
 
 interface TXCSocialHubProps {
   className?: string;
@@ -19,17 +24,37 @@ export const TXCSocialHub: React.FC<TXCSocialHubProps> = ({ className = '' }) =>
         </p>
       </div>
 
-      <Tabs defaultValue="activity" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+      <Tabs defaultValue="mobile" className="w-full">
+        <TabsList className="grid w-full grid-cols-6 mb-6">
+          <TabsTrigger value="mobile" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            TXC Hub
+          </TabsTrigger>
           <TabsTrigger value="activity" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
-            Live Activity
+            Activity
           </TabsTrigger>
           <TabsTrigger value="leaderboard" className="flex items-center gap-2">
             <Trophy className="h-4 w-4" />
             Leaderboard
           </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Analytics
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="system" className="flex items-center gap-2">
+            <Server className="h-4 w-4" />
+            System
+          </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="mobile" className="space-y-6">
+          <TXCMobileOptimized />
+        </TabsContent>
 
         <TabsContent value="activity" className="space-y-6">
           <TXCLiveActivity />
@@ -111,6 +136,20 @@ export const TXCSocialHub: React.FC<TXCSocialHubProps> = ({ className = '' }) =>
 
         <TabsContent value="leaderboard" className="space-y-6">
           <TXCLeaderboard />
+        </TabsContent>
+        
+        <TabsContent value="analytics" className="space-y-6">
+          <div className="text-center py-8 text-muted-foreground">
+            Advanced Analytics - Coming Soon
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="security" className="space-y-6">
+          <TXCSecurityManager />
+        </TabsContent>
+        
+        <TabsContent value="system" className="space-y-6">
+          <TXCSystemStatus />
         </TabsContent>
       </Tabs>
     </div>
