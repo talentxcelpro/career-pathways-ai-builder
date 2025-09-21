@@ -20,83 +20,28 @@ import {
   Search,
   Filter
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useLinkedInBulkUpload } from '@/hooks/useLinkedInBulkUpload';
 
 const LinkedInBulkUpload = () => {
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const { data: uploadStats } = useQuery({
-    queryKey: ['linkedin-upload-stats'],
-    queryFn: async () => ({
-      totalUploads: 15420,
-      successfulImports: 14856,
-      failedImports: 564,
-      avgProcessingTime: '2.3 minutes',
-      todayUploads: 234,
-      weeklyGrowth: 18.5
-    })
+  const [uploadOptions, setUploadOptions] = useState({
+    validateEmails: true,
+    checkDuplicates: true,
+    autoEnrich: false,
+    tokenRewardPerUser: 10
   });
 
-  const { data: recentUploads } = useQuery({
-    queryKey: ['linkedin-recent-uploads'],
-    queryFn: async () => [
-      { 
-        id: '1', 
-        filename: 'tech_professionals_batch_1.csv', 
-        uploadedBy: 'Admin User', 
-        timestamp: '2024-01-20T10:30:00Z',
-        status: 'completed',
-        processed: 250,
-        total: 250,
-        errors: 0
-      },
-      { 
-        id: '2', 
-        filename: 'marketing_leads_2024.xlsx', 
-        uploadedBy: 'HR Manager', 
-        timestamp: '2024-01-20T09:15:00Z',
-        status: 'processing',
-        processed: 180,
-        total: 300,
-        errors: 5
-      },
-      { 
-        id: '3', 
-        filename: 'sales_contacts_q1.csv', 
-        uploadedBy: 'Sales Lead', 
-        timestamp: '2024-01-20T08:45:00Z',
-        status: 'failed',
-        processed: 45,
-        total: 150,
-        errors: 23
-      },
-      { 
-        id: '4', 
-        filename: 'engineering_talent.xlsx', 
-        uploadedBy: 'Tech Recruiter', 
-        timestamp: '2024-01-19T17:30:00Z',
-        status: 'completed',
-        processed: 420,
-        total: 420,
-        errors: 2
-      }
-    ]
-  });
-
-  const { data: dataQuality } = useQuery({
-    queryKey: ['linkedin-data-quality'],
-    queryFn: async () => ({
-      completenessScore: 87,
-      duplicateRate: 3.2,
-      validationIssues: [
-        { type: 'Missing Email', count: 45, severity: 'medium' },
-        { type: 'Invalid Phone', count: 23, severity: 'low' },
-        { type: 'Incomplete Profile', count: 67, severity: 'high' },
-        { type: 'Missing Skills', count: 89, severity: 'medium' }
-      ]
-    })
-  });
+  const {
+    uploadStats,
+    recentUploads,
+    dataQuality,
+    uploadProgress,
+    isUploading,
+    uploadFile,
+    isUploadLoading,
+    downloadTemplate,
+    isStatsLoading,
+    isHistoryLoading
+  } = useLinkedInBulkUpload();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -119,20 +64,7 @@ const LinkedInBulkUpload = () => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setIsUploading(true);
-      setUploadProgress(0);
-      
-      // Simulate upload progress
-      const interval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setIsUploading(false);
-            return 100;
-          }
-          return prev + 10;
-        });
-      }, 200);
+      uploadFile({ file, options: uploadOptions });
     }
   };
 
@@ -255,17 +187,40 @@ const LinkedInBulkUpload = () => {
                   <h4 className="font-medium">Upload Options</h4>
                   <div className="space-y-2">
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked />
+                      <input 
+                        type="checkbox" 
+                        checked={uploadOptions.validateEmails}
+                        onChange={(e) => setUploadOptions(prev => ({ ...prev, validateEmails: e.target.checked }))}
+                      />
                       <span className="text-sm">Validate email addresses</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked />
+                      <input 
+                        type="checkbox" 
+                        checked={uploadOptions.checkDuplicates}
+                        onChange={(e) => setUploadOptions(prev => ({ ...prev, checkDuplicates: e.target.checked }))}
+                      />
                       <span className="text-sm">Check for duplicates</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" />
+                      <input 
+                        type="checkbox" 
+                        checked={uploadOptions.autoEnrich}
+                        onChange={(e) => setUploadOptions(prev => ({ ...prev, autoEnrich: e.target.checked }))}
+                      />
                       <span className="text-sm">Auto-enrich profiles</span>
                     </label>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm">Tokens per user:</span>
+                      <Input
+                        type="number"
+                        value={uploadOptions.tokenRewardPerUser}
+                        onChange={(e) => setUploadOptions(prev => ({ ...prev, tokenRewardPerUser: parseInt(e.target.value) || 10 }))}
+                        className="w-20"
+                        min="1"
+                        max="100"
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -284,7 +239,7 @@ const LinkedInBulkUpload = () => {
                     <p className="font-medium">LinkedIn Contacts Template</p>
                     <p className="text-sm text-muted-foreground">Standard contact fields</p>
                   </div>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => downloadTemplate('contacts')}>
                     <Download className="h-4 w-4 mr-1" />
                     CSV
                   </Button>
@@ -294,9 +249,9 @@ const LinkedInBulkUpload = () => {
                     <p className="font-medium">Job Candidates Template</p>
                     <p className="text-sm text-muted-foreground">Recruitment focused fields</p>
                   </div>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => downloadTemplate('candidates')}>
                     <Download className="h-4 w-4 mr-1" />
-                    XLSX
+                    CSV
                   </Button>
                 </div>
                 <div className="flex items-center justify-between p-3 border rounded">
@@ -304,7 +259,7 @@ const LinkedInBulkUpload = () => {
                     <p className="font-medium">Sales Leads Template</p>
                     <p className="text-sm text-muted-foreground">Sales pipeline fields</p>
                   </div>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => downloadTemplate('leads')}>
                     <Download className="h-4 w-4 mr-1" />
                     CSV
                   </Button>
@@ -323,8 +278,13 @@ const LinkedInBulkUpload = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentUploads?.map((upload) => {
+              {isHistoryLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentUploads?.map((upload) => {
                   const StatusIcon = getStatusIcon(upload.status);
                   return (
                     <div key={upload.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -359,9 +319,15 @@ const LinkedInBulkUpload = () => {
                         </Button>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                  {(!recentUploads || recentUploads.length === 0) && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No upload history found
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
