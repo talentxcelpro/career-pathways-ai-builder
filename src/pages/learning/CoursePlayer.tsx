@@ -110,7 +110,6 @@ const CoursePlayer = () => {
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
                   <div className="relative">
-                    {console.log('Loading video URL:', currentLesson.video_url)}
                     <VideoReelPlayer
                       videoUrl={currentLesson.video_url}
                       isActive={isPlaying}
