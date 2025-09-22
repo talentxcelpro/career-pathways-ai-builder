@@ -61,45 +61,46 @@ export const CourseraStyleHeader: React.FC = () => {
 
   return (
     <>
-      {/* Black Audience Navigation Bar */}
+      {/* Black Audience Navigation Bar - Exact Coursera Style */}
       <div className="bg-black text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-14 space-x-8">
-            {audienceOptions.map((option) => (
+          <div className="flex items-center h-12 space-x-0">
+            {audienceOptions.map((option, index) => (
               <Link
                 key={option.id}
                 to={option.href}
-                className="flex items-center space-x-2 text-white/90 hover:text-white text-sm font-medium transition-colors"
+                className={`px-6 py-3 text-white/90 hover:text-white hover:bg-white/10 text-sm font-medium transition-all border-b-2 border-transparent hover:border-white/30 ${
+                  index === 0 ? 'border-b-2 border-white text-white' : ''
+                }`}
               >
-                <span>{option.title}</span>
+                {option.title}
               </Link>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Main Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+      {/* Main Header - Clean White Background */}
+      <header className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top Navigation Bar */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/learning" className="flex items-center space-x-2">
+            <Link to="/learning" className="flex items-center">
               <div className="text-2xl font-bold text-blue-600">TalentXcel</div>
             </Link>
 
-            {/* Search Bar with Explore */}
-            <div className="flex items-center space-x-4 flex-1 max-w-2xl mx-8">
+            {/* Center - Explore + Search */}
+            <div className="flex items-center space-x-6 flex-1 max-w-2xl mx-8">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="bg-blue-600 text-white hover:bg-blue-700 font-medium px-6 h-11">
+                  <Button className="bg-blue-600 text-white hover:bg-blue-700 font-medium px-6 h-11 rounded-md">
                     <div className="flex items-center space-x-2">
                       <span>Explore</span>
                       <ChevronDown className="h-4 w-4" />
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-96 p-6">
+                <DropdownMenuContent className="w-96 p-6" align="start">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <h4 className="font-semibold mb-3 text-gray-900">Popular Skills</h4>
@@ -123,19 +124,18 @@ export const CourseraStyleHeader: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Search Input */}
+              {/* Search Input - Coursera Style */}
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
                   placeholder="What do you want to learn?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-20 h-11 text-base bg-white border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg"
+                  className="pl-4 pr-12 h-11 text-base bg-white border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-full"
                 />
                 <Button 
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 h-7 px-4 text-sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 h-9 w-9 p-0 rounded-full"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-4 w-4 text-white" />
                 </Button>
               </div>
             </div>
@@ -145,36 +145,36 @@ export const CourseraStyleHeader: React.FC = () => {
               <Link to="/learning/degrees" className="hidden md:block text-gray-700 hover:text-blue-600 font-medium text-sm">
                 Online Degrees
               </Link>
-              <Link to="/learning/certificates" className="hidden md:block text-gray-700 hover:text-blue-600 font-medium text-sm">
+              <Link to="/learning/careers" className="hidden md:block text-gray-700 hover:text-blue-600 font-medium text-sm">
                 Careers
               </Link>
               <Link to="/auth" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
                 Log In
               </Link>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9">
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9 rounded-md font-medium">
                 <Link to="/auth">Join for Free</Link>
               </Button>
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Promotional Banner */}
-        <div className="bg-blue-50 border-t border-blue-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-sm">
-                <span className="text-blue-900">Ends tomorrow: Discover new skills with courses from industry experts—</span>
-                <Link to="/learning/courses" className="text-blue-600 hover:text-blue-800 font-semibold underline">
-                  now ₹7,999/year
-                </Link>
-              </div>
-              <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 h-8 w-8 p-0">
-                ✕
-              </Button>
+      {/* Promotional Banner - Coursera Style */}
+      <div className="bg-blue-50 border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-blue-900">Ends tomorrow: Discover new skills with courses from industry experts—</span>
+              <Link to="/learning/courses" className="text-blue-600 hover:text-blue-800 font-semibold underline">
+                now ₹7,999/year
+              </Link>
             </div>
+            <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 h-8 w-8 p-0">
+              ✕
+            </Button>
           </div>
         </div>
-      </header>
+      </div>
     </>
   );
 };

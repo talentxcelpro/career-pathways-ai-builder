@@ -6,96 +6,93 @@ import { Play, ArrowRight, Star, Users, BookOpen, Award } from 'lucide-react';
 
 export const CourseraHeroSection: React.FC = () => {
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl"></div>
-        <div className="absolute bottom-20 left-40 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl"></div>
+    <section className="relative bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden">
+      {/* Clean geometric background elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl"></div>
+        <div className="absolute bottom-20 right-20 w-72 h-72 bg-indigo-600 rounded-full mix-blend-multiply filter blur-xl"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
-          {/* Left Content */}
-          <div className="text-white space-y-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left Content - Clean and Professional */}
+          <div className="space-y-8">
             {/* TalentXcel Plus Badge */}
             <div className="inline-flex items-center space-x-2">
-              <Badge className="bg-blue-500 text-white hover:bg-blue-400 px-4 py-1 text-sm font-medium">
+              <Badge className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 text-sm font-semibold rounded-sm">
                 TALENTXCEL PLUS
               </Badge>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+            {/* Main Headline - Coursera Style */}
+            <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-gray-900">
               Achieve your career goals with
               <br />
-              <span className="text-blue-200">TalentXcel Plus</span>
+              <span className="text-gray-900">TalentXcel Plus</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl lg:text-2xl text-blue-100 leading-relaxed max-w-xl">
+            <p className="text-xl text-gray-700 leading-relaxed max-w-xl">
               Subscribe to build job-ready skills from world-class institutions.
             </p>
 
             {/* Pricing */}
-            <div className="space-y-4">
-              <div className="text-white">
+            <div className="space-y-3">
+              <div className="text-gray-900">
                 <span className="text-2xl font-bold">₹2,099/month, cancel anytime</span>
               </div>
-              <div className="flex items-center space-x-1 text-blue-200">
-                <span>or</span>
-                <Link to="/pricing" className="text-blue-200 hover:text-white underline font-medium">
+              <div className="flex items-center space-x-1 text-blue-600">
+                <span className="text-gray-700">or</span>
+                <Link to="/pricing" className="text-blue-600 hover:text-blue-700 underline font-medium ml-2">
                   ₹13,999/year with 14-day money-back guarantee
                 </Link>
               </div>
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Coursera Style */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button 
                 size="lg" 
-                className="bg-blue-500 hover:bg-blue-400 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-sm shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <Play className="mr-2 h-5 w-5" />
                 Start 7-day Free Trial
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-2 border-blue-300 text-white hover:bg-blue-300/10 px-8 py-4 text-lg font-semibold rounded-lg backdrop-blur-sm"
+                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold rounded-sm"
               >
-                Explore Courses
-                <ArrowRight className="ml-2 h-5 w-5" />
+                or ₹13,999/year with 14-day money-back guarantee
               </Button>
             </div>
           </div>
 
-          {/* Right Content - Hero Image/Illustration */}
+          {/* Right Content - Clean Visual */}
           <div className="relative">
-            <div className="relative bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20">
-              {/* Mock interface or illustration would go here */}
-              <div className="aspect-square bg-gradient-to-br from-white/20 to-transparent rounded-2xl flex items-center justify-center">
+            <div className="relative bg-white rounded-2xl p-8 shadow-2xl border">
+              {/* Clean hero visual */}
+              <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center">
                 <div className="text-center space-y-6">
-                  <div className="w-24 h-24 bg-blue-400/30 rounded-full flex items-center justify-center mx-auto">
-                    <Play className="h-12 w-12 text-white" />
+                  <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                    <Play className="h-12 w-12 text-blue-600" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-bold text-white">Learn with confidence</h3>
-                    <p className="text-blue-100">Interactive courses from top universities</p>
+                    <h3 className="text-2xl font-bold text-gray-900">Learn with confidence</h3>
+                    <p className="text-gray-600">Interactive courses from top universities</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 bg-white rounded-xl p-4 shadow-lg">
+            {/* Floating stats - Clean design */}
+            <div className="absolute -top-4 -right-4 bg-white rounded-lg p-4 shadow-lg border">
               <div className="flex items-center space-x-2">
                 <Star className="h-5 w-5 text-yellow-500 fill-current" />
                 <span className="text-sm font-semibold text-gray-900">4.8 rating</span>
               </div>
             </div>
 
-            <div className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-lg">
+            <div className="absolute -bottom-4 -left-4 bg-white rounded-lg p-4 shadow-lg border">
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-blue-600" />
                 <span className="text-sm font-semibold text-gray-900">100M+ learners</span>
@@ -104,20 +101,22 @@ export const CourseraHeroSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Stats */}
-        <div className="pt-16 border-t border-blue-400/30 mt-16">
+        {/* Partner Section - Clean and Minimal */}
+        <div className="pt-20 border-t border-gray-200 mt-20">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Learn from 350+ top universities and companies
             </h2>
           </div>
           
-          {/* Partner Logos Grid */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-8 items-center justify-items-center opacity-80">
-            {/* Mock partner logos */}
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white/20 backdrop-blur-sm rounded-lg p-4 w-full h-16 flex items-center justify-center">
-                <div className="text-white font-bold text-lg">PARTNER</div>
+          {/* Partner Logos Grid - Coursera Style */}
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-8 items-center justify-items-center">
+            {/* Clean partner logo placeholders */}
+            {[
+              'ILLINOIS', 'DUKE', 'GOOGLE', 'MICHIGAN', 'IBM', 'VANDERBILT'
+            ].map((partner, i) => (
+              <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 w-full h-12 flex items-center justify-center border border-gray-200">
+                <div className="text-gray-600 font-semibold text-sm">{partner}</div>
               </div>
             ))}
           </div>
