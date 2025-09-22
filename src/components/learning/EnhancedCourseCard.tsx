@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Star, Clock, Users, Play, BookOpen, Heart, Share2, Sparkles } from 'lucide-react';
+import { Star, Clock, Users, Play, BookOpen, Heart, Share2, Sparkles, Youtube, Eye, ThumbsUp, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Course {
@@ -21,6 +21,15 @@ interface Course {
   skills_taught?: string[];
   thumbnail_url?: string;
   category?: string;
+  youtube_video_id?: string;
+  youtube_playlist_id?: string;
+  youtube_channel_name?: string;
+  video_duration?: string;
+  view_count?: number;
+  like_count?: number;
+  content_type?: 'video' | 'playlist' | 'course';
+  external_url?: string;
+  language?: string;
 }
 
 interface EnhancedCourseCardProps {
@@ -87,6 +96,66 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
     }
   }, [course.title, course.description, course.id]);
 
+  const handleExternalLink = useCallback(() => {
+    if (course.external_url) {
+      window.open(course.external_url, '_blank');
+    }
+  }, [course.external_url]);
+
+  const formatNumber = useCallback((num?: number) => {
+    if (!num) return '0';
+    if (num >= 1000000) {
+      return `${(num / 1000000).toFixed(1)}M`;
+    } else if (num >= 1000) {
+      return `${(num / 1000).toFixed(1)}K`;
+    }
+    return num.toString();
+  }, []);
+
+  const formatDuration = useCallback((duration?: string) => {
+    if (!duration) return null;
+    
+    // Parse YouTube duration format (PT1H2M10S)
+    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+    const matches = duration.match(regex);
+    
+    if (!matches) return duration;
+    
+    const hours = parseInt(matches[1] || '0');
+    const minutes = parseInt(matches[2] || '0');
+    const seconds = parseInt(matches[3] || '0');
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
+  }, []);
+
+  const getContentTypeIcon = useCallback(() => {
+    switch (course.content_type) {
+      case 'video':
+        return <Youtube className="w-4 h-4" />;
+      case 'playlist':
+        return <Play className="w-4 h-4" />;
+      default:
+        return <BookOpen className="w-4 h-4" />;
+    }
+  }, [course.content_type]);
+
+  const getContentTypeLabel = useCallback(() => {
+    switch (course.content_type) {
+      case 'video':
+        return 'YouTube Video';
+      case 'playlist':
+        return 'YouTube Playlist';
+      default:
+        return 'Course';
+    }
+  }, [course.content_type]);
+
   const handleEnroll = useCallback(() => {
     onEnroll(course.id);
   }, [onEnroll, course.id]);
@@ -128,6 +197,15 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
           >
             <Heart className={`card-icon-sm transition-colors ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
           </Button>
+          {course.external_url && (
+            <Button
+              size="sm" 
+              className="bg-white/90 hover:bg-white text-gray-700 apple-rounded-md w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
+              onClick={handleExternalLink}
+            >
+              <ExternalLink className="card-icon-sm" />
+            </Button>
+          )}
           <Button
             size="sm" 
             className="bg-white/90 hover:bg-white text-gray-700 apple-rounded-md w-9 h-9 p-0 shadow-lg backdrop-blur-sm"
@@ -160,16 +238,31 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
       </div>
 
       <CardHeader className="pb-3 space-y-3">
-        {/* Difficulty and Rating */}
+        {/* Content Type and Difficulty */}
         <div className="flex items-center justify-between">
-          <Badge className={`${difficultyConfig.className} text-xs font-medium px-3 py-1`}>
-            <span className="mr-1">{difficultyConfig.icon}</span>
-            {difficultyConfig.label}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {getContentTypeIcon()}
+            <Badge variant="secondary" className="text-xs">
+              {getContentTypeLabel()}
+            </Badge>
+            {course.language && (
+              <Badge variant="outline" className="text-xs">
+                {course.language.toUpperCase()}
+              </Badge>
+            )}
+          </div>
           <div className="flex items-center space-x-1">
             <Star className="h-4 w-4 text-yellow-500 fill-current" />
             <span className="text-sm font-medium text-foreground">{course.rating}</span>
           </div>
+        </div>
+        
+        {/* Difficulty Badge */}
+        <div className="flex justify-start">
+          <Badge className={`${difficultyConfig.className} text-xs font-medium px-3 py-1`}>
+            <span className="mr-1">{difficultyConfig.icon}</span>
+            {difficultyConfig.label}
+          </Badge>
         </div>
         
         {/* Course Title */}
@@ -187,20 +280,41 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
 
       <CardContent className="pt-0 space-y-4">
         {/* Course Metadata */}
-        <div className="flex items-center gap-4 text-caption text-muted-foreground">
+        <div className="grid grid-cols-2 gap-2 text-caption text-muted-foreground">
           <div className="flex items-center">
             <Clock className="card-icon-sm mr-1.5" />
-            <span>{course.duration_hours}h</span>
+            <span>
+              {course.video_duration 
+                ? formatDuration(course.video_duration)
+                : `${course.duration_hours}h`
+              }
+            </span>
           </div>
           <div className="flex items-center">
             <Users className="card-icon-sm mr-1.5" />
             <span>{course.enrolled_count.toLocaleString()}</span>
           </div>
+          
+          {course.view_count !== undefined && (
+            <div className="flex items-center">
+              <Eye className="card-icon-sm mr-1.5" />
+              <span>{formatNumber(course.view_count)} views</span>
+            </div>
+          )}
+          
+          {course.like_count !== undefined && (
+            <div className="flex items-center">
+              <ThumbsUp className="card-icon-sm mr-1.5" />
+              <span>{formatNumber(course.like_count)} likes</span>
+            </div>
+          )}
         </div>
 
         {/* Instructor */}
         <p className="text-body-small text-muted-foreground">
-          by <span className="font-medium text-foreground">{course.instructor_name}</span>
+          by <span className="font-medium text-foreground">
+            {course.youtube_channel_name || course.instructor_name}
+          </span>
         </p>
 
         {/* Skills Preview */}
@@ -250,7 +364,10 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
               size="sm"
               className="bg-primary hover:bg-primary/90 apple-rounded-xl px-6"
             >
-              Enroll Now
+              {course.content_type === 'video' || course.content_type === 'playlist' 
+                ? 'Watch Now' 
+                : 'Enroll Now'
+              }
             </Button>
           )}
         </div>

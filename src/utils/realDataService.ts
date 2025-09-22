@@ -70,7 +70,18 @@ export const realDataService = {
     try {
       const { data: courses } = await supabase
         .from('courses')
-        .select('*')
+        .select(`
+          *,
+          youtube_video_id,
+          youtube_playlist_id,
+          youtube_channel_name,
+          video_duration,
+          view_count,
+          like_count,
+          content_type,
+          external_url,
+          language
+        `)
         .eq('is_active', true)
         .order('enrolled_count', { ascending: false })
         .limit(6);
@@ -86,7 +97,18 @@ export const realDataService = {
     try {
       const { data: courses } = await supabase
         .from('courses')
-        .select('*')
+        .select(`
+          *,
+          youtube_video_id,
+          youtube_playlist_id,
+          youtube_channel_name,
+          video_duration,
+          view_count,
+          like_count,
+          content_type,
+          external_url,
+          language
+        `)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
