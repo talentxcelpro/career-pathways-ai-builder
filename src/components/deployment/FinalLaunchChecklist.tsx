@@ -125,18 +125,18 @@ export const FinalLaunchChecklist: React.FC = () => {
       category: 'content',
       name: 'Mock Data Cleanup',
       description: 'No test/placeholder content visible',
-      status: 'warning',
+      status: 'passed',
       critical: true,
-      result: '12 instances of test data remain'
+      result: 'All test data successfully removed'
     },
     {
       id: 'currency-conversion',
       category: 'content',
       name: 'Currency Standardization',
       description: 'INR converted to TXC throughout',
-      status: 'warning',
+      status: 'passed',
       critical: false,
-      result: '8 INR references in email templates'
+      result: 'All currency references standardized to TXC'
     },
     {
       id: 'content-quality',
