@@ -6,21 +6,17 @@ import { CourseraHeroSection } from '@/components/learning/CourseraHeroSection';
 import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
 import { LearningSearchHub } from '@/components/learning/LearningSearchHub';
 import { PersonalizedDashboard } from '@/components/learning/PersonalizedDashboard';
+import { CourseraStyleLearningEngine } from '@/components/learning/CourseraStyleLearningEngine';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { 
   BookOpen, 
-  Users, 
-  Star,
-  GraduationCap,
-  Play,
-  TrendingUp,
+  Target,
   Award,
-  Target
+  GraduationCap,
+  Play
 } from 'lucide-react';
-import { CourseGrid } from '@/components/learning/CourseGrid';
 
 export default function LearningHub() {
   const { seoData, breadcrumbs } = useAdvancedLearningData({ 
@@ -62,25 +58,9 @@ export default function LearningHub() {
           <SmartLearningNav />
         </section>
 
-        <Separator className="mb-16" />
-
-        {/* Featured Courses */}
+        {/* Coursera-Style Learning Engine */}
         <section>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Featured Courses</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Hand-picked courses from top instructors to accelerate your career growth
-            </p>
-          </div>
-          <CourseGrid limit={6} />
-          <div className="text-center mt-12">
-            <Button asChild size="lg" className="px-8">
-              <Link to="/learning/courses">
-                <BookOpen className="h-5 w-5 mr-2" />
-                View All Courses
-              </Link>
-            </Button>
-          </div>
+          <CourseraStyleLearningEngine view="hub" />
         </section>
       </div>
 
