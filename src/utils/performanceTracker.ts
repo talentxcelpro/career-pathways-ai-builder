@@ -264,8 +264,8 @@ class PerformanceTrackerClass {
     }
 
     // Vercel Analytics
-    if (typeof window !== 'undefined' && window.va) {
-      window.va('event', eventName);
+    if (typeof window !== 'undefined' && (window as any).va) {
+      (window as any).va('event', eventName);
     }
 
     // Custom analytics endpoint
@@ -349,5 +349,6 @@ if (typeof window !== 'undefined') {
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
+    va?: (...args: any[]) => void;
   }
 }

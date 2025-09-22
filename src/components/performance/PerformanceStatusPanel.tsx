@@ -69,7 +69,7 @@ export const PerformanceStatusPanel: React.FC = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Used Memory</span>
-                <span>{Math.round(metrics.memoryUsage / 1024 / 1024)} MB</span>
+                <span>N/A</span>
               </div>
               <Progress 
                 value={60} 
