@@ -190,6 +190,42 @@
   }
 }
 
+@keyframes shadow-glow {
+  0%, 100% { 
+    box-shadow: 0 10px 30px -10px hsla(var(--primary) / 0.3); 
+  }
+  50% { 
+    box-shadow: 0 20px 40px -10px hsla(var(--primary) / 0.5); 
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-5px); 
+  }
+}
+
+@keyframes spin-slow {
+  from { 
+    transform: rotate(0deg); 
+  }
+  to { 
+    transform: rotate(360deg); 
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.7; 
+  }
+}
+
 @keyframes float {
   0%, 100% { 
     transform: translateY(0px); 
@@ -268,6 +304,13 @@
   animation: fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
 .animate-fade-in-up {
   animation: fade-in-up 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -294,6 +337,22 @@
 
 .animate-glow-pulse {
   animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-shadow-glow {
+  animation: shadow-glow 3s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
 }
 
 .animate-float {
@@ -1054,6 +1113,10 @@ img.loaded {
   /* TalentXcel Premium Utility Classes */
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
   }
   
     .shadow-glow {

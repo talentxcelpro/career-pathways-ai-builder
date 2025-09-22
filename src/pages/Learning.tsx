@@ -271,6 +271,162 @@ const Learning = () => {
         </div>
       )}
 
+      {/* Learning Path Categories */}
+      <div className="mb-12 space-y-8 animate-fade-in-up">
+        <div className="text-center mb-8">
+          <h2 className="text-title font-heading text-foreground mb-3">Choose Your Learning Journey</h2>
+          <p className="text-body text-muted-foreground max-w-2xl mx-auto">
+            Tailored learning paths designed for different career stages and goals
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
+          {/* Individual Learners */}
+          <Card className="group hover:scale-105 transition-all duration-500 bg-gradient-to-br from-card via-primary/5 to-card shadow-card hover:shadow-glow border-primary/20 hover:border-primary/40 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-4 right-4 w-12 h-12 bg-primary/10 rounded-full animate-pulse"></div>
+            
+            <CardHeader className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-primary/15 rounded-xl group-hover:bg-primary/25 transition-colors">
+                  <BookOpen className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+                </div>
+                <Badge className="bg-primary/10 text-primary border-primary/20">Individual</Badge>
+              </div>
+              <CardTitle className="text-xl text-foreground group-hover:text-primary transition-colors">
+                Personal Growth
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Build skills at your own pace with AI-guided learning paths
+              </p>
+            </CardHeader>
+            
+            <CardContent className="relative z-10 space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {['Skill Assessment', 'Career Roadmap', 'Progress Tracking'].map((feature, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                    {feature}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="border-t pt-4">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Available Paths</span>
+                  <span className="font-semibold text-primary">12+</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-primary rounded-full h-2 w-3/4 animate-pulse"></div>
+                </div>
+              </div>
+              
+              <Link to="/learning/paths" className="block">
+                <Button className="w-full group-hover:bg-primary/90">
+                  Explore Individual Paths
+                  <Sparkles className="w-4 h-4 ml-2 group-hover:animate-spin" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Job Seekers */}
+          <Card className="group hover:scale-105 transition-all duration-500 bg-gradient-to-br from-card via-success/5 to-card shadow-card hover:shadow-glow border-success/20 hover:border-success/40 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-success/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-4 right-4 w-12 h-12 bg-success/10 rounded-full animate-bounce-slow"></div>
+            
+            <CardHeader className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-success/15 rounded-xl group-hover:bg-success/25 transition-colors">
+                  <Target className="w-6 h-6 text-success group-hover:scale-110 transition-transform" />
+                </div>
+                <Badge className="bg-success/10 text-success border-success/20">Job Seeker</Badge>
+              </div>
+              <CardTitle className="text-xl text-foreground group-hover:text-success transition-colors">
+                Employment Bridge
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Job-focused training with direct employer connections
+              </p>
+            </CardHeader>
+            
+            <CardContent className="relative z-10 space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {['Job Matching', 'Interview Prep', 'Industry Insights'].map((feature, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                    {feature}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="border-t pt-4">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Success Rate</span>
+                  <span className="font-semibold text-success">94%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-success rounded-full h-2 w-5/6 animate-pulse"></div>
+                </div>
+              </div>
+              
+              <Link to="/learning/employment-bridge" className="block">
+                <Button className="w-full bg-success hover:bg-success/90 text-white">
+                  Start Job Search
+                  <TrendingUp className="w-4 h-4 ml-2 group-hover:animate-bounce" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Companies */}
+          <Card className="group hover:scale-105 transition-all duration-500 bg-gradient-to-br from-card via-ai-violet/5 to-card shadow-card hover:shadow-glow border-ai-violet/20 hover:border-ai-violet/40 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-ai-violet/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-4 right-4 w-12 h-12 bg-ai-violet/10 rounded-full animate-spin-slow"></div>
+            
+            <CardHeader className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-ai-violet/15 rounded-xl group-hover:bg-ai-violet/25 transition-colors">
+                  <Users className="w-6 h-6 text-ai-violet-dark group-hover:scale-110 transition-transform" />
+                </div>
+                <Badge className="bg-ai-violet/10 text-ai-violet-dark border-ai-violet/20">Enterprise</Badge>
+              </div>
+              <CardTitle className="text-xl text-foreground group-hover:text-ai-violet-dark transition-colors">
+                Corporate Training
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Scalable workforce development and skill advancement
+              </p>
+            </CardHeader>
+            
+            <CardContent className="relative z-10 space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {['Team Training', 'Analytics', 'Custom Content'].map((feature, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                    {feature}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="border-t pt-4">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-muted-foreground">Companies Served</span>
+                  <span className="font-semibold text-ai-violet-dark">500+</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div className="bg-ai-violet-medium rounded-full h-2 w-4/5 animate-pulse"></div>
+                </div>
+              </div>
+              
+              <Link to="/learning/company-portal" className="block">
+                <Button className="w-full bg-ai-violet-medium hover:bg-ai-violet-dark text-white">
+                  Enterprise Solutions
+                  <Zap className="w-4 h-4 ml-2 group-hover:animate-pulse" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Learning Tabs */}
       <LearningTabs
         activeTab={activeTab}
