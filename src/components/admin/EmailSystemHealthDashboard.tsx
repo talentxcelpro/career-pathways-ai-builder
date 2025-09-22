@@ -8,6 +8,9 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { RealDataEmailTester } from './RealDataEmailTester';
+import { EndToEndEmailTester } from './EndToEndEmailTester';
+import { EmailMonitoringDashboard } from './EmailMonitoringDashboard';
+import { EmailPerformanceOptimizer } from './EmailPerformanceOptimizer';
 import { 
   CheckCircle, 
   XCircle, 
@@ -370,12 +373,15 @@ export const EmailSystemHealthDashboard = () => {
 
       {/* Detailed Health Checks */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="smtp">SMTP</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="queue">Queue</TabsTrigger>
-          <TabsTrigger value="realdata">Real Data Testing</TabsTrigger>
+          <TabsTrigger value="realdata">Real Data</TabsTrigger>
+          <TabsTrigger value="e2e">E2E Test</TabsTrigger>
+          <TabsTrigger value="monitoring">Monitor</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -595,6 +601,18 @@ export const EmailSystemHealthDashboard = () => {
 
         <TabsContent value="realdata" className="space-y-4">
           <RealDataEmailTester />
+        </TabsContent>
+
+        <TabsContent value="e2e" className="space-y-4">
+          <EndToEndEmailTester />
+        </TabsContent>
+
+        <TabsContent value="monitoring" className="space-y-4">
+          <EmailMonitoringDashboard />
+        </TabsContent>
+
+        <TabsContent value="performance" className="space-y-4">
+          <EmailPerformanceOptimizer />
         </TabsContent>
       </Tabs>
     </div>
