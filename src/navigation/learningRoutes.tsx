@@ -27,6 +27,7 @@ import IndividualsPage from "../pages/learning/IndividualsPage";
 import BusinessesPage from "../pages/learning/BusinessesPage";
 import UniversitiesPage from "../pages/learning/UniversitiesPage";
 import GovernmentsPage from "../pages/learning/GovernmentsPage";
+import AdminCourses from "../pages/admin/AdminCourses";
 
 export const learningRoutes = [
   {
@@ -187,5 +188,13 @@ export const learningRoutes = [
     to: "/learning/governments",
     page: <GovernmentsPage />,
     isPublic: true,
+  },
+  {
+    title: "Admin - Courses",
+    to: "/admin/courses",
+    page: <AdminCourses />,
+    isPublic: false,
+    requiresAuth: true,
+    requiresAdminAccess: true,
   },
 ];
