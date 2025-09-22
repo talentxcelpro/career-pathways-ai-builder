@@ -9141,6 +9141,7 @@ export type Database = {
       courses: {
         Row: {
           category: string | null
+          content_type: string | null
           created_at: string | null
           created_by: string | null
           curriculum: Json | null
@@ -9148,11 +9149,14 @@ export type Database = {
           difficulty_level: string | null
           duration_hours: number | null
           enrolled_count: number | null
+          external_url: string | null
           id: string
           instructor_bio: string | null
           instructor_name: string | null
           is_active: boolean | null
           is_free: boolean | null
+          language: string | null
+          like_count: number | null
           price: number | null
           published: boolean | null
           rating: number | null
@@ -9160,10 +9164,18 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string | null
+          video_duration: string | null
           video_url: string | null
+          view_count: number | null
+          youtube_channel_id: string | null
+          youtube_channel_name: string | null
+          youtube_playlist_id: string | null
+          youtube_stats: Json | null
+          youtube_video_id: string | null
         }
         Insert: {
           category?: string | null
+          content_type?: string | null
           created_at?: string | null
           created_by?: string | null
           curriculum?: Json | null
@@ -9171,11 +9183,14 @@ export type Database = {
           difficulty_level?: string | null
           duration_hours?: number | null
           enrolled_count?: number | null
+          external_url?: string | null
           id?: string
           instructor_bio?: string | null
           instructor_name?: string | null
           is_active?: boolean | null
           is_free?: boolean | null
+          language?: string | null
+          like_count?: number | null
           price?: number | null
           published?: boolean | null
           rating?: number | null
@@ -9183,10 +9198,18 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string | null
+          video_duration?: string | null
           video_url?: string | null
+          view_count?: number | null
+          youtube_channel_id?: string | null
+          youtube_channel_name?: string | null
+          youtube_playlist_id?: string | null
+          youtube_stats?: Json | null
+          youtube_video_id?: string | null
         }
         Update: {
           category?: string | null
+          content_type?: string | null
           created_at?: string | null
           created_by?: string | null
           curriculum?: Json | null
@@ -9194,11 +9217,14 @@ export type Database = {
           difficulty_level?: string | null
           duration_hours?: number | null
           enrolled_count?: number | null
+          external_url?: string | null
           id?: string
           instructor_bio?: string | null
           instructor_name?: string | null
           is_active?: boolean | null
           is_free?: boolean | null
+          language?: string | null
+          like_count?: number | null
           price?: number | null
           published?: boolean | null
           rating?: number | null
@@ -9206,7 +9232,14 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
+          video_duration?: string | null
           video_url?: string | null
+          view_count?: number | null
+          youtube_channel_id?: string | null
+          youtube_channel_name?: string | null
+          youtube_playlist_id?: string | null
+          youtube_stats?: Json | null
+          youtube_video_id?: string | null
         }
         Relationships: []
       }
@@ -31804,6 +31837,10 @@ export type Database = {
         Args:
           | { batch_id: string; success?: boolean }
           | { batch_id: string; success?: boolean }
+        Returns: undefined
+      }
+      increment_course_view_count: {
+        Args: { course_uuid: string }
         Returns: undefined
       }
       increment_event_participants: {
