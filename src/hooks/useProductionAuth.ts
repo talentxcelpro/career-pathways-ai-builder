@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { ENV } from '@/lib/environment';
-import { safeConsoleLog, safeConsoleError } from '@/utils/productionCleanup';
+import { productionConsole, validateProductionData } from '@/utils/productionCleanup';
 
 export interface ProductionAuthState {
   user: User | null;
@@ -25,7 +25,7 @@ export const useProductionAuth = () => {
   // Enhanced session refresh with retry logic
   const refreshSession = useCallback(async (retryCount = 0) => {
     try {
-      safeConsoleLog('Refreshing auth session...');
+      productionConsole.log('Refreshing auth session...');
       
       const { data: { session }, error } = await supabase.auth.getSession();
       
@@ -44,11 +44,11 @@ export const useProductionAuth = () => {
       
       return session;
     } catch (error: any) {
-      safeConsoleError('Session refresh failed:', error);
+      productionConsole.error('Session refresh failed:', error);
       
       // Retry logic for production stability
       if (retryCount < 2 && error.message !== 'Auth session missing!') {
-        safeConsoleLog(`Retrying session refresh (attempt ${retryCount + 1})`);
+        productionConsole.log(`Retrying session refresh (attempt ${retryCount + 1})`);
         setTimeout(() => refreshSession(retryCount + 1), 1000);
         return;
       }
@@ -83,7 +83,7 @@ export const useProductionAuth = () => {
           async (event, session) => {
             if (!mounted) return;
             
-            safeConsoleLog('Auth state changed:', event);
+            productionConsole.log('Auth state changed:', event);
             
             setAuthState(prev => ({
               ...prev,
@@ -101,7 +101,7 @@ export const useProductionAuth = () => {
             }
             
             if (event === 'TOKEN_REFRESHED') {
-              safeConsoleLog('Token refreshed successfully');
+              productionConsole.log('Token refreshed successfully');
             }
           }
         );
@@ -110,7 +110,7 @@ export const useProductionAuth = () => {
           subscription.unsubscribe();
         };
       } catch (error) {
-        safeConsoleError('Auth initialization failed:', error);
+        productionConsole.error('Auth initialization failed:', error);
         
         if (mounted) {
           setAuthState(prev => ({
@@ -147,9 +147,9 @@ export const useProductionAuth = () => {
         isAuthenticated: false,
       });
       
-      safeConsoleLog('User signed out successfully');
+      productionConsole.log('User signed out successfully');
     } catch (error: any) {
-      safeConsoleError('Sign out failed:', error);
+      productionConsole.error('Sign out failed:', error);
       
       setAuthState(prev => ({
         ...prev,

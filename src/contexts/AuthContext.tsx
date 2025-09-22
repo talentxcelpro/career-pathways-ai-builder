@@ -1,5 +1,5 @@
 // Production-ready authentication context with improved session management
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,7 @@ export const useAuth = () => {
     return {
       user: null,
       session: null,
-      loading: false,
+      loading: true,
       signOut: async () => {},
       refreshSession: async () => {}
     };
@@ -41,120 +41,163 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const authInitialized = useRef(false);
   const navigate = useNavigate();
-
-  const refreshSession = useCallback(async () => {
-    try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error && error.message !== 'Auth session missing!') {
-        throw error;
-      }
-
-      setUser(session?.user ?? null);
-      setSession(session);
-    } catch (error: any) {
-      console.warn('Session refresh failed:', error.message);
-      setUser(null);
-      setSession(null);
-    }
-  }, []);
-
-  const initializeAuth = useCallback(async () => {
-    if (authInitialized.current) return;
-    authInitialized.current = true;
-
-    try {
-      // Clear any invalid stored sessions first
-      const storedSession = localStorage.getItem('sb-dthlgsnakhoftinssokm-auth-token');
-      if (storedSession) {
-        try {
-          const parsed = JSON.parse(storedSession);
-          if (!parsed || !parsed.access_token) {
-            localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
-          }
-        } catch {
-          localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
-        }
-      }
-
-      // Get initial session with timeout
-      const sessionPromise = supabase.auth.getSession();
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Session timeout')), 10000)
-      );
-      
-      const { data: { session }, error } = await Promise.race([
-        sessionPromise,
-        timeoutPromise
-      ]) as any;
-
-      if (error && error.message !== 'Auth session missing!') {
-        throw error;
-      }
-
-      setUser(session?.user ?? null);
-      setSession(session);
-      setLoading(false);
-    } catch (error: any) {
-      console.warn('Auth initialization error:', error.message);
-      
-      // Clear any corrupted auth data
-      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
-      
-      setUser(null);
-      setSession(null);
-      setLoading(false);
-    }
-  }, []);
+  const authStateRef = useRef<any>(null);
 
   useEffect(() => {
-    // Set up auth state listener with error handling
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        // Update state synchronously to avoid deadlocks
-        setUser(session?.user ?? null);
-        setSession(session);
-        setLoading(false);
+    let mounted = true;
+    
+    const initializeAuth = async () => {
+      try {
+        setLoading(true);
         
-        // Handle auth events
-        if (event === 'SIGNED_OUT') {
-          localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+        // Set up auth state listener FIRST
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (!mounted) return;
+            
+            if (ENV.isDevelopment) {
+              console.log('🔐 Auth state changed:', event, !!session);
+            }
+            
+            // Defer any additional Supabase calls to prevent deadlock
+            setTimeout(() => {
+              if (mounted) {
+                setSession(session);
+                setUser(session?.user ?? null);
+                setLoading(false);
+              }
+            }, 0);
+          }
+        );
+        
+        // Store subscription for cleanup
+        authStateRef.current = subscription;
+        
+        // THEN check for existing session with error handling
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            if (ENV.isDevelopment) {
+              console.warn('⚠️ Session check error:', error);
+            }
+            // Don't throw - just set to null state
+            if (mounted) {
+              setSession(null);
+              setUser(null);
+              setLoading(false);
+            }
+          } else {
+            if (mounted) {
+              if (ENV.isDevelopment) {
+                console.log('✅ Session initialized:', !!session);
+              }
+              setSession(session);
+              setUser(session?.user ?? null);
+              setLoading(false);
+            }
+          }
+        } catch (sessionError) {
+          // Handle auth session missing error gracefully
+          if (ENV.isDevelopment) {
+            console.warn('⚠️ Auth session error (handled):', sessionError);
+          }
+          if (mounted) {
+            setSession(null);
+            setUser(null);
+            setLoading(false);
+          }
+        }
+        
+      } catch (error) {
+        if (ENV.isDevelopment) {
+          console.error('❌ Auth initialization failed:', error);
+        }
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setLoading(false);
         }
       }
-    );
+    };
 
-    // Initialize auth after setting up listener
     initializeAuth();
 
     return () => {
-      subscription.unsubscribe();
+      mounted = false;
+      if (authStateRef.current) {
+        authStateRef.current.unsubscribe();
+      }
     };
-  }, [initializeAuth]);
+  }, []);
 
   const signOut = useCallback(async () => {
     try {
       setLoading(true);
-      await supabase.auth.signOut();
-      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
-      setUser(null);
+      const { error } = await supabase.auth.signOut();
+      
+      if (error && ENV.isDevelopment) {
+        console.error('❌ Sign out error:', error);
+      }
+      
+      // Clear state immediately regardless of server response
       setSession(null);
+      setUser(null);
+      setLoading(false);
+      
+      // Navigate to home after logout
       navigate('/');
-    } catch (error: any) {
-      console.error('Sign out error:', error);
-    } finally {
+      
+    } catch (error) {
+      if (ENV.isDevelopment) {
+        console.error('❌ Sign out failed:', error);
+      }
+      // Clear state anyway for security
+      setSession(null);
+      setUser(null);
       setLoading(false);
     }
   }, [navigate]);
 
-  const value = {
+  const refreshSession = useCallback(async () => {
+    try {
+      const { data: { session }, error } = await supabase.auth.refreshSession();
+      
+      if (error) {
+        if (ENV.isDevelopment) {
+          console.warn('⚠️ Session refresh failed:', error);
+        }
+        // If refresh fails, clear the session for security
+        setSession(null);
+        setUser(null);
+        return;
+      }
+      
+      if (session) {
+        setSession(session);
+        setUser(session.user);
+      }
+    } catch (error) {
+      if (ENV.isDevelopment) {
+        console.error('❌ Session refresh error:', error);
+      }
+      setSession(null);
+      setUser(null);
+    }
+  }, []);
+
+  const value = useMemo(() => ({
     user,
     session,
     loading,
     signOut,
     refreshSession
-  };
+  }), [user, session, loading, signOut, refreshSession]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

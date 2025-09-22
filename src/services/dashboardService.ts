@@ -150,7 +150,10 @@ export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
       .limit(6);
 
     if (error) throw error;
-    return data || [];
+    return (data || []).map(job => ({
+      ...job,
+      companies: job.companies ? job.companies : undefined
+    }));
   }, []);
 };
 
