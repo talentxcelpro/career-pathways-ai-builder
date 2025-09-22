@@ -31,17 +31,6 @@ const AllCourses = () => {
     });
   }, []);
 
-  // Debug logging
-  React.useEffect(() => {
-    console.log('🔍 AllCourses Debug:', {
-      isLoading,
-      coursesCount: filteredCourses?.length,
-      totalCourses: courses?.length,
-      categoriesCount: categories?.length,
-      firstCourse: filteredCourses?.[0]
-    });
-  }, [isLoading, filteredCourses, courses, categories]);
-
   const handleEnroll = (courseId: string) => {
     setEnrolledCourses(prev => [...prev, courseId]);
   };

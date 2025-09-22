@@ -276,16 +276,18 @@ export const getAllCourses = async (): Promise<PopularCourse[]> => {
 
 // Real-time learning paths
 export const getAllLearningPaths = async () => {
-  return fetchProductionData(async () => {
+  try {
     const { data, error } = await supabase
       .from('learning_paths')
       .select('*')
-      .eq('is_active', true)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
     return data || [];
-  }, []);
+  } catch (error) {
+    console.error('Error fetching learning paths:', error);
+    return [];
+  }
 };
 
 // Real-time job-focused courses
