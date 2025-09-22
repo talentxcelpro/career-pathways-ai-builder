@@ -68,14 +68,15 @@ export const CourseraStyleHeader: React.FC = () => {
   return (
     <>
       {/* Black Audience Navigation Bar - Coursera Style with White Text */}
-      <div className="bg-black text-white">
+      <div className="bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-12 space-x-0">
             {audienceOptions.map((option, index) => (
               <Link
                 key={option.id}
                 to={option.href}
-                className="px-6 py-3 text-white font-semibold hover:text-white hover:bg-white/10 text-sm transition-all border-b-2 border-transparent hover:border-white/30"
+                className="px-6 py-3 text-white font-semibold hover:text-gray-200 hover:bg-white/10 text-sm transition-all border-b-2 border-transparent hover:border-white/50"
+                style={{ color: '#ffffff' }}
               >
                 {option.title}
               </Link>
