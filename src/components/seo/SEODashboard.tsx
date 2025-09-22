@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, CheckCircle, Clock, Zap, TrendingUp } from 'lucide-react';
 import { useSEOAudit } from '@/hooks/useSEOAudit';
-import { performanceCore } from '@/utils/performanceCore';
+import { turboCore } from '@/utils/turboCore';
 
 export const SEODashboard: React.FC = () => {
   const { auditResult, isAuditing, refreshAudit } = useSEOAudit();

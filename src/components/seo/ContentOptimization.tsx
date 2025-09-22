@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Search, FileText, Image, Link, Zap, BarChart3, Globe } from 'lucide-react';
 import { useSEOAudit } from '@/hooks/useSEOAudit';
-import { performanceCore } from '@/utils/performanceCore';
+import { turboCore } from '@/utils/turboCore';
 
 interface ContentOptimizationProps {
   onOptimize?: () => void;

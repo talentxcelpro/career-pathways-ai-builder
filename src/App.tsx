@@ -4,16 +4,13 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Analytics } from "@vercel/analytics/react";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
-import { OfflineIndicator } from "./components/shared/OfflineIndicator";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
-import { AnalyticsProvider } from "./contexts/AnalyticsContext";
 import SubdomainGateway from "@/pages/SubdomainGateway";
 // import { AIProvider } from "./contexts/AIContext";
 // import { SecurityProvider } from "./components/security/SecurityProvider";
@@ -104,9 +101,7 @@ import DynamicAchievementSystem from "./pages/DynamicAchievementSystem";
 import InteractiveCareerRoadmapBuilder from "./pages/InteractiveCareerRoadmapBuilder";
 import Services from "./pages/Services";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
-import { StableContainer } from "@/utils/layoutOptimizer";
-import "@/utils/flickerFix";
-import { performanceCore } from "@/utils/performanceCore";
+import { turboCore } from "@/utils/turboCore";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -165,20 +160,16 @@ const publicRoutes = [
 ];
 
 const App = () => {
-  // Initialize performance optimizations on app start
+  // Initialize turbo optimizations
   useEffect(() => {
-    try {
-      // Apply color scheme from localStorage
-      const savedColorScheme = localStorage.getItem('colorScheme');
-      if (savedColorScheme) {
-        document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
-      }
-      
-      // Initialize performance optimizations
-      performanceCore.init();
-    } catch (error) {
-      console.error('Error in App initialization:', error);
+    // Apply color scheme
+    const savedColorScheme = localStorage.getItem('colorScheme');
+    if (savedColorScheme) {
+      document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
     }
+    
+    // Initialize turbo core
+    turboCore.init();
   }, []);
 
   // Check if this is a subdomain - simplified as fallback only
@@ -198,13 +189,8 @@ const App = () => {
     <ReactErrorBoundary>
       <ErrorBoundary FallbackComponent={BundleErrorFallback}>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider 
-            delayDuration={300}
-            skipDelayDuration={100}
-            disableHoverableContent={false}
-          >
+          <TooltipProvider delayDuration={200}>
             <BrowserRouter>
-              <AnalyticsProvider>
               <AuthErrorBoundary>
                 <AuthProvider>
                   <AuthErrorRecovery>
@@ -226,13 +212,8 @@ const App = () => {
                     },
                   }}
                 />
-                <MobileAppInitializer />
-                <GoogleOneTapLogin autoSelect />
-                <GoogleAnalytics measurementId="G-XXXXXXXXXX" />
-                <SearchConsoleVerification verificationCode="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
                 <MobileAppWrapper>
                   <div className="min-h-screen flex flex-col">
-                    <OfflineIndicator />
                     <Navbar />
                     <main className="flex-1">
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
@@ -250,18 +231,15 @@ const App = () => {
                         <Route path="/network/people/:id" element={<ProfileUrlRedirect />} />
                         <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                          <Route path="/platform" element={<Platform />} />
-                          <Route path="/career-platform" element={
-                            <React.Suspense fallback={
-                              <StableContainer minHeight="100vh" className="flex items-center justify-center">
-                                <div className="text-center space-y-4">
-                                  <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                                  <p className="text-muted-foreground">Loading Career Platform...</p>
-                                </div>
-                              </StableContainer>
-                            }>
-                              <CareerPlatformShowcasePage />
-                            </React.Suspense>
-                          } />
+                           <Route path="/career-platform" element={
+                             <React.Suspense fallback={
+                               <div className="flex items-center justify-center min-h-[50vh]">
+                                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                               </div>
+                             }>
+                               <CareerPlatformShowcasePage />
+                             </React.Suspense>
+                           } />
                            {/* Career Platform feature routes */}
                            <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
                            {/* <Route path="/embed-test" element={<EmbedTestPage />} /> */}
@@ -397,21 +375,17 @@ const App = () => {
                      <IOSInstallPrompt />
                    </div>
                  </MobileAppWrapper>
-                  <Analytics />
+                  
                 </CopilotProvider>
-                {/* </RealtimeProvider> */}
-                {/* </AIProvider> */}
-              {/* </SecurityProvider> */}
                     </NotificationProvider>
                   </AuthErrorRecovery>
                 </AuthProvider>
               </AuthErrorBoundary>
-            </AnalyticsProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  </ReactErrorBoundary>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </ReactErrorBoundary>
   );
 };
 

@@ -2,10 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { usePerformance } from '@/hooks/usePerformance';
+import { useTurbo } from '@/hooks/useTurbo';
 
 export const PerformanceStatusPanel: React.FC = () => {
-  const { getMetrics } = usePerformance({ componentName: 'PerformanceStatusPanel' });
+  const { getMetrics } = useTurbo('PerformanceStatusPanel');
   const metrics = getMetrics();
 
   const getPerformanceGrade = (metric: number | undefined, thresholds: { good: number; needs: number }) => {
@@ -25,18 +25,11 @@ export const PerformanceStatusPanel: React.FC = () => {
     },
     {
       name: 'Last Render Time',
-      value: metrics.lastRenderTime,
+      value: metrics.renderTime,
       unit: 'ms',
-      grade: getPerformanceGrade(metrics.lastRenderTime, { good: 16, needs: 50 }),
+      grade: getPerformanceGrade(metrics.renderTime, { good: 16, needs: 50 }),
       description: 'Time of last render'
     },
-    {
-      name: 'Average Render Time',
-      value: metrics.averageRenderTime,
-      unit: 'ms',
-      grade: getPerformanceGrade(metrics.averageRenderTime, { good: 16, needs: 50 }),
-      description: 'Average render time'
-    }
   ];
 
   return (
@@ -67,7 +60,7 @@ export const PerformanceStatusPanel: React.FC = () => {
         </CardContent>
       </Card>
 
-      {metrics.memoryUsage && (
+      {false && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Memory Usage</CardTitle>
