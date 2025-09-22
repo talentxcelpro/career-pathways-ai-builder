@@ -89,31 +89,35 @@ export default function LearningHub() {
         </div>
       </section>
 
-      {/* Learning Stats */}
+      {/* Learn with Confidence */}
       <section className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Join millions of learners worldwide</h2>
-            <p className="text-xl text-gray-600">Transform your career with industry-leading courses</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Learn with confidence</h2>
+            <p className="text-xl text-gray-600">Interactive courses from top universities</p>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { value: '100M+', label: 'Registered learners', icon: Users },
-              { value: '7,000+', label: 'Courses available', icon: BookOpen },
-              { value: '275+', label: 'University partners', icon: GraduationCap },
-              { value: '4.7★', label: 'Average rating', icon: Star }
-            ].map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
-                    <IconComponent className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                  <div className="text-gray-600">{stat.label}</div>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                <Play className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Interactive Learning</h3>
+              <p className="text-gray-600">Hands-on projects and quizzes</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                <GraduationCap className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Expert Instructors</h3>
+              <p className="text-gray-600">Learn from industry professionals</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
+                <Star className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Recognized Certificates</h3>
+              <p className="text-gray-600">Credentials from top institutions</p>
+            </div>
           </div>
         </div>
       </section>
@@ -122,19 +126,17 @@ export default function LearningHub() {
       <section className="bg-blue-600 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to Transform Your Career?
+            Start Your Learning Journey
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join millions of learners worldwide and start building job-relevant skills today
+            Explore thousands of courses and build the skills that matter most to your career
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold">
-              <Play className="h-5 w-5 mr-2" />
-              Start Learning Free
-            </Button>
-            <Button size="lg" variant="outline" className="border-2 border-blue-300 text-white hover:bg-blue-300/10 px-8 py-4 text-lg font-semibold">
-              <BookOpen className="h-5 w-5 mr-2" />
-              Browse Courses
+            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold">
+              <Link to="/learning/courses">
+                <BookOpen className="h-5 w-5 mr-2" />
+                Explore Courses
+              </Link>
             </Button>
           </div>
         </div>
