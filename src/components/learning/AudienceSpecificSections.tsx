@@ -53,7 +53,6 @@ const audienceData = {
       }
     ],
     stats: [
-      { value: '100M+', label: 'Registered learners' },
       { value: '7,000+', label: 'Courses' },
       { value: '90%', label: 'Career advancement rate' }
     ],

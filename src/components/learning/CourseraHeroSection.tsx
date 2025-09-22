@@ -149,12 +149,6 @@ export const CourseraHeroSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="absolute -bottom-4 -left-4 bg-white rounded-lg p-4 shadow-lg border animate-fade-in" style={{animationDelay: '0.2s'}}>
-              <div className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-blue-600" />
-                <span className="text-sm font-semibold text-gray-900">100M+ learners</span>
-              </div>
-            </div>
 
             <div className="absolute top-1/2 -left-6 bg-green-50 border border-green-200 rounded-lg p-3 shadow-lg animate-fade-in" style={{animationDelay: '0.4s'}}>
               <div className="flex items-center space-x-2">
