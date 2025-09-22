@@ -40,6 +40,7 @@ import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
+import NotFound from "@/pages/NotFound";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -378,8 +379,10 @@ const App = () => {
                       {/* Sitemap routes */}
                       <Route path="/sitemap.xml" element={<SitemapRedirect />} />
                       <Route path="/sitemap-dynamic.xml" element={<SitemapRedirect />} />
-                      
-       {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
+                       
+                       {/* Catchall 404 route - must be last */}
+                       <Route path="*" element={<NotFound />} />
+        {/* SEO Routes - Note: These should be handled by server/CDN level redirects in production */}
                         </Routes>
                         </React.Suspense>
                      </main>
