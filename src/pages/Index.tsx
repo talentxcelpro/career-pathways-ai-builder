@@ -7,12 +7,14 @@ import TestEmailSender from '@/components/dev/TestEmailSender';
 import { TestAlertSender } from '@/components/TestAlertSender';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { GoogleOneTapLogin } from '@/components/auth/GoogleOneTapLogin';
+import { FinalLaunchRunner } from '@/components/deployment/FinalLaunchRunner';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [disableOneTap, setDisableOneTap] = useState(false);
   const enableTestSend = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('send_emails') === '1';
+  const showFinalLaunch = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('final_launch') === '1';
 
   // Detect iOS Safari to avoid potential One Tap issues
   useEffect(() => {
@@ -91,7 +93,7 @@ const Index = () => {
         </div>
       )}
       {!disableOneTap && <GoogleOneTapLogin autoSelect />}
-      <LandingPage />
+      {showFinalLaunch ? <FinalLaunchRunner /> : <LandingPage />}
     </ErrorBoundary>
   );
 };

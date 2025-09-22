@@ -10,6 +10,7 @@ import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { AuthProvider } from "./contexts/AuthContext";
+import { FinalLaunchChecklist } from '@/components/deployment/FinalLaunchChecklist';
 import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
 import SubdomainGateway from "@/pages/SubdomainGateway";
 // import { AIProvider } from "./contexts/AIContext";
@@ -222,7 +223,18 @@ const App = () => {
                     <main className="flex-1">
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                           <Routes>
-                         {navItems.map((item: NavItem) => (
+                          {/* Final Launch Checklist Route */}
+                          <Route path="/launch/final" element={
+                            <ProtectedRoute>
+                              <AdminLayout>
+                                <div className="p-6">
+                                  <FinalLaunchChecklist />
+                                </div>
+                              </AdminLayout>
+                            </ProtectedRoute>
+                          } />
+                          
+                          {navItems.map((item: NavItem) => (
                             <Route 
                               key={item.to} 
                               path={item.to} 
