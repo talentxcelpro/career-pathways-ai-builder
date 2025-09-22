@@ -11,7 +11,7 @@ export const growthRoutes = [
     icon: <Users className="h-4 w-4" />,
     page: <UserAcquisitionPage />,
     description: "Advanced referral system and growth tools",
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Content Creation Studio",
@@ -19,7 +19,7 @@ export const growthRoutes = [
     icon: <Star className="h-4 w-4" />,
     page: <ContentStudioPage />,
     description: "AI-powered content creation and scheduling",
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Enhanced Company Profiles",
@@ -27,7 +27,7 @@ export const growthRoutes = [
     icon: <TrendingUp className="h-4 w-4" />,
     page: <EnhancedCompanyPage />,
     description: "Rich company pages with media and analytics",
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Advanced Analytics",
@@ -35,6 +35,6 @@ export const growthRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <AdvancedAnalyticsPage />,
     description: "Deep hiring insights and competitor analysis",
-    requiresAuth: true,
+    isPublic: true,
   },
 ];

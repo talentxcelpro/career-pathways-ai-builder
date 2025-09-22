@@ -21,8 +21,6 @@ export const employerCoreRoutes = [
     icon: <Building2 className="h-4 w-4" />,
     page: <EmployerDashboard />,
     isPublic: true,
-    requiresAuth: true,
-    requiresEmployerAccess: true,
   },
   {
     title: "Employer Profile",
@@ -41,8 +39,6 @@ export const employerCoreRoutes = [
     to: "/employer/team",
     page: <TeamManagement />,
     isPublic: true,
-    requiresAuth: true,
-    requiresEmployerAccess: true,
   },
   {
     title: "Legacy Team Management",
@@ -62,8 +58,6 @@ export const employerCoreRoutes = [
     icon: <Users className="h-4 w-4" />,
     page: <EmployerApplications />,
     isPublic: true,
-    requiresAuth: true,
-    requiresEmployerAccess: true,
   },
   {
     title: "Employer Analytics",
@@ -71,8 +65,6 @@ export const employerCoreRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <EmployerAnalytics />,
     isPublic: true,
-    requiresAuth: true,
-    requiresEmployerAccess: true,
   },
   {
     title: "Accept Team Invitation",

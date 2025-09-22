@@ -14,12 +14,12 @@ export const assessmentRoutes: NavItem[] = [
     title: "Take Assessment",
     to: "/assessments/:assessmentId/take/:attemptId",
     page: <AssessmentTaking />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Assessment Results",
     to: "/assessments/:assessmentId/results/:attemptId",
     page: <AssessmentResults />,
-    requiresAuth: true
+    isPublic: true
   }
 ];

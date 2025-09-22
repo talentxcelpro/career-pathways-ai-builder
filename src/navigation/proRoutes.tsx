@@ -18,74 +18,74 @@ export const proRoutes: NavItem[] = [
     title: "Pro Dashboard",
     to: "/pro",
     page: <ProDashboard />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Set Up Services",
     to: "/pro/services",
     page: <ServiceManagement />,
     icon: <Settings className="h-4 w-4" />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Pro Setup",
     to: "/pro/setup",
     page: <ProSetup />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "AI Business Toolkit",
     to: "/pro/ai-toolkit",
     page: <AIBusinessToolkit />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Advanced Analytics",
     to: "/pro/analytics",
     page: <AdvancedAnalytics />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "CRM Dashboard",
     to: "/pro/crm",
     page: <CRMDashboard />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Leads",
     to: "/pro/leads",
     page: <ProLeads />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "AI Tools",
     to: "/pro/ai-tools",
     page: <ProAITools />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Pro Subscription",
     to: "/pro/subscription",
     page: <ProSubscription />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Pro Profile",
     to: "/pro/profile",
     page: <ProProfile />,
-    requiresAuth: true
+    isPublic: true
   },
   {
     title: "Subscription Policy",
     to: "/pro/subscription-policy",
     page: <ProSubscriptionPolicy />,
-    requiresAuth: false
+    isPublic: true
   },
   {
     title: "TXC Diagnostics",
     to: "/pro/diagnostics",
     page: <TXCDiagnostics />,
     icon: <Activity className="h-4 w-4" />,
-    requiresAuth: true
+    isPublic: true
   }
 ];

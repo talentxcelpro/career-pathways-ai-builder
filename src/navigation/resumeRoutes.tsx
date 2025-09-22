@@ -26,7 +26,6 @@ export const resumeRoutes = [
     to: "/resume/hub",
     icon: <Sparkles className="h-4 w-4" />,
     page: <ResumeHub />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -34,7 +33,6 @@ export const resumeRoutes = [
     to: "/resume/templates",
     icon: <FileText className="h-4 w-4" />,
     page: <TemplateGallery />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -42,7 +40,6 @@ export const resumeRoutes = [
     to: "/resume/upload",
     icon: <Upload className="h-4 w-4" />,
     page: <UploadParser />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -50,7 +47,6 @@ export const resumeRoutes = [
     to: "/resume/builder",
     icon: <Sparkles className="h-4 w-4" />,
     page: <AIResumeBuilder />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -58,7 +54,6 @@ export const resumeRoutes = [
     to: "/resume/cover-letter",
     icon: <PenTool className="h-4 w-4" />,
     page: <CoverLetterStudio />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -66,7 +61,6 @@ export const resumeRoutes = [
     to: "/resume/interview-prep", 
     icon: <Video className="h-4 w-4" />,
     page: <InterviewPrepSuite />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -74,7 +68,6 @@ export const resumeRoutes = [
     to: "/resume/portfolio",
     icon: <Globe className="h-4 w-4" />,
     page: <PortfolioBuilder />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -82,7 +75,6 @@ export const resumeRoutes = [
     to: "/resume/career-intelligence",
     icon: <TrendingUp className="h-4 w-4" />,
     page: <CareerIntelligence />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -90,15 +82,13 @@ export const resumeRoutes = [
     to: "/resume/ai-enhancement",
     icon: <Sparkles className="h-4 w-4" />,
     page: <AIEnhancement />,
-    requiresAuth: true,
-    isPublic: false,
+    isPublic: true,
   },
   {
     title: "ATS Checker",
     to: "/resume/ats-check",
     icon: <Target className="h-4 w-4" />,
     page: <ATSOptimizer />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -106,7 +96,6 @@ export const resumeRoutes = [
     to: "/resume/dashboard",
     icon: <Target className="h-4 w-4" />,
     page: <Dashboard />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -114,7 +103,6 @@ export const resumeRoutes = [
     to: "/resume/company-tools",
     icon: <Target className="h-4 w-4" />,
     page: <CompanyDashboard />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -122,7 +110,6 @@ export const resumeRoutes = [
     to: "/resume/analytics",
     icon: <Target className="h-4 w-4" />,
     page: <AnalyticsDashboard resumeId="current" />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -130,7 +117,6 @@ export const resumeRoutes = [
     to: "/resume/learning-hub",
     icon: <Target className="h-4 w-4" />,
     page: <LearningHub />,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -138,7 +124,6 @@ export const resumeRoutes = [
     to: "/resume/new",
     icon: <FileText className="h-4 w-4" />,
     page: <ErrorBoundary><ResumeNew /></ErrorBoundary>,
-    requiresAuth: false,
     isPublic: true,
   },
   {
@@ -146,21 +131,19 @@ export const resumeRoutes = [
     to: "/resume-builder/enhanced/:id",
     icon: <Sparkles className="h-4 w-4" />,
     page: <TalentXcelResumeBuilder />,
-    requiresAuth: true,
     isPublic: true,
   },
   {
     title: "Edit Resume",
     to: "/resume/edit/:id",
     page: <EditResume />,
-    requiresAuth: true,
     isPublic: true,
   },
   {
     title: "Resume Editor V1",
     to: "/resume/editor/:id",
     page: <ErrorBoundary><ResumeEditorV1 /></ErrorBoundary>,
-    requiresAuth: true,
+    isPublic: true,
     isPublic: true,
   },
 ];

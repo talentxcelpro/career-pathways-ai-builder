@@ -47,7 +47,6 @@ export const coreRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <Dashboard />,
     isPublic: true,
-    requiresAuth: true,
   },
   {
     title: "My Applications",

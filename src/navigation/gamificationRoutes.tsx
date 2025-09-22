@@ -8,6 +8,6 @@ export const gamificationRoutes: NavItem[] = [
     to: "/gamification",
     icon: <Trophy className="h-4 w-4" />,
     page: <GamificationCenter />,
-    requiresAuth: true,
+    isPublic: true,
   },
 ];

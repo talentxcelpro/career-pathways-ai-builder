@@ -24,13 +24,13 @@ export const profileRoutes = [
     title: "TXC Pricing",
     to: "/txc/pricing",
     page: <TXCPricing />,
-    requiresAuth: false,
+    isPublic: true,
   },
   {
     title: "TXC Mining",
     to: "/txc/mining",
     page: <TXCMining />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile by Username",
