@@ -189,13 +189,13 @@ export const TXCSpendingPreview: React.FC = () => {
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
           <Sparkles className="h-6 w-6 text-primary" />
-          TXC Spending Preview
+          TXC - The Only Currency That Matters
         </h2>
         <p className="text-muted-foreground">
-          Get ready for exciting ways to use your TXC tokens
+          All platform services powered exclusively by TalentXcel Coins
         </p>
-        <Badge variant="secondary" className="bg-primary/10 text-primary">
-          Coming Soon • Q1-Q2 2025
+        <Badge variant="secondary" className="bg-green-100 text-green-800">
+          ₹1 = 1 TXC • No other currencies accepted
         </Badge>
       </div>
 

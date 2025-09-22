@@ -343,21 +343,21 @@ export const TXCEnhancedBalance: React.FC = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="text-center p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 border">
                       <p className="font-semibold text-sm">Starter Pack</p>
-                      <p className="text-xs text-muted-foreground">₹99 → 100 TXC</p>
+                      <p className="text-xs text-muted-foreground">100 TXC • ₹99</p>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 border">
                       <p className="font-semibold text-sm">Growth Pack</p>
-                      <p className="text-xs text-muted-foreground">₹499 → 600 TXC</p>
+                      <p className="text-xs text-muted-foreground">600 TXC • ₹499</p>
                       <Badge variant="secondary" className="mt-1 text-xs">+20% Bonus</Badge>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 border">
                       <p className="font-semibold text-sm">Pro Pack</p>
-                      <p className="text-xs text-muted-foreground">₹999 → 1,300 TXC</p>
+                      <p className="text-xs text-muted-foreground">1,300 TXC • ₹999</p>
                       <Badge variant="secondary" className="mt-1 text-xs">+30% Bonus</Badge>
                     </div>
                     <div className="text-center p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 border">
                       <p className="font-semibold text-sm">Enterprise</p>
-                      <p className="text-xs text-muted-foreground">Custom Pricing</p>
+                      <p className="text-xs text-muted-foreground">Custom TXC Pricing</p>
                       <Badge className="mt-1 text-xs bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                         10K+ TXC
                       </Badge>
@@ -366,7 +366,7 @@ export const TXCEnhancedBalance: React.FC = () => {
                   
                   <p className="text-xs text-center text-muted-foreground mt-3">
                     <Lock className="h-3 w-3 inline mr-1" />
-                    Purchase options will be available once the platform grows and features are launched
+                    TXC is the only currency accepted - no traditional payments once live
                   </p>
                 </motion.div>
               </CardContent>
