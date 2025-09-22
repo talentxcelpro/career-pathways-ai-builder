@@ -1,9 +1,11 @@
 
-// TXC token utility functions for formatting
+// Production-ready TXC token utility functions
+import { formatTXCToUSD } from '@/config/constants';
+
 export const formatCurrency = (amount: number | null | undefined): string => {
   if (!amount) return "Not specified";
   
-  // Format for TXC token system
+  // Format for TXC token system only
   if (amount >= 100000) {
     return `${(amount / 100000).toFixed(1)}L TXC`;
   } else if (amount >= 1000) {
@@ -11,6 +13,11 @@ export const formatCurrency = (amount: number | null | undefined): string => {
   } else {
     return `${amount.toLocaleString('en-IN')} TXC`;
   }
+};
+
+// Get USD value for TXC amount
+export const getTXCUSDValue = (txcAmount: number): string => {
+  return formatTXCToUSD(txcAmount);
 };
 
 // Enhanced TXC range formatting with frequency support
@@ -36,7 +43,7 @@ export const formatSalaryRange = (
         return `${reasonableMin.toLocaleString()}-${reasonableMax.toLocaleString()} TXC`;
       }
     }
-    // Convert any currency symbols to TXC
+    // Convert any legacy currency symbols to TXC (production cleanup)
     return salaryRange.replace(/₹|Rs\.?|INR|LPA|L/gi, 'TXC').replace(/\s+/g, ' ').trim();
   }
   

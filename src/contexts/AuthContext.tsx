@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { ENV } from '@/lib/environment';
 
 interface AuthContextType {
   user: User | null;
@@ -19,7 +20,7 @@ export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     // Fail-safe: provide a non-throwing fallback to avoid crashing before provider mounts
-    if (import.meta.env?.DEV) {
+    if (ENV.isDevelopment) {
       console.warn('useAuth called outside AuthProvider - returning safe fallback');
     }
     return {
