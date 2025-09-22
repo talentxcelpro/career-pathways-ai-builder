@@ -1,179 +1,295 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Course } from '@/components/learning/types';
+import { useState, useEffect } from 'react';
 
-interface UserProfile {
+interface PersonalizedRecommendation {
+  title: string;
+  instructor: string;
+  description: string;
+  duration: string;
+  rating: number;
+  enrolled: string;
+  aiScore: number;
+  relevanceScore: number;
   skills: string[];
-  interests: string[];
-  career_goals: string[];
-  learning_history: string[];
-  experience_level: string;
-  preferred_learning_style: string;
 }
 
-interface AIRecommendation extends Course {
-  match_score: number;
-  reason: string;
-  badge: 'Perfect Match' | 'Trending' | 'Quick Win' | 'Skill Builder' | 'Career Boost';
-  priority: number;
+interface SkillGap {
+  skill: string;
+  category: string;
+  priority: 'high' | 'medium' | 'low';
+  currentLevel: number;
+  targetLevel: number;
+  marketDemand: number;
+  recommendedCourses: Array<{
+    title: string;
+    duration: string;
+  }>;
 }
 
-export const useAIRecommendations = (courses: Course[]) => {
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+interface CareerPath {
+  title: string;
+  description: string;
+  timeToComplete: string;
+  successProbability: number;
+  salaryRange: string;
+  jobOpenings: string;
+  milestones: Array<{
+    title: string;
+    description: string;
+    duration: string;
+    completed: boolean;
+  }>;
+}
 
-  // Fetch user profile and preferences
-  const { data: profile } = useQuery({
-    queryKey: ['user-profile-for-recommendations'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+interface TrendingCourse {
+  title: string;
+  instructor: string;
+  growthRate: number;
+  popularityScore: number;
+  enrolled: string;
+  rating: number;
+}
 
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('title, skills, industry, career_goals, preferences')
-        .eq('id', user.id)
-        .single();
+interface CollaborativeGroup {
+  title: string;
+  description: string;
+  courses: Array<{
+    title: string;
+    peersEnrolled: number;
+  }>;
+}
 
-      const { data: enrollmentHistory } = await supabase
-        .from('user_courses')
-        .select('course_id, progress_percentage, completed_at')
-        .eq('user_id', user.id);
+export const useAIRecommendations = () => {
+  const [personalizedRecommendations, setPersonalizedRecommendations] = useState<PersonalizedRecommendation[]>([]);
+  const [skillGapAnalysis, setSkillGapAnalysis] = useState<SkillGap[]>([]);
+  const [careerPathSuggestions, setCareerPathSuggestions] = useState<CareerPath[]>([]);
+  const [trendingCourses, setTrendingCourses] = useState<TrendingCourse[]>([]);
+  const [collaborativeFiltering, setCollaborativeFiltering] = useState<CollaborativeGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-      return {
-        profile: profileData,
-        history: enrollmentHistory || []
-      };
-    },
-    enabled: courses.length > 0
-  });
+  useEffect(() => {
+    fetchAllRecommendations();
+  }, []);
 
-  // Generate AI-powered recommendations
-  const recommendations = useMemo((): AIRecommendation[] => {
-    if (!courses.length || !profile?.profile) return [];
-
-    const userSkills = profile.profile.skills || [];
-    const userTitle = profile.profile.title || '';
-    const userIndustry = profile.profile.industry || '';
-    const completedCourses = profile.history?.filter(h => h.completed_at) || [];
-    const inProgressCourses = profile.history?.filter(h => !h.completed_at) || [];
-
-    return courses
-      .map((course): AIRecommendation => {
-        let score = 0;
-        let reason = '';
-        let badge: AIRecommendation['badge'] = 'Quick Win';
-        let priority = 0;
-
-        // Skill matching (40% of score)
-        const courseSkills = course.skills_taught || [];
-        const skillMatches = courseSkills.filter(skill => 
-          userSkills.some(userSkill => 
-            userSkill.toLowerCase().includes(skill.toLowerCase()) ||
-            skill.toLowerCase().includes(userSkill.toLowerCase())
-          )
-        );
-
-        if (skillMatches.length > 0) {
-          score += (skillMatches.length / courseSkills.length) * 40;
-          reason = `Builds on your ${skillMatches.slice(0, 2).join(' and ')} skills`;
-          badge = 'Skill Builder';
-          priority += 3;
+  const fetchAllRecommendations = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Simulate AI processing delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Mock personalized recommendations
+      const mockPersonalized: PersonalizedRecommendation[] = [
+        {
+          title: 'Advanced React Patterns',
+          instructor: 'Sarah Chen',
+          description: 'Master advanced React concepts including hooks, context, and performance optimization.',
+          duration: '6 weeks',
+          rating: 4.8,
+          enrolled: '12,847',
+          aiScore: 96,
+          relevanceScore: 94,
+          skills: ['React Hooks', 'Performance', 'State Management']
+        },
+        {
+          title: 'Machine Learning for Developers',
+          instructor: 'Dr. Alex Kumar',
+          description: 'Introduction to ML concepts and practical implementation for software engineers.',
+          duration: '8 weeks',
+          rating: 4.7,
+          enrolled: '8,234',
+          aiScore: 89,
+          relevanceScore: 87,
+          skills: ['Python', 'TensorFlow', 'Data Science']
+        },
+        {
+          title: 'Cloud Native Architecture',
+          instructor: 'Michael Rodriguez',
+          description: 'Design and build scalable cloud-native applications using modern patterns.',
+          duration: '10 weeks',
+          rating: 4.9,
+          enrolled: '15,672',
+          aiScore: 92,
+          relevanceScore: 90,
+          skills: ['Kubernetes', 'Docker', 'Microservices']
+        },
+        {
+          title: 'Full Stack TypeScript',
+          instructor: 'Emma Thompson',
+          description: 'Complete TypeScript development from frontend to backend.',
+          duration: '12 weeks',
+          rating: 4.6,
+          enrolled: '9,891',
+          aiScore: 85,
+          relevanceScore: 83,
+          skills: ['TypeScript', 'Node.js', 'REST APIs']
         }
+      ];
 
-        // Career relevance (30% of score)
-        if (userTitle && course.title.toLowerCase().includes(userTitle.toLowerCase())) {
-          score += 30;
-          reason = `Perfect for your ${userTitle} role`;
-          badge = 'Perfect Match';
-          priority += 5;
-        } else if (userIndustry && (course.category?.toLowerCase().includes(userIndustry.toLowerCase()) || 
-                   course.description?.toLowerCase().includes(userIndustry.toLowerCase()))) {
-          score += 20;
-          reason = `Relevant to ${userIndustry} industry`;
-          badge = 'Career Boost';
-          priority += 4;
+      // Mock skills gap analysis
+      const mockSkillsGap: SkillGap[] = [
+        {
+          skill: 'Machine Learning',
+          category: 'Technical Skills',
+          priority: 'high',
+          currentLevel: 3,
+          targetLevel: 7,
+          marketDemand: 89,
+          recommendedCourses: [
+            { title: 'ML Fundamentals', duration: '4 weeks' },
+            { title: 'Python for Data Science', duration: '3 weeks' }
+          ]
+        },
+        {
+          skill: 'Cloud Architecture',
+          category: 'Infrastructure',
+          priority: 'medium',
+          currentLevel: 5,
+          targetLevel: 8,
+          marketDemand: 76,
+          recommendedCourses: [
+            { title: 'AWS Solutions Architect', duration: '6 weeks' },
+            { title: 'Kubernetes Fundamentals', duration: '4 weeks' }
+          ]
+        },
+        {
+          skill: 'Leadership & Management',
+          category: 'Soft Skills',
+          priority: 'medium',
+          currentLevel: 4,
+          targetLevel: 7,
+          marketDemand: 68,
+          recommendedCourses: [
+            { title: 'Technical Leadership', duration: '5 weeks' },
+            { title: 'Agile Management', duration: '3 weeks' }
+          ]
         }
+      ];
 
-        // Experience level matching (15% of score)
-        const userLevel = profile.profile.title?.toLowerCase().includes('senior') ? 'advanced' :
-                          profile.profile.title?.toLowerCase().includes('junior') ? 'beginner' : 'intermediate';
-        
-        if (course.difficulty_level === userLevel) {
-          score += 15;
-          priority += 2;
-        } else if (
-          (userLevel === 'beginner' && course.difficulty_level === 'intermediate') ||
-          (userLevel === 'intermediate' && course.difficulty_level === 'advanced')
-        ) {
-          score += 10;
-          reason = reason || 'Next step in your learning journey';
-          badge = 'Skill Builder';
-          priority += 3;
+      // Mock career paths
+      const mockCareerPaths: CareerPath[] = [
+        {
+          title: 'Senior Full Stack Developer',
+          description: 'Progress from mid-level to senior developer role with comprehensive technical and leadership skills',
+          timeToComplete: '8-12 months',
+          successProbability: 87,
+          salaryRange: '$90k-$130k',
+          jobOpenings: '2,847',
+          milestones: [
+            { title: 'Advanced React Mastery', description: 'Complete advanced patterns course', duration: '6 weeks', completed: false },
+            { title: 'Backend Architecture', description: 'Learn microservices design', duration: '8 weeks', completed: false },
+            { title: 'Leadership Skills', description: 'Develop team leadership abilities', duration: '4 weeks', completed: false },
+            { title: 'System Design', description: 'Master large-scale system design', duration: '6 weeks', completed: false }
+          ]
+        },
+        {
+          title: 'Machine Learning Engineer',
+          description: 'Transition into ML engineering with focus on production systems and model deployment',
+          timeToComplete: '12-18 months',
+          successProbability: 72,
+          salaryRange: '$110k-$180k',
+          jobOpenings: '1,234',
+          milestones: [
+            { title: 'Python & ML Basics', description: 'Foundation in Python and ML concepts', duration: '8 weeks', completed: true },
+            { title: 'Deep Learning', description: 'Neural networks and deep learning', duration: '10 weeks', completed: false },
+            { title: 'MLOps & Deployment', description: 'Production ML systems', duration: '8 weeks', completed: false },
+            { title: 'Advanced ML', description: 'Specialized ML techniques', duration: '12 weeks', completed: false }
+          ]
         }
+      ];
 
-        // Popularity and rating boost (10% of score)
-        if (course.rating >= 4.5) {
-          score += 5;
-          badge = badge === 'Quick Win' ? 'Trending' : badge;
-          priority += 2;
+      // Mock trending courses
+      const mockTrending: TrendingCourse[] = [
+        {
+          title: 'ChatGPT for Developers',
+          instructor: 'AI Experts',
+          growthRate: 340,
+          popularityScore: 95,
+          enrolled: '45,672',
+          rating: 4.9
+        },
+        {
+          title: 'Web3 Development',
+          instructor: 'Blockchain Academy',
+          growthRate: 156,
+          popularityScore: 82,
+          enrolled: '23,891',
+          rating: 4.6
+        },
+        {
+          title: 'Rust Programming',
+          instructor: 'Systems Programming Pro',
+          growthRate: 128,
+          popularityScore: 78,
+          enrolled: '18,445',
+          rating: 4.7
+        },
+        {
+          title: 'Advanced Docker & Kubernetes',
+          instructor: 'Cloud Native Expert',
+          growthRate: 89,
+          popularityScore: 84,
+          enrolled: '31,256',
+          rating: 4.8
         }
-        if (course.enrolled_count > 1000) {
-          score += 5;
-          badge = badge === 'Quick Win' ? 'Trending' : badge;
-          priority += 1;
-        }
+      ];
 
-        // Quick completion bonus (5% of score)
-        if (course.duration_hours <= 10) {
-          score += 5;
-          if (score < 30) {
-            badge = 'Quick Win';
-            reason = reason || 'Quick skill boost in just a few hours';
-          }
-          priority += 1;
+      // Mock collaborative filtering
+      const mockCollaborative: CollaborativeGroup[] = [
+        {
+          title: 'JavaScript Developers Like You',
+          description: 'Courses popular among JavaScript developers with similar experience',
+          courses: [
+            { title: 'Advanced TypeScript', peersEnrolled: 234 },
+            { title: 'Node.js Performance', peersEnrolled: 189 },
+            { title: 'React Testing Library', peersEnrolled: 156 },
+            { title: 'GraphQL Mastery', peersEnrolled: 143 }
+          ]
+        },
+        {
+          title: 'Career Changers to Tech',
+          description: 'Popular learning paths for professionals transitioning to technology',
+          courses: [
+            { title: 'Full Stack Bootcamp', peersEnrolled: 567 },
+            { title: 'Data Science Fundamentals', peersEnrolled: 423 },
+            { title: 'UX/UI Design Basics', peersEnrolled: 389 },
+            { title: 'Agile & Scrum', peersEnrolled: 312 }
+          ]
+        },
+        {
+          title: 'Senior Developers',
+          description: 'Advanced courses taken by senior-level professionals',
+          courses: [
+            { title: 'System Design Interviews', peersEnrolled: 445 },
+            { title: 'Architecture Patterns', peersEnrolled: 378 },
+            { title: 'Technical Leadership', peersEnrolled: 298 },
+            { title: 'Performance Optimization', peersEnrolled: 267 }
+          ]
         }
+      ];
+      
+      setPersonalizedRecommendations(mockPersonalized);
+      setSkillGapAnalysis(mockSkillsGap);
+      setCareerPathSuggestions(mockCareerPaths);
+      setTrendingCourses(mockTrending);
+      setCollaborativeFiltering(mockCollaborative);
+    } catch (error) {
+      console.error('Failed to fetch AI recommendations:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        // Avoid already completed courses
-        if (completedCourses.some(c => c.course_id === course.id)) {
-          score *= 0.1;
-          priority = 0;
-        }
-
-        // Boost courses in progress
-        if (inProgressCourses.some(c => c.course_id === course.id)) {
-          score *= 1.2;
-          reason = 'Continue your learning journey';
-          priority += 2;
-        }
-
-        // Default reason if none assigned
-        if (!reason) {
-          reason = course.difficulty_level === 'beginner' ? 
-            'Great starting point for new skills' : 
-            'Advance your expertise';
-        }
-
-        return {
-          ...course,
-          match_score: Math.round(score),
-          reason,
-          badge,
-          priority
-        };
-      })
-      .filter(rec => rec.match_score > 20) // Only show decent matches
-      .sort((a, b) => {
-        // Sort by priority first, then by score
-        if (a.priority !== b.priority) return b.priority - a.priority;
-        return b.match_score - a.match_score;
-      })
-      .slice(0, 6); // Top 6 recommendations
-  }, [courses, profile]);
+  const refreshRecommendations = () => {
+    fetchAllRecommendations();
+  };
 
   return {
-    recommendations,
-    isLoading: !profile && courses.length > 0,
-    userProfile: profile?.profile
+    personalizedRecommendations,
+    skillGapAnalysis,
+    careerPathSuggestions,
+    trendingCourses,
+    collaborativeFiltering,
+    isLoading,
+    refreshRecommendations
   };
 };
