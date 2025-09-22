@@ -31,7 +31,23 @@ export const LearningContent: React.FC<LearningContentProps> = ({
   const isEnrolled = (courseId: string) => enrolledCourses.includes(courseId);
   
   // Get AI recommendations
-  const { recommendations, isLoading: recommendationsLoading } = useAIRecommendations(courses);
+  const { personalizedRecommendations, isLoading: recommendationsLoading } = useAIRecommendations();
+  
+  // Transform personalized recommendations to match AIRecommendation interface
+  const transformedRecommendations = personalizedRecommendations.map((rec, index) => ({
+    id: `ai-rec-${index}`,
+    title: rec.title,
+    description: rec.description,
+    difficulty_level: 'intermediate',
+    duration_hours: parseInt(rec.duration.split(' ')[0]) * 7 || 40, // Convert weeks to hours estimate
+    rating: rec.rating,
+    enrolled_count: parseInt(rec.enrolled.replace(/,/g, '')) || 0,
+    skills_taught: rec.skills || [],
+    match_score: rec.aiScore,
+    reason: `${rec.aiScore}% AI match - Perfect for your learning goals`,
+    badge: rec.aiScore > 95 ? 'Perfect Match' as const : 
+          rec.aiScore > 85 ? 'Career Boost' as const : 'Skill Builder' as const
+  }));
 
   if (activeTab === 'courses') {
     return (
@@ -47,7 +63,7 @@ export const LearningContent: React.FC<LearningContentProps> = ({
               <p className="text-sm text-slate-600">Personalized based on your profile and goals</p>
             </div>
             <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border-0 shadow-sm ml-auto">
-              {recommendations.length} Matches
+              {transformedRecommendations.length} Matches
             </Badge>
           </div>
           
@@ -58,7 +74,7 @@ export const LearningContent: React.FC<LearningContentProps> = ({
             </div>
           ) : (
             <AIRecommendations 
-              recommendations={recommendations}
+              recommendations={transformedRecommendations}
               onEnroll={onEnroll}
               isEnrolled={isEnrolled}
             />

@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { updateMetaTags } from "@/utils/metaTags";
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BookOpen, 
   Target, 
@@ -33,11 +34,18 @@ import {
   Palette,
   Brain,
   Camera,
-  Wrench
+  Wrench,
+  Building2,
+  Shield
 } from 'lucide-react';
 import { useCourses, useCourseCategories } from '@/hooks/useCourses';
 import { AdvancedProgressTracker } from '@/components/learning/AdvancedProgressTracker';
 import { SocialLearningHub } from '@/components/learning/SocialLearningHub';
+import { MobileOptimizedLearning } from '@/components/learning/MobileOptimizedLearning';
+import { EnterpriseAnalyticsDashboard } from '@/components/learning/EnterpriseAnalyticsDashboard';
+import { AIRecommendationEngine } from '@/components/learning/AIRecommendationEngine';
+import { CertificationMarketplace } from '@/components/learning/CertificationMarketplace';
+import { CorporatePortal } from '@/components/learning/CorporatePortal';
 import { CourseGrid } from '@/components/learning/CourseGrid';
 
 const industryIcons = {
@@ -88,6 +96,7 @@ const learningStats = [
 export default function LearningHub() {
   const { displayName, streakDays } = useCurrentUserProfile();
   const [searchQuery, setSearchQuery] = useState('');
+  const [activePhase, setActivePhase] = useState<'phase1' | 'phase2'>('phase1');
   const { courses: featuredCourses, isLoading } = useCourses({ limit: 9 });
   const { data: categories } = useCourseCategories();
   
@@ -133,6 +142,28 @@ export default function LearningHub() {
               From quick skills to expert certifications - your learning journey starts here.
             </p>
 
+            {/* Phase Toggle */}
+            <div className="flex justify-center gap-4 mb-8">
+              <Button 
+                size="lg" 
+                onClick={() => setActivePhase('phase1')}
+                variant={activePhase === 'phase1' ? 'secondary' : 'outline'}
+                className={activePhase === 'phase1' ? 'bg-white text-primary' : 'border-white/30 text-white hover:bg-white/10'}
+              >
+                <BookOpen className="mr-2 h-5 w-5" />
+                Core Features
+              </Button>
+              <Button 
+                size="lg" 
+                onClick={() => setActivePhase('phase2')}
+                variant={activePhase === 'phase2' ? 'secondary' : 'outline'}
+                className={activePhase === 'phase2' ? 'bg-white text-primary' : 'border-white/30 text-white hover:bg-white/10'}
+              >
+                <Brain className="mr-2 h-5 w-5" />
+                Enterprise Suite
+              </Button>
+            </div>
+
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto mb-8">
               <div className="relative">
@@ -168,152 +199,183 @@ export default function LearningHub() {
         </div>
       </section>
 
-      {/* Learning Hub Features */}
+      {/* Feature Cards Based on Active Phase */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {/* Pipeline Dashboard */}
-          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                <BarChart3 className="h-8 w-8 text-blue-500" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Pipeline Dashboard</h3>
-              <p className="text-muted-foreground text-sm mb-4">Track your learning progress and job pipeline</p>
-              <Link to="/learning/pipeline">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
-                  Access
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+        {activePhase === 'phase1' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                  <TrendingUp className="h-8 w-8 text-blue-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Progress Tracking</h3>
+                <p className="text-muted-foreground text-sm mb-4">Advanced learning analytics and insights</p>
+              </CardContent>
+            </Card>
 
-          {/* Smart Learning */}
-          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-pink-500/10 flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
-                <Brain className="h-8 w-8 text-pink-500" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Smart Learning</h3>
-              <p className="text-muted-foreground text-sm mb-4">AI-powered personalized learning paths</p>
-              <Link to="/learning/system">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
-                  Explore
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
+                  <Users className="h-8 w-8 text-green-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Social Learning</h3>
+                <p className="text-muted-foreground text-sm mb-4">Connect and learn with peers</p>
+              </CardContent>
+            </Card>
 
-          {/* Company Portal */}
-          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-600/10 flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                <Building className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Company Portal</h3>
-              <p className="text-muted-foreground text-sm mb-4">Access corporate learning resources</p>
-              <Link to="/learning/company-portal">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
-                  Enter
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
+                  <Smartphone className="h-8 w-8 text-purple-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Mobile Learning</h3>
+                <p className="text-muted-foreground text-sm mb-4">Learn anywhere, anytime</p>
+              </CardContent>
+            </Card>
 
-          {/* Advanced Analytics */}
-          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-700/10 flex items-center justify-center group-hover:bg-blue-700/20 transition-colors">
-                <TrendingUp className="h-8 w-8 text-blue-700" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Advanced Analytics</h3>
-              <p className="text-muted-foreground text-sm mb-4">Deep insights into your learning performance</p>
-              <Link to="/learning/analytics">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
-                  View Data
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
+                  <Award className="h-8 w-8 text-orange-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Achievements</h3>
+                <p className="text-muted-foreground text-sm mb-4">Earn badges and certificates</p>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+                  <BarChart3 className="h-8 w-8 text-emerald-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Enterprise Analytics</h3>
+                <p className="text-muted-foreground text-sm mb-4">Comprehensive learning insights</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
+                  <Brain className="h-8 w-8 text-purple-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">AI Recommendations</h3>
+                <p className="text-muted-foreground text-sm mb-4">Personalized learning paths</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
+                  <Shield className="h-8 w-8 text-amber-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Certifications</h3>
+                <p className="text-muted-foreground text-sm mb-4">Industry-recognized credentials</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-slate-500/10 flex items-center justify-center group-hover:bg-slate-500/20 transition-colors">
+                  <Building2 className="h-8 w-8 text-slate-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Corporate Portal</h3>
+                <p className="text-muted-foreground text-sm mb-4">Enterprise team management</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Feature Tabs */}
+        <Tabs defaultValue={activePhase === 'phase1' ? 'progress' : 'analytics'} className="w-full">
+          <TabsList className={`grid w-full ${activePhase === 'phase1' ? 'grid-cols-3' : 'grid-cols-4'} mb-8`}>
+            {activePhase === 'phase1' ? (
+              <>
+                <TabsTrigger value="progress" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Progress
+                </TabsTrigger>
+                <TabsTrigger value="social" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Social
+                </TabsTrigger>
+                <TabsTrigger value="mobile" className="flex items-center gap-2">
+                  <Smartphone className="h-4 w-4" />
+                  Mobile
+                </TabsTrigger>
+              </>
+            ) : (
+              <>
+                <TabsTrigger value="analytics" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="ai" className="flex items-center gap-2">
+                  <Brain className="h-4 w-4" />
+                  AI Engine
+                </TabsTrigger>
+                <TabsTrigger value="certifications" className="flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  Certifications
+                </TabsTrigger>
+                <TabsTrigger value="corporate" className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Corporate
+                </TabsTrigger>
+              </>
+            )}
+          </TabsList>
+
+          {activePhase === 'phase1' ? (
+            <>
+              <TabsContent value="progress">
+                <AdvancedProgressTracker />
+              </TabsContent>
+              <TabsContent value="social">
+                <SocialLearningHub />
+              </TabsContent>
+              <TabsContent value="mobile">
+                <MobileOptimizedLearning />
+              </TabsContent>
+            </>
+          ) : (
+            <>
+              <TabsContent value="analytics">
+                <EnterpriseAnalyticsDashboard />
+              </TabsContent>
+              <TabsContent value="ai">
+                <AIRecommendationEngine />
+              </TabsContent>
+              <TabsContent value="certifications">
+                <CertificationMarketplace />
+              </TabsContent>
+              <TabsContent value="corporate">
+                <CorporatePortal />
+              </TabsContent>
+            </>
+          )}
+        </Tabs>
       </section>
 
-      {/* Course Duration Selection */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Choose Your Learning Pace</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Whether you need quick skills or comprehensive expertise, we have the perfect learning duration for you.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {courseDurations.map((duration) => {
-            const IconComponent = duration.icon;
-            return (
-              <Card key={duration.id} className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-                <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    <IconComponent className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl font-bold">{duration.title}</CardTitle>
-                  <p className="text-muted-foreground">{duration.duration}</p>
-                  <Badge variant="secondary" className="mt-2">
-                    {duration.courses} courses
-                  </Badge>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <p className="text-sm text-muted-foreground mb-4">{duration.description}</p>
-                  <Link to={`/learning/courses?duration=${duration.id}`}>
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-md">
-                      Explore Courses
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Industry Categories */}
+      {/* Learning Stats */}
       <section className="bg-muted/20 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Explore by Industry</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Dive deep into your field with specialized courses designed by industry experts.
-            </p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Learning Impact</h2>
+            <p className="text-lg text-muted-foreground">Join thousands of learners transforming their careers</p>
           </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories?.map((category) => {
-              const categoryKey = category.name.toLowerCase().replace(/\s+/g, '');
-              const IconComponent = industryIcons[categoryKey as keyof typeof industryIcons] || Code;
-              
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {learningStats.map((stat, index) => {
+              const IconComponent = stat.icon;
               return (
-                <Card key={category.id} className="group overflow-hidden border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <div className="h-20 bg-gradient-to-br from-primary/5 to-primary/10 relative overflow-hidden flex items-center justify-center group-hover:from-primary/10 group-hover:to-primary/20 transition-colors">
-                    <IconComponent className="h-10 w-10 text-primary group-hover:scale-110 transition-transform" />
-                    <div className="absolute top-3 right-3">
-                      <Badge className="bg-primary/20 text-primary border-0 text-xs">
-                        {category.course_count || 0}
-                      </Badge>
-                    </div>
+                <div key={index} className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                    <IconComponent className={`h-8 w-8 ${stat.color}`} />
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="text-lg font-bold text-foreground mb-2">{category.name}</h3>
-                    <p className="text-muted-foreground mb-3 text-sm leading-relaxed">
-                      {category.description}
-                    </p>
-                    <Link to={`/learning/courses?category=${category.name}`}>
-                      <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
-                        Explore
-                        <ArrowRight className="h-3 w-3 ml-2" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                  <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                </div>
               );
             })}
           </div>
@@ -337,90 +399,6 @@ export default function LearningHub() {
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>
-        </div>
-      </section>
-
-      {/* Advanced Features */}
-      <section className="bg-primary py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">Advanced Learning Features</h2>
-            <p className="text-lg text-white/90 max-w-2xl mx-auto">
-              Leverage cutting-edge technology to accelerate your learning journey.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { title: 'Smart Recommendations', href: '/learning/recommendations', icon: Brain, description: 'AI-powered course suggestions' },
-              { title: 'Interactive Learning', href: '/learning/interactive', icon: Smartphone, description: 'Hands-on practice environments' },
-              { title: 'Learning Community', href: '/learning/community-new', icon: Users, description: 'Connect with fellow learners' },
-              { title: 'Mobile Learning', href: '/learning/mobile', icon: Smartphone, description: 'Learn on-the-go' }
-            ].map((feature, index) => {
-              const IconComponent = feature.icon;
-              return (
-                <Card key={index} className="bg-white/10 backdrop-blur border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:-translate-y-1">
-                  <CardContent className="p-6 text-center">
-                    <IconComponent className="h-8 w-8 mx-auto mb-4 text-accent" />
-                    <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-white/80 mb-4">{feature.description}</p>
-                    <Link to={feature.href}>
-                      <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">
-                        Explore
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats & Social Proof */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Join Thousands of Successful Learners</h2>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-          {learningStats.map((stat, index) => {
-            const IconComponent = stat.icon;
-            return (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <IconComponent className={`h-8 w-8 ${stat.color}`} />
-                </div>
-                <div className="text-3xl font-bold text-foreground mb-2">{stat.value}</div>
-                <div className="text-muted-foreground">{stat.label}</div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-primary py-16">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Transform Your Career?</h2>
-          <p className="text-xl text-white/90 mb-8 leading-relaxed">
-            Join thousands of professionals who have advanced their careers with TalentXcel. 
-            Start your journey today with our comprehensive learning platform.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/learning/courses">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8 py-4 rounded-lg text-lg font-semibold">
-                <Play className="h-5 w-5 mr-2" />
-                Start Learning for Free
-              </Button>
-            </Link>
-            <Link to="/learning/paths">
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-semibold">
-                <Calendar className="h-5 w-5 mr-2" />
-                View Learning Paths
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
     </div>

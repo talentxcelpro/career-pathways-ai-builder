@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, Star, Users, Clock, DollarSign, Shield, Trending, Filter } from 'lucide-react';
+import { Award, Star, Users, Clock, DollarSign, Shield, TrendingUp, Filter } from 'lucide-react';
 
 export const CertificationMarketplace: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -64,7 +64,7 @@ export const CertificationMarketplace: React.FC = () => {
             {cert.trending && (
               <div className="absolute top-4 right-4 z-10">
                 <Badge className="bg-red-500 text-white">
-                  <Trending className="h-3 w-3 mr-1" />
+                  <TrendingUp className="h-3 w-3 mr-1" />
                   Trending
                 </Badge>
               </div>
