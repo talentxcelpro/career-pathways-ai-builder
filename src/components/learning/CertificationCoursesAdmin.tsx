@@ -39,11 +39,15 @@ export const CertificationCoursesAdmin: React.FC = () => {
   };
 
   const courseCategories = [
-    { name: 'Programming', count: 15, icon: BookOpen, color: 'bg-blue-500' },
-    { name: 'Data Science', count: 12, icon: Users, color: 'bg-green-500' },
-    { name: 'Digital Marketing', count: 10, icon: Clock, color: 'bg-purple-500' },
-    { name: 'Design & Creative', count: 8, icon: Award, color: 'bg-pink-500' },
-    { name: 'Business & Management', count: 8, icon: Play, color: 'bg-orange-500' }
+    { name: 'Programming & Web Dev', count: 25, icon: BookOpen, color: 'bg-blue-500' },
+    { name: 'Data Science & AI/ML', count: 32, icon: Users, color: 'bg-green-500' },
+    { name: 'Digital Marketing', count: 15, icon: Clock, color: 'bg-purple-500' },
+    { name: 'Design & Creative', count: 15, icon: Award, color: 'bg-pink-500' },
+    { name: 'Business & Management', count: 15, icon: Play, color: 'bg-orange-500' },
+    { name: 'Cloud & DevOps', count: 12, icon: BookOpen, color: 'bg-cyan-500' },
+    { name: 'Cybersecurity', count: 10, icon: Users, color: 'bg-red-500' },
+    { name: 'Mobile Development', count: 8, icon: Clock, color: 'bg-indigo-500' },
+    { name: 'Soft Skills', count: 10, icon: Award, color: 'bg-yellow-500' }
   ];
 
   return (
@@ -57,8 +61,8 @@ export const CertificationCoursesAdmin: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Create 50+ certification courses across multiple domains with 2-10 hour duration each. 
-            This will include freemium content to attract learners with proper course structure, modules, lessons, and assessments.
+            Create 150+ certification courses across 9 major domains with 2-10 hour duration each. 
+            This comprehensive freemium system will attract individual learners, companies, and training agencies with structured learning paths, assessments, and certificates.
           </p>
           
           {isCreating && (
@@ -84,7 +88,7 @@ export const CertificationCoursesAdmin: React.FC = () => {
             ) : (
               <>
                 <BookOpen className="h-4 w-4 mr-2" />
-                Create 50+ Certification Courses
+                Create 150+ Certification Courses
               </>
             )}
           </Button>
