@@ -24,6 +24,7 @@ cleanupDevelopmentLogs();
 
 // Data validation utility
 export const validateProductionData = (data: any, context: string = 'data'): boolean => {
+  console.log('🔍 validateProductionData called for:', context);
   if (!data) {
     if (ENV.isDevelopment) {
       console.warn(`⚠️ ${context}: No data received`);
@@ -57,8 +58,10 @@ export const fetchProductionData = async <T>(
 ): Promise<T> => {
   try {
     const data = await fetcher();
+    console.log('🔍 fetchProductionData - raw data:', context, Array.isArray(data) ? `${data.length} items` : typeof data);
     
     if (validateProductionData(data, context)) {
+      console.log('✅ Data validated successfully for:', context);
       return data;
     }
     

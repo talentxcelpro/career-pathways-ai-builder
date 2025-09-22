@@ -161,7 +161,7 @@ export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
 
 // Real-time popular courses
 export const getPopularCourses = async (): Promise<PopularCourse[]> => {
-  return fetchProductionData(async () => {
+  try {
     const { data, error } = await supabase
       .from('courses')
       .select(`
@@ -210,12 +210,15 @@ export const getPopularCourses = async (): Promise<PopularCourse[]> => {
       skills_taught: course.skills_taught,
       is_free: course.is_free
     }));
-  }, []);
+  } catch (error) {
+    console.error('Error fetching popular courses:', error);
+    return [];
+  }
 };
 
 // Real-time course data for learning section
 export const getAllCourses = async (): Promise<PopularCourse[]> => {
-  return fetchProductionData(async () => {
+  try {
     const { data, error } = await supabase
       .from('courses')
       .select(`
@@ -238,7 +241,9 @@ export const getAllCourses = async (): Promise<PopularCourse[]> => {
       .eq('published', true)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     
     // Map the database columns to the expected interface
     return (data || []).map(course => ({
@@ -263,7 +268,10 @@ export const getAllCourses = async (): Promise<PopularCourse[]> => {
       skills_taught: course.skills_taught,
       is_free: course.is_free
     }));
-  }, []);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    return [];
+  }
 };
 
 // Real-time learning paths
