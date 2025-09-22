@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -20,6 +21,7 @@ export const EnhancedCourseDetail: React.FC = () => {
   const navigate = useNavigate();
   const isPreview = searchParams.get('preview') === 'true';
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   // Fetch course data from Supabase
   const { data: course, isLoading: courseLoading } = useQuery({
@@ -62,12 +64,9 @@ export const EnhancedCourseDetail: React.FC = () => {
 
   // Check if user is enrolled
   const { data: enrollment } = useQuery({
-    queryKey: ['enrollment', id],
+    queryKey: ['enrollment', id, user?.id],
     queryFn: async () => {
-      if (!id) return null;
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!id || !user) return null;
       
       const { data, error } = await supabase
         .from('course_enrollments')
@@ -79,7 +78,7 @@ export const EnhancedCourseDetail: React.FC = () => {
       if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!id && !!user
   });
 
   const isEnrolled = !!enrollment;
@@ -88,8 +87,6 @@ export const EnhancedCourseDetail: React.FC = () => {
   const enrollMutation = useMutation({
     mutationFn: async () => {
       if (!id || !course) throw new Error('Course ID and data required');
-      
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Please log in to enroll in courses');
       
       const { error } = await supabase
