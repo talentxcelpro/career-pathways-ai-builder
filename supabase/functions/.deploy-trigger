@@ -1,0 +1,12 @@
+# Deployment Trigger File
+# This file forces Supabase to recognize only the current functions
+# and remove all outdated deployed functions
+# 
+# Current function count: 42
+# Expected cleanup: Remove 200+ old functions
+# Date: 2025-09-22
+# Action: Resource exhaustion fix
+
+FORCE_CLEANUP=true
+DEPLOYMENT_VERSION=v2.0.0
+TIMESTAMP=2025-09-22T16:47:00Z
