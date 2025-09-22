@@ -323,7 +323,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
                 <form onSubmit={handleAuth} className="space-y-4">
                   {authMode === 'signup' && (
                     <>
-                      <div className="space-y-2">
+                      <div className="relative space-y-2">
                         <Input
                           type="text"
                           placeholder="Full Name"
@@ -337,7 +337,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
                       </div>
 
                       {userType === 'employer' && (
-                        <div className="space-y-2">
+                        <div className="relative space-y-2">
                           <Input
                             type="text"
                             placeholder="Company Name"

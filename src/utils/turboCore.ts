@@ -3,6 +3,9 @@
  * Minimal overhead, maximum impact
  */
 
+// Import polyfills for better browser compatibility
+import './polyfills';
+
 class TurboCore {
   private static instance: TurboCore;
   private isInitialized = false;
@@ -28,10 +31,18 @@ class TurboCore {
     // Instant navigation setup
     this.enableInstantNav();
     
-    // Image optimization
-    requestIdleCallback(() => {
+    // Image optimization with better browser compatibility
+    const scheduleOptimization = () => {
       this.optimizeImages();
-    });
+    };
+
+    // Use requestIdleCallback if available, otherwise use setTimeout
+    if (typeof window !== 'undefined' && window.requestIdleCallback) {
+      window.requestIdleCallback(scheduleOptimization);
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      setTimeout(scheduleOptimization, 1);
+    }
 
     this.isInitialized = true;
   }
