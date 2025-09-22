@@ -14,8 +14,6 @@ import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnec
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { EnhancedConnections } from "@/components/network/EnhancedConnections";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
-import { EmailTestButton } from "@/components/EmailTestButton";
-import { EdgeFunctionTester } from "@/components/EdgeFunctionTester";
 import { Users, UserPlus, TrendingUp, MessageSquare, Sparkles, Newspaper, Trophy, Gift } from "lucide-react";
 import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
