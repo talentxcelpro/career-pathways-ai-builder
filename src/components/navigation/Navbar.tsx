@@ -216,6 +216,17 @@ export const Navbar = () => {
               {/* User Menu */}
               <div className="flex items-center space-x-4">
 
+                {/* Launch Checklist Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/?final_launch=1')}
+                  className="text-xs px-2 py-1 border-green-500/20 bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-950/20 dark:text-green-400"
+                >
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Launch Status
+                </Button>
+
                 {/* Notifications */}
                 <NotificationBell />
 
