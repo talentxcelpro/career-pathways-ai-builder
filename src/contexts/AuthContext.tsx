@@ -1,5 +1,5 @@
-
-import React, { createContext, useContext, useEffect, useState } from 'react';
+// Production-ready authentication context with improved session management
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
-  signInWithIdToken: (provider: string, token: string) => Promise<{ user: User; session: Session; } | { user: null; session: null; }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,161 +25,136 @@ export const useAuth = () => {
     return {
       user: null,
       session: null,
-      loading: true,
+      loading: false,
       signOut: async () => {},
-      refreshSession: async () => {},
-      signInWithIdToken: async () => ({ user: null, session: null })
-    } as any;
+      refreshSession: async () => {}
+    };
   }
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const authInitialized = useRef(false);
   const navigate = useNavigate();
 
-  const refreshSession = async () => {
+  const refreshSession = useCallback(async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.refreshSession();
-      if (error) {
-        // Handle session refresh failure gracefully
-        if (error.message?.includes('refresh_token_not_found') || error.message?.includes('invalid_refresh_token')) {
-          console.warn('Refresh token invalid, clearing session');
-          await signOut();
-          return;
-        }
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error && error.message !== 'Auth session missing!') {
         throw error;
       }
-      setSession(session);
+
       setUser(session?.user ?? null);
-    } catch (error) {
-      console.error('Session refresh error:', error);
-      // Clear potentially corrupted session data
-      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
-      sessionStorage.clear();
+      setSession(session);
+    } catch (error: any) {
+      console.warn('Session refresh failed:', error.message);
+      setUser(null);
+      setSession(null);
     }
-  };
+  }, []);
+
+  const initializeAuth = useCallback(async () => {
+    if (authInitialized.current) return;
+    authInitialized.current = true;
+
+    try {
+      // Clear any invalid stored sessions first
+      const storedSession = localStorage.getItem('sb-dthlgsnakhoftinssokm-auth-token');
+      if (storedSession) {
+        try {
+          const parsed = JSON.parse(storedSession);
+          if (!parsed || !parsed.access_token) {
+            localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+          }
+        } catch {
+          localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+        }
+      }
+
+      // Get initial session with timeout
+      const sessionPromise = supabase.auth.getSession();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Session timeout')), 10000)
+      );
+      
+      const { data: { session }, error } = await Promise.race([
+        sessionPromise,
+        timeoutPromise
+      ]) as any;
+
+      if (error && error.message !== 'Auth session missing!') {
+        throw error;
+      }
+
+      setUser(session?.user ?? null);
+      setSession(session);
+      setLoading(false);
+    } catch (error: any) {
+      console.warn('Auth initialization error:', error.message);
+      
+      // Clear any corrupted auth data
+      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+      
+      setUser(null);
+      setSession(null);
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let mounted = true;
-    let authSubscription: any = null;
-    let initTimeout: NodeJS.Timeout;
-
-    // Initialize auth session and listener
-    const initializeAuth = async () => {
-      try {
-        // Set up auth state listener first
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (event, session) => {
-            if (!mounted) return;
-
-            // Synchronous state updates only
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-          }
-        );
-        
-        authSubscription = subscription;
-
-        // Check for existing session
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-          localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
-          sessionStorage.clear();
-        }
-        
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Add timeout to prevent infinite loading
-    initTimeout = setTimeout(() => {
-      if (mounted && loading) {
-        console.warn('Auth initialization timeout, setting loading to false');
+    // Set up auth state listener with error handling
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        // Update state synchronously to avoid deadlocks
+        setUser(session?.user ?? null);
+        setSession(session);
         setLoading(false);
+        
+        // Handle auth events
+        if (event === 'SIGNED_OUT') {
+          localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+        }
       }
-    }, 5000);
+    );
 
+    // Initialize auth after setting up listener
     initializeAuth();
 
     return () => {
-      mounted = false;
-      clearTimeout(initTimeout);
-      if (authSubscription) {
-        authSubscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     };
-  }, [navigate, loading]);
+  }, [initializeAuth]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Error signing out:', error);
-        throw error;
-      }
-      // Clear state immediately
+      await supabase.auth.signOut();
+      localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
       setUser(null);
       setSession(null);
-      // Navigation will be handled by auth state change
-    } catch (error) {
-      console.error('Error signing out:', error);
-      throw error;
+      navigate('/');
+    } catch (error: any) {
+      console.error('Sign out error:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const signInWithIdToken = async (provider: string, token: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: provider as any,
-        token,
-      });
-
-      if (error) {
-        console.error('Error signing in with ID token:', error);
-        throw error;
-      }
-
-      // Session will be updated via auth state change
-      return data;
-    } catch (error) {
-      console.error('Error signing in with ID token:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [navigate]);
 
   const value = {
     user,
     session,
     loading,
     signOut,
-    refreshSession,
-    signInWithIdToken
+    refreshSession
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
