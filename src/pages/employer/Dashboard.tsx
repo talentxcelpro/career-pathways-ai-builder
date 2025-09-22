@@ -394,9 +394,5 @@ function DashboardContent() {
 }
 
 export default function EmployerDashboard() {
-  return (
-    <EmployerAccessGuard>
-      <DashboardContent />
-    </EmployerAccessGuard>
-  );
+  return <DashboardContent />;
 }

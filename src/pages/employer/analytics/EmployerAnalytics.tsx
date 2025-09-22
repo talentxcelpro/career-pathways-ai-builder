@@ -286,9 +286,5 @@ function AnalyticsContent() {
 }
 
 export default function EmployerAnalytics() {
-  return (
-    <EmployerAccessGuard>
-      <AnalyticsContent />
-    </EmployerAccessGuard>
-  );
+  return <AnalyticsContent />;
 }

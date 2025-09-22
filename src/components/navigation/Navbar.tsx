@@ -128,14 +128,8 @@ export const Navbar = () => {
   const { isAdmin } = useAdminAccess();
   const { hasEmployerAccess, employerStatus } = useEmployerAccess();
 
-  // Hide specific modules from navbar for non-admins
-  const hiddenForNonAdmin = [
-    '/resume-builder',
-    '/tools',
-    '/learning',
-    '/career-map',
-  ];
-  const visibleNavItems = isAdmin ? mainNavItems : mainNavItems.filter(item => !hiddenForNonAdmin.includes(item.to));
+  // Show all navigation items to all users
+  const visibleNavItems = mainNavItems;
 
   const getEmployerButtonText = () => {
     if (!user) return 'Sign In';

@@ -338,9 +338,5 @@ function ApplicationsContent() {
 }
 
 export default function EmployerApplications() {
-  return (
-    <EmployerAccessGuard>
-      <ApplicationsContent />
-    </EmployerAccessGuard>
-  );
+  return <ApplicationsContent />;
 }

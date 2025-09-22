@@ -525,9 +525,5 @@ function JobPostContent() {
 }
 
 export default function JobPost() {
-  return (
-    <EmployerAccessGuard>
-      <JobPostContent />
-    </EmployerAccessGuard>
-  );
+  return <JobPostContent />;
 }
