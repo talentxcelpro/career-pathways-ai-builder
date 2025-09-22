@@ -68,21 +68,31 @@ export const CourseraStyleHeader: React.FC = () => {
   return (
     <>
       {/* Black Audience Navigation Bar - Coursera Style with White Text */}
-      <div className="bg-black">
+      <div style={{ backgroundColor: '#000000' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-12 space-x-0">
             {audienceOptions.map((option, index) => (
-              <Link
+              <a
                 key={option.id}
-                to={option.href}
-                className="px-6 py-3 font-semibold hover:bg-white/10 text-sm transition-all border-b-2 border-transparent hover:border-white/50"
+                href={option.href}
+                className="px-6 py-3 font-semibold text-sm transition-all border-b-2 border-transparent"
                 style={{ 
-                  color: '#ffffff',
-                  textDecoration: 'none'
+                  color: '#FFFFFF',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  display: 'block'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.borderBottomColor = 'rgba(255, 255, 255, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.borderBottomColor = 'transparent';
                 }}
               >
                 {option.title}
-              </Link>
+              </a>
             ))}
           </div>
         </div>
