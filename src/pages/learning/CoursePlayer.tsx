@@ -110,12 +110,13 @@ const CoursePlayer = () => {
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
                   <div className="relative">
+                    {console.log('Loading video URL:', currentLesson.video_url)}
                     <VideoReelPlayer
                       videoUrl={currentLesson.video_url}
                       isActive={isPlaying}
                       className="aspect-video rounded-t-lg"
                       muted={isMuted}
-                      onVideoLoad={() => console.log('Video loaded')}
+                      onVideoLoad={() => console.log('Video loaded:', currentLesson.video_url)}
                     />
                     {/* Video Controls Overlay */}
                     <div className="absolute top-4 right-4 flex gap-2">
