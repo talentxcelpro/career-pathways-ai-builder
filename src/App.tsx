@@ -42,6 +42,7 @@ import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
 import { EmbedTestPage } from "@/components/embed-test/EmbedTestPage";
 import { TestAlertSender } from "@/components/TestAlertSender";
+import { EmailSystemHealthDashboard } from "@/components/admin/EmailSystemHealthDashboard";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -293,7 +294,8 @@ const App = () => {
                         <Route path="/resume/templates" element={<ResumeTemplates />} />
                         <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                         <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
-                        <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
+                         <Route path="/admin/email-health" element={<AdminLayout><EmailSystemHealthDashboard /></AdminLayout>} />
+                         <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
                         <Route path="/talent-database" element={<AdminLayout><TalentDatabase /></AdminLayout>} />
                         <Route path="/admin/security" element={<AdminLayout><SecurityCenter /></AdminLayout>} />
                         <Route path="/admin/prd" element={<AdminLayout><ProductRequirementDocument /></AdminLayout>} />
