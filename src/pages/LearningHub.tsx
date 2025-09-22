@@ -166,6 +166,75 @@ export default function LearningHub() {
         </div>
       </section>
 
+      {/* Learning Hub Features */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {/* Pipeline Dashboard */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+            <CardContent className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                <BarChart3 className="h-8 w-8 text-blue-500" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Pipeline Dashboard</h3>
+              <p className="text-muted-foreground text-sm mb-4">Track your learning progress and job pipeline</p>
+              <Link to="/learning/pipeline">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
+                  Access
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Smart Learning */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+            <CardContent className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-pink-500/10 flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
+                <Brain className="h-8 w-8 text-pink-500" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Smart Learning</h3>
+              <p className="text-muted-foreground text-sm mb-4">AI-powered personalized learning paths</p>
+              <Link to="/learning/system">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
+                  Explore
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Company Portal */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+            <CardContent className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-600/10 flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
+                <Building className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Company Portal</h3>
+              <p className="text-muted-foreground text-sm mb-4">Access corporate learning resources</p>
+              <Link to="/learning/company-portal">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
+                  Enter
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Advanced Analytics */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
+            <CardContent className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-700/10 flex items-center justify-center group-hover:bg-blue-700/20 transition-colors">
+                <TrendingUp className="h-8 w-8 text-blue-700" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Advanced Analytics</h3>
+              <p className="text-muted-foreground text-sm mb-4">Deep insights into your learning performance</p>
+              <Link to="/learning/analytics">
+                <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6">
+                  View Data
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       {/* Course Duration Selection */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
