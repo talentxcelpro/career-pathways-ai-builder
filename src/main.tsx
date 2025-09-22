@@ -4,9 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AppWrapper } from './AppWrapper.tsx'
 
 import './index.css'
-import './utils/ultraFastLoader'
-import './utils/instantLoader'
-import './utils/appleOptimizations'
+import './utils/performanceCore'
 
 // Ensure React is globally available and properly initialized
 if (typeof window !== 'undefined') {
