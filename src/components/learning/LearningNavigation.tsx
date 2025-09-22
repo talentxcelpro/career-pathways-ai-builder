@@ -79,6 +79,14 @@ export const LearningNavigation: React.FC = memo(() => {
       category: 'tools'
     },
     {
+      title: 'Skill Assessments',
+      href: '/assessments',
+      icon: Target,
+      description: 'Test your skills',
+      badge: 'New',
+      category: 'tools'
+    },
+    {
       title: 'Analytics',
       href: '/learning/analytics',
       icon: BarChart3,

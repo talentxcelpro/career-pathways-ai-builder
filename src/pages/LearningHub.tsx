@@ -47,6 +47,8 @@ import { AIRecommendationEngine } from '@/components/learning/AIRecommendationEn
 import { CertificationMarketplace } from '@/components/learning/CertificationMarketplace';
 import { CorporatePortal } from '@/components/learning/CorporatePortal';
 import { CourseGrid } from '@/components/learning/CourseGrid';
+import { ProfessionalCourseGrid } from '@/components/learning/ProfessionalCourseGrid';
+import { AssessmentIntegration } from '@/components/learning/AssessmentIntegration';
 
 const industryIcons = {
   'technology': Code,
@@ -395,10 +397,66 @@ export default function LearningHub() {
         <div className="text-center mt-12">
           <Link to="/learning/courses">
             <Button size="lg" variant="outline" className="px-8 py-4 rounded-lg">
-              View All 300+ Courses
+              View All 500+ Courses
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>
+        </div>
+      </section>
+
+      {/* Assessment Integration Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <AssessmentIntegration />
+      </section>
+
+      {/* Categories & Duration */}
+      <section className="bg-muted/20 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Explore by Category</h2>
+            <p className="text-lg text-muted-foreground">Find the perfect learning path for your career goals</p>
+          </div>
+
+          {/* Course Categories */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-12">
+            {categories?.map((category) => {
+              const IconComponent = industryIcons[category.name?.toLowerCase() as keyof typeof industryIcons] || Code;
+              return (
+                <Card key={category.id} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <IconComponent className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">{category.name}</h3>
+                    <p className="text-xs text-muted-foreground">{category.course_count || 0} courses</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Duration-based Learning */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {courseDurations.map((duration) => {
+              const IconComponent = duration.icon;
+              return (
+                <Card key={duration.id} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <IconComponent className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">{duration.title}</h3>
+                    <p className="text-muted-foreground mb-3">{duration.description}</p>
+                    <div className="text-2xl font-bold text-primary mb-3">{duration.courses} courses</div>
+                    <div className="text-sm text-muted-foreground mb-4">{duration.duration}</div>
+                    <Button variant="outline" className="w-full">
+                      Explore {duration.title}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>
