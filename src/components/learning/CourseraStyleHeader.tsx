@@ -58,144 +58,123 @@ const audienceOptions: AudienceOption[] = [
 
 export const CourseraStyleHeader: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeAudience, setActiveAudience] = useState<string | null>(null);
 
   return (
-    <header className="bg-white border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Navigation Bar */}
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/learning" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold text-primary">TalentXcel</div>
-          </Link>
-
-          {/* Audience Navigation */}
-          <div className="hidden lg:flex space-x-8">
-            {audienceOptions.map((option) => {
-              const IconComponent = option.icon;
-              return (
-                <DropdownMenu key={option.id}>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost"
-                      className="flex items-center space-x-2 text-foreground hover:text-primary font-medium"
-                    >
-                      <IconComponent className={cn("h-4 w-4", option.color)} />
-                      <span>{option.title}</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-80 p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className={cn("p-3 rounded-lg bg-gray-50")}>
-                        <IconComponent className={cn("h-6 w-6", option.color)} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground mb-2">{option.title}</h3>
-                        <p className="text-muted-foreground text-sm mb-4">{option.description}</p>
-                        <Button asChild size="sm">
-                          <Link to={option.href}>Learn More</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              );
-            })}
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center space-x-4">
-            <Link to="/learning/degrees" className="hidden md:block text-foreground hover:text-primary font-medium">
-              Online Degrees
-            </Link>
-            <Link to="/learning/certificates" className="hidden md:block text-foreground hover:text-primary font-medium">
-              Certificates
-            </Link>
-            <Link to="/auth" className="text-primary hover:text-primary/80 font-medium">
-              Log In
-            </Link>
-            <Button asChild size="sm">
-              <Link to="/auth">Join for Free</Link>
-            </Button>
+    <>
+      {/* Black Audience Navigation Bar */}
+      <div className="bg-black text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-14 space-x-8">
+            {audienceOptions.map((option) => (
+              <Link
+                key={option.id}
+                to={option.href}
+                className="flex items-center space-x-2 text-white/90 hover:text-white text-sm font-medium transition-colors"
+              >
+                <span>{option.title}</span>
+              </Link>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Search Bar Section */}
-        <div className="pb-4">
-          <div className="flex items-center justify-between">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-blue-600 text-white hover:bg-blue-700 font-medium">
-                  <div className="flex items-center space-x-2">
-                    <span>Explore</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-96 p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold mb-3">Popular Skills</h4>
-                    <div className="space-y-2 text-sm">
-                      <Link to="/learning/courses?category=data-science" className="block text-muted-foreground hover:text-primary">Data Science</Link>
-                      <Link to="/learning/courses?category=machine-learning" className="block text-muted-foreground hover:text-primary">Machine Learning</Link>
-                      <Link to="/learning/courses?category=web-development" className="block text-muted-foreground hover:text-primary">Web Development</Link>
-                      <Link to="/learning/courses?category=cloud-computing" className="block text-muted-foreground hover:text-primary">Cloud Computing</Link>
+      {/* Main Header */}
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Top Navigation Bar */}
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link to="/learning" className="flex items-center space-x-2">
+              <div className="text-2xl font-bold text-blue-600">TalentXcel</div>
+            </Link>
+
+            {/* Search Bar with Explore */}
+            <div className="flex items-center space-x-4 flex-1 max-w-2xl mx-8">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-blue-600 text-white hover:bg-blue-700 font-medium px-6 h-11">
+                    <div className="flex items-center space-x-2">
+                      <span>Explore</span>
+                      <ChevronDown className="h-4 w-4" />
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-96 p-6">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold mb-3 text-gray-900">Popular Skills</h4>
+                      <div className="space-y-2 text-sm">
+                        <Link to="/learning/courses?category=data-science" className="block text-gray-600 hover:text-blue-600 py-1">Data Science</Link>
+                        <Link to="/learning/courses?category=machine-learning" className="block text-gray-600 hover:text-blue-600 py-1">Machine Learning</Link>
+                        <Link to="/learning/courses?category=web-development" className="block text-gray-600 hover:text-blue-600 py-1">Web Development</Link>
+                        <Link to="/learning/courses?category=cloud-computing" className="block text-gray-600 hover:text-blue-600 py-1">Cloud Computing</Link>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-3 text-gray-900">Career Paths</h4>
+                      <div className="space-y-2 text-sm">
+                        <Link to="/learning/paths?role=data-scientist" className="block text-gray-600 hover:text-blue-600 py-1">Data Scientist</Link>
+                        <Link to="/learning/paths?role=software-engineer" className="block text-gray-600 hover:text-blue-600 py-1">Software Engineer</Link>
+                        <Link to="/learning/paths?role=product-manager" className="block text-gray-600 hover:text-blue-600 py-1">Product Manager</Link>
+                        <Link to="/learning/paths?role=digital-marketer" className="block text-gray-600 hover:text-blue-600 py-1">Digital Marketer</Link>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold mb-3">Career Paths</h4>
-                    <div className="space-y-2 text-sm">
-                      <Link to="/learning/paths?role=data-scientist" className="block text-muted-foreground hover:text-primary">Data Scientist</Link>
-                      <Link to="/learning/paths?role=software-engineer" className="block text-muted-foreground hover:text-primary">Software Engineer</Link>
-                      <Link to="/learning/paths?role=product-manager" className="block text-muted-foreground hover:text-primary">Product Manager</Link>
-                      <Link to="/learning/paths?role=digital-marketer" className="block text-muted-foreground hover:text-primary">Digital Marketer</Link>
-                    </div>
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            {/* Search Input */}
-            <div className="flex-1 max-w-2xl mx-8">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
                   placeholder="What do you want to learn?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 py-3 text-base bg-gray-50 border-gray-200 focus:bg-white focus:border-blue-500"
+                  className="pl-12 pr-20 h-11 text-base bg-white border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 rounded-lg"
                 />
                 <Button 
-                  size="sm" 
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 h-7 px-4 text-sm"
                 >
-                  Search
+                  <Search className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Promotional Banner */}
-      <div className="bg-blue-50 border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="text-blue-900">Ends tomorrow: Discover new skills with courses from industry experts—</span>
-              <Link to="/learning/courses" className="text-blue-600 hover:text-blue-800 font-medium underline">
-                now ₹7,999/year
+            {/* Right side actions */}
+            <div className="flex items-center space-x-6">
+              <Link to="/learning/degrees" className="hidden md:block text-gray-700 hover:text-blue-600 font-medium text-sm">
+                Online Degrees
               </Link>
+              <Link to="/learning/certificates" className="hidden md:block text-gray-700 hover:text-blue-600 font-medium text-sm">
+                Careers
+              </Link>
+              <Link to="/auth" className="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                Log In
+              </Link>
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9">
+                <Link to="/auth">Join for Free</Link>
+              </Button>
             </div>
-            <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800">
-              ✕
-            </Button>
           </div>
         </div>
-      </div>
-    </header>
+
+        {/* Promotional Banner */}
+        <div className="bg-blue-50 border-t border-blue-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="text-blue-900">Ends tomorrow: Discover new skills with courses from industry experts—</span>
+                <Link to="/learning/courses" className="text-blue-600 hover:text-blue-800 font-semibold underline">
+                  now ₹7,999/year
+                </Link>
+              </div>
+              <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 h-8 w-8 p-0">
+                ✕
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+    </>
   );
 };
