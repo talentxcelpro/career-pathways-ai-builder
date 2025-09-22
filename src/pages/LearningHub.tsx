@@ -36,7 +36,9 @@ import {
   Camera,
   Wrench,
   Building2,
-  Shield
+  Shield,
+  User,
+  School
 } from 'lucide-react';
 import { useCourses, useCourseCategories } from '@/hooks/useCourses';
 import { AdvancedProgressTracker } from '@/components/learning/AdvancedProgressTracker';
@@ -88,6 +90,45 @@ const courseDurations = [
   }
 ];
 
+const audienceTypes = [
+  {
+    id: 'individuals',
+    title: 'For Individuals',
+    description: 'Build skills to advance your career',
+    icon: User,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    features: ['Personal career growth', 'Flexible learning schedule', 'Industry certifications']
+  },
+  {
+    id: 'businesses',
+    title: 'For Businesses',
+    description: 'Upskill your workforce effectively',
+    icon: Building,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    features: ['Team learning analytics', 'Custom learning paths', 'Enterprise dashboard']
+  },
+  {
+    id: 'universities',
+    title: 'For Universities',
+    description: 'Enhance academic programs',
+    icon: School,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    features: ['Academic integration', 'Student progress tracking', 'Curriculum enhancement']
+  },
+  {
+    id: 'governments',
+    title: 'For Governments',
+    description: 'Develop public sector skills',
+    icon: Shield,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    features: ['Public policy training', 'Compliance courses', 'Leadership development']
+  }
+];
+
 const learningStats = [
   { label: 'Active Learners', value: '50,000+', icon: Users, color: 'text-primary' },
   { label: 'Courses Available', value: '300+', icon: BookOpen, color: 'text-brand-green' },
@@ -99,6 +140,7 @@ export default function LearningHub() {
   const { displayName, streakDays } = useCurrentUserProfile();
   const [searchQuery, setSearchQuery] = useState('');
   const [activePhase, setActivePhase] = useState<'phase1' | 'phase2'>('phase1');
+  const [selectedAudience, setSelectedAudience] = useState<string>('individuals');
   const { courses: featuredCourses, isLoading } = useCourses({ limit: 9 });
   const { data: categories } = useCourseCategories();
   
@@ -120,266 +162,187 @@ export default function LearningHub() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light opacity-90"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Flame className="h-5 w-5 text-accent" />
-              <Badge variant="secondary" className="bg-white/10 text-white border-white/20">
-                {streakDays}-day learning streak
-              </Badge>
+      {/* Audience Navigation - Coursera Style */}
+      <section className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-8">
+              {audienceTypes.map((audience) => (
+                <button
+                  key={audience.id}
+                  onClick={() => setSelectedAudience(audience.id)}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    selectedAudience === audience.id
+                      ? 'text-primary border-b-2 border-primary'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {audience.title}
+                </button>
+              ))}
             </div>
-            
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-              Welcome back,{' '}
-              <span className="text-accent">
-                {friendlyName}
-              </span>
-            </h1>
-            
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform your career with 300+ industry-leading courses across multiple domains. 
-              From quick skills to expert certifications - your learning journey starts here.
-            </p>
-
-            {/* Phase Toggle */}
-            <div className="flex justify-center gap-4 mb-8">
-              <Button 
-                size="lg" 
-                onClick={() => setActivePhase('phase1')}
-                variant={activePhase === 'phase1' ? 'secondary' : 'outline'}
-                className={activePhase === 'phase1' ? 'bg-white text-primary' : 'border-white/30 text-white hover:bg-white/10'}
-              >
-                <BookOpen className="mr-2 h-5 w-5" />
-                Core Features
-              </Button>
-              <Button 
-                size="lg" 
-                onClick={() => setActivePhase('phase2')}
-                variant={activePhase === 'phase2' ? 'secondary' : 'outline'}
-                className={activePhase === 'phase2' ? 'bg-white text-primary' : 'border-white/30 text-white hover:bg-white/10'}
-              >
-                <Brain className="mr-2 h-5 w-5" />
-                Enterprise Suite
-              </Button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-                <Input
-                  placeholder="Search courses, skills, or industries..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-4 py-6 text-lg bg-white border-0 shadow-lg rounded-lg focus:ring-2 focus:ring-accent"
-                />
-                <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-secondary hover:bg-secondary/90 px-6 rounded-md">
-                  Search
-                </Button>
-              </div>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/learning/courses">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8 py-4 rounded-lg text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  <Play className="h-5 w-5 mr-2" />
-                  Start Learning Now
+            <div className="flex items-center space-x-4">
+              <Link to="/learning/search">
+                <Button variant="ghost" size="sm">
+                  <Search className="h-4 w-4 mr-2" />
+                  Explore
                 </Button>
               </Link>
-              <Link to="/learning/paths">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-semibold backdrop-blur-sm">
-                  <Target className="h-5 w-5 mr-2" />
-                  Explore Learning Paths
+              <Link to="/learning/certificates">
+                <Button variant="outline" size="sm">
+                  Online Degrees
                 </Button>
               </Link>
+              <Button size="sm" className="bg-primary text-white">
+                Join for Free
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Feature Cards Based on Active Phase */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-8">
-        {activePhase === 'phase1' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                  <TrendingUp className="h-8 w-8 text-blue-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Progress Tracking</h3>
-                <p className="text-muted-foreground text-sm mb-4">Advanced learning analytics and insights</p>
-              </CardContent>
-            </Card>
+      {/* Hero Section - Clean Coursera Style */}
+      <section className="bg-gradient-to-b from-blue-50 to-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="mb-6">
+                <Badge variant="secondary" className="mb-4">
+                  {audienceTypes.find(a => a.id === selectedAudience)?.title}
+                </Badge>
+                <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+                  Build skills with courses, certificates, and degrees online from world-class universities and companies
+                </h1>
+                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                  Learn at your own pace from top universities like Yale, Michigan, Stanford, and leading companies like Google and IBM.
+                </p>
+              </div>
 
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-                  <Users className="h-8 w-8 text-green-500" />
+              {/* Search Bar */}
+              <div className="mb-8">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                  <Input
+                    placeholder="What do you want to learn?"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 pr-32 py-4 text-base bg-white border-2 border-border shadow-sm rounded-lg focus:ring-2 focus:ring-primary"
+                  />
+                  <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6">
+                    <Search className="h-4 w-4" />
+                  </Button>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Social Learning</h3>
-                <p className="text-muted-foreground text-sm mb-4">Connect and learn with peers</p>
-              </CardContent>
-            </Card>
+              </div>
 
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
-                  <Smartphone className="h-8 w-8 text-purple-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Mobile Learning</h3>
-                <p className="text-muted-foreground text-sm mb-4">Learn anywhere, anytime</p>
-              </CardContent>
-            </Card>
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/learning/courses">
+                  <Button size="lg" className="px-8 py-3 text-base">
+                    Start Learning Today
+                  </Button>
+                </Link>
+                <Link to="/learning/paths">
+                  <Button size="lg" variant="outline" className="px-8 py-3 text-base">
+                    Explore Programs
+                  </Button>
+                </Link>
+              </div>
+            </div>
 
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-                  <Award className="h-8 w-8 text-orange-500" />
+            {/* Hero Image/Visual */}
+            <div className="relative">
+              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-8 text-center">
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {learningStats.map((stat, index) => {
+                    const IconComponent = stat.icon;
+                    return (
+                      <div key={index} className="bg-white rounded-lg p-4 shadow-sm">
+                        <IconComponent className={`h-6 w-6 mx-auto mb-2 ${stat.color}`} />
+                        <div className="text-xl font-bold">{stat.value}</div>
+                        <div className="text-xs text-muted-foreground">{stat.label}</div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Achievements</h3>
-                <p className="text-muted-foreground text-sm mb-4">Earn badges and certificates</p>
-              </CardContent>
-            </Card>
+                <div className="text-sm text-muted-foreground">
+                  Trusted by learners worldwide
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                  <BarChart3 className="h-8 w-8 text-emerald-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Enterprise Analytics</h3>
-                <p className="text-muted-foreground text-sm mb-4">Comprehensive learning insights</p>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
-                  <Brain className="h-8 w-8 text-purple-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">AI Recommendations</h3>
-                <p className="text-muted-foreground text-sm mb-4">Personalized learning paths</p>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                  <Shield className="h-8 w-8 text-amber-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Certifications</h3>
-                <p className="text-muted-foreground text-sm mb-4">Industry-recognized credentials</p>
-              </CardContent>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-all duration-300 border hover:-translate-y-1">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-slate-500/10 flex items-center justify-center group-hover:bg-slate-500/20 transition-colors">
-                  <Building2 className="h-8 w-8 text-slate-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Corporate Portal</h3>
-                <p className="text-muted-foreground text-sm mb-4">Enterprise team management</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Feature Tabs */}
-        <Tabs defaultValue={activePhase === 'phase1' ? 'progress' : 'analytics'} className="w-full">
-          <TabsList className={`grid w-full ${activePhase === 'phase1' ? 'grid-cols-3' : 'grid-cols-4'} mb-8`}>
-            {activePhase === 'phase1' ? (
-              <>
-                <TabsTrigger value="progress" className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  Progress
-                </TabsTrigger>
-                <TabsTrigger value="social" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Social
-                </TabsTrigger>
-                <TabsTrigger value="mobile" className="flex items-center gap-2">
-                  <Smartphone className="h-4 w-4" />
-                  Mobile
-                </TabsTrigger>
-              </>
-            ) : (
-              <>
-                <TabsTrigger value="analytics" className="flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  Analytics
-                </TabsTrigger>
-                <TabsTrigger value="ai" className="flex items-center gap-2">
-                  <Brain className="h-4 w-4" />
-                  AI Engine
-                </TabsTrigger>
-                <TabsTrigger value="certifications" className="flex items-center gap-2">
-                  <Award className="h-4 w-4" />
-                  Certifications
-                </TabsTrigger>
-                <TabsTrigger value="corporate" className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  Corporate
-                </TabsTrigger>
-              </>
-            )}
-          </TabsList>
-
-          {activePhase === 'phase1' ? (
-            <>
-              <TabsContent value="progress">
-                <AdvancedProgressTracker />
-              </TabsContent>
-              <TabsContent value="social">
-                <SocialLearningHub />
-              </TabsContent>
-              <TabsContent value="mobile">
-                <MobileOptimizedLearning />
-              </TabsContent>
-            </>
-          ) : (
-            <>
-              <TabsContent value="analytics">
-                <EnterpriseAnalyticsDashboard />
-              </TabsContent>
-              <TabsContent value="ai">
-                <AIRecommendationEngine />
-              </TabsContent>
-              <TabsContent value="certifications">
-                <CertificationMarketplace />
-              </TabsContent>
-              <TabsContent value="corporate">
-                <CorporatePortal />
-              </TabsContent>
-            </>
-          )}
-        </Tabs>
+        </div>
       </section>
 
-      {/* Learning Stats */}
-      <section className="bg-muted/20 py-16">
+      {/* Audience-Specific Features */}
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Learning Impact</h2>
-            <p className="text-lg text-muted-foreground">Join thousands of learners transforming their careers</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              {audienceTypes.find(a => a.id === selectedAudience)?.description}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Discover the right learning solution for your needs
+            </p>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {learningStats.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                    <IconComponent className={`h-8 w-8 ${stat.color}`} />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {audienceTypes.find(a => a.id === selectedAudience)?.features.map((feature, index) => (
+              <Card key={index} className="text-center p-6 border-0 shadow-sm bg-muted/20">
+                <CardContent className="p-0">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                    <CheckCircle className="h-6 w-6 text-primary" />
                   </div>
-                  <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </div>
-              );
-            })}
+                  <h3 className="font-semibold mb-2">{feature}</h3>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Courses */}
+      <section className="py-16 bg-muted/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Popular Courses</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore our most popular courses from top instructors and industry experts.
+            </p>
+          </div>
+
+          <CourseGrid limit={6} />
+          
+          <div className="text-center mt-8">
+            <Link to="/learning/courses">
+              <Button variant="outline" size="lg" className="px-8">
+                View All Courses
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Learn from Top Universities Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Learn from 300+ top universities and companies
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Access world-class education from leading institutions and industry leaders
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center opacity-60">
+            {/* University/Company logos would go here */}
+            <div className="text-2xl font-bold text-muted-foreground">Stanford</div>
+            <div className="text-2xl font-bold text-muted-foreground">Yale</div>
+            <div className="text-2xl font-bold text-muted-foreground">Google</div>
+            <div className="text-2xl font-bold text-muted-foreground">IBM</div>
+            <div className="text-2xl font-bold text-muted-foreground">Microsoft</div>
+            <div className="text-2xl font-bold text-muted-foreground">Meta</div>
           </div>
         </div>
       </section>
