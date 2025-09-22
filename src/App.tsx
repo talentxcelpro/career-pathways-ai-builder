@@ -247,27 +247,14 @@ const App = () => {
                              }
                              return route === item.to;
                            });
-                          
-                         return (
-                           <Route 
-                             key={item.to} 
-                             path={item.to} 
-                             element={
-                                isLegacyPublicRoute || item.isPublic ? (
-                                  <PublicAccessGuard 
-                                    requiresAdminAccess={item.requiresAdminAccess}
-                                    isPublic={item.isPublic || isLegacyPublicRoute}
-                                  >
-                                    {item.page}
-                                  </PublicAccessGuard>
-                                ) : item.to.startsWith('/admin') ? (
-                                  <ProtectedRoute><AdminLayout>{item.page}</AdminLayout></ProtectedRoute>
-                                ) : (
-                                  <ProtectedRoute>{item.page}</ProtectedRoute>
-                                )
-                             }
-                           />
-                         );
+                           
+                          return (
+                            <Route 
+                              key={item.to} 
+                              path={item.to} 
+                              element={item.page}
+                            />
+                          );
                         })}
                        
                         {/* Legacy UUID-based profile redirects */}

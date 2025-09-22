@@ -13,8 +13,7 @@ export const marketplaceRoutes = [
     title: "Marketplace",
     to: "/marketplace",
     page: <Marketplace />,
-    isPublic: false,
-    requiresAdminAccess: true,
+    isPublic: true,
   },
   {
     title: "Services Directory",
@@ -62,14 +61,12 @@ export const marketplaceRoutes = [
     title: "Services Integration",
     to: "/services/integration",
     page: <ServicesIntegration />,
-    isPublic: false,
-    requiresAdminAccess: true,
+    isPublic: true,
   },
   {
     title: "Testing & Optimization",
     to: "/services/testing",
     page: <TestingOptimization />,
-    isPublic: false,
-    requiresAdminAccess: true,
+    isPublic: true,
   },
 ];

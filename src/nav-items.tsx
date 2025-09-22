@@ -53,7 +53,7 @@ export const campaignRoutes = [
     icon: "target",
     page: <CampaignManager />,
     description: "Launch and manage content & outreach campaigns",
-    requiresAdminAccess: true
+    isPublic: true
   }
 ];
 
@@ -115,7 +115,7 @@ export const linkedInToolsRoutes = [
     icon: "linkedin",
     page: <LinkedInToolsHub />,
     description: "Advanced LinkedIn data management and automation",
-    requiresAdminAccess: true
+    isPublic: true
   }
 ];
 
