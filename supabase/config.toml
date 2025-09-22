@@ -1,14 +1,5 @@
 project_id = "dthlgsnakhoftinssokm"
 
-[functions.scrape-content]
-verify_jwt = false
-
-[functions.image-proxy]
-verify_jwt = false
-
-[functions.youtube-integration]
-verify_jwt = false
-
 [api]
 enabled = true
 port = 54321
@@ -28,187 +19,177 @@ password_min_length = 8
 security_password_change_confirm = true
 security_update_password_require_reauthentication = true
 
-# Essential functions only
-[functions.ai-agent-admin-trigger]
+# Core Infrastructure Functions
+[functions.health-check]
 verify_jwt = false
 
-[functions.bot-social-posts]
+[functions.admin-health-check]
+verify_jwt = false
+
+[functions.get-token-balance]
+verify_jwt = false
+
+[functions.initialize-user-txc]
+verify_jwt = false
+
+[functions.storage-proxy]
+verify_jwt = false
+
+# Authentication & Security
+[functions.auth-service-root]
+verify_jwt = false
+
+[functions.secure-admin-validation]
+verify_jwt = false
+
+[functions.get-realtime-token]
+verify_jwt = false
+
+# Email System (Unified)
+[functions.unified-email-service]
 verify_jwt = false
 
 [functions.process-email-queue]
 verify_jwt = false
 
-# AI Content Generation Functions
-[functions.ai-comprehensive]
+[functions.end-to-end-email-test]
 verify_jwt = false
 
-[functions.ai-content-generator]
+[functions.optimize-email-queue]
 verify_jwt = false
 
-[functions.daily-content-factory]
+[functions.send-email-notification]
 verify_jwt = false
 
-[functions.health-check]
+[functions.email-webhook]
 verify_jwt = false
 
-# Content queue processors (both names supported)
-[functions.content-queue-processor]
-verify_jwt = false
-
-[functions.content_queue_processor]
-verify_jwt = false
-
-# Job import functions
-[functions.adzuna-job-importer]
-verify_jwt = false
-
-[functions.bulk-job-upload]
-verify_jwt = false
-
-# Automation and AI agent functions
-[functions.ai-agent-trigger-automation]
-verify_jwt = false
-
+# AI & Content Generation
 [functions.ai-agent]
 verify_jwt = false
 
 [functions.ai-chat]
 verify_jwt = false
 
-# Backlink System Functions
-[functions.backlink-prospecting]
+[functions.ai-comprehensive]
 verify_jwt = false
 
-[functions.backlink-content-generator]
+[functions.ai-content-generator]
 verify_jwt = false
 
-[functions.backlink-outreach]
+[functions.ai-resume-parser]
 verify_jwt = false
 
-[functions.backlink-monitor]
-verify_jwt = false
-
-[functions.send-email-smtp]
-verify_jwt = false
-
-# Unified CV Database Functions
-[functions.cv-search]
-verify_jwt = false
-
-[functions.sync-candidates]
-verify_jwt = false
-
-[functions.bulk-download-cvs]
-verify_jwt = false
-
-# Resume Functions
 [functions.ai-ats-analyzer]
 verify_jwt = false
 
 [functions.ai-resume-content]
 verify_jwt = false
 
-[functions.ai-resume-parser]
+# Job Management
+[functions.adzuna-job-importer]
 verify_jwt = false
 
-# News automation functions
+[functions.bulk-job-upload-v2]
+verify_jwt = false
+
+[functions.job-quality-checker]
+verify_jwt = false
+
+[functions.job-expiry-cleanup]
+verify_jwt = false
+
+[functions.linkedin-job-scraper]
+verify_jwt = false
+
+# CV & Resume Processing
+[functions.cv-search]
+verify_jwt = false
+
+[functions.cv-parser]
+verify_jwt = false
+
+[functions.bulk-download-cvs]
+verify_jwt = false
+
+[functions.comprehensive-resume-extractor]
+verify_jwt = false
+
+[functions.record-resume-download]
+verify_jwt = false
+
+# Payment & TXC System
+[functions.razorpay-create-order]
+verify_jwt = false
+
+[functions.razorpay-verify-payment]
+verify_jwt = false
+
+[functions.process-txc-purchase]
+verify_jwt = false
+
+[functions.txc-unified-purchase]
+verify_jwt = false
+
+[functions.claim-daily-bonus]
+verify_jwt = false
+
+# News & Content
 [functions.news-feed-automation]
 verify_jwt = false
 
-[functions.trigger-news-now]
+[functions.content-queue-processor]
 verify_jwt = false
 
-# Email Notifications Function
-[functions.send-email-notification]
+[functions.daily-content-factory]
 verify_jwt = false
 
-[functions.send-email-smtp]
+[functions.bot-social-posts]
 verify_jwt = false
 
-# Storage proxy for public media (used by cdn.talentxcel.in fallback)
-[functions.storage-proxy]
+# SEO & Analytics
+[functions.seo-site-analyzer]
 verify_jwt = false
 
-# Phase 3: Advanced AI SEO Functions
-[functions.ai-seo-content-generator]
-verify_jwt = false
-
-[functions.seo-rank-predictor]
-verify_jwt = false
-
-[functions.seo-automation-engine]
-verify_jwt = false
-
-[functions.white-label-reports]
-verify_jwt = false
-
-[functions.enhanced-sitemap]
-verify_jwt = false
-
-[functions.backlink-automation]
-verify_jwt = false
-
-[functions.competitor-intelligence]
-verify_jwt = false
-
-[functions.url-metadata]
-verify_jwt = false
-
-# Phase 4: Enterprise Integration & Analytics
 [functions.google-analytics-integration]
-verify_jwt = false
-
-[functions.seo-automation-scheduler]
-verify_jwt = false
-
-[functions.webhook-notifications]
-verify_jwt = false
-
-[functions.enterprise-reporting]
-verify_jwt = false
-
-[functions.international-seo-manager]
-verify_jwt = false
-
-# Function Monitoring & News System
-[functions.function-health-monitor]
-verify_jwt = false
-
-[functions.generate-rss-feed]
-verify_jwt = false
-
-[functions.google-news-sitemap]
 verify_jwt = false
 
 [functions.dynamic-sitemap]
 verify_jwt = false
 
-[functions.ping-google-sitemap]
+[functions.url-metadata]
 verify_jwt = false
 
-[functions.sitemap-index]
+# Notifications
+[functions.send-push-notification]
 verify_jwt = false
 
-[functions.sitemap-module]
+[functions.register-push-token]
 verify_jwt = false
 
-# SEO Analysis Functions
-[functions.seo-site-analyzer]
+[functions.webhook-notifications]
 verify_jwt = false
 
-[functions.seo-content-optimizer]
+# Utilities
+[functions.scrape-content]
 verify_jwt = false
 
-# Phase 3: Advanced SEO Integration
-[functions.google-search-console]
+[functions.image-proxy]
 verify_jwt = false
 
-[functions.seo-analytics-integration]
+[functions.qr-generator]
 verify_jwt = false
 
-# Phase 4: Enterprise SEO Automation
-[functions.ml-rank-predictor]
+# Agent System
+[functions.ai-agent-admin-trigger]
 verify_jwt = false
 
-[functions.seo-automation-engine]
+[functions.agent-worker]
+verify_jwt = false
+
+# LinkedIn Integration
+[functions.bulk-linkedin-import]
+verify_jwt = false
+
+[functions.linkedin-profile-enricher]
 verify_jwt = false
