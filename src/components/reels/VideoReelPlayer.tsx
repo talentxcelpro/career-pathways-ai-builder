@@ -28,17 +28,32 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
     const video = videoRef.current;
     if (!video) return;
 
-    if (isActive) {
-      video.play().catch(() => {
-        // Handle autoplay restrictions
-        video.muted = true;
-        video.play().catch(() => setError(true));
-      });
-    } else {
-      video.pause();
-      video.currentTime = 0;
-    }
-  }, [isActive]);
+    const playVideo = async () => {
+      try {
+        if (isActive) {
+          video.muted = muted;
+          await video.play();
+        } else {
+          video.pause();
+          video.currentTime = 0;
+        }
+      } catch (error) {
+        console.error('Video play error:', error);
+        if (isActive) {
+          // Try with muted for autoplay restrictions
+          video.muted = true;
+          try {
+            await video.play();
+          } catch (mutedError) {
+            console.error('Muted video play error:', mutedError);
+            setError(true);
+          }
+        }
+      }
+    };
+
+    playVideo();
+  }, [isActive, muted]);
 
   useEffect(() => {
     const video = videoRef.current;
