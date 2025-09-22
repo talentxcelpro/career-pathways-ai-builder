@@ -47,9 +47,12 @@ export const TXCOnlyIndicator: React.FC<{
           <p className="text-sm text-green-600">Experience the future of digital value</p>
         </div>
       </div>
-      <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
-        ₹1 = 1 TXC
-      </Badge>
+      <div className="flex flex-col items-center gap-1">
+        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
+          ₹1 = 1 TXC = $0.012
+        </Badge>
+        <span className="text-xs text-green-600 font-medium">Trading Q2 2025</span>
+      </div>
     </div>
   );
 };

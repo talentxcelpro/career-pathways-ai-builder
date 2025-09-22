@@ -17,12 +17,18 @@ export const TXCOnlyNavIndicator: React.FC = () => {
         </div>
         <div className="text-sm">
           <p className="font-semibold text-green-800">TXC Only Platform</p>
-          <p className="text-xs text-green-600">₹1 = 1 TXC</p>
+          <p className="text-xs text-green-600">₹1 = 1 TXC = $0.012</p>
+          <p className="text-xs text-green-500 font-medium">Exchanges Q2 2025</p>
         </div>
       </div>
-      <Badge className="bg-green-600 text-white text-xs">
-        {availableBalance.toLocaleString()} TXC
-      </Badge>
+      <div className="text-right">
+        <Badge className="bg-green-600 text-white text-xs">
+          {availableBalance.toLocaleString()} TXC
+        </Badge>
+        <p className="text-xs text-green-600 mt-1">
+          ${(availableBalance * 0.012).toFixed(2)} USD
+        </p>
+      </div>
     </div>
   );
 };

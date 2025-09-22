@@ -160,16 +160,29 @@ export const TXCEnhancedBalance: React.FC = () => {
                   </div>
                   <p className="text-sm text-amber-600/80">Available Balance</p>
                   
-                  {/* Live Price Teaser */}
+                  {/* USD Value & Exchange Info */}
                   <motion.div 
-                    className="mt-3 px-3 py-1 bg-amber-50/50 dark:bg-amber-900/10 rounded-full border border-amber-200/30"
+                    className="mt-3 space-y-2"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <p className="text-xs text-amber-700/80 dark:text-amber-400/80">
-                      💰 <strong>Current Rate:</strong> ₹1 = 1 TXC • <span className="text-green-600">Exchange Coming Soon!</span>
-                    </p>
+                    {/* USD Value Display */}
+                    <div className="px-3 py-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-200/30">
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-sm font-semibold text-blue-700 dark:text-blue-400">
+                          ${(availableBalance * 0.012).toFixed(2)} USD
+                        </span>
+                        <span className="text-xs text-blue-600/80">• Current Value</span>
+                      </div>
+                    </div>
+                    
+                    {/* Exchange Rate Info */}
+                    <div className="px-3 py-1 bg-amber-50/50 dark:bg-amber-900/10 rounded-full border border-amber-200/30">
+                      <p className="text-xs text-amber-700/80 dark:text-amber-400/80 text-center">
+                        💰 <strong>Rate:</strong> ₹1 = 1 TXC = $0.012 • <span className="text-green-600 font-semibold">Trading on Exchanges Q2 2025!</span>
+                      </p>
+                    </div>
                   </motion.div>
                 </div>
               </div>
