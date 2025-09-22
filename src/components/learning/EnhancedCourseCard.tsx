@@ -10,17 +10,24 @@ import { Link } from 'react-router-dom';
 interface Course {
   id: string;
   title: string;
-  description: string;
-  instructor_name: string;
-  difficulty_level: string;
-  duration_hours: number;
-  rating: number;
-  enrolled_count: number;
-  price: number;
-  is_free: boolean;
+  description?: string;
+  instructor_name?: string;
+  instructor?: string;
+  difficulty_level?: string;
+  level?: string;
+  duration_hours?: number;
+  duration?: string;
+  rating?: number;
+  enrolled_count?: number;
+  students?: number;
+  price?: number | string;
+  is_free?: boolean;
   skills_taught?: string[];
   thumbnail_url?: string;
+  thumbnail?: string;
   category?: string;
+  subcategory?: string;
+  is_active?: boolean;
   youtube_video_id?: string;
   youtube_playlist_id?: string;
   youtube_channel_name?: string;
@@ -348,7 +355,7 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         {/* Price and Action */}
         <div className="flex items-center justify-between pt-2">
           <div className={`text-subheading font-bold ${course.is_free || course.price === 0 ? 'text-success' : 'text-foreground'}`}>
-            {formatPrice(course.price, course.is_free)}
+            {formatPrice(typeof course.price === 'string' ? parseFloat(course.price) : (course.price || 0), course.is_free)}
           </div>
           
           {isEnrolled ? (

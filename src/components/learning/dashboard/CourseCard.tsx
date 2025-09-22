@@ -19,19 +19,27 @@ import { Link } from 'react-router-dom';
 interface Course {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   instructor_name?: string;
+  instructor?: string;
   instructor_bio?: string;
   duration_hours?: number;
+  duration?: string;
   rating?: number;
   enrolled_count?: number;
+  students?: number;
   skills_taught?: string[];
-  price?: number;
+  price?: number | string;
   currency?: string;
   thumbnail_url?: string;
+  thumbnail?: string;
   video_preview_url?: string;
   difficulty_level?: string;
+  level?: string;
   category?: string;
+  subcategory?: string;
+  is_active?: boolean;
+  is_free?: boolean;
 }
 
 interface CourseCardProps {
@@ -259,9 +267,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               <div className="flex items-center justify-between pt-2">
                 <div className="text-2xl font-bold text-primary">
                   {formatPrice()}
-                  {course.price && course.price > 0 && (
+                  {course.price && (typeof course.price === 'number' ? course.price > 0 : parseFloat(course.price.toString()) > 0) && (
                     <span className="text-sm text-muted-foreground line-through ml-2">
-                      ₹{(course.price * 1.5).toFixed(0)}
+                      ₹{(typeof course.price === 'number' ? course.price * 1.5 : parseFloat(course.price.toString()) * 1.5).toFixed(0)}
                     </span>
                   )}
                 </div>

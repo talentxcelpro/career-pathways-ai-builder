@@ -11,11 +11,13 @@ interface Course {
   title: string;
   description?: string;
   instructor_name?: string;
+  instructor?: string;
   rating?: number;
   enrolled_count?: number;
+  students?: number;
   duration_hours?: number;
   difficulty_level?: string;
-  price?: number;
+  price?: string | number;
   is_free?: boolean;
 }
 

@@ -8,16 +8,20 @@ import { Clock, Users, Star, Play, Award } from "lucide-react";
 interface Course {
   id: string;
   title: string;
-  description: string;
-  category: string;
-  difficulty_level: string;
-  duration_hours: number;
-  enrolled_count: number;
-  rating: number;
-  instructor_name: string;
-  skills_taught: string[];
-  is_free: boolean;
-  price: number;
+  description?: string;
+  category?: string;
+  difficulty_level?: string;
+  level?: string;
+  duration_hours?: number;
+  duration?: string;
+  enrolled_count?: number;
+  students?: number;
+  rating?: number;
+  instructor_name?: string;
+  instructor?: string;
+  skills_taught?: string[];
+  is_free?: boolean;
+  price?: number | string;
 }
 
 interface CourseCardProps {
@@ -27,24 +31,26 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEnroll }) => {
-  const formatPrice = (price: number, isFree: boolean) => {
-    if (isFree || price === 0) return "Free";
-    return `₹${price.toLocaleString('en-IN')}`;
+  const formatPrice = (price: number | string | undefined, isFree?: boolean) => {
+    if (isFree || price === 0 || price === '0') return "Free";
+    if (!price) return "Contact for price";
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    return `₹${numPrice.toLocaleString('en-IN')}`;
   };
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex justify-between items-start mb-2">
-          <Badge variant="secondary">{course.category}</Badge>
-          <Badge variant={course.difficulty_level === 'beginner' ? 'default' : 
-                 course.difficulty_level === 'intermediate' ? 'secondary' : 'destructive'}>
-            {course.difficulty_level}
+          <Badge variant="secondary">{course.category || 'General'}</Badge>
+          <Badge variant={(course.difficulty_level || course.level) === 'beginner' ? 'default' : 
+                 (course.difficulty_level || course.level) === 'intermediate' ? 'secondary' : 'destructive'}>
+            {course.difficulty_level || course.level || 'Beginner'}
           </Badge>
         </div>
         <CardTitle className="text-lg">{course.title}</CardTitle>
         <CardDescription className="line-clamp-2">
-          {course.description}
+          {course.description || 'Learn essential skills for your career growth'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -52,21 +58,21 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEn
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-1" />
-              {course.duration_hours}h
+              {course.duration || `${course.duration_hours || 2}h`}
             </div>
             <div className="flex items-center">
               <Users className="h-4 w-4 mr-1" />
-              {course.enrolled_count}
+              {course.students || course.enrolled_count || 0}
             </div>
             <div className="flex items-center">
               <Star className="h-4 w-4 mr-1 text-yellow-500" />
-              {course.rating}
+              {course.rating || 4.5}
             </div>
           </div>
           
-          {course.instructor_name && (
+          {(course.instructor_name || course.instructor) && (
             <p className="text-sm text-gray-600">
-              by {course.instructor_name}
+              by {course.instructor_name || course.instructor}
             </p>
           )}
 

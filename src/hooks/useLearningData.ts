@@ -24,13 +24,13 @@ export const useLearningData = () => {
   const filteredCourses = useMemo(() => {
     if (!Array.isArray(courses)) return [];
     
-    return courses.filter((course: Course) => {
+    return courses.filter((course) => {
       const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           course.instructor_name?.toLowerCase().includes(searchTerm.toLowerCase());
+                           (course.instructor || course.instructor_name)?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
-      const matchesLevel = selectedDifficulty === 'all' || course.difficulty_level === selectedDifficulty;
+      const matchesLevel = selectedDifficulty === 'all' || (course.level || course.difficulty_level) === selectedDifficulty;
       
       return matchesSearch && matchesCategory && matchesLevel;
     });
@@ -40,7 +40,7 @@ export const useLearningData = () => {
   const categories = useMemo(() => {
     if (!Array.isArray(courses)) return [];
     
-    const uniqueCategories = [...new Set(courses.map((course: Course) => course.category).filter(Boolean))];
+    const uniqueCategories = [...new Set(courses.map((course) => course.category).filter(Boolean))];
     return uniqueCategories as string[];
   }, [courses]);
 

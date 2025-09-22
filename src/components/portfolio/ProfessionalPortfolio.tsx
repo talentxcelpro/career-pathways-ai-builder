@@ -213,7 +213,7 @@ export const ProfessionalPortfolio: React.FC = () => {
     
     // Basic profile info (20%)
     if (user?.email) completion += 10;
-    if (user?.full_name) completion += 10;
+    if (user?.user_metadata?.full_name || user?.email) completion += 10;
     
     // Projects (30%)
     if (projects.length >= 1) completion += 15;
@@ -350,12 +350,12 @@ export const ProfessionalPortfolio: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-20 w-20">
                     <AvatarImage src="/placeholder-avatar.jpg" />
-                    <AvatarFallback>{user?.full_name?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    <AvatarFallback>{(user?.user_metadata?.full_name || user?.email || 'U')?.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}</AvatarFallback>
                   </Avatar>
                   
                   <div className="flex-1 space-y-3">
                     <div>
-                      <h3 className="text-xl font-bold">{user?.full_name || 'Your Name'}</h3>
+                      <h3 className="text-xl font-bold">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Your Name'}</h3>
                       <p className="text-muted-foreground">Full Stack Developer | React & Node.js Specialist</p>
                       <div className="flex items-center gap-2 mt-2">
                         <MapPin className="h-4 w-4 text-muted-foreground" />

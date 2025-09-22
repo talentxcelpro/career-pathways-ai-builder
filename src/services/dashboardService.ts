@@ -46,6 +46,14 @@ export interface PopularCourse {
   category: string;
   subcategory: string;
   is_active: boolean;
+  // Compatibility with Course interface
+  instructor_name?: string;
+  difficulty_level?: string;
+  duration_hours?: number;
+  enrolled_count?: number;
+  is_free?: boolean;
+  skills_taught?: string[];
+  thumbnail_url?: string;
 }
 
 // Real-time user dashboard stats

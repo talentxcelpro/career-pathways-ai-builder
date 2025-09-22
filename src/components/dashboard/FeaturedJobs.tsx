@@ -9,10 +9,10 @@ import { formatSalaryRange } from "@/utils/currencyUtils";
 interface Job {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   location: string;
   employment_type: string;
-  created_at: string;
+  created_at?: string;
   salary_min?: number;
   salary_max?: number;
   skills_required?: string[];

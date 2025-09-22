@@ -249,7 +249,7 @@ export const LearningDashboard = () => {
 
           <TabsContent value="community">
             <CommunityLearning 
-              courses={filteredCourses.filter(course => course.enrolled_count > 100)}
+              courses={filteredCourses.filter(course => (course.students || course.enrolled_count || 0) > 100) as any}
               onEnroll={handleEnroll}
               onWishlist={handleWishlist}
               enrolledCourses={enrolledCourses}

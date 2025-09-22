@@ -1,19 +1,26 @@
 
-// Shared types for learning components
+// Shared types for learning components - unified with real data structure
 export interface Course {
   id: string;
   title: string;
-  description: string;
-  instructor_name: string;
-  difficulty_level: string;
-  duration_hours: number;
-  rating: number;
-  enrolled_count: number;
-  price: number;
-  is_free: boolean;
-  skills_taught: string[];
-  category: string;
-  thumbnail_url?: string;
+  description?: string;
+  instructor?: string;
+  instructor_name?: string; // Alias for instructor
+  level?: string;
+  difficulty_level?: string; // Alias for level  
+  duration?: string;
+  duration_hours?: number;
+  rating?: number;
+  students?: number;
+  enrolled_count?: number; // Alias for students
+  price?: string | number;
+  is_active?: boolean;
+  is_free?: boolean;
+  category?: string;
+  subcategory?: string;
+  thumbnail?: string;
+  thumbnail_url?: string; // Alias for thumbnail
+  skills_taught?: string[];
 }
 
 export interface LearningPath {

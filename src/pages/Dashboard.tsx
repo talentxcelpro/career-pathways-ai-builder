@@ -10,6 +10,7 @@ import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { useJobsRealtime } from '@/hooks/useRealtimeData';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
+import { useAuth } from '@/contexts/AuthContext';
 import { realDataService } from '@/utils/realDataService';
 import { updateMetaTags } from '@/utils/metaTags';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,13 +23,15 @@ import { TrendingUp, Clock, Target, BookOpen, Briefcase, Users, Star, ArrowRight
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   // Get data with auto-refresh
   const { data: dashboardStats, isLoading: statsLoading, dataUpdatedAt: statsUpdatedAt, refetch: refetchStats } = useQuery({
-    queryKey: ['dashboard_stats'],
-    queryFn: realDataService.getDashboardStats,
+    queryKey: ['dashboard_stats', user?.id],
+    queryFn: () => realDataService.getDashboardStats(user?.id),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: !!user,
   });
 
   const { data: featuredJobs = [], isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
