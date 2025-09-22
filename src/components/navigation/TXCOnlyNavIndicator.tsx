@@ -18,7 +18,7 @@ export const TXCOnlyNavIndicator: React.FC = () => {
         <div className="text-sm">
           <p className="font-semibold text-green-800">TXC Only Platform</p>
           <p className="text-xs text-green-600">₹1 = 1 TXC = $0.012</p>
-          <p className="text-xs text-green-500 font-medium">Exchanges Q2 2025</p>
+          <p className="text-xs text-green-500 font-medium">Exchanges Q2 2026</p>
         </div>
       </div>
       <div className="text-right">

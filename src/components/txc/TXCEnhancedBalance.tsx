@@ -180,7 +180,7 @@ export const TXCEnhancedBalance: React.FC = () => {
                     {/* Exchange Rate Info */}
                     <div className="px-3 py-1 bg-amber-50/50 dark:bg-amber-900/10 rounded-full border border-amber-200/30">
                       <p className="text-xs text-amber-700/80 dark:text-amber-400/80 text-center">
-                        💰 <strong>Rate:</strong> ₹1 = 1 TXC = $0.012 • <span className="text-green-600 font-semibold">Trading on Exchanges Q2 2025!</span>
+                        💰 <strong>Rate:</strong> ₹1 = 1 TXC = $0.012 • <span className="text-green-600 font-semibold">Trading on Exchanges Q2 2026!</span>
                       </p>
                     </div>
                   </motion.div>
