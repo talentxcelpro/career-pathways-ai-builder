@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from 'react-error-boundary';
 import TestEmailSender from '@/components/dev/TestEmailSender';
+import { TestAlertSender } from '@/components/TestAlertSender';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { GoogleOneTapLogin } from '@/components/auth/GoogleOneTapLogin';
 
@@ -83,6 +84,7 @@ const Index = () => {
       )}
     >
       {enableTestSend && <TestEmailSender />}
+      <TestAlertSender />
       {!disableOneTap && !authChecked && (
         <div className="fixed top-4 right-4 z-50 bg-background/80 backdrop-blur-sm border rounded-lg px-3 py-2 text-sm text-muted-foreground">
           Looking for your Google account...

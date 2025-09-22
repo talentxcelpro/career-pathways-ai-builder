@@ -41,6 +41,7 @@ import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper"
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
 import { EmbedTestPage } from "@/components/embed-test/EmbedTestPage";
+import { TestAlertSender } from "@/components/TestAlertSender";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
