@@ -8,8 +8,10 @@ import './utils/ultraFastLoader'
 import './utils/instantLoader'
 import './utils/appleOptimizations'
 
-// Ensure React is globally available
-(window as any).React = React;
+// Ensure React is globally available and properly initialized
+if (typeof window !== 'undefined') {
+  (window as any).React = React;
+}
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
