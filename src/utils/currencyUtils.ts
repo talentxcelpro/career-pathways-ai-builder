@@ -5,22 +5,25 @@ import { formatTXCToUSD } from '@/config/constants';
 export const formatCurrency = (amount: number | null | undefined): string => {
   if (!amount) return "Not specified";
   
-  // Format for TXC token system only
-  if (amount >= 100000) {
-    return `${(amount / 100000).toFixed(1)}L TXC`;
+  // Format for INR currency system
+  if (amount >= 10000000) {
+    return `₹${(amount / 10000000).toFixed(1)} Cr`;
+  } else if (amount >= 100000) {
+    return `₹${(amount / 100000).toFixed(1)}L`;
   } else if (amount >= 1000) {
-    return `${(amount / 1000).toFixed(1)}K TXC`;
+    return `₹${(amount / 1000).toFixed(1)}K`;
   } else {
-    return `${amount.toLocaleString('en-IN')} TXC`;
+    return `₹${amount.toLocaleString('en-IN')}`;
   }
 };
 
-// Get USD value for TXC amount
-export const getTXCUSDValue = (txcAmount: number): string => {
-  return formatTXCToUSD(txcAmount);
+// Get USD value for INR amount (conversion rate: 1 USD = 83 INR approximately)
+export const getINRUSDValue = (inrAmount: number): string => {
+  const usdAmount = inrAmount / 83;
+  return `$${usdAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 };
 
-// Enhanced TXC range formatting with frequency support
+// Enhanced INR range formatting with frequency support
 export const formatSalaryRange = (
   min?: number, 
   max?: number, 
@@ -30,65 +33,54 @@ export const formatSalaryRange = (
 ): string => {
   // First check if we have a salary_range string (for quality jobs)
   if (salaryRange && salaryRange.trim() !== '') {
-    // Check for unrealistic salary ranges and correct them
-    if (salaryRange.includes('Cr') || salaryRange.includes('crore')) {
-      // Convert unrealistic crore amounts to reasonable TXC
-      const crMatch = salaryRange.match(/(\d+(?:\.\d+)?)-?(\d+(?:\.\d+)?)?.*?Cr/i);
-      if (crMatch) {
-        const min = parseFloat(crMatch[1]);
-        const max = crMatch[2] ? parseFloat(crMatch[2]) : min;
-        // Convert from crores to reasonable TXC (multiply by 10000)
-        const reasonableMin = Math.max(30000, Math.min(min * 10000, 500000));
-        const reasonableMax = Math.max(reasonableMin + 50000, Math.min(max * 10000, 800000));
-        return `${reasonableMin.toLocaleString()}-${reasonableMax.toLocaleString()} TXC`;
-      }
+    // Return salary range as-is if it already contains INR symbols
+    if (salaryRange.includes('₹') || salaryRange.includes('INR') || salaryRange.includes('Rs')) {
+      return salaryRange;
     }
-    // Convert any legacy currency symbols to TXC (production cleanup)
-    return salaryRange.replace(/₹|Rs\.?|INR|LPA|L/gi, 'TXC').replace(/\s+/g, ' ').trim();
+    // Convert TXC references back to INR for display
+    return salaryRange.replace(/TXC/gi, '₹').replace(/\s+/g, ' ').trim();
   }
   
   // Fallback to min/max if no salary_range
-  if (!min && !max) return "TXC not specified";
+  if (!min && !max) return "Salary not specified";
   
-  // Fix unrealistic values (convert to reasonable TXC amounts)
-  if (min && min > 10000000) { // > 1 crore, convert to TXC
-    min = Math.max(30000, Math.min(min / 100, 500000)); // Convert to 30K-500K TXC range
-  }
-  if (max && max > 10000000) { // > 1 crore, convert to TXC
-    max = Math.max(50000, Math.min(max / 100, 800000)); // Convert to 50K-800K TXC range
-  }
+  // Use values as-is for INR display (no conversion needed)
+  const minValue = min || 0;
+  const maxValue = max || 0;
   
   const formatAmount = (amount: number) => {
     if (frequency === 'hourly') {
-      return `${amount.toLocaleString('en-IN')} TXC/hr`;
+      return `₹${amount.toLocaleString('en-IN')}/hr`;
     }
     
     if (frequency === 'monthly') {
       if (amount >= 100000) {
-        return `${(amount / 100000).toFixed(1)}L TXC/month`;
+        return `₹${(amount / 100000).toFixed(1)}L/month`;
       } else if (amount >= 1000) {
-        return `${(amount / 1000).toFixed(0)}K TXC/month`;
+        return `₹${(amount / 1000).toFixed(0)}K/month`;
       } else {
-        return `${amount.toLocaleString('en-IN')} TXC/month`;
+        return `₹${amount.toLocaleString('en-IN')}/month`;
       }
     }
     
     // Yearly format (default)
     if (lpa) {
-      if (amount >= 100000) {
-        return `${(amount / 100000).toFixed(1)}L TXC`;
+      if (amount >= 10000000) {
+        return `₹${(amount / 10000000).toFixed(1)} Cr`;
+      } else if (amount >= 100000) {
+        return `₹${(amount / 100000).toFixed(1)}L`;
       } else if (amount >= 1000) {
-        return `${(amount / 1000).toFixed(0)}K TXC`;
+        return `₹${(amount / 1000).toFixed(0)}K`;
       } else {
-        return `${amount} TXC`;
+        return `₹${amount}`;
       }
     }
     return formatCurrency(amount);
   };
   
-  if (min && max) return `${formatAmount(min)} - ${formatAmount(max)} TXC`;
-  if (min) return `${formatAmount(min)}+ TXC`;
-  return `Up to ${formatAmount(max)} TXC`;
+  if (minValue && maxValue) return `${formatAmount(minValue)} - ${formatAmount(maxValue)}`;
+  if (minValue) return `${formatAmount(minValue)}+`;
+  return `Up to ${formatAmount(maxValue)}`;
 };
 
 // Normalize salary to annual for comparison
@@ -123,11 +115,13 @@ export const detectSalaryFrequency = (text: string): 'hourly' | 'monthly' | 'yea
 };
 
 export const formatCompactCurrency = (amount: number): string => {
-  if (amount >= 100000) {
-    return `${(amount / 100000).toFixed(0)}L TXC`;
+  if (amount >= 10000000) {
+    return `₹${(amount / 10000000).toFixed(0)} Cr`;
+  } else if (amount >= 100000) {
+    return `₹${(amount / 100000).toFixed(0)}L`;
   } else if (amount >= 1000) {
-    return `${(amount / 1000).toFixed(0)}K TXC`;
+    return `₹${(amount / 1000).toFixed(0)}K`;
   } else {
-    return `${amount} TXC`;
+    return `₹${amount}`;
   }
 };
