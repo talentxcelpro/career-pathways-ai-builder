@@ -27317,6 +27317,7 @@ export type Database = {
           to_user_id: string | null
           token_type: string | null
           transaction_type: string
+          user_id: string | null
         }
         Insert: {
           amount: number
@@ -27332,6 +27333,7 @@ export type Database = {
           to_user_id?: string | null
           token_type?: string | null
           transaction_type: string
+          user_id?: string | null
         }
         Update: {
           amount?: number
@@ -27347,6 +27349,7 @@ export type Database = {
           to_user_id?: string | null
           token_type?: string | null
           transaction_type?: string
+          user_id?: string | null
         }
         Relationships: [
           {
