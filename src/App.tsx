@@ -169,8 +169,20 @@ const publicRoutes = [
 
 const App = () => {
   // Initialize performance optimizations on app start
-  React.useEffect(() => {
-    initBundleOptimizations();
+  useEffect(() => {
+    try {
+      // Apply color scheme from localStorage
+      const savedColorScheme = localStorage.getItem('colorScheme');
+      if (savedColorScheme) {
+        document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+      }
+      
+      // Initialize performance optimizations
+      initBundleOptimizations();
+      initializePerformanceOptimizations();
+    } catch (error) {
+      console.error('Error in App initialization:', error);
+    }
   }, []);
 
   // Check if this is a subdomain - simplified as fallback only
@@ -427,30 +439,4 @@ const App = () => {
   );
 };
 
-// Initialize performance optimizations - Wrapped with error boundary to prevent React hook issues
-const AppWrapper = () => {
-  // Add null check for React to prevent "Cannot read properties of null" error
-  if (typeof React === 'undefined' || React === null) {
-    console.error('React is not properly loaded');
-    return <div>Loading application...</div>;
-  }
-
-  React.useEffect(() => {
-    try {
-      // Apply color scheme from localStorage
-      const savedColorScheme = localStorage.getItem('colorScheme');
-      if (savedColorScheme) {
-        document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
-      }
-      
-      // Initialize performance optimizations for better Core Web Vitals
-      initializePerformanceOptimizations();
-    } catch (error) {
-      console.error('Error in AppWrapper useEffect:', error);
-    }
-  }, []);
-
-  return <App />;
-};
-
-export default AppWrapper;
+export default App;
