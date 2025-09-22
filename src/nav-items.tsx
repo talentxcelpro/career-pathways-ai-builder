@@ -41,7 +41,8 @@ export const aiAgentRoutes = [
     to: "/ai-agent",
     icon: "brain",
     page: <AIAgentDashboard />,
-    description: "Your personalized AI career companion"
+    description: "Your personalized AI career companion",
+    isPublic: true
   }
 ];
 
@@ -77,8 +78,7 @@ export const mobileSearchRoutes = [
     icon: "search",
     page: <MobileSearch />,
     description: "Mobile search interface",
-    isPublic: true,
-    requiresAuth: true
+    isPublic: true
   }
 ];
 
@@ -90,7 +90,7 @@ export const notificationRoutes = [
     icon: "bell",
     page: <NotificationsPage />,
     description: "Real-time notifications and alerts",
-    requiresAuth: true
+    isPublic: true
   }
 ];
 
@@ -102,8 +102,7 @@ export const servicesRoutes = [
     icon: "briefcase",
     page: <TalentXcelServices />,
     description: "Strategic Talent Solutions for the Future of Work",
-    isPublic: true,
-    requiresAuth: false
+    isPublic: true
   }
 ];
 

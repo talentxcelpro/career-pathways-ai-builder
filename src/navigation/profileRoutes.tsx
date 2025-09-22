@@ -38,8 +38,7 @@ export const profileRoutes = [
     icon: "user",
     page: <SlugProfile />,
     description: "View user profile by username",
-    isPublic: true,
-    requiresAuth: false
+    isPublic: true
   },
   {
     title: "User Profile (Redirect)",
@@ -47,80 +46,79 @@ export const profileRoutes = [
     icon: "user",
     page: <ProfileUrlRedirect />, // Redirects to /:username or /:slug
     description: "Legacy user route - redirects to username",
-    isPublic: true,
-    requiresAuth: false
+    isPublic: true
   },
   {
     title: "TalentXcel Profile",
     to: "/profile/talentxcel",
     page: <TalentXcelProfile />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile",
     to: "/profile",
     icon: <User className="h-4 w-4" />,
     page: <ProfilePage />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Public Profile by Username",
     to: "/profile/:username",
     page: <UsernameProfile />,
-    requiresAuth: false, // SEO-friendly username route
+    isPublic: true,
   },
   {
     title: "Profile Edit",
     to: "/profile/edit",
     page: <ProfileEdit />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Resume",
     to: "/profile/resume",
     page: <ProfileResume />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Cover Letter",
     to: "/profile/cover-letter",
     page: <ProfileCoverLetter />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Preferences",
     to: "/profile/preferences",
     page: <ProfilePreferences />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Settings",
     to: "/profile/settings",
     page: <ProfileSettings />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Media",
     to: "/profile/media",
     page: <ProfileMedia />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Analytics",
     to: "/profile/analytics",
     page: <ProfileAnalytics />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Documents",
     to: "/profile/documents",
     page: <ProfileDocuments />,
-    requiresAuth: true,
+    isPublic: true,
   },
   {
     title: "Profile Branding",
     to: "/profile/branding",
     page: <ProfileBranding />,
-    requiresAuth: true,
+    isPublic: true,
   },
 ];
