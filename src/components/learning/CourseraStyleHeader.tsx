@@ -4,13 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Search, ChevronDown, User, Building, GraduationCap, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -73,45 +71,39 @@ export const CourseraStyleHeader: React.FC = () => {
           </Link>
 
           {/* Audience Navigation */}
-          <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList className="flex space-x-8">
-              {audienceOptions.map((option) => {
-                const IconComponent = option.icon;
-                return (
-                  <NavigationMenuItem key={option.id}>
-                    <NavigationMenuTrigger 
-                      className={cn(
-                        "bg-transparent hover:bg-transparent text-foreground hover:text-primary font-medium px-0",
-                        activeAudience === option.id && "text-primary"
-                      )}
-                      onMouseEnter={() => setActiveAudience(option.id)}
+          <div className="hidden lg:flex space-x-8">
+            {audienceOptions.map((option) => {
+              const IconComponent = option.icon;
+              return (
+                <DropdownMenu key={option.id}>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost"
+                      className="flex items-center space-x-2 text-foreground hover:text-primary font-medium"
                     >
-                      <div className="flex items-center space-x-2">
-                        <IconComponent className={cn("h-4 w-4", option.color)} />
-                        <span>{option.title}</span>
+                      <IconComponent className={cn("h-4 w-4", option.color)} />
+                      <span>{option.title}</span>
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-80 p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className={cn("p-3 rounded-lg bg-gray-50")}>
+                        <IconComponent className={cn("h-6 w-6", option.color)} />
                       </div>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="w-80 p-6">
-                        <div className="flex items-start space-x-4">
-                          <div className={cn("p-3 rounded-lg bg-gray-50")}>
-                            <IconComponent className={cn("h-6 w-6", option.color)} />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-foreground mb-2">{option.title}</h3>
-                            <p className="text-muted-foreground text-sm mb-4">{option.description}</p>
-                            <Button asChild size="sm">
-                              <Link to={option.href}>Learn More</Link>
-                            </Button>
-                          </div>
-                        </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-foreground mb-2">{option.title}</h3>
+                        <p className="text-muted-foreground text-sm mb-4">{option.description}</p>
+                        <Button asChild size="sm">
+                          <Link to={option.href}>Learn More</Link>
+                        </Button>
                       </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            })}
+          </div>
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
@@ -133,42 +125,38 @@ export const CourseraStyleHeader: React.FC = () => {
         {/* Search Bar Section */}
         <div className="pb-4">
           <div className="flex items-center justify-between">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-blue-600 text-white hover:bg-blue-700 font-medium">
-                    <div className="flex items-center space-x-2">
-                      <span>Explore</span>
-                      <ChevronDown className="h-4 w-4" />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-blue-600 text-white hover:bg-blue-700 font-medium">
+                  <div className="flex items-center space-x-2">
+                    <span>Explore</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-96 p-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-semibold mb-3">Popular Skills</h4>
+                    <div className="space-y-2 text-sm">
+                      <Link to="/learning/courses?category=data-science" className="block text-muted-foreground hover:text-primary">Data Science</Link>
+                      <Link to="/learning/courses?category=machine-learning" className="block text-muted-foreground hover:text-primary">Machine Learning</Link>
+                      <Link to="/learning/courses?category=web-development" className="block text-muted-foreground hover:text-primary">Web Development</Link>
+                      <Link to="/learning/courses?category=cloud-computing" className="block text-muted-foreground hover:text-primary">Cloud Computing</Link>
                     </div>
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="w-96 p-6">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-semibold mb-3">Popular Skills</h4>
-                          <div className="space-y-2 text-sm">
-                            <Link to="/learning/courses?category=data-science" className="block text-muted-foreground hover:text-primary">Data Science</Link>
-                            <Link to="/learning/courses?category=machine-learning" className="block text-muted-foreground hover:text-primary">Machine Learning</Link>
-                            <Link to="/learning/courses?category=web-development" className="block text-muted-foreground hover:text-primary">Web Development</Link>
-                            <Link to="/learning/courses?category=cloud-computing" className="block text-muted-foreground hover:text-primary">Cloud Computing</Link>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-3">Career Paths</h4>
-                          <div className="space-y-2 text-sm">
-                            <Link to="/learning/paths?role=data-scientist" className="block text-muted-foreground hover:text-primary">Data Scientist</Link>
-                            <Link to="/learning/paths?role=software-engineer" className="block text-muted-foreground hover:text-primary">Software Engineer</Link>
-                            <Link to="/learning/paths?role=product-manager" className="block text-muted-foreground hover:text-primary">Product Manager</Link>
-                            <Link to="/learning/paths?role=digital-marketer" className="block text-muted-foreground hover:text-primary">Digital Marketer</Link>
-                          </div>
-                        </div>
-                      </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-3">Career Paths</h4>
+                    <div className="space-y-2 text-sm">
+                      <Link to="/learning/paths?role=data-scientist" className="block text-muted-foreground hover:text-primary">Data Scientist</Link>
+                      <Link to="/learning/paths?role=software-engineer" className="block text-muted-foreground hover:text-primary">Software Engineer</Link>
+                      <Link to="/learning/paths?role=product-manager" className="block text-muted-foreground hover:text-primary">Product Manager</Link>
+                      <Link to="/learning/paths?role=digital-marketer" className="block text-muted-foreground hover:text-primary">Digital Marketer</Link>
                     </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Search Input */}
             <div className="flex-1 max-w-2xl mx-8">
