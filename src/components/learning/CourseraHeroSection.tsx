@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { Play, ArrowRight, Star, Users, BookOpen, Award } from 'lucide-react';
+import { Play, ArrowRight, Star, Users, BookOpen, Award, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 
 export const CourseraHeroSection: React.FC = () => {
+  const [activeFeature, setActiveFeature] = useState(0);
+  
+  const features = [
+    {
+      icon: BookOpen,
+      title: 'Expert-Led Courses',
+      description: 'Learn from top instructors at leading universities'
+    },
+    {
+      icon: Award,
+      title: 'Career Certificates',
+      description: 'Earn industry-recognized credentials'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Skill Assessment',
+      description: 'Track your progress with detailed analytics'
+    }
+  ];
+
   return (
     <section className="relative bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden">
       {/* Clean geometric background elements */}
@@ -53,56 +73,106 @@ export const CourseraHeroSection: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button 
                 size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-sm shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 hover-scale"
               >
                 Start 7-day Free Trial
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold rounded-sm"
-              >
-                or ₹13,999/year with 14-day money-back guarantee
               </Button>
             </div>
           </div>
 
-          {/* Right Content - Clean Visual */}
+          {/* Right Content - Interactive Learning Dashboard */}
           <div className="relative">
-            <div className="relative bg-white rounded-2xl p-8 shadow-2xl border">
-              {/* Clean hero visual */}
-              <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center">
-                <div className="text-center space-y-6">
-                  <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                    <Play className="h-12 w-12 text-blue-600" />
+            <div className="relative bg-white rounded-2xl p-8 shadow-2xl border animate-fade-in">
+              {/* Interactive Learning Interface */}
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-gray-900">Your Learning Journey</h3>
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                    <span className="text-sm font-medium text-gray-600">4.8</span>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-bold text-gray-900">Learn with confidence</h3>
-                    <p className="text-gray-600">Interactive courses from top universities</p>
+                </div>
+
+                {/* Interactive Feature Cards */}
+                <div className="space-y-3">
+                  {features.map((feature, index) => {
+                    const IconComponent = feature.icon;
+                    return (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
+                          activeFeature === index
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setActiveFeature(index)}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-lg ${
+                            activeFeature === index ? 'bg-blue-500' : 'bg-gray-100'
+                          }`}>
+                            <IconComponent className={`h-5 w-5 ${
+                              activeFeature === index ? 'text-white' : 'text-gray-600'
+                            }`} />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900">{feature.title}</h4>
+                            <p className="text-sm text-gray-600">{feature.description}</p>
+                          </div>
+                          <div className={`w-2 h-2 rounded-full ${
+                            activeFeature === index ? 'bg-blue-500' : 'bg-gray-300'
+                          }`}></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Progress indicators */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">Flexible schedule</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span className="text-sm text-gray-600">Verified certificate</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Floating stats - Clean design */}
-            <div className="absolute -top-4 -right-4 bg-white rounded-lg p-4 shadow-lg border">
+            {/* Floating stats - Clean design with animation */}
+            <div className="absolute -top-4 -right-4 bg-white rounded-lg p-4 shadow-lg border animate-scale-in">
               <div className="flex items-center space-x-2">
-                <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                <span className="text-sm font-semibold text-gray-900">4.8 rating</span>
+                <div className="flex text-yellow-500">
+                  {[1,2,3,4,5].map((star) => (
+                    <Star key={star} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <span className="text-sm font-semibold text-gray-900">4.8/5</span>
               </div>
             </div>
 
-            <div className="absolute -bottom-4 -left-4 bg-white rounded-lg p-4 shadow-lg border">
+            <div className="absolute -bottom-4 -left-4 bg-white rounded-lg p-4 shadow-lg border animate-fade-in" style={{animationDelay: '0.2s'}}>
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-blue-600" />
                 <span className="text-sm font-semibold text-gray-900">100M+ learners</span>
+              </div>
+            </div>
+
+            <div className="absolute top-1/2 -left-6 bg-green-50 border border-green-200 rounded-lg p-3 shadow-lg animate-fade-in" style={{animationDelay: '0.4s'}}>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-xs font-medium text-green-800">Certificate Ready</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Partner Section - Clean and Minimal */}
-        <div className="pt-20 border-t border-gray-200 mt-20">
+        <div className="pt-16 border-t border-gray-200 mt-16">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Learn from 350+ top universities and companies
@@ -115,8 +185,8 @@ export const CourseraHeroSection: React.FC = () => {
             {[
               'ILLINOIS', 'DUKE', 'GOOGLE', 'MICHIGAN', 'IBM', 'VANDERBILT'
             ].map((partner, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 w-full h-12 flex items-center justify-center border border-gray-200">
-                <div className="text-gray-600 font-semibold text-sm">{partner}</div>
+              <div key={i} className="bg-white rounded-lg p-4 w-full h-12 flex items-center justify-center border border-gray-100 hover:border-gray-200 transition-colors hover-scale">
+                <div className="text-gray-600 font-semibold text-xs">{partner}</div>
               </div>
             ))}
           </div>
