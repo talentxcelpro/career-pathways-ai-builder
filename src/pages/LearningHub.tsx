@@ -36,6 +36,8 @@ import {
   Wrench
 } from 'lucide-react';
 import { useCourses, useCourseCategories } from '@/hooks/useCourses';
+import { AdvancedProgressTracker } from '@/components/learning/AdvancedProgressTracker';
+import { SocialLearningHub } from '@/components/learning/SocialLearningHub';
 import { CourseGrid } from '@/components/learning/CourseGrid';
 
 const industryIcons = {
