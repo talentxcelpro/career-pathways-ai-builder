@@ -8960,6 +8960,39 @@ export type Database = {
           },
         ]
       }
+      course_categories: {
+        Row: {
+          course_count: number | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          course_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          course_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       course_lessons: {
         Row: {
           content: string | null
@@ -9121,6 +9154,7 @@ export type Database = {
           is_active: boolean | null
           is_free: boolean | null
           price: number | null
+          published: boolean | null
           rating: number | null
           skills_taught: string[] | null
           thumbnail_url: string | null
@@ -9143,6 +9177,7 @@ export type Database = {
           is_active?: boolean | null
           is_free?: boolean | null
           price?: number | null
+          published?: boolean | null
           rating?: number | null
           skills_taught?: string[] | null
           thumbnail_url?: string | null
@@ -9165,6 +9200,7 @@ export type Database = {
           is_active?: boolean | null
           is_free?: boolean | null
           price?: number | null
+          published?: boolean | null
           rating?: number | null
           skills_taught?: string[] | null
           thumbnail_url?: string | null
@@ -19899,6 +19935,7 @@ export type Database = {
           ip_address: unknown | null
           profile_id: string
           user_agent: string | null
+          view_type: string | null
           viewed_at: string | null
           viewer_id: string | null
         }
@@ -19907,6 +19944,7 @@ export type Database = {
           ip_address?: unknown | null
           profile_id: string
           user_agent?: string | null
+          view_type?: string | null
           viewed_at?: string | null
           viewer_id?: string | null
         }
@@ -19915,6 +19953,7 @@ export type Database = {
           ip_address?: unknown | null
           profile_id?: string
           user_agent?: string | null
+          view_type?: string | null
           viewed_at?: string | null
           viewer_id?: string | null
         }
@@ -31432,6 +31471,10 @@ export type Database = {
           title: string
         }[]
       }
+      get_current_user_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_or_admin: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -31453,6 +31496,23 @@ export type Database = {
       get_email_domain: {
         Args: { email_address: string }
         Returns: string
+      }
+      get_employer_cv_applications: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          application_id: string
+          application_source: string
+          applied_at: string
+          company_name: string
+          email: string
+          full_name: string
+          job_id: string
+          job_title: string
+          location: string
+          phone: string
+          resume_url: string
+          status: string
+        }[]
       }
       get_job_categories_with_counts: {
         Args: Record<PropertyKey, never>
@@ -32303,6 +32363,10 @@ export type Database = {
       }
       user_has_feature_access: {
         Args: { feature_name: string; user_uuid: string }
+        Returns: boolean
+      }
+      user_has_job_access: {
+        Args: { job_id_param: string }
         Returns: boolean
       }
       user_has_role: {
