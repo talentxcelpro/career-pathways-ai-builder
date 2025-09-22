@@ -68,30 +68,44 @@ export const CourseraStyleHeader: React.FC = () => {
   return (
     <>
       {/* Black Audience Navigation Bar - Coursera Style with White Text */}
-      <div style={{ backgroundColor: '#000000' }}>
+      <div 
+        style={{ 
+          backgroundColor: '#000000',
+          borderTop: 'none',
+          borderBottom: 'none'
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-12 space-x-0">
             {audienceOptions.map((option, index) => (
               <a
                 key={option.id}
                 href={option.href}
-                className="px-6 py-3 font-semibold text-sm transition-all border-b-2 border-transparent"
                 style={{ 
-                  color: '#FFFFFF',
-                  textDecoration: 'none',
-                  fontWeight: '600',
-                  display: 'block'
+                  color: '#FFFFFF !important',
+                  textDecoration: 'none !important',
+                  fontWeight: '600 !important',
+                  display: 'block',
+                  padding: '12px 24px',
+                  fontSize: '14px',
+                  borderBottom: '2px solid transparent',
+                  transition: 'all 0.3s ease',
+                  fontFamily: 'inherit'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                   e.currentTarget.style.borderBottomColor = 'rgba(255, 255, 255, 0.5)';
+                  e.currentTarget.style.color = '#FFFFFF';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent';
                   e.currentTarget.style.borderBottomColor = 'transparent';
+                  e.currentTarget.style.color = '#FFFFFF';
                 }}
               >
-                {option.title}
+                <span style={{ color: '#FFFFFF !important' }}>
+                  {option.title}
+                </span>
               </a>
             ))}
           </div>
