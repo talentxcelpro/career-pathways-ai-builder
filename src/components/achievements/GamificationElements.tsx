@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Crown, 
-  Star, 
-  Trophy, 
-  Zap, 
-  Target, 
-  Users, 
-  TrendingUp,
-  Medal,
-  Award,
-  Flame,
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTXCLeaderboard } from '@/hooks/useTXCLeaderboard';
+import {
+  Star,
+  Trophy,
+  Target,
+  Zap,
   Calendar,
+  Clock,
+  TrendingUp,
+  Users,
+  Award,
+  Crown,
+  ChevronRight,
+  RotateCcw,
+  Flame,
+  Coins,
+  Medal,
   Gift
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserLevel {
   current: number;
@@ -134,14 +141,6 @@ const challenges: Challenge[] = [
   }
 ];
 
-const leaderboard: Leaderboard[] = [
-  { rank: 1, name: 'Alex Chen', points: 15420, level: 18, change: 'same' },
-  { rank: 2, name: 'Sarah Johnson', points: 14890, level: 17, change: 'up' },
-  { rank: 3, name: 'Mike Rodriguez', points: 14200, level: 16, change: 'down' },
-  { rank: 4, name: 'You', points: 12750, level: 12, change: 'up', isCurrentUser: true },
-  { rank: 5, name: 'Emily Davis', points: 12100, level: 15, change: 'same' }
-];
-
 const getDifficultyColor = (difficulty: string) => {
   const colors = {
     easy: 'bg-green-100 text-green-700 border-green-200',
@@ -164,6 +163,8 @@ const getChangeIcon = (change: string) => {
 };
 
 export const GamificationElements: React.FC = () => {
+  const { user } = useAuth();
+  const { userContext, userRankInfo, isLoading: leaderboardLoading } = useTXCLeaderboard();
   const [activeTab, setActiveTab] = useState<'level' | 'streaks' | 'challenges' | 'leaderboard'>('level');
   const [showLevelUp, setShowLevelUp] = useState(false);
 
@@ -406,24 +407,66 @@ export const GamificationElements: React.FC = () => {
 
       {/* Leaderboard Tab */}
       {activeTab === 'leaderboard' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-amber-500" />
-              Weekly Leaderboard
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {leaderboard.map((user) => (
-                <div
-                  key={user.rank}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${
-                    user.isCurrentUser ? 'bg-primary/5 border-primary/20' : 'border-border'
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+        <motion.div
+          key="leaderboard"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="space-y-6"
+        >
+          {/* Your Position Card */}
+          {userRankInfo && (
+            <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-amber-800">
+                  <Crown className="h-5 w-5" />
+                  Your Position
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-amber-700">#{userRankInfo.rank}</div>
+                    <div className="text-sm text-amber-600">
+                      Rank #{userRankInfo.rank} of {userRankInfo.totalUsers.toLocaleString()} users
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-amber-700">{userRankInfo.percentile}%</div>
+                    <div className="text-sm text-amber-600">Top percentile</div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-amber-700">Your TXC: {userRankInfo.currentTxc.toLocaleString()}</span>
+                  <span className="text-amber-600">Lifetime: {userRankInfo.lifetimeTxc.toLocaleString()}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Full Leaderboard */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-amber-500" />
+                TXC Leaderboard
+                {leaderboardLoading && (
+                  <div className="animate-spin h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full" />
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {userContext.map((user) => (
+                  <div
+                    key={`${user.user_id}-${user.rank}`}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                      user.isCurrentUser 
+                        ? 'bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
                       user.rank === 1 ? 'bg-amber-100 text-amber-700' :
                       user.rank === 2 ? 'bg-gray-100 text-gray-700' :
                       user.rank === 3 ? 'bg-orange-100 text-orange-700' :
@@ -435,34 +478,52 @@ export const GamificationElements: React.FC = () => {
                         user.rank
                       )}
                     </div>
-                    <div>
-                      <p className={`font-medium ${user.isCurrentUser ? 'text-primary' : ''}`}>
-                        {user.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Level {user.level}
-                      </p>
+                    
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user.profile_picture_url || undefined} />
+                      <AvatarFallback>
+                        {user.isCurrentUser ? 'You' : (user.full_name?.split(' ').map(n => n[0]).join('') || '?')}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`font-medium ${user.isCurrentUser ? 'text-amber-800' : ''}`}>
+                          {user.isCurrentUser ? 'You' : user.full_name}
+                        </span>
+                        {user.isCurrentUser && (
+                          <Badge variant="secondary" className="bg-amber-100 text-amber-700">You</Badge>
+                        )}
+                      </div>
+                      <div className="text-sm text-muted-foreground flex items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Coins className="h-3 w-3" />
+                          {user.current_txc.toLocaleString()} TXC
+                        </span>
+                        {user.job_title && (
+                          <span>{user.job_title}</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
+                    
                     <div className="text-right">
-                      <p className="font-medium">{user.points.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground">points</p>
+                      <div className="text-sm font-medium">
+                        {user.lifetime_txc.toLocaleString()} TXC
+                      </div>
+                      <div className="text-xs text-muted-foreground">Lifetime</div>
                     </div>
-                    {getChangeIcon(user.change)}
+                    
+                    {getChangeIcon(user.change || 'same')}
                   </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground text-center">
-                Keep climbing! Complete challenges and earn XP to improve your ranking.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+              
+              <div className="mt-4 p-3 text-center text-sm text-muted-foreground border-t">
+                Keep earning TXC to improve your ranking! Complete challenges and activities to climb higher.
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
     </div>
   );
