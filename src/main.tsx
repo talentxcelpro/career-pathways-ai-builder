@@ -11,6 +11,7 @@ import './utils/appleOptimizations'
 // Ensure React is globally available and properly initialized
 if (typeof window !== 'undefined') {
   (window as any).React = React;
+  console.log('React version:', React.version);
 }
 
 const container = document.getElementById("root");

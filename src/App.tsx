@@ -204,7 +204,11 @@ const App = () => {
     <ReactErrorBoundary>
       <ErrorBoundary FallbackComponent={BundleErrorFallback}>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
+          <TooltipProvider 
+            delayDuration={300}
+            skipDelayDuration={100}
+            disableHoverableContent={false}
+          >
             <BrowserRouter>
               <AnalyticsProvider>
               <AuthErrorBoundary>
