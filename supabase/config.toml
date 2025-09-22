@@ -1,5 +1,5 @@
 project_id = "dthlgsnakhoftinssokm"
-# EMERGENCY: Force complete function cleanup due to resource exhaustion - 2025-09-22T16:47
+# EMERGENCY CLEANUP v2.1.0: Deploying only 42 functions, removing 200+ legacy - 2025-09-22T17:30
 
 [api]
 enabled = true
@@ -151,4 +151,11 @@ verify_jwt = false
 
 # Agent System
 [functions.agent-worker]
+verify_jwt = false
+
+# Monitoring & Cleanup
+[functions.database-cleanup]
+verify_jwt = false
+
+[functions.function-monitor]
 verify_jwt = false

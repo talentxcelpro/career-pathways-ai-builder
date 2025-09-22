@@ -5,8 +5,17 @@
 # Current function count: 42
 # Expected cleanup: Remove 200+ old functions
 # Date: 2025-09-22
-# Action: Resource exhaustion fix
+# Action: Complete resource exhaustion fix
 
 FORCE_CLEANUP=true
-DEPLOYMENT_VERSION=v2.0.0
-TIMESTAMP=2025-09-22T16:47:00Z
+DEPLOYMENT_VERSION=v2.1.0
+TIMESTAMP=2025-09-22T17:30:00Z
+CLEANUP_STATUS=INITIATED
+TARGET_FUNCTIONS=42
+LEGACY_FUNCTIONS_TO_REMOVE=200+
+
+# This deployment will:
+# 1. Deploy only the 42 functions in config.toml
+# 2. Force cleanup of all legacy functions
+# 3. Optimize database performance
+# 4. Reset resource usage counters
