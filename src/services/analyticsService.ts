@@ -216,5 +216,11 @@ export const exportAnalyticsData = async (
       exported_at: new Date().toISOString(),
       date_range: { startDate, endDate }
     };
-  }, {});
+  }, {
+    users: [],
+    jobs: [],
+    applications: [],
+    exported_at: new Date().toISOString(),
+    date_range: { startDate: '', endDate: '' }
+  });
 };

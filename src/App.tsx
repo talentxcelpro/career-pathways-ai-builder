@@ -18,6 +18,9 @@ import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
 import { BundleErrorFallback } from "./components/BundleErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
 import { HelmetProvider } from 'react-helmet-async';
+import { HealthMonitor } from '@/components/monitoring/HealthMonitor';
+import { MetaTags } from '@/components/seo/MetaTags';
+import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
@@ -388,5 +391,10 @@ const App = () => {
     </ReactErrorBoundary>
   );
 };
+
+// Initialize production optimizations
+if (typeof window !== 'undefined') {
+  initializeProductionOptimizations();
+}
 
 export default App;

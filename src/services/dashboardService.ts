@@ -152,7 +152,9 @@ export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
     if (error) throw error;
     return (data || []).map(job => ({
       ...job,
-      companies: job.companies ? job.companies : undefined
+      companies: job.companies && Array.isArray(job.companies) && job.companies.length > 0 
+        ? job.companies[0] 
+        : undefined
     }));
   }, []);
 };
