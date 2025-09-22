@@ -90,7 +90,7 @@ export const EnhancedCourseDetail: React.FC = () => {
       if (!id || !course) throw new Error('Course ID and data required');
       
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User must be authenticated');
+      if (!user) throw new Error('Please log in to enroll in courses');
       
       const { error } = await supabase
         .from('course_enrollments')
@@ -100,14 +100,15 @@ export const EnhancedCourseDetail: React.FC = () => {
           status: 'active'
         });
       
-      if (error) throw error;
+      if (error) throw new Error(error.message || 'Failed to enroll in course');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment', id] });
       toast.success('Successfully enrolled in course!');
     },
-    onError: (error) => {
-      toast.error('Failed to enroll: ' + error.message);
+    onError: (error: any) => {
+      console.error('Enrollment error:', error);
+      toast.error('Failed to enroll: ' + (error?.message || 'Unknown error'));
     }
   });
 
