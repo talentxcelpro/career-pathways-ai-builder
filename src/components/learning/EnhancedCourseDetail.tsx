@@ -21,58 +21,128 @@ export const EnhancedCourseDetail: React.FC = () => {
   const isPreview = searchParams.get('preview') === 'true';
   const queryClient = useQueryClient();
 
-  // Mock course data for now since we don't have actual Supabase data
-  const mockCourse = {
-    id: id || '',
-    title: 'UI/UX Design Fundamentals',
-    description: 'Learn the fundamentals of user interface and user experience design. This comprehensive course covers design principles, user research, wireframing, prototyping, and usability testing.',
-    instructor_name: 'Emma Thompson',
-    rating: 4.6,
-    enrolled_count: 2156,
-    duration_hours: 60,
-    difficulty_level: 'beginner',
-    price: 9999,
-    is_free: false,
-    skills_taught: ['UI Design', 'UX Research', 'Prototyping', 'Figma', 'User Testing'],
-    category: 'Design'
-  };
-
-  const mockModules = [
-    {
-      id: 1,
-      title: 'Introduction to UI/UX Design',
-      description: 'Understanding the basics of user interface and user experience design',
-      module_order: 1,
-      course_lessons: [
-        { id: 1, title: 'What is UI/UX Design?', duration_minutes: 15, lesson_order: 1 },
-        { id: 2, title: 'Design Thinking Process', duration_minutes: 20, lesson_order: 2 },
-        { id: 3, title: 'Tools Overview', duration_minutes: 25, lesson_order: 3 }
-      ]
+  // Fetch course data from Supabase
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ['course', id],
+    queryFn: async () => {
+      if (!id) throw new Error('Course ID is required');
+      
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      return data;
     },
-    {
-      id: 2,
-      title: 'User Research & Analysis',
-      description: 'Learn how to conduct user research and analyze user needs',
-      module_order: 2,
-      course_lessons: [
-        { id: 4, title: 'User Personas', duration_minutes: 30, lesson_order: 1 },
-        { id: 5, title: 'User Journey Mapping', duration_minutes: 35, lesson_order: 2 }
-      ]
+    enabled: !!id
+  });
+
+  // Fetch course modules and lessons
+  const { data: modules = [], isLoading: modulesLoading } = useQuery({
+    queryKey: ['course_modules', id],
+    queryFn: async () => {
+      if (!id) return [];
+      
+      const { data, error } = await supabase
+        .from('course_modules')
+        .select(`
+          *,
+          course_lessons (*)
+        `)
+        .eq('course_id', id)
+        .order('module_order');
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id
+  });
+
+  // Check if user is enrolled
+  const { data: enrollment } = useQuery({
+    queryKey: ['enrollment', id],
+    queryFn: async () => {
+      if (!id) return null;
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
+      const { data, error } = await supabase
+        .from('course_enrollments')
+        .select('*')
+        .eq('course_id', id)
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!id
+  });
+
+  const isEnrolled = !!enrollment;
+
+  // Enrollment mutation
+  const enrollMutation = useMutation({
+    mutationFn: async () => {
+      if (!id || !course) throw new Error('Course ID and data required');
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User must be authenticated');
+      
+      const { error } = await supabase
+        .from('course_enrollments')
+        .insert({
+          course_id: id,
+          user_id: user.id,
+          status: 'active'
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['enrollment', id] });
+      toast.success('Successfully enrolled in course!');
+    },
+    onError: (error) => {
+      toast.error('Failed to enroll: ' + error.message);
     }
-  ];
+  });
 
-  const [course] = useState(mockCourse);
-  const [modules] = useState(mockModules);
-  const [isEnrolled, setIsEnrolled] = useState(false);
-  const [userProgress] = useState<any[]>([]);
+  if (courseLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p>Loading course...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const totalLessons = modules.reduce((acc, module) => acc + module.course_lessons.length, 0);
-  const completedLessons = userProgress.filter(p => p?.is_completed).length;
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Course not found</p>
+          <Button onClick={() => navigate('/learning/courses')}>
+            Back to Courses
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const isLoading = courseLoading || modulesLoading;
+
+  const totalLessons = modules.reduce((acc, module) => acc + (module.course_lessons?.length || 0), 0);
+  const completedLessons = 0; // TODO: Implement progress tracking
   const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
   const handleEnroll = () => {
-    setIsEnrolled(true);
-    toast.success('Successfully enrolled in course!');
+    enrollMutation.mutate();
   };
 
   if (isPreview) {
@@ -94,8 +164,12 @@ export const EnhancedCourseDetail: React.FC = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className="mb-4">Course Preview</Badge>
-                <Button onClick={handleEnroll} className="bg-blue-600 hover:bg-blue-700">
-                  Enroll Now
+                <Button 
+                  onClick={handleEnroll} 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={enrollMutation.isPending}
+                >
+                  {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Now'}
                 </Button>
               </div>
               <CardTitle className="text-2xl">{course.title}</CardTitle>
@@ -153,11 +227,18 @@ export const EnhancedCourseDetail: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-center">
-                <Button onClick={handleEnroll} size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  Enroll for ₹{course.price.toLocaleString('en-IN')}
-                </Button>
-              </div>
+            <div className="text-center">
+              <Button 
+                onClick={handleEnroll} 
+                size="lg" 
+                className="bg-blue-600 hover:bg-blue-700"
+                disabled={enrollMutation.isPending}
+              >
+                {enrollMutation.isPending ? 'Enrolling...' : 
+                 course.is_free ? 'Enroll for Free' : 
+                 `Enroll for ₹${course.price?.toLocaleString('en-IN') || 0}`}
+              </Button>
+            </div>
             </CardContent>
           </Card>
         </div>
@@ -202,8 +283,15 @@ export const EnhancedCourseDetail: React.FC = () => {
             {!isEnrolled ? (
               <div className="text-center py-8">
                 <p className="text-gray-600 mb-4">Enroll in this course to access all content</p>
-                <Button onClick={handleEnroll} size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  Enroll for ₹{course.price.toLocaleString('en-IN')}
+                <Button 
+                  onClick={handleEnroll} 
+                  size="lg" 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={enrollMutation.isPending}
+                >
+                  {enrollMutation.isPending ? 'Enrolling...' : 
+                   course.is_free ? 'Enroll for Free' : 
+                   `Enroll for ₹${course.price?.toLocaleString('en-IN') || 0}`}
                 </Button>
               </div>
             ) : (
