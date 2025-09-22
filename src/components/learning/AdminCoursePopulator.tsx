@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { populateCourseContent } from '@/utils/populateCourseContent';
+import { populateMassiveCourseDatabase } from '@/utils/massiveCoursePopulator';
 import { Database, BookOpen, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -14,6 +15,17 @@ export const AdminCoursePopulator: React.FC = () => {
       toast.success('Course content populated successfully!');
     } catch (error) {
       toast.error('Failed to populate course content');
+      console.error(error);
+    }
+  };
+
+  const handlePopulateMassiveCourses = async () => {
+    try {
+      toast.info('Generating 500+ courses... This may take a few minutes.');
+      const result = await populateMassiveCourseDatabase();
+      toast.success(`Successfully created ${result.count} courses!`);
+    } catch (error) {
+      toast.error('Failed to populate massive course database');
       console.error(error);
     }
   };
@@ -34,7 +46,7 @@ export const AdminCoursePopulator: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="font-semibold">10 Courses</div>
+            <div className="font-semibold">500+ Courses</div>
             <div className="text-sm text-gray-600">Complete curriculum</div>
           </div>
           <div className="text-center p-4 bg-green-50 rounded-lg">
@@ -44,14 +56,20 @@ export const AdminCoursePopulator: React.FC = () => {
           </div>
           <div className="text-center p-4 bg-purple-50 rounded-lg">
             <Database className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="font-semibold">Full Content</div>
-            <div className="text-sm text-gray-600">Ready to learn</div>
+            <div className="font-semibold">LMS Integration</div>
+            <div className="text-sm text-gray-600">External platforms</div>
           </div>
         </div>
 
-        <Button onClick={handlePopulateCourses} className="w-full" size="lg">
-          Populate Course Content
-        </Button>
+        <div className="space-y-3">
+          <Button onClick={handlePopulateCourses} className="w-full" size="lg">
+            Populate Course Content (Basic)
+          </Button>
+          
+          <Button onClick={handlePopulateMassiveCourses} className="w-full" size="lg" variant="outline">
+            Generate 500+ Courses Database
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

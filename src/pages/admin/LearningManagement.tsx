@@ -10,6 +10,7 @@ import { CommunityManagement } from '@/components/admin/learning/CommunityManage
 import { LearningAnalytics } from '@/components/admin/learning/LearningAnalytics';
 import { ContentModeration } from '@/components/admin/learning/ContentModeration';
 import { LearningSettings } from '@/components/admin/learning/LearningSettings';
+import { LMSIntegration } from '@/components/learning/LMSIntegration';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BookOpen, 
@@ -21,7 +22,8 @@ import {
   BarChart3, 
   Shield,
   Settings,
-  Home
+  Home,
+  Database
 } from 'lucide-react';
 
 const LearningManagement = () => {
@@ -37,6 +39,7 @@ const LearningManagement = () => {
     { id: 'community', label: 'Community', icon: MessageSquare, component: CommunityManagement },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, component: LearningAnalytics },
     { id: 'moderation', label: 'Moderation', icon: Shield, component: ContentModeration },
+    { id: 'lms', label: 'LMS Integration', icon: Database, component: LMSIntegration },
     { id: 'settings', label: 'Settings', icon: Settings, component: LearningSettings }
   ];
 
@@ -47,7 +50,7 @@ const LearningManagement = () => {
     >
       <div className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 gap-1">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
