@@ -23,6 +23,10 @@ import LearningAnalyticsPage from "../pages/learning/LearningAnalyticsPage";
 import { LearningJobPipelineDashboard } from "../pages/LearningJobPipelineDashboard";
 import { SmartLearningSystem } from "../pages/SmartLearningSystem";
 import { CompanyPartnershipPortal } from "../pages/CompanyPartnershipPortal";
+import IndividualsPage from "../pages/learning/IndividualsPage";
+import BusinessesPage from "../pages/learning/BusinessesPage";
+import UniversitiesPage from "../pages/learning/UniversitiesPage";
+import GovernmentsPage from "../pages/learning/GovernmentsPage";
 
 export const learningRoutes = [
   {
@@ -158,6 +162,30 @@ export const learningRoutes = [
     title: "Company Portal",
     to: "/learning/company-portal",
     page: <CompanyPartnershipPortal />,
+    isPublic: true,
+  },
+  {
+    title: "For Individuals",
+    to: "/learning/individuals",
+    page: <IndividualsPage />,
+    isPublic: true,
+  },
+  {
+    title: "For Businesses",
+    to: "/learning/businesses",
+    page: <BusinessesPage />,
+    isPublic: true,
+  },
+  {
+    title: "For Universities",
+    to: "/learning/universities",
+    page: <UniversitiesPage />,
+    isPublic: true,
+  },
+  {
+    title: "For Governments",
+    to: "/learning/governments",
+    page: <GovernmentsPage />,
     isPublic: true,
   },
 ];

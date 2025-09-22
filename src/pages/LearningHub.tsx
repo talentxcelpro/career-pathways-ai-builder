@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { updateMetaTags } from "@/utils/metaTags";
+import { CourseraStyleHeader } from '@/components/learning/CourseraStyleHeader';
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -120,6 +121,7 @@ export default function LearningHub() {
 
   return (
     <div className="min-h-screen bg-background">
+      <CourseraStyleHeader />
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-primary">
         <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light opacity-90"></div>
