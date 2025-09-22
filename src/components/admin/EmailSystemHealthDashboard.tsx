@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { RealDataEmailTester } from './RealDataEmailTester';
 import { 
   CheckCircle, 
   XCircle, 
@@ -369,11 +370,12 @@ export const EmailSystemHealthDashboard = () => {
 
       {/* Detailed Health Checks */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="smtp">SMTP</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="queue">Queue</TabsTrigger>
+          <TabsTrigger value="realdata">Real Data Testing</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -589,6 +591,10 @@ export const EmailSystemHealthDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="realdata" className="space-y-4">
+          <RealDataEmailTester />
         </TabsContent>
       </Tabs>
     </div>
