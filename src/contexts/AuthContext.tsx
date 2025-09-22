@@ -48,80 +48,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     let mounted = true;
     
     const initializeAuth = async () => {
+      if (!mounted) return;
+      
       try {
-        setLoading(true);
+        console.log('🔍 Starting auth check...');
         
         // Set up auth state listener FIRST
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
           async (event, session) => {
             if (!mounted) return;
             
-            if (ENV.isDevelopment) {
-              console.log('🔐 Auth state changed:', event, !!session);
-            }
+            console.log('🔐 Auth state changed:', event, !!session);
             
-            // Defer any additional Supabase calls to prevent deadlock
-            setTimeout(() => {
-              if (mounted) {
-                setSession(session);
-                setUser(session?.user ?? null);
-                setLoading(false);
-              }
-            }, 0);
+            // Only update state synchronously to prevent deadlock
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+            
+            // Handle auth events
+            if (event === 'SIGNED_IN' && session?.user) {
+              console.log('✅ User signed in successfully');
+              localStorage.removeItem('auth_redirect');
+            } else if (event === 'SIGNED_OUT') {
+              console.log('👋 User signed out');
+              setUser(null);
+              setSession(null);
+            }
           }
         );
+
+        // THEN check for existing session
+        console.log('👤 Checking existing user session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        // Store subscription for cleanup
+        if (error) {
+          console.warn('⚠️ Auth check error:', error);
+          // Don't throw on session errors - just continue without auth
+        }
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+          console.log('✅ Auth check complete:', !!session);
+        }
+
         authStateRef.current = subscription;
         
-        // THEN check for existing session with error handling
-        try {
-          const { data: { session }, error } = await supabase.auth.getSession();
-          
-          if (error) {
-            if (ENV.isDevelopment) {
-              console.warn('⚠️ Session check error:', error);
-            }
-            // Don't throw - just set to null state
-            if (mounted) {
-              setSession(null);
-              setUser(null);
-              setLoading(false);
-            }
-          } else {
-            if (mounted) {
-              if (ENV.isDevelopment) {
-                console.log('✅ Session initialized:', !!session);
-              }
-              setSession(session);
-              setUser(session?.user ?? null);
-              setLoading(false);
-            }
-          }
-        } catch (sessionError) {
-          // Handle auth session missing error gracefully
-          if (ENV.isDevelopment) {
-            console.warn('⚠️ Auth session error (handled):', sessionError);
-          }
-          if (mounted) {
-            setSession(null);
-            setUser(null);
-            setLoading(false);
-          }
-        }
+        return () => {
+          subscription.unsubscribe();
+        };
         
       } catch (error) {
-        if (ENV.isDevelopment) {
-          console.error('❌ Auth initialization failed:', error);
-        }
+        console.error('❌ Auth initialization error:', error);
         if (mounted) {
-          setSession(null);
-          setUser(null);
           setLoading(false);
+          setUser(null);
+          setSession(null);
         }
       }
     };
-
+    
     initializeAuth();
 
     return () => {
