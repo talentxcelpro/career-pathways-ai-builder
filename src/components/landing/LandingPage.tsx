@@ -6,7 +6,7 @@ import { WhyTalentXcel } from './WhyTalentXcel';
 import { CTABanner } from './CTABanner';
 import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
 
-import { AppleFooter } from './AppleFooter';
+import { LandingFooter } from './LandingFooter';
 
 // Lazy load news widget for faster initial load
 const NewsLatestWidget = React.lazy(() => 
@@ -43,6 +43,7 @@ export const LandingPage = () => {
           </div>
         </div>
       </div>
+      <LandingFooter />
     </div>
   );
 };
