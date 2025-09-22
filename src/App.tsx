@@ -357,9 +357,7 @@ const App = () => {
                       <Route path="/services/:type" element={<JobsByRole />} />
                       <Route path="/services/:type/:serviceName" element={<JobsByRole />} />
                       <Route path="/services/resume-writing/:template" element={<JobsByRole />} />
-                      <Route path="/learning/:category" element={<JobsByRole />} />
-                      <Route path="/learning/:category/:courseName" element={<JobsByRole />} />
-                      <Route path="/learning/paths/:skill" element={<JobsByRole />} />
+                       {/* Removed conflicting learning routes that were redirecting to JobsByRole */}
                       <Route path="/colleges/:location" element={<SEOCompaniesLocation />} />
                       <Route path="/colleges/:location/:collegeName" element={<SEOCompaniesLocation />} />
                       <Route path="/colleges/:location/:field" element={<SEOCompaniesLocation />} />
