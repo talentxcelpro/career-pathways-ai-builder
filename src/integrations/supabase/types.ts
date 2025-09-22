@@ -10136,6 +10136,56 @@ export type Database = {
         }
         Relationships: []
       }
+      email_automation_triggers: {
+        Row: {
+          conditions: Json | null
+          created_at: string | null
+          frequency_limit: string | null
+          id: string
+          is_enabled: boolean | null
+          priority: number | null
+          template_key: string
+          trigger_category: string
+          trigger_key: string
+          trigger_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          conditions?: Json | null
+          created_at?: string | null
+          frequency_limit?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          priority?: number | null
+          template_key: string
+          trigger_category: string
+          trigger_key: string
+          trigger_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          conditions?: Json | null
+          created_at?: string | null
+          frequency_limit?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          priority?: number | null
+          template_key?: string
+          trigger_category?: string
+          trigger_key?: string
+          trigger_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_automation_triggers_template_key_fkey"
+            columns: ["template_key"]
+            isOneToOne: false
+            referencedRelation: "email_templates_v2"
+            referencedColumns: ["template_key"]
+          },
+        ]
+      }
       email_config_settings: {
         Row: {
           created_at: string | null
@@ -10617,6 +10667,57 @@ export type Database = {
           subject?: string
           template_type?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      email_templates_v2: {
+        Row: {
+          approved_by: string | null
+          category: string
+          created_at: string | null
+          created_by: string | null
+          html_template: string
+          id: string
+          is_active: boolean | null
+          subject_template: string
+          template_key: string
+          template_name: string
+          text_template: string | null
+          updated_at: string | null
+          variables: Json | null
+          version: number | null
+        }
+        Insert: {
+          approved_by?: string | null
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          html_template: string
+          id?: string
+          is_active?: boolean | null
+          subject_template: string
+          template_key: string
+          template_name: string
+          text_template?: string | null
+          updated_at?: string | null
+          variables?: Json | null
+          version?: number | null
+        }
+        Update: {
+          approved_by?: string | null
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          html_template?: string
+          id?: string
+          is_active?: boolean | null
+          subject_template?: string
+          template_key?: string
+          template_name?: string
+          text_template?: string | null
+          updated_at?: string | null
+          variables?: Json | null
+          version?: number | null
         }
         Relationships: []
       }
