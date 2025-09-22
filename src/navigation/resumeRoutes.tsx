@@ -144,6 +144,5 @@ export const resumeRoutes = [
     to: "/resume/editor/:id",
     page: <ErrorBoundary><ResumeEditorV1 /></ErrorBoundary>,
     isPublic: true,
-    isPublic: true,
   },
 ];
