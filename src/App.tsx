@@ -27,8 +27,6 @@ import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 // import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
-import { initializePerformanceOptimizations } from "@/utils/performanceOptimizer";
-import { initBundleOptimizations } from "@/utils/bundleOptimizer";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
 import { SEOJobsRoleLocation } from "@/components/seo/SEOJobsRoleLocation";
@@ -40,9 +38,6 @@ import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
-import { EmbedTestPage } from "@/components/embed-test/EmbedTestPage";
-import { TestAlertSender } from "@/components/TestAlertSender";
-import { EmailSystemHealthDashboard } from "@/components/admin/EmailSystemHealthDashboard";
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -111,7 +106,7 @@ import Services from "./pages/Services";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { StableContainer } from "@/utils/layoutOptimizer";
 import "@/utils/flickerFix";
-import { performanceOptimizer } from "@/utils/performanceOptimizer.v2";
+import { performanceCore } from "@/utils/performanceCore";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -180,8 +175,7 @@ const App = () => {
       }
       
       // Initialize performance optimizations
-      initBundleOptimizations();
-      initializePerformanceOptimizations();
+      performanceCore.init();
     } catch (error) {
       console.error('Error in App initialization:', error);
     }
@@ -270,7 +264,7 @@ const App = () => {
                           } />
                            {/* Career Platform feature routes */}
                            <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
-                           <Route path="/embed-test" element={<EmbedTestPage />} />
+                           {/* <Route path="/embed-test" element={<EmbedTestPage />} /> */}
                           <Route path="/career-intelligence" element={<AICareerIntelligence />} />
                           <Route path="/skills-assessment" element={<SkillsGap />} />
                           <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
@@ -298,7 +292,7 @@ const App = () => {
                         <Route path="/resume/templates" element={<ResumeTemplates />} />
                         <Route path="/resume/edit/:id" element={<ResumeEdit />} />
                         <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
-                         <Route path="/admin/email-health" element={<AdminLayout><EmailSystemHealthDashboard /></AdminLayout>} />
+                         {/* <Route path="/admin/email-health" element={<AdminLayout><EmailSystemHealthDashboard /></AdminLayout>} /> */}
                          <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
                         <Route path="/talent-database" element={<AdminLayout><TalentDatabase /></AdminLayout>} />
                         <Route path="/admin/security" element={<AdminLayout><SecurityCenter /></AdminLayout>} />

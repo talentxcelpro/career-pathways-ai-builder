@@ -2,15 +2,11 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
-import { useMemoryOptimization } from '@/hooks/useMemoryOptimization';
+import { usePerformance } from '@/hooks/usePerformance';
 
 export const PerformanceStatusPanel: React.FC = () => {
-  const { vitals, getMemoryUsage } = usePerformanceMonitor('PerformanceStatusPanel');
-  const { getMemoryStats } = useMemoryOptimization();
-
-  const memoryUsage = getMemoryUsage();
-  const memoryStats = getMemoryStats();
+  const { getMetrics } = usePerformance({ componentName: 'PerformanceStatusPanel' });
+  const metrics = getMetrics();
 
   const getPerformanceGrade = (metric: number | undefined, thresholds: { good: number; needs: number }) => {
     if (!metric) return { grade: 'Unknown', color: 'secondary' };
@@ -21,32 +17,25 @@ export const PerformanceStatusPanel: React.FC = () => {
 
   const performanceMetrics = [
     {
-      name: 'First Contentful Paint',
-      value: vitals.fcp,
-      unit: 'ms',
-      grade: getPerformanceGrade(vitals.fcp, { good: 1800, needs: 3000 }),
-      description: 'Time until first text/image paint'
-    },
-    {
-      name: 'Largest Contentful Paint',
-      value: vitals.lcp,
-      unit: 'ms',
-      grade: getPerformanceGrade(vitals.lcp, { good: 2500, needs: 4000 }),
-      description: 'Time until largest element paint'
-    },
-    {
-      name: 'Cumulative Layout Shift',
-      value: vitals.cls,
+      name: 'Render Count',
+      value: metrics.renderCount,
       unit: '',
-      grade: getPerformanceGrade(vitals.cls, { good: 0.1, needs: 0.25 }),
-      description: 'Visual stability measure'
+      grade: getPerformanceGrade(metrics.renderCount, { good: 50, needs: 100 }),
+      description: 'Number of component renders'
     },
     {
-      name: 'First Input Delay',
-      value: vitals.fid,
+      name: 'Last Render Time',
+      value: metrics.lastRenderTime,
       unit: 'ms',
-      grade: getPerformanceGrade(vitals.fid, { good: 100, needs: 300 }),
-      description: 'Time until page becomes interactive'
+      grade: getPerformanceGrade(metrics.lastRenderTime, { good: 16, needs: 50 }),
+      description: 'Time of last render'
+    },
+    {
+      name: 'Average Render Time',
+      value: metrics.averageRenderTime,
+      unit: 'ms',
+      grade: getPerformanceGrade(metrics.averageRenderTime, { good: 16, needs: 50 }),
+      description: 'Average render time'
     }
   ];
 
@@ -78,7 +67,7 @@ export const PerformanceStatusPanel: React.FC = () => {
         </CardContent>
       </Card>
 
-      {memoryStats && (
+      {metrics.memoryUsage && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Memory Usage</CardTitle>
@@ -87,15 +76,15 @@ export const PerformanceStatusPanel: React.FC = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Used Memory</span>
-                <span>{Math.round(memoryStats.usedJSHeapSize / 1024 / 1024)} MB</span>
+                <span>{Math.round(metrics.memoryUsage / 1024 / 1024)} MB</span>
               </div>
               <Progress 
-                value={(memoryStats.usedJSHeapSize / memoryStats.jsHeapSizeLimit) * 100} 
+                value={60} 
                 className="h-2"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>0 MB</span>
-                <span>{Math.round(memoryStats.jsHeapSizeLimit / 1024 / 1024)} MB limit</span>
+                <span>Available</span>
               </div>
             </div>
           </CardContent>

@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, CheckCircle, Clock, Zap, TrendingUp } from 'lucide-react';
 import { useSEOAudit } from '@/hooks/useSEOAudit';
-import { getPerformanceScore } from '@/utils/performanceOptimizer';
+import { performanceCore } from '@/utils/performanceCore';
 
 export const SEODashboard: React.FC = () => {
   const { auditResult, isAuditing, refreshAudit } = useSEOAudit();
@@ -15,8 +15,8 @@ export const SEODashboard: React.FC = () => {
   React.useEffect(() => {
     const checkPerformance = async () => {
       try {
-        const result = await getPerformanceScore();
-        setPerformanceScore(result.score);
+        const result = await performanceCore.getMetrics();
+        setPerformanceScore(Math.round(100 - (result.lcp / 100) - (result.cls * 100)));
       } catch (error) {
         console.error('Performance check failed:', error);
       }
@@ -31,8 +31,8 @@ export const SEODashboard: React.FC = () => {
       // Run optimizations
       await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate optimization
       await refreshAudit();
-      const result = await getPerformanceScore();
-      setPerformanceScore(result.score);
+      const result = await performanceCore.getMetrics();
+      setPerformanceScore(Math.round(100 - (result.lcp / 100) - (result.cls * 100)));
     } catch (error) {
       console.error('Optimization failed:', error);
     } finally {

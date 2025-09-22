@@ -1,40 +1,46 @@
 /**
- * Optimized performance utilities - cleaner and more efficient
+ * Unified Performance Optimization System
+ * Consolidates all performance optimizers into a single, efficient system
  */
 
 interface PerformanceConfig {
   enableMonitoring: boolean;
-  throttleObservers: boolean;
-  maxCLSObservations: number;
+  enablePrefetch: boolean;
+  enableImageOptimization: boolean;
+  enableBundleOptimization: boolean;
 }
 
-class PerformanceOptimizer {
+class PerformanceCore {
   private config: PerformanceConfig = {
-    enableMonitoring: process.env.NODE_ENV === 'production',
-    throttleObservers: true,
-    maxCLSObservations: 10
+    enableMonitoring: true,
+    enablePrefetch: true,
+    enableImageOptimization: true,
+    enableBundleOptimization: true,
   };
 
   private observers: PerformanceObserver[] = [];
-  private clsObservationCount = 0;
+  private prefetchedUrls = new Set<string>();
 
   /**
-   * Initialize lightweight performance optimizations
+   * Initialize all performance optimizations
    */
   public init() {
     this.preloadCriticalResources();
     this.optimizeImages();
+    this.enableInstantNavigation();
     
     if (this.config.enableMonitoring) {
-      this.setupLightweightMonitoring();
+      this.setupPerformanceMonitoring();
     }
   }
 
   /**
-   * Preload only critical resources
+   * Preload critical resources
    */
   private preloadCriticalResources() {
-    // Preload hero image only
+    if (typeof document === 'undefined') return;
+
+    // Preload hero image
     const heroLink = document.createElement('link');
     heroLink.rel = 'preload';
     heroLink.href = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
@@ -50,52 +56,81 @@ class PerformanceOptimizer {
     fontLink.type = 'font/woff2';
     fontLink.crossOrigin = 'anonymous';
     document.head.appendChild(fontLink);
-  }
 
-  /**
-   * Optimize images without aggressive transformations
-   */
-  private optimizeImages() {
-    // Only optimize images that don't have loading attributes
-    const images = document.querySelectorAll('img:not([loading])');
-    images.forEach((img, index) => {
-      const htmlImg = img as HTMLImageElement;
-      // First 2 images load eagerly (above fold)
-      (htmlImg as any).loading = index < 2 ? 'eager' : 'lazy';
-      htmlImg.decoding = 'async';
+    // DNS prefetch
+    const prefetchDomains = [
+      'https://dthlgsnakhoftinssokm.supabase.co',
+      'https://fonts.googleapis.com',
+      'https://fonts.gstatic.com'
+    ];
+
+    prefetchDomains.forEach(domain => {
+      const link = document.createElement('link');
+      link.rel = 'dns-prefetch';
+      link.href = domain;
+      document.head.appendChild(link);
     });
   }
 
   /**
-   * Lightweight monitoring with proper cleanup
+   * Optimize images with lazy loading
    */
-  private setupLightweightMonitoring() {
+  private optimizeImages() {
+    if (typeof document === 'undefined') return;
+
+    const images = document.querySelectorAll('img:not([loading])');
+    images.forEach((img, index) => {
+      const htmlImg = img as HTMLImageElement;
+      // First 2 images load eagerly
+      (htmlImg as any).loading = index < 2 ? 'eager' : 'lazy';
+      htmlImg.decoding = 'async';
+      
+      if (index === 0) {
+        (htmlImg as any).fetchPriority = 'high';
+      }
+    });
+  }
+
+  /**
+   * Enable instant navigation with prefetching
+   */
+  private enableInstantNavigation() {
+    if (typeof document === 'undefined') return;
+
+    document.addEventListener('mouseover', (e) => {
+      const link = (e.target as Element)?.closest('a[href]') as HTMLAnchorElement;
+      if (link?.hostname === location.hostname && !this.prefetchedUrls.has(link.href)) {
+        const prefetch = document.createElement('link');
+        prefetch.rel = 'prefetch';
+        prefetch.href = link.href;
+        document.head.appendChild(prefetch);
+        this.prefetchedUrls.add(link.href);
+      }
+    }, { passive: true });
+  }
+
+  /**
+   * Setup lightweight performance monitoring
+   */
+  private setupPerformanceMonitoring() {
     if (!('PerformanceObserver' in window)) return;
 
     try {
-      // Monitor only critical metrics with throttling
+      // Monitor LCP
       const lcpObserver = new PerformanceObserver((list) => {
-        if (this.config.throttleObservers) {
-          list.getEntries().forEach((entry) => {
-            if (entry.startTime > 4000) { // Only log slow LCP
-              console.warn('Slow LCP detected:', entry.startTime);
-            }
-          });
-        }
+        list.getEntries().forEach((entry) => {
+          if (entry.startTime > 2500) {
+            console.warn('Slow LCP detected:', entry.startTime);
+          }
+        });
       });
       lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
       this.observers.push(lcpObserver);
 
-      // Monitor CLS with strict limits
+      // Monitor CLS
       const clsObserver = new PerformanceObserver((list) => {
-        if (this.clsObservationCount >= this.config.maxCLSObservations) {
-          clsObserver.disconnect();
-          return;
-        }
-
         list.getEntries().forEach((entry: any) => {
           if (!entry.hadRecentInput && entry.value > 0.1) {
-            this.clsObservationCount++;
             console.warn('Layout shift detected:', entry.value);
           }
         });
@@ -123,7 +158,7 @@ class PerformanceOptimizer {
   }
 
   /**
-   * Get simple performance metrics
+   * Get performance metrics
    */
   public async getMetrics(): Promise<{ lcp: number; cls: number }> {
     return new Promise((resolve) => {
@@ -166,22 +201,22 @@ class PerformanceOptimizer {
 }
 
 // Singleton instance
-export const performanceOptimizer = new PerformanceOptimizer();
+export const performanceCore = new PerformanceCore();
 
-// Auto-initialize when DOM is ready
+// Auto-initialize
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      performanceOptimizer.init();
+      performanceCore.init();
     });
   } else {
-    performanceOptimizer.init();
+    performanceCore.init();
   }
 }
 
 // Cleanup on page unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    performanceOptimizer.cleanup();
+    performanceCore.cleanup();
   });
 }

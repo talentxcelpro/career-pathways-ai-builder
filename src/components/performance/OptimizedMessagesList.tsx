@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import MediaPreview from "@/components/posts/MediaPreview";
 import { VirtualizedList } from "@/components/performance/VirtualizedList";
-import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
+import { usePerformance } from "@/hooks/usePerformance";
 
 interface Message {
   id: string;
@@ -138,7 +138,7 @@ const OptimizedMessagesListComponent: React.FC<OptimizedMessagesListProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Performance monitoring
-  const { getMetrics } = usePerformanceMonitoring({
+  const { getMetrics } = usePerformance({
     componentName: 'OptimizedMessagesList',
     enableLogging: process.env.NODE_ENV === 'development'
   });
