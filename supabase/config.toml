@@ -10,8 +10,8 @@ max_rows = 1000
 [auth]
 enabled = true
 port = 54324
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["https://dthlgsnakhoftinssokm.supabase.co/auth/v1/callback"]
+site_url = "https://talentxcel.in"
+additional_redirect_urls = ["https://talentxcel.in/auth/callback", "https://dthlgsnakhoftinssokm.supabase.co/auth/v1/callback"]
 jwt_expiry = 3600
 enable_signup = true
 enable_confirmations = false
@@ -19,7 +19,7 @@ password_min_length = 8
 security_password_change_confirm = true
 security_update_password_require_reauthentication = true
 
-# Core Infrastructure Functions
+# Core Infrastructure
 [functions.health-check]
 verify_jwt = false
 
@@ -45,7 +45,7 @@ verify_jwt = false
 [functions.get-realtime-token]
 verify_jwt = false
 
-# Email System (Unified)
+# Email System
 [functions.unified-email-service]
 verify_jwt = false
 
@@ -64,7 +64,7 @@ verify_jwt = false
 [functions.email-webhook]
 verify_jwt = false
 
-# AI & Content Generation
+# AI Services
 [functions.ai-agent]
 verify_jwt = false
 
@@ -87,9 +87,6 @@ verify_jwt = false
 verify_jwt = false
 
 # Job Management
-[functions.adzuna-job-importer]
-verify_jwt = false
-
 [functions.bulk-job-upload-v2]
 verify_jwt = false
 
@@ -99,10 +96,7 @@ verify_jwt = false
 [functions.job-expiry-cleanup]
 verify_jwt = false
 
-[functions.linkedin-job-scraper]
-verify_jwt = false
-
-# CV & Resume Processing
+# CV Processing
 [functions.cv-search]
 verify_jwt = false
 
@@ -118,7 +112,7 @@ verify_jwt = false
 [functions.record-resume-download]
 verify_jwt = false
 
-# Payment & TXC System
+# Payments
 [functions.razorpay-create-order]
 verify_jwt = false
 
@@ -132,32 +126,6 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.claim-daily-bonus]
-verify_jwt = false
-
-# News & Content
-[functions.news-feed-automation]
-verify_jwt = false
-
-[functions.content-queue-processor]
-verify_jwt = false
-
-[functions.daily-content-factory]
-verify_jwt = false
-
-[functions.bot-social-posts]
-verify_jwt = false
-
-# SEO & Analytics
-[functions.seo-site-analyzer]
-verify_jwt = false
-
-[functions.google-analytics-integration]
-verify_jwt = false
-
-[functions.dynamic-sitemap]
-verify_jwt = false
-
-[functions.url-metadata]
 verify_jwt = false
 
 # Notifications
@@ -181,15 +149,5 @@ verify_jwt = false
 verify_jwt = false
 
 # Agent System
-[functions.ai-agent-admin-trigger]
-verify_jwt = false
-
 [functions.agent-worker]
-verify_jwt = false
-
-# LinkedIn Integration
-[functions.bulk-linkedin-import]
-verify_jwt = false
-
-[functions.linkedin-profile-enricher]
 verify_jwt = false
