@@ -26,7 +26,7 @@ export default function LearningHub() {
   React.useEffect(() => {
     updateMetaTags({
       title: 'TalentXcel Learning Hub | Professional Skills Development',
-      description: `Master industry-relevant skills with our comprehensive learning platform. Choose from 300+ courses across technology, business, healthcare, and more.`
+      description: 'Master industry-relevant skills with our comprehensive learning platform. Choose from 300+ courses across technology, business, healthcare, and more.'
     });
   }, []);
 
