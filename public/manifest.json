@@ -1,7 +1,7 @@
 {
-  "name": "TalentXcel - AI-Powered Career Platform",
-  "short_name": "TalentXcel",
-  "description": "Your Career. One Platform. Endless Possibilities.",
+  "name": "CareerCatalyst - AI-Powered Career Platform",
+  "short_name": "CareerCatalyst",
+  "description": "Transform your career with AI-powered tools and professional networking",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

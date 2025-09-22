@@ -1,6 +1,6 @@
 // Service Worker for advanced caching and offline support
-const CACHE_NAME = 'jobmagnet-v1';
-const STATIC_CACHE = 'static-v1';
+const CACHE_NAME = 'careercatalyst-v1.0.0';
+const STATIC_CACHE = 'careercatalyst-static-v1.0.0';
 const DYNAMIC_CACHE = 'dynamic-v1';
 
 // Resources to cache immediately
