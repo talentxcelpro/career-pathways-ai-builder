@@ -167,24 +167,49 @@ export const getPopularCourses = async (): Promise<PopularCourse[]> => {
       .select(`
         id,
         title,
-        instructor,
+        instructor_name,
         rating,
-        students,
-        duration,
-        level,
+        enrolled_count,
+        duration_hours,
+        difficulty_level,
         price,
-        thumbnail,
+        thumbnail_url,
         description,
         category,
-        subcategory,
-        is_active
+        is_active,
+        skills_taught,
+        is_free
       `)
       .eq('is_active', true)
-      .order('students', { ascending: false })
+      .eq('published', true)
+      .order('enrolled_count', { ascending: false })
       .limit(6);
 
     if (error) throw error;
-    return data || [];
+    
+    // Map the database columns to the expected interface
+    return (data || []).map(course => ({
+      id: course.id,
+      title: course.title,
+      instructor: course.instructor_name,
+      instructor_name: course.instructor_name,
+      rating: course.rating,
+      students: course.enrolled_count,
+      enrolled_count: course.enrolled_count,
+      duration: `${course.duration_hours}h`,
+      duration_hours: course.duration_hours,
+      level: course.difficulty_level,
+      difficulty_level: course.difficulty_level,
+      price: course.is_free ? 'Free' : `₹${course.price}`,
+      thumbnail: course.thumbnail_url || '',
+      thumbnail_url: course.thumbnail_url,
+      description: course.description,
+      category: course.category,
+      subcategory: course.category, // Using category as subcategory for now
+      is_active: course.is_active,
+      skills_taught: course.skills_taught,
+      is_free: course.is_free
+    }));
   }, []);
 };
 
@@ -196,23 +221,48 @@ export const getAllCourses = async (): Promise<PopularCourse[]> => {
       .select(`
         id,
         title,
-        instructor,
+        instructor_name,
         rating,
-        students,
-        duration,
-        level,
+        enrolled_count,
+        duration_hours,
+        difficulty_level,
         price,
-        thumbnail,
+        thumbnail_url,
         description,
         category,
-        subcategory,
-        is_active
+        is_active,
+        skills_taught,
+        is_free
       `)
       .eq('is_active', true)
+      .eq('published', true)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    // Map the database columns to the expected interface
+    return (data || []).map(course => ({
+      id: course.id,
+      title: course.title,
+      instructor: course.instructor_name,
+      instructor_name: course.instructor_name,
+      rating: course.rating,
+      students: course.enrolled_count,
+      enrolled_count: course.enrolled_count,
+      duration: `${course.duration_hours}h`,
+      duration_hours: course.duration_hours,
+      level: course.difficulty_level,
+      difficulty_level: course.difficulty_level,
+      price: course.is_free ? 'Free' : `₹${course.price}`,
+      thumbnail: course.thumbnail_url || '',
+      thumbnail_url: course.thumbnail_url,
+      description: course.description,
+      category: course.category,
+      subcategory: course.category, // Using category as subcategory for now
+      is_active: course.is_active,
+      skills_taught: course.skills_taught,
+      is_free: course.is_free
+    }));
   }, []);
 };
 
