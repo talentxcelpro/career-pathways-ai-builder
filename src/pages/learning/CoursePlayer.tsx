@@ -8,11 +8,12 @@ import { Progress } from '@/components/ui/progress';
 import { VideoReelPlayer } from '@/components/reels/VideoReelPlayer';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2 } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Volume2, VolumeX } from 'lucide-react';
 
 const CoursePlayer = () => {
   const { id } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
 
@@ -108,13 +109,30 @@ const CoursePlayer = () => {
             <Card className="mb-6">
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
-                  <VideoReelPlayer
-                    videoUrl={currentLesson.video_url}
-                    isActive={isPlaying}
-                    className="aspect-video rounded-t-lg"
-                    muted={false}
-                    onVideoLoad={() => console.log('Video loaded')}
-                  />
+                  <div className="relative">
+                    <VideoReelPlayer
+                      videoUrl={currentLesson.video_url}
+                      isActive={isPlaying}
+                      className="aspect-video rounded-t-lg"
+                      muted={isMuted}
+                      onVideoLoad={() => console.log('Video loaded')}
+                    />
+                    {/* Video Controls Overlay */}
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setIsMuted(!isMuted)}
+                        className="bg-black/50 hover:bg-black/70 text-white border-0"
+                      >
+                        {isMuted ? (
+                          <VolumeX className="h-4 w-4" />
+                        ) : (
+                          <Volume2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
                     <div className="text-center">
