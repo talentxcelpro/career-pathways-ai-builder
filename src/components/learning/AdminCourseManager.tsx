@@ -19,6 +19,7 @@ import { useYouTubeIntegration } from '@/hooks/useYouTubeIntegration';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { CertificationCoursesAdmin } from './CertificationCoursesAdmin';
 
 interface Course {
   id: string;
@@ -126,6 +127,9 @@ export const AdminCourseManager: React.FC = () => {
           Import from YouTube
         </Button>
       </div>
+
+      {/* Certification Courses Section */}
+      <CertificationCoursesAdmin />
 
       <Card>
         <CardHeader>
