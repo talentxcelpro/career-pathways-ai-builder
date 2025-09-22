@@ -75,8 +75,11 @@ export const CourseraStyleHeader: React.FC = () => {
               <Link
                 key={option.id}
                 to={option.href}
-                className="px-6 py-3 text-white font-semibold hover:text-gray-200 hover:bg-white/10 text-sm transition-all border-b-2 border-transparent hover:border-white/50"
-                style={{ color: '#ffffff' }}
+                className="px-6 py-3 font-semibold hover:bg-white/10 text-sm transition-all border-b-2 border-transparent hover:border-white/50"
+                style={{ 
+                  color: '#ffffff',
+                  textDecoration: 'none'
+                }}
               >
                 {option.title}
               </Link>
