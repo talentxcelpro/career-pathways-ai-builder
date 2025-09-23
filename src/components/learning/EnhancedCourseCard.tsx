@@ -96,10 +96,10 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
       navigator.share({
         title: course.title,
         text: course.description,
-        url: window.location.origin + `/learning/${course.id}`
+        url: window.location.origin + `/learning/courses/${course.id}`
       });
     } else {
-      navigator.clipboard.writeText(window.location.origin + `/learning/${course.id}`);
+      navigator.clipboard.writeText(window.location.origin + `/learning/courses/${course.id}`);
     }
   }, [course.title, course.description, course.id]);
 
@@ -234,7 +234,7 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         {/* Quick Play Overlay for Enrolled Courses */}
         {isEnrolled && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 backdrop-blur-sm">
-            <Link to={`/learning/${course.id}`}>
+            <Link to={`/learning/courses/${course.id}`}>
               <Button size="lg" className="bg-white text-primary hover:bg-white/90 apple-rounded-xl shadow-lg">
                 <Play className="icon-md mr-2" />
                 Continue Learning
@@ -274,7 +274,7 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
         
         {/* Course Title */}
         <CardTitle className="text-subheading font-heading leading-tight group-hover:text-primary transition-colors">
-          <Link to={`/learning/${course.id}`} className="hover:underline line-clamp-2">
+          <Link to={`/learning/courses/${course.id}`} className="hover:underline line-clamp-2">
             {course.title}
           </Link>
         </CardTitle>
@@ -359,7 +359,7 @@ export const EnhancedCourseCard: React.FC<EnhancedCourseCardProps> = memo(({
           </div>
           
           {isEnrolled ? (
-            <Link to={`/learning/${course.id}`}>
+            <Link to={`/learning/courses/${course.id}`}>
               <Button variant="outline" size="sm" className="apple-rounded-xl">
                 <Play className="card-icon-sm mr-1.5" />
                 Continue

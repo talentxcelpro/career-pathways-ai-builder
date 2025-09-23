@@ -51,26 +51,31 @@ export const VideoUrlFixer: React.FC = () => {
         
         console.log(`Processing: ${lesson.title} from ${courseTitle} (${category})`);
         
-        // COMPREHENSIVE VIDEO MATCHING - FIXES PYTHON/JAVASCRIPT MISMATCHES
+        // COMPREHENSIVE VIDEO MATCHING - PRECISION CATEGORY MATCHING
         
-        // AWS & CLOUD COMPUTING - PRIORITY FIX
-        if (courseTitle.includes('aws') || courseTitle.includes('cloud computing') || courseTitle.includes('amazon web services')) {
-          videoUrl = 'https://www.youtube.com/embed/3hLmDS179YE'; // AWS Cloud Computing Course
+        // AWS & CLOUD COMPUTING
+        if (allText.includes('aws') || allText.includes('cloud') || allText.includes('amazon web services') || 
+            category === 'cloud computing' || allText.includes('ec2') || allText.includes('s3')) {
+          videoUrl = 'https://www.youtube.com/embed/3hLmDS179YE'; // AWS Training
         }
         
-        // JOB INTERVIEW MASTERY & SUCCESS
-        else if (courseTitle.includes('job interview') || courseTitle.includes('interview mastery')) {
-          videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Interview Skills Training
+        // JOB INTERVIEW & CAREER SUCCESS
+        else if (allText.includes('interview') || allText.includes('job search') || 
+                 allText.includes('career success') || allText.includes('resume')) {
+          videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Interview Skills
         }
         
-        // PYTHON PROGRAMMING (Only for actual Python courses)
-        else if (courseTitle.includes('python') || courseTitle.includes('python programming')) {
-          videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Programming Course
+        // PYTHON PROGRAMMING - ONLY for actual Python content
+        else if ((allText.includes('python') && (category === 'programming' || category === 'technology')) ||
+                 allText.includes('python programming') || allText.includes('django') || allText.includes('flask')) {
+          videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Programming
         }
         
-        // DATA SCIENCE & ANALYTICS (Not Python unless specifically Python Data Science)
-        else if (courseTitle.includes('data science') || courseTitle.includes('data analytics')) {
-          videoUrl = 'https://www.youtube.com/embed/wUSDVGivd-8'; // Data Science Course
+        // DATA SCIENCE & ANALYTICS - NO Python unless specifically mentioned
+        else if ((allText.includes('data science') || allText.includes('data analytics') || 
+                  allText.includes('analytics') || allText.includes('data visualization')) &&
+                 !allText.includes('python')) {
+          videoUrl = 'https://www.youtube.com/embed/wUSDVGivd-8'; // Data Science
         }
         
         // AI & MACHINE LEARNING
