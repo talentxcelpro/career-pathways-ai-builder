@@ -13,9 +13,10 @@ import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Vol
 const CoursePlayer = () => {
   const { id } = useParams();
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start muted to allow autoplay
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   // Fetch course data
   const { data: course, isLoading: courseLoading } = useQuery({
@@ -112,19 +113,20 @@ const CoursePlayer = () => {
                   <div className="relative">
                     <VideoReelPlayer
                       videoUrl={currentLesson.video_url}
-                      isActive={isPlaying}
+                      isActive={true} // Always active when showing video
                       className="aspect-video rounded-t-lg"
                       muted={isMuted}
                       onVideoLoad={() => {
                         console.log('Video loaded:', currentLesson.video_url);
-                        // Auto-set playing state when video loads
-                        if (!isPlaying) {
-                          setIsPlaying(true);
-                        }
                       }}
                       onTimeUpdate={(currentTime) => {
-                        // Update progress based on current time
                         console.log('Video time update:', currentTime);
+                      }}
+                      onPlayStateChange={(playing) => {
+                        setIsPlaying(playing);
+                        if (playing) {
+                          setHasUserInteracted(true);
+                        }
                       }}
                     />
                   </div>
@@ -146,27 +148,49 @@ const CoursePlayer = () => {
                   <div className="flex items-center justify-between mb-4">
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentLessonIndex(Math.max(0, currentLessonIndex - 1))}
+                      onClick={() => {
+                        setCurrentLessonIndex(Math.max(0, currentLessonIndex - 1));
+                        setIsPlaying(false); // Reset playing state for new video
+                      }}
                       disabled={currentLessonIndex === 0}
                     >
                       <SkipBack className="h-4 w-4 mr-2" />
                       Previous
                     </Button>
                     
-                    <Button
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="px-8"
-                    >
-                      {isPlaying ? (
-                        <Pause className="h-5 w-5" />
-                      ) : (
-                        <Play className="h-5 w-5" />
+                    <div className="flex items-center space-x-2">
+                      {hasUserInteracted && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsMuted(!isMuted)}
+                        >
+                          {isMuted ? (
+                            <VolumeX className="h-4 w-4" />
+                          ) : (
+                            <Volume2 className="h-4 w-4" />
+                          )}
+                        </Button>
                       )}
-                    </Button>
+                      
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">
+                          {isPlaying ? 'Playing' : 'Click video to start'}
+                        </p>
+                        {!hasUserInteracted && (
+                          <p className="text-xs text-muted-foreground">
+                            Interaction required for sound
+                          </p>
+                        )}
+                      </div>
+                    </div>
                     
                     <Button
                       variant="outline"
-                      onClick={() => setCurrentLessonIndex(Math.min(allLessons.length - 1, currentLessonIndex + 1))}
+                      onClick={() => {
+                        setCurrentLessonIndex(Math.min(allLessons.length - 1, currentLessonIndex + 1));
+                        setIsPlaying(false); // Reset playing state for new video
+                      }}
                       disabled={currentLessonIndex === allLessons.length - 1}
                     >
                       Next

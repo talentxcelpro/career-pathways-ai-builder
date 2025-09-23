@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Play, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, AlertCircle } from 'lucide-react';
 
 interface VideoReelPlayerProps {
   videoUrl: string;
@@ -9,6 +9,7 @@ interface VideoReelPlayerProps {
   isActive: boolean;
   onVideoLoad?: () => void;
   onTimeUpdate?: (currentTime: number) => void;
+  onPlayStateChange?: (isPlaying: boolean) => void;
   muted?: boolean;
   className?: string;
 }
@@ -19,6 +20,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   isActive,
   onVideoLoad,
   onTimeUpdate,
+  onPlayStateChange,
   muted = false,
   className
 }) => {
@@ -29,6 +31,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [actuallyPlaying, setActuallyPlaying] = useState(false);
   const [showClickToPlay, setShowClickToPlay] = useState(false);
+  const [showControls, setShowControls] = useState(false);
 
   // Handle video play with better error handling and user interaction
   const playVideo = useCallback(async () => {
@@ -43,6 +46,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         await playPromise;
         setActuallyPlaying(true);
         setShowClickToPlay(false);
+        onPlayStateChange?.(true);
         console.log('Video playing successfully');
       }
     } catch (error) {
@@ -55,25 +59,27 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         await video.play();
         setActuallyPlaying(true);
         setShowClickToPlay(false);
+        onPlayStateChange?.(true);
         console.log('Video playing muted due to autoplay policy');
       } catch (mutedError) {
         console.error('Muted autoplay also failed:', mutedError);
         setError(false); // Don't show error immediately
         setShowClickToPlay(true); // Show click to play instead
         setActuallyPlaying(false);
+        onPlayStateChange?.(false);
       }
     }
-  }, [isActive, internalMuted]);
+  }, [isActive, internalMuted, onPlayStateChange]);
 
   const pauseVideo = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     
     video.pause();
-    video.currentTime = 0;
     setActuallyPlaying(false);
     setShowClickToPlay(false);
-  }, []);
+    onPlayStateChange?.(false);
+  }, [onPlayStateChange]);
 
   // Handle user click for manual play
   const handleUserPlay = useCallback(async () => {
@@ -88,11 +94,27 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       setActuallyPlaying(true);
       setShowClickToPlay(false);
       setError(false);
+      onPlayStateChange?.(true);
     } catch (error) {
       console.error('User-initiated play failed:', error);
       setError(true);
+      onPlayStateChange?.(false);
     }
-  }, [internalMuted]);
+  }, [internalMuted, onPlayStateChange]);
+
+  // Toggle play/pause
+  const togglePlayPause = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    setHasUserInteracted(true);
+    
+    if (actuallyPlaying) {
+      pauseVideo();
+    } else {
+      await handleUserPlay();
+    }
+  }, [actuallyPlaying, pauseVideo, handleUserPlay]);
 
   // Toggle mute with user interaction
   const toggleMute = useCallback(() => {
@@ -171,22 +193,59 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         </div>
       )}
 
-      {/* Mute toggle for active videos */}
-      {isActive && actuallyPlaying && hasUserInteracted && (
-        <div className="absolute top-4 right-4 z-30">
-          <Button
-            onClick={toggleMute}
-            size="sm"
-            variant="secondary"
-            className="bg-black/50 hover:bg-black/70 text-white border-0"
-          >
-            {internalMuted ? (
-              <VolumeX className="h-4 w-4" />
-            ) : (
-              <Volume2 className="h-4 w-4" />
+      {/* Video Controls */}
+      {isActive && !showClickToPlay && (
+        <div 
+          className={cn(
+            "absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent transition-opacity duration-300 z-20",
+            showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+          onMouseEnter={() => setShowControls(true)}
+          onMouseLeave={() => setShowControls(false)}
+        >
+          {/* Center play/pause button */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Button
+              onClick={togglePlayPause}
+              size="lg"
+              variant="ghost"
+              className="h-16 w-16 rounded-full bg-black/30 hover:bg-black/50 text-white transition-all"
+            >
+              {actuallyPlaying ? (
+                <Pause className="h-8 w-8" />
+              ) : (
+                <Play className="h-8 w-8 ml-1" />
+              )}
+            </Button>
+          </div>
+
+          {/* Top right controls */}
+          <div className="absolute top-4 right-4 flex space-x-2">
+            {hasUserInteracted && (
+              <Button
+                onClick={toggleMute}
+                size="sm"
+                variant="ghost"
+                className="bg-black/30 hover:bg-black/50 text-white border-0"
+              >
+                {internalMuted ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </Button>
             )}
-          </Button>
+          </div>
         </div>
+      )}
+
+      {/* Hover to show controls */}
+      {isActive && !showClickToPlay && !showControls && (
+        <div 
+          className="absolute inset-0 z-10"
+          onMouseEnter={() => setShowControls(true)}
+          onClick={togglePlayPause}
+        />
       )}
       
       <video
