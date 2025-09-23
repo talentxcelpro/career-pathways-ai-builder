@@ -83,15 +83,7 @@ export const SimpleCourseCompletion: React.FC = () => {
     setProgress(0);
     
     try {
-      console.log('🚀 Starting course completion...');
-      
-      // First test edge function connectivity - but don't fail if test fails
-      console.log('Testing edge function connectivity (non-blocking)...');
-      const connectivityOk = await testEdgeFunction();
-      
-      if (!connectivityOk) {
-        console.warn('Edge function test failed, but continuing with main function...');
-      }
+      console.log('🚀 Starting course completion using direct fetch...');
       
       // Enhanced progress updates
       const progressInterval = setInterval(() => {
@@ -104,37 +96,34 @@ export const SimpleCourseCompletion: React.FC = () => {
         });
       }, 800);
 
-      // Try to call the main edge function directly
-      console.log('Attempting to invoke complete-course-content function...');
+      // Use direct fetch since Supabase client has issues
+      console.log('Calling complete-course-content via direct fetch...');
       
-      const { data, error } = await supabase.functions.invoke('complete-course-content', {
-        body: {
+      const response = await fetch('https://dthlgsnakhoftinssokm.supabase.co/functions/v1/complete-course-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        },
+        body: JSON.stringify({
           action: 'complete_existing_courses',
           course_limit: 50
-        }
+        })
       });
 
       clearInterval(progressInterval);
       setProgress(100);
 
-      if (error) {
-        console.error('Course completion error details:', {
-          message: error.message,
-          context: error.context,
-          stack: error.stack,
-          name: error.name
-        });
-        
-        // Provide more specific error handling
-        if (error.name === 'FunctionsFetchError' || error.message?.includes('Failed to fetch')) {
-          toast.error('⚠️ Edge function connectivity issue. This may be due to network restrictions in the preview environment. This functionality will work in production.');
-          return; // Don't throw, just inform user
-        }
-        
-        throw error;
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
+      const data = await response.json();
       console.log('✅ Course completion successful:', data);
+      
       setResults(data);
       
       if (data?.stats?.courses_processed > 0) {
@@ -146,13 +135,8 @@ export const SimpleCourseCompletion: React.FC = () => {
     } catch (error) {
       console.error('Course completion failed:', error);
       
-      // Better error handling for different scenarios
-      if (error.message?.includes('Failed to fetch') || error.name === 'FunctionsFetchError') {
-        toast.error('⚠️ Network connectivity issue detected. Edge functions may be blocked in this preview environment. This will work in production deployment.');
-      } else {
-        const errorMessage = error.message || 'Course completion failed. Please check console logs.';
-        toast.error(errorMessage);
-      }
+      const errorMessage = error.message || 'Course completion failed. Please check console logs.';
+      toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
     }
