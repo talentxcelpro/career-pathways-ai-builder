@@ -5,7 +5,7 @@ import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { VideoReelPlayer } from '@/components/reels/VideoReelPlayer';
+import { SimpleVideoPlayer } from '@/components/video/SimpleVideoPlayer';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Volume2, VolumeX } from 'lucide-react';
@@ -111,17 +111,9 @@ const CoursePlayer = () => {
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
                   <div className="relative">
-                    <VideoReelPlayer
+                    <SimpleVideoPlayer
                       videoUrl={currentLesson.video_url}
-                      isActive={true} // Always active when showing video
                       className="aspect-video rounded-t-lg"
-                      muted={isMuted}
-                      onVideoLoad={() => {
-                        console.log('Video loaded:', currentLesson.video_url);
-                      }}
-                      onTimeUpdate={(currentTime) => {
-                        console.log('Video time update:', currentTime);
-                      }}
                       onPlayStateChange={(playing) => {
                         setIsPlaying(playing);
                         if (playing) {
@@ -150,7 +142,7 @@ const CoursePlayer = () => {
                       variant="outline"
                       onClick={() => {
                         setCurrentLessonIndex(Math.max(0, currentLessonIndex - 1));
-                        setIsPlaying(false); // Reset playing state for new video
+                        setIsPlaying(false);
                       }}
                       disabled={currentLessonIndex === 0}
                     >
@@ -158,38 +150,20 @@ const CoursePlayer = () => {
                       Previous
                     </Button>
                     
-                    <div className="flex items-center space-x-2">
-                      {hasUserInteracted && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setIsMuted(!isMuted)}
-                        >
-                          {isMuted ? (
-                            <VolumeX className="h-4 w-4" />
-                          ) : (
-                            <Volume2 className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
-                      
-                      <div className="text-center">
-                        <p className="text-sm text-muted-foreground">
-                          {isPlaying ? 'Playing' : 'Click video to start'}
-                        </p>
-                        {!hasUserInteracted && (
-                          <p className="text-xs text-muted-foreground">
-                            Interaction required for sound
-                          </p>
-                        )}
-                      </div>
+                    <div className="text-center">
+                      <p className="text-lg font-semibold">
+                        {currentLesson?.title}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {isPlaying ? 'Playing' : 'Ready to play'} • {currentLesson?.duration_minutes} min
+                      </p>
                     </div>
                     
                     <Button
                       variant="outline"
                       onClick={() => {
                         setCurrentLessonIndex(Math.min(allLessons.length - 1, currentLessonIndex + 1));
-                        setIsPlaying(false); // Reset playing state for new video
+                        setIsPlaying(false);
                       }}
                       disabled={currentLessonIndex === allLessons.length - 1}
                     >
@@ -198,7 +172,7 @@ const CoursePlayer = () => {
                     </Button>
                   </div>
                   
-                  <Progress value={30} className="h-2" />
+                  <Progress value={((currentLessonIndex + 1) / allLessons.length) * 100} className="h-2" />
                 </div>
               </CardContent>
             </Card>
