@@ -22,6 +22,7 @@ import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';
 import { VideoUrlFixer } from '@/components/admin/VideoUrlFixer';
 import { AdminNavigationPanel } from '@/components/admin/AdminNavigationPanel';
+import { QuickVideoFix } from '@/components/admin/QuickVideoFix';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -74,7 +75,7 @@ const AdminDashboard = () => {
         <div className="grid gap-6 md:grid-cols-3 mt-8">
           <SocialTXCAwardPanel />
           <JoiningBonusPanel />
-          <VideoUrlFixer />
+          <QuickVideoFix />
         </div>
 
         {/* Job Generator for SEO - High Priority */}
