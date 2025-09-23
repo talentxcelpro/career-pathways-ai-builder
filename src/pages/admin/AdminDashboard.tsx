@@ -20,6 +20,7 @@ import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard'
 import { JobGenerator } from '@/components/admin/JobGenerator';
 import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';
+import { VideoUrlFixer } from '@/components/admin/VideoUrlFixer';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -68,9 +69,10 @@ const AdminDashboard = () => {
         </div>
 
         {/* TXC Award Panels */}
-        <div className="grid gap-6 md:grid-cols-2 mt-8">
+        <div className="grid gap-6 md:grid-cols-3 mt-8">
           <SocialTXCAwardPanel />
           <JoiningBonusPanel />
+          <VideoUrlFixer />
         </div>
 
         {/* Job Generator for SEO - High Priority */}

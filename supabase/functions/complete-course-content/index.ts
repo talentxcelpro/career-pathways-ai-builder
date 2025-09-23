@@ -84,11 +84,31 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
                   
                   if (lessonDetails && lessonDetails.lesson_type === 'video' && !lessonDetails.video_url) {
                     console.log(`Adding video URL to lesson: ${lessonDetails.title}`);
+                    
+                    // Generate appropriate video URL based on lesson content
+                    let videoUrl = 'https://www.youtube.com/embed/rfscVS0vtbw'; // Default: Learn JavaScript in 1 Hour
+                    
+                    if (lessonDetails.title.toLowerCase().includes('python')) {
+                      videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Tutorial for Beginners
+                    } else if (lessonDetails.title.toLowerCase().includes('web development') || lessonDetails.title.toLowerCase().includes('html') || lessonDetails.title.toLowerCase().includes('css')) {
+                      videoUrl = 'https://www.youtube.com/embed/pQN-pnXPaVg'; // HTML, CSS, JS in 1 Hour
+                    } else if (lessonDetails.title.toLowerCase().includes('data science') || lessonDetails.title.toLowerCase().includes('data')) {
+                      videoUrl = 'https://www.youtube.com/embed/ua-CiDNNj30'; // Data Science Course
+                    } else if (lessonDetails.title.toLowerCase().includes('react')) {
+                      videoUrl = 'https://www.youtube.com/embed/Ke90Tje7VS0'; // React Tutorial for Beginners
+                    } else if (lessonDetails.title.toLowerCase().includes('marketing')) {
+                      videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Digital Marketing Course
+                    } else if (lessonDetails.title.toLowerCase().includes('leadership') || lessonDetails.title.toLowerCase().includes('management')) {
+                      videoUrl = 'https://www.youtube.com/embed/llKvV8_T95M'; // Leadership Training
+                    } else if (lessonDetails.title.toLowerCase().includes('design') || lessonDetails.title.toLowerCase().includes('ui') || lessonDetails.title.toLowerCase().includes('ux')) {
+                      videoUrl = 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design Tutorial
+                    }
+                    
                     // Update lesson with video URL
                     await supabaseClient
                       .from('course_lessons')
                       .update({
-                        video_url: `https://www.youtube.com/embed/dQw4w9WgXcQ`
+                        video_url: videoUrl
                       })
                       .eq('id', lesson.id);
                     
