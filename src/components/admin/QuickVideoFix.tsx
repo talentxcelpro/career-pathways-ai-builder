@@ -11,29 +11,8 @@ export const QuickVideoFix: React.FC = () => {
   const quickFix = async () => {
     setIsFixing(true);
     try {
-      // Mapping of broken video IDs to appropriate replacements
-      const videoMappings = [
-        // AWS Course videos
-        { broken: 'rfscVS0vtbw', replacement: '3hLmDS179YE', coursePattern: 'AWS' },
-        { broken: 'rfscVS0vtbw', replacement: '1ukSR1GRtMU', coursePattern: 'Flutter' },
-        { broken: 'rfscVS0vtbw', replacement: 'kI1KJGgWr34', coursePattern: 'Customer Service' },
-        { broken: 'rfscVS0vtbw', replacement: 'AykYRO5d_lI', coursePattern: 'Public Speaking' },
-        { broken: 'rfscVS0vtbw', replacement: '_b4QHbOKY3k', coursePattern: 'Interview' },
-        { broken: 'rfscVS0vtbw', replacement: 'naIkpQ_cIt0', coursePattern: 'Communication' },
-        { broken: 'rfscVS0vtbw', replacement: 'HAnw168huqA', coursePattern: 'other' },
-        
-        // Fix the other major broken video too
-        { broken: 'llKvV8_T95M', replacement: 'UF8uR6Z6KLc', coursePattern: 'Leadership' },
-        { broken: 'llKvV8_T95M', replacement: 'BHK4IoLWvfE', coursePattern: 'Brand' },
-        { broken: 'llKvV8_T95M', replacement: 'naIkpQ_cIt0', coursePattern: 'Communication' },
-        { broken: 'llKvV8_T95M', replacement: 'HAnw168huqA', coursePattern: 'other' },
-        
-        { broken: 'bFOKONpVDAQ', replacement: 'LHBE6Q9XlzI', coursePattern: 'Python' },
-        { broken: 'bFOKONpVDAQ', replacement: 'UB1O30fR-EE', coursePattern: 'Web Development' },
-        { broken: 'bFOKONpVDAQ', replacement: 'HAnw168huqA', coursePattern: 'other' }
-      ];
-
       let totalFixed = 0;
+      let processedLessons = 0;
 
       // Get all lessons with broken videos
       const { data: brokenLessons, error: fetchError } = await supabase
@@ -49,46 +28,96 @@ export const QuickVideoFix: React.FC = () => {
             )
           )
         `)
-        .or('video_url.like.%rfscVS0vtbw%,video_url.like.%llKvV8_T95M%,video_url.like.%bFOKONpVDAQ%');
+        .or('video_url.like.%rfscVS0vtbw%,video_url.like.%llKvV8_T95M%,video_url.like.%bFOKONpVDAQ%,video_url.like.%ByYP60zz3F4%,video_url.like.%dQw4w9WgXcQ%');
 
       if (fetchError) throw fetchError;
 
       if (!brokenLessons?.length) {
-        toast.success('No broken videos found - all videos are working!');
+        toast.success('✅ No broken videos found - all videos are working!');
         return;
       }
 
       console.log(`Found ${brokenLessons.length} broken video lessons to fix`);
+      toast.info(`🔧 Fixing ${brokenLessons.length} broken videos...`);
+
+      // Real working educational videos by category
+      const categoryVideos = {
+        // AWS & Cloud Computing
+        aws: 'k1RI5locZE4', // AWS Tutorial for Beginners - Real educational content
+        cloud: 'k1RI5locZE4',
+        
+        // Mobile Development
+        flutter: 'VPvVD8t02U8', // Flutter Course for Beginners - Real tutorial
+        mobile: 'VPvVD8t02U8',
+        
+        // Customer Service & Support
+        'customer service': 'kI1KJGgWr34', // Customer Service Training
+        support: 'kI1KJGgWr34',
+        
+        // Public Speaking & Presentation
+        'public speaking': 'HAnw168huqA', // Public Speaking Course
+        presentation: 'HAnw168huqA',
+        
+        // Interview & Career
+        interview: 'PJKYqLP6MRE', // Job Interview Tips
+        career: 'PJKYqLP6MRE',
+        job: 'PJKYqLP6MRE',
+        
+        // Leadership & Management
+        leadership: 'UF8uR6Z6KLc', // Leadership Training
+        management: 'UF8uR6Z6KLc',
+        
+        // Brand & Strategy
+        brand: 'vWsK5710d6Y', // Brand Strategy Tutorial
+        strategy: 'vWsK5710d6Y',
+        
+        // Programming
+        python: '_uQrJ0TkZlc', // Python Tutorial for Beginners
+        javascript: 'PkZNo7MFNFg', // Learn JavaScript - Full Course
+        programming: 'PkZNo7MFNFg',
+        
+        // Web Development
+        'web development': 'pQN-pnXPaVg', // HTML CSS JavaScript Course
+        html: 'pQN-pnXPaVg',
+        css: 'pQN-pnXPaVg',
+        frontend: 'pQN-pnXPaVg',
+        
+        // Design
+        design: 'c9Wg6Cb_YlU', // UI/UX Design Course
+        'ui': 'c9Wg6Cb_YlU',
+        'ux': 'c9Wg6Cb_YlU',
+        
+        // Communication
+        communication: 'naIkpQ_cIt0', // Business Communication
+        business: 'naIkpQ_cIt0',
+        
+        // Default fallback
+        default: 'HAnw168huqA' // General Business Skills Course
+      };
 
       // Process each lesson
       for (const lesson of brokenLessons) {
+        processedLessons++;
         const courseTitle = (lesson as any).course_modules?.courses?.title?.toLowerCase() || '';
         const category = (lesson as any).course_modules?.courses?.category?.toLowerCase() || '';
+        const lessonTitle = lesson.title?.toLowerCase() || '';
         
-        let newVideoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // Default fallback
-
-        // Determine the best replacement video
-        if (courseTitle.includes('aws') || courseTitle.includes('cloud')) {
-          newVideoUrl = 'https://www.youtube.com/embed/3hLmDS179YE'; // AWS Training
-        } else if (courseTitle.includes('flutter') || courseTitle.includes('mobile')) {
-          newVideoUrl = 'https://www.youtube.com/embed/1ukSR1GRtMU'; // Mobile Development
-        } else if (courseTitle.includes('customer service')) {
-          newVideoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Customer Service
-        } else if (courseTitle.includes('public speaking') || courseTitle.includes('presentation')) {
-          newVideoUrl = 'https://www.youtube.com/embed/AykYRO5d_lI'; // Public Speaking
-        } else if (courseTitle.includes('interview') || courseTitle.includes('job')) {
-          newVideoUrl = 'https://www.youtube.com/embed/_b4QHbOKY3k'; // Interview Skills
-        } else if (courseTitle.includes('leadership') || courseTitle.includes('management')) {
-          newVideoUrl = 'https://www.youtube.com/embed/UF8uR6Z6KLc'; // Leadership
-        } else if (courseTitle.includes('brand') || courseTitle.includes('strategy')) {
-          newVideoUrl = 'https://www.youtube.com/embed/BHK4IoLWvfE'; // Brand Strategy
-        } else if (courseTitle.includes('python')) {
-          newVideoUrl = 'https://www.youtube.com/embed/LHBE6Q9XlzI'; // Python Programming
-        } else if (courseTitle.includes('web development') || courseTitle.includes('html') || courseTitle.includes('css')) {
-          newVideoUrl = 'https://www.youtube.com/embed/UB1O30fR-EE'; // Web Development
-        } else if (category.includes('communication')) {
-          newVideoUrl = 'https://www.youtube.com/embed/naIkpQ_cIt0'; // Business Communication
+        // Combine all text for better matching
+        const allText = `${courseTitle} ${category} ${lessonTitle}`;
+        
+        let videoId = categoryVideos.default;
+        
+        // Smart matching - check for specific keywords
+        for (const [keyword, id] of Object.entries(categoryVideos)) {
+          if (keyword !== 'default' && allText.includes(keyword)) {
+            videoId = id;
+            break;
+          }
         }
+        
+        const newVideoUrl = `https://www.youtube.com/embed/${videoId}`;
+
+        console.log(`Fixing lesson: "${lesson.title}" from course: "${(lesson as any).course_modules?.courses?.title}" with video: ${videoId}`);
 
         // Update the lesson
         const { error: updateError } = await supabase
@@ -101,9 +130,18 @@ export const QuickVideoFix: React.FC = () => {
         } else {
           console.error(`Failed to update lesson ${lesson.id}:`, updateError);
         }
+
+        // Show progress for large batches
+        if (processedLessons % 10 === 0) {
+          toast.info(`🔄 Progress: ${processedLessons}/${brokenLessons.length} videos processed...`);
+        }
       }
 
-      toast.success(`🚀 Successfully fixed ${totalFixed} out of ${brokenLessons.length} broken videos! All courses now have working educational content.`);
+      if (totalFixed === brokenLessons.length) {
+        toast.success(`🎉 COMPLETE! Successfully fixed all ${totalFixed} broken videos with real educational content!`);
+      } else {
+        toast.success(`✅ Fixed ${totalFixed} out of ${brokenLessons.length} videos. ${brokenLessons.length - totalFixed} had errors.`);
+      }
       
     } catch (error: any) {
       console.error('Quick fix error:', error);
