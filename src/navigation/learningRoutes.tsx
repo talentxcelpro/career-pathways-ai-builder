@@ -64,6 +64,12 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
+    title: "Course Player (Direct)",
+    to: "/learning/:id/player",
+    page: <CoursePlayer />,
+    isPublic: true,
+  },
+  {
     title: "My Courses",
     to: "/learning/my-courses",
     page: <MyCoursesPage />,

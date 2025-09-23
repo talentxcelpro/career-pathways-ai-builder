@@ -278,6 +278,14 @@ export const EnhancedCourseDetail: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm">
+                <strong>Debug Info:</strong> User: {user ? 'Logged in' : 'Not logged in'} | 
+                Enrolled: {isEnrolled ? 'Yes' : 'No'} | 
+                Enrollment data: {enrollment ? 'Found' : 'None'}
+              </p>
+            </div>
+            
             {!isEnrolled ? (
               <div className="text-center py-8">
                 <p className="text-gray-600 mb-4">Enroll in this course to access all content</p>
@@ -357,9 +365,16 @@ export const EnhancedCourseDetail: React.FC = () => {
                                   console.log('Course ID:', id);
                                   console.log('Lesson ID:', lesson.id);
                                   console.log('Lesson Title:', lesson.title);
-                                  const playerUrl = `/learning/${id}?lesson=${lesson.id}`;
-                                  console.log('Navigating to:', playerUrl);
-                                  navigate(playerUrl);
+                                  console.log('Navigate function:', typeof navigate);
+                                  
+                                  try {
+                                    const playerUrl = `/learning/${id}/player?lesson=${lesson.id}`;
+                                    console.log('About to navigate to:', playerUrl);
+                                    navigate(playerUrl);
+                                    console.log('Navigation completed');
+                                  } catch (error) {
+                                    console.error('Navigation failed:', error);
+                                  }
                                 }}
                               >
                                 Play
