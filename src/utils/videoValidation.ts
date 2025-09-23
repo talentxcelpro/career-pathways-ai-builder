@@ -23,14 +23,34 @@ export const validateVideoUrl = async (url: string): Promise<{ isValid: boolean;
     // Enhanced YouTube validation
     if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
       try {
-        // Try to fetch video metadata to verify it exists
         const videoId = extractYouTubeVideoId(url);
         if (!videoId) {
           return { isValid: false, reason: 'Invalid YouTube URL format' };
         }
         
-        // For now, assume valid if format is correct (API check would require key)
-        return { isValid: true };
+        // Actually check if the video exists by trying to fetch its embed page
+        try {
+          const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+          const response = await fetch(embedUrl, { 
+            method: 'HEAD',
+            mode: 'no-cors' // Avoid CORS issues
+          });
+          // If we get here without error, the video likely exists
+          return { isValid: true };
+        } catch (embedError) {
+          // If embed fails, try oEmbed API as fallback
+          try {
+            const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+            const oEmbedResponse = await fetch(oEmbedUrl);
+            if (oEmbedResponse.ok) {
+              return { isValid: true };
+            } else {
+              return { isValid: false, reason: 'Video not found or unavailable' };
+            }
+          } catch (oEmbedError) {
+            return { isValid: false, reason: 'Unable to verify video availability' };
+          }
+        }
       } catch (error) {
         return { isValid: false, reason: 'YouTube URL validation failed' };
       }

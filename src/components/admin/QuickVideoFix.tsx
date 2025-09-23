@@ -33,6 +33,8 @@ export const QuickVideoFix: React.FC = () => {
 
       if (fetchError) throw fetchError;
 
+      toast.info('Scanning all videos for issues...');
+
       // Filter out broken videos using our validation function
       const brokenLessons = [];
       if (allLessons) {
@@ -45,8 +47,6 @@ export const QuickVideoFix: React.FC = () => {
           }
         }
       }
-
-      if (fetchError) throw fetchError;
 
       if (!brokenLessons?.length) {
         toast.success('✅ No broken videos found - all videos are working!');
