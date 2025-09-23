@@ -5,7 +5,6 @@ import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { AdaptiveVideoPlayer } from '@/components/video/AdaptiveVideoPlayer';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Volume2, VolumeX } from 'lucide-react';
@@ -165,20 +164,27 @@ const CoursePlayer = () => {
             <Card className="mb-6">
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
-                  <div className="relative">
-                    <AdaptiveVideoPlayer
-                      videoUrl={currentLesson.video_url}
-                      lessonId={currentLesson.id}
-                      className="aspect-video rounded-t-lg"
-                      onProgress={(progress, position) => {
-                        console.log('Video progress:', progress, position);
-                      }}
-                      onComplete={() => {
-                        console.log('Video completed');
-                      }}
-                      autoplay={false}
-                      allowDownload={true}
-                    />
+                  <div className="relative aspect-video bg-black rounded-t-lg overflow-hidden">
+                    {currentLesson.video_url.includes('youtube.com/embed') || currentLesson.video_url.includes('youtu.be') ? (
+                      <iframe
+                        src={currentLesson.video_url}
+                        className="w-full h-full border-0"
+                        title={currentLesson.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                        loading="lazy"
+                      />
+                    ) : (
+                      <video
+                        className="w-full h-full object-cover"
+                        controls
+                        preload="metadata"
+                        src={currentLesson.video_url}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
                   </div>
                 ) : (
                   <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
