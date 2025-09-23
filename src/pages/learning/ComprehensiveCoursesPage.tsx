@@ -326,14 +326,30 @@ export default function ComprehensiveCoursesPage() {
   return (
     <LearningLayout>
       <div className="space-y-8">
-        {/* Hero Section */}
-        <div className="text-center py-12 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl">
+        {/* Hero Section with Quick Course Completion */}
+        <div className="text-center py-12 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl relative">
           <h1 className="text-4xl font-bold mb-4">
             Discover Your Next Learning Adventure
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Access thousands of courses from industry experts. Learn at your own pace with interactive content and hands-on projects.
           </p>
+          
+          {/* Quick Access to Course Completion */}
+          <div className="mb-6">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg"
+              onClick={() => {
+                const element = document.getElementById('course-factory');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              <Zap className="h-5 w-5 mr-2" />
+              🚀 Complete All 50 Courses Now!
+            </Button>
+          </div>
+          
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <BookOpen className="h-4 w-4" />
@@ -445,20 +461,21 @@ export default function ComprehensiveCoursesPage() {
           </CardContent>
         </Card>
 
-        {/* Admin Course Factory (for authenticated users) */}
-        {user && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5" />
-                Course Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <SuperChargedCourseFactory />
-            </CardContent>
-          </Card>
-        )}
+        {/* Course Management - Always Visible for Testing */}
+        <Card id="course-factory" className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-primary" />
+              🚀 SuperCharged Course Factory
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Complete all 50 courses with comprehensive content - Available for all users
+            </p>
+          </CardHeader>
+          <CardContent>
+            <SuperChargedCourseFactory />
+          </CardContent>
+        </Card>
 
         {/* Results */}
         <div>
