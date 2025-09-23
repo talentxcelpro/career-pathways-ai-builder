@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Video, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { validateVideoUrl } from '@/utils/videoValidation';
 
 export const QuickVideoFix: React.FC = () => {
   const [isFixing, setIsFixing] = useState(false);
@@ -14,8 +15,8 @@ export const QuickVideoFix: React.FC = () => {
       let totalFixed = 0;
       let processedLessons = 0;
 
-      // Get all lessons with broken videos
-      const { data: brokenLessons, error: fetchError } = await supabase
+      // Get all lessons with video URLs first
+      const { data: allLessons, error: fetchError } = await supabase
         .from('course_lessons')
         .select(`
           id,
@@ -28,7 +29,22 @@ export const QuickVideoFix: React.FC = () => {
             )
           )
         `)
-        .or('video_url.like.%rfscVS0vtbw%,video_url.like.%llKvV8_T95M%,video_url.like.%bFOKONpVDAQ%,video_url.like.%ByYP60zz3F4%,video_url.like.%dQw4w9WgXcQ%');
+        .not('video_url', 'is', null);
+
+      if (fetchError) throw fetchError;
+
+      // Filter out broken videos using our validation function
+      const brokenLessons = [];
+      if (allLessons) {
+        for (const lesson of allLessons) {
+          if (lesson.video_url) {
+            const validation = await validateVideoUrl(lesson.video_url);
+            if (!validation.isValid) {
+              brokenLessons.push(lesson);
+            }
+          }
+        }
+      }
 
       if (fetchError) throw fetchError;
 
