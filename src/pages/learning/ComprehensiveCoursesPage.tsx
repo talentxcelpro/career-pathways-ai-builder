@@ -35,7 +35,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { updateMetaTags } from '@/utils/metaTags';
-import { SuperChargedCourseFactory } from '@/components/learning/SuperChargedCourseFactory';
+import { SimpleCourseCompletion } from '@/components/learning/SimpleCourseCompletion';
 import { toast } from 'sonner';
 
 // Enhanced course categories with professional icons and descriptions
@@ -473,7 +473,7 @@ export default function ComprehensiveCoursesPage() {
             </p>
           </CardHeader>
           <CardContent>
-            <SuperChargedCourseFactory />
+            <SimpleCourseCompletion />
           </CardContent>
         </Card>
 

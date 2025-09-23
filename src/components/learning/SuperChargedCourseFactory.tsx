@@ -23,7 +23,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useCourseEnhancement } from '@/hooks/useAdvancedLearning';
+// Removed problematic import for now
+// import { useCourseEnhancement } from '@/hooks/useAdvancedLearning';
 
 export const SuperChargedCourseFactory: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -32,7 +33,8 @@ export const SuperChargedCourseFactory: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [generationResults, setGenerationResults] = useState<any>(null);
   
-  const { enhanceCourse, isLoading: enhanceLoading } = useCourseEnhancement();
+  // Temporarily removed hook usage to fix loading issue
+  // const { enhanceCourse, isLoading: enhanceLoading } = useCourseEnhancement();
 
   const availableCategories = [
     'Web Development',
@@ -172,12 +174,9 @@ export const SuperChargedCourseFactory: React.FC = () => {
 
   const enhanceExistingCourses = async () => {
     try {
-      await enhanceCourse({
-        action: 'enhance_existing_course',
-        include_youtube_videos: true,
-        include_exercises: true,
-        include_projects: true
-      });
+      // Temporarily disabled - will re-enable after fixing hook
+      console.log('Course enhancement feature temporarily disabled');
+      toast.info('Course enhancement feature will be available soon!');
     } catch (error) {
       console.error('Enhancement failed:', error);
     }
