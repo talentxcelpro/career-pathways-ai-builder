@@ -321,12 +321,17 @@ const App = () => {
                          <Route path="/tools/cover-letter" element={<CoverLetterGenerator />} />
                          <Route path="/tools/interview-prep" element={<InterviewPrep />} />
 
-                         {/* Learning Routes - Phase 3 Complete */}
-                         <Route path="/learning/courses" element={
-                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading courses...</div>}>
-                             {React.createElement(React.lazy(() => import('./pages/learning/ComprehensiveCoursesPage')))}
-                           </React.Suspense>
-                         } />
+                          {/* Learning Routes - Phase 3 Complete */}
+                          <Route path="/learning/comprehensive-courses" element={
+                            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading courses...</div>}>
+                              {React.createElement(React.lazy(() => import('./pages/learning/ComprehensiveCoursesPage')))}
+                            </React.Suspense>
+                          } />
+                          <Route path="/learning/courses" element={
+                            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading courses...</div>}>
+                              {React.createElement(React.lazy(() => import('./pages/learning/ComprehensiveCoursesPage')))}
+                            </React.Suspense>
+                          } />
                          <Route path="/learning/courses/:id" element={
                            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading course...</div>}>
                              {React.createElement(React.lazy(() => import('./pages/learning/EnhancedCoursePage')))}
