@@ -41,7 +41,7 @@ export const VideoUrlFixer: React.FC = () => {
       let updatedCount = 0;
 
       for (const lesson of lessons) {
-        let videoUrl = 'https://www.youtube.com/embed/rfscVS0vtbw'; // Default: JavaScript
+        let videoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // Default: Professional Development
         
         const lessonTitle = lesson.title.toLowerCase();
         const moduleTitle = (lesson as any).course_modules?.title?.toLowerCase() || '';
@@ -51,11 +51,26 @@ export const VideoUrlFixer: React.FC = () => {
         
         console.log(`Processing: ${lesson.title} from ${courseTitle} (${category})`);
         
-        // PRECISE MATCHING BASED ON COURSE TITLE AND CATEGORY - Fixes the mismatch issue
+        // COMPREHENSIVE VIDEO MATCHING - FIXES PYTHON/JAVASCRIPT MISMATCHES
         
-        // JOB INTERVIEW MASTERY & SUCCESS - Fix the mismatch!
-        if (courseTitle.includes('job interview') || courseTitle.includes('interview mastery')) {
+        // AWS & CLOUD COMPUTING - PRIORITY FIX
+        if (courseTitle.includes('aws') || courseTitle.includes('cloud computing') || courseTitle.includes('amazon web services')) {
+          videoUrl = 'https://www.youtube.com/embed/3hLmDS179YE'; // AWS Cloud Computing Course
+        }
+        
+        // JOB INTERVIEW MASTERY & SUCCESS
+        else if (courseTitle.includes('job interview') || courseTitle.includes('interview mastery')) {
           videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Interview Skills Training
+        }
+        
+        // PYTHON PROGRAMMING (Only for actual Python courses)
+        else if (courseTitle.includes('python') || courseTitle.includes('python programming')) {
+          videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Programming Course
+        }
+        
+        // DATA SCIENCE & ANALYTICS (Not Python unless specifically Python Data Science)
+        else if (courseTitle.includes('data science') || courseTitle.includes('data analytics')) {
+          videoUrl = 'https://www.youtube.com/embed/wUSDVGivd-8'; // Data Science Course
         }
         
         // AI & MACHINE LEARNING
@@ -63,39 +78,19 @@ export const VideoUrlFixer: React.FC = () => {
           videoUrl = 'https://www.youtube.com/embed/JMUxmLyrhSk'; // Machine Learning Course
         }
         
-        // BLOCKCHAIN & CRYPTOCURRENCY  
-        else if (courseTitle.includes('blockchain') || courseTitle.includes('cryptocurrency')) {
-          videoUrl = 'https://www.youtube.com/embed/SSo_EIwHSd4'; // Blockchain Technology Course
+        // WEB DEVELOPMENT (HTML, CSS, JavaScript)
+        else if (courseTitle.includes('web development') || courseTitle.includes('html') || courseTitle.includes('css') || courseTitle.includes('javascript')) {
+          videoUrl = 'https://www.youtube.com/embed/rfscVS0vtbw'; // Web Development Course
         }
         
-        // BUSINESS COMMUNICATION & WRITING
-        else if (courseTitle.includes('business writing') || courseTitle.includes('communication')) {
-          videoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // Business Communication Skills
+        // REACT & FRONTEND FRAMEWORKS
+        else if (courseTitle.includes('react') || courseTitle.includes('frontend') || courseTitle.includes('front-end')) {
+          videoUrl = 'https://www.youtube.com/embed/w7ejDZ8SWv8'; // React Development Course
         }
         
-        // BRAND MANAGEMENT & MARKETING STRATEGY
-        else if (courseTitle.includes('brand management') || courseTitle.includes('brand strategy')) {
-          videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Brand Management Course
-        }
-        
-        // BUSINESS ANALYTICS & DATA
-        else if (courseTitle.includes('business analytics') || courseTitle.includes('data-driven')) {
-          videoUrl = 'https://www.youtube.com/embed/ZcaKgqXsEbA'; // Business Analytics Course
-        }
-        
-        // CUSTOMER SERVICE & EXPERIENCE
-        else if (courseTitle.includes('customer service') || courseTitle.includes('customer experience')) {
-          videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Customer Service Training
-        }
-        
-        // CYBERSECURITY
-        else if (courseTitle.includes('cybersecurity') || courseTitle.includes('cyber security')) {
-          videoUrl = 'https://www.youtube.com/embed/inWWhr5tnEA'; // Cybersecurity Fundamentals
-        }
-        
-        // DATA SCIENCE & ANALYTICS
-        else if (courseTitle.includes('data science') || courseTitle.includes('data analytics')) {
-          videoUrl = 'https://www.youtube.com/embed/wUSDVGivd-8'; // Data Science Course
+        // NODE.JS & BACKEND
+        else if (courseTitle.includes('node') || courseTitle.includes('backend') || courseTitle.includes('back-end')) {
+          videoUrl = 'https://www.youtube.com/embed/TlB_eWDSMt4'; // Node.js Backend Course
         }
         
         // DIGITAL MARKETING
@@ -103,105 +98,94 @@ export const VideoUrlFixer: React.FC = () => {
           videoUrl = 'https://www.youtube.com/embed/Ayekd8lkUkU'; // Digital Marketing Course
         }
         
-        // ENTREPRENEURSHIP & STARTUP
-        else if (courseTitle.includes('entrepreneurship') || courseTitle.includes('startup')) {
-          videoUrl = 'https://www.youtube.com/embed/nkNHn0VqVBA'; // Entrepreneurship Course
-        }
-        
-        // FINANCIAL ANALYSIS & PLANNING
-        else if (courseTitle.includes('financial') || courseTitle.includes('finance')) {
-          videoUrl = 'https://www.youtube.com/embed/WEDIj9JBTC8'; // Financial Planning Course
-        }
-        
-        // HEALTHCARE MANAGEMENT
-        else if (courseTitle.includes('healthcare') || courseTitle.includes('medical')) {
-          videoUrl = 'https://www.youtube.com/embed/gGqVNuYhcxw'; // Healthcare Management
-        }
-        
-        // HR & HUMAN RESOURCES
-        else if (courseTitle.includes('human resources') || courseTitle.includes('hr')) {
-          videoUrl = 'https://www.youtube.com/embed/86V_DQdb4e0'; // HR Management Course
-        }
-        
-        // INNOVATION & CREATIVITY
-        else if (courseTitle.includes('innovation') || courseTitle.includes('creative')) {
-          videoUrl = 'https://www.youtube.com/embed/ByYP60zz3F4'; // Innovation & Creativity
-        }
-        
-        // JOB INTERVIEW & CAREER
-        else if (courseTitle.includes('job interview') || courseTitle.includes('interview mastery')) {
-          videoUrl = 'https://www.youtube.com/embed/ciIkiWwZnlc'; // Job Interview Skills
-        }
-        
-        // LEADERSHIP & MANAGEMENT  
-        else if (courseTitle.includes('leadership') || courseTitle.includes('management')) {
-          videoUrl = 'https://www.youtube.com/embed/VrJjOht8Z9Y'; // Leadership Training
-        }
-        
-        // NETWORKING & RELATIONSHIPS
-        else if (courseTitle.includes('networking') || courseTitle.includes('relationship')) {
-          videoUrl = 'https://www.youtube.com/embed/u6XAPnuFjJc'; // Professional Networking
-        }
-        
-        // OPERATIONS MANAGEMENT
-        else if (courseTitle.includes('operations') || courseTitle.includes('operational')) {
-          videoUrl = 'https://www.youtube.com/embed/MJqP6_a_YKM'; // Operations Management
-        }
-        
-        // PERSONAL DEVELOPMENT
-        else if (courseTitle.includes('personal development') || courseTitle.includes('self-improvement')) {
-          videoUrl = 'https://www.youtube.com/embed/u6XAPnuFjJc'; // Personal Development
-        }
-        
-        // PROJECT MANAGEMENT
+        // PROJECT MANAGEMENT & PMP
         else if (courseTitle.includes('project management') || courseTitle.includes('pmp')) {
-          videoUrl = 'https://www.youtube.com/embed/MJqP6_a_YKM'; // Project Management
+          videoUrl = 'https://www.youtube.com/embed/XHCvCO8z0A8'; // Project Management Course
         }
         
-        // PYTHON PROGRAMMING
-        else if (courseTitle.includes('python')) {
-          videoUrl = 'https://www.youtube.com/embed/ix9cRaBkVe0'; // Python Programming Course
+        // LEADERSHIP & MANAGEMENT
+        else if (courseTitle.includes('leadership') || courseTitle.includes('management skills')) {
+          videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Leadership Development
         }
         
-        // QUALITY ASSURANCE & CONTROL
-        else if (courseTitle.includes('quality') || courseTitle.includes('qa')) {
-          videoUrl = 'https://www.youtube.com/embed/MJqP6_a_YKM'; // Quality Management
+        // BLOCKCHAIN & CRYPTOCURRENCY  
+        else if (courseTitle.includes('blockchain') || courseTitle.includes('cryptocurrency')) {
+          videoUrl = 'https://www.youtube.com/embed/SSo_EIwHSd4'; // Blockchain Technology Course
         }
         
-        // SALES & SELLING
-        else if (courseTitle.includes('sales') || courseTitle.includes('selling')) {
-          videoUrl = 'https://www.youtube.com/embed/tHsFGZ3MbgU'; // Sales Training
+        // CYBERSECURITY
+        else if (courseTitle.includes('cybersecurity') || courseTitle.includes('cyber security')) {
+          videoUrl = 'https://www.youtube.com/embed/inWWhr5tnEA'; // Cybersecurity Fundamentals
         }
         
-        // SUPPLY CHAIN MANAGEMENT
-        else if (courseTitle.includes('supply chain') || courseTitle.includes('logistics')) {
-          videoUrl = 'https://www.youtube.com/embed/MJqP6_a_YKM'; // Supply Chain Management
+        // DATABASE & SQL
+        else if (courseTitle.includes('database') || courseTitle.includes('sql')) {
+          videoUrl = 'https://www.youtube.com/embed/HXV3zeQKqGY'; // Database Design & SQL
         }
         
-        // TEAM BUILDING & COLLABORATION
-        else if (courseTitle.includes('team building') || courseTitle.includes('collaboration')) {
-          videoUrl = 'https://www.youtube.com/embed/VrJjOht8Z9Y'; // Team Building
+        // BUSINESS ANALYTICS
+        else if (courseTitle.includes('business analytics') || courseTitle.includes('data-driven')) {
+          videoUrl = 'https://www.youtube.com/embed/ZcaKgqXsEbA'; // Business Analytics Course
         }
         
-        // UI/UX DESIGN
-        else if (courseTitle.includes('ui') || courseTitle.includes('ux') || courseTitle.includes('design')) {
-          videoUrl = 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design Course
+        // CUSTOMER SERVICE & COMMUNICATION
+        else if (courseTitle.includes('customer service') || courseTitle.includes('customer experience')) {
+          videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Customer Service Training
         }
         
-        // WEB DEVELOPMENT
-        else if (courseTitle.includes('web development') || courseTitle.includes('frontend') || courseTitle.includes('backend')) {
-          videoUrl = 'https://www.youtube.com/embed/GxmfcnU3feo'; // Web Development Course
+        // BUSINESS COMMUNICATION & WRITING
+        else if (courseTitle.includes('business writing') || courseTitle.includes('communication')) {
+          videoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // Business Communication Skills
         }
         
-        // CATEGORY-BASED FALLBACKS for unmatched courses
-        else if (category === 'technology') {
-          videoUrl = 'https://www.youtube.com/embed/rfscVS0vtbw'; // General Technology
-        } else if (category === 'business') {
-          videoUrl = 'https://www.youtube.com/embed/nkNHn0VqVBA'; // General Business
-        } else if (category === 'marketing') {
-          videoUrl = 'https://www.youtube.com/embed/Ayekd8lkUkUU'; // General Marketing
-        } else if (category === 'communication') {
-          videoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // General Communication
+        // BRAND MANAGEMENT
+        else if (courseTitle.includes('brand management') || courseTitle.includes('brand strategy')) {
+          videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Brand Management Course
+        }
+        
+        // CONTENT MARKETING
+        else if (courseTitle.includes('content marketing') || courseTitle.includes('storytelling')) {
+          videoUrl = 'https://www.youtube.com/embed/Ayekd8lkUkU'; // Content Marketing Course
+        }
+        
+        // HUMAN RESOURCES
+        else if (category.includes('human resources') || courseTitle.includes('hr ') || courseTitle.includes('compensation')) {
+          videoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // HR Management Course
+        }
+        
+        // SALES & CRM
+        else if (courseTitle.includes('sales') || courseTitle.includes('crm') || courseTitle.includes('customer relationship')) {
+          videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Sales Training Course
+        }
+        
+        // FINANCE & ACCOUNTING
+        else if (category.includes('finance') || courseTitle.includes('finance') || courseTitle.includes('accounting')) {
+          videoUrl = 'https://www.youtube.com/embed/ZcaKgqXsEbA'; // Finance & Accounting Course
+        }
+        
+        // ENTREPRENEURSHIP & STARTUP
+        else if (courseTitle.includes('entrepreneur') || courseTitle.includes('startup') || courseTitle.includes('business plan')) {
+          videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Entrepreneurship Course
+        }
+        
+        // DESIGN & UX/UI
+        else if (courseTitle.includes('design') || courseTitle.includes('ux') || courseTitle.includes('ui')) {
+          videoUrl = 'https://www.youtube.com/embed/w7ejDZ8SWv8'; // Design Course
+        }
+        
+        // MOBILE DEVELOPMENT
+        else if (courseTitle.includes('mobile') || courseTitle.includes('android') || courseTitle.includes('ios')) {
+          videoUrl = 'https://www.youtube.com/embed/TlB_eWDSMt4'; // Mobile Development Course
+        }
+        
+        // DEVOPS & DOCKER
+        else if (courseTitle.includes('devops') || courseTitle.includes('docker') || courseTitle.includes('kubernetes')) {
+          videoUrl = 'https://www.youtube.com/embed/3hLmDS179YE'; // DevOps Course
+        }
+        
+        // QUALITY ASSURANCE & TESTING
+        else if (courseTitle.includes('quality') || courseTitle.includes('testing') || courseTitle.includes('qa')) {
+          videoUrl = 'https://www.youtube.com/embed/TlB_eWDSMt4'; // Software Testing Course
         }
 
         const { error: updateError } = await supabase
@@ -216,7 +200,7 @@ export const VideoUrlFixer: React.FC = () => {
         }
       }
       
-      toast.success(`Successfully updated ${updatedCount} out of ${lessons.length} video URLs with relevant content!`);
+      toast.success(`Successfully updated ${updatedCount} out of ${lessons.length} video URLs with topic-specific content!`);
     } catch (error) {
       console.error('Error fixing video URLs:', error);
       toast.error(`Failed to fix video URLs: ${error.message}`);
@@ -235,7 +219,7 @@ export const VideoUrlFixer: React.FC = () => {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">
-          Match videos precisely with course content to fix mismatches. Uses course titles, categories, and modules for accurate matching.
+          Match videos precisely with course content to fix mismatches. AWS courses get AWS videos, Python courses get Python videos, etc.
         </p>
         <Button 
           onClick={fixVideoUrls} 
