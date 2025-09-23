@@ -17,12 +17,43 @@ export const SimpleCourseCompletion: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<any>(null);
 
+  const testEdgeFunction = async () => {
+    try {
+      console.log('Testing edge function connectivity...');
+      const { data, error } = await supabase.functions.invoke('simple-test', {
+        body: { test: true }
+      });
+      
+      if (error) {
+        console.error('Test function error:', error);
+        toast.error('Edge functions are not accessible');
+        return false;
+      }
+      
+      console.log('Test function success:', data);
+      toast.success('Edge functions are working!');
+      return true;
+    } catch (error) {
+      console.error('Test function failed:', error);
+      toast.error('Edge functions connectivity test failed');
+      return false;
+    }
+  };
+
   const completeCourses = async () => {
     setIsGenerating(true);
     setProgress(0);
     
     try {
       console.log('🚀 Starting course completion...');
+      
+      // First test edge function connectivity
+      console.log('Testing edge function connectivity first...');
+      const connectivityOk = await testEdgeFunction();
+      
+      if (!connectivityOk) {
+        throw new Error('Edge functions are not accessible. Please check your connection and try again.');
+      }
       
       // Enhanced progress updates
       const progressInterval = setInterval(() => {

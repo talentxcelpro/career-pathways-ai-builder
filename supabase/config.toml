@@ -87,6 +87,10 @@ verify_jwt = false
 [functions.ai-resume-content]
 verify_jwt = false
 
+# Testing
+[functions.simple-test]
+verify_jwt = false
+
 # Learning Management
 [functions.complete-course-content]
 verify_jwt = false
