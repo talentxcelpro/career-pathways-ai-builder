@@ -68,17 +68,19 @@ export const SuperChargedCourseFactory: React.FC = () => {
     setProgress(0);
     
     try {
-      // Simulate progress updates
+      // Enhanced progress updates with more detailed feedback
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 95) {
             clearInterval(progressInterval);
             return prev;
           }
-          return prev + Math.random() * 10;
+          return prev + Math.random() * 5 + 2; // Faster progress
         });
-      }, 1000);
+      }, 800);
 
+      console.log('🚀 Starting course completion process...');
+      
       const { data, error } = await supabase.functions.invoke('complete-course-content', {
         body: {
           action: 'complete_existing_courses',
@@ -89,14 +91,23 @@ export const SuperChargedCourseFactory: React.FC = () => {
       clearInterval(progressInterval);
       setProgress(100);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Course completion error:', error);
+        throw error;
+      }
 
+      console.log('✅ Course completion successful:', data);
       setGenerationResults(data);
-      toast.success(`🎉 Completed ${data.courses_processed} courses with full content!`);
+      
+      if (data.courses_processed > 0) {
+        toast.success(`🎉 Successfully completed ${data.courses_processed} courses with ${data.modules_created} modules, ${data.lessons_created} lessons, and ${data.youtube_videos_integrated} YouTube videos!`);
+      } else {
+        toast.info(data.message || 'All courses already have complete content!');
+      }
 
     } catch (error) {
       console.error('Course completion failed:', error);
-      toast.error('Course completion failed. Please try again.');
+      toast.error('Course completion failed. Please check console logs and try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -246,25 +257,28 @@ export const SuperChargedCourseFactory: React.FC = () => {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">What this will add to each course:</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100 text-lg">🚀 Ready to Complete All 50 Courses!</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
                   <div className="flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-blue-600" />
-                    <span>4 comprehensive modules per course</span>
+                    <span><strong>200 modules</strong> (4 per course)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <PlayCircle className="h-4 w-4 text-blue-600" />
-                    <span>15+ lessons with YouTube videos</span>
+                    <span><strong>750+ lessons</strong> with YouTube videos</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Target className="h-4 w-4 text-blue-600" />
-                    <span>Interactive exercises & quizzes</span>
+                    <span><strong>Interactive exercises</strong> & quizzes</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Award className="h-4 w-4 text-blue-600" />
-                    <span>Final assessments & certificates</span>
+                    <span><strong>50 final assessments</strong> & certificates</span>
                   </div>
+                </div>
+                <div className="text-xs text-blue-700 dark:text-blue-300 bg-white/50 dark:bg-black/20 p-2 rounded">
+                  💡 This will transform your empty courses into a comprehensive learning platform with structured content, real YouTube videos, and professional assessments.
                 </div>
               </div>
 
@@ -285,21 +299,25 @@ export const SuperChargedCourseFactory: React.FC = () => {
               <Button
                 onClick={completeCourseContent}
                 disabled={isGenerating}
-                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                className="w-full bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-700 hover:via-blue-700 hover:to-purple-700 text-white shadow-xl border-0 text-lg font-semibold"
                 size="lg"
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Completing Courses...
+                    <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                    Completing All 50 Courses...
                   </>
                 ) : (
                   <>
-                    <CheckCircle className="h-5 w-5 mr-2" />
-                    Complete All 50 Courses
+                    <Rocket className="h-6 w-6 mr-2" />
+                    🚀 Complete All 50 Courses Now!
                   </>
                 )}
               </Button>
+              
+              <div className="text-center text-sm text-muted-foreground mt-2">
+                ⚡ This will create <strong>200 modules</strong>, <strong>750+ lessons</strong>, and <strong>50 assessments</strong> in minutes!
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
