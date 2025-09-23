@@ -8960,6 +8960,54 @@ export type Database = {
           },
         ]
       }
+      course_batches: {
+        Row: {
+          batch_metadata: Json | null
+          batch_name: string
+          batch_number: number
+          completed_at: string | null
+          courses_created: number | null
+          created_at: string
+          created_by: string | null
+          id: string
+          started_at: string | null
+          status: string
+          total_courses: number
+          updated_at: string
+          video_distribution: Json | null
+        }
+        Insert: {
+          batch_metadata?: Json | null
+          batch_name: string
+          batch_number: number
+          completed_at?: string | null
+          courses_created?: number | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string
+          total_courses?: number
+          updated_at?: string
+          video_distribution?: Json | null
+        }
+        Update: {
+          batch_metadata?: Json | null
+          batch_name?: string
+          batch_number?: number
+          completed_at?: string | null
+          courses_created?: number | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string
+          total_courses?: number
+          updated_at?: string
+          video_distribution?: Json | null
+        }
+        Relationships: []
+      }
       course_categories: {
         Row: {
           course_count: number | null
@@ -9024,6 +9072,57 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_creation_log: {
+        Row: {
+          batch_id: string | null
+          course_id: string | null
+          course_title: string | null
+          created_at: string
+          creation_status: string
+          error_message: string | null
+          id: string
+          processing_time_ms: number | null
+          video_id: string | null
+        }
+        Insert: {
+          batch_id?: string | null
+          course_id?: string | null
+          course_title?: string | null
+          created_at?: string
+          creation_status?: string
+          error_message?: string | null
+          id?: string
+          processing_time_ms?: number | null
+          video_id?: string | null
+        }
+        Update: {
+          batch_id?: string | null
+          course_id?: string | null
+          course_title?: string | null
+          created_at?: string
+          creation_status?: string
+          error_message?: string | null
+          id?: string
+          processing_time_ms?: number | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_creation_log_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "course_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_creation_log_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "video_library"
             referencedColumns: ["id"]
           },
         ]
@@ -30743,6 +30842,60 @@ export type Database = {
         }
         Relationships: []
       }
+      video_library: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          difficulty_level: string
+          duration_minutes: number
+          id: string
+          is_unique: boolean | null
+          quality_score: number | null
+          subcategory: string | null
+          tags: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          usage_count: number | null
+          video_url: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number
+          id?: string
+          is_unique?: boolean | null
+          quality_score?: number | null
+          subcategory?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          usage_count?: number | null
+          video_url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_minutes?: number
+          id?: string
+          is_unique?: boolean | null
+          quality_score?: number | null
+          subcategory?: string | null
+          tags?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          usage_count?: number | null
+          video_url?: string
+        }
+        Relationships: []
+      }
       video_likes: {
         Row: {
           created_at: string
@@ -31547,6 +31700,17 @@ export type Database = {
         }
         Returns: string
       }
+      create_course_batch: {
+        Args:
+          | {
+              batch_description: string
+              batch_title: string
+              course_tags: string[]
+              difficulty_level: string
+            }
+          | { p_batch_name?: string; p_courses_per_batch?: number }
+        Returns: string
+      }
       create_notification: {
         Args: {
           p_action_url?: string
@@ -31754,6 +31918,20 @@ export type Database = {
       get_backlink_dashboard_stats: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      get_batch_progress: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          batch_id: string
+          batch_name: string
+          batch_number: number
+          completed_at: string
+          courses_created: number
+          created_at: string
+          status: string
+          total_courses: number
+          video_distribution: Json
+        }[]
       }
       get_bot_display_info: {
         Args: { bot_uuid: string }
@@ -32085,6 +32263,23 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: string
       }
+      get_video_library: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          category: string
+          description: string
+          difficulty_level: string
+          duration_minutes: number
+          id: string
+          quality_score: number
+          subcategory: string
+          tags: string[]
+          thumbnail_url: string
+          title: string
+          usage_count: number
+          video_url: string
+        }[]
+      }
       has_app_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -32335,6 +32530,10 @@ export type Database = {
       }
       normalize_salary_to_annual: {
         Args: { amount: number; frequency: string }
+        Returns: number
+      }
+      populate_video_library: {
+        Args: Record<PropertyKey, never>
         Returns: number
       }
       process_successful_referral: {
