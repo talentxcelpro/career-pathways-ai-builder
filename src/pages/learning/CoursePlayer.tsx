@@ -70,8 +70,35 @@ const CoursePlayer = () => {
       
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!id,
+    retry: false
   });
+
+  // Calculate derived values
+  const allLessons = modules?.flatMap(module => 
+    module.course_lessons?.map(lesson => ({
+      ...lesson,
+      moduleTitle: module.title,
+      moduleId: module.id
+    })) || []
+  ) || [];
+
+  const currentLesson = allLessons[currentLessonIndex];
+  const completedLessons = allLessons.filter(l => l.is_completed).length;
+  const progress = allLessons.length > 0 ? (completedLessons / allLessons.length) * 100 : 0;
+  const isLoading = courseLoading || modulesLoading;
+
+  // Set initial lesson based on URL parameter
+  useEffect(() => {
+    if (lessonId && allLessons.length > 0) {
+      const lessonIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
+      if (lessonIndex !== -1) {
+        console.log('Setting lesson from URL:', lessonId, 'at index:', lessonIndex);
+        setCurrentLessonIndex(lessonIndex);
+      }
+    }
+  }, [lessonId, allLessons]);
 
   useEffect(() => {
     if (course) {
@@ -82,9 +109,7 @@ const CoursePlayer = () => {
     }
   }, [course]);
 
-  const isLoading = courseLoading || modulesLoading;
-  
-  // Show errors instead of auth error boundary
+  // Render error state
   if (courseError) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -105,6 +130,7 @@ const CoursePlayer = () => {
     );
   }
   
+  // Render loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -116,6 +142,7 @@ const CoursePlayer = () => {
     );
   }
 
+  // Render not found state
   if (!course || !modules) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -126,32 +153,6 @@ const CoursePlayer = () => {
       </div>
     );
   }
-
-  // Get all lessons flattened
-  const allLessons = modules.flatMap(module => 
-    module.course_lessons?.map(lesson => ({
-      ...lesson,
-      moduleTitle: module.title,
-      moduleId: module.id
-    })) || []
-  );
-
-  const currentLesson = allLessons[currentLessonIndex];
-  
-  // Set initial lesson based on URL parameter
-  useEffect(() => {
-    if (lessonId && allLessons.length > 0) {
-      const lessonIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
-      if (lessonIndex !== -1) {
-        console.log('Setting lesson from URL:', lessonId, 'at index:', lessonIndex);
-        setCurrentLessonIndex(lessonIndex);
-      }
-    }
-  }, [lessonId, allLessons]);
-  
-  // Calculate progress
-  const completedLessons = allLessons.filter(l => l.is_completed).length;
-  const progress = allLessons.length > 0 ? (completedLessons / allLessons.length) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-background">
