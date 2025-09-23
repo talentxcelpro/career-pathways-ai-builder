@@ -279,17 +279,23 @@ function generateCourseContent(category: string, title: string): CourseContentTe
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  console.log('Function called with method:', req.method);
+
   try {
+    console.log('Creating Supabase client...');
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
+    console.log('Parsing request body...');
     const { action, course_limit = 50 } = await req.json();
+    console.log('Request data:', { action, course_limit });
 
     if (action === 'complete_existing_courses') {
       console.log(`Starting completion process for up to ${course_limit} courses...`);
@@ -483,10 +489,14 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in complete-course-content function:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        details: 'Check edge function logs for more details'
+        error: error.message || 'Unknown error occurred',
+        details: 'Check edge function logs for more details',
+        stack: error.stack
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

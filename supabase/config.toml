@@ -87,6 +87,16 @@ verify_jwt = false
 [functions.ai-resume-content]
 verify_jwt = false
 
+# Learning Management
+[functions.complete-course-content]
+verify_jwt = false
+
+[functions.course-content-generator]
+verify_jwt = false
+
+[functions.course-enhancement]
+verify_jwt = false
+
 # Job Management
 [functions.bulk-job-upload-v2]
 verify_jwt = false
