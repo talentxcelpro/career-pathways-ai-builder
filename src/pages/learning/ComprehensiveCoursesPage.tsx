@@ -157,8 +157,8 @@ export default function ComprehensiveCoursesPage() {
           course_modules(
             id,
             title,
-            order_number,
-            course_lessons(id, title, duration_minutes, order_number)
+            module_order,
+            course_lessons(id, title, duration_minutes, lesson_order)
           )
         `)
         .eq('is_active', true);
