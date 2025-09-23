@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, RefreshCw, Eye } from 'lucide-react';
 import { scanCourseVideos } from '@/utils/videoValidation';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const VideoHealthMonitor: React.FC = () => {
@@ -28,6 +29,27 @@ export const VideoHealthMonitor: React.FC = () => {
     } catch (error) {
       toast.error('Failed to scan video health');
       console.error('Health check failed:', error);
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  const fixBrokenVideos = async () => {
+    setIsScanning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fix-video-urls');
+      
+      if (error) throw error;
+      
+      toast.success(data.message || 'Videos fixed successfully');
+      
+      // Refresh the health check after fixing
+      setTimeout(() => {
+        runHealthCheck();
+      }, 1000);
+    } catch (error) {
+      console.error('Failed to fix videos:', error);
+      toast.error('Failed to fix broken videos');
     } finally {
       setIsScanning(false);
     }
@@ -101,10 +123,20 @@ export const VideoHealthMonitor: React.FC = () => {
 
             {scanResults.brokenVideos.length > 0 && (
               <div className="space-y-2">
-                <h4 className="font-medium text-sm flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  Broken Videos Found
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-sm flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    Broken Videos Found
+                  </h4>
+                  <Button 
+                    onClick={fixBrokenVideos} 
+                    disabled={isScanning}
+                    size="sm"
+                    variant="destructive"
+                  >
+                    {isScanning ? 'Fixing...' : 'Fix All Broken Videos'}
+                  </Button>
+                </div>
                 <div className="max-h-32 overflow-y-auto space-y-1">
                   {scanResults.brokenVideos.slice(0, 5).map((video) => (
                     <div key={video.id} className="text-xs p-2 bg-muted rounded border-l-2 border-red-500">
