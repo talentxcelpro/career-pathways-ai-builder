@@ -9098,9 +9098,11 @@ export type Database = {
           course_id: string | null
           created_at: string | null
           description: string | null
+          duration_hours: number | null
           duration_minutes: number | null
           id: string
           is_active: boolean | null
+          learning_objectives: string[] | null
           module_order: number
           title: string
           updated_at: string | null
@@ -9109,9 +9111,11 @@ export type Database = {
           course_id?: string | null
           created_at?: string | null
           description?: string | null
+          duration_hours?: number | null
           duration_minutes?: number | null
           id?: string
           is_active?: boolean | null
+          learning_objectives?: string[] | null
           module_order?: number
           title: string
           updated_at?: string | null
@@ -9120,9 +9124,11 @@ export type Database = {
           course_id?: string | null
           created_at?: string | null
           description?: string | null
+          duration_hours?: number | null
           duration_minutes?: number | null
           id?: string
           is_active?: boolean | null
+          learning_objectives?: string[] | null
           module_order?: number
           title?: string
           updated_at?: string | null
@@ -9203,6 +9209,7 @@ export type Database = {
           is_active: boolean | null
           is_free: boolean | null
           language: string | null
+          learning_outcomes: string[] | null
           like_count: number | null
           price: number | null
           published: boolean | null
@@ -9237,6 +9244,7 @@ export type Database = {
           is_active?: boolean | null
           is_free?: boolean | null
           language?: string | null
+          learning_outcomes?: string[] | null
           like_count?: number | null
           price?: number | null
           published?: boolean | null
@@ -9271,6 +9279,7 @@ export type Database = {
           is_active?: boolean | null
           is_free?: boolean | null
           language?: string | null
+          learning_outcomes?: string[] | null
           like_count?: number | null
           price?: number | null
           published?: boolean | null
