@@ -299,7 +299,14 @@ const App = () => {
                          <Route path="/admin/scraped-applications" element={<AdminLayout><AdminScrapedJobApplications /></AdminLayout>} />
                          <Route path="/admin/edge-functions-monitor" element={<AdminLayout><EdgeFunctionsMonitor /></AdminLayout>} />
                           <Route path="/admin/news-management" element={<AdminLayout><NewsManagement /></AdminLayout>} />
-                          <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
+                         <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
+                         <Route path="/admin/course-management" element={
+                           <AdminLayout>
+                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading course management...</div>}>
+                               {React.createElement(React.lazy(() => import('./pages/admin/CourseManagementPage')))}
+                             </React.Suspense>
+                           </AdminLayout>
+                         } />
                          <Route path="/news" element={<NewsPage />} />
                          <Route path="/news/:slug" element={<NewsPage />} />
                          <Route path="/employer/cv-database" element={<CVDatabase />} />
