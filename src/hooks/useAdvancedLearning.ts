@@ -304,40 +304,79 @@ export const useUserAchievements = (userId?: string) => {
 
 // Course Enhancement
 export const useCourseEnhancement = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const enhanceCourse = async (params: {
-    action: 'generate_comprehensive_course' | 'enhance_existing_course' | 'create_interactive_exercises';
-    topic?: string;
-    difficulty_level?: string;
-    duration_hours?: number;
-    course_id?: string;
-    include_youtube_videos?: boolean;
-    include_exercises?: boolean;
-    include_projects?: boolean;
-  }) => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('course-content-generator', {
+  const enhanceCourse = useMutation({
+    mutationFn: async (params: {
+      action: 'generate_comprehensive_course' | 'enhance_existing_course' | 'create_interactive_exercises';
+      topic?: string;
+      difficulty_level?: string;
+      duration_hours?: number;
+      course_id?: string;
+      include_youtube_videos?: boolean;
+      include_exercises?: boolean;
+      include_projects?: boolean;
+    }) => {
+      const { data, error } = await supabase.functions.invoke('course-enhancement', {
         body: params
       });
 
       if (error) throw error;
-      
-      toast.success('Course enhancement completed!');
       return data;
-    } catch (error) {
-      console.error('Course Enhancement Error:', error);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['course-modules'] });
+      queryClient.invalidateQueries({ queryKey: ['course-lessons'] });
+      toast.success('Course enhancement completed successfully!');
+    },
+    onError: (error) => {
+      console.error('Course enhancement failed:', error);
       toast.error('Course enhancement failed');
-      throw error;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  });
 
   return {
-    enhanceCourse,
-    isLoading
+    enhanceCourse: enhanceCourse.mutate,
+    isLoading: enhanceCourse.isPending,
+    data: enhanceCourse.data,
+    error: enhanceCourse.error
+  };
+};
+
+// Mass Course Generation
+export const useCourseMassGeneration = () => {
+  const queryClient = useQueryClient();
+
+  const generateCourses = useMutation({
+    mutationFn: async (options: {
+      action: string;
+      count: number;
+      categories: string[];
+    }) => {
+      const { data, error } = await supabase.functions.invoke('mass-course-population', {
+        body: options
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['learning-paths'] });
+      toast.success(`Successfully generated ${data.courses_created} courses!`);
+    },
+    onError: (error) => {
+      console.error('Mass course generation failed:', error);
+      toast.error('Failed to generate courses');
+    }
+  });
+
+  return {
+    generateCourses: generateCourses.mutate,
+    isLoading: generateCourses.isPending,
+    data: generateCourses.data,
+    error: generateCourses.error
   };
 };
 
