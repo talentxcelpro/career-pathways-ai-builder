@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { LearningHeader } from '@/components/learning/LearningHeader';
 import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,6 +12,9 @@ import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Vol
 
 const CoursePlayer = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const lessonId = searchParams.get('lesson');
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true); // Start muted to allow autoplay
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
@@ -94,6 +97,17 @@ const CoursePlayer = () => {
   );
 
   const currentLesson = allLessons[currentLessonIndex];
+  
+  // Set initial lesson based on URL parameter
+  useEffect(() => {
+    if (lessonId && allLessons.length > 0) {
+      const lessonIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
+      if (lessonIndex !== -1) {
+        console.log('Setting lesson from URL:', lessonId, 'at index:', lessonIndex);
+        setCurrentLessonIndex(lessonIndex);
+      }
+    }
+  }, [lessonId, allLessons]);
   
   // Calculate progress
   const completedLessons = allLessons.filter(l => l.is_completed).length;

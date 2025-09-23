@@ -349,7 +349,19 @@ export const EnhancedCourseDetail: React.FC = () => {
                                   <div className="text-sm text-gray-500">{lesson.duration_minutes} minutes</div>
                                 </div>
                               </div>
-                              <Button variant="outline" size="sm">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  console.log('Play button clicked!');
+                                  console.log('Course ID:', id);
+                                  console.log('Lesson ID:', lesson.id);
+                                  console.log('Lesson Title:', lesson.title);
+                                  const playerUrl = `/learning/${id}?lesson=${lesson.id}`;
+                                  console.log('Navigating to:', playerUrl);
+                                  navigate(playerUrl);
+                                }}
+                              >
                                 Play
                               </Button>
                             </div>
