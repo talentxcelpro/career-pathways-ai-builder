@@ -56,20 +56,24 @@ export const CourseraHeroSection: React.FC = () => {
 
             {/* CTA Buttons - Coursera Style */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button 
+              <Button asChild
                 size="lg" 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 hover-scale"
               >
-                <Play className="h-5 w-5 mr-2" />
-                Start Learning
+                <Link to="/learning/skill-assessment">
+                  <Play className="h-5 w-5 mr-2" />
+                  Start Learning
+                </Link>
               </Button>
-              <Button 
+              <Button asChild
                 size="lg" 
                 variant="outline"
                 className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold rounded-sm"
               >
-                <BookOpen className="h-5 w-5 mr-2" />
-                Browse Courses
+                <Link to="/learning/courses">
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  Browse Courses
+                </Link>
               </Button>
             </div>
           </div>
@@ -81,7 +85,9 @@ export const CourseraHeroSection: React.FC = () => {
               <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">Your Learning Journey</h3>
+                  <Link to="/learning/my-courses" className="hover:text-primary transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900">Your Learning Journey</h3>
+                  </Link>
                   <div className="flex items-center space-x-1">
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     <span className="text-sm font-medium text-gray-600">4.8</span>
@@ -100,7 +106,11 @@ export const CourseraHeroSection: React.FC = () => {
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
-                        onClick={() => setActiveFeature(index)}
+                        onClick={() => {
+                          setActiveFeature(index);
+                          const links = ['/learning/courses', '/learning/certificates', '/learning/skill-assessment'];
+                          window.location.href = links[index];
+                        }}
                       >
                         <div className="flex items-center space-x-3">
                           <div className={`p-2 rounded-lg ${

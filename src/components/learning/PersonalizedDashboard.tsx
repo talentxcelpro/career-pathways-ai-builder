@@ -110,7 +110,9 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ cl
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold text-foreground mb-4">Welcome to TalentXcel Learning! 🚀</h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Start your learning journey with a quick skill assessment to get personalized course recommendations.
+              <Link to="/learning" className="hover:text-primary transition-colors">
+                Start your learning journey
+              </Link> with a quick skill assessment to get personalized course recommendations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg">
@@ -193,12 +195,13 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ cl
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {currentCourses.map((course) => (
-            <Card key={course.id} className="group hover:shadow-md transition-all cursor-pointer">
-              <CardContent className="p-4">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-16 bg-muted rounded-lg flex items-center justify-center">
-                    <PlayCircle className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                  </div>
+            <Link key={course.id} to={`/learning/courses/${course.id}`}>
+              <Card className="group hover:shadow-md transition-all cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex space-x-4">
+                    <div className="w-20 h-16 bg-muted rounded-lg flex items-center justify-center">
+                      <PlayCircle className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-foreground mb-1 truncate">{course.title}</h4>
                     <p className="text-sm text-muted-foreground mb-2">Next: {course.nextLesson}</p>
@@ -213,6 +216,7 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ cl
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
       </div>
@@ -243,8 +247,9 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ cl
         <h3 className="text-xl font-bold text-foreground mb-4">Recommended for You</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {recommendations.map((course, index) => (
-            <Card key={index} className="group hover:shadow-md transition-all cursor-pointer">
-              <CardContent className="p-4">
+            <Link key={index} to={`/learning/courses/search?q=${encodeURIComponent(course.title)}`}>
+              <Card className="group hover:shadow-md transition-all cursor-pointer">
+                <CardContent className="p-4">
                 <div className="flex items-start space-x-4">
                   <div className="w-16 h-12 bg-muted rounded-lg"></div>
                   <div className="flex-1 min-w-0">
@@ -265,6 +270,7 @@ export const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ cl
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
       </div>

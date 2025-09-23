@@ -256,15 +256,17 @@ export const CourseraStyleLearningEngine: React.FC<CourseraStyleLearningEnginePr
                 { name: 'Language', count: '300+', icon: Users, color: 'bg-orange-500' },
                 { name: 'Arts', count: '250+', icon: Zap, color: 'bg-pink-500' }
               ].map((category) => (
-                <Card key={category.name} className="group hover:shadow-lg transition-all cursor-pointer">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-12 h-12 mx-auto mb-4 rounded-xl ${category.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                      <category.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-                    <p className="text-sm text-gray-500">{category.count} courses</p>
-                  </CardContent>
-                </Card>
+                <Link key={category.name} to={`/learning/courses?category=${category.name.toLowerCase().replace(' ', '-')}`}>
+                  <Card className="group hover:shadow-lg transition-all cursor-pointer">
+                    <CardContent className="p-6 text-center">
+                      <div className={`w-12 h-12 mx-auto mb-4 rounded-xl ${category.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <category.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
+                      <p className="text-sm text-gray-500">{category.count} courses</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>
