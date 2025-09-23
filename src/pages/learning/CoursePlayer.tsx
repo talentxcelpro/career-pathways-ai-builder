@@ -84,6 +84,12 @@ const CoursePlayer = () => {
   ) || [];
 
   const currentLesson = allLessons[currentLessonIndex];
+  
+  // Auto-navigate to first video lesson if current lesson has no video
+  const firstVideoLessonIndex = allLessons.findIndex(lesson => lesson.video_url);
+  const shouldShowVideoLesson = currentLesson && !currentLesson.video_url && firstVideoLessonIndex !== -1;
+  const displayLesson = shouldShowVideoLesson ? allLessons[firstVideoLessonIndex] : currentLesson;
+  
   const completedLessons = allLessons.filter(l => l.is_completed).length;
   const progress = allLessons.length > 0 ? (completedLessons / allLessons.length) * 100 : 0;
   const isLoading = courseLoading || modulesLoading;
@@ -163,13 +169,13 @@ const CoursePlayer = () => {
           <div className="lg:col-span-3">
             <Card className="mb-6">
               <CardContent className="p-0">
-                {currentLesson?.video_url ? (
+                {displayLesson?.video_url ? (
                   <div className="relative aspect-video bg-black rounded-t-lg overflow-hidden">
-                    {currentLesson.video_url.includes('youtube.com') || currentLesson.video_url.includes('youtu.be') ? (
+                    {displayLesson.video_url.includes('youtube.com') || displayLesson.video_url.includes('youtu.be') ? (
                       <iframe
-                        src={currentLesson.video_url.includes('/embed/') ? currentLesson.video_url : currentLesson.video_url.replace('watch?v=', 'embed/')}
+                        src={displayLesson.video_url.includes('/embed/') ? displayLesson.video_url : displayLesson.video_url.replace('watch?v=', 'embed/')}
                         className="w-full h-full border-0"
-                        title={currentLesson.title}
+                        title={displayLesson.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
@@ -180,7 +186,7 @@ const CoursePlayer = () => {
                         className="w-full h-full object-cover"
                         controls
                         preload="metadata"
-                        src={currentLesson.video_url}
+                        src={displayLesson.video_url}
                       >
                         Your browser does not support the video tag.
                       </video>
@@ -194,7 +200,9 @@ const CoursePlayer = () => {
                       <p className="text-muted-foreground">
                         Duration: {currentLesson?.duration_minutes || 0} minutes
                       </p>
-                      <p className="text-sm text-muted-foreground mt-2">Video not available</p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {shouldShowVideoLesson ? 'This is a text lesson. Navigate to a video lesson to watch videos.' : 'Video not available'}
+                      </p>
                     </div>
                   </div>
                 )}
