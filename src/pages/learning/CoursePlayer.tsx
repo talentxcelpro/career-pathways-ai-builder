@@ -20,20 +20,39 @@ const CoursePlayer = () => {
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
 
-  // Fetch course data
-  const { data: course, isLoading: courseLoading } = useQuery({
+  // Add debug logging
+  useEffect(() => {
+    console.log('CoursePlayer mounted with params:', { id, lessonId });
+    setDebugInfo(`Course ID: ${id}, Lesson ID: ${lessonId}`);
+  }, [id, lessonId]);
+
+  // Fetch course data with better error handling
+  const { data: course, isLoading: courseLoading, error: courseError } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
+      if (!id) {
+        throw new Error('Course ID is required');
+      }
+      
+      console.log('Fetching course data for ID:', id);
       const { data, error } = await supabase
         .from('courses')
         .select('*')
         .eq('id', id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Course fetch error:', error);
+        throw error;
+      }
+      
+      console.log('Course data fetched successfully:', data?.title);
       return data;
-    }
+    },
+    enabled: !!id,
+    retry: false // Don't retry on errors to avoid auth loops
   });
 
   // Fetch course modules and lessons
@@ -64,6 +83,27 @@ const CoursePlayer = () => {
   }, [course]);
 
   const isLoading = courseLoading || modulesLoading;
+  
+  // Show errors instead of auth error boundary
+  if (courseError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center max-w-lg p-6">
+          <div className="text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold mb-4">Unable to Load Course</h2>
+          <p className="text-muted-foreground mb-4">
+            {courseError?.message || 'There was an error loading the course content.'}
+          </p>
+          <p className="text-sm text-muted-foreground mb-4">
+            Debug: {debugInfo}
+          </p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
   
   if (isLoading) {
     return (
