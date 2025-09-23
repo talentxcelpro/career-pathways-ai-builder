@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -355,19 +355,106 @@ export default function EnhancedCoursePage() {
           </TabsContent>
 
           <TabsContent value="lessons" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Course Lessons</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Access all video lessons and course materials
-                </p>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center text-muted-foreground py-8">
-                  Lesson player will be integrated here
-                </p>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {course.course_modules?.map((module, moduleIndex) => (
+                <Card key={module.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Play className="h-5 w-5" />
+                      Module {moduleIndex + 1}: {module.title}
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {module.description}
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {module.course_lessons?.map((lesson, lessonIndex) => (
+                      <div key={lesson.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <h4 className="font-medium">{lesson.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {lesson.duration_minutes} minutes
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {lesson.is_free && (
+                              <Badge variant="secondary">Free</Badge>
+                            )}
+                            <Button 
+                              size="sm" 
+                              onClick={() => handlePlayAudio(lesson.content || lesson.title, lesson.id)}
+                              disabled={ttsLoading}
+                            >
+                              <Volume2 className="h-3 w-3 mr-1" />
+                              Listen
+                            </Button>
+                            <Button size="sm" variant="outline" asChild>
+                              <Link to={`/learning/courses/${courseId}/player?lesson=${lesson.id}`}>
+                                <Play className="h-3 w-3 mr-1" />
+                                Play
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {lesson.video_url && (
+                          <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
+                            {lesson.video_url.includes('youtube.com/embed') || lesson.video_url.includes('youtu.be') ? (
+                              <iframe
+                                src={lesson.video_url}
+                                className="w-full h-full border-0"
+                                title={lesson.title}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerPolicy="strict-origin-when-cross-origin"
+                                allowFullScreen
+                                loading="lazy"
+                              />
+                            ) : (
+                              <video
+                                className="w-full h-full object-cover"
+                                controls
+                                preload="metadata"
+                                poster={lesson.thumbnail_url}
+                              >
+                                <source src={lesson.video_url} type="video/mp4" />
+                                Your browser does not support the video tag.
+                              </video>
+                            )}
+                          </div>
+                        )}
+                        
+                        {lesson.content && (
+                          <div className="prose prose-sm max-w-none">
+                            <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {(!course.course_modules || course.course_modules.length === 0) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Course Lessons</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Access all video lessons and course materials
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <Play className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-muted-foreground">No lessons available yet</p>
+                      <p className="text-sm text-muted-foreground">
+                        Course content will be added soon
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="exercises" className="mt-6">

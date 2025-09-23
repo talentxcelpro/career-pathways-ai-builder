@@ -524,11 +524,10 @@ export const CourseViewer: React.FC = () => {
                 <div className="space-y-6">
                   {/* Video Player */}
                   <VideoPlayer
-                    videoUrl={currentLesson.video_url}
-                    lessonId={currentLesson.id}
-                    onProgress={handleVideoProgress}
+                    src={currentLesson.video_url}
+                    title={currentLesson.title}
+                    onProgress={(progress) => handleVideoProgress(progress, 0)}
                     className="w-full max-w-4xl mx-auto"
-                    autoplay={true}
                   />
 
                   {/* Lesson Content */}

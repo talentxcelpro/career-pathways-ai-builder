@@ -315,11 +315,18 @@ const App = () => {
                         <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                         <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                         
-                        {/* Tools Routes */}
-                        <Route path="/tools" element={<ToolsHub />} />
-                        <Route path="/tools/resume-check" element={<ResumeChecker />} />
-                        <Route path="/tools/cover-letter" element={<CoverLetterGenerator />} />
-                        <Route path="/tools/interview-prep" element={<InterviewPrep />} />
+                         {/* Tools Routes */}
+                         <Route path="/tools" element={<ToolsHub />} />
+                         <Route path="/tools/resume-check" element={<ResumeChecker />} />
+                         <Route path="/tools/cover-letter" element={<CoverLetterGenerator />} />
+                         <Route path="/tools/interview-prep" element={<InterviewPrep />} />
+
+                         {/* Learning Routes - Phase 3 Complete */}
+                         <Route path="/learning/courses" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading courses...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/ComprehensiveCoursesPage')))}
+                           </React.Suspense>
+                         } />
                         <Route path="/tools/profile-optimizer" element={<ProfileOptimizer />} />
                         <Route path="/tools/salary-analyzer" element={<SalaryAnalyzer />} />
                         <Route path="/tools/skill-assessor" element={<SkillAssessor />} />
