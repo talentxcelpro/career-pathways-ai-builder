@@ -20,22 +20,37 @@ export const SimpleCourseCompletion: React.FC = () => {
   const testEdgeFunction = async () => {
     try {
       console.log('Testing edge function connectivity...');
+      
       const { data, error } = await supabase.functions.invoke('simple-test', {
-        body: { test: true }
+        body: { test: true, timestamp: new Date().toISOString() }
       });
       
+      console.log('Test function response - data:', data, 'error:', error);
+      
       if (error) {
-        console.error('Test function error:', error);
-        toast.error('Edge functions are not accessible');
+        console.error('Test function error details:', {
+          message: error.message,
+          context: error.context,
+          name: error.name,
+          stack: error.stack
+        });
+        toast.error(`Edge function error: ${error.message}`);
         return false;
       }
       
-      console.log('Test function success:', data);
-      toast.success('Edge functions are working!');
-      return true;
+      if (data && data.success) {
+        console.log('Test function success:', data);
+        toast.success('Edge functions are working!');
+        return true;
+      } else {
+        console.error('Test function returned unexpected data:', data);
+        toast.error('Edge function returned unexpected response');
+        return false;
+      }
+      
     } catch (error) {
-      console.error('Test function failed:', error);
-      toast.error('Edge functions connectivity test failed');
+      console.error('Test function exception:', error);
+      toast.error(`Edge function test failed: ${error.message}`);
       return false;
     }
   };
