@@ -16,11 +16,29 @@ export class AuthErrorBoundary extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(error: Error): State {
+    // Only show error boundary for critical errors, not auth session issues
+    const isAuthSessionError = error.message?.includes('Auth session missing') || 
+                              error.message?.includes('JWT') ||
+                              error.message?.includes('session');
+    
+    // Don't show error boundary for normal auth session issues
+    if (isAuthSessionError) {
+      console.warn('Auth session error handled gracefully:', error.message);
+      return { hasError: false };
+    }
+    
     return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Auth Error Boundary caught an error:', error, errorInfo);
+    // Only log critical errors
+    const isAuthSessionError = error.message?.includes('Auth session missing') || 
+                              error.message?.includes('JWT') ||
+                              error.message?.includes('session');
+    
+    if (!isAuthSessionError) {
+      console.error('Auth Error Boundary caught an error:', error, errorInfo);
+    }
   }
 
   private handleRetry = () => {

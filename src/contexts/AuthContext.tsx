@@ -83,7 +83,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (error) {
           console.warn('⚠️ Auth check error:', error);
-          // Don't throw on session errors - just continue without auth
+          // Silently handle session errors - don't throw or show error UI
+          // This is normal when no session exists or session is expired
+          if (mounted) {
+            setSession(null);
+            setUser(null);
+            setLoading(false);
+          }
+          return;
         }
         
         if (mounted) {

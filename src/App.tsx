@@ -48,6 +48,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
 import { GoogleOneTapLogin } from "./components/auth/GoogleOneTapLogin";
+import { SilentAuthHandler } from "./components/auth/SilentAuthHandler";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 
@@ -198,8 +199,9 @@ const App = () => {
           <TooltipProvider delayDuration={200}>
             <BrowserRouter>
               <AuthErrorBoundary>
-                <AuthProvider>
-                  <AuthErrorRecovery>
+                <SilentAuthHandler>
+                  <AuthProvider>
+                    <AuthErrorRecovery>
                     <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
@@ -395,8 +397,9 @@ const App = () => {
                   
                 </CopilotProvider>
                     </NotificationProvider>
-                  </AuthErrorRecovery>
-                </AuthProvider>
+                    </AuthErrorRecovery>
+                  </AuthProvider>
+                </SilentAuthHandler>
               </AuthErrorBoundary>
             </BrowserRouter>
           </TooltipProvider>
