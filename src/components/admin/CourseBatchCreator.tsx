@@ -21,12 +21,13 @@ import {
 } from 'lucide-react';
 
 interface BatchInfo {
-  id: string;
+  batch_id: string;
+  batch_name: string;
   batch_number: number;
-  batch_size: number;
+  total_courses: number;
+  courses_created: number;
   status: string;
-  created_courses_count: number;
-  target_categories: string[];
+  video_distribution: any;
   created_at: string;
   completed_at: string | null;
 }
@@ -36,17 +37,7 @@ export const CourseGraphenerator: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [batchSize, setBatchSize] = useState(10);
-  const [targetCategories] = useState([
-    'programming',
-    'web-development', 
-    'database',
-    'design',
-    'data-science',
-    'mobile-development',
-    'marketing',
-    'cloud-computing',
-    'cybersecurity'
-  ]);
+  const [batchName, setBatchName] = useState('');
 
   const courseTemplates = [
     { title: 'Complete Python Bootcamp', category: 'programming', lessons: 12 },
@@ -64,9 +55,7 @@ export const CourseGraphenerator: React.FC = () => {
   const fetchBatches = async () => {
     try {
       const { data, error } = await supabase
-        .from('course_batches')
-        .select('*')
-        .order('batch_number', { ascending: false });
+        .rpc('get_batch_progress');
 
       if (error) throw error;
       setBatches(data || []);
@@ -76,174 +65,33 @@ export const CourseGraphenerator: React.FC = () => {
   };
 
   const createCourseBatch = async () => {
+    if (!batchName.trim()) {
+      toast.error('Please enter a batch name');
+      return;
+    }
+
+    setIsCreating(true);
+    setProgress(10);
+    
     try {
-      setIsCreating(true);
-      setProgress(0);
+      const { data: result, error } = await supabase
+        .rpc('create_course_batch', {
+          p_batch_name: batchName,
+          p_courses_per_batch: batchSize
+        });
 
-      // Create batch record
-      const batchNumber = batches.length > 0 ? Math.max(...batches.map(b => b.batch_number)) + 1 : 1;
-      
-      const { data: batch, error: batchError } = await supabase
-        .from('course_batches')
-        .insert({
-          batch_number: batchNumber,
-          batch_size: batchSize,
-          status: 'creating',
-          target_categories: targetCategories.slice(0, batchSize)
-        })
-        .select()
-        .single();
-
-      if (batchError) throw batchError;
-      setProgress(10);
-
-      // Create courses intelligently
-      const coursesToCreate = courseTemplates.slice(0, batchSize);
-      
-      for (let i = 0; i < coursesToCreate.length; i++) {
-        const template = coursesToCreate[i];
-        
-        try {
-          // Get available videos for this category
-          const { data: availableVideos, error: videoError } = await supabase
-            .rpc('get_available_videos_for_category', {
-              category_param: template.category,
-              limit_param: Math.min(template.lessons, 3)
-            });
-
-          if (videoError) {
-            console.error('Error getting videos:', videoError);
-            continue;
-          }
-
-          // Create course
-          const { data: course, error: courseError } = await supabase
-            .from('courses')
-            .insert({
-              title: template.title,
-              instructor: 'Expert Instructor',
-              rating: 4.5 + Math.random() * 0.5,
-              students: Math.floor(Math.random() * 1000) + 100,
-              duration: `${template.lessons} hours`,
-              level: 'All Levels',
-              price: 'Free',
-              category: template.category,
-              subcategory: template.category,
-              thumbnail: 'https://via.placeholder.com/300x200',
-              tags: [template.category, 'certification', 'practical'],
-              certified: true,
-              trending: Math.random() > 0.7,
-              description: `Comprehensive ${template.title} course covering essential concepts and practical applications.`,
-              what_you_learn: [
-                `Master ${template.category} fundamentals`,
-                'Build real-world projects',
-                'Get industry-ready skills',
-                'Earn a professional certificate'
-              ],
-              requirements: ['Basic computer skills', 'Willingness to learn'],
-              is_active: true
-            })
-            .select()
-            .single();
-
-          if (courseError) throw courseError;
-
-          // Create modules and lessons
-          const moduleCount = Math.ceil(template.lessons / 4);
-          let videoIndex = 0;
-
-          for (let m = 0; m < moduleCount; m++) {
-            const { data: module, error: moduleError } = await supabase
-              .from('course_modules')
-              .insert({
-                course_id: course.id,
-                title: `Module ${m + 1}: Core Concepts`,
-                description: `Essential topics for ${template.category}`,
-                order_index: m,
-                is_active: true
-              })
-              .select()
-              .single();
-
-            if (moduleError) throw moduleError;
-
-            // Create lessons for this module
-            const lessonsInModule = Math.min(4, template.lessons - (m * 4));
-            
-            for (let l = 0; l < lessonsInModule; l++) {
-              const videoUrl = availableVideos && availableVideos[videoIndex % availableVideos.length]?.video_url || 
-                              'https://www.youtube.com/embed/llKvV8_T95M';
-
-              await supabase
-                .from('course_lessons')
-                .insert({
-                  module_id: module.id,
-                  title: `Lesson ${(m * 4) + l + 1}: Practical Application`,
-                  description: `Learn key concepts in ${template.category}`,
-                  video_url: videoUrl,
-                  order_index: l,
-                  duration_minutes: 15 + Math.floor(Math.random() * 10),
-                  lesson_type: 'video',
-                  is_active: true
-                });
-
-              // Increment video usage
-              if (availableVideos && availableVideos[videoIndex % availableVideos.length]) {
-                await supabase.rpc('increment_video_usage', {
-                  video_url_param: videoUrl
-                });
-              }
-              
-              videoIndex++;
-            }
-          }
-
-          // Log course creation
-          await supabase
-            .from('course_creation_log')
-            .insert({
-              batch_id: batch.id,
-              course_id: course.id,
-              course_title: course.title,
-              videos_assigned: template.lessons,
-              unique_videos_used: Math.min(availableVideos?.length || 1, 3),
-              duplication_score: availableVideos?.length ? 1 - (Math.min(availableVideos.length, 3) / template.lessons) : 0.8,
-              creation_status: 'completed'
-            });
-
-        } catch (error) {
-          console.error(`Error creating course ${template.title}:`, error);
-          
-          await supabase
-            .from('course_creation_log')
-            .insert({
-              batch_id: batch.id,
-              course_title: template.title,
-              creation_status: 'failed',
-              error_message: error instanceof Error ? error.message : 'Unknown error'
-            });
-        }
-        
-        setProgress(10 + ((i + 1) / coursesToCreate.length) * 80);
-      }
-
-      // Update batch status
-      await supabase
-        .from('course_batches')
-        .update({
-          status: 'completed',
-          created_courses_count: coursesToCreate.length,
-          completed_at: new Date().toISOString()
-        })
-        .eq('id', batch.id);
-
+      if (error) throw error;
       setProgress(100);
-      toast.success(`Successfully created batch ${batchNumber} with ${coursesToCreate.length} courses!`);
+
+      toast.success(`Successfully created ${result.courses_created} courses in batch ${result.batch_number}!`);
+      
+      // Reset form and refresh data
+      setBatchName('');
       await fetchBatches();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating course batch:', error);
-      toast.error('Failed to create course batch');
+      toast.error(error.message || 'Failed to create course batch');
     } finally {
       setIsCreating(false);
       setTimeout(() => setProgress(0), 2000);
@@ -291,6 +139,16 @@ export const CourseGraphenerator: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
+              <Label htmlFor="batch-name">Batch Name</Label>
+              <Input
+                id="batch-name"
+                placeholder="e.g., AI & Tech Batch"
+                value={batchName}
+                onChange={(e) => setBatchName(e.target.value)}
+                disabled={isCreating}
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="batch-size">Batch Size</Label>
               <Input
                 id="batch-size"
@@ -302,11 +160,12 @@ export const CourseGraphenerator: React.FC = () => {
                 disabled={isCreating}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Target: 50 Total Courses</Label>
-              <div className="text-sm text-muted-foreground">
-                Current: {batches.reduce((sum, b) => sum + b.created_courses_count, 0)} courses
-              </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label>Progress Tracking</Label>
+            <div className="text-sm text-muted-foreground">
+              Total courses created: {batches.reduce((sum, b) => sum + (b.courses_created || 0), 0)}
             </div>
           </div>
 
@@ -322,7 +181,7 @@ export const CourseGraphenerator: React.FC = () => {
 
           <Button 
             onClick={createCourseBatch}
-            disabled={isCreating}
+            disabled={isCreating || !batchName.trim()}
             className="w-full"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -342,21 +201,21 @@ export const CourseGraphenerator: React.FC = () => {
         <CardContent>
           <div className="space-y-3">
             {batches.map((batch) => (
-              <div key={batch.id} className="flex items-center justify-between p-3 rounded-lg border">
+              <div key={batch.batch_id} className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center gap-3">
                   {getStatusIcon(batch.status)}
                   <div>
-                    <h4 className="font-medium">Batch #{batch.batch_number}</h4>
+                    <h4 className="font-medium">{batch.batch_name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(batch.created_at).toLocaleDateString()}
+                      Batch #{batch.batch_number} • {new Date(batch.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <div className="text-sm text-right">
-                    <div className="font-medium">{batch.created_courses_count} courses</div>
-                    <div className="text-muted-foreground">Target: {batch.batch_size}</div>
+                    <div className="font-medium">{batch.courses_created || 0} / {batch.total_courses}</div>
+                    <div className="text-muted-foreground">courses</div>
                   </div>
                   <Badge className={getStatusColor(batch.status)}>
                     {batch.status}

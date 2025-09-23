@@ -22,10 +22,12 @@ interface VideoLibraryItem {
   title: string;
   description: string;
   category: string;
+  subcategory: string;
   difficulty_level: string;
+  duration_minutes: number;
+  tags: string[];
+  quality_score: number;
   usage_count: number;
-  max_usage_limit: number;
-  is_active: boolean;
 }
 
 export const VideoLibraryManager: React.FC = () => {
@@ -110,9 +112,7 @@ export const VideoLibraryManager: React.FC = () => {
   const fetchVideoLibrary = async () => {
     try {
       const { data, error } = await supabase
-        .from('video_library')
-        .select('*')
-        .order('usage_count', { ascending: false });
+        .rpc('get_video_library');
 
       if (error) throw error;
       setVideos(data || []);
@@ -129,39 +129,14 @@ export const VideoLibraryManager: React.FC = () => {
       setIsCleaningUp(true);
       setCleanupProgress(10);
 
-      // Check if video_library table exists, if not create it
-      const { error: createError } = await supabase.rpc('create_video_library_table');
-      setCleanupProgress(30);
+      // Populate video library using the function
+      const { data, error } = await supabase
+        .rpc('populate_video_library');
 
-      // Insert our 10 unique videos
-      for (let i = 0; i < uniqueVideos.length; i++) {
-        const video = uniqueVideos[i];
-        
-        const { error } = await supabase
-          .from('video_library')
-          .upsert({
-            video_url: video.url,
-            title: video.title,
-            description: video.description,
-            category: video.category,
-            difficulty_level: video.difficulty,
-            usage_count: 0,
-            max_usage_limit: 5,
-            is_active: true
-          }, { 
-            onConflict: 'video_url',
-            ignoreDuplicates: false 
-          });
-
-        if (error) {
-          console.error(`Error inserting video ${video.title}:`, error);
-        }
-        
-        setCleanupProgress(30 + ((i + 1) / uniqueVideos.length) * 60);
-      }
-
+      if (error) throw error;
       setCleanupProgress(100);
-      toast.success('Video library initialized with 10 unique videos!');
+      
+      toast.success(`Video library initialized with ${data} unique videos!`);
       await fetchVideoLibrary();
       
     } catch (error) {
@@ -341,24 +316,17 @@ export const VideoLibraryManager: React.FC = () => {
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1">
                     <BarChart3 className="h-3 w-3" />
-                    <span>Used: {video.usage_count}/{video.max_usage_limit}</span>
+                    <span>Used: {video.usage_count} times</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    {video.usage_count < video.max_usage_limit ? (
-                      <CheckCircle className="h-3 w-3 text-green-500" />
-                    ) : (
-                      <AlertTriangle className="h-3 w-3 text-orange-500" />
-                    )}
-                    <span className={video.usage_count < video.max_usage_limit ? 'text-green-600' : 'text-orange-600'}>
-                      {video.usage_count < video.max_usage_limit ? 'Available' : 'At Limit'}
-                    </span>
+                    <span>{video.duration_minutes} mins</span>
                   </div>
                 </div>
 
-                <Progress 
-                  value={(video.usage_count / video.max_usage_limit) * 100} 
-                  className="h-2"
-                />
+                <div className="flex items-center justify-between text-xs">
+                  <span>Quality: {video.quality_score}/10</span>
+                  <CheckCircle className="h-3 w-3 text-green-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
