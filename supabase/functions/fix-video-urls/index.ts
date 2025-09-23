@@ -19,12 +19,13 @@ serve(async (req) => {
 
     console.log('Starting to fix video URLs...');
 
-    // Get all video lessons with Rick Astley URLs, including course information
+    // Get all lessons with NULL or broken video URLs
     const { data: lessons, error: fetchError } = await supabaseClient
       .from('course_lessons')
       .select(`
         id, 
         title,
+        video_url,
         course_modules!inner (
           courses!inner (
             title,
@@ -32,8 +33,7 @@ serve(async (req) => {
           )
         )
       `)
-      .eq('lesson_type', 'video')
-      .or('video_url.eq.https://www.youtube.com/watch?v=dQw4w9WgXcQ,video_url.like.%dQw4w9WgXcQ%');
+      .or('video_url.is.null,video_url.eq.https://www.youtube.com/watch?v=dQw4w9WgXcQ,video_url.like.%dQw4w9WgXcQ%');
 
     if (fetchError) {
       console.error('Error fetching lessons:', fetchError);
@@ -42,12 +42,12 @@ serve(async (req) => {
 
     if (!lessons || lessons.length === 0) {
       return new Response(
-        JSON.stringify({ success: true, message: 'No Rick Astley videos found to update' }),
+        JSON.stringify({ success: true, message: 'No broken videos found to update' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Found ${lessons.length} Rick Astley videos to update`);
+    console.log(`Found ${lessons.length} lessons with missing/broken videos to update`);
 
     let updatedCount = 0;
 
