@@ -29,6 +29,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [playbackReady, setPlaybackReady] = useState(false);
+
   const {
     containerRef,
     isPlaying,
@@ -37,7 +40,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     toggleMute,
     watchTime
   } = useVideoAutoplay(videoRef.current, {
-    enableSound: true,
+    enableSound: hasUserInteracted,
     threshold: 0.5
   });
 
@@ -186,7 +189,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         {/* Center play button */}
         <div className="absolute inset-0 flex items-center justify-center">
           <Button
-            onClick={togglePlay}
+            onClick={() => {
+              setHasUserInteracted(true);
+              togglePlay();
+            }}
             size="lg"
             variant="ghost"
             className={cn(
@@ -223,7 +229,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Button
-                onClick={togglePlay}
+                onClick={() => {
+                  setHasUserInteracted(true);
+                  togglePlay();
+                }}
                 size="sm"
                 variant="ghost"
                 className="text-white hover:bg-white/20"
@@ -232,7 +241,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               </Button>
 
               <Button
-                onClick={restart}
+                onClick={() => {
+                  setHasUserInteracted(true);
+                  restart();
+                }}
                 size="sm"
                 variant="ghost"
                 className="text-white hover:bg-white/20"
@@ -242,7 +254,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
               <div className="flex items-center space-x-2">
                 <Button
-                  onClick={toggleMute}
+                  onClick={() => {
+                    setHasUserInteracted(true);
+                    toggleMute();
+                  }}
                   size="sm"
                   variant="ghost"
                   className="text-white hover:bg-white/20"

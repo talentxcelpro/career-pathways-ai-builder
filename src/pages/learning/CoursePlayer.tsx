@@ -115,23 +115,18 @@ const CoursePlayer = () => {
                       isActive={isPlaying}
                       className="aspect-video rounded-t-lg"
                       muted={isMuted}
-                      onVideoLoad={() => console.log('Video loaded:', currentLesson.video_url)}
+                      onVideoLoad={() => {
+                        console.log('Video loaded:', currentLesson.video_url);
+                        // Auto-set playing state when video loads
+                        if (!isPlaying) {
+                          setIsPlaying(true);
+                        }
+                      }}
+                      onTimeUpdate={(currentTime) => {
+                        // Update progress based on current time
+                        console.log('Video time update:', currentTime);
+                      }}
                     />
-                    {/* Video Controls Overlay */}
-                    <div className="absolute top-4 right-4 flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => setIsMuted(!isMuted)}
-                        className="bg-black/50 hover:bg-black/70 text-white border-0"
-                      >
-                        {isMuted ? (
-                          <VolumeX className="h-4 w-4" />
-                        ) : (
-                          <Volume2 className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
                   </div>
                 ) : (
                   <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
