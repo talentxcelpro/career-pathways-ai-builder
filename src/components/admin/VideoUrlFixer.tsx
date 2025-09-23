@@ -17,6 +17,7 @@ export const VideoUrlFixer: React.FC = () => {
         .select(`
           id, 
           title,
+          video_url,
           course_modules!inner (
             courses!inner (
               title,
@@ -25,7 +26,7 @@ export const VideoUrlFixer: React.FC = () => {
           )
         `)
         .eq('lesson_type', 'video')
-        .or('video_url.eq.https://www.youtube.com/watch?v=dQw4w9WgXcQ,video_url.like.%dQw4w9WgXcQ%');
+        .like('video_url', '%dQw4w9WgXcQ%');
 
       if (fetchError) throw fetchError;
 
