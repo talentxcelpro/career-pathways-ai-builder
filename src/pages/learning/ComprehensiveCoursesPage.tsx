@@ -191,7 +191,7 @@ export default function ComprehensiveCoursesPage() {
           query = query.order('duration_hours', { ascending: false });
           break;
         default:
-          query = query.order('enrollment_count', { ascending: false });
+          query = query.order('enrolled_count', { ascending: false });
       }
 
       const { data, error } = await query.limit(50);
@@ -267,7 +267,7 @@ export default function ComprehensiveCoursesPage() {
             </div>
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              <span>{course.enrollment_count || 0} enrolled</span>
+              <span>{course.enrolled_count || 0} enrolled</span>
             </div>
             <div className="flex items-center gap-1">
               <Play className="h-3 w-3" />

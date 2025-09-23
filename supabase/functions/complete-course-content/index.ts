@@ -300,10 +300,9 @@ serve(async (req) => {
         .select(`
           id, 
           title, 
-          category,
-          course_modules(count)
+          category
         `)
-        .is('course_modules.id', null)
+        .eq('is_active', true)
         .limit(course_limit);
 
       if (coursesError) {
@@ -322,14 +321,37 @@ serve(async (req) => {
         );
       }
 
-      console.log(`Found ${courses.length} courses without modules`);
+      console.log(`Found ${courses.length} courses to process`);
+
+      // Check which courses already have modules to avoid duplicates
+      const courseIds = courses.map(c => c.id);
+      const { data: existingModules } = await supabaseClient
+        .from('course_modules')
+        .select('course_id')
+        .in('course_id', courseIds);
+      
+      const coursesWithModules = new Set(existingModules?.map(m => m.course_id) || []);
+      const coursesToProcess = courses.filter(c => !coursesWithModules.has(c.id));
+      
+      console.log(`${coursesToProcess.length} courses need modules (${coursesWithModules.size} already have modules)`);
+
+      if (coursesToProcess.length === 0) {
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: 'All courses already have content!',
+            courses_processed: 0
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       let completedCourses = 0;
       let totalModulesCreated = 0;
       let totalLessonsCreated = 0;
 
       // Process each course
-      for (const course of courses) {
+      for (const course of coursesToProcess) {
         try {
           console.log(`Processing course: ${course.title}`);
           
@@ -391,7 +413,7 @@ serve(async (req) => {
       console.log('Creating assessments...');
       let assessmentsCreated = 0;
       
-      for (const course of courses.slice(0, completedCourses)) {
+      for (const course of coursesToProcess.slice(0, completedCourses)) {
         try {
           const { error: assessmentError } = await supabaseClient
             .from('course_assessments')
