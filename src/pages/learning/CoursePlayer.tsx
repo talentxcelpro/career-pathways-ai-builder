@@ -5,7 +5,7 @@ import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { SimpleVideoPlayer } from '@/components/video/SimpleVideoPlayer';
+import { AdaptiveVideoPlayer } from '@/components/video/AdaptiveVideoPlayer';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Play, Pause, SkipForward, SkipBack, BookOpen, CheckCircle, Loader2, Volume2, VolumeX } from 'lucide-react';
