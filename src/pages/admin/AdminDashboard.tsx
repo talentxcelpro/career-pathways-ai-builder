@@ -21,6 +21,7 @@ import { JobGenerator } from '@/components/admin/JobGenerator';
 import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';
 import { VideoUrlFixer } from '@/components/admin/VideoUrlFixer';
+import { AdminNavigationPanel } from '@/components/admin/AdminNavigationPanel';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -63,8 +64,9 @@ const AdminDashboard = () => {
             <RecentActivityCard activities={recentActivity} />
             <QuickActionsPanel stats={adminStats} />
           </div>
-          <div>
+          <div className="space-y-6">
             <PlatformOverviewWidget stats={adminStats} />
+            <AdminNavigationPanel />
           </div>
         </div>
 
