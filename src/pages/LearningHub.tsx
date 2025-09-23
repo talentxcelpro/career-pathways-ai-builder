@@ -6,8 +6,10 @@ import { CourseraHeroSection } from '@/components/learning/CourseraHeroSection';
 import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
 import { LearningSearchHub } from '@/components/learning/LearningSearchHub';
 import { PersonalizedDashboard } from '@/components/learning/PersonalizedDashboard';
+import { AdvancedLearningDashboard } from '@/components/learning/AdvancedLearningDashboard';
 import { CourseraStyleLearningEngine } from '@/components/learning/CourseraStyleLearningEngine';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -19,9 +21,18 @@ import {
 } from 'lucide-react';
 
 export default function LearningHub() {
+  const [user, setUser] = React.useState<any>(null);
+  
+  React.useEffect(() => {
+    // Get current user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, []);
+
   const { seoData, breadcrumbs } = useAdvancedLearningData({ 
     pageType: 'hub',
-    userContext: { isAuthenticated: false, completedCourses: 0 }
+    userContext: { isAuthenticated: !!user, completedCourses: 0 }
   });
 
   React.useEffect(() => {
@@ -39,10 +50,15 @@ export default function LearningHub() {
       {/* Main Content Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
+        {/* Advanced Learning Dashboard for authenticated users */}
+        {user && (
+          <section className="mb-16">
+            <AdvancedLearningDashboard userId={user.id} />
+          </section>
+        )}
+
         {/* Personalized Dashboard Section */}
-        <section className="mb-16">
-          <PersonalizedDashboard />
-        </section>
+        <section className="mb-16">{!user && <PersonalizedDashboard />}</section>
 
         <Separator className="mb-16" />
 
