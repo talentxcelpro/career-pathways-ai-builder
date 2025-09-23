@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { CourseDetailHeader } from './CourseDetailHeader';
 import { CourseLesson } from './CourseLesson';
 import { CourseAssessment } from './CourseAssessment';
+import { CourseReviews } from './CourseReviews';
 import { BookOpen, Award, Users, Clock, CheckCircle, ArrowLeft, Star, Play } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -305,6 +306,7 @@ export const EnhancedCourseDetail: React.FC = () => {
                 <TabsList>
                   <TabsTrigger value="content">Content</TabsTrigger>
                   <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="reviews">Reviews</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="content" className="space-y-6">
@@ -410,6 +412,10 @@ export const EnhancedCourseDetail: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
+                </TabsContent>
+
+                <TabsContent value="reviews">
+                  <CourseReviews courseId={id!} />
                 </TabsContent>
               </Tabs>
             )}
