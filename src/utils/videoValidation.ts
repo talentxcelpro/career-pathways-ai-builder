@@ -28,28 +28,26 @@ export const validateVideoUrl = async (url: string): Promise<{ isValid: boolean;
           return { isValid: false, reason: 'Invalid YouTube URL format' };
         }
         
-        // Actually check if the video exists by trying to fetch its embed page
+        // Use oEmbed API to check if video exists (works without CORS issues)
         try {
-          const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-          const response = await fetch(embedUrl, { 
-            method: 'HEAD',
-            mode: 'no-cors' // Avoid CORS issues
-          });
-          // If we get here without error, the video likely exists
-          return { isValid: true };
-        } catch (embedError) {
-          // If embed fails, try oEmbed API as fallback
-          try {
-            const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-            const oEmbedResponse = await fetch(oEmbedUrl);
-            if (oEmbedResponse.ok) {
+          const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+          const oEmbedResponse = await fetch(oEmbedUrl);
+          
+          if (oEmbedResponse.ok) {
+            const data = await oEmbedResponse.json();
+            if (data && data.title) {
               return { isValid: true };
             } else {
               return { isValid: false, reason: 'Video not found or unavailable' };
             }
-          } catch (oEmbedError) {
+          } else if (oEmbedResponse.status === 404 || oEmbedResponse.status === 401) {
+            return { isValid: false, reason: 'Video not found or private' };
+          } else {
             return { isValid: false, reason: 'Unable to verify video availability' };
           }
+        } catch (oEmbedError) {
+          console.warn('oEmbed check failed for:', url, oEmbedError);
+          return { isValid: false, reason: 'Unable to verify video availability' };
         }
       } catch (error) {
         return { isValid: false, reason: 'YouTube URL validation failed' };
