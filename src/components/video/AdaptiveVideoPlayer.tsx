@@ -75,7 +75,7 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
   
   // Custom hooks
   const { isOnline, connectionSpeed, effectiveType } = useNetworkStatus();
-  const { cacheVideo, getCachedVideo, downloadProgress } = useVideoCache();
+  const { cacheVideo, downloadProgress } = useVideoCache();
   const { trackVideoEvent } = useVideoAnalytics();
 
   // Auto-select quality based on network
@@ -179,7 +179,7 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
     } catch (error) {
       console.error('Download failed:', error);
     }
-  }, [selectedQuality, allowDownload, cacheVideo, lessonId]);
+  }, [selectedQuality, allowDownload, cacheVideo]);
 
   // Quality change handler
   const handleQualityChange = useCallback((quality: VideoQuality) => {
@@ -350,6 +350,7 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
         </div>
       </div>
     );
+  }
 
   return (
     <div 
