@@ -88,7 +88,7 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
                     await supabaseClient
                       .from('course_lessons')
                       .update({
-                        video_url: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
+                        video_url: `https://www.youtube.com/embed/dQw4w9WgXcQ`
                       })
                       .eq('id', lesson.id);
                     

@@ -165,9 +165,9 @@ const CoursePlayer = () => {
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
                   <div className="relative aspect-video bg-black rounded-t-lg overflow-hidden">
-                    {currentLesson.video_url.includes('youtube.com/embed') || currentLesson.video_url.includes('youtu.be') ? (
+                    {currentLesson.video_url.includes('youtube.com') || currentLesson.video_url.includes('youtu.be') ? (
                       <iframe
-                        src={currentLesson.video_url}
+                        src={currentLesson.video_url.includes('/embed/') ? currentLesson.video_url : currentLesson.video_url.replace('watch?v=', 'embed/')}
                         className="w-full h-full border-0"
                         title={currentLesson.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
