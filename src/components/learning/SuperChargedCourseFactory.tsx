@@ -63,6 +63,45 @@ export const SuperChargedCourseFactory: React.FC = () => {
     );
   };
 
+  const completeCourseContent = async () => {
+    setIsGenerating(true);
+    setProgress(0);
+    
+    try {
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 1000);
+
+      const { data, error } = await supabase.functions.invoke('complete-course-content', {
+        body: {
+          action: 'complete_existing_courses',
+          course_limit: 50
+        }
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      if (error) throw error;
+
+      setGenerationResults(data);
+      toast.success(`🎉 Completed ${data.courses_processed} courses with full content!`);
+
+    } catch (error) {
+      console.error('Course completion failed:', error);
+      toast.error('Course completion failed. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const generateMassiveCourseLibrary = async () => {
     if (selectedCategories.length === 0) {
       toast.error('Please select at least one category');
@@ -142,8 +181,8 @@ export const SuperChargedCourseFactory: React.FC = () => {
             SuperCharged Course Factory
           </CardTitle>
           <p className="text-muted-foreground">
-            Generate hundreds of professional-grade courses with AI-powered content, 
-            YouTube integration, and interactive exercises - Building the world's most comprehensive learning platform!
+            Complete your existing 50 courses with comprehensive modules, lessons, and YouTube integration - 
+            Building the world's most comprehensive learning platform!
           </p>
         </CardHeader>
         <CardContent>
@@ -188,12 +227,82 @@ export const SuperChargedCourseFactory: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="generate" className="w-full">
+      <Tabs defaultValue="complete" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="complete">Complete Existing</TabsTrigger>
           <TabsTrigger value="generate">Mass Generation</TabsTrigger>
-          <TabsTrigger value="enhance">Enhance Existing</TabsTrigger>
           <TabsTrigger value="results">Results & Analytics</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="complete" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Complete Existing Courses
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Add comprehensive modules, lessons, and YouTube integration to your existing 50 courses
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">What this will add to each course:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4 text-blue-600" />
+                    <span>4 comprehensive modules per course</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <PlayCircle className="h-4 w-4 text-blue-600" />
+                    <span>15+ lessons with YouTube videos</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-blue-600" />
+                    <span>Interactive exercises & quizzes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4 text-blue-600" />
+                    <span>Final assessments & certificates</span>
+                  </div>
+                </div>
+              </div>
+
+              {isGenerating && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Completion Progress</span>
+                    <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="w-full" />
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Completing courses with modules, lessons, and YouTube integration...
+                  </div>
+                </div>
+              )}
+
+              <Button
+                onClick={completeCourseContent}
+                disabled={isGenerating}
+                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                size="lg"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Completing Courses...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    Complete All 50 Courses
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="generate" className="space-y-6">
           <Card>
@@ -250,20 +359,6 @@ export const SuperChargedCourseFactory: React.FC = () => {
                   </Button>
                 </div>
 
-                {isGenerating && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Generation Progress</span>
-                      <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
-                    </div>
-                    <Progress value={progress} className="w-full" />
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Creating professional-grade courses with AI...
-                    </div>
-                  </div>
-                )}
-
                 <Button
                   onClick={generateMassiveCourseLibrary}
                   disabled={isGenerating || selectedCategories.length === 0}
@@ -287,47 +382,6 @@ export const SuperChargedCourseFactory: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="enhance" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Enhance Existing Courses
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Add advanced features to your existing course library
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button
-                  onClick={enhanceExistingCourses}
-                  disabled={enhanceLoading}
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center"
-                >
-                  <PlayCircle className="h-6 w-6 mb-2" />
-                  <span>Add YouTube Videos</span>
-                  <span className="text-xs text-muted-foreground">Real educational content</span>
-                </Button>
-
-                <Button
-                  onClick={() => enhanceCourse({
-                    action: 'create_interactive_exercises'
-                  })}
-                  disabled={enhanceLoading}
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center"
-                >
-                  <Target className="h-6 w-6 mb-2" />
-                  <span>Interactive Exercises</span>
-                  <span className="text-xs text-muted-foreground">Coding challenges</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="results" className="space-y-6">
           {generationResults ? (
             <Card>
@@ -338,28 +392,36 @@ export const SuperChargedCourseFactory: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
-                      {generationResults.courses_created}
+                      {generationResults.courses_processed || generationResults.courses_created || 0}
                     </div>
-                    <div className="text-sm text-muted-foreground">Courses Created</div>
+                    <div className="text-sm text-muted-foreground">Courses Completed</div>
                   </div>
                   <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">
-                      {generationResults.categories_processed}
+                      {generationResults.modules_created || 0}
                     </div>
-                    <div className="text-sm text-muted-foreground">Categories</div>
+                    <div className="text-sm text-muted-foreground">Modules Added</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">100%</div>
-                    <div className="text-sm text-muted-foreground">AI Generated</div>
+                    <div className="text-2xl font-bold text-purple-600">
+                      {generationResults.lessons_created || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Lessons Created</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">
+                      {generationResults.youtube_videos_integrated || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Videos Integrated</div>
                   </div>
                 </div>
 
                 {generationResults.sample_courses && (
                   <div>
-                    <h4 className="font-semibold mb-3">Sample Courses Created:</h4>
+                    <h4 className="font-semibold mb-3">Sample Courses Completed:</h4>
                     <div className="space-y-2">
                       {generationResults.sample_courses.map((course: any) => (
                         <div key={course.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -383,7 +445,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
                 <div className="text-center">
                   <AlertCircle className="h-8 w-8 mx-auto mb-4 opacity-50" />
                   <p className="text-muted-foreground">
-                    No generation results yet. Run the course generator to see analytics here.
+                    No completion results yet. Run the course completion process to see analytics here.
                   </p>
                 </div>
               </CardContent>
