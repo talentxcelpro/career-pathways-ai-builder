@@ -28,7 +28,7 @@ interface CourseLessonProps {
   onComplete: (lessonId: string) => void;
 }
 
-export const CourseLessonComponent: React.FC<CourseLessonProps> = ({
+export const CourseLesson: React.FC<CourseLessonProps> = ({
   lesson,
   isEnrolled,
   onComplete

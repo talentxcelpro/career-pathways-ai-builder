@@ -10,7 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CourseDetailHeader } from './CourseDetailHeader';
-import { CourseLessonComponent } from './CourseLesson';
+import { CourseLesson } from './CourseLesson';
 import { CourseAssessment } from './CourseAssessment';
 import { BookOpen, Award, Users, Clock, CheckCircle, ArrowLeft, Star, Play } from 'lucide-react';
 import { toast } from 'sonner';

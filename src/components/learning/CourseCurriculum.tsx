@@ -20,12 +20,12 @@ interface CurriculumModule {
 }
 
 interface CourseCurriculumProps {
-  curriculum: CurriculumModule[];
+  modules: CurriculumModule[];
   isEnrolled: boolean;
 }
 
 export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
-  curriculum,
+  modules,
   isEnrolled
 }) => {
   const [openModules, setOpenModules] = useState<string[]>([]);
@@ -62,7 +62,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {curriculum.map((module) => (
+          {modules.map((module) => (
             <Collapsible
               key={module.id}
               open={openModules.includes(module.id)}
