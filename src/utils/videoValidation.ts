@@ -1,5 +1,5 @@
 // Known broken video IDs that should be flagged immediately
-const KNOWN_BROKEN_VIDEO_IDS = [
+export const KNOWN_BROKEN_VIDEO_IDS = [
   'rfscVS0vtbw',
   'llKvV8_T95M', 
   'bFOKONpVDAQ',

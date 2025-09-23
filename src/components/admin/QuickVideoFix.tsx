@@ -4,18 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Video, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { validateVideoUrl } from '@/utils/videoValidation';
+import { validateVideoUrl, KNOWN_BROKEN_VIDEO_IDS } from '@/utils/videoValidation';
 
 export const QuickVideoFix: React.FC = () => {
   const [isFixing, setIsFixing] = useState(false);
 
   const quickFix = async () => {
     setIsFixing(true);
+    console.log('🔧 QuickVideoFix: Starting video fix process...');
+    
     try {
       let totalFixed = 0;
       let processedLessons = 0;
 
       // Get all lessons with video URLs first
+      console.log('📊 QuickVideoFix: Fetching lessons from database...');
       const { data: allLessons, error: fetchError } = await supabase
         .from('course_lessons')
         .select(`
@@ -31,17 +34,24 @@ export const QuickVideoFix: React.FC = () => {
         `)
         .not('video_url', 'is', null);
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error('❌ QuickVideoFix: Database fetch error:', fetchError);
+        throw fetchError;
+      }
 
-      toast.info('Scanning all videos for issues...');
+      console.log(`📈 QuickVideoFix: Found ${allLessons?.length || 0} lessons with video URLs`);
+      toast.info(`Scanning ${allLessons?.length || 0} videos for issues...`);
 
-      // Filter out broken videos using our validation function
+      // Use direct broken video ID detection instead of validation API calls
       const brokenLessons = [];
       if (allLessons) {
         for (const lesson of allLessons) {
           if (lesson.video_url) {
-            const validation = await validateVideoUrl(lesson.video_url);
-            if (!validation.isValid) {
+            // Check if URL contains known broken video IDs
+            const hasKnownBrokenId = KNOWN_BROKEN_VIDEO_IDS.some(id => lesson.video_url.includes(id));
+            
+            if (hasKnownBrokenId) {
+              console.log(`🔍 QuickVideoFix: Found broken video - ${lesson.title}: ${lesson.video_url}`);
               brokenLessons.push(lesson);
             }
           }
@@ -49,11 +59,12 @@ export const QuickVideoFix: React.FC = () => {
       }
 
       if (!brokenLessons?.length) {
+        console.log('✅ QuickVideoFix: No broken videos found');
         toast.success('✅ No broken videos found - all videos are working!');
         return;
       }
 
-      console.log(`Found ${brokenLessons.length} broken video lessons to fix`);
+      console.log(`🎯 QuickVideoFix: Found ${brokenLessons.length} broken video lessons to fix`);
       toast.info(`🔧 Fixing ${brokenLessons.length} broken videos...`);
 
       // Real working educational videos by category
@@ -111,9 +122,11 @@ export const QuickVideoFix: React.FC = () => {
         default: 'HAnw168huqA' // General Business Skills Course
       };
 
-      // Process each lesson
+      // Process each lesson with detailed logging
       for (const lesson of brokenLessons) {
         processedLessons++;
+        console.log(`🔄 QuickVideoFix: Processing lesson ${processedLessons}/${brokenLessons.length}: "${lesson.title}"`);
+        
         const courseTitle = (lesson as any).course_modules?.courses?.title?.toLowerCase() || '';
         const category = (lesson as any).course_modules?.courses?.category?.toLowerCase() || '';
         const lessonTitle = lesson.title?.toLowerCase() || '';
@@ -127,15 +140,18 @@ export const QuickVideoFix: React.FC = () => {
         for (const [keyword, id] of Object.entries(categoryVideos)) {
           if (keyword !== 'default' && allText.includes(keyword)) {
             videoId = id;
+            console.log(`🎯 QuickVideoFix: Matched keyword "${keyword}" for lesson "${lesson.title}"`);
             break;
           }
         }
         
         const newVideoUrl = `https://www.youtube.com/embed/${videoId}`;
 
-        console.log(`Fixing lesson: "${lesson.title}" from course: "${(lesson as any).course_modules?.courses?.title}" with video: ${videoId}`);
+        console.log(`🔧 QuickVideoFix: Updating lesson "${lesson.title}" with new video: ${videoId}`);
+        console.log(`📝 QuickVideoFix: Old URL: ${lesson.video_url}`);
+        console.log(`✨ QuickVideoFix: New URL: ${newVideoUrl}`);
 
-        // Update the lesson
+        // Update the lesson with error handling
         const { error: updateError } = await supabase
           .from('course_lessons')
           .update({ video_url: newVideoUrl })
@@ -143,26 +159,42 @@ export const QuickVideoFix: React.FC = () => {
 
         if (!updateError) {
           totalFixed++;
+          console.log(`✅ QuickVideoFix: Successfully updated lesson ${lesson.id}`);
         } else {
-          console.error(`Failed to update lesson ${lesson.id}:`, updateError);
+          console.error(`❌ QuickVideoFix: Failed to update lesson ${lesson.id}:`, updateError);
+          toast.error(`Failed to update "${lesson.title}": ${updateError.message}`);
         }
 
-        // Show progress for large batches
-        if (processedLessons % 10 === 0) {
-          toast.info(`🔄 Progress: ${processedLessons}/${brokenLessons.length} videos processed...`);
+        // Show progress for batches
+        if (processedLessons % 5 === 0) {
+          console.log(`📊 QuickVideoFix: Progress update - ${processedLessons}/${brokenLessons.length} processed, ${totalFixed} fixed`);
+          toast.info(`🔄 Progress: ${processedLessons}/${brokenLessons.length} videos processed, ${totalFixed} fixed...`);
         }
+
+        // Add small delay to prevent overwhelming the database
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
+      console.log(`🏁 QuickVideoFix: Process complete - ${totalFixed}/${brokenLessons.length} videos fixed`);
+      
       if (totalFixed === brokenLessons.length) {
+        console.log('🎉 QuickVideoFix: All videos fixed successfully!');
         toast.success(`🎉 COMPLETE! Successfully fixed all ${totalFixed} broken videos with real educational content!`);
       } else {
+        console.log(`⚠️ QuickVideoFix: Partial success - ${totalFixed}/${brokenLessons.length} fixed`);
         toast.success(`✅ Fixed ${totalFixed} out of ${brokenLessons.length} videos. ${brokenLessons.length - totalFixed} had errors.`);
       }
       
     } catch (error: any) {
-      console.error('Quick fix error:', error);
+      console.error('❌ QuickVideoFix: Critical error:', error);
+      console.error('❌ QuickVideoFix: Error details:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
       toast.error(`❌ Failed to fix videos: ${error.message}`);
     } finally {
+      console.log('🔄 QuickVideoFix: Cleaning up, setting isFixing to false');
       setIsFixing(false);
     }
   };
