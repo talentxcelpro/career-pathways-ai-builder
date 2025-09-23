@@ -48,39 +48,99 @@ export const VideoUrlFixer: React.FC = () => {
         
         console.log(`Processing: ${lesson.title} from ${courseTitle}`);
         
-        // Enhanced matching with better video assignments
-        if (allText.includes('python') || allText.includes('programming')) {
-          videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Tutorial
-        } else if (allText.includes('web development') || allText.includes('html') || allText.includes('css') || allText.includes('javascript') || allText.includes('web')) {
-          videoUrl = 'https://www.youtube.com/embed/pQN-pnXPaVg'; // Web Development
-        } else if (allText.includes('devops') || allText.includes('deployment') || allText.includes('infrastructure') || allText.includes('cloud')) {
-          videoUrl = 'https://www.youtube.com/embed/hQcFE0RD0cQ'; // DevOps & AWS
-        } else if (allText.includes('data') || allText.includes('analytics') || allText.includes('sql') || allText.includes('database')) {
-          videoUrl = 'https://www.youtube.com/embed/ua-CiDNNj30'; // Data Science
-        } else if (allText.includes('marketing') || allText.includes('brand') || allText.includes('social media') || allText.includes('digital marketing')) {
-          videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Digital Marketing
-        } else if (allText.includes('leadership') || allText.includes('management') || allText.includes('business') || allText.includes('communication') || allText.includes('writing')) {
-          videoUrl = 'https://www.youtube.com/embed/llKvV8_T95M'; // Leadership & Communication
-        } else if (allText.includes('design') || allText.includes('ui') || allText.includes('ux') || allText.includes('graphic')) {
-          videoUrl = 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design
-        } else if (allText.includes('ai') || allText.includes('artificial intelligence') || allText.includes('machine learning') || allText.includes('ml')) {
-          videoUrl = 'https://www.youtube.com/embed/JMUxmLyrhSk'; // AI/ML
-        } else if (allText.includes('blockchain') || allText.includes('cryptocurrency') || allText.includes('crypto')) {
-          videoUrl = 'https://www.youtube.com/embed/SSo_EIwHSd4'; // Blockchain
+        // SOPHISTICATED VIDEO MATCHING - Based on actual high-quality educational content
+        
+        // PYTHON & PROGRAMMING
+        if (allText.includes('python')) {
+          if (allText.includes('data') || allText.includes('analytics')) {
+            videoUrl = 'https://www.youtube.com/embed/wUSDVGivd-8'; // Python for Data Analytics - Full Course
+          } else {
+            videoUrl = 'https://www.youtube.com/embed/ix9cRaBkVe0'; // Python Full Course 2024
+          }
+        }
+        
+        // WEB DEVELOPMENT & FRAMEWORKS
+        else if (allText.includes('react') || allText.includes('frontend framework')) {
+          videoUrl = 'https://www.youtube.com/embed/CgkZ7MvWUAA'; // React Full Course 2024
+        } else if (allText.includes('javascript') || allText.includes('js')) {
+          videoUrl = 'https://www.youtube.com/embed/lfmg-EJ8gm4'; // JavaScript Full Course 2024
+        } else if (allText.includes('web development') || allText.includes('html') || allText.includes('css') || allText.includes('frontend')) {
+          videoUrl = 'https://www.youtube.com/embed/GxmfcnU3feo'; // Complete Web Development Roadmap
+        }
+        
+        // DATA SCIENCE & MACHINE LEARNING
+        else if (allText.includes('data science') || allText.includes('data analytics') || allText.includes('business analytics')) {
+          videoUrl = 'https://www.youtube.com/embed/ZcaKgqXsEbA'; // Data Science Full Course 2024
+        } else if (allText.includes('machine learning') || allText.includes('ai') || allText.includes('artificial intelligence')) {
+          videoUrl = 'https://www.youtube.com/embed/LR5nTW6vXhQ'; // Machine Learning Full Course 2024
+        }
+        
+        // DIGITAL MARKETING & BUSINESS
+        else if (allText.includes('digital marketing') || allText.includes('marketing') || allText.includes('social media')) {
+          videoUrl = 'https://www.youtube.com/embed/Ayekd8lkUkU'; // Digital Marketing Course 10 Hours
+        } else if (allText.includes('business') || allText.includes('entrepreneurship') || allText.includes('startup')) {
+          videoUrl = 'https://www.youtube.com/embed/nkNHn0VqVBA'; // Digital Marketing Full Course
+        }
+        
+        // PROJECT MANAGEMENT & LEADERSHIP
+        else if (allText.includes('project management') || allText.includes('pmp') || allText.includes('agile') || allText.includes('scrum')) {
+          videoUrl = 'https://www.youtube.com/embed/MJqP6_a_YKM'; // Project Management Fundamentals
+        } else if (allText.includes('leadership') || allText.includes('management') || allText.includes('executive')) {
+          videoUrl = 'https://www.youtube.com/embed/VrJjOht8Z9Y'; // Leadership Training & Development
+        }
+        
+        // COMMUNICATION & SOFT SKILLS  
+        else if (allText.includes('communication') || allText.includes('presentation') || allText.includes('public speaking')) {
+          videoUrl = 'https://www.youtube.com/embed/HAnw168huqA'; // Public Speaking & Communication Skills
+        } else if (allText.includes('writing') || allText.includes('copywriting') || allText.includes('content')) {
+          videoUrl = 'https://www.youtube.com/embed/vnVuqfXohxc'; // Content Writing Tutorial
+        }
+        
+        // CAREER DEVELOPMENT
+        else if (allText.includes('resume') || allText.includes('linkedin') || allText.includes('job interview')) {
+          videoUrl = 'https://www.youtube.com/embed/ciIkiWwZnlc'; // Resume Writing & Interview Skills
+        } else if (allText.includes('career') || allText.includes('professional') || allText.includes('workplace')) {
+          videoUrl = 'https://www.youtube.com/embed/u6XAPnuFjJc'; // Career Development Strategies
+        }
+        
+        // TECHNOLOGY SPECIALIZATIONS
+        else if (allText.includes('devops') || allText.includes('cloud') || allText.includes('aws') || allText.includes('deployment')) {
+          videoUrl = 'https://www.youtube.com/embed/hQcFE0RD0cQ'; // DevOps & Cloud Computing
         } else if (allText.includes('cybersecurity') || allText.includes('security') || allText.includes('cyber')) {
-          videoUrl = 'https://www.youtube.com/embed/inWWhr5tnEA'; // Cybersecurity
-        } else if (allText.includes('finance') || allText.includes('accounting') || allText.includes('financial')) {
-          videoUrl = 'https://www.youtube.com/embed/WEDIj9JBTC8'; // Finance
-        } else if (allText.includes('project management') || allText.includes('agile') || allText.includes('scrum')) {
-          videoUrl = 'https://www.youtube.com/embed/i-QyW8D3ei0'; // Project Management
-        } else if (allText.includes('mobile') || allText.includes('app development') || allText.includes('react native')) {
-          videoUrl = 'https://www.youtube.com/embed/0-S5a0eXPoc'; // Mobile Development
-        } else if (allText.includes('content') || allText.includes('copywriting') || allText.includes('writing')) {
-          videoUrl = 'https://www.youtube.com/embed/vnVuqfXohxc'; // Content Writing
+          videoUrl = 'https://www.youtube.com/embed/inWWhr5tnEA'; // Cybersecurity Fundamentals
+        } else if (allText.includes('blockchain') || allText.includes('cryptocurrency') || allText.includes('crypto')) {
+          videoUrl = 'https://www.youtube.com/embed/SSo_EIwHSd4'; // Blockchain Technology Explained
+        }
+        
+        // DESIGN & CREATIVITY
+        else if (allText.includes('design') || allText.includes('ui') || allText.includes('ux') || allText.includes('graphic')) {
+          videoUrl = 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design Complete Course
+        }
+        
+        // FINANCE & BUSINESS ANALYTICS
+        else if (allText.includes('finance') || allText.includes('accounting') || allText.includes('financial')) {
+          videoUrl = 'https://www.youtube.com/embed/WEDIj9JBTC8'; // Finance & Accounting Basics
+        } else if (allText.includes('excel') || allText.includes('spreadsheet') || allText.includes('tableau')) {
+          videoUrl = 'https://www.youtube.com/embed/Vl0H-qTclOg'; // Excel & Data Analysis
+        }
+        
+        // HEALTHCARE & SPECIALIZED FIELDS
+        else if (allText.includes('healthcare') || allText.includes('medical') || allText.includes('nursing')) {
+          videoUrl = 'https://www.youtube.com/embed/gGqVNuYhcxw'; // Healthcare Management
         } else if (allText.includes('hr') || allText.includes('human resources') || allText.includes('recruitment')) {
-          videoUrl = 'https://www.youtube.com/embed/86V_DQdb4e0'; // HR Management
+          videoUrl = 'https://www.youtube.com/embed/86V_DQdb4e0'; // HR Management & Leadership
         } else if (allText.includes('sales') || allText.includes('selling') || allText.includes('negotiation')) {
-          videoUrl = 'https://www.youtube.com/embed/tHsFGZ3MbgU'; // Sales Training
+          videoUrl = 'https://www.youtube.com/embed/tHsFGZ3MbgU'; // Sales Training & Techniques
+        }
+        
+        // MOBILE & APP DEVELOPMENT
+        else if (allText.includes('mobile') || allText.includes('app development') || allText.includes('android') || allText.includes('ios')) {
+          videoUrl = 'https://www.youtube.com/embed/0-S5a0eXPoc'; // Mobile App Development
+        }
+        
+        // EDUCATION & TRAINING
+        else if (allText.includes('education') || allText.includes('teaching') || allText.includes('training')) {
+          videoUrl = 'https://www.youtube.com/embed/UCFg9bcW7Bk'; // Educational Technology & Methods
         }
 
         const { error: updateError } = await supabase
