@@ -35,6 +35,9 @@ export const SimpleCourseCompletion: React.FC = () => {
         });
       }, 800);
 
+      // Try to call the edge function with better error handling
+      console.log('Attempting to invoke complete-course-content function...');
+      
       const { data, error } = await supabase.functions.invoke('complete-course-content', {
         body: {
           action: 'complete_existing_courses',
@@ -46,22 +49,34 @@ export const SimpleCourseCompletion: React.FC = () => {
       setProgress(100);
 
       if (error) {
-        console.error('Course completion error:', error);
+        console.error('Course completion error details:', {
+          message: error.message,
+          context: error.context,
+          stack: error.stack,
+          name: error.name
+        });
+        
+        // Check if it's a fetch error (function not accessible)
+        if (error.name === 'FunctionsFetchError') {
+          throw new Error('Edge function not accessible. This may be a deployment issue. Please try again later or contact support.');
+        }
+        
         throw error;
       }
 
       console.log('✅ Course completion successful:', data);
       setResults(data);
       
-      if (data.courses_processed > 0) {
-        toast.success(`🎉 Successfully completed ${data.courses_processed} courses!`);
+      if (data?.stats?.courses_processed > 0) {
+        toast.success(`🎉 Successfully completed ${data.stats.courses_processed} courses!`);
       } else {
-        toast.info(data.message || 'All courses already have complete content!');
+        toast.info(data?.message || 'All courses already have complete content!');
       }
 
     } catch (error) {
       console.error('Course completion failed:', error);
-      toast.error('Course completion failed. Please check console logs.');
+      const errorMessage = error.message || 'Course completion failed. Please check console logs.';
+      toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -140,19 +155,19 @@ export const SimpleCourseCompletion: React.FC = () => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Courses Processed:</span>
-                  <span className="font-semibold ml-2">{results.courses_processed || 0}</span>
+                  <span className="font-semibold ml-2">{results?.stats?.courses_processed || 0}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Modules Created:</span>
-                  <span className="font-semibold ml-2">{results.modules_created || 0}</span>
+                  <span className="font-semibold ml-2">{results?.stats?.modules_created || 0}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Lessons Created:</span>
-                  <span className="font-semibold ml-2">{results.lessons_created || 0}</span>
+                  <span className="font-semibold ml-2">{results?.stats?.lessons_created || 0}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Videos Integrated:</span>
-                  <span className="font-semibold ml-2">{results.youtube_videos_integrated || 0}</span>
+                  <span className="font-semibold ml-2">{results?.stats?.videos_integrated || 0}</span>
                 </div>
               </div>
             </CardContent>
