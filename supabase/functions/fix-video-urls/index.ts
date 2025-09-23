@@ -19,7 +19,7 @@ serve(async (req) => {
 
     console.log('Starting to fix video URLs...');
 
-    // Get all lessons with NULL or broken video URLs
+    // Get all lessons with NULL or broken video URLs - Fixed query syntax
     const { data: lessons, error: fetchError } = await supabaseClient
       .from('course_lessons')
       .select(`
@@ -33,7 +33,7 @@ serve(async (req) => {
           )
         )
       `)
-      .or('video_url.is.null,video_url.eq.https://www.youtube.com/watch?v=dQw4w9WgXcQ,video_url.like.%dQw4w9WgXcQ%');
+      .or('video_url.is.null,video_url.eq."https://www.youtube.com/watch?v=dQw4w9WgXcQ",video_url.like."%dQw4w9WgXcQ%"');
 
     if (fetchError) {
       console.error('Error fetching lessons:', fetchError);
