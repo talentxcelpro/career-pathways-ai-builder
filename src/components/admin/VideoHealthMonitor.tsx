@@ -37,19 +37,31 @@ export const VideoHealthMonitor: React.FC = () => {
   const fixBrokenVideos = async () => {
     setIsScanning(true);
     try {
-      const { data, error } = await supabase.functions.invoke('fix-video-urls');
+      console.log('🔧 Calling fix-video-urls edge function...');
       
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke('fix-video-urls', {
+        body: {},
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
       
-      toast.success(data.message || 'Videos fixed successfully');
+      console.log('🔧 Edge function response:', { data, error });
+      
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+      
+      toast.success(data?.message || 'Videos fixed successfully');
       
       // Refresh the health check after fixing
       setTimeout(() => {
         runHealthCheck();
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error('Failed to fix videos:', error);
-      toast.error('Failed to fix broken videos');
+      toast.error(`Failed to fix broken videos: ${error.message || 'Unknown error'}`);
     } finally {
       setIsScanning(false);
     }
