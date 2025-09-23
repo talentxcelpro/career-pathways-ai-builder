@@ -11,13 +11,14 @@ export const VideoUrlFixer: React.FC = () => {
   const fixVideoUrls = async () => {
     setIsFixing(true);
     try {
-      // Get ALL video lessons with course information for comprehensive update
+      // Get ALL lessons that should have videos (Video Tutorial lessons and video type lessons)
       const { data: lessons, error: fetchError } = await supabase
         .from('course_lessons')
         .select(`
           id, 
           title,
           video_url,
+          lesson_type,
           course_modules!inner (
             title,
             courses!inner (
@@ -26,7 +27,7 @@ export const VideoUrlFixer: React.FC = () => {
             )
           )
         `)
-        .eq('lesson_type', 'video');
+        .or('lesson_type.eq.video,title.ilike.%Video Tutorial%');
 
       if (fetchError) throw fetchError;
 
@@ -35,7 +36,7 @@ export const VideoUrlFixer: React.FC = () => {
         return;
       }
 
-      console.log(`Found ${lessons.length} video lessons to update`);
+      console.log(`Found ${lessons.length} lessons that should have videos to update`);
 
       let updatedCount = 0;
 
@@ -52,8 +53,13 @@ export const VideoUrlFixer: React.FC = () => {
         
         // PRECISE MATCHING BASED ON COURSE TITLE AND CATEGORY - Fixes the mismatch issue
         
+        // JOB INTERVIEW MASTERY & SUCCESS - Fix the mismatch!
+        if (courseTitle.includes('job interview') || courseTitle.includes('interview mastery')) {
+          videoUrl = 'https://www.youtube.com/embed/kI1KJGgWr34'; // Interview Skills Training
+        }
+        
         // AI & MACHINE LEARNING
-        if (courseTitle.includes('artificial intelligence') || courseTitle.includes('machine learning')) {
+        else if (courseTitle.includes('artificial intelligence') || courseTitle.includes('machine learning')) {
           videoUrl = 'https://www.youtube.com/embed/JMUxmLyrhSk'; // Machine Learning Course
         }
         
