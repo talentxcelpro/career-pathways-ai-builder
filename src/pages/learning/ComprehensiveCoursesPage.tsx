@@ -165,7 +165,7 @@ export default function ComprehensiveCoursesPage() {
 
       // Apply category filter
       if (selectedCategory !== 'all') {
-        query = query.ilike('category', selectedCategory);
+        query = query.eq('category', selectedCategory);
       }
 
       // Apply difficulty filter
