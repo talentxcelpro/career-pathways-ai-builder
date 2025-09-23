@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LearningLayout } from '@/components/learning/LearningLayout';
-import { EnhancedCourseCard } from '@/components/learning/EnhancedCourseCard';
+import { CourseWithContent } from '@/components/learning/CourseWithContent';
 import { useLearningData } from '@/hooks/useLearningData';
 import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -123,7 +123,7 @@ const AllCourses = () => {
           </div>
         </div>
 
-        {/* Courses Grid */}
+        {/* Courses with Full Content */}
         {filteredCourses.length === 0 ? (
           <div className="text-center py-12">
             <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -133,15 +133,13 @@ const AllCourses = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="space-y-6 mb-12">
             {filteredCourses.map((course) => (
-              <EnhancedCourseCard
+              <CourseWithContent
                 key={course.id}
                 course={course}
                 isEnrolled={isEnrolled(course.id)}
                 onEnroll={handleEnroll}
-                userProgress={0}
-                showProgress={false}
               />
             ))}
           </div>
