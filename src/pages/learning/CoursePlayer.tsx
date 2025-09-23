@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { LearningHeader } from '@/components/learning/LearningHeader';
+import { PublicLearningHeader } from '@/components/learning/PublicLearningHeader';
 import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -156,7 +156,7 @@ const CoursePlayer = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LearningHeader />
+        <PublicLearningHeader />
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Video Player */}
