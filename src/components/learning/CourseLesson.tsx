@@ -102,16 +102,26 @@ export const CourseLessonComponent: React.FC<CourseLessonProps> = ({
         <CardContent>
           <div className="space-y-4">
             {lesson.lesson_type === 'video' && lesson.video_url && (
-              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                {isPlaying ? (
-                  <div className="w-full h-full bg-black rounded-lg flex items-center justify-center text-white">
-                    Video Player Placeholder
-                  </div>
+              <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                {lesson.video_url.includes('youtube.com/embed') || lesson.video_url.includes('youtu.be') ? (
+                  <iframe
+                    src={lesson.video_url}
+                    className="w-full h-full border-0"
+                    title={lesson.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                    loading="lazy"
+                  />
                 ) : (
-                  <Button onClick={() => setIsPlaying(true)} size="lg">
-                    <Play className="h-6 w-6 mr-2" />
-                    Play Video
-                  </Button>
+                  <video
+                    className="w-full h-full object-cover"
+                    controls
+                    preload="metadata"
+                    src={lesson.video_url}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
                 )}
               </div>
             )}
