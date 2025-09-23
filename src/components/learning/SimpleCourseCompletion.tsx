@@ -19,69 +19,61 @@ export const SimpleCourseCompletion: React.FC = () => {
 
   const testEdgeFunction = async () => {
     try {
-      console.log('=== STARTING EDGE FUNCTION TEST ===');
-      console.log('Testing Supabase functions...');
+      console.log('=== PRODUCTION EDGE FUNCTION TEST ===');
+      console.log('Environment:', window.location.origin);
+      console.log('Testing direct connectivity...');
       
-      console.log('Invoking simple-test function...');
-      const startTime = Date.now();
+      // Test 1: Direct fetch to edge function
+      console.log('Test 1: Direct fetch test...');
+      const directUrl = 'https://dthlgsnakhoftinssokm.supabase.co/functions/v1/simple-test';
       
-      const response = await supabase.functions.invoke('simple-test', {
+      const fetchResponse = await fetch(directUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc'
+        },
+        body: JSON.stringify({ test: true, timestamp: new Date().toISOString() })
+      });
+      
+      console.log('Direct fetch status:', fetchResponse.status);
+      console.log('Direct fetch ok:', fetchResponse.ok);
+      
+      if (fetchResponse.ok) {
+        const fetchData = await fetchResponse.json();
+        console.log('Direct fetch data:', fetchData);
+        toast.success('✅ Direct fetch to edge function works!');
+      } else {
+        console.error('Direct fetch failed:', fetchResponse.statusText);
+        toast.error(`❌ Direct fetch failed: ${fetchResponse.status} ${fetchResponse.statusText}`);
+      }
+      
+      // Test 2: Supabase client
+      console.log('Test 2: Supabase client test...');
+      const { data, error } = await supabase.functions.invoke('simple-test', {
         body: { test: true, timestamp: new Date().toISOString() }
       });
       
-      const endTime = Date.now();
-      console.log(`Function call took ${endTime - startTime}ms`);
-      console.log('=== FULL RESPONSE ===');
-      console.log('Response object:', response);
-      console.log('Response data:', response.data);
-      console.log('Response error:', response.error);
-      console.log('=== END RESPONSE ===');
-      
-      const { data, error } = response;
-      
       if (error) {
-        console.error('=== ERROR DETAILS ===');
-        console.error('Error message:', error.message);
-        console.error('Error name:', error.name);
-        console.error('Error context:', error.context);
-        console.error('Error stack:', error.stack);
-        console.error('Full error object:', error);
-        console.error('=== END ERROR DETAILS ===');
-        
-        toast.error(`Edge function error: ${error.message || 'Unknown error'}`);
+        console.error('Supabase client error:', error);
+        toast.error(`❌ Supabase client error: ${error.message}`);
         return false;
       }
       
-      console.log('=== SUCCESS ANALYSIS ===');
-      console.log('Data exists:', !!data);
-      console.log('Data type:', typeof data);
-      console.log('Data content:', data);
-      
-      if (data) {
-        console.log('Data.success:', data.success);
-        console.log('Data.message:', data.message);
-      }
-      console.log('=== END SUCCESS ANALYSIS ===');
-      
       if (data && data.success === true) {
-        console.log('✅ Test function succeeded!');
-        toast.success('Edge functions are working!');
+        console.log('✅ Supabase client test succeeded!');
+        toast.success('✅ Supabase client test works!');
         return true;
       } else {
-        console.error('❌ Test function returned unexpected data');
-        toast.error('Edge function test failed - unexpected response');
+        console.error('❌ Unexpected response from Supabase client');
+        toast.error('❌ Unexpected response from edge function');
         return false;
       }
       
     } catch (error) {
-      console.error('=== EXCEPTION CAUGHT ===');
-      console.error('Exception message:', error.message);
-      console.error('Exception name:', error.name);
-      console.error('Exception stack:', error.stack);
-      console.error('Full exception:', error);
-      console.error('=== END EXCEPTION ===');
-      
-      toast.error(`Edge function test exception: ${error.message}`);
+      console.error('=== PRODUCTION TEST EXCEPTION ===');
+      console.error('Exception:', error);
+      toast.error(`❌ Test failed: ${error.message}`);
       return false;
     }
   };
@@ -208,24 +200,35 @@ export const SimpleCourseCompletion: React.FC = () => {
           </div>
         )}
 
-        <Button
-          onClick={completeCourses}
-          disabled={isGenerating}
-          className="w-full bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-700 hover:via-blue-700 hover:to-purple-700 text-white shadow-xl border-0 text-lg font-semibold"
-          size="lg"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="h-6 w-6 mr-2 animate-spin" />
-              Completing All 50 Courses...
-            </>
-          ) : (
-            <>
-              <Rocket className="h-6 w-6 mr-2" />
-              🚀 Complete All 50 Courses Now!
-            </>
-          )}
-        </Button>
+        <div className="space-y-3">
+          <Button
+            onClick={testEdgeFunction}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full"
+          >
+            🧪 Test Edge Function Connectivity
+          </Button>
+          
+          <Button
+            onClick={completeCourses}
+            disabled={isGenerating}
+            className="w-full bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-700 hover:via-blue-700 hover:to-purple-700 text-white shadow-xl border-0 text-lg font-semibold"
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                Completing All 50 Courses...
+              </>
+            ) : (
+              <>
+                <Rocket className="h-6 w-6 mr-2" />
+                🚀 Complete All 50 Courses Now!
+              </>
+            )}
+          </Button>
+        </div>
 
         {results && (
           <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
