@@ -109,6 +109,7 @@ import InteractiveCareerRoadmapBuilder from "./pages/InteractiveCareerRoadmapBui
 import Services from "./pages/Services";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { turboCore } from "@/utils/turboCore";
+import AdminVideoManager from "./pages/AdminVideoManager";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
@@ -297,7 +298,8 @@ const App = () => {
                         <Route path="/seo-suite" element={<SEOSuite />} />
                          <Route path="/admin/scraped-applications" element={<AdminLayout><AdminScrapedJobApplications /></AdminLayout>} />
                          <Route path="/admin/edge-functions-monitor" element={<AdminLayout><EdgeFunctionsMonitor /></AdminLayout>} />
-                         <Route path="/admin/news-management" element={<AdminLayout><NewsManagement /></AdminLayout>} />
+                          <Route path="/admin/news-management" element={<AdminLayout><NewsManagement /></AdminLayout>} />
+                          <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
                          <Route path="/news" element={<NewsPage />} />
                          <Route path="/news/:slug" element={<NewsPage />} />
                          <Route path="/employer/cv-database" element={<CVDatabase />} />
