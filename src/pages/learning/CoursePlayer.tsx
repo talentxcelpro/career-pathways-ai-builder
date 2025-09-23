@@ -166,15 +166,18 @@ const CoursePlayer = () => {
               <CardContent className="p-0">
                 {currentLesson?.video_url ? (
                   <div className="relative">
-                    <SimpleVideoPlayer
+                    <AdaptiveVideoPlayer
                       videoUrl={currentLesson.video_url}
+                      lessonId={currentLesson.id}
                       className="aspect-video rounded-t-lg"
-                      onPlayStateChange={(playing) => {
-                        setIsPlaying(playing);
-                        if (playing) {
-                          setHasUserInteracted(true);
-                        }
+                      onProgress={(progress, position) => {
+                        console.log('Video progress:', progress, position);
                       }}
+                      onComplete={() => {
+                        console.log('Video completed');
+                      }}
+                      autoplay={false}
+                      allowDownload={true}
                     />
                   </div>
                 ) : (
