@@ -148,6 +148,8 @@ export default function ComprehensiveCoursesPage() {
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses-comprehensive', selectedCategory, selectedDifficulty, sortBy, searchTerm],
     queryFn: async () => {
+      console.log('🔍 Fetching courses with filters:', { selectedCategory, selectedDifficulty, sortBy, searchTerm });
+      
       let query = supabase
         .from('courses')
         .select(`
@@ -155,15 +157,15 @@ export default function ComprehensiveCoursesPage() {
           course_modules(
             id,
             title,
-            module_order,
-            course_lessons(id, title, duration_minutes)
+            order_number,
+            course_lessons(id, title, duration_minutes, order_number)
           )
         `)
         .eq('is_active', true);
 
       // Apply category filter
       if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory);
+        query = query.ilike('category', selectedCategory);
       }
 
       // Apply difficulty filter
@@ -173,7 +175,7 @@ export default function ComprehensiveCoursesPage() {
 
       // Apply search filter
       if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,instructor_name.ilike.%${searchTerm}%`);
       }
 
       // Apply sorting
@@ -195,7 +197,15 @@ export default function ComprehensiveCoursesPage() {
       }
 
       const { data, error } = await query.limit(50);
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error fetching courses:', error);
+        throw error;
+      }
+      
+      console.log('✅ Fetched courses:', data?.length, 'courses');
+      console.log('📊 First course modules:', data?.[0]?.course_modules?.length || 0);
+      console.log('📚 Sample course:', data?.[0]?.title);
+      
       return data;
     }
   });

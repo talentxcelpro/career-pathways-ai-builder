@@ -61,15 +61,23 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
         // Check if course already has modules
         const { data: existingModules } = await supabaseClient
           .from('course_modules')
-          .select('id')
+          .select('id, course_lessons(id)')
           .eq('course_id', course.id);
 
+        // Skip if course already has modules with lessons
         if (existingModules && existingModules.length > 0) {
-          console.log(`Course ${course.title} already has modules, skipping`);
-          continue;
+          const hasLessons = existingModules.some(module => 
+            module.course_lessons && module.course_lessons.length > 0
+          );
+          if (hasLessons) {
+            console.log(`Course ${course.title} already has complete content, skipping`);
+            continue;
+          } else {
+            console.log(`Course ${course.title} has modules but no lessons, will add lessons`);
+          }
         }
 
-        // Generate course structure
+        // Generate course structure (4 modules per course)
         const modules = [
           {
             title: `Introduction to ${course.title}`,
@@ -92,34 +100,46 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
         for (let moduleIndex = 0; moduleIndex < modules.length; moduleIndex++) {
           const module = modules[moduleIndex];
           
-          // Create module
-          const { data: newModule, error: moduleError } = await supabaseClient
-            .from('course_modules')
-            .insert({
-              course_id: course.id,
-              title: module.title,
-              description: module.description,
-              order_number: moduleIndex + 1,
-              duration_hours: 2,
-              is_published: true
-            })
-            .select()
-            .single();
+          // Check if this module already exists
+          let moduleId;
+          const existingModule = existingModules?.find(m => 
+            m.course_lessons && m.course_lessons.length === 0 // Module exists but has no lessons
+          );
+          
+          if (existingModule) {
+            moduleId = existingModule.id;
+            console.log(`Using existing module: ${module.title}`);
+          } else {
+            // Create new module
+            const { data: newModule, error: moduleError } = await supabaseClient
+              .from('course_modules')
+              .insert({
+                course_id: course.id,
+                title: module.title,
+                description: module.description,
+                order_number: moduleIndex + 1,
+                duration_hours: 2,
+                is_published: true
+              })
+              .select()
+              .single();
 
-          if (moduleError) {
-            console.error(`Error creating module for course ${course.title}:`, moduleError);
-            continue;
+            if (moduleError) {
+              console.error(`Error creating module for course ${course.title}:`, moduleError);
+              continue;
+            }
+            
+            moduleId = newModule.id;
+            createdModules++;
+            console.log(`Created module: ${module.title}`);
           }
-
-          createdModules++;
-          console.log(`Created module: ${module.title}`);
 
           // Create lessons for this module
           const lessons = [
-            { title: `${module.title} - Overview`, type: 'text' },
-            { title: `${module.title} - Video Tutorial`, type: 'video' },
-            { title: `${module.title} - Practice Exercise`, type: 'assignment' },
-            { title: `${module.title} - Quiz`, type: 'quiz' }
+            { title: `${module.title} - Overview`, type: 'text', content: 'Introduction and overview of the topic' },
+            { title: `${module.title} - Video Tutorial`, type: 'video', content: 'Comprehensive video explanation' },
+            { title: `${module.title} - Practice Exercise`, type: 'assignment', content: 'Hands-on practice assignment' },
+            { title: `${module.title} - Knowledge Check`, type: 'quiz', content: 'Quiz to test understanding' }
           ];
           
           for (let lessonIndex = 0; lessonIndex < lessons.length; lessonIndex++) {
@@ -129,9 +149,9 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
             const { data: newLesson, error: lessonError } = await supabaseClient
               .from('course_lessons')
               .insert({
-                module_id: newModule.id,
+                module_id: moduleId,
                 title: lesson.title,
-                content: `# ${lesson.title}\n\nThis lesson covers important concepts in ${module.title}.\n\n## Learning Objectives\n- Understand key principles\n- Apply practical skills\n- Master core concepts\n\n## Content\nDetailed lesson content goes here.`,
+                content: `# ${lesson.title}\n\nThis lesson covers important concepts in ${module.title}.\n\n## Learning Objectives\n- Understand key principles\n- Apply practical skills\n- Master core concepts\n\n## Content\n${lesson.content}\n\n## Next Steps\nContinue to the next lesson to build on these concepts.`,
                 order_number: lessonIndex + 1,
                 lesson_type: lesson.type,
                 duration_minutes: 15,
@@ -155,22 +175,24 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
                 .insert({
                   lesson_id: newLesson.id,
                   title: `${lesson.title} - Video`,
-                  video_url: `https://example.com/videos/${course.id}-${newModule.id}-${newLesson.id}`,
+                  video_url: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`, // Placeholder URL
                   duration: 900, // 15 minutes
-                  video_type: 'mp4',
+                  video_type: 'youtube',
                   is_public: true
                 });
 
               if (!videoError) {
                 integratedVideos++;
                 console.log(`Integrated video for lesson: ${lesson.title}`);
+              } else {
+                console.error(`Error creating video for lesson ${lesson.title}:`, videoError);
               }
             }
           }
         }
 
         processedCourses++;
-        console.log(`Completed course: ${course.title}`);
+        console.log(`Completed course: ${course.title} (${processedCourses}/${courses.length})`);
         
       } catch (courseError) {
         console.error(`Error processing course ${course.title}:`, courseError);
