@@ -206,6 +206,16 @@ export const AdaptiveVideoPlayer: React.FC<AdaptiveVideoPlayerProps> = ({
     video.load();
   }, [selectedQuality]);
 
+  // Set video source
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !videoUrl) return;
+
+    // Set the video source - this was missing!
+    video.src = selectedQuality?.url || videoUrl;
+    video.load();
+  }, [videoUrl, selectedQuality]);
+
   // Video event handlers
   useEffect(() => {
     const video = videoRef.current;
