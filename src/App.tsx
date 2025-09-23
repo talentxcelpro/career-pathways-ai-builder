@@ -327,6 +327,91 @@ const App = () => {
                              {React.createElement(React.lazy(() => import('./pages/learning/ComprehensiveCoursesPage')))}
                            </React.Suspense>
                          } />
+                         <Route path="/learning/courses/:id" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading course...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/EnhancedCoursePage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/courses/:id/player" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading player...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/CoursePlayer')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/paths" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading paths...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/LearningPathsPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/paths/:id" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading path...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/LearningPathDetail')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/my-courses" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading courses...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/MyCoursesPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/skill-assessment" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading assessment...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/SkillAssessment')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/quick-learn" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading content...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/QuickLearningPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/employment-bridge" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading bridge...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/EmploymentBridgePage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/analytics" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading analytics...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/LearningAnalyticsPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/career-analytics" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading analytics...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/CareerAnalytics')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/community" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading community...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/CommunityLearning')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/community-new" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading community...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/CommunityLearning')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/certificates" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading certificates...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/Certificates')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/individuals" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading content...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/IndividualsPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/businesses" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading content...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/BusinessesPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/universities" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading content...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/UniversitiesPage')))}
+                           </React.Suspense>
+                         } />
+                         <Route path="/learning/governments" element={
+                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading content...</div>}>
+                             {React.createElement(React.lazy(() => import('./pages/learning/GovernmentsPage')))}
+                           </React.Suspense>
+                         } />
                         <Route path="/tools/profile-optimizer" element={<ProfileOptimizer />} />
                         <Route path="/tools/salary-analyzer" element={<SalaryAnalyzer />} />
                         <Route path="/tools/skill-assessor" element={<SkillAssessor />} />
