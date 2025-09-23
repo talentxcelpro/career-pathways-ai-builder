@@ -316,6 +316,12 @@ const platformFeaturesItems = [
     description: 'Courses & learning paths'
   },
   {
+    title: 'Comprehensive Courses',
+    url: '/learning/comprehensive-courses',
+    icon: GraduationCap,
+    description: 'Browse all available courses'
+  },
+  {
     title: 'Create Course',
     url: '/admin/learning/create',
     icon: GraduationCap,

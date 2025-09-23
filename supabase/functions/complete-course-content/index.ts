@@ -173,12 +173,11 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
               const { error: videoError } = await supabaseClient
                 .from('course_videos')
                 .insert({
-                  lesson_id: newLesson.id,
                   title: `${lesson.title} - Video`,
                   video_url: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`, // Placeholder URL
-                  duration: 900, // 15 minutes
-                  video_type: 'youtube',
-                  is_public: true
+                  description: `Video tutorial for ${lesson.title}`,
+                  visibility: 'public',
+                  featured: false
                 });
 
               if (!videoError) {
