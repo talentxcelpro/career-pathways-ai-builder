@@ -23,6 +23,7 @@ import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';
 import { VideoUrlFixer } from '@/components/admin/VideoUrlFixer';
 import { AdminNavigationPanel } from '@/components/admin/AdminNavigationPanel';
 import { QuickVideoFix } from '@/components/admin/QuickVideoFix';
+import { VideoHealthMonitor } from '@/components/admin/VideoHealthMonitor';
 
 const AdminDashboard = () => {
   const { data: adminStats, isLoading: statsLoading } = useAdminStats();
@@ -71,11 +72,16 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* TXC Award Panels */}
-        <div className="grid gap-6 md:grid-cols-3 mt-8">
-          <SocialTXCAwardPanel />
-          <JoiningBonusPanel />
+        {/* Video Management Panels */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-8">
           <QuickVideoFix />
+          <VideoHealthMonitor />
+          <SocialTXCAwardPanel />
+        </div>
+
+        {/* Additional Admin Panels */}
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+          <JoiningBonusPanel />
         </div>
 
         {/* Job Generator for SEO - High Priority */}
