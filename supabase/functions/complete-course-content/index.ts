@@ -117,9 +117,9 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
                 course_id: course.id,
                 title: module.title,
                 description: module.description,
-                order_number: moduleIndex + 1,
+                module_order: moduleIndex + 1,
                 duration_hours: 2,
-                is_published: true
+                is_active: true
               })
               .select()
               .single();
@@ -152,10 +152,10 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
                 module_id: moduleId,
                 title: lesson.title,
                 content: `# ${lesson.title}\n\nThis lesson covers important concepts in ${module.title}.\n\n## Learning Objectives\n- Understand key principles\n- Apply practical skills\n- Master core concepts\n\n## Content\n${lesson.content}\n\n## Next Steps\nContinue to the next lesson to build on these concepts.`,
-                order_number: lessonIndex + 1,
+                lesson_order: lessonIndex + 1,
                 lesson_type: lesson.type,
                 duration_minutes: 15,
-                is_published: true
+                is_active: true
               })
               .select()
               .single();
