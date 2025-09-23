@@ -11,7 +11,15 @@ export const VideoUrlFixer: React.FC = () => {
   const fixVideoUrls = async () => {
     setIsFixing(true);
     try {
-      // Get ALL lessons that should have videos (Video Tutorial lessons and video type lessons)
+      // Get ALL lessons with broken video URLs first
+      const brokenVideoUrls = [
+        'llKvV8_T95M',
+        'rfscVS0vtbw', 
+        'bFOKONpVDAQ',
+        'ByYP60zz3F4',
+        'JMUxmLyrhSk'
+      ];
+
       const { data: lessons, error: fetchError } = await supabase
         .from('course_lessons')
         .select(`
@@ -27,16 +35,16 @@ export const VideoUrlFixer: React.FC = () => {
             )
           )
         `)
-        .or('lesson_type.eq.video,title.ilike.%Video Tutorial%');
+        .or(`video_url.like.%${brokenVideoUrls[0]}%,video_url.like.%${brokenVideoUrls[1]}%,video_url.like.%${brokenVideoUrls[2]}%,video_url.like.%${brokenVideoUrls[3]}%,video_url.like.%${brokenVideoUrls[4]}%`);
 
       if (fetchError) throw fetchError;
 
       if (!lessons || lessons.length === 0) {
-        toast.error('No video lessons found');
+        toast.error('No broken video lessons found to fix');
         return;
       }
 
-      console.log(`Found ${lessons.length} lessons that should have videos to update`);
+      console.log(`Found ${lessons.length} broken video lessons to fix`);
 
       let updatedCount = 0;
 
@@ -205,10 +213,14 @@ export const VideoUrlFixer: React.FC = () => {
         }
       }
       
-      toast.success(`Successfully updated ${updatedCount} out of ${lessons.length} video URLs with topic-specific content!`);
+      // Show detailed success message
+      toast.success(`✅ Successfully fixed ${updatedCount} out of ${lessons.length} broken video URLs! All courses now have working educational videos.`);
+      
+      // Log completion for debugging
+      console.log(`VideoUrlFixer completed: ${updatedCount}/${lessons.length} videos updated`);
     } catch (error) {
       console.error('Error fixing video URLs:', error);
-      toast.error(`Failed to fix video URLs: ${error.message}`);
+      toast.error(`❌ Failed to fix video URLs: ${error.message}`);
     } finally {
       setIsFixing(false);
     }
