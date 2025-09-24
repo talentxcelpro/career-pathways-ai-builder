@@ -27544,6 +27544,7 @@ export type Database = {
           metadata: Json | null
           reference_id: string | null
           reference_type: string | null
+          source: string | null
           status: string | null
           to_user_id: string | null
           token_type: string | null
@@ -27560,6 +27561,7 @@ export type Database = {
           metadata?: Json | null
           reference_id?: string | null
           reference_type?: string | null
+          source?: string | null
           status?: string | null
           to_user_id?: string | null
           token_type?: string | null
@@ -27576,6 +27578,7 @@ export type Database = {
           metadata?: Json | null
           reference_id?: string | null
           reference_type?: string | null
+          source?: string | null
           status?: string | null
           to_user_id?: string | null
           token_type?: string | null
@@ -31704,12 +31707,12 @@ export type Database = {
         Args:
           | {
               batch_description: string
-              batch_title: string
+              batch_name_param: string
               course_tags: string[]
               difficulty_level: string
             }
           | { p_batch_name?: string; p_courses_per_batch?: number }
-        Returns: string
+        Returns: Json
       }
       create_notification: {
         Args: {
