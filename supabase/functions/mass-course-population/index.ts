@@ -274,7 +274,7 @@ serve(async (req) => {
             sampleCourses.push({
               id: course.id,
               title: course.title,
-              instructor: course.instructor_name,
+              instructor_name: course.instructor_name,
               category: course.category
             });
           }

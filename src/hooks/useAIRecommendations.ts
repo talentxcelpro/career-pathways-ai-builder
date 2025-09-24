@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface PersonalizedRecommendation {
   title: string;
-  instructor: string;
+  instructor_name: string;
   description: string;
   duration: string;
   rating: number;
@@ -42,7 +42,7 @@ interface CareerPath {
 
 interface TrendingCourse {
   title: string;
-  instructor: string;
+  instructor_name: string;
   growthRate: number;
   popularityScore: number;
   enrolled: string;
@@ -81,7 +81,7 @@ export const useAIRecommendations = () => {
       const mockPersonalized: PersonalizedRecommendation[] = [
         {
           title: 'Advanced React Patterns',
-          instructor: 'Sarah Chen',
+          instructor_name: 'Sarah Chen',
           description: 'Master advanced React concepts including hooks, context, and performance optimization.',
           duration: '6 weeks',
           rating: 4.8,
@@ -92,7 +92,7 @@ export const useAIRecommendations = () => {
         },
         {
           title: 'Machine Learning for Developers',
-          instructor: 'Dr. Alex Kumar',
+          instructor_name: 'Dr. Alex Kumar',
           description: 'Introduction to ML concepts and practical implementation for software engineers.',
           duration: '8 weeks',
           rating: 4.7,
@@ -103,7 +103,7 @@ export const useAIRecommendations = () => {
         },
         {
           title: 'Cloud Native Architecture',
-          instructor: 'Michael Rodriguez',
+          instructor_name: 'Michael Rodriguez',
           description: 'Design and build scalable cloud-native applications using modern patterns.',
           duration: '10 weeks',
           rating: 4.9,
@@ -114,7 +114,7 @@ export const useAIRecommendations = () => {
         },
         {
           title: 'Full Stack TypeScript',
-          instructor: 'Emma Thompson',
+          instructor_name: 'Emma Thompson',
           description: 'Complete TypeScript development from frontend to backend.',
           duration: '12 weeks',
           rating: 4.6,
@@ -201,7 +201,7 @@ export const useAIRecommendations = () => {
       const mockTrending: TrendingCourse[] = [
         {
           title: 'ChatGPT for Developers',
-          instructor: 'AI Experts',
+          instructor_name: 'AI Experts',
           growthRate: 340,
           popularityScore: 95,
           enrolled: '45,672',
@@ -209,7 +209,7 @@ export const useAIRecommendations = () => {
         },
         {
           title: 'Web3 Development',
-          instructor: 'Blockchain Academy',
+          instructor_name: 'Blockchain Academy',
           growthRate: 156,
           popularityScore: 82,
           enrolled: '23,891',
@@ -217,7 +217,7 @@ export const useAIRecommendations = () => {
         },
         {
           title: 'Rust Programming',
-          instructor: 'Systems Programming Pro',
+          instructor_name: 'Systems Programming Pro',
           growthRate: 128,
           popularityScore: 78,
           enrolled: '18,445',
@@ -225,7 +225,7 @@ export const useAIRecommendations = () => {
         },
         {
           title: 'Advanced Docker & Kubernetes',
-          instructor: 'Cloud Native Expert',
+          instructor_name: 'Cloud Native Expert',
           growthRate: 89,
           popularityScore: 84,
           enrolled: '31,256',

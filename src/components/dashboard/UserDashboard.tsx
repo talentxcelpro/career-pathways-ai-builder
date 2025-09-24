@@ -30,9 +30,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
   ];
 
   const trendingCourses = [
-    { id: 1, title: "Advanced React Development", instructor: "Sarah Wilson", rating: 4.8, students: 2456 },
-    { id: 2, title: "AI & Machine Learning Fundamentals", instructor: "Dr. Michael Chen", rating: 4.9, students: 3890 },
-    { id: 3, title: "Product Management Masterclass", instructor: "Jennifer Davis", rating: 4.7, students: 1823 }
+    { id: 1, title: "Advanced React Development", instructor_name: "Sarah Wilson", rating: 4.8, students: 2456 },
+    { id: 2, title: "AI & Machine Learning Fundamentals", instructor_name: "Dr. Michael Chen", rating: 4.9, students: 3890 },
+    { id: 3, title: "Product Management Masterclass", instructor_name: "Jennifer Davis", rating: 4.7, students: 1823 }
   ];
 
   return (
@@ -147,7 +147,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   <h3 className="font-semibold text-gray-900">{course.title}</h3>
                   <ExternalLink className="h-4 w-4 text-gray-400" />
                 </div>
-                <p className="text-gray-600 mb-2">by {course.instructor}</p>
+                <p className="text-gray-600 mb-2">by {course.instructor_name}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 fill-current" />

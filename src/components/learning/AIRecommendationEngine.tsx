@@ -148,7 +148,7 @@ export const AIRecommendationEngine: React.FC = () => {
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-lg">{course.title}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{course.instructor}</p>
+                          <p className="text-sm text-muted-foreground">{course.instructor_name}</p>
                         </div>
                       </div>
                     </CardHeader>
@@ -372,7 +372,7 @@ export const AIRecommendationEngine: React.FC = () => {
                     </div>
                     <CardHeader>
                       <CardTitle className="text-lg">{course.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{course.instructor}</p>
+                      <p className="text-sm text-muted-foreground">{course.instructor_name}</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex items-center justify-between text-sm">

@@ -10,7 +10,7 @@ interface Course {
   id: string;
   title: string;
   description: string;
-  instructor: string;
+  instructor_name: string;
   level: string;
   duration: string;
   category: string;
