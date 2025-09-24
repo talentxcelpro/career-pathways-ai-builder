@@ -223,12 +223,12 @@ export const EnhancedCourseDetail: React.FC = () => {
               <div className="mb-6">
                 <h3 className="font-semibold mb-3">What you'll learn:</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {course.skills_taught.map((skill, index) => (
-                    <div key={index} className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                      {skill}
-                    </div>
-                  ))}
+                  {(course.skills_taught || []).map((skill, index) => (
+                     <div key={index} className="flex items-center">
+                       <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                       {skill}
+                     </div>
+                   ))}
                 </div>
               </div>
 
@@ -240,15 +240,15 @@ export const EnhancedCourseDetail: React.FC = () => {
                       <h4 className="font-medium mb-2">Module {index + 1}: {module.title}</h4>
                       <p className="text-sm text-gray-600 mb-3">{module.description}</p>
                       <div className="space-y-2">
-                        {module.course_lessons.map((lesson) => (
-                          <div key={lesson.id} className="flex items-center justify-between text-sm">
-                            <div className="flex items-center">
-                              <Play className="h-3 w-3 mr-2 text-gray-400" />
-                              {lesson.title}
-                            </div>
-                            <span className="text-gray-500">{lesson.duration_minutes}min</span>
-                          </div>
-                        ))}
+                         {(module.course_lessons || []).map((lesson) => (
+                           <div key={lesson.id} className="flex items-center justify-between text-sm">
+                             <div className="flex items-center">
+                               <Play className="h-3 w-3 mr-2 text-gray-400" />
+                               {lesson.title}
+                             </div>
+                             <span className="text-gray-500">{lesson.duration_minutes}min</span>
+                           </div>
+                         ))}
                       </div>
                     </div>
                   ))}
@@ -379,16 +379,16 @@ export const EnhancedCourseDetail: React.FC = () => {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-3">
-                          {module.course_lessons.map((lesson) => (
-                            <div key={lesson.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                              <div className="flex items-center">
-                                <Play className="h-4 w-4 mr-3 text-blue-600" />
-                                <div>
-                                  <div className="font-medium">{lesson.title}</div>
-                                  <div className="text-sm text-gray-500">{lesson.duration_minutes} minutes</div>
-                                </div>
-                              </div>
-                              <Button 
+                          {(module.course_lessons || []).map((lesson) => (
+                             <div key={lesson.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                               <div className="flex items-center">
+                                 <Play className="h-4 w-4 mr-3 text-blue-600" />
+                                 <div>
+                                   <div className="font-medium">{lesson.title}</div>
+                                   <div className="text-sm text-gray-500">{lesson.duration_minutes} minutes</div>
+                                 </div>
+                               </div>
+                               <Button
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => {
@@ -430,12 +430,12 @@ export const EnhancedCourseDetail: React.FC = () => {
                         <div>
                           <h3 className="text-lg font-semibold mb-3">What you'll learn</h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {course.skills_taught.map((skill, index) => (
-                              <div key={index} className="flex items-center">
-                                <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0" />
-                                {skill}
-                              </div>
-                            ))}
+                            {(course.skills_taught || []).map((skill, index) => (
+                               <div key={index} className="flex items-center">
+                                 <CheckCircle className="h-4 w-4 text-green-600 mr-2 flex-shrink-0" />
+                                 {skill}
+                               </div>
+                             ))}
                           </div>
                         </div>
                       </div>
