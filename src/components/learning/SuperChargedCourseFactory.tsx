@@ -30,6 +30,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [courseCount, setCourseCount] = useState(100);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFixingVideos, setIsFixingVideos] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationResults, setGenerationResults] = useState<any>(null);
   
@@ -102,7 +103,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
       setGenerationResults(data);
       
       if (data.courses_processed > 0) {
-        toast.success(`🎉 Successfully completed ${data.courses_processed} courses with ${data.modules_created} modules, ${data.lessons_created} lessons, and ${data.youtube_videos_integrated} YouTube videos!`);
+        toast.success(`🎉 Successfully completed ${data.courses_processed} courses with ${data.modules_created} modules, ${data.lessons_created} lessons, and ${data.videos_integrated} YouTube videos!`);
       } else {
         toast.info(data.message || 'All courses already have complete content!');
       }
@@ -112,6 +113,39 @@ export const SuperChargedCourseFactory: React.FC = () => {
       toast.error('Course completion failed. Please check console logs and try again.');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleFixVideos = async () => {
+    setIsFixingVideos(true);
+    
+    try {
+      console.log('🔧 Starting video fix process...');
+      
+      const { data, error } = await supabase.functions.invoke('fix-course-videos', {
+        body: {
+          action: 'fix_broken_videos'
+        }
+      });
+
+      if (error) {
+        console.error('Video fix error:', error);
+        throw error;
+      }
+
+      console.log('✅ Video fix successful:', data);
+      
+      if (data.stats.videos_fixed > 0) {
+        toast.success(`🔧 Successfully fixed ${data.stats.videos_fixed} out of ${data.stats.videos_checked} videos!`);
+      } else {
+        toast.info('All videos are already working correctly!');
+      }
+
+    } catch (error) {
+      console.error('Video fix failed:', error);
+      toast.error('Video fix failed. Please check console logs and try again.');
+    } finally {
+      setIsFixingVideos(false);
     }
   };
 
@@ -295,24 +329,46 @@ export const SuperChargedCourseFactory: React.FC = () => {
                 </div>
               )}
 
-              <Button
-                onClick={completeCourseContent}
-                disabled={isGenerating}
-                className="w-full bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-700 hover:via-blue-700 hover:to-purple-700 text-white shadow-xl border-0 text-lg font-semibold"
-                size="lg"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-6 w-6 mr-2 animate-spin" />
-                    Completing All 50 Courses...
-                  </>
-                ) : (
-                  <>
-                    <Rocket className="h-6 w-6 mr-2" />
-                    🚀 Complete All 50 Courses Now!
-                  </>
-                )}
-              </Button>
+              <div className="space-y-3">
+                <Button
+                  onClick={completeCourseContent}
+                  disabled={isGenerating || isFixingVideos}
+                  className="w-full bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-700 hover:via-blue-700 hover:to-purple-700 text-white shadow-xl border-0 text-lg font-semibold"
+                  size="lg"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                      Completing All 50 Courses...
+                    </>
+                  ) : (
+                    <>
+                      <Rocket className="h-6 w-6 mr-2" />
+                      🚀 Complete All 50 Courses Now!
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={handleFixVideos}
+                  disabled={isGenerating || isFixingVideos}
+                  variant="outline"
+                  className="w-full border-orange-500 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold"
+                  size="lg"
+                >
+                  {isFixingVideos ? (
+                    <>
+                      <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                      Fixing Mismatched Videos...
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="h-6 w-6 mr-2" />
+                      🔧 Fix Mismatched Videos
+                    </>
+                  )}
+                </Button>
+              </div>
               
               <div className="text-center text-sm text-muted-foreground mt-2">
                 ⚡ This will create <strong>200 modules</strong>, <strong>750+ lessons</strong>, and <strong>50 assessments</strong> in minutes!
