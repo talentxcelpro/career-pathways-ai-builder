@@ -102,7 +102,7 @@ serve(async (req) => {
               company: job.company,
               matchScore: analysis.overallScore,
               topFactors: analysis.matchingFactors.slice(0, 3),
-              criticalGaps: analysis.skillGaps.filter(gap => gap.importance === 'critical')
+              criticalGaps: analysis.skillGaps.filter((gap: any) => gap.importance === 'critical')
             });
           } catch (error) {
             console.error(`Failed to analyze job ${job.id}:`, error);
@@ -288,19 +288,19 @@ function generateApplicationRecommendations(analysis: any): any {
       'Apply immediately - excellent match!',
       'Highlight your strongest matching factors in your application',
       'Prepare for interview with confidence'
-    ];
+    ] as any;
   } else if (analysis.overallScore >= 60) {
     recommendations.actions = [
       'Apply with targeted improvements',
       'Address skill gaps in your cover letter',
       'Research the company thoroughly'
-    ];
+    ] as any;
   } else {
     recommendations.actions = [
       'Consider developing missing skills first',
       'Look for similar roles with better fit',
       'Network with company employees for insights'
-    ];
+    ] as any;
     recommendations.timeline = 'after_preparation';
   }
 

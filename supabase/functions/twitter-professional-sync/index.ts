@@ -222,11 +222,11 @@ serve(async (req) => {
         // Analyze following list for professional connections
         if (followingList) {
           networkAnalysis.professional_connections = followingList.filter(
-            user => user.verified || user.professionalAccount
+            (user: any) => user.verified || user.professionalAccount
           ).length;
 
           networkAnalysis.industry_leaders = followingList
-            .filter(user => user.followersCount > 10000 && user.verified)
+            .filter((user: any) => user.followersCount > 10000 && user.verified)
             .slice(0, 10);
         }
 

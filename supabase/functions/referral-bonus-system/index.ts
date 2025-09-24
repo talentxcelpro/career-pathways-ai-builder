@@ -173,7 +173,7 @@ serve(async (req) => {
           );
         }
 
-        const bonusConfig = REFERRAL_BONUSES[milestoneType];
+        const bonusConfig = REFERRAL_BONUSES[milestoneType as keyof typeof REFERRAL_BONUSES];
         if (!bonusConfig) {
           return new Response(
             JSON.stringify({ success: false, error: 'Invalid milestone type' }),
@@ -235,8 +235,8 @@ serve(async (req) => {
         await supabase
           .from('referral_codes')
           .update({
-            total_uses: supabase.raw('total_uses + 1'),
-            total_earnings: supabase.raw(`total_earnings + ${bonusConfig.referrer}`)
+            total_uses: (supabase as any).raw('total_uses + 1'),
+            total_earnings: (supabase as any).raw(`total_earnings + ${bonusConfig.referrer}`)
           })
           .eq('referral_code', referralCode);
 
@@ -384,11 +384,11 @@ function calculateMilestoneBreakdown(bonuses: any[]): any {
   
   bonuses.forEach(bonus => {
     const milestone = bonus.milestone_type;
-    if (!breakdown[milestone]) {
-      breakdown[milestone] = { count: 0, totalEarnings: 0 };
+    if (!(breakdown as any)[milestone]) {
+      (breakdown as any)[milestone] = { count: 0, totalEarnings: 0 };
     }
-    breakdown[milestone].count++;
-    breakdown[milestone].totalEarnings += bonus.referrer_bonus;
+    (breakdown as any)[milestone].count++;
+    (breakdown as any)[milestone].totalEarnings += bonus.referrer_bonus;
   });
   
   return breakdown;
@@ -409,5 +409,5 @@ function generateSharingLinks(baseUrl: string, platform: string, customMessage: 
     copy: baseUrl
   };
 
-  return platform ? { [platform]: links[platform] } : links;
+  return platform ? { [platform]: links[platform as keyof typeof links] } : links;
 }

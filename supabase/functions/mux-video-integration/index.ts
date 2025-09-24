@@ -42,7 +42,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: (error as Error).message
       }),
       {
         status: 500,
@@ -86,15 +86,15 @@ async function replaceAllYouTubeWithMux() {
   // Process each lesson
   for (const lesson of lessons) {
     try {
-      const course = lesson.course_modules.courses
-      const module = lesson.course_modules
+      const course = (lesson.course_modules as any).course || { title: 'Unknown Course' };
+      const module = lesson.course_modules;
       
-      console.log(`🎬 Processing lesson: "${lesson.title}" from course: "${course.title}"`)
+      console.log(`🎬 Processing lesson: "${lesson.title}" from course: "${course.title}"`);
 
       // Create course-specific video content
       const muxPlaybackId = await createMuxVideo({
         courseTitle: course.title,
-        moduleTitle: module.title,
+        moduleTitle: (module as any).title || 'Unknown Module',
         lessonTitle: lesson.title,
         lessonId: lesson.id
       })
@@ -147,7 +147,7 @@ async function replaceAllYouTubeWithMux() {
         lessonId: lesson.id,
         lessonTitle: lesson.title,
         success: false,
-        error: error.message
+        error: (error as Error).message
       })
     }
   }
@@ -205,12 +205,12 @@ async function replaceCourseVideos(courseId: string) {
 
   for (const lesson of lessons) {
     try {
-      const course = lesson.course_modules.courses
-      const module = lesson.course_modules
+      const course = (lesson.course_modules as any).course || { title: 'Unknown Course' };
+      const module = lesson.course_modules;
       
       const muxPlaybackId = await createMuxVideo({
         courseTitle: course.title,
-        moduleTitle: module.title,
+        moduleTitle: (module as any).title || 'Unknown Module',
         lessonTitle: lesson.title,
         lessonId: lesson.id
       })
@@ -251,7 +251,7 @@ async function replaceCourseVideos(courseId: string) {
         lessonId: lesson.id,
         lessonTitle: lesson.title,
         success: false,
-        error: error.message
+        error: (error as Error).message
       })
     }
   }

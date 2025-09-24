@@ -142,7 +142,7 @@ Return as a structured JSON object with specific scores, recommendations, and ac
     return new Response(
       JSON.stringify({ 
         error: 'Skills assessment failed',
-        details: error.message 
+        details: (error as Error).message 
       }),
       { 
         status: 500, 

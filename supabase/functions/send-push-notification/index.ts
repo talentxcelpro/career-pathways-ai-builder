@@ -48,7 +48,7 @@ serve(async (req) => {
     }
 
     // Create notifications in database first
-    const notifications = targetUserIds.map(userId => ({
+    const notifications = targetUserIds.map((userId: any) => ({
       user_id: userId,
       type: trigger_type || 'general',
       title,
@@ -121,7 +121,7 @@ serve(async (req) => {
               priority
             };
 
-            function getDefaultActions(type) {
+            function getDefaultActions(type: any) {
               switch (type) {
                 case 'profile_completion_reminder':
                   return [

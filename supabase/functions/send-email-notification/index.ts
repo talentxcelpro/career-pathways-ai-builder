@@ -77,7 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
     const recipientList = recipients ? recipients : [requestBody];
 
     // Validate that we have at least one recipient with email
-    const validRecipients = recipientList.filter(r => r.recipient_email && r.recipient_email.trim() !== '');
+    const validRecipients = recipientList.filter((r: any) => r.recipient_email && r.recipient_email.trim() !== '');
     if (!validRecipients.length) {
       throw new Error('No valid recipients found. At least one recipient_email is required.');
     }
@@ -238,7 +238,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('SMTP transporter created successfully');
     } catch (transporterError) {
       console.error('Failed to create SMTP transporter:', transporterError);
-      throw new Error(`SMTP configuration error: ${transporterError.message}`);
+      throw new Error(`SMTP configuration error: ${(transporterError as Error).message}`);
     }
 
     let successCount = 0;
@@ -311,7 +311,7 @@ const handler = async (req: Request): Promise<Response> => {
         results.push({
           email: recipient.recipient_email,
           status: 'error',
-          error: emailError.message
+          error: (emailError as Error).message
         });
       }
     }

@@ -183,11 +183,11 @@ serve(async (req) => {
         };
 
         // Analyze content for professional relevance
-        const professionalContent = contentSelection.filter(post => 
+        const professionalContent = contentSelection.filter((post: any) => 
           isProfessionalContent(post)
         );
 
-        portfolioData.professional_score = Math.round(
+        (portfolioData as any).professional_score = Math.round(
           (professionalContent.length / contentSelection.length) * 100
         );
 
@@ -210,7 +210,7 @@ serve(async (req) => {
           JSON.stringify({
             success: true,
             portfolio,
-            professionalScore: portfolioData.professional_score,
+            professionalScore: (portfolioData as any).professional_score,
             selectedContent: professionalContent.length
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

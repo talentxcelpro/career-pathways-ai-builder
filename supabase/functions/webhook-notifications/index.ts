@@ -227,8 +227,8 @@ async function sendNotification(notificationData: any) {
       const response = await fetch(webhook.url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...webhook.headers
+          ...webhook.headers,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
@@ -248,11 +248,11 @@ async function sendNotification(notificationData: any) {
         webhookId: webhook.id,
         webhookName: webhook.name,
         status: 'error',
-        error: error.message,
+        error: (error as Error).message,
         deliveredAt: new Date().toISOString()
       });
       
-      console.error(`❌ Failed to send to ${webhook.name}:`, error.message);
+      console.error(`❌ Failed to send to ${webhook.name}:`, (error as Error).message);
     }
   }
   

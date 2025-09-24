@@ -144,7 +144,7 @@ serve(async (req) => {
     console.error("Error creating Razorpay order:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || "Failed to create payment order" 
+        error: (error as Error).message || "Failed to create payment order" 
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

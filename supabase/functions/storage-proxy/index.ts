@@ -57,9 +57,9 @@ serve(async (req) => {
       'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
     };
     
-    if (contentLength) responseHeaders['Content-Length'] = contentLength;
-    if (lastModified) responseHeaders['Last-Modified'] = lastModified;
-    if (etag) responseHeaders['ETag'] = etag;
+    if (contentLength) (responseHeaders as any)['Content-Length'] = contentLength;
+    if (lastModified) (responseHeaders as any)['Last-Modified'] = lastModified;
+    if (etag) (responseHeaders as any)['ETag'] = etag;
     
     // Return the proxied response
     return new Response(response.body, {

@@ -37,13 +37,13 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     console.error('Error in simple test function:', error);
-    console.error('Error stack:', error.stack);
+    console.error('Error stack:', (error as Error).stack);
     
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message,
-        stack: error.stack 
+        error: (error as Error).message,
+        stack: (error as Error).stack
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

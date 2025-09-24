@@ -320,7 +320,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message,
+        error: (error as Error).message,
         message: 'Failed to populate courses. Please check your database connection.'
       }),
       {

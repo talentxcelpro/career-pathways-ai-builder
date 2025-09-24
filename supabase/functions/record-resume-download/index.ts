@@ -55,7 +55,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('record-resume-download error:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Failed to record download' }), {
+    return new Response(JSON.stringify({ error: (error as Error).message || 'Failed to record download' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
