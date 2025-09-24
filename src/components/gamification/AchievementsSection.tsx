@@ -22,6 +22,7 @@ import { useUserBadges } from '@/hooks/useUserScores';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useUnifiedGamification } from '@/hooks/useUnifiedGamification';
+import { useRealAchievements } from '@/hooks/useRealAchievements';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
@@ -60,43 +61,86 @@ export const AchievementsSection: React.FC = () => {
     triggerConnectionMade, 
     triggerJobApplied 
   } = useUnifiedGamification();
+  const { 
+    userAchievements: realUserAchievements, 
+    allAchievementTypes, 
+    summary 
+  } = useRealAchievements();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showEarnedOnly, setShowEarnedOnly] = useState(false);
   const [celebratingAchievement, setCelebratingAchievement] = useState<string | null>(null);
 
-  // Process unified achievements data
-  const achievements: Achievement[] = (unifiedAchievements || []).map(achievement => {
-    const userAchievement = userAchievements?.find(ua => ua.achievement_id === achievement.id);
-    
-    // Map icon names to components
-    const getIconComponent = (iconName: string) => {
-      const iconMap: { [key: string]: React.ElementType } = {
-        'star': Star,
-        'flame': Flame,
-        'users': Users,
-        'briefcase': Briefcase,
-        'zap': Zap,
-        'crown': Crown,
-        'trophy': Trophy,
-        'target': Target
-      };
-      return iconMap[iconName] || Star;
-    };
+  // Combine real achievements with available achievement types
+  const earnedAchievements: Achievement[] = realUserAchievements.map(ach => ({
+    id: ach.id,
+    name: ach.achievement_title,
+    description: ach.achievement_description,
+    icon: getIconForType(ach.achievement_type),
+    rarity: getRarityByPoints(ach.points_awarded),
+    category: getCategoryForType(ach.achievement_type),
+    points: ach.points_awarded,
+    progress: 1,
+    maxProgress: 1,
+    earned: true,
+    earnedAt: ach.earned_at
+  }));
 
-    return {
-      id: achievement.id,
-      name: achievement.title,
-      description: achievement.description,
-      icon: getIconComponent(achievement.icon),
-      rarity: achievement.rarity,
-      category: achievement.category,
-      points: achievement.points,
-      progress: userAchievement?.progress || 0,
-      maxProgress: achievement.requirement,
-      earned: userAchievement?.is_completed || false,
-      earnedAt: userAchievement?.completed_at || undefined
+  // Add available achievement types that haven't been earned
+  const availableAchievements: Achievement[] = (allAchievementTypes || [])
+    .filter(type => !realUserAchievements.some(earned => earned.achievement_type === type.type))
+    .map(type => ({
+      id: type.type,
+      name: type.title,
+      description: type.description || 'Complete activities to unlock this achievement',
+      icon: getIconForType(type.type),
+      rarity: getRarityByPoints(type.points),
+      category: getCategoryForType(type.type),
+      points: type.points,
+      progress: 0,
+      maxProgress: 1,
+      earned: false,
+      earnedAt: undefined
+    }));
+
+  // Combine earned and available achievements
+  const achievements: Achievement[] = [...earnedAchievements, ...availableAchievements];
+
+  // Helper functions
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: React.ElementType } = {
+      'star': Star,
+      'flame': Flame,
+      'users': Users,
+      'briefcase': Briefcase,
+      'zap': Zap,
+      'crown': Crown,
+      'trophy': Trophy,
+      'target': Target
     };
-  });
+    return iconMap[iconName] || Star;
+  };
+
+  const getIconForType = (type: string): React.ElementType => {
+    if (type.includes('social') || type.includes('connection')) return Users;
+    if (type.includes('career') || type.includes('job')) return Briefcase;
+    if (type.includes('skill')) return Target;
+    if (type.includes('streak')) return Flame;
+    return Star;
+  };
+
+  const getRarityByPoints = (points: number): 'common' | 'rare' | 'epic' | 'legendary' => {
+    if (points >= 1000) return 'legendary';
+    if (points >= 500) return 'epic';
+    if (points >= 200) return 'rare';
+    return 'common';
+  };
+
+  const getCategoryForType = (type: string): string => {
+    if (type.includes('social') || type.includes('connection')) return 'social';
+    if (type.includes('career') || type.includes('job')) return 'career';
+    if (type.includes('skill')) return 'career';
+    return 'engagement';
+  };
 
   const getRarityConfig = (rarity: string) => {
     switch (rarity) {
@@ -161,8 +205,9 @@ export const AchievementsSection: React.FC = () => {
     });
   }, [achievements, txcIntegration, toast]);
 
-  const earnedCount = achievements.filter(a => a.earned).length;
-  const totalPoints = achievements.filter(a => a.earned).reduce((sum, a) => sum + a.points, 0);
+  const earnedCount = realUserAchievements.length > 0 ? summary.totalEarned : achievements.filter(a => a.earned).length;
+  const totalPoints = realUserAchievements.length > 0 ? summary.totalPoints : achievements.filter(a => a.earned).reduce((sum, a) => sum + a.points, 0);
+  const completionRate = realUserAchievements.length > 0 ? summary.completionRate : (achievements.length > 0 ? Math.round((earnedCount / achievements.length) * 100) : 0);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -180,7 +225,7 @@ export const AchievementsSection: React.FC = () => {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-1">
-                {Math.round((earnedCount / achievements.length) * 100)}%
+                {completionRate}%
               </div>
               <div className="text-sm text-gray-600">Completion Rate</div>
             </div>

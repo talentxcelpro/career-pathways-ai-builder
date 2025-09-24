@@ -132,13 +132,13 @@ export const LeaderboardsWidget: React.FC = () => {
     }
   };
 
-  const getMetricValue = (user: LeaderboardUser) => {
+  const getMetricValue = (user: any) => {
     switch (activeCategory) {
-      case 'points': return user.total_points.toLocaleString();
-      case 'streaks': return `${user.current_streak} days`;
-      case 'txc': return `${user.txc_balance.toLocaleString()} TXC`;
-      case 'achievements': return `${user.achievements_count} badges`;
-      default: return user.total_points.toLocaleString();
+      case 'points': return (user.total_points || user.lifetime_txc || 0).toLocaleString();
+      case 'streaks': return `${user.current_streak || 0} days`;
+      case 'txc': return `${(user.txc_balance || user.current_txc || 0).toLocaleString()} TXC`;
+      case 'achievements': return `${user.achievements_count || 0} badges`;
+      default: return (user.total_points || user.lifetime_txc || 0).toLocaleString();
     }
   };
 
@@ -273,12 +273,12 @@ export const LeaderboardsWidget: React.FC = () => {
                       <Badge className={getBadgeColor(user.badge_level || 'bronze')}>
                         {user.badge_level || 'bronze'}
                       </Badge>
-                      {user.user_id === currentUser?.id && (
+                      {user.id === currentUser?.id && (
                         <Badge variant="outline" className="text-xs">You</Badge>
                       )}
                     </div>
                     <p className="text-sm text-gray-600">
-                      {user.achievements_count || 0} achievements • {user.txc_balance?.toLocaleString() || 0} TXC
+                      {user.achievements_count || 0} achievements • {(user.txc_balance || user.current_txc || 0).toLocaleString()} TXC
                     </p>
                   </div>
 
@@ -287,7 +287,7 @@ export const LeaderboardsWidget: React.FC = () => {
                     <div className="text-lg font-bold text-gray-900">
                       {getMetricValue(user)}
                     </div>
-                    {activeCategory === 'streaks' && user.current_streak > 0 && (
+                    {activeCategory === 'streaks' && (user.current_streak || 0) > 0 && (
                       <div className="flex items-center gap-1 text-xs text-orange-600">
                         <Flame className="h-3 w-3" />
                         Active
