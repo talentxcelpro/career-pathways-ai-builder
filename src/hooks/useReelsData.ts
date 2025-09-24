@@ -94,20 +94,21 @@ export const useReelsData = () => {
             const url = u.toLowerCase();
             console.log('Checking URL:', url);
             
-            // Check for video file extensions anywhere in the URL
-            const videoExtensions = ['.mp4', '.mov', '.webm', '.avi', '.m4v'];
+            // Only check for actual video file extensions
+            const videoExtensions = ['.mp4', '.mov', '.webm', '.avi', '.m4v', '.mkv', '.flv'];
             const hasVideoExtension = videoExtensions.some(ext => url.includes(ext));
             
-            // Check for video-related keywords in URL path
-            const hasVideoKeywords = url.includes('video') || url.includes('media');
+            // Exclude image extensions to prevent false positives
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+            const hasImageExtension = imageExtensions.some(ext => url.includes(ext));
             
-            // Special handling for Supabase storage patterns
-            const isSupabaseVideo = url.includes('supabase') && hasVideoExtension;
-            
-            const isVideo = hasVideoExtension || (hasVideoKeywords && url.includes('post-media'));
+            // Only consider it a video if it has video extension and NOT an image extension
+            const isVideo = hasVideoExtension && !hasImageExtension;
             
             if (isVideo) {
               console.log('✓ Found video URL:', u);
+            } else if (hasImageExtension) {
+              console.log('✗ Skipping image URL:', u);
             }
             
             return isVideo;
