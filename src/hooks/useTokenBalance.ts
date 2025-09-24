@@ -19,27 +19,57 @@ export const useTokenBalance = () => {
       if (!user?.id) return null;
 
       try {
-        console.log('Fetching token balance for user:', user.id);
+        console.log('Fetching TXC balance for user:', user.id);
         
-        // First initialize user TXC if needed
-        const initResult = await supabase.functions.invoke('initialize-user-txc');
-        console.log('Initialization result:', initResult);
-
-        // Then get the balance
-        const { data, error } = await supabase.functions.invoke('get-token-balance', {
-          body: { userId: user.id }
-        });
+        // Get TXC balance from user_txc_balances table
+        const { data: balanceData, error: balanceError } = await supabase
+          .from('user_txc_balances')
+          .select('balance, total_earned, total_spent, last_activity_at')
+          .eq('user_id', user.id)
+          .single();
         
-        console.log('Token balance response:', data, error);
+        console.log('TXC balance response:', balanceData, balanceError);
 
-        if (error) {
-          console.error('Error fetching token balance:', error);
+        if (balanceError && balanceError.code !== 'PGRST116') {
+          console.error('Error fetching TXC balance:', balanceError);
           return null;
         }
 
-        return data?.balance || null;
+        // If no balance record exists, create one
+        if (!balanceData) {
+          const { data: newBalance, error: createError } = await supabase
+            .from('user_txc_balances')
+            .insert({
+              user_id: user.id,
+              balance: 500, // Welcome bonus
+              total_earned: 500,
+              total_spent: 0,
+              last_activity_at: new Date().toISOString()
+            })
+            .select('balance, total_earned, total_spent, last_activity_at')
+            .single();
+
+          if (createError) {
+            console.error('Error creating TXC balance:', createError);
+            return null;
+          }
+
+          return {
+            total: newBalance.balance,
+            available: newBalance.balance,
+            locked: 0,
+            lifetime_earned: newBalance.total_earned
+          };
+        }
+
+        return {
+          total: balanceData.balance,
+          available: balanceData.balance,
+          locked: 0,
+          lifetime_earned: balanceData.total_earned
+        };
       } catch (error) {
-        console.error('Error in token balance fetch:', error);
+        console.error('Error in TXC balance fetch:', error);
         return null;
       }
     },

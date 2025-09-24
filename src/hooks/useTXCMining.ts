@@ -129,7 +129,7 @@ export const useTXCMining = () => {
         .select('created_at')
         .eq('user_id', user.id)
         .eq('transaction_type', 'mining')
-        .eq('source', action)
+        .eq('activity_type', action)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
@@ -183,13 +183,13 @@ export const useTXCMining = () => {
         if (action === 'joining_bonus') {
           toast({
             title: "Welcome to TalentXcel! 🎉",
-            description: `You've received ${reward.amount} TXC as a welcome bonus!`,
+            description: `You've received ${data.amount} TXC as a welcome bonus!`,
             variant: "default"
           });
         } else {
           toast({
             title: "TXC Earned! 🎉",
-            description: `+${reward.amount} TXC for ${reward.description}`,
+            description: `+${data.amount} TXC for ${data.description}`,
             variant: "default"
           });
         }
@@ -197,10 +197,13 @@ export const useTXCMining = () => {
         // Refresh balance to show updated amount
         refreshBalance();
         return true;
+      } else {
+        // Silent fail for cooldown or other non-critical errors
+        return false;
       }
-      
       return false;
     } catch (error) {
+      console.error('TXC earning error:', error);
       return false;
     } finally {
       setIsProcessing(false);
