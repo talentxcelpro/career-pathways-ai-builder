@@ -31710,15 +31710,7 @@ export type Database = {
         Returns: string
       }
       create_course_batch: {
-        Args:
-          | { batch_data: Json }
-          | {
-              batch_description: string
-              batch_title: string
-              course_tags: string[]
-              difficulty_level: string
-            }
-          | { p_batch_name?: string; p_courses_per_batch?: number }
+        Args: { p_batch_name?: string; p_courses_per_batch?: number }
         Returns: Json
       }
       create_notification: {
@@ -31932,15 +31924,9 @@ export type Database = {
       get_batch_progress: {
         Args: Record<PropertyKey, never>
         Returns: {
-          batch_id: string
           batch_name: string
-          batch_number: number
-          completed_at: string
-          courses_created: number
-          created_at: string
-          status: string
-          total_courses: number
-          video_distribution: Json
+          courses_count: number
+          created_date: string
         }[]
       }
       get_bot_display_info: {
