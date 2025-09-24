@@ -10,6 +10,7 @@ import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { formatTXC } from '@/types/txc-pricing';
 import txcMascot from '@/assets/txc-mascot.jpg';
 import { RetroactiveTXCAdmin } from '@/components/admin/RetroactiveTXCAdmin';
+import { ComprehensiveTXCDistribution } from '@/components/admin/ComprehensiveTXCDistribution';
 
 const TXCMining: React.FC = () => {
   const { user } = useAuth();
@@ -135,8 +136,9 @@ const TXCMining: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Admin Panel for Retroactive Rewards */}
-        <div className="mb-8">
+        {/* Admin Panel for TXC Distribution */}
+        <div className="mb-8 space-y-4">
+          <ComprehensiveTXCDistribution />
           <RetroactiveTXCAdmin />
         </div>
 
