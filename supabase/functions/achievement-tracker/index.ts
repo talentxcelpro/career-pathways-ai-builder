@@ -353,8 +353,7 @@ serve(async (req) => {
 
         let query = supabase
           .from('user_achievements')
-          .select('user_id, count(*), sum(reward_amount), profiles(full_name, profile_picture_url)')
-          .group('user_id');
+          .select('user_id, profiles(full_name, profile_picture_url)');
 
         if (category) {
           query = query.eq('category', category);
@@ -398,7 +397,14 @@ serve(async (req) => {
         if (setValue !== undefined) {
           updateData[statName] = setValue;
         } else {
-          updateData[statName] = supabase.raw(`COALESCE(${statName}, 0) + ${increment}`);
+          // For increments, we'll use the database function to handle atomic updates
+          const { data: currentStats } = await supabase
+            .from('user_achievement_stats')
+            .select(statName)
+            .eq('user_id', userId)
+            .single();
+          
+          updateData[statName] = (currentStats?.[statName] || 0) + increment;
         }
 
         updateData.updated_at = new Date().toISOString();

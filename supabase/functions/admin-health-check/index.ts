@@ -61,7 +61,7 @@ serve(async (req) => {
       healthResults.push({
         service: 'database',
         status: 'error',
-        message: `Database test failed: ${dbError.message}`,
+        message: `Database test failed: ${(dbError as Error).message}`,
         details: dbError
       })
     }
@@ -99,7 +99,7 @@ serve(async (req) => {
       healthResults.push({
         service: 'email',
         status: 'warning',
-        message: `Email function test failed: ${emailError.message}`
+        message: `Email function test failed: ${(emailError as Error).message}`
       })
     }
     
@@ -131,7 +131,7 @@ serve(async (req) => {
       healthResults.push({
         service: 'job-scraper',
         status: 'warning',
-        message: `Job scraper test failed: ${scraperError.message}`
+        message: `Job scraper test failed: ${(scraperError as Error).message}`
       })
     }
     
@@ -161,7 +161,7 @@ serve(async (req) => {
       healthResults.push({
         service: 'sitemap',
         status: 'warning',
-        message: `Sitemap test failed: ${sitemapError.message}`
+        message: `Sitemap test failed: ${(sitemapError as Error).message}`
       })
     }
     
@@ -200,7 +200,7 @@ serve(async (req) => {
       timestamp: new Date().toISOString(),
       overallStatus: 'error',
       error: 'Health check system failure',
-      details: error.message
+      details: (error as Error).message
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

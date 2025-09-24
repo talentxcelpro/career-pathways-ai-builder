@@ -97,7 +97,7 @@ serve(async (req) => {
         const dailyEarnings = lastActivityDate === today ? (userStats?.daily_earnings || 0) : 0;
 
         // Calculate reward amount
-        const rewardConfig = ACTIVITY_REWARDS[activityType];
+        const rewardConfig = ACTIVITY_REWARDS[activityType as keyof typeof ACTIVITY_REWARDS];
         if (!rewardConfig && !customAmount) {
           return new Response(
             JSON.stringify({ success: false, error: 'Invalid activity type' }),
@@ -107,10 +107,10 @@ serve(async (req) => {
 
         let baseAmount = customAmount || rewardConfig.base;
         let multiplier = rewardConfig?.multiplier || 1.0;
-        let dailyLimit = rewardConfig?.dailyLimit || 1000;
+        let dailyLimit = rewardConfig?.daily_limit || 1000;
 
         // Apply tier multiplier
-        const tierMultiplier = TIER_MULTIPLIERS[userTier] || 1.0;
+        const tierMultiplier = TIER_MULTIPLIERS[userTier as keyof typeof TIER_MULTIPLIERS] || 1.0;
         multiplier *= tierMultiplier;
 
         // Apply activity-specific bonuses
@@ -122,7 +122,7 @@ serve(async (req) => {
           multiplier *= 1.5; // Bonus for high completion
         }
 
-        const finalAmount = Math.round(baseAmount * multiplier);
+        let finalAmount = Math.round(baseAmount * multiplier);
 
         // Check daily limits
         const currentTypeEarnings = await getDailyActivityEarnings(supabase, userId, activityType, today);
@@ -180,19 +180,22 @@ serve(async (req) => {
         }
 
         // Update user stats
+        const totalEarned = ((userStats as any)?.total_earned || 0) + finalAmount;
+        const activityCount = ((userStats as any)?.activity_count || 0) + 1;
+        
         await supabase
           .from('user_txc_stats')
           .upsert({
             user_id: userId,
             current_tier: userTier,
             daily_earnings: dailyEarnings + finalAmount,
-            total_earned: (userStats?.total_earned || 0) + finalAmount,
+            total_earned: totalEarned,
             last_activity_date: new Date().toISOString(),
-            activity_count: (userStats?.activity_count || 0) + 1
+            activity_count: activityCount
           });
 
         // Check for tier upgrades
-        const newTier = await checkTierUpgrade(supabase, userId, userStats?.total_earned || 0 + finalAmount);
+        const newTier = await checkTierUpgrade(supabase, userId, totalEarned);
         
         return new Response(
           JSON.stringify({
@@ -259,7 +262,7 @@ serve(async (req) => {
         }
 
         const today = new Date().toISOString().split('T')[0];
-        const dailyLimits = {};
+        const dailyLimits: any = {};
 
         for (const [activityType, config] of Object.entries(ACTIVITY_REWARDS)) {
           const currentEarnings = await getDailyActivityEarnings(supabase, userId, activityType, today);
@@ -335,7 +338,7 @@ async function getDailyActivityEarnings(supabase: any, userId: string, activityT
     return 0;
   }
 
-  return (data || []).reduce((sum, record) => sum + record.amount_earned, 0);
+  return (data || []).reduce((sum: number, record: any) => sum + record.amount_earned, 0);
 }
 
 async function checkTierUpgrade(supabase: any, userId: string, totalEarned: number): Promise<string> {
