@@ -9391,6 +9391,7 @@ export type Database = {
           published: boolean | null
           rating: number | null
           skills_taught: string[] | null
+          subcategory: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string | null
@@ -9427,6 +9428,7 @@ export type Database = {
           published?: boolean | null
           rating?: number | null
           skills_taught?: string[] | null
+          subcategory?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string | null
@@ -9463,6 +9465,7 @@ export type Database = {
           published?: boolean | null
           rating?: number | null
           skills_taught?: string[] | null
+          subcategory?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string | null
