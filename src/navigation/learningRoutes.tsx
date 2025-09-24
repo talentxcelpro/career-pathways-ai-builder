@@ -111,6 +111,24 @@ export const learningRoutes = [
     isPublic: true,
   },
   {
+    title: "Employment Bridge Overview",
+    to: "/learning/employment-bridge/overview",
+    page: <EmploymentBridgePage />,
+    isPublic: true,
+  },
+  {
+    title: "Employment Bridge Modules",
+    to: "/learning/employment-bridge/modules",
+    page: <EmploymentBridgePage />,
+    isPublic: true,
+  },
+  {
+    title: "Employment Bridge Certificate",
+    to: "/learning/employment-bridge/certificate",
+    page: <EmploymentBridgePage />,
+    isPublic: true,
+  },
+  {
     title: "Job-Focused Courses",
     to: "/learning/job-focused-courses",
     page: <JobFocusedCourses />,

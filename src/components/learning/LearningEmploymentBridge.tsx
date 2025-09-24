@@ -3,47 +3,52 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Briefcase, TrendingUp, Target, Users, Award } from 'lucide-react';
-import { JobFocusedCourses } from './JobFocusedCourses';
-import { SkillMarketTrends } from './SkillMarketTrends';
-import { useLearningJobIntegration } from '@/hooks/useLearningJobIntegration';
-import { AnalyticsView } from './AnalyticsView';
+import { BookOpen, Briefcase, TrendingUp, Target, Users, Award, GraduationCap, Play } from 'lucide-react';
+import { EmploymentBridgeModules } from './EmploymentBridgeModules';
+import { EmploymentBridgeCertificate } from './EmploymentBridgeCertificate';
+import { useLearningProgress } from '@/hooks/useLearningProgress';
 
 export const LearningEmploymentBridge: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('courses');
-  const { userProgress, isLoading } = useLearningJobIntegration();
+  const [activeTab, setActiveTab] = useState('overview');
+  const { progress, isLoading } = useLearningProgress();
 
-  // Calculate user stats
-  const completedCourses = userProgress.filter(p => p.completion_date).length;
-  const inProgressCourses = userProgress.filter(p => !p.completion_date && p.progress_percentage > 0).length;
-  const certificatesEarned = userProgress.filter(p => p.certificate_earned).length;
-  const totalSkillsAcquired = [...new Set(userProgress.flatMap(p => p.skills_acquired))].length;
+  // Calculate user stats for Employment Bridge modules
+  const employmentBridgeProgress = progress.filter(p => 
+    ['career-readiness', 'soft-skills', 'interview-prep', 'job-search', 'workplace-adaptation'].includes(p.course_id)
+  );
+  
+  const completedModules = employmentBridgeProgress.filter(p => p.progress_percentage === 100).length;
+  const inProgressModules = employmentBridgeProgress.filter(p => p.progress_percentage > 0 && p.progress_percentage < 100).length;
+  const totalTimeSpent = employmentBridgeProgress.reduce((acc, p) => acc + (p.completed_lessons * 0.5), 0); // Estimate 30min per lesson
+  const averageScore = employmentBridgeProgress.length > 0 
+    ? Math.round(employmentBridgeProgress.reduce((acc, p) => acc + (p.progress_percentage || 0), 0) / employmentBridgeProgress.length)
+    : 0;
 
   const stats = [
     {
-      title: 'Courses Completed',
-      value: completedCourses,
+      title: 'Modules Completed',
+      value: `${completedModules}/5`,
       icon: BookOpen,
       color: 'text-green-600',
       bgColor: 'bg-green-100'
     },
     {
       title: 'In Progress',
-      value: inProgressCourses,
+      value: inProgressModules,
       icon: Target,
       color: 'text-blue-600',
       bgColor: 'bg-blue-100'
     },
     {
-      title: 'Certificates',
-      value: certificatesEarned,
-      icon: Award,
+      title: 'Time Invested',
+      value: `${Math.round(totalTimeSpent)}h`,
+      icon: Play,
       color: 'text-purple-600',
       bgColor: 'bg-purple-100'
     },
     {
-      title: 'Skills Acquired',
-      value: totalSkillsAcquired,
+      title: 'Average Score',
+      value: `${averageScore}%`,
       icon: TrendingUp,
       color: 'text-orange-600',
       bgColor: 'bg-orange-100'
@@ -54,13 +59,27 @@ export const LearningEmploymentBridge: React.FC = () => {
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Learning-to-Employment Bridge
+        <h1 className="text-3xl font-bold">
+          Employment Bridge Certification Program
         </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Discover job-focused courses aligned with market demands, track your skill development, 
-          and bridge the gap between learning and employment opportunities.
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          Master essential career skills through our comprehensive 5-module program. From resume building to workplace adaptation, 
+          get job-ready with hands-on learning, assessments, and earn your official certification.
         </p>
+        <div className="flex justify-center gap-4 mt-6">
+          <Badge variant="secondary" className="text-sm">
+            5 Core Modules
+          </Badge>
+          <Badge variant="secondary" className="text-sm">
+            15-20 Hours
+          </Badge>
+          <Badge variant="secondary" className="text-sm">
+            Official Certificate
+          </Badge>
+          <Badge variant="secondary" className="text-sm">
+            Career Ready
+          </Badge>
+        </div>
       </div>
 
       {/* Stats Overview */}
@@ -87,132 +106,145 @@ export const LearningEmploymentBridge: React.FC = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
-          <TabsTrigger value="courses" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-3 max-w-xl mx-auto">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
             <BookOpen className="h-4 w-4" />
-            Courses
+            Program Overview
           </TabsTrigger>
-          <TabsTrigger value="trends" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Trends
-          </TabsTrigger>
-          <TabsTrigger value="progress" className="flex items-center gap-2">
+          <TabsTrigger value="modules" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
-            Progress
+            Learning Modules
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Analytics
+          <TabsTrigger value="certificate" className="flex items-center gap-2">
+            <GraduationCap className="h-4 w-4" />
+            Certification
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="courses" className="space-y-6">
-          <JobFocusedCourses />
-        </TabsContent>
-
-        <TabsContent value="trends" className="space-y-6">
-          <SkillMarketTrends />
-        </TabsContent>
-
-        <TabsContent value="progress" className="space-y-6">
+        <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Current Progress */}
+            {/* Program Overview */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-blue-600" />
-                  Current Learning Progress
+                  <Briefcase className="h-5 w-5 text-primary" />
+                  What You'll Learn
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {userProgress.filter(p => !p.completion_date).map((progress) => (
-                  <div key={progress.id} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium">Course #{progress.course_id.slice(-8)}</h4>
-                      <Badge variant="outline">
-                        {progress.progress_percentage}%
-                      </Badge>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-green-100 mt-1">
+                      <Award className="h-3 w-3 text-green-600" />
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${progress.progress_percentage}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>{progress.lessons_completed}/{progress.total_lessons} lessons</span>
-                      <span>{progress.time_spent_hours}h spent</span>
+                    <div>
+                      <h4 className="font-medium">Career Readiness</h4>
+                      <p className="text-sm text-muted-foreground">Master resume writing, cover letters, and LinkedIn optimization</p>
                     </div>
                   </div>
-                ))}
-                {userProgress.filter(p => !p.completion_date).length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No courses in progress</p>
-                    <Button 
-                      variant="outline" 
-                      className="mt-2"
-                      onClick={() => setActiveTab('courses')}
-                    >
-                      Browse Courses
-                    </Button>
+                  <div className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-blue-100 mt-1">
+                      <Users className="h-3 w-3 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Essential Soft Skills</h4>
+                      <p className="text-sm text-muted-foreground">Develop communication, teamwork, and leadership abilities</p>
+                    </div>
                   </div>
-                )}
+                  <div className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-purple-100 mt-1">
+                      <Target className="h-3 w-3 text-purple-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Interview Excellence</h4>
+                      <p className="text-sm text-muted-foreground">Ace interviews with proven strategies and mock sessions</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-orange-100 mt-1">
+                      <TrendingUp className="h-3 w-3 text-orange-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Job Search Mastery</h4>
+                      <p className="text-sm text-muted-foreground">Learn networking, applications, and negotiation skills</p>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Completed Courses */}
+            {/* Program Structure */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5 text-green-600" />
-                  Completed Courses
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  Program Structure
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {userProgress.filter(p => p.completion_date).map((progress) => (
-                  <div key={progress.id} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium">Course #{progress.course_id.slice(-8)}</h4>
-                      <div className="flex gap-2">
-                        {progress.certificate_earned && (
-                          <Badge variant="default" className="bg-green-600">
-                            <Award className="h-3 w-3 mr-1" />
-                            Certified
-                          </Badge>
-                        )}
-                        <Badge variant="outline">
-                          Score: {progress.performance_score}%
-                        </Badge>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      Completed: {new Date(progress.completion_date!).toLocaleDateString()}
-                    </p>
-                    {progress.skills_acquired.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {progress.skills_acquired.map((skill, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <div className="text-2xl font-bold text-primary">5</div>
+                    <div className="text-sm text-muted-foreground">Core Modules</div>
                   </div>
-                ))}
-                {userProgress.filter(p => p.completion_date).length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <Award className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No completed courses yet</p>
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <div className="text-2xl font-bold text-primary">30+</div>
+                    <div className="text-sm text-muted-foreground">Video Lessons</div>
                   </div>
-                )}
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <div className="text-2xl font-bold text-primary">15-20</div>
+                    <div className="text-sm text-muted-foreground">Hours Total</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <div className="text-2xl font-bold text-primary">100%</div>
+                    <div className="text-sm text-muted-foreground">Job Focused</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium">Learning Format:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Interactive video lessons (5-10 min each)</li>
+                    <li>• Downloadable workbooks and templates</li>
+                    <li>• Hands-on assignments and projects</li>
+                    <li>• Knowledge assessments and quizzes</li>
+                    <li>• Real-world case studies and examples</li>
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           </div>
+
+          {/* Quick Start */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Ready to Get Started?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground">
+                    Join thousands of learners who have successfully transitioned to their dream careers through our comprehensive program.
+                  </p>
+                </div>
+                <Button 
+                  size="lg" 
+                  onClick={() => setActiveTab('modules')}
+                  className="flex items-center gap-2"
+                >
+                  <Play className="h-4 w-4" />
+                  Start Learning Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <AnalyticsView />
+        <TabsContent value="modules" className="space-y-6">
+          <EmploymentBridgeModules />
+        </TabsContent>
+
+        <TabsContent value="certificate" className="space-y-6">
+          <EmploymentBridgeCertificate />
         </TabsContent>
       </Tabs>
     </div>
