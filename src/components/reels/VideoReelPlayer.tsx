@@ -38,6 +38,12 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
     const video = videoRef.current;
     if (!video || !isActive) return;
 
+    // Don't attempt autoplay without user interaction
+    if (!hasUserInteracted) {
+      setShowClickToPlay(true);
+      return;
+    }
+
     try {
       video.muted = internalMuted;
       const playPromise = video.play();
@@ -46,30 +52,18 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         await playPromise;
         setActuallyPlaying(true);
         setShowClickToPlay(false);
+        setError(false);
         onPlayStateChange?.(true);
         console.log('Video playing successfully');
       }
     } catch (error) {
-      console.warn('Initial play failed, trying muted:', error);
-      
-      // Try muted autoplay for browser restrictions
-      try {
-        video.muted = true;
-        setInternalMuted(true);
-        await video.play();
-        setActuallyPlaying(true);
-        setShowClickToPlay(false);
-        onPlayStateChange?.(true);
-        console.log('Video playing muted due to autoplay policy');
-      } catch (mutedError) {
-        console.error('Muted autoplay also failed:', mutedError);
-        setError(false); // Don't show error immediately
-        setShowClickToPlay(true); // Show click to play instead
-        setActuallyPlaying(false);
-        onPlayStateChange?.(false);
-      }
+      console.warn('Play failed, showing click to play:', error);
+      setShowClickToPlay(true);
+      setActuallyPlaying(false);
+      setError(false);
+      onPlayStateChange?.(false);
     }
-  }, [isActive, internalMuted, onPlayStateChange]);
+  }, [isActive, internalMuted, hasUserInteracted, onPlayStateChange]);
 
   const pauseVideo = useCallback(() => {
     const video = videoRef.current;
@@ -119,13 +113,14 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   // Toggle mute with user interaction
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !hasUserInteracted) return;
 
     setHasUserInteracted(true);
     const newMuted = !internalMuted;
     setInternalMuted(newMuted);
     video.muted = newMuted;
-  }, [internalMuted]);
+    console.log(`Volume ${newMuted ? 'muted' : 'unmuted'}`);
+  }, [internalMuted, hasUserInteracted]);
 
   // Main effect for play/pause logic
   useEffect(() => {
@@ -180,7 +175,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       )}
       
       {/* Click to play overlay */}
-      {showClickToPlay && (
+      {(showClickToPlay || !hasUserInteracted) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
           <Button
             onClick={handleUserPlay}
@@ -188,13 +183,13 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
             className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm"
           >
             <Play className="h-8 w-8 mr-2" />
-            Click to Play
+            Tap to Play
           </Button>
         </div>
       )}
 
       {/* Video Controls */}
-      {isActive && !showClickToPlay && (
+      {isActive && hasUserInteracted && !showClickToPlay && (
         <div 
           className={cn(
             "absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent transition-opacity duration-300 z-20",
@@ -219,28 +214,26 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
             </Button>
           </div>
 
-          {/* Top right controls */}
+          {/* Top right controls - Always show volume when user has interacted */}
           <div className="absolute top-4 right-4 flex space-x-2">
-            {hasUserInteracted && (
-              <Button
-                onClick={toggleMute}
-                size="sm"
-                variant="ghost"
-                className="bg-black/30 hover:bg-black/50 text-white border-0"
-              >
-                {internalMuted ? (
-                  <VolumeX className="h-4 w-4" />
-                ) : (
-                  <Volume2 className="h-4 w-4" />
-                )}
-              </Button>
-            )}
+            <Button
+              onClick={toggleMute}
+              size="sm"
+              variant="ghost"
+              className="bg-black/30 hover:bg-black/50 text-white border-0"
+            >
+              {internalMuted ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
           </div>
         </div>
       )}
 
       {/* Hover to show controls */}
-      {isActive && !showClickToPlay && !showControls && (
+      {isActive && hasUserInteracted && !showClickToPlay && !showControls && (
         <div 
           className="absolute inset-0 z-10"
           onMouseEnter={() => setShowControls(true)}
