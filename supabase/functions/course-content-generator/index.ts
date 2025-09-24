@@ -49,7 +49,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: 'Course generation failed',
-        details: error.message 
+        details: (error as Error).message 
       }),
       { 
         status: 500, 
@@ -113,11 +113,11 @@ Return as structured JSON with all course data ready for database insertion.`
     max_tokens: 4000,
   })
 
-  let courseData
+  let courseData: any;
   try {
-    courseData = JSON.parse(completion.choices[0].message.content!)
+    courseData = JSON.parse(completion.choices[0].message.content || '{}');
   } catch {
-    throw new Error('Failed to generate structured course data')
+    throw new Error('Failed to generate structured course data');
   }
 
   // Create course in database
@@ -258,11 +258,11 @@ Difficulty: ${course.difficulty_level}`
         max_tokens: 2000,
       })
 
-      let exerciseData
+      let exerciseData: any;
       try {
-        exerciseData = JSON.parse(exerciseCompletion.choices[0].message.content!)
+        exerciseData = JSON.parse(exerciseCompletion.choices[0].message.content || '{}');
       } catch {
-        continue // Skip if JSON parsing fails
+        continue; // Skip if JSON parsing fails
       }
 
       // Insert exercises into database

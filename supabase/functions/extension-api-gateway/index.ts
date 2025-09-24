@@ -47,7 +47,7 @@ serve(async (req) => {
     // Rate limiting
     const rateLimitKey = `${session.user_id}:${rateLimitCategory}`;
     const now = Date.now();
-    const limit = RATE_LIMITS[rateLimitCategory] || RATE_LIMITS.default;
+    const limit = RATE_LIMITS[rateLimitCategory as keyof typeof RATE_LIMITS] || RATE_LIMITS.default;
     
     let rateLimitData = rateLimitStore.get(rateLimitKey);
     if (!rateLimitData || now > rateLimitData.resetTime) {

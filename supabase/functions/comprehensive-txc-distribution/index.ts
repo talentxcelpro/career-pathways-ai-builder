@@ -116,7 +116,7 @@ serve(async (req) => {
           name: user.full_name,
           email: user.email,
           awarded: 0,
-          error: error.message,
+          error: (error as Error).message,
           phase: 'welcome_bonus'
         });
       }
@@ -183,7 +183,7 @@ serve(async (req) => {
           name: user.full_name,
           email: user.email,
           awarded: 0,
-          error: error.message,
+          error: (error as Error).message,
           phase: 'active_bonus'
         });
       }
@@ -361,7 +361,7 @@ serve(async (req) => {
           name: user.full_name,
           email: user.email,
           awarded: 0,
-          error: error.message,
+          error: (error as Error).message,
           phase: 'retroactive'
         });
       }
@@ -399,7 +399,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: (error as Error).message
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

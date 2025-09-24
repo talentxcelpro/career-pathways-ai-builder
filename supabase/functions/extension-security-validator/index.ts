@@ -115,10 +115,10 @@ serve(async (req) => {
               }
             }
 
-            validationResults.sanitizedData[key] = sanitized;
-            validationResults.errors.push(...fieldErrors);
+            (validationResults.sanitizedData as any)[key] = sanitized;
+            (validationResults.errors as any[]).push(...fieldErrors);
           } else {
-            validationResults.sanitizedData[key] = value;
+            (validationResults.sanitizedData as any)[key] = value;
           }
         }
 
@@ -169,22 +169,22 @@ serve(async (req) => {
         for (const permission of requiredPermissions) {
           switch (permission) {
             case 'profile_read':
-              permissionResults[permission] = securitySettings.allow_profile_read !== false;
+              (permissionResults as any)[permission] = securitySettings.allow_profile_read !== false;
               break;
             case 'profile_write':
-              permissionResults[permission] = securitySettings.allow_profile_write === true;
+              (permissionResults as any)[permission] = securitySettings.allow_profile_write === true;
               break;
             case 'job_apply':
-              permissionResults[permission] = securitySettings.allow_job_apply !== false;
+              (permissionResults as any)[permission] = securitySettings.allow_job_apply !== false;
               break;
             case 'network_access':
-              permissionResults[permission] = securitySettings.allow_network_access !== false;
+              (permissionResults as any)[permission] = securitySettings.allow_network_access !== false;
               break;
             case 'data_export':
-              permissionResults[permission] = securitySettings.allow_data_export === true;
+              (permissionResults as any)[permission] = securitySettings.allow_data_export === true;
               break;
             default:
-              permissionResults[permission] = false;
+              (permissionResults as any)[permission] = false;
           }
         }
 

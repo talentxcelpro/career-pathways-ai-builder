@@ -55,7 +55,7 @@ serve(async (req) => {
     }
 
     // Check if activity is valid and get reward amount
-    const baseReward = TXC_REWARDS[activity];
+    const baseReward = TXC_REWARDS[activity as keyof typeof TXC_REWARDS];
     if (!baseReward) {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid activity type' }),

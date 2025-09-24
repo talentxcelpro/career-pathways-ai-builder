@@ -175,7 +175,8 @@ serve(async (req) => {
 
     // NEW ACTION: Generate comprehensive course
     if (action === 'generate_comprehensive_course') {
-      const { topic, difficulty_level = 'intermediate', duration_hours = 40 } = await req.json();
+      const requestBody = await req.json();
+      const { topic, difficulty_level = 'intermediate', duration_hours = 40 } = requestBody;
       
       console.log(`🎯 Generating comprehensive course for: ${topic}`);
       
@@ -270,7 +271,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: (error as Error).message }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

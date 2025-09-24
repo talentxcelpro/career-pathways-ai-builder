@@ -124,12 +124,12 @@ ENHANCED EXTRACTION REQUIREMENTS:
 - Preserve formatting hints and document structure information
 - Calculate comprehensive confidence scores for data quality assessment`;
 
-    const industryContext = industrySkills?.length > 0 ? `
+    const industryContext = (industrySkills && industrySkills.length > 0) ? `
 INDUSTRY-SPECIFIC CONTEXT (${industryType.toUpperCase()}):
-Key Skills to Look For: ${industrySkills.map(s => s.skill_name).join(', ')}
-Software/Tools: ${industrySkills.filter(s => s.skill_category === 'software').map(s => s.skill_name).join(', ')}
-Certifications: ${industrySkills.filter(s => s.skill_category === 'certification').map(s => s.skill_name).join(', ')}
-Technical Areas: ${industrySkills.filter(s => s.skill_category === 'technical').map(s => s.skill_name).join(', ')}
+Key Skills to Look For: ${industrySkills.map((s: any) => s.skill_name).join(', ')}
+Software/Tools: ${industrySkills.filter((s: any) => s.skill_category === 'software').map((s: any) => s.skill_name).join(', ')}
+Certifications: ${industrySkills.filter((s: any) => s.skill_category === 'certification').map((s: any) => s.skill_name).join(', ')}
+Technical Areas: ${industrySkills.filter((s: any) => s.skill_category === 'technical').map((s: any) => s.skill_name).join(', ')}
 ` : '';
 
     const userPrompt = `COMPREHENSIVE RESUME EXTRACTION TASK
@@ -480,11 +480,11 @@ Return ONLY the JSON object with no additional text or explanations.`;
       })
       .eq('id', extractionJob.id);
 
-    let extractedData;
+    let extractedData: any;
     try {
-      extractedData = JSON.parse(data.choices[0].message.content);
+      extractedData = JSON.parse(data.choices[0].message.content || '{}');
       console.log('✅ Successfully parsed comprehensive extraction data');
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('❌ Failed to parse OpenAI JSON response:', parseError);
       
       // Update extraction job with error
@@ -580,7 +580,7 @@ Return ONLY the JSON object with no additional text or explanations.`;
     
     return new Response(JSON.stringify({
       success: false,
-      error: error.message || 'Comprehensive extraction failed',
+      error: (error as Error).message || 'Comprehensive extraction failed',
       timestamp: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

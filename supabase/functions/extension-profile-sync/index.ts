@@ -91,11 +91,11 @@ serve(async (req) => {
             }
           };
 
-          const mapping = fieldMapping[platform];
+          const mapping = fieldMapping[platform as keyof typeof fieldMapping];
           if (mapping) {
             for (const [txField, extField] of Object.entries(mapping)) {
-              if (profileData[extField]) {
-                updateData[txField] = profileData[extField];
+              if (profileData[extField as keyof typeof profileData]) {
+                updateData[txField] = profileData[extField as keyof typeof profileData];
                 syncLog.synced_fields.push(txField);
               }
             }
@@ -132,7 +132,7 @@ serve(async (req) => {
           };
 
           syncLog.exported_data = exportData;
-          syncLog.synced_fields = Object.keys(exportData).filter(key => exportData[key]);
+          syncLog.synced_fields = Object.keys(exportData).filter(key => exportData[key as keyof typeof exportData]);
         }
 
         // Log sync activity
@@ -210,7 +210,7 @@ serve(async (req) => {
             });
             results.push({ platform: platformData.platform, success: true, result });
           } catch (error) {
-            results.push({ platform: platformData.platform, success: false, error: error.message });
+            results.push({ platform: platformData.platform, success: false, error: (error as Error).message });
           }
         }
 
