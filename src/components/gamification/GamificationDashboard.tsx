@@ -74,10 +74,10 @@ export const GamificationDashboard: React.FC = () => {
     return () => clearInterval(balanceInterval);
   }, [user, refreshBalance]);
 
-  // Auto-earn TXC for engagement
+  // Reduced auto-earning for more realistic experience
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (user && Math.random() > 0.7) { // 30% chance every minute
+      if (user && Math.random() > 0.95) { // 5% chance every 5 minutes
         const actions = ['post_liked', 'comment_made'];
         const randomAction = actions[Math.floor(Math.random() * actions.length)];
         const earned = await txcIntegration.earnTXC(randomAction);
@@ -86,7 +86,7 @@ export const GamificationDashboard: React.FC = () => {
           setTimeout(() => setRecentEarning(null), 3000);
         }
       }
-    }, 60000); // Check every minute
+    }, 300000); // Check every 5 minutes
 
     return () => clearInterval(interval);
   }, [user, txcIntegration]);
@@ -96,13 +96,13 @@ export const GamificationDashboard: React.FC = () => {
     level: Math.floor((unifiedUserRanking?.total_points || userScores?.total_points || 0) / 1000) + 1,
     currentXP: (unifiedUserRanking?.total_points || userScores?.total_points || 0) % 1000,
     nextLevelXP: 1000,
-    streak: unifiedUserRanking?.current_streak || 7,
-    longestStreak: 15,
+    streak: unifiedUserRanking?.current_streak || 1,
+    longestStreak: unifiedUserRanking?.current_streak || 1,
     weeklyGoal: 5000,
-    weeklyProgress: 3200,
-    rank: unifiedUserRanking?.rank || userRanking?.rank || 42,
-    totalUsers: userRanking?.total_users || 1250,
-    percentile: userRanking?.percentile || 85,
+    weeklyProgress: Math.min((unifiedUserRanking?.total_points || userScores?.total_points || 0), 5000),
+    rank: unifiedUserRanking?.rank || userRanking?.rank || '--',
+    totalUsers: userRanking?.total_users || 463,
+    percentile: userRanking?.percentile || '--',
     txcBalance: unifiedUserRanking?.txc_balance || availableBalance || 0,
     achievementsEarned: unifiedUserRanking?.achievements_count || userAchievements?.filter(a => a.is_completed).length || 0
   };
@@ -455,16 +455,22 @@ export const GamificationDashboard: React.FC = () => {
         <CardContent>
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-sm">
-                <span className="text-lg font-bold text-blue-600">#{stats.rank}</span>
+               <div className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-sm">
+                <span className="text-lg font-bold text-blue-600">
+                  {typeof stats.rank === 'number' ? `#${stats.rank}` : '--'}
+                </span>
               </div>
               <div>
-                <div className="font-semibold text-gray-900">Rank #{stats.rank}</div>
-                <div className="text-sm text-gray-600">of {stats.totalUsers.toLocaleString()} users</div>
+              <div className="font-semibold text-gray-900">
+                {typeof stats.rank === 'number' ? `Rank #${stats.rank}` : 'Calculating rank...'}
+              </div>
+              <div className="text-sm text-gray-600">of {stats.totalUsers.toLocaleString()} users</div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-purple-600">{stats.percentile}%</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {typeof stats.percentile === 'number' ? `${stats.percentile}%` : '--'}
+              </div>
               <div className="text-xs text-gray-600">Top percentile</div>
             </div>
           </div>

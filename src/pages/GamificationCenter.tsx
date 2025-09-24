@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 import { AchievementsSection } from '@/components/gamification/AchievementsSection';
 import { LeaderboardsWidget } from '@/components/gamification/LeaderboardsWidget';
-import { TXCTestButton } from '@/components/TXCTestButton';
+
 
 const GamificationCenter: React.FC = () => {
   const navigate = useNavigate();
@@ -62,9 +62,6 @@ const GamificationCenter: React.FC = () => {
 
           <TabsContent value="dashboard" className="mt-4">
             <GamificationDashboard />
-            <div className="mt-6">
-              <TXCTestButton />
-            </div>
           </TabsContent>
 
           <TabsContent value="achievements" className="mt-4">

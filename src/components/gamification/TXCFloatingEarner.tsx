@@ -34,7 +34,7 @@ export const TXCFloatingEarner: React.FC = () => {
   const [floatingRewards, setFloatingRewards] = useState<FloatingReward[]>([]);
   const [isActive, setIsActive] = useState(true);
 
-  // Auto-earning activities every 30-90 seconds
+  // Auto-earning activities every 5-10 minutes for realistic earning
   useEffect(() => {
     if (!user || !isActive) return;
 
@@ -43,14 +43,14 @@ export const TXCFloatingEarner: React.FC = () => {
       let action = '';
       let shouldEarn = false;
 
-      // Different chances for different activities
-      if (random > 0.85) {
+      // Reduced chances for more realistic earning
+      if (random > 0.95) {
         action = 'daily_login';
         shouldEarn = true;
-      } else if (random > 0.75) {
+      } else if (random > 0.90) {
         action = 'post_liked';
         shouldEarn = true;
-      } else if (random > 0.65) {
+      } else if (random > 0.85) {
         action = 'social_activity_bonus';
         shouldEarn = true;
       }
@@ -62,7 +62,7 @@ export const TXCFloatingEarner: React.FC = () => {
           refreshBalance();
         }
       }
-    }, Math.random() * 60000 + 30000); // 30-90 seconds
+    }, Math.random() * 300000 + 300000); // 5-10 minutes
 
     return () => clearInterval(autoEarnInterval);
   }, [user, isActive, txcIntegration, refreshBalance]);
@@ -219,14 +219,6 @@ export const TXCFloatingEarner: React.FC = () => {
             })}
           </div>
 
-          <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-            <div className="flex items-center gap-2 text-yellow-800">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-medium">
-                Auto-earning active! TXC will be awarded automatically for your activities.
-              </span>
-            </div>
-          </div>
         </CardContent>
       </Card>
 

@@ -168,7 +168,9 @@ export const LeaderboardsWidget: React.FC = () => {
                 <div className="text-xs text-gray-600">Your Rank</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{(userRanking as any)?.percentile || 85}%</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {(userRanking as any)?.percentile ? `${(userRanking as any).percentile}%` : '--'}
+                </div>
                 <div className="text-xs text-gray-600">Percentile</div>
               </div>
               <div className="text-center p-3 bg-white rounded-lg">
