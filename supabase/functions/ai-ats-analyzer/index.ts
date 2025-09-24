@@ -198,7 +198,7 @@ Be specific and actionable in your suggestions. Focus on ATS compatibility issue
     console.error('Error in ai-ats-analyzer function:', error);
     return new Response(JSON.stringify({ 
       error: 'Internal server error',
-      details: error.message 
+      details: (error as Error).message 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -178,7 +178,7 @@ serve(async (req) => {
 
       } catch (taskError) {
         console.error(`Error processing task ${task.id}:`, taskError);
-        await completeTask(supabase, task.id, false, taskError.message);
+        await completeTask(supabase, task.id, false, (taskError as Error).message);
       }
     }
 
@@ -196,7 +196,7 @@ serve(async (req) => {
     console.error('❌ Agent worker error:', error);
     return new Response(JSON.stringify({ 
       success: false, 
-      error: error.message 
+      error: (error as Error).message 
     }), { 
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -248,7 +248,7 @@ function generateAgentContent(agent: any): string {
     ]
   };
 
-  const toneTemplates = templates[tone] || templates.professional;
+  const toneTemplates = templates[tone as keyof typeof templates] || templates.professional;
   const content = toneTemplates[Math.floor(Math.random() * toneTemplates.length)];
 
   // Add relevant hashtags

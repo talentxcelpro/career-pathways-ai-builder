@@ -35,8 +35,8 @@ serve(async (req) => {
           .single()
 
         // Extract user interests from enrollment history
-        const userCategories = enrollments?.map(e => e.courses?.category).filter(Boolean) || []
-        const userSkills = enrollments?.flatMap(e => e.courses?.skills_taught || []) || []
+        const userCategories = enrollments?.map((e: any) => e.courses?.category).filter(Boolean) || []
+        const userSkills = enrollments?.flatMap((e: any) => e.courses?.skills_taught || []) || []
         
         // Get available courses excluding already enrolled ones
         const enrolledCourseIds = enrollments?.map(e => e.course_id) || []
@@ -57,7 +57,7 @@ serve(async (req) => {
           if (userCategories.includes(course.category)) score += 3
           
           // Skill overlap
-          const skillOverlap = course.skills_taught?.filter(skill => 
+          const skillOverlap = course.skills_taught?.filter((skill: any) => 
             userSkills.some(userSkill => 
               userSkill.toLowerCase().includes(skill.toLowerCase()) ||
               skill.toLowerCase().includes(userSkill.toLowerCase())
@@ -131,8 +131,8 @@ serve(async (req) => {
         // Calculate learning insights
         const totalCourses = courseProgress?.length || 0
         const completedCourses = courseProgress?.filter(c => c.progress_percentage >= 100).length || 0
-        const averageProgress = totalCourses > 0 
-          ? courseProgress.reduce((acc, c) => acc + (c.progress_percentage || 0), 0) / totalCourses 
+        const averageProgress = totalCourses > 0 && courseProgress
+          ? courseProgress.reduce((acc: number, c: any) => acc + (c.progress_percentage || 0), 0) / totalCourses 
           : 0
 
         const learningStreak = calculateLearningStreak(analytics || [])
@@ -166,7 +166,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: (error as Error).message
       }),
       {
         status: 400,

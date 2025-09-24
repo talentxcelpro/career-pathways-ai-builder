@@ -177,7 +177,7 @@ Remember: You are here to guide learning, not just provide answers. Help the stu
     return new Response(
       JSON.stringify({ 
         error: 'AI tutor temporarily unavailable',
-        details: error.message 
+        details: (error as Error).message 
       }),
       { 
         status: 500, 

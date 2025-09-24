@@ -86,7 +86,7 @@ serve(async (req) => {
       }
     };
 
-    const template = contentTemplates[contentType] || contentTemplates.linkedin_post;
+    const template = contentTemplates[contentType as keyof typeof contentTemplates] || contentTemplates.linkedin_post;
 
     // Build generation prompt
     const generationPrompt = `As a professional content creator and career expert, create ${contentType.replace('_', ' ')} content.
@@ -227,7 +227,7 @@ Provide the content in this JSON format:
     console.error('Error in ai-content-generator function:', error);
     return new Response(JSON.stringify({ 
       error: 'Internal server error',
-      details: error.message 
+      details: (error as Error).message 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

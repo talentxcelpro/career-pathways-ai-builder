@@ -177,9 +177,9 @@ You are a professional Twitter/X optimization expert. Optimize for:
     conversion: 'Optimize for converting profile views into meaningful connections or opportunities.'
   };
 
-  return `${platformSpecific[platform] || platformSpecific.linkedin}
+  return `${platformSpecific[platform as keyof typeof platformSpecific] || platformSpecific.linkedin}
 
-${typeSpecific[type] || typeSpecific.general}
+${typeSpecific[type as keyof typeof typeSpecific] || typeSpecific.general}
 
 IMPORTANT: Respond with a valid JSON object in this exact format:
 {
@@ -219,7 +219,7 @@ function prioritizeSuggestions(suggestions: any) {
   const priorityOrder = { high: 1, medium: 2, low: 3 };
   
   suggestions.suggestions.sort((a: any, b: any) => {
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
+    return priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder];
   });
   
   return suggestions;
@@ -250,5 +250,5 @@ function generateImplementationTips(platform: string): string[] {
     ]
   };
   
-  return tips[platform] || tips.linkedin;
+  return tips[platform as keyof typeof tips] || tips.linkedin;
 }

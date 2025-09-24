@@ -95,7 +95,7 @@ serve(async (req) => {
       try {
         const values = line.split(',').map((v: string) => v.trim().replace(/^"|"$/g, ''));
         const row: Record<string, string> = {};
-        headers.forEach((h, idx) => row[h] = values[idx] || '');
+        headers.forEach((h: any, idx: number) => row[h] = values[idx] || '');
 
         let salaryMin = toInt(row['salary_min']);
         let salaryMax = toInt(row['salary_max']);

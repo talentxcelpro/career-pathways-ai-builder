@@ -29,6 +29,7 @@ serve(async (req) => {
     });
   }
 
+  let fileName = 'resume';
   try {
     const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAiApiKey) {
@@ -36,7 +37,8 @@ serve(async (req) => {
     }
 
     const requestBody = await req.json();
-    const { extractedText, fileName } = requestBody;
+    const { extractedText, fileName: requestFileName } = requestBody;
+    fileName = requestFileName || 'resume';
 
     if (!extractedText) {
       throw new Error('Missing extracted text');
@@ -195,21 +197,21 @@ Guidelines:
     console.error('❌ Function error:', error);
     
     // Check if it's an AI service failure
-    const isAIFailure = error.message?.includes('quota') || 
-                       error.message?.includes('unavailable') || 
-                       error.message?.includes('API error');
+    const isAIFailure = (error as Error).message?.includes('quota') ||
+                       (error as Error).message?.includes('unavailable') ||
+                       (error as Error).message?.includes('API error');
     
     if (isAIFailure) {
       console.log('🔄 Attempting basic text extraction fallback...');
       
       // Basic fallback parsing when AI fails
-      const fallbackResume = createFallbackResume(extractedText, fileName);
+      const fallbackResume = createFallbackResume('Resume text not available', fileName);
       
       const result = {
         success: true,
         data: {
           structured_resume: fallbackResume,
-          raw_text: extractedText,
+          raw_text: 'Resume text not available',
           field_confidence: [{ field: 'fallback', confidence: 40, note: 'AI services unavailable, basic extraction used' }],
           ats_compatibility: { score: 50, note: 'Limited analysis - AI services unavailable' },
           content_quality: { overall_score: 50, note: 'Limited analysis - AI services unavailable' },
@@ -235,7 +237,7 @@ Guidelines:
     
     const errorResponse = {
       success: false,
-      error: error.message || 'Unknown error occurred',
+      error: (error as Error).message || 'Unknown error occurred',
       timestamp: new Date().toISOString()
     };
 

@@ -25,7 +25,7 @@ async function retryApiCall<T>(
     try {
       return await apiCall();
     } catch (error) {
-      console.log(`API call attempt ${attempt} failed:`, error.message);
+      console.log(`API call attempt ${attempt} failed:`, (error as Error).message);
       
       if (attempt === maxRetries) {
         throw error;
@@ -337,7 +337,7 @@ serve(async (req) => {
 
     const errorResponse = {
       success: false,
-      error: error.message,
+      error: (error as Error).message,
       requestId: requestId,
       processingTime: processingTime
     };
