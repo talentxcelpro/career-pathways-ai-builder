@@ -220,7 +220,6 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
           newCoursesCreated++;
           console.log(`✅ Created new course: ${courseData.title}`);
         }
-        }
       }
 
     // Now get all courses (including newly created ones) to process
