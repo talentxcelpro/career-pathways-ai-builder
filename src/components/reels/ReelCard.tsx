@@ -53,7 +53,6 @@ export const ReelCard: React.FC<ReelCardProps> = ({
           isActive={isActive}
           onVideoLoad={handleVideoLoad}
           onTimeUpdate={handleTimeUpdate}
-          onPlayStateChange={(playing) => console.log('Video playing:', playing)}
           muted={isMuted}
           className="w-full h-full"
         />
