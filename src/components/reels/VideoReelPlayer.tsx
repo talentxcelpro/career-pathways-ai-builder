@@ -256,7 +256,7 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
         loop
         playsInline
         muted={internalMuted}
-        preload="metadata"
+        preload="auto"
         onLoadedData={handleLoadedData}
         onTimeUpdate={handleTimeUpdate}
         onError={handleError}

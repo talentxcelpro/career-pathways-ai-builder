@@ -65,7 +65,7 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({
 
   const handleMessage = () => {
     // Navigate to messages
-    window.location.href = `/mobile/messages?userId=${userId}`;
+    window.location.href = `/network/messages?userId=${userId}`;
   };
 
   if (connectionStatus === 'connected') {

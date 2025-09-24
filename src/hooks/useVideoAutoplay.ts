@@ -13,9 +13,9 @@ export const useVideoAutoplay = (
   options: VideoAutoplayOptions = {}
 ) => {
   const {
-    threshold = 0.75,
-    rootMargin = '50px',
-    enableSound = false,
+    threshold = 0.5,
+    rootMargin = '0px',
+    enableSound = true,
     preloadNext = true
   } = options;
 

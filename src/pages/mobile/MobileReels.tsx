@@ -45,7 +45,7 @@ export const MobileReels = () => {
           onTabChange={handleTabChange}
           onSearch={() => console.log('Search opened')}
           onNotifications={() => navigate('/mobile/notifications')}
-          onMessages={() => navigate('/mobile/messages')}
+          onMessages={() => navigate('/network/messages')}
           notificationCount={0}
           messageCount={0}
         />
@@ -91,7 +91,7 @@ export const MobileReels = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/mobile/messages')}
+              onClick={() => navigate('/network/messages')}
               className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
             >
               <MessageCircle className="h-5 w-5" />

@@ -39,7 +39,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
     hasUserInteracted,
     canPlayWithSound
   } = useVideoAutoplay(videoRef.current, {
-    threshold: 0.75, // Play when 75% visible
+    threshold: 0.5, // Play when 50% visible for faster loading
     enableSound: true, // Enable sound for reels
     preloadNext: true
   });
