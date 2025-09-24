@@ -11,7 +11,7 @@ const FUNCTION_TIMEOUT = 45000; // 45 seconds
 const BATCH_SIZE = 3; // Smaller batches for stability
 const BATCH_DELAY = 50; // Minimal delay between batches
 
-interface Course {
+interface CourseData {
   title: string;
   description: string;
   category: string;
@@ -26,7 +26,22 @@ interface Course {
   course_content: any;
 }
 
-const COURSE_DATA: Course[] = [
+interface DbCourse {
+  title: string;
+  description: string;
+  category: string;
+  difficulty_level: string;
+  duration_hours: number;
+  instructor_name: string;
+  rating: number;
+  price: number;
+  is_free: boolean;
+  skills_taught: string[];
+  learning_outcomes: string[];
+  curriculum: any;
+}
+
+const COURSE_DATA: CourseData[] = [
   {
     title: "Complete React.js Bootcamp",
     description: "Master React from basics to advanced concepts including hooks, context, and state management.",
@@ -237,10 +252,28 @@ async function withTimeout<T>(operation: Promise<T>, timeoutMs: number): Promise
   return Promise.race([operation, timeoutPromise]);
 }
 
+// Function to convert CourseData to DbCourse format
+function convertToDbFormat(courseData: CourseData): DbCourse {
+  return {
+    title: courseData.title,
+    description: courseData.description,
+    category: courseData.category,
+    difficulty_level: courseData.level, // Map level to difficulty_level
+    duration_hours: Math.round(courseData.duration_minutes / 60), // Convert minutes to hours
+    instructor_name: courseData.instructor_name,
+    rating: courseData.rating,
+    price: courseData.price,
+    is_free: courseData.is_free,
+    skills_taught: courseData.skills_covered, // Map skills_covered to skills_taught
+    learning_outcomes: courseData.learning_objectives, // Map learning_objectives to learning_outcomes
+    curriculum: courseData.course_content // Map course_content to curriculum
+  };
+}
+
 // Optimized batch processing function
 async function processBatchOptimized(
   supabaseClient: any,
-  batch: Course[],
+  batch: CourseData[],
   batchNumber: number
 ): Promise<{ successCount: number; errorCount: number; errors: string[] }> {
   console.log(`🔄 Processing batch ${batchNumber} (${batch.length} courses)`);
@@ -259,8 +292,10 @@ async function processBatchOptimized(
     
     const existingTitleSet = new Set(existingCourses?.map((c: any) => c.title) || []);
     
-    // Filter out existing courses
-    const newCourses = batch.filter(course => !existingTitleSet.has(course.title));
+    // Filter out existing courses and convert to DB format
+    const newCourses = batch
+      .filter(course => !existingTitleSet.has(course.title))
+      .map(convertToDbFormat);
     
     if (newCourses.length === 0) {
       console.log(`📋 All courses in batch ${batchNumber} already exist, skipping...`);
@@ -279,23 +314,29 @@ async function processBatchOptimized(
       // Fallback: try inserting courses individually
       console.log(`🔄 Falling back to individual inserts for batch ${batchNumber}`);
       
-      for (const course of newCourses) {
+      // For individual inserts, we need to convert back to original format to get titles
+      const originalNewCourses = batch.filter(course => !existingTitleSet.has(course.title));
+      
+      for (let i = 0; i < newCourses.length; i++) {
+        const dbCourse = newCourses[i];
+        const originalCourse = originalNewCourses[i];
+        
         try {
           const { error: individualError } = await supabaseClient
             .from('courses')
-            .insert([course]);
+            .insert([dbCourse]);
           
           if (individualError) {
-            console.error(`❌ Error inserting "${course.title}":`, individualError);
-            errors.push(`${course.title}: ${individualError.message}`);
+            console.error(`❌ Error inserting "${originalCourse.title}":`, individualError);
+            errors.push(`${originalCourse.title}: ${individualError.message}`);
             errorCount++;
           } else {
-            console.log(`✅ Created: "${course.title}"`);
+            console.log(`✅ Created: "${originalCourse.title}"`);
             successCount++;
           }
         } catch (err: any) {
-          console.error(`💥 Exception inserting "${course.title}":`, err);
-          errors.push(`${course.title}: ${err.message}`);
+          console.error(`💥 Exception inserting "${originalCourse.title}":`, err);
+          errors.push(`${originalCourse.title}: ${err.message}`);
           errorCount++;
         }
       }
