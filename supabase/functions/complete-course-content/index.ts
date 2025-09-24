@@ -146,10 +146,9 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
 
     const currentCourseCount = 0; // Start fresh
 
-    // Always create additional courses if we need to reach the target  
-    if (currentCourseCount < courseLimit) {
-      const coursesToCreate = courseLimit - currentCourseCount;
-      console.log(`🚀 CREATING ${coursesToCreate} courses to reach ${courseLimit} total`);
+    // Always create courses to reach the target  
+    const coursesToCreate = courseLimit - currentCourseCount;
+    console.log(`🚀 CREATING ${coursesToCreate} courses to reach ${courseLimit} total`);
       
       const additionalCourses = [
         { title: 'Google Data Analytics Professional Certificate', category: 'Technology', subcategory: 'Data Analytics', level: 'Beginner', duration: '6 months', isMostPopular: true, rating: 4.6, enrolled: 2100000 },
@@ -221,8 +220,8 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
           newCoursesCreated++;
           console.log(`✅ Created new course: ${courseData.title}`);
         }
+        }
       }
-    }
 
     // Now get all courses (including newly created ones) to process
     const { data: allCourses, error: allCoursesError } = await supabaseClient
