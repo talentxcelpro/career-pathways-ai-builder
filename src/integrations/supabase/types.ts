@@ -9379,6 +9379,7 @@ export type Database = {
           enrolled_count: number | null
           external_url: string | null
           id: string
+          instructor: string | null
           instructor_bio: string | null
           instructor_name: string | null
           is_active: boolean | null
@@ -9414,6 +9415,7 @@ export type Database = {
           enrolled_count?: number | null
           external_url?: string | null
           id?: string
+          instructor?: string | null
           instructor_bio?: string | null
           instructor_name?: string | null
           is_active?: boolean | null
@@ -9449,6 +9451,7 @@ export type Database = {
           enrolled_count?: number | null
           external_url?: string | null
           id?: string
+          instructor?: string | null
           instructor_bio?: string | null
           instructor_name?: string | null
           is_active?: boolean | null
