@@ -27,12 +27,7 @@ export function CopilotProvider({ children }: { children: React.ReactNode }) {
     <CopilotContext.Provider value={copilotHook}>
       {children}
       {copilotHook.copilotState.isOpen && (
-        <AICareerCopilot
-          context={copilotHook.copilotState.context}
-          onClose={copilotHook.closeCopilot}
-          isMinimized={copilotHook.copilotState.isMinimized}
-          onToggleMinimize={copilotHook.toggleMinimize}
-        />
+        <AICareerCopilot />
       )}
     </CopilotContext.Provider>
   );
