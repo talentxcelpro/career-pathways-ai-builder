@@ -101,6 +101,9 @@ verify_jwt = false
 [functions.course-enhancement]
 verify_jwt = false
 
+[functions.fix-course-videos]
+verify_jwt = false
+
 # Job Management
 [functions.bulk-job-upload-v2]
 verify_jwt = false
