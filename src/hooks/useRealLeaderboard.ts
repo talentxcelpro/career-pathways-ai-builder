@@ -35,23 +35,22 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
       try {
         console.log('Fetching leaderboard data for category:', category);
         
-        // Get user scores and profile data
+        // Get TXC balances and profile data directly
         const { data: usersData, error: usersError } = await supabase
-          .from('user_scores')
+          .from('user_txc_balances')
           .select(`
             user_id,
-            total_points,
-            career_readiness_score,
-            profile_completion_score,
-            last_updated,
+            balance,
+            total_earned,
+            last_activity_at,
             profiles!inner(
               id,
               full_name,
               profile_picture_url
             )
           `)
-          .gt('total_points', 0)
-          .order('rank', { ascending: true })
+          .gt('balance', 0)
+          .order('balance', { ascending: false })
           .limit(50);
 
         if (usersError) {
@@ -71,11 +70,7 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
           .select('user_id')
           .in('user_id', userIds);
 
-        // Get user token balances from user_txc_balances
-        const { data: balancesData } = await supabase
-          .from('user_txc_balances')
-          .select('user_id, balance, total_earned')
-          .in('user_id', userIds);
+        // TXC balances are already included in usersData
 
         // Get user streaks from real data
         const { data: streaksData } = await supabase
@@ -128,14 +123,13 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
         // Process and combine data
         const leaderboardUsers: LeaderboardUser[] = usersData.map((userData, index) => {
           const achievementsCount = achievementsData?.filter(a => a.user_id === userData.user_id).length || 0;
-          const userBalance = balancesData?.find(b => b.user_id === userData.user_id);
           const streaks = calculateStreaks(userData.user_id);
           
-          // Determine badge level based on points
-          const getBadgeLevel = (points: number): 'bronze' | 'silver' | 'gold' | 'platinum' => {
-            if (points >= 5000) return 'platinum';
-            if (points >= 2000) return 'gold';
-            if (points >= 500) return 'silver';
+          // Determine badge level based on TXC balance
+          const getBadgeLevel = (balance: number): 'bronze' | 'silver' | 'gold' | 'platinum' => {
+            if (balance >= 10000) return 'platinum';
+            if (balance >= 5000) return 'gold';
+            if (balance >= 1000) return 'silver';
             return 'bronze';
           };
 
@@ -143,23 +137,23 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
             id: userData.user_id,
             full_name: (userData.profiles as any)?.full_name || 'Anonymous User',
             profile_picture_url: (userData.profiles as any)?.profile_picture_url,
-            total_points: userData.total_points || 0,
+            total_points: userData.balance || 0, // Use TXC balance as points
             current_streak: streaks.current,
             longest_streak: streaks.longest,
             achievements_count: achievementsCount,
-            txc_balance: userBalance?.balance || 0,
+            txc_balance: userData.balance || 0,
             rank: index + 1,
-            badge_level: getBadgeLevel(userData.total_points || 0),
-            last_activity: userData.last_updated || new Date().toISOString()
+            badge_level: getBadgeLevel(userData.balance || 0),
+            last_activity: userData.last_activity_at || new Date().toISOString()
           };
         });
 
         // Sort based on category, but use existing rank for points
         let sortedUsers = [...leaderboardUsers];
         
-        if (category === 'points') {
-          // For points, we already have the correct ranking from database
-          sortedUsers = sortedUsers.sort((a, b) => a.rank - b.rank);
+        if (category === 'points' || category === 'txc') {
+          // For points/TXC, we already have the correct ranking from database
+          sortedUsers = sortedUsers.sort((a, b) => b.txc_balance - a.txc_balance);
         } else {
           // For other categories, sort and re-rank
           sortedUsers = sortedUsers.sort((a, b) => {
@@ -171,7 +165,7 @@ export function useRealLeaderboard(category: string = 'points', timeFilter: stri
               case 'txc':
                 return b.txc_balance - a.txc_balance;
               default:
-                return b.total_points - a.total_points;
+                return b.txc_balance - a.txc_balance; // Default to TXC sorting
             }
           }).map((user, index) => ({
             ...user,
