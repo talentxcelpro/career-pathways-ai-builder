@@ -42,9 +42,9 @@ const employmentBridgeModules: Module[] = [
   {
     id: 'career-readiness',
     title: 'Career Readiness',
-    description: 'Master resume building, cover letters, and LinkedIn optimization to stand out in the job market.',
-    duration: '3-4 hours',
-    videos: 8,
+    description: 'Master LinkedIn optimization, cover letter writing, and career preparation with real expert guidance.',
+    duration: '1-2 hours',
+    videos: 4,
     icon: <FileText className="h-5 w-5" />,
     difficulty: 'Beginner',
     lessons: [
@@ -99,9 +99,9 @@ const employmentBridgeModules: Module[] = [
   {
     id: 'soft-skills',
     title: 'Essential Soft Skills',
-    description: 'Develop communication, teamwork, and time management skills crucial for workplace success.',
-    duration: '4-5 hours',
-    videos: 10,
+    description: 'Develop communication, teamwork, and workplace skills essential for career success.',
+    duration: '2-3 hours',
+    videos: 5,
     icon: <Users className="h-5 w-5" />,
     difficulty: 'Intermediate',
     lessons: [
@@ -157,9 +157,9 @@ const employmentBridgeModules: Module[] = [
   {
     id: 'interview-prep',
     title: 'Interview Preparation',
-    description: 'Excel in interviews with mock sessions, common questions, and body language tips.',
+    description: 'Master interview skills with body language tips, mock sessions, and expert guidance.',
     duration: '2-3 hours',
-    videos: 6,
+    videos: 5,
     icon: <MessageCircle className="h-5 w-5" />,
     difficulty: 'Intermediate',
     lessons: [
@@ -209,9 +209,9 @@ const employmentBridgeModules: Module[] = [
   {
     id: 'job-search',
     title: 'Job Search Strategies',
-    description: 'Learn effective networking, online applications, and referral strategies to land your dream job.',
+    description: 'Learn modern job search strategies, networking tactics, and career advancement tips.',
     duration: '3-4 hours',
-    videos: 9,
+    videos: 5,
     icon: <Search className="h-5 w-5" />,
     difficulty: 'Intermediate',
     lessons: [
@@ -261,9 +261,9 @@ const employmentBridgeModules: Module[] = [
   {
     id: 'workplace-adaptation',
     title: 'Workplace Adaptation',
-    description: 'Navigate office culture, professional ethics, and workplace communication successfully.',
+    description: 'Navigate workplace culture, professional ethics, and modern work environments successfully.',
     duration: '2-3 hours',
-    videos: 7,
+    videos: 5,
     icon: <Building className="h-5 w-5" />,
     difficulty: 'Beginner',
     lessons: [
