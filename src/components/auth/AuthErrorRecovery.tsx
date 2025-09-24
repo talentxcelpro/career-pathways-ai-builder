@@ -9,44 +9,35 @@ export const AuthErrorRecovery: React.FC<{ children: React.ReactNode }> = ({ chi
   const [lastSessionCheck, setLastSessionCheck] = useState(Date.now());
 
   useEffect(() => {
-    // Improved auth error recovery
+    // Improved auth error recovery - less aggressive
     const handleAuthError = async (error?: any) => {
       if (isRecovering) return;
+      
+      // Ignore common non-critical auth messages
+      if (!error || 
+          error?.message?.includes('Auth session missing') ||
+          error?.message?.includes('No session') ||
+          !error.message) {
+        return; // Don't treat these as errors
+      }
       
       setIsRecovering(true);
       
       try {
-        // Don't treat missing session as an error - it's normal
-        if (error?.message?.includes('Auth session missing')) {
-          console.log('No active session - this is normal for logged out users');
-          setIsRecovering(false);
-          return;
-        }
-
-        // Only handle actual JWT expiration/corruption
-        if (session && (error?.message?.includes('JWT') || error?.message?.includes('expired'))) {
+        // Only handle critical JWT issues when user actually has a session
+        if (session && error?.message?.includes('JWT') && error?.message?.includes('expired')) {
           console.log('JWT expired, attempting refresh...');
           
           try {
             await refreshSession();
-            toast.success('Session refreshed successfully');
           } catch (refreshError) {
-            console.warn('Session refresh failed:', refreshError);
-            // Only show error for genuine refresh failures
-            toast.error('Session expired. Please sign in again.');
-            
-            // Clear corrupted auth data
+            console.warn('Session refresh failed, clearing auth data');
             localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
             localStorage.removeItem('secure_session');
-            
-            // Redirect to login only if user was actually logged in
-            setTimeout(() => {
-              window.location.href = '/auth/login';
-            }, 2000);
           }
         }
       } catch (error) {
-        console.error('Auth recovery failed:', error);
+        console.warn('Auth recovery attempt failed:', error);
       } finally {
         setIsRecovering(false);
       }

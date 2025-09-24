@@ -15,35 +15,38 @@ export const SilentAuthHandler: React.FC<SilentAuthHandlerProps> = ({ children }
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Global error handler for auth-related errors
+    // Global error handler for auth-related errors - more selective
     const handleGlobalError = (event: ErrorEvent | PromiseRejectionEvent) => {
       const error = 'reason' in event ? event.reason : event.error;
       
-      // Silently handle common auth errors that shouldn't crash the app
-      if (error?.message?.includes('Auth session missing') ||
-          error?.message?.includes('JWT') ||
-          error?.message?.includes('session') ||
+      // Only handle actual critical auth errors, ignore normal session states
+      if (!error || 
+          error?.message?.includes('Auth session missing') ||
+          error?.message?.includes('No session') ||
           error?.name === 'AuthSessionMissingError') {
-        
-        // Prevent error from bubbling up to error boundaries
+        return; // These are normal, not errors
+      }
+      
+      // Only handle critical JWT corruption/expiration
+      if (error?.message?.includes('JWT') && error?.message?.includes('malformed')) {
         event.preventDefault?.();
+        console.log('Critical JWT error handled silently');
         
-        console.log('Auth error handled silently:', error.message);
+        // Clear corrupted data
+        localStorage.removeItem('sb-dthlgsnakhoftinssokm-auth-token');
+        localStorage.removeItem('secure_session');
         
-        // Only redirect if user was expecting to be authenticated
+        // Only redirect if on protected route and no valid user session
         const isOnProtectedRoute = window.location.pathname.includes('/dashboard') || 
                                  window.location.pathname.includes('/profile') ||
                                  window.location.pathname.includes('/admin');
         
         if (isOnProtectedRoute && !loading && !user) {
-          console.log('Redirecting from protected route to login');
           navigate('/auth/login', { 
             state: { from: window.location.pathname },
             replace: true 
           });
         }
-        
-        return;
       }
     };
 
