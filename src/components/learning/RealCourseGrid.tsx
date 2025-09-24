@@ -223,15 +223,23 @@ export const RealCourseGrid: React.FC<RealCourseGridProps> = ({
 
                       {/* Price */}
                       <div className="flex items-center justify-between">
-                        {course.price ? (
+                        {course.price && parseFloat(String(course.price)) > 0 && !course.is_free ? (
                           <span className="font-bold text-lg text-primary">
-                            {typeof course.price === 'string' ? course.price : `$${course.price}`}
+                            ₹{typeof course.price === 'string' ? parseFloat(course.price) || 0 : course.price}
                           </span>
                         ) : (
                           <span className="font-bold text-lg text-green-600">Free</span>
                         )}
-                        <Button size="sm" className="group-hover:bg-primary group-hover:text-primary-foreground">
-                          View Course
+                        <Button 
+                          size="sm" 
+                          className="group-hover:bg-primary group-hover:text-primary-foreground"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.location.href = `/learning/courses/${course.id}`;
+                          }}
+                        >
+                          Enroll Now
                         </Button>
                       </div>
                     </div>
