@@ -1,95 +1,126 @@
 
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
+import { ReelsHeader } from '@/components/mobile/ReelsHeader';
 import { Button } from '@/components/ui/button';
-import { Plus, Home, Search, User } from 'lucide-react';
+import { Plus, Home, Search, User, Heart, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAnalyticsTracking } from '@/hooks/useAnalyticsTracking';
 
 export const MobileReels = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'following' | 'explore'>('explore');
   const navigate = useNavigate();
+  const { trackToolUsage } = useAnalyticsTracking();
 
   const handleUploadSuccess = () => {
     toast.success("Your reel has been uploaded successfully!");
     setShowUploadModal(false);
+    trackToolUsage('reels', 'upload_success');
+  };
+
+  const handleTabChange = (tab: 'following' | 'explore') => {
+    setActiveTab(tab);
+    trackToolUsage('reels', `switch_to_${tab}`);
   };
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-black relative">
-      {/* Mobile Header */}
-      <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/50 to-transparent p-4">
-        <div className="flex items-center justify-between text-white">
-          <h1 className="text-xl font-bold">TalentXcel Reels</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowUploadModal(true)}
-            className="text-white hover:bg-white/20 rounded-full"
-          >
-            <Plus className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
+    <>
+      <Helmet>
+        <title>TalentXcel Reels - Discover Professional Stories | Career Growth Videos</title>
+        <meta name="description" content="Discover inspiring career stories, professional tips, and growth content on TalentXcel Reels. Connect with professionals and share your journey." />
+        <meta name="keywords" content="career reels, professional videos, career growth, job tips, networking, professional development" />
+        <meta property="og:title" content="TalentXcel Reels - Professional Video Stories" />
+        <meta property="og:description" content="Watch and share professional career stories, tips, and insights on TalentXcel Reels." />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="TalentXcel Reels - Career Growth Videos" />
+        <meta name="twitter:description" content="Discover inspiring career stories and professional content." />
+        <link rel="canonical" href={`${window.location.origin}/mobile/reels`} />
+      </Helmet>
+      
+      <div className="w-full h-screen overflow-hidden bg-black relative">
+        {/* Enhanced Mobile Header */}
+        <ReelsHeader
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onSearch={() => trackToolUsage('reels', 'search_opened')}
+          onNotifications={() => navigate('/mobile/notifications')}
+          onMessages={() => navigate('/mobile/messages')}
+          notificationCount={0}
+          messageCount={0}
+        />
 
-      {/* Infinite Reels Feed */}
-      <InfiniteReelsFeed 
-        onUploadClick={() => setShowUploadModal(true)}
-      />
+        {/* Infinite Reels Feed with Enhanced Features */}
+        <InfiniteReelsFeed 
+          onUploadClick={() => setShowUploadModal(true)}
+          feedType={activeTab}
+        />
 
-      {/* Mobile Bottom Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-t border-white/20">
-        <div className="flex items-center justify-around py-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
-          >
-            <Home className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/jobs')}
-            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowUploadModal(true)}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-full h-9 w-9"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/network')}
-            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
-          >
-            <User className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/profile')}
-            className="text-white hover:bg-white/20 rounded-full h-8 w-8"
-          >
-            <User className="h-4 w-4" />
-          </Button>
+        {/* Enhanced Bottom Navigation */}
+        <div className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md">
+          <div className="flex items-center justify-around py-3 px-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
+            >
+              <Home className="h-5 w-5" />
+              <span className="text-xs">Home</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/mobile/network')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
+            >
+              <Heart className="h-5 w-5" />
+              <span className="text-xs">Activity</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowUploadModal(true)}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105 transition-all"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/mobile/messages')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-xs">Messages</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/mobile/profile')}
+              className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
+            >
+              <User className="h-5 w-5" />
+              <span className="text-xs">Profile</span>
+            </Button>
+          </div>
         </div>
-      </div>
       
       {/* Upload Modal */}
       <ReelsUploadModal
         isOpen={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onUploadSuccess={handleUploadSuccess}
-      />
-    </div>
+        />
+      </div>
+    </>
   );
 };

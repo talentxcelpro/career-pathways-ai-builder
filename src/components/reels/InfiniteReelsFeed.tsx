@@ -9,11 +9,13 @@ import { useIntersectionObserverCallback } from '@/hooks/useIntersectionObserver
 
 interface InfiniteReelsFeedProps {
   onUploadClick: () => void;
+  feedType?: 'following' | 'explore';
   className?: string;
 }
 
 export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   onUploadClick,
+  feedType = 'explore',
   className
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
