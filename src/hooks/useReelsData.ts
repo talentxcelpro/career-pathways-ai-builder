@@ -68,11 +68,17 @@ export const useReelsData = () => {
 
         if (postsError) {
           console.error('Error fetching posts fallback:', postsError);
-          // Gracefully degrade to an empty feed instead of failing the whole query
           return [] as ReelData[];
         }
 
-        const videoPosts = (posts || []).filter((p: any) => Array.isArray(p.media_urls) && p.media_urls.some((u: string) => typeof u === 'string' && u.toLowerCase().endsWith('.mp4')));
+        // Filter for video posts more carefully
+        const videoPosts = (posts || []).filter((p: any) => {
+          if (!Array.isArray(p.media_urls)) return false;
+          return p.media_urls.some((u: string) => 
+            typeof u === 'string' && 
+            (u.toLowerCase().includes('.mp4') || u.toLowerCase().includes('.mov') || u.toLowerCase().includes('.webm'))
+          );
+        });
         const userIds = Array.from(new Set(videoPosts.map((p: any) => p.user_id).filter(Boolean)));
 
         const { data: profiles } = await supabase
@@ -83,7 +89,10 @@ export const useReelsData = () => {
         const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
 
         const mapped: ReelData[] = videoPosts.map((p: any) => {
-          const videoUrl: string = p.media_urls.find((u: string) => u.toLowerCase().endsWith('.mp4'));
+          // Find the first video URL
+          const videoUrl: string = p.media_urls.find((u: string) => 
+            u.toLowerCase().includes('.mp4') || u.toLowerCase().includes('.mov') || u.toLowerCase().includes('.webm')
+          );
           const prof = profileMap.get(p.user_id);
           return {
             id: p.id,
