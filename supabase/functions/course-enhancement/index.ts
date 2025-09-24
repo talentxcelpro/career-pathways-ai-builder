@@ -173,6 +173,92 @@ serve(async (req) => {
       );
     }
 
+    // NEW ACTION: Generate comprehensive course
+    if (action === 'generate_comprehensive_course') {
+      const { topic, difficulty_level = 'intermediate', duration_hours = 40 } = await req.json();
+      
+      console.log(`🎯 Generating comprehensive course for: ${topic}`);
+      
+      // Create a comprehensive course with modules and lessons
+      const courseData = {
+        title: `Complete ${topic} Mastery`,
+        description: `Comprehensive ${topic} course covering fundamentals to advanced concepts`,
+        category: 'Technology',
+        difficulty_level,
+        duration_hours,
+        instructor_name: 'Expert Instructor',
+        rating: 4.8,
+        price: 599,
+        is_free: false,
+        skills_taught: [topic, 'Best Practices', 'Real-world Applications'],
+        learning_outcomes: [`Master ${topic}`, 'Build projects', 'Industry expertise'],
+        is_active: true
+      };
+
+      const { data: course, error: courseError } = await supabaseClient
+        .from('courses')
+        .insert([courseData])
+        .select()
+        .single();
+
+      if (courseError) throw courseError;
+
+      // Create modules for the course
+      const modules = [
+        { title: 'Fundamentals', order: 1 },
+        { title: 'Intermediate Concepts', order: 2 },
+        { title: 'Advanced Techniques', order: 3 },
+        { title: 'Real-world Projects', order: 4 }
+      ];
+
+      let modulesCreated = 0;
+      for (const moduleData of modules) {
+        const { data: module, error: moduleError } = await supabaseClient
+          .from('course_modules')
+          .insert([{
+            course_id: course.id,
+            title: moduleData.title,
+            module_order: moduleData.order,
+            is_published: true
+          }])
+          .select()
+          .single();
+
+        if (!moduleError) {
+          modulesCreated++;
+          
+          // Add lessons to each module
+          for (let i = 1; i <= 3; i++) {
+            await supabaseClient
+              .from('course_lessons')
+              .insert([{
+                module_id: module.id,
+                title: `${moduleData.title} - Lesson ${i}`,
+                content: `Detailed content for ${moduleData.title} lesson ${i}`,
+                lesson_type: 'video',
+                duration_minutes: 30,
+                lesson_order: i,
+                is_free: i === 1,
+              }]);
+          }
+        }
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          course_created: true,
+          modules_created: modulesCreated,
+          course_id: course.id,
+          message: `Generated comprehensive ${topic} course with ${modulesCreated} modules`
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: 'Unknown action' }),
       {
