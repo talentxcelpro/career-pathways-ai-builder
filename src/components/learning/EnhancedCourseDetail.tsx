@@ -24,12 +24,25 @@ export const EnhancedCourseDetail: React.FC = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
+  // Early return if no course ID
+  if (!id) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-muted-foreground">Course not found</p>
+          <Button onClick={() => navigate('/learning')} className="mt-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Courses
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Fetch course data from Supabase
-  const { data: course, isLoading: courseLoading } = useQuery({
+  const { data: course, isLoading: courseLoading, error: courseError } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
-      if (!id) throw new Error('Course ID is required');
-      
       const { data, error } = await supabase
         .from('courses')
         .select('*')
@@ -121,12 +134,28 @@ export const EnhancedCourseDetail: React.FC = () => {
     );
   }
 
+  // Handle course error
+  if (courseError) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-destructive mb-4">Error loading course: {courseError.message}</p>
+          <Button onClick={() => navigate('/learning')} className="mt-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Courses
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!course) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Course not found</p>
-          <Button onClick={() => navigate('/learning/courses')}>
+          <p className="text-muted-foreground mb-4">Course not found</p>
+          <Button onClick={() => navigate('/learning')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Courses
           </Button>
         </div>
