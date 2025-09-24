@@ -5,6 +5,7 @@ import { Heart, MessageCircle, Share2, Music, Play, Pause, Volume2, VolumeX } fr
 import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { VideoReelPlayer } from './VideoReelPlayer';
+import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 
 interface Reel {
   id: string;
@@ -103,7 +104,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
       id: 'reel-4',
       user: {
         id: 'user-4',
-        name: 'Alex Designer',
+        name: 'Alex Creative',
         username: '@alexcreates',
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
         verified: false
@@ -115,7 +116,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
       },
       caption: 'UI/UX design principles that will level up your portfolio 🎨 #UIDesign #UXTips #Design',
       hashtags: ['#UIDesign', '#UXTips', '#Design', '#Portfolio'],
-      stats: { likes: 7890, comments: 189, shares: 345, views: 28700 },
+      stats: { likes: 9870, comments: 201, shares: 445, views: 38200 },
       isLiked: false
     },
     {
@@ -134,107 +135,30 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
       },
       caption: '30-second career tip: How to network effectively at tech events 💼 #CareerTips #Networking',
       hashtags: ['#CareerTips', '#Networking', '#ProfessionalGrowth'],
-      stats: { likes: 11200, comments: 298, shares: 456, views: 41300 },
+      stats: { likes: 11200, comments: 167, shares: 789, views: 42000 },
       isLiked: true
-    },
-    {
-      id: 'reel-6',
-      user: {
-        id: 'user-6',
-        name: 'James Developer',
-        username: '@jamesdev',
-        avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop',
-        verified: false
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=600&fit=crop',
-        duration: 40
-      },
-      caption: 'JavaScript tricks that will blow your mind 🤯 Save this for later! #JavaScript #WebDev #Coding',
-      hashtags: ['#JavaScript', '#WebDev', '#Coding', '#Tips'],
-      stats: { likes: 9876, comments: 432, shares: 678, views: 37200 },
-      isLiked: false
-    },
-    {
-      id: 'reel-7',
-      user: {
-        id: 'user-7',
-        name: 'Linda Business',
-        username: '@lindabiz',
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop',
-        verified: true
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=600&fit=crop',
-        duration: 55
-      },
-      caption: 'Entrepreneurship lessons I wish I knew before starting my company 📈 #Entrepreneur #Business',
-      hashtags: ['#Entrepreneur', '#Business', '#StartupLife'],
-      stats: { likes: 14500, comments: 567, shares: 890, views: 52100 },
-      isLiked: false
-    },
-    {
-      id: 'reel-8',
-      user: {
-        id: 'user-8',
-        name: 'Mike Data Scientist',
-        username: '@mikedata',
-        avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop',
-        verified: false
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=600&fit=crop',
-        duration: 42
-      },
-      caption: 'Data visualization that tells a story 📊 Python tutorial coming soon! #DataScience #Python',
-      hashtags: ['#DataScience', '#Python', '#Analytics', '#Tutorial'],
-      stats: { likes: 6789, comments: 123, shares: 234, views: 24800 },
-      isLiked: true
-    },
-    {
-      id: 'reel-9',
-      user: {
-        id: 'user-9',
-        name: 'Anna Marketing',
-        username: '@annamarketing',
-        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop',
-        verified: true
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=400&h=600&fit=crop',
-        duration: 38
-      },
-      caption: 'Social media marketing hacks that actually work in 2024 📱 #SocialMedia #Marketing #Growth',
-      hashtags: ['#SocialMedia', '#Marketing', '#Growth', '#Strategy'],
-      stats: { likes: 13400, comments: 389, shares: 567, views: 48900 },
-      isLiked: false
-    },
-    {
-      id: 'reel-10',
-      user: {
-        id: 'user-10',
-        name: 'David AI Expert',
-        username: '@davidai',
-        avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=150&h=150&fit=crop',
-        verified: true
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=600&fit=crop',
-        duration: 48
-      },
-      caption: 'AI is changing the job market - here\'s how to stay ahead 🤖 #AI #FutureOfWork #TechTrends',
-      hashtags: ['#AI', '#FutureOfWork', '#TechTrends', '#Innovation'],
-      stats: { likes: 18900, comments: 678, shares: 1234, views: 67500 },
-      isLiked: false
     }
   ]);
 
-  // Video refs no longer needed since we're using VideoReelPlayer
+  const nextReel = useCallback(() => {
+    setCurrentReelIndex(prev => 
+      prev < reels.length - 1 ? prev + 1 : prev
+    );
+    triggerHaptic('light');
+  }, [triggerHaptic, reels.length]);
+
+  const prevReel = useCallback(() => {
+    setCurrentReelIndex(prev => prev > 0 ? prev - 1 : prev);
+    triggerHaptic('light');
+  }, [triggerHaptic]);
+
+  const swipeHandlers = useSwipeGestures({
+    onSwipeUp: nextReel,
+    onSwipeDown: prevReel,
+    onDoubleTap: () => handleLike(reels[currentReelIndex]?.id),
+    threshold: 30,
+    velocity: 0.2
+  });
 
   const handleLike = useCallback((reelId: string) => {
     triggerHaptic('light');
@@ -247,7 +171,10 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
   }, [isPlaying, triggerHaptic]);
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-black">
+    <div 
+      className="w-full h-screen overflow-hidden bg-black"
+      {...swipeHandlers}
+    >
       <div 
         className="flex flex-col transition-transform duration-300 ease-out"
         style={{ 
@@ -276,25 +203,25 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
                   <Avatar className="w-10 h-10 ring-2 ring-white/30">
                     <AvatarImage src={reel.user.avatar} alt={reel.user.name} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {reel.user.name.split(' ').map(n => n[0]).join('')}
+                      {reel.user.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-2">
+                    <div>
                       <p className="text-white font-semibold text-sm">{reel.user.name}</p>
-                      {reel.user.verified && (
-                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        </div>
-                      )}
+                      <p className="text-gray-300 text-xs">{reel.user.username}</p>
                     </div>
-                    <p className="text-white/80 text-xs">{reel.user.username}</p>
+                    {reel.user.verified && (
+                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <Button
-                  variant="outline"
                   size="sm"
-                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  variant="outline"
+                  className="bg-transparent border-white text-white hover:bg-white hover:text-black"
                 >
                   Follow
                 </Button>
@@ -358,20 +285,17 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
                   {reel.stats.shares > 1000 ? `${(reel.stats.shares / 1000).toFixed(1)}K` : reel.stats.shares}
                 </span>
               </div>
-            </div>
 
-            {/* Play/Pause Control */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-              {!isPlaying && (
+              <div className="flex flex-col items-center">
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="w-16 h-16 rounded-full bg-black/30 text-white hover:bg-black/50"
-                  onClick={togglePlayPause}
+                  className="w-12 h-12 rounded-full text-white hover:bg-white/20"
+                  onClick={() => setIsMuted(!isMuted)}
                 >
-                  <Play className="w-8 h-8 ml-1" />
+                  {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
                 </Button>
-              )}
+              </div>
             </div>
 
             {/* Progress Indicator */}
@@ -390,7 +314,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         {reels.map((_, index) => (
           <div
             key={index}
-            className={`w-1 h-8 rounded-full transition-colors ${
+            className={`w-1 h-8 rounded-full transition-colors cursor-pointer ${
               index === currentReelIndex ? 'bg-white' : 'bg-white/30'
             }`}
             onClick={() => setCurrentReelIndex(index)}
