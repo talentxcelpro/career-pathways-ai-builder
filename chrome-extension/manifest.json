@@ -1,0 +1,103 @@
+{
+  "manifest_version": 3,
+  "name": "TalentXcel - Career Intelligence Extension",
+  "version": "1.0.0",
+  "description": "AI-powered career enhancement and job matching directly in your browser",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "background",
+    "identity",
+    "scripting"
+  ],
+  
+  "host_permissions": [
+    "https://linkedin.com/*",
+    "https://*.linkedin.com/*",
+    "https://naukri.com/*",
+    "https://*.naukri.com/*",
+    "https://twitter.com/*",
+    "https://*.twitter.com/*",
+    "https://x.com/*",
+    "https://*.x.com/*",
+    "https://instagram.com/*",
+    "https://*.instagram.com/*",
+    "https://indeed.com/*",
+    "https://*.indeed.com/*",
+    "https://glassdoor.com/*",
+    "https://*.glassdoor.com/*",
+    "https://talentxcel.in/*",
+    "https://*.talentxcel.in/*"
+  ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["https://*.linkedin.com/*"],
+      "js": ["content-scripts/linkedin.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://*.naukri.com/*"],
+      "js": ["content-scripts/naukri.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://*.twitter.com/*", "https://*.x.com/*"],
+      "js": ["content-scripts/twitter.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://*.instagram.com/*"],
+      "js": ["content-scripts/instagram.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://*.indeed.com/*", "https://*.glassdoor.com/*"],
+      "js": ["content-scripts/job-boards.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TalentXcel",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "options_page": "options.html",
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "styles/*.css",
+        "icons/*.png",
+        "assets/*.png",
+        "assets/*.svg"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

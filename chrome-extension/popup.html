@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentXcel</title>
+    <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <img src="icons/icon32.png" alt="TalentXcel" class="logo-img">
+                <span class="logo-text">TalentXcel</span>
+            </div>
+            <div class="auth-status" id="authStatus">
+                <span class="status-indicator offline" id="statusIndicator"></span>
+            </div>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section" id="authSection">
+            <h3>Sign in to TalentXcel</h3>
+            <form id="loginForm" class="login-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            <div class="auth-links">
+                <a href="#" id="signupLink">Create Account</a> | 
+                <a href="#" id="forgotLink">Forgot Password?</a>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="dashboard-section" id="dashboardSection" style="display: none;">
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="user-avatar">
+                    <img id="userAvatar" src="icons/icon32.png" alt="User">
+                </div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-title" id="userTitle">Professional</div>
+                </div>
+            </div>
+
+            <!-- TXC Balance -->
+            <div class="balance-card">
+                <div class="balance-label">TXC Balance</div>
+                <div class="balance-amount">
+                    <span id="txcBalance">0</span>
+                    <span class="currency">TXC</span>
+                </div>
+                <div class="balance-actions">
+                    <button class="btn btn-small" id="earnTokensBtn">Earn More</button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h4>Quick Actions</h4>
+                <div class="action-grid">
+                    <button class="action-btn" id="syncProfileBtn">
+                        <span class="action-icon">🔄</span>
+                        <span class="action-text">Sync Profile</span>
+                    </button>
+                    <button class="action-btn" id="findJobsBtn">
+                        <span class="action-icon">🎯</span>
+                        <span class="action-text">Find Jobs</span>
+                    </button>
+                    <button class="action-btn" id="skillVerifyBtn">
+                        <span class="action-icon">✅</span>
+                        <span class="action-text">Verify Skills</span>
+                    </button>
+                    <button class="action-btn" id="inviteContactsBtn">
+                        <span class="action-icon">👥</span>
+                        <span class="action-text">Invite Friends</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Current Site Actions -->
+            <div class="site-actions" id="siteActions">
+                <h4 id="siteTitle">Site Actions</h4>
+                <div class="site-specific-actions" id="siteSpecificActions">
+                    <!-- Dynamic content based on current site -->
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="notifications" id="notifications">
+                <h4>Recent Updates</h4>
+                <div class="notifications-list" id="notificationsList">
+                    <div class="no-notifications">No new notifications</div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="settings-section">
+                <button class="btn btn-secondary btn-full" id="settingsBtn">Settings</button>
+                <button class="btn btn-secondary btn-full" id="logoutBtn">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <div class="error-content">
+                <span class="error-icon">⚠️</span>
+                <span class="error-text" id="errorText">Something went wrong</span>
+            </div>
+            <button class="btn btn-small" id="retryBtn">Retry</button>
+        </div>
+    </div>
+
+    <script src="scripts/popup.js"></script>
+</body>
+</html>
