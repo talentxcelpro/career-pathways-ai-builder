@@ -292,7 +292,7 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Unknown error occurred',
+        error: (error as Error).message || 'Unknown error occurred',
         details: 'Check edge function logs for more details'
       }),
       {

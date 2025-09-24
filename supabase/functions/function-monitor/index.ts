@@ -47,8 +47,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Analyze function performance
-    const functionStats = {};
-    const criticalIssues = [];
+    const functionStats: Record<string, any> = {};
+    const criticalIssues: string[] = [];
 
     expectedFunctions.forEach(func => {
       const logs = healthLogs?.filter(log => log.function_name === func) || [];

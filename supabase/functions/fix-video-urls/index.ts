@@ -55,13 +55,13 @@ serve(async (req) => {
       let videoUrl = 'https://www.youtube.com/embed/rfscVS0vtbw'; // Default: Learn JavaScript in 1 Hour
       
       const lessonTitle = lesson.title.toLowerCase();
-      const courseTitle = lesson.course_modules.courses.title.toLowerCase();
-      const category = lesson.course_modules.courses.category?.toLowerCase() || '';
+      const courseTitle = (lesson.course_modules as any).course?.title?.toLowerCase() || '';
+      const category = (lesson.course_modules as any).course?.category?.toLowerCase() || '';
       
       // Combine all text for keyword matching
       const allText = `${lessonTitle} ${courseTitle} ${category}`;
       
-      console.log(`Processing lesson: ${lesson.title} from course: ${lesson.course_modules.courses.title}`);
+      console.log(`Processing lesson: ${lesson.title} from course: ${courseTitle}`);
       
       if (allText.includes('python') || allText.includes('programming')) {
         videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Tutorial for Beginners
@@ -87,7 +87,7 @@ serve(async (req) => {
         videoUrl = 'https://www.youtube.com/embed/vnVuqfXohxc'; // Content Writing Tutorial
       }
 
-      console.log(`Updating lesson: ${lesson.title} (Course: ${lesson.course_modules.courses.title}) with video: ${videoUrl}`);
+      console.log(`Updating lesson: ${lesson.title} (Course: ${courseTitle}) with video: ${videoUrl}`);
 
       const { error: updateError } = await supabaseClient
         .from('course_lessons')
@@ -117,7 +117,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: (error as Error).message }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

@@ -399,7 +399,7 @@ function calculateResponseTime(platform: string): string {
     'default': '1-2 weeks'
   };
   
-  return responseTimes[platform] || responseTimes.default;
+  return responseTimes[platform as keyof typeof responseTimes] || responseTimes.default;
 }
 
 function calculateFollowUpDate(): string {

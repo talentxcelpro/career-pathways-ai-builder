@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         success: false,
         healthCheck: false,
-        error: error.message || "Health check failed" 
+        error: (error as Error).message || "Health check failed" 
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

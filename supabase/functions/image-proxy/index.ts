@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
 
     // Add SEO-friendly headers
     if (searchParams.get('alt')) {
-      responseHeaders['X-Image-Alt'] = searchParams.get('alt')!;
+      (responseHeaders as any)['X-Image-Alt'] = searchParams.get('alt')!;
     }
 
     return new Response(imageData, {
