@@ -1,7 +1,7 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Music, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Music, Play, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { VideoReelPlayer } from './VideoReelPlayer';
@@ -51,11 +51,13 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
     return hashtags.slice(0, 5); // Limit to 5 hashtags
   };
 
-  // Load real videos from database
+  // Load ONLY real videos from database - NO MOCK CONTENT
   useEffect(() => {
     const loadRealVideos = async () => {
       try {
-        const { data: posts } = await supabase
+        console.log('🔍 Loading REAL videos from database (no mock content)...');
+        
+        const { data: posts, error } = await supabase
           .from('posts')
           .select(`
             id, 
@@ -76,14 +78,28 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
           .order('created_at', { ascending: false })
           .limit(20);
 
-        if (posts) {
-          // Filter posts that have MP4 videos
+        if (error) {
+          console.error('❌ Database error:', error);
+          setReels([]);
+          setLoading(false);
+          return;
+        }
+
+        console.log('📦 Posts found:', posts?.length || 0);
+
+        if (posts && posts.length > 0) {
+          // Filter ONLY posts that have MP4 videos
           const videoReels = posts
-            .filter(post => 
-              post.media_urls && 
-              Array.isArray(post.media_urls) && 
-              post.media_urls.some((url: string) => url?.includes('.mp4'))
-            )
+            .filter(post => {
+              const hasVideos = post.media_urls && 
+                Array.isArray(post.media_urls) && 
+                post.media_urls.some((url: string) => url?.includes('.mp4'));
+              
+              if (hasVideos) {
+                console.log(`✅ Found video in post ${post.id}:`, post.media_urls);
+              }
+              return hasVideos;
+            })
             .map((post, index): Reel => {
               const videoUrl = post.media_urls.find((url: string) => url?.includes('.mp4')) || '';
               const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
@@ -93,78 +109,36 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
                 user: {
                   id: post.user_id,
                   name: profile?.full_name || 'TalentXcel User',
-                  username: `@${(profile?.full_name || 'user').toLowerCase().replace(/\s+/g, '')}`,
-                  avatar: profile?.profile_picture_url || `https://images.unsplash.com/photo-${1500000000 + index}?w=150&h=150&fit=crop`,
-                  verified: post.user_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062' // Your user ID
+                  username: `@${(profile?.full_name || 'user').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}`,
+                  avatar: profile?.profile_picture_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || 'User')}&background=6366f1&color=fff`,
+                  verified: post.user_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062'
                 },
                 video: {
                   url: videoUrl,
-                  thumbnail: '', // We'll use the video itself as thumbnail
-                  duration: 30 + (index * 5) // Estimated duration
+                  thumbnail: '',
+                  duration: 30
                 },
-                caption: post.content || 'Check out this amazing content! 🚀',
+                caption: post.content || '',
                 hashtags: extractHashtags(post.content || ''),
                 stats: {
-                  likes: post.likes_count || Math.floor(Math.random() * 10000) + 1000,
-                  comments: post.comments_count || Math.floor(Math.random() * 500) + 50,
-                  shares: post.shares_count || Math.floor(Math.random() * 200) + 20,
-                  views: post.views_count || Math.floor(Math.random() * 50000) + 5000
+                  likes: post.likes_count || 0,
+                  comments: post.comments_count || 0,
+                  shares: post.shares_count || 0,
+                  views: post.views_count || 0
                 },
-                isLiked: Math.random() > 0.7
+                isLiked: false
               };
             });
 
-          if (videoReels.length > 0) {
-            setReels(videoReels);
-          } else {
-            // Fallback to working test videos if no real videos found
-            setReels([
-              {
-                id: 'fallback-1',
-                user: {
-                  id: 'user-1',
-                  name: 'TalentXcel Demo',
-                  username: '@talentxcel',
-                  avatar: 'https://images.unsplash.com/photo-1494790108755-2616b60e9077?w=150&h=150&fit=crop',
-                  verified: true
-                },
-                video: {
-                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                  thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
-                  duration: 30
-                },
-                caption: 'Welcome to TalentXcel! 🚀 Your career growth platform #TalentXcel #CareerGrowth',
-                hashtags: ['#TalentXcel', '#CareerGrowth', '#Platform'],
-                stats: { likes: 12500, comments: 340, shares: 890, views: 45600 },
-                isLiked: false
-              }
-            ]);
-          }
+          console.log(`🎬 Created ${videoReels.length} real video reels`);
+          setReels(videoReels);
+        } else {
+          console.log('📭 No posts found in database');
+          setReels([]);
         }
       } catch (error) {
-        console.error('Error loading real videos:', error);
-        // Fallback videos
-        setReels([
-          {
-            id: 'fallback-1',
-            user: {
-              id: 'user-1',
-              name: 'TalentXcel Demo',
-              username: '@talentxcel',
-              avatar: 'https://images.unsplash.com/photo-1494790108755-2616b60e9077?w=150&h=150&fit=crop',
-              verified: true
-            },
-            video: {
-              url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-              thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
-              duration: 30
-            },
-            caption: 'Welcome to TalentXcel! 🚀 Your career growth platform #TalentXcel #CareerGrowth',
-            hashtags: ['#TalentXcel', '#CareerGrowth', '#Platform'],
-            stats: { likes: 12500, comments: 340, shares: 890, views: 45600 },
-            isLiked: false
-          }
-        ]);
+        console.error('💥 Error loading videos:', error);
+        setReels([]);
       } finally {
         setLoading(false);
       }
@@ -174,21 +148,23 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
   }, []);
 
   const nextReel = useCallback(() => {
-    setCurrentReelIndex(prev => 
-      prev < reels.length - 1 ? prev + 1 : prev
-    );
-    triggerHaptic('light');
-  }, [triggerHaptic, reels.length]);
+    if (currentReelIndex < reels.length - 1) {
+      setCurrentReelIndex(prev => prev + 1);
+      triggerHaptic('light');
+    }
+  }, [currentReelIndex, reels.length, triggerHaptic]);
 
   const prevReel = useCallback(() => {
-    setCurrentReelIndex(prev => prev > 0 ? prev - 1 : prev);
-    triggerHaptic('light');
-  }, [triggerHaptic]);
+    if (currentReelIndex > 0) {
+      setCurrentReelIndex(prev => prev - 1);
+      triggerHaptic('light');
+    }
+  }, [currentReelIndex, triggerHaptic]);
 
   const swipeHandlers = useSwipeGestures({
     onSwipeUp: nextReel,
     onSwipeDown: prevReel,
-    onDoubleTap: () => handleLike(reels[currentReelIndex]?.id),
+    onDoubleTap: () => reels[currentReelIndex] && handleLike(reels[currentReelIndex].id),
     threshold: 30,
     velocity: 0.2
   });
@@ -196,21 +172,58 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
   const handleLike = useCallback((reelId: string) => {
     triggerHaptic('light');
     toast.success('Liked!');
+    
+    // Update like state locally
+    setReels(prev => prev.map(reel => 
+      reel.id === reelId 
+        ? { 
+            ...reel, 
+            isLiked: !reel.isLiked,
+            stats: { 
+              ...reel.stats, 
+              likes: reel.isLiked ? reel.stats.likes - 1 : reel.stats.likes + 1 
+            }
+          }
+        : reel
+    ));
   }, [triggerHaptic]);
 
-  const togglePlayPause = useCallback(() => {
-    setIsPlaying(!isPlaying);
-    triggerHaptic('light');
-  }, [isPlaying, triggerHaptic]);
-
+  // Loading state
   if (loading) {
     return (
       <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white text-sm">Loading your content...</p>
+        </div>
       </div>
     );
   }
 
+  // Empty state - no real content found
+  if (reels.length === 0) {
+    return (
+      <div className="w-full h-screen bg-black flex items-center justify-center">
+        <div className="text-center px-8">
+          <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Play className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-white text-lg font-semibold mb-2">No Video Content Found</h3>
+          <p className="text-gray-400 text-sm mb-6">
+            Upload some videos to your posts to see them here as reels
+          </p>
+          <Button 
+            onClick={onUploadClick}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+          >
+            Upload Your First Reel
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Real content display
   return (
     <div 
       className="w-full h-screen overflow-hidden bg-black"
@@ -273,11 +286,13 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
             <div className="absolute bottom-4 left-4 right-20 z-10">
               <div className="mb-4">
                 <p className="text-white text-sm leading-relaxed mb-2 line-clamp-3">{reel.caption}</p>
-                <div className="flex flex-wrap gap-1">
-                  {reel.hashtags.slice(0, 3).map((tag, i) => (
-                    <span key={i} className="text-blue-300 text-xs">{tag}</span>
-                  ))}
-                </div>
+                {reel.hashtags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {reel.hashtags.slice(0, 3).map((tag, i) => (
+                      <span key={i} className="text-blue-300 text-xs">{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex items-center space-x-2 bg-black/30 rounded-full px-3 py-1 w-fit">
                 <Music className="w-3 h-3 text-white" />
@@ -297,7 +312,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
                   <Heart className={`w-6 h-6 ${reel.isLiked ? 'fill-current' : ''}`} />
                 </Button>
                 <span className="text-white text-xs font-medium">
-                  {reel.stats.likes > 1000 ? `${(reel.stats.likes / 1000).toFixed(1)}K` : reel.stats.likes}
+                  {reel.stats.likes > 0 ? reel.stats.likes : ''}
                 </span>
               </div>
 
@@ -310,7 +325,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
                   <MessageCircle className="w-6 h-6" />
                 </Button>
                 <span className="text-white text-xs font-medium">
-                  {reel.stats.comments > 1000 ? `${(reel.stats.comments / 1000).toFixed(1)}K` : reel.stats.comments}
+                  {reel.stats.comments > 0 ? reel.stats.comments : ''}
                 </span>
               </div>
 
@@ -323,7 +338,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
                   <Share2 className="w-6 h-6" />
                 </Button>
                 <span className="text-white text-xs font-medium">
-                  {reel.stats.shares > 1000 ? `${(reel.stats.shares / 1000).toFixed(1)}K` : reel.stats.shares}
+                  {reel.stats.shares > 0 ? reel.stats.shares : ''}
                 </span>
               </div>
 
