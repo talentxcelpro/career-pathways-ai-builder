@@ -5,6 +5,7 @@ import { RealDataLearningDashboard } from '@/components/learning/RealDataLearnin
 import { RealLearningSearchHub } from '@/components/learning/RealLearningSearchHub';
 import { RealCourseGrid } from '@/components/learning/RealCourseGrid';
 import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
+import { CoreLearningNav } from '@/components/learning/CoreLearningNav';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
 import { supabase } from '@/integrations/supabase/client';
 import { Separator } from "@/components/ui/separator";
@@ -70,6 +71,13 @@ export default function LearningHub() {
             limit={6}
             showFilters={false}
           />
+        </section>
+
+        <Separator className="mb-16" />
+
+        {/* Core Learning Navigation */}
+        <section className="mb-16">
+          <CoreLearningNav />
         </section>
 
         <Separator className="mb-16" />
