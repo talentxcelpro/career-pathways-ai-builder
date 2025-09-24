@@ -11,7 +11,6 @@ interface Course {
   title: string;
   description?: string;
   instructor_name?: string;
-  instructor?: string;
   rating?: number;
   enrolled_count?: number;
   students?: number;

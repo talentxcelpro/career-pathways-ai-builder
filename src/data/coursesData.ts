@@ -2,7 +2,7 @@
 export interface Course {
   id: number;
   title: string;
-  instructor: string;
+  instructor_name: string;
   rating: number;
   students: number;
   duration: string;
@@ -156,7 +156,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 1,
     title: 'Complete Full Stack Web Development Bootcamp',
-    instructor: 'Angela Yu',
+    instructor_name: 'Angela Yu',
     rating: 4.8,
     students: 125430,
     duration: '12 weeks',
@@ -176,7 +176,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 2,
     title: 'Data Science & Machine Learning Masterclass',
-    instructor: 'Kirill Eremenko',
+    instructor_name: 'Kirill Eremenko',
     rating: 4.9,
     students: 87650,
     duration: '16 weeks',
@@ -195,7 +195,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 3,
     title: 'AWS Cloud Computing Fundamentals',
-    instructor: 'Amazon Web Services',
+    instructor_name: 'Amazon Web Services',
     rating: 4.7,
     students: 92340,
     duration: '8 weeks',
@@ -215,7 +215,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 4,
     title: 'Cybersecurity Fundamentals & Ethical Hacking',
-    instructor: 'MIT Cybersecurity',
+    instructor_name: 'MIT Cybersecurity',
     rating: 4.9,
     students: 67890,
     duration: '10 weeks',
@@ -235,7 +235,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 5,
     title: 'React Native Mobile App Development',
-    instructor: 'Stephen Grider',
+    instructor_name: 'Stephen Grider',
     rating: 4.6,
     students: 54320,
     duration: '12 weeks',
@@ -254,7 +254,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 6,
     title: 'Python Programming for Beginners',
-    instructor: 'Jose Portilla',
+    instructor_name: 'Jose Portilla',
     rating: 4.8,
     students: 143210,
     duration: '8 weeks',
@@ -274,7 +274,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 7,
     title: 'DevOps with Docker and Kubernetes',
-    instructor: 'Mumshad Mannambeth',
+    instructor_name: 'Mumshad Mannambeth',
     rating: 4.7,
     students: 45670,
     duration: '14 weeks',
@@ -293,7 +293,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 8,
     title: 'Database Design and SQL Mastery',
-    instructor: 'Colt Steele',
+    instructor_name: 'Colt Steele',
     rating: 4.6,
     students: 78950,
     duration: '10 weeks',
@@ -312,7 +312,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 9,
     title: 'JavaScript ES6+ Modern Development',
-    instructor: 'Brad Traversy',
+    instructor_name: 'Brad Traversy',
     rating: 4.8,
     students: 98760,
     duration: '6 weeks',
@@ -332,7 +332,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 10,
     title: 'Automated Software Testing',
-    instructor: 'Rahul Shetty',
+    instructor_name: 'Rahul Shetty',
     rating: 4.5,
     students: 34560,
     duration: '8 weeks',
@@ -353,7 +353,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 11,
     title: 'Business Leadership & Management Excellence',
-    instructor: 'Wharton Business School',
+    instructor_name: 'Wharton Business School',
     rating: 4.6,
     students: 43210,
     duration: '14 weeks',
@@ -372,7 +372,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 12,
     title: 'Project Management Professional (PMP)',
-    instructor: 'Joseph Phillips',
+    instructor_name: 'Joseph Phillips',
     rating: 4.7,
     students: 67890,
     duration: '12 weeks',
@@ -392,7 +392,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 13,
     title: 'Financial Analysis & Investment Banking',
-    instructor: 'Chris Haroun',
+    instructor_name: 'Chris Haroun',
     rating: 4.8,
     students: 45670,
     duration: '16 weeks',
@@ -411,7 +411,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 14,
     title: 'Entrepreneurship & Startup Strategy',
-    instructor: 'Guy Kawasaki',
+    instructor_name: 'Guy Kawasaki',
     rating: 4.5,
     students: 32450,
     duration: '10 weeks',
@@ -431,7 +431,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 15,
     title: 'Operations Management & Supply Chain',
-    instructor: 'MIT Sloan',
+    instructor_name: 'MIT Sloan',
     rating: 4.6,
     students: 28760,
     duration: '12 weeks',
@@ -452,7 +452,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 16,
     title: 'Digital Marketing Strategy & Growth Hacking',
-    instructor: 'Neil Patel',
+    instructor_name: 'Neil Patel',
     rating: 4.7,
     students: 154320,
     duration: '8 weeks',
@@ -472,7 +472,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 17,
     title: 'Content Marketing & Brand Storytelling',
-    instructor: 'Ann Handley',
+    instructor_name: 'Ann Handley',
     rating: 4.8,
     students: 76540,
     duration: '6 weeks',
@@ -491,7 +491,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 18,
     title: 'Social Media Marketing Mastery',
-    instructor: 'Gary Vaynerchuk',
+    instructor_name: 'Gary Vaynerchuk',
     rating: 4.6,
     students: 89760,
     duration: '8 weeks',
@@ -511,7 +511,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 19,
     title: 'SEO & Search Engine Marketing',
-    instructor: 'Moz Academy',
+    instructor_name: 'Moz Academy',
     rating: 4.7,
     students: 54320,
     duration: '10 weeks',
@@ -530,7 +530,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 20,
     title: 'Sales Strategy & Customer Relationship Management',
-    instructor: 'HubSpot Academy',
+    instructor_name: 'HubSpot Academy',
     rating: 4.5,
     students: 43210,
     duration: '12 weeks',
@@ -551,7 +551,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 21,
     title: 'UI/UX Design Complete Course',
-    instructor: 'Jonas Schmedtmann',
+    instructor_name: 'Jonas Schmedtmann',
     rating: 4.8,
     students: 76540,
     duration: '10 weeks',
@@ -570,7 +570,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 22,
     title: 'Graphic Design Fundamentals',
-    instructor: 'Ellen Lupton',
+    instructor_name: 'Ellen Lupton',
     rating: 4.6,
     students: 65430,
     duration: '8 weeks',
@@ -590,7 +590,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 23,
     title: 'Photography & Visual Storytelling',
-    instructor: 'Annie Leibovitz',
+    instructor_name: 'Annie Leibovitz',
     rating: 4.8,
     students: 56780,
     duration: '6 weeks',
@@ -609,7 +609,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 24,
     title: 'Web Design with HTML, CSS & JavaScript',
-    instructor: 'Kevin Powell',
+    instructor_name: 'Kevin Powell',
     rating: 4.7,
     students: 87650,
     duration: '12 weeks',
@@ -629,7 +629,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 25,
     title: 'Video Production & Editing',
-    instructor: 'Peter McKinnon',
+    instructor_name: 'Peter McKinnon',
     rating: 4.6,
     students: 45670,
     duration: '10 weeks',
@@ -650,7 +650,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 26,
     title: 'Healthcare Management & Administration',
-    instructor: 'Johns Hopkins University',
+    instructor_name: 'Johns Hopkins University',
     rating: 4.5,
     students: 23450,
     duration: '16 weeks',
@@ -669,7 +669,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 27,
     title: 'Nursing Fundamentals & Patient Care',
-    instructor: 'Mayo Clinic',
+    instructor_name: 'Mayo Clinic',
     rating: 4.7,
     students: 34560,
     duration: '14 weeks',
@@ -689,7 +689,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 28,
     title: 'Mental Health & Counseling Basics',
-    instructor: 'American Psychological Association',
+    instructor_name: 'American Psychological Association',
     rating: 4.6,
     students: 45670,
     duration: '12 weeks',
@@ -710,7 +710,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 29,
     title: 'Teaching Methods & Educational Technology',
-    instructor: 'Stanford Education',
+    instructor_name: 'Stanford Education',
     rating: 4.7,
     students: 56780,
     duration: '10 weeks',
@@ -730,7 +730,7 @@ export const coursesDatabase: Course[] = [
   {
     id: 30,
     title: 'Online Learning Design & Development',
-    instructor: 'MIT OpenCourseWare',
+    instructor_name: 'MIT OpenCourseWare',
     rating: 4.8,
     students: 34560,
     duration: '8 weeks',
@@ -770,7 +770,7 @@ export const searchCourses = (query: string): Course[] => {
     course.category.toLowerCase().includes(searchTerm) ||
     course.subcategory.toLowerCase().includes(searchTerm) ||
     course.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
-    course.instructor.toLowerCase().includes(searchTerm)
+    course.instructor_name.toLowerCase().includes(searchTerm)
   );
 };
 

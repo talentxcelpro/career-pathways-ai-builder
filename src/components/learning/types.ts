@@ -4,8 +4,7 @@ export interface Course {
   id: string;
   title: string;
   description?: string;
-  instructor?: string;
-  instructor_name?: string; // Alias for instructor
+  instructor_name?: string;
   level?: string;
   difficulty_level?: string; // Alias for level  
   duration?: string;

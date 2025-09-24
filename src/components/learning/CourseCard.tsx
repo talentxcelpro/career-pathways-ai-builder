@@ -18,7 +18,6 @@ interface Course {
   students?: number;
   rating?: number;
   instructor_name?: string;
-  instructor?: string;
   skills_taught?: string[];
   is_free?: boolean;
   price?: number | string;
@@ -70,9 +69,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEn
             </div>
           </div>
           
-          {(course.instructor_name || course.instructor) && (
+          {course.instructor_name && (
             <p className="text-sm text-gray-600">
-              by {course.instructor_name || course.instructor}
+              by {course.instructor_name}
             </p>
           )}
 

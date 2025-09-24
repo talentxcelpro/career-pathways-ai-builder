@@ -24,7 +24,7 @@ export const migrateCourseData = async () => {
       for (const course of courses) {
         await supabase.from('courses').insert({
           title: course.title,
-          instructor: course.instructor,
+          instructor_name: course.instructor_name,
           rating: course.rating,
           students: course.students,
           duration: course.duration,
