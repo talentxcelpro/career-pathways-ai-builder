@@ -74,19 +74,51 @@ export const useReelsData = () => {
         console.log('Raw posts fetched:', posts?.length || 0);
         console.log('Sample post media_urls:', posts?.[0]?.media_urls);
 
-        // Filter for video posts more carefully
+        // Enhanced video detection with flexible URL patterns
         const videoPosts = (posts || []).filter((p: any) => {
+          console.log('Processing post:', p.id, 'media_urls:', p.media_urls);
+          
           if (!Array.isArray(p.media_urls)) {
             console.log('Post has non-array media_urls:', p.id, p.media_urls);
             return false;
           }
-          const hasVideo = p.media_urls.some((u: string) => 
-            typeof u === 'string' && 
-            (u.toLowerCase().includes('.mp4') || u.toLowerCase().includes('.mov') || u.toLowerCase().includes('.webm'))
-          );
-          if (hasVideo) {
-            console.log('Found video post:', p.id, p.media_urls);
+          
+          if (p.media_urls.length === 0) {
+            console.log('Post has empty media_urls array:', p.id);
+            return false;
           }
+          
+          const hasVideo = p.media_urls.some((u: string) => {
+            if (!u || typeof u !== 'string') return false;
+            
+            const url = u.toLowerCase();
+            console.log('Checking URL:', url);
+            
+            // Check for video file extensions anywhere in the URL
+            const videoExtensions = ['.mp4', '.mov', '.webm', '.avi', '.m4v'];
+            const hasVideoExtension = videoExtensions.some(ext => url.includes(ext));
+            
+            // Check for video-related keywords in URL path
+            const hasVideoKeywords = url.includes('video') || url.includes('media');
+            
+            // Special handling for Supabase storage patterns
+            const isSupabaseVideo = url.includes('supabase') && hasVideoExtension;
+            
+            const isVideo = hasVideoExtension || (hasVideoKeywords && url.includes('post-media'));
+            
+            if (isVideo) {
+              console.log('✓ Found video URL:', u);
+            }
+            
+            return isVideo;
+          });
+          
+          if (hasVideo) {
+            console.log('✓ Video post found:', p.id, p.media_urls);
+          } else {
+            console.log('✗ No video found in post:', p.id, p.media_urls);
+          }
+          
           return hasVideo;
         });
 
