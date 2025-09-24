@@ -2,6 +2,7 @@
 import { BookOpen } from "lucide-react";
 import Learning from "../pages/Learning";
 import LearningHub from "../pages/LearningHub";
+import CompleteLearningHub from "../pages/learning/CompleteLearningHub";
 import AllCourses from "../pages/learning/AllCourses";
 import CourseDetail from "../pages/learning/CourseDetail";
 import CoursePlayer from "../pages/learning/CoursePlayer";
@@ -35,6 +36,14 @@ export const learningRoutes = [
     to: "/learning",
     icon: <BookOpen className="h-4 w-4" />,
     page: <LearningHub />,
+    isPublic: true,
+    requiresAuth: false,
+    requiresAdminAccess: false,
+  },
+  {
+    title: "Complete Learning Hub",
+    to: "/learning/comprehensive-courses",
+    page: <CompleteLearningHub />,
     isPublic: true,
     requiresAuth: false,
     requiresAdminAccess: false,
