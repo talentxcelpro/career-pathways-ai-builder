@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { CourseGraphenerator } from '@/components/admin/CourseBatchCreator';
 import { SuperChargedCourseFactory } from '@/components/learning/SuperChargedCourseFactory';
+import { VideoIntegrationPanel } from '@/components/admin/VideoIntegrationPanel';
 import { toast } from 'sonner';
 import { 
   GraduationCap, 
@@ -126,9 +127,10 @@ export default function CourseManagementPage() {
       </div>
 
       <Tabs defaultValue="batch-creator" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="batch-creator">Batch Creator</TabsTrigger>
           <TabsTrigger value="enhancement">Enhancement</TabsTrigger>
+          <TabsTrigger value="video-integration">Video Integration</TabsTrigger>
           <TabsTrigger value="population">Mass Population</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
@@ -226,6 +228,10 @@ export default function CourseManagementPage() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="video-integration" className="space-y-6">
+          <VideoIntegrationPanel />
         </TabsContent>
 
         <TabsContent value="population" className="space-y-6">
