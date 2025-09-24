@@ -27,7 +27,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const { trackView } = useReelViewTracking();
   
-  // Enhanced autoplay with intersection observer
+  // Enhanced autoplay with sound enabled
   const {
     containerRef,
     isVisible,
@@ -35,10 +35,12 @@ export const ReelCard: React.FC<ReelCardProps> = ({
     isMuted,
     toggleMute,
     watchTime,
-    hasStartedPlaying
+    hasStartedPlaying,
+    hasUserInteracted,
+    canPlayWithSound
   } = useVideoAutoplay(videoRef.current, {
     threshold: 0.75, // Play when 75% visible
-    enableSound: false, // Start muted for autoplay policy
+    enableSound: true, // Enable sound for reels
     preloadNext: true
   });
 
@@ -74,6 +76,25 @@ export const ReelCard: React.FC<ReelCardProps> = ({
 
       {/* Enhanced Content Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20">
+        
+        {/* Audio Indicator for First-Time Users */}
+        {!hasUserInteracted && isMuted && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+            <div className="bg-black/60 backdrop-blur-md rounded-full px-4 py-2 flex items-center gap-2 text-white text-sm animate-pulse">
+              <span>🔊</span>
+              <span>Tap to unmute</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Sound Status Indicator */}
+        {canPlayWithSound && !isMuted && (
+          <div className="absolute top-20 right-4 z-20">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full px-3 py-1 text-white text-xs font-medium shadow-lg">
+              🎵 Sound On
+            </div>
+          </div>
+        )}
         {/* Top User Info - Instagram Style */}
         <div className="absolute top-12 left-4 right-20 z-10">
           <div className="flex items-center gap-3 mb-2">

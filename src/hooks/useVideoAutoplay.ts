@@ -25,6 +25,8 @@ export const useVideoAutoplay = (
   const [error, setError] = useState<string | null>(null);
   const [watchTime, setWatchTime] = useState(0);
   const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [canPlayWithSound, setCanPlayWithSound] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const startTimeRef = useRef<number>(0);
@@ -80,17 +82,35 @@ export const useVideoAutoplay = (
     };
   }, [videoElement]);
 
-  // Auto play/pause based on visibility
+  // Enhanced auto play/pause with sound detection
   useEffect(() => {
     if (!videoElement || error) return;
 
     const playVideo = async () => {
       try {
-        videoElement.muted = isMuted;
-        await videoElement.play();
+        // First try to play with sound if user has interacted and sound is enabled
+        if (hasUserInteracted && enableSound && !isMuted) {
+          videoElement.muted = false;
+          await videoElement.play();
+          setCanPlayWithSound(true);
+          console.log('Playing with sound after user interaction');
+        } else {
+          // Fallback to muted autoplay
+          videoElement.muted = true;
+          await videoElement.play();
+          console.log('Playing muted for autoplay policy compliance');
+        }
       } catch (err) {
         console.error('Failed to autoplay video:', err);
-        setError('Autoplay failed');
+        // Try muted as fallback
+        try {
+          videoElement.muted = true;
+          setIsMuted(true);
+          await videoElement.play();
+        } catch (mutedErr) {
+          console.error('Even muted autoplay failed:', mutedErr);
+          setError('Autoplay failed');
+        }
       }
     };
 
@@ -99,32 +119,47 @@ export const useVideoAutoplay = (
     } else {
       videoElement.pause();
     }
-  }, [isVisible, videoElement, error, isMuted]);
+  }, [isVisible, videoElement, error, isMuted, hasUserInteracted, enableSound]);
 
-  // Toggle play/pause
+  // Enhanced toggle play/pause with user interaction
   const togglePlay = useCallback(async () => {
     if (!videoElement || error) return;
 
+    setHasUserInteracted(true);
+    
     try {
       if (isPlaying) {
         videoElement.pause();
       } else {
+        // If user is playing and sound is enabled, try with sound
+        if (enableSound && !isMuted) {
+          videoElement.muted = false;
+          setCanPlayWithSound(true);
+        }
         await videoElement.play();
+        console.log('User initiated play');
       }
     } catch (err) {
       console.error('Failed to toggle video:', err);
       setError('Playback failed');
     }
-  }, [videoElement, isPlaying, error]);
+  }, [videoElement, isPlaying, error, enableSound, isMuted]);
 
-  // Toggle mute
+  // Enhanced toggle mute with user interaction tracking
   const toggleMute = useCallback(() => {
     if (!videoElement) return;
     
+    setHasUserInteracted(true);
     const newMuted = !isMuted;
     videoElement.muted = newMuted;
     setIsMuted(newMuted);
-  }, [videoElement, isMuted]);
+    
+    // If unmuting, try to enable sound
+    if (!newMuted && enableSound) {
+      setCanPlayWithSound(true);
+      console.log('User unmuted - sound enabled');
+    }
+  }, [videoElement, isMuted, enableSound]);
 
   // Reset function
   const reset = useCallback(() => {
@@ -143,6 +178,8 @@ export const useVideoAutoplay = (
     error,
     watchTime,
     hasStartedPlaying,
+    hasUserInteracted,
+    canPlayWithSound,
     togglePlay,
     toggleMute,
     reset
