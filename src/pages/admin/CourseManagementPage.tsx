@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CourseGraphenerator } from '@/components/admin/CourseBatchCreator';
 import { SuperChargedCourseFactory } from '@/components/learning/SuperChargedCourseFactory';
 import { VideoIntegrationPanel } from '@/components/admin/VideoIntegrationPanel';
+import { ErrorBoundary } from '@/components/admin/ErrorBoundary';
 import { toast } from 'sonner';
 import { 
   GraduationCap, 
@@ -51,12 +52,20 @@ export default function CourseManagementPage() {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Enhancement error:', error);
+        toast.error(`Enhancement failed: ${error.message}`);
+        return;
+      }
 
-      toast.success(`Successfully enhanced ${data.items_enhanced} course items!`);
+      if (data?.success) {
+        toast.success(`Successfully enhanced ${data.items_enhanced || 0} course items!`);
+      } else {
+        toast.error(data?.message || 'Enhancement completed with warnings');
+      }
     } catch (error: any) {
       console.error('Enhancement error:', error);
-      toast.error(error.message || 'Failed to enhance courses');
+      toast.error(`Enhancement failed: ${error.message || 'Unknown error'}`);
     } finally {
       setIsEnhancing(false);
     }
@@ -67,17 +76,25 @@ export default function CourseManagementPage() {
     try {
       const { data, error } = await supabase.functions.invoke('mass-course-population', {
         body: {
-          action: 'populate_professional_courses',
+          action: 'populate_courses',
           ...populationConfig
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Population error:', error);
+        toast.error(`Population failed: ${error.message}`);
+        return;
+      }
 
-      toast.success(`Successfully created ${data.courses_created} professional courses!`);
+      if (data?.success) {
+        toast.success(`Successfully created ${data.courses_created || 0} courses!`);
+      } else {
+        toast.error(data?.message || 'Population completed with warnings');
+      }
     } catch (error: any) {
       console.error('Population error:', error);
-      toast.error(error.message || 'Failed to populate courses');
+      toast.error(`Population failed: ${error.message || 'Unknown error'}`);
     } finally {
       setIsPopulating(false);
     }
@@ -92,12 +109,20 @@ export default function CourseManagementPage() {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Exercise creation error:', error);
+        toast.error(`Exercise creation failed: ${error.message}`);
+        return;
+      }
 
-      toast.success(`Created ${data.exercises_created} interactive exercises!`);
+      if (data?.success) {
+        toast.success(`Created ${data.exercises_created || 0} interactive exercises!`);
+      } else {
+        toast.error(data?.message || 'Exercise creation completed with warnings');
+      }
     } catch (error: any) {
       console.error('Exercise creation error:', error);
-      toast.error(error.message || 'Failed to create exercises');
+      toast.error(`Exercise creation failed: ${error.message || 'Unknown error'}`);
     } finally {
       setIsEnhancing(false);
     }
@@ -136,8 +161,12 @@ export default function CourseManagementPage() {
         </TabsList>
 
         <TabsContent value="batch-creator" className="space-y-6">
-          <SuperChargedCourseFactory />
-          <CourseGraphenerator />
+          <ErrorBoundary>
+            <SuperChargedCourseFactory />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <CourseGraphenerator />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="enhancement" className="space-y-6">
@@ -231,7 +260,9 @@ export default function CourseManagementPage() {
         </TabsContent>
 
         <TabsContent value="video-integration" className="space-y-6">
-          <VideoIntegrationPanel />
+          <ErrorBoundary>
+            <VideoIntegrationPanel />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="population" className="space-y-6">

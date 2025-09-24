@@ -56,12 +56,15 @@ export const CourseGraphenerator: React.FC = () => {
   const fetchBatches = async () => {
     try {
       const { data, error } = await supabase
-        .rpc('get_batch_progress');
+        .from('course_batches')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setBatches(data || []);
     } catch (error) {
       console.error('Error fetching batches:', error);
+      toast.error('Failed to load course batches');
     }
   };
 
