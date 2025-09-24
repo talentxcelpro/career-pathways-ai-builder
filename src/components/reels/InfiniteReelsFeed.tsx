@@ -1,184 +1,150 @@
-
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { cn } from '@/lib/utils';
-import { useReelsData } from '@/hooks/useReelsData';
-import { ReelCard } from './ReelCard';
+import React, { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Upload, RefreshCw } from 'lucide-react';
-import { useIntersectionObserverCallback } from '@/hooks/useIntersectionObserver';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Heart, MessageCircle, Share2, Music, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { toast } from 'sonner';
+import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+
+interface Reel {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    verified: boolean;
+  };
+  video: {
+    url: string;
+    thumbnail: string;
+    duration: number;
+  };
+  caption: string;
+  hashtags: string[];
+  stats: {
+    likes: number;
+    comments: number;
+    shares: number;
+    views: number;
+  };
+  isLiked: boolean;
+}
 
 interface InfiniteReelsFeedProps {
   onUploadClick: () => void;
-  className?: string;
 }
 
-export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
-  onUploadClick,
-  className
-}) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error, refetch } = useReelsData();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const observerTargets = useRef<Map<number, HTMLDivElement>>(new Map());
-
-  // Flatten all pages into a single array of reels
-  const reels = data?.pages.flat() || [];
-
-  // Load more reels when approaching the end
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-  useIntersectionObserverCallback(loadMoreRef,
-    useCallback(() => {
-      if (hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage]),
-    { threshold: 0.1 }
-  );
-
-  // Set up intersection observer for each reel to track which one is active
-  useEffect(() => {
-    if (!containerRef.current || reels.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = parseInt(entry.target.getAttribute('data-index') || '0');
-            setActiveIndex(index);
-          }
-        });
+export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadClick }) => {
+  const [currentReelIndex, setCurrentReelIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const { triggerHaptic } = useHapticFeedback();
+  
+  const [reels] = useState<Reel[]>([
+    {
+      id: 'reel-1',
+      user: {
+        id: 'user-1',
+        name: 'Sarah Chen',
+        username: '@sarahtech',
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b60e9077?w=150&h=150&fit=crop',
+        verified: true
       },
-      {
-        root: containerRef.current,
-        threshold: 0.6, // Reel is considered active when 60% visible
-        rootMargin: '-20% 0px'
-      }
-    );
-
-    // Observe all reel elements
-    observerTargets.current.forEach((element) => {
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [reels.length]);
-
-  const setObserverRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
-    if (el) {
-      observerTargets.current.set(index, el);
-    } else {
-      observerTargets.current.delete(index);
+      video: {
+        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
+        duration: 30
+      },
+      caption: '5 Essential tips for your next tech interview! 💻✨ #TechTips #CareerAdvice',
+      hashtags: ['#TechTips', '#CareerAdvice', '#InterviewPrep'],
+      stats: { likes: 12500, comments: 340, shares: 890, views: 45600 },
+      isLiked: false
     }
-  }, []);
+  ]);
 
-  // Handle scroll to ensure reels snap properly
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const scrollTop = container.scrollTop;
-    const itemHeight = container.clientHeight;
-    const newIndex = Math.round(scrollTop / itemHeight);
-    
-    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < reels.length) {
-      setActiveIndex(newIndex);
-    }
-  }, [activeIndex, reels.length]);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const handleRefresh = useCallback(() => {
-    setActiveIndex(0);
-    refetch();
-  }, [refetch]);
+  const handleLike = useCallback((reelId: string) => {
+    triggerHaptic('light');
+    toast.success('Liked!');
+  }, [triggerHaptic]);
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-          <p>Loading amazing reels...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 text-white text-center p-6">
-          <div className="text-6xl mb-4">😞</div>
-          <h3 className="text-xl font-semibold">Oops! Something went wrong</h3>
-          <p className="text-gray-300 mb-6">We couldn't load the reels right now</p>
-          <Button 
-            onClick={handleRefresh} 
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!reels.length) {
-    return (
-      <div className="w-full h-screen bg-black flex items-center justify-center">
-        <div className="flex flex-col items-center gap-6 text-white text-center p-6">
-          <div className="text-8xl mb-4">🎬</div>
-          <h3 className="text-2xl font-bold mb-2">No Reels Yet!</h3>
-          <p className="text-gray-300 mb-6 max-w-sm">
-            Be the first to share your career journey or professional insights
-          </p>
-          <Button
-            onClick={onUploadClick}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg"
-          >
-            <Upload className="mr-2 h-5 w-5" />
-            Create Your First Reel
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const togglePlayPause = useCallback(() => {
+    setIsPlaying(!isPlaying);
+    triggerHaptic('light');
+  }, [isPlaying, triggerHaptic]);
 
   return (
-    <div 
-      ref={containerRef}
-      className={cn(
-        "w-full h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide",
-        className
-      )}
-      onScroll={handleScroll}
-      style={{ 
-        scrollbarWidth: 'none', 
-        msOverflowStyle: 'none'
-      }}
-    >
+    <div className="w-full h-screen overflow-hidden bg-black">
       {reels.map((reel, index) => (
-        <div
-          key={reel.id}
-          ref={setObserverRef(index)}
-          data-index={index}
-          className="w-full h-screen snap-start snap-always flex-shrink-0"
-        >
-          <ReelCard
-            reel={reel}
-            isActive={index === activeIndex}
-            onComment={() => {}}
-          />
-        </div>
-      ))}
+        <div key={reel.id} className="relative w-full h-screen flex-shrink-0 bg-black overflow-hidden">
+          <video
+            ref={(el) => { videoRefs.current[index] = el; }}
+            className="absolute inset-0 w-full h-full object-cover"
+            poster={reel.video.thumbnail}
+            loop
+            playsInline
+            onClick={togglePlayPause}
+          >
+            <source src={reel.video.url} type="video/mp4" />
+          </video>
 
-      {/* Loading indicator for infinite scroll */}
-      {hasNextPage && (
-        <div 
-          ref={loadMoreRef}
-          className="h-screen w-full bg-black flex items-center justify-center snap-start"
-        >
-          <div className="flex flex-col items-center gap-4 text-white">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <p className="text-sm">Loading more reels...</p>
+          {/* Gradient Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+
+          {/* User Info */}
+          <div className="absolute top-4 left-4 right-4 z-10">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-10 h-10 ring-2 ring-white/30">
+                <AvatarImage src={reel.user.avatar} alt={reel.user.name} />
+                <AvatarFallback>{reel.user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-white font-semibold text-sm">{reel.user.name}</p>
+                <p className="text-white/80 text-xs">{reel.user.username}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Content */}
+          <div className="absolute bottom-4 left-4 right-20 z-10">
+            <p className="text-white text-sm mb-2">{reel.caption}</p>
+            <div className="flex items-center space-x-2 bg-black/30 rounded-full px-3 py-1 w-fit">
+              <Music className="w-3 h-3 text-white" />
+              <span className="text-white text-xs">Original Audio</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="absolute bottom-20 right-4 z-10 flex flex-col space-y-4">
+            <div className="flex flex-col items-center">
+              <Button
+                size="icon"
+                variant="ghost"
+                className={`w-12 h-12 rounded-full ${reel.isLiked ? 'text-red-500' : 'text-white'} hover:bg-white/20`}
+                onClick={() => handleLike(reel.id)}
+              >
+                <Heart className={`w-6 h-6 ${reel.isLiked ? 'fill-current' : ''}`} />
+              </Button>
+              <span className="text-white text-xs">{reel.stats.likes > 1000 ? `${(reel.stats.likes / 1000).toFixed(1)}K` : reel.stats.likes}</span>
+            </div>
+          </div>
+
+          {/* Play/Pause Control */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            {!isPlaying && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="w-16 h-16 rounded-full bg-black/30 text-white hover:bg-black/50"
+                onClick={togglePlayPause}
+              >
+                <Play className="w-8 h-8 ml-1" />
+              </Button>
+            )}
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };
