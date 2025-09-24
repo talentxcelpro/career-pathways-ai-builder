@@ -200,10 +200,7 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
           <TooltipProvider delayDuration={200}>
             <BrowserRouter>
-              <AuthErrorBoundary>
-                <SilentAuthHandler>
-                  <AuthProvider>
-                    <AuthErrorRecovery>
+              <AuthProvider>
                     <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
@@ -500,12 +497,9 @@ const App = () => {
                    </div>
                  </MobileAppWrapper>
                   
-                </CopilotProvider>
-                    </NotificationProvider>
-                    </AuthErrorRecovery>
-                  </AuthProvider>
-                </SilentAuthHandler>
-              </AuthErrorBoundary>
+                 </CopilotProvider>
+                     </NotificationProvider>
+                   </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>
         </QueryClientProvider>
