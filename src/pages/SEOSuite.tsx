@@ -58,6 +58,7 @@ import { VoiceSearchOptimizer } from '@/components/seo/VoiceSearchOptimizer';
 import { FeaturedSnippetsTargeting } from '@/components/seo/FeaturedSnippetsTargeting';
 import { AIContentScaler } from '@/components/seo/AIContentScaler';
 import { PredictiveAnalytics } from '@/components/seo/PredictiveAnalytics';
+import { InternationalSEO } from '@/components/seo/advanced-features/InternationalSEO';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
