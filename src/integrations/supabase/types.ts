@@ -31711,9 +31711,10 @@ export type Database = {
       }
       create_course_batch: {
         Args:
+          | { batch_data: Json }
           | {
               batch_description: string
-              batch_name_param: string
+              batch_title: string
               course_tags: string[]
               difficulty_level: string
             }
