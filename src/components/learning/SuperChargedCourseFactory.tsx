@@ -86,7 +86,7 @@ export const SuperChargedCourseFactory: React.FC = () => {
       const { data, error } = await supabase.functions.invoke('complete-course-content', {
         body: {
           action: 'complete_existing_courses',
-          courseLimit: 50
+          course_limit: 50
         }
       });
 
