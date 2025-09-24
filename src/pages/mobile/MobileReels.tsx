@@ -8,23 +8,19 @@ import { Button } from '@/components/ui/button';
 import { Plus, Home, Search, User, Heart, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useAnalyticsTracking } from '@/hooks/useAnalyticsTracking';
 
 export const MobileReels = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'following' | 'explore'>('explore');
   const navigate = useNavigate();
-  const { trackToolUsage } = useAnalyticsTracking();
 
   const handleUploadSuccess = () => {
     toast.success("Your reel has been uploaded successfully!");
     setShowUploadModal(false);
-    trackToolUsage('reels', 'upload_success');
   };
 
   const handleTabChange = (tab: 'following' | 'explore') => {
     setActiveTab(tab);
-    trackToolUsage('reels', `switch_to_${tab}`);
   };
 
   return (
@@ -47,7 +43,7 @@ export const MobileReels = () => {
         <ReelsHeader
           activeTab={activeTab}
           onTabChange={handleTabChange}
-          onSearch={() => trackToolUsage('reels', 'search_opened')}
+          onSearch={() => console.log('Search opened')}
           onNotifications={() => navigate('/mobile/notifications')}
           onMessages={() => navigate('/mobile/messages')}
           notificationCount={0}
