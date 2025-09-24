@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { DirectVideoPlayer } from './DirectVideoPlayer';
 import { 
   Play, 
@@ -32,14 +32,14 @@ interface LessonViewerProps {
   moduleTitle: string;
 }
 
-// Sample video URLs - in real implementation, these would come from your content management system
+// Working video URLs for demonstration
 const sampleVideoUrls = {
-  'resume-basics': 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-  'cover-letter': 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
-  'linkedin-opt': 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-  'communication': 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
-  'teamwork': 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-  'interview-types': 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4'
+  'resume-basics': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'cover-letter': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4', 
+  'linkedin-opt': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'communication': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  'teamwork': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  'interview-types': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4'
 };
 
 export const LessonViewer: React.FC<LessonViewerProps> = ({
@@ -52,16 +52,57 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
   const [lessonProgress, setLessonProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(lesson.completed || false);
 
-  const handleVideoComplete = () => {
+  const handleMarkAsComplete = () => {
     setIsCompleted(true);
     onComplete();
+  };
+
+  const handlePdfDownload = () => {
+    // Create a sample PDF download
+    const pdfContent = `
+# ${lesson.title} - TalentXcel Learning Guide
+
+## Overview
+This comprehensive guide covers everything you need to know about ${lesson.title.toLowerCase()}.
+
+## Key Points
+- Professional development strategies
+- Industry best practices
+- Practical implementation tips
+- Real-world examples
+
+## Resources
+- Templates and worksheets
+- Checklists and assessments
+- Additional reading materials
+
+---
+© 2024 TalentXcel Learning Platform
+For more resources, visit: learning.talentxcel.com
+`;
+    
+    const blob = new Blob([pdfContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${lesson.title.replace(/\s+/g, '_')}_Guide.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleStartQuiz = () => {
+    // Navigate to quiz or open quiz modal
+    alert(`Starting ${lesson.title} quiz!\n\n📝 Format: 10 multiple choice questions\n⏱️ Time limit: 15 minutes\n✅ Pass score: 70%\n\nFeature coming soon in TalentXcel Learning Platform!`);
+    handleMarkAsComplete();
   };
 
   const handleVideoProgress = (progress: number) => {
     setLessonProgress(progress * 100);
     // Mark as completed when 90% watched
     if (progress >= 0.9 && !isCompleted) {
-      handleVideoComplete();
+      handleMarkAsComplete();
     }
   };
 
@@ -86,7 +127,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             src={videoUrl}
             title={lesson.title}
             description={lesson.description}
-            onComplete={handleVideoComplete}
+            onComplete={handleMarkAsComplete}
             onProgress={handleVideoProgress}
           />
         );
@@ -102,17 +143,17 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/50 rounded-lg p-8 text-center">
-                <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="font-semibold mb-2">PDF Resource</h3>
+                <FileText className="h-16 w-16 mx-auto mb-4 text-primary" />
+                <h3 className="font-semibold mb-2">TalentXcel Learning Resource</h3>
                 <p className="text-muted-foreground mb-4">
                   Download the comprehensive guide for {lesson.title.toLowerCase()}.
                 </p>
                 <div className="space-y-2">
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={handlePdfDownload}>
                     <Download className="h-4 w-4 mr-2" />
                     Download PDF Guide
                   </Button>
-                  <Button variant="outline" onClick={handleVideoComplete} className="w-full">
+                  <Button variant="outline" onClick={handleMarkAsComplete} className="w-full">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Mark as Complete
                   </Button>
@@ -134,12 +175,12 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             <CardContent className="space-y-4">
               <div className="bg-muted/50 rounded-lg p-8 text-center">
                 <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
-                <h3 className="font-semibold mb-2">Knowledge Assessment</h3>
+                <h3 className="font-semibold mb-2">TalentXcel Knowledge Assessment</h3>
                 <p className="text-muted-foreground mb-4">
                   Test your understanding of {lesson.title.toLowerCase()}.
                 </p>
                 <div className="space-y-2">
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={handleStartQuiz}>
                     <Play className="h-4 w-4 mr-2" />
                     Start Quiz
                   </Button>
@@ -163,17 +204,17 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/50 rounded-lg p-8 text-center">
-                <Download className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="font-semibold mb-2">Practical Assignment</h3>
+                <Download className="h-16 w-16 mx-auto mb-4 text-primary" />
+                <h3 className="font-semibold mb-2">TalentXcel Practical Assignment</h3>
                 <p className="text-muted-foreground mb-4">
                   Apply what you've learned with this hands-on {lesson.title.toLowerCase()}.
                 </p>
                 <div className="space-y-2">
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={handlePdfDownload}>
                     <Download className="h-4 w-4 mr-2" />
                     Download Assignment
                   </Button>
-                  <Button variant="outline" onClick={handleVideoComplete} className="w-full">
+                  <Button variant="outline" onClick={handleMarkAsComplete} className="w-full">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Submit & Complete
                   </Button>
@@ -202,8 +243,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                 {getLessonIcon(lesson.type)}
                 {lesson.title}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                {lesson.description || `Interactive ${lesson.type} lesson for ${lesson.title}`}
+              </DialogDescription>
               <div className="flex items-center gap-2 mt-2">
-                <Badge variant="outline">{moduleTitle}</Badge>
+                <Badge variant="outline">TalentXcel - {moduleTitle}</Badge>
                 <Badge variant="secondary" className="capitalize">
                   {lesson.type}
                 </Badge>

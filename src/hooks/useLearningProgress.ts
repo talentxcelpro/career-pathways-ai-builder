@@ -48,7 +48,7 @@ export const useLearningProgress = () => {
         .from('learning_progress')
         .select('*')
         .eq('user_id', user.id)
-        .order('last_accessed', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as CourseProgress[];
@@ -69,21 +69,21 @@ export const useLearningProgress = () => {
 
       const { data, error } = await supabase
         .from('learning_progress')
-        .select('last_accessed')
+        .select('created_at')
         .eq('user_id', user.id)
-        .gte('last_accessed', lastWeek.toISOString());
+        .gte('created_at', lastWeek.toISOString());
 
       if (error) throw error;
 
       // Calculate streak logic (simplified)
       const uniqueDates = new Set(
-        data?.map(item => item.last_accessed.split('T')[0]) || []
+        data?.map(item => item.created_at.split('T')[0]) || []
       );
 
       return {
         current_streak: uniqueDates.size,
         longest_streak: uniqueDates.size, // Would be calculated from historical data
-        last_activity_date: data?.[0]?.last_accessed || new Date().toISOString()
+        last_activity_date: data?.[0]?.created_at || new Date().toISOString()
       } as LearningStreak;
     }
   });
@@ -105,7 +105,7 @@ export const useLearningProgress = () => {
       const updateData: any = {
         progress_percentage: progressPercentage,
         completed_lessons: completedLessons,
-        last_accessed: new Date().toISOString()
+        created_at: new Date().toISOString()
       };
 
       if (progressPercentage >= 100) {
@@ -163,7 +163,7 @@ export const useLearningProgress = () => {
           completed_lessons: 0,
           current_streak: 0,
           is_completed: false,
-          last_accessed: new Date().toISOString()
+          created_at: new Date().toISOString()
         })
         .select()
         .single();

@@ -132,7 +132,7 @@ export const DirectVideoPlayer: React.FC<VideoPlayerProps> = ({
           <video
             ref={videoRef}
             className="w-full aspect-video"
-            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 675'%3E%3Crect width='1200' height='675' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='48' fill='%2364748b'%3E%F0%9F%93%B9 {title}%3C/text%3E%3C/svg%3E"
+            poster={`data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 675'%3E%3Crect width='1200' height='675' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='48' fill='%2364748b'%3ETalentXcel Learning%3C/text%3E%3Ctext x='50%25' y='60%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='32' fill='%2364748b'%3E📹 ${encodeURIComponent(title)}%3C/text%3E%3C/svg%3E`}
           >
             <source src={src} type="video/mp4" />
             Your browser does not support the video tag.
