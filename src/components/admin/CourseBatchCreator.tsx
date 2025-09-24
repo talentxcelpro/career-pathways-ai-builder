@@ -77,7 +77,8 @@ export const CourseGraphenerator: React.FC = () => {
       const { data: result, error } = await supabase
         .rpc('create_course_batch', {
           p_batch_name: batchName,
-          p_courses_per_batch: batchSize
+          p_course_count: batchSize,
+          p_categories: ['programming', 'web-development', 'database', 'design', 'data-science', 'mobile-development', 'marketing', 'cloud-computing', 'cybersecurity']
         });
 
       if (error) throw error;
