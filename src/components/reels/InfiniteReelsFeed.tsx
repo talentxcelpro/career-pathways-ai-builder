@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Music, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
+import { VideoReelPlayer } from './VideoReelPlayer';
 
 interface Reel {
   id: string;
@@ -51,7 +52,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: true
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
         duration: 30
       },
@@ -70,7 +71,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: false
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=600&fit=crop',
         duration: 45
       },
@@ -89,7 +90,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: true
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=600&fit=crop',
         duration: 60
       },
@@ -108,7 +109,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: false
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=600&fit=crop',
         duration: 35
       },
@@ -127,7 +128,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: true
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=400&h=600&fit=crop',
         duration: 50
       },
@@ -146,7 +147,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: false
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=600&fit=crop',
         duration: 40
       },
@@ -165,7 +166,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: true
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=600&fit=crop',
         duration: 55
       },
@@ -184,7 +185,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: false
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=600&fit=crop',
         duration: 42
       },
@@ -203,7 +204,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: true
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_5mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=400&h=600&fit=crop',
         duration: 38
       },
@@ -222,7 +223,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
         verified: true
       },
       video: {
-        url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=600&fit=crop',
         duration: 48
       },
@@ -233,7 +234,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
     }
   ]);
 
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  // Video refs no longer needed since we're using VideoReelPlayer
 
   const handleLike = useCallback((reelId: string) => {
     triggerHaptic('light');
@@ -256,16 +257,14 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
       >
         {reels.map((reel, index) => (
           <div key={reel.id} className="relative w-full h-screen flex-shrink-0 bg-black overflow-hidden">
-            <video
-              ref={(el) => { videoRefs.current[index] = el; }}
-              className="absolute inset-0 w-full h-full object-cover"
-              poster={reel.video.thumbnail}
-              loop
-              playsInline
-              onClick={togglePlayPause}
-            >
-              <source src={reel.video.url} type="video/mp4" />
-            </video>
+            <VideoReelPlayer
+              videoUrl={reel.video.url}
+              thumbnailUrl={reel.video.thumbnail}
+              isActive={index === currentReelIndex}
+              onPlayStateChange={(playing) => setIsPlaying(playing)}
+              muted={isMuted}
+              className="absolute inset-0 w-full h-full"
+            />
 
             {/* Gradient Overlays */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
