@@ -12,7 +12,8 @@ import {
   SkipForward,
   Download,
   BookOpen,
-  CheckCircle
+  CheckCircle,
+  ExternalLink
 } from 'lucide-react';
 
 interface VideoPlayerProps {
@@ -23,6 +24,15 @@ interface VideoPlayerProps {
   onProgress?: (progress: number) => void;
 }
 
+// Helper function to convert YouTube URL to embed URL
+const getYouTubeEmbedUrl = (url: string): string => {
+  const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+  if (videoIdMatch) {
+    return `https://www.youtube.com/embed/${videoIdMatch[1]}?enablejsapi=1&rel=0&modestbranding=1`;
+  }
+  return url;
+};
+
 export const DirectVideoPlayer: React.FC<VideoPlayerProps> = ({
   src,
   title,
@@ -30,219 +40,139 @@ export const DirectVideoPlayer: React.FC<VideoPlayerProps> = ({
   onComplete,
   onProgress
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+  const isYouTubeVideo = src.includes('youtube.com') || src.includes('youtu.be');
+  const embedUrl = isYouTubeVideo ? getYouTubeEmbedUrl(src) : src;
 
-    const updateProgress = () => {
-      const current = video.currentTime;
-      const total = video.duration;
-      setCurrentTime(current);
-      setProgress((current / total) * 100);
-      onProgress?.(current / total);
-    };
-
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration);
-    };
-
-    const handleEnded = () => {
-      setIsPlaying(false);
-      onComplete?.();
-    };
-
-    video.addEventListener('timeupdate', updateProgress);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('ended', handleEnded);
-
-    return () => {
-      video.removeEventListener('timeupdate', updateProgress);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('ended', handleEnded);
-    };
-  }, [onComplete, onProgress]);
-
-  const togglePlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isPlaying) {
-      video.pause();
-    } else {
-      video.play();
-    }
-    setIsPlaying(!isPlaying);
+  const handleComplete = () => {
+    setIsCompleted(true);
+    setProgress(100);
+    onComplete?.();
+    onProgress?.(1);
   };
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    video.currentTime = percent * duration;
-  };
-
-  const skip = (seconds: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.currentTime = Math.max(0, Math.min(duration, video.currentTime + seconds));
-  };
-
-  const toggleFullscreen = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (!isFullscreen) {
-      video.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
-    setIsFullscreen(!isFullscreen);
-  };
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  const handleWatchOnYouTube = () => {
+    window.open(src, '_blank');
   };
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Play className="h-5 w-5 text-primary" />
-          {title}
-        </CardTitle>
+    <div className="space-y-4">
+      {/* Video Header */}
+      <div className="space-y-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+            <Badge variant="secondary" className="mt-1">
+              <BookOpen className="h-3 w-3 mr-1" />
+              TalentXcel Learning
+            </Badge>
+          </div>
+          {isYouTubeVideo && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleWatchOnYouTube}
+              className="flex items-center gap-2"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Watch on YouTube
+            </Button>
+          )}
+        </div>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-muted-foreground">{description}</p>
         )}
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="relative bg-black group">
-          <video
-            ref={videoRef}
-            className="w-full aspect-video"
-            poster={`data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 675'%3E%3Crect width='1200' height='675' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='45%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='48' fill='%2364748b'%3ETalentXcel Learning%3C/text%3E%3Ctext x='50%25' y='60%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='32' fill='%2364748b'%3E📹 ${encodeURIComponent(title)}%3C/text%3E%3C/svg%3E`}
+      </div>
+
+      {/* Video Player */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="aspect-video w-full bg-black rounded-lg overflow-hidden">
+            {isYouTubeVideo ? (
+              <iframe
+                src={embedUrl}
+                title={title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+                onLoad={() => setIsVideoLoaded(true)}
+              />
+            ) : (
+              <video
+                src={src}
+                controls
+                className="w-full h-full"
+                poster="/placeholder.svg"
+                preload="metadata"
+                onLoadedMetadata={() => setIsVideoLoaded(true)}
+                onEnded={handleComplete}
+                onTimeUpdate={(e) => {
+                  const video = e.target as HTMLVideoElement;
+                  const progressPercent = (video.currentTime / video.duration) * 100;
+                  setProgress(progressPercent);
+                  onProgress?.(video.currentTime / video.duration);
+                  
+                  // Mark as completed when 90% watched
+                  if (progressPercent > 90 && !isCompleted) {
+                    handleComplete();
+                  }
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Progress and Actions */}
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Progress</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {isCompleted && (
+              <div className="flex items-center gap-2 text-green-600">
+                <CheckCircle className="h-4 w-4" />
+                <span className="text-sm font-medium">Completed</span>
+              </div>
+            )}
+          </div>
+          
+          <Button 
+            onClick={handleComplete}
+            variant={isCompleted ? "outline" : "default"}
+            disabled={isCompleted}
           >
-            <source src={src} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-
-          {/* Video Controls Overlay */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            {/* Center Play Button */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
-                onClick={togglePlay}
-              >
-                {isPlaying ? (
-                  <Pause className="h-8 w-8 text-white" />
-                ) : (
-                  <Play className="h-8 w-8 text-white ml-1" />
-                )}
-              </Button>
-            </div>
-
-            {/* Bottom Controls */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-              {/* Progress Bar */}
-              <div 
-                className="w-full h-2 bg-white/20 rounded-full cursor-pointer mb-3"
-                onClick={handleSeek}
-              >
-                <div 
-                  className="h-full bg-primary rounded-full transition-all duration-200"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-
-              {/* Control Buttons */}
-              <div className="flex items-center justify-between text-white">
-                <div className="flex items-center space-x-2">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-white hover:bg-white/20"
-                    onClick={togglePlay}
-                  >
-                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-white hover:bg-white/20"
-                    onClick={() => skip(-10)}
-                  >
-                    <SkipBack className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-white hover:bg-white/20"
-                    onClick={() => skip(10)}
-                  >
-                    <SkipForward className="h-4 w-4" />
-                  </Button>
-                  <div className="flex items-center space-x-2">
-                    <Volume2 className="h-4 w-4" />
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.1"
-                      value={volume}
-                      onChange={(e) => {
-                        const newVolume = parseFloat(e.target.value);
-                        setVolume(newVolume);
-                        if (videoRef.current) {
-                          videoRef.current.volume = newVolume;
-                        }
-                      }}
-                      className="w-16"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm">
-                    {formatTime(currentTime)} / {formatTime(duration)}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-white hover:bg-white/20"
-                    onClick={toggleFullscreen}
-                  >
-                    <Maximize className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+            {isCompleted ? 'Completed' : 'Mark as Complete'}
+          </Button>
         </div>
+      </div>
 
-        {/* Video Progress */}
-        <div className="p-4 bg-muted/50">
-          <div className="flex items-center justify-between text-sm">
-            <span>Video Progress</span>
-            <span>{Math.round(progress)}% Complete</span>
+      {/* Video Instructions */}
+      <Card className="bg-muted/50">
+        <CardContent className="p-4">
+          <div className="text-sm text-muted-foreground">
+            <p className="font-medium mb-2">💡 Learning Tips:</p>
+            <ul className="space-y-1 list-disc list-inside">
+              <li>Take notes while watching the video</li>
+              <li>Pause and replay sections as needed</li>
+              <li>Apply what you learn immediately</li>
+              <li>Complete the lesson to track your progress</li>
+            </ul>
           </div>
-          <Progress value={progress} className="mt-2" />
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
