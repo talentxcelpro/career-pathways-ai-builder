@@ -1,14 +1,11 @@
 import React from 'react';
 import { updateMetaTags } from "@/utils/metaTags";
-import { CourseraStyleHeader } from '@/components/learning/CourseraStyleHeader';
-import { RealDataLearningDashboard } from '@/components/learning/RealDataLearningDashboard';
-import { RealLearningSearchHub } from '@/components/learning/RealLearningSearchHub';
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { LearningAppSidebar } from '@/components/learning/LearningAppSidebar';
+import { MobileLearningDashboard } from '@/components/learning/MobileLearningDashboard';
 import { RealCourseGrid } from '@/components/learning/RealCourseGrid';
-import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
-import { CoreLearningNav } from '@/components/learning/CoreLearningNav';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
 import { supabase } from '@/integrations/supabase/client';
-import { Separator } from "@/components/ui/separator";
 
 export default function LearningHub() {
   const [user, setUser] = React.useState<any>(null);
@@ -32,61 +29,56 @@ export default function LearningHub() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <CourseraStyleHeader />
-
-      {/* Hero Section - Simplified */}
-      <section className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Learn. Grow. Succeed.
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Master new skills with our interactive learning platform designed for working professionals
-          </p>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
+          <LearningAppSidebar />
         </div>
-      </section>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        {/* User Dashboard */}
-        <section className="mb-16">
-          <RealDataLearningDashboard userId={user?.id} />
-        </section>
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          {/* Mobile Header with Trigger */}
+          <div className="md:hidden bg-background border-b p-4 flex items-center justify-between sticky top-0 z-10">
+            <SidebarTrigger />
+            <h1 className="font-bold text-lg">TalentXcel Learning</h1>
+            <div></div>
+          </div>
 
-        <Separator className="mb-16" />
+          {/* Mobile Sidebar Overlay */}
+          <div className="md:hidden">
+            <LearningAppSidebar />
+          </div>
 
-        {/* Search and Discovery */}
-        <section className="mb-16">
-          <RealLearningSearchHub />
-        </section>
+          {/* Content Area */}
+          <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+            {/* Hero Section - Compact for Mobile */}
+            <section className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-lg p-6 md:p-8 mb-6 text-center">
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2 md:mb-4">
+                Learn. Grow. Succeed.
+              </h1>
+              <p className="text-sm md:text-xl text-muted-foreground max-w-3xl mx-auto">
+                Master new skills with our interactive learning platform
+              </p>
+            </section>
 
-        <Separator className="mb-16" />
+            {/* Mobile Dashboard */}
+            <div className="mb-6">
+              <MobileLearningDashboard userId={user?.id} />
+            </div>
 
-        {/* Featured Courses */}
-        <section className="mb-16">
-          <RealCourseGrid 
-            title="Featured Courses" 
-            limit={6}
-            showFilters={false}
-          />
-        </section>
-
-        <Separator className="mb-16" />
-
-        {/* Core Learning Navigation */}
-        <section className="mb-16">
-          <CoreLearningNav />
-        </section>
-
-        <Separator className="mb-16" />
-
-        {/* Navigation Options */}
-        <section>
-          <SmartLearningNav />
-        </section>
+            {/* Featured Courses - Responsive Grid */}
+            <section className="mb-6">
+              <RealCourseGrid 
+                title="Featured Courses" 
+                limit={6}
+                showFilters={false}
+                className="space-y-4"
+              />
+            </section>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
