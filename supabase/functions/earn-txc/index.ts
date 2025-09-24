@@ -36,6 +36,16 @@ interface Database {
   }
 }
 
+// ============================================================================
+// OFFICIAL TXC MINING POLICY - PERMANENT CONFIGURATION
+// 
+// ⚠️  CRITICAL WARNING: These values are PERMANENT and IMMUTABLE ⚠️
+// 
+// This configuration must match the official policy exactly.
+// DO NOT modify these values without explicit authorization.
+// Policy Source: @/config/txcPolicy.ts
+// ============================================================================
+
 const TXC_REWARDS: Record<string, { amount: number; description: string; cooldownMinutes: number }> = {
   'daily_login': { amount: 75, description: 'Daily login bonus', cooldownMinutes: 1440 },
   'post_created': { amount: 150, description: 'Create a post', cooldownMinutes: 60 },

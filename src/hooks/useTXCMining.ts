@@ -3,112 +3,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTokenBalance } from './useTokenBalance';
+import { 
+  OFFICIAL_TXC_MINING_POLICY, 
+  TXCReward, 
+  verifyPolicyIntegrity 
+} from '@/config/txcPolicy';
 
-export interface TXCReward {
-  action: string;
-  amount: number;
-  description: string;
-  cooldownMinutes?: number;
-}
+// ============================================================================
+// IMPORTANT: TXC MINING POLICY IS PERMANENT AND IMMUTABLE
+// 
+// This hook uses the official TXC mining policy from @/config/txcPolicy
+// DO NOT modify reward amounts or cooldowns in this file.
+// All changes must be made to the official policy configuration.
+// ============================================================================
 
-export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
-  'post_created': {
-    action: 'post_created',
-    amount: 150,
-    description: 'Create a post',
-    cooldownMinutes: 60 // Once per hour
-  },
-  'connection_made': {
-    action: 'connection_made', 
-    amount: 75,
-    description: 'Connect with someone',
-    cooldownMinutes: 60 // 1h cooldown
-  },
-  'profile_completed': {
-    action: 'profile_completed',
-    amount: 300,
-    description: 'Complete your profile',
-    cooldownMinutes: 1440 // Once per day
-  },
-  'resume_created': {
-    action: 'resume_created',
-    amount: 225,
-    description: 'Create a resume',
-    cooldownMinutes: 240 // Once per 4 hours
-  },
-  'job_applied': {
-    action: 'job_applied',
-    amount: 90,
-    description: 'Apply to a job',
-    cooldownMinutes: 60
-  },
-  'recommendation_given': {
-    action: 'recommendation_given',
-    amount: 120,
-    description: 'Give a recommendation',
-    cooldownMinutes: 120 // 2h cooldown
-  },
-  'skill_added': {
-    action: 'skill_added',
-    amount: 60,
-    description: 'Add skills to profile',
-    cooldownMinutes: 180 // 3h cooldown
-  },
-  'daily_login': {
-    action: 'daily_login',
-    amount: 75,
-    description: 'Daily login bonus',
-    cooldownMinutes: 1440 // Once per day
-  },
-  'course_completed': {
-    action: 'course_completed',
-    amount: 600,
-    description: 'Complete a course',
-    cooldownMinutes: 60
-  },
-  'feedback_given': {
-    action: 'feedback_given',
-    amount: 45,
-    description: 'Provide feedback',
-    cooldownMinutes: 60
-  },
-  'social_activity_bonus': {
-    action: 'social_activity_bonus',
-    amount: 300,
-    description: 'Social activity bonus',
-    cooldownMinutes: 10080 // Once per week
-  },
-  'joining_bonus': {
-    action: 'joining_bonus',
-    amount: 500,
-    description: 'Welcome to TalentXcel!',
-    cooldownMinutes: 0 // One-time only
-  },
-  'referral_made': {
-    action: 'referral_made',
-    amount: 1000,
-    description: 'Refer a friend',
-    cooldownMinutes: 0 // No limit on referrals
-  },
-  'post_liked': {
-    action: 'post_liked',
-    amount: 20,
-    description: 'Like a post',
-    cooldownMinutes: 0 // No cooldown for likes
-  },
-  'comment_made': {
-    action: 'comment_made',
-    amount: 20,
-    description: 'Comment on a post',
-    cooldownMinutes: 0 // No cooldown for comments
-  },
-  'article_posted': {
-    action: 'article_posted',
-    amount: 500,
-    description: 'Post an article',
-    cooldownMinutes: 240 // Once per 4 hours
-  }
-};
+// Export the official policy for backward compatibility
+export type { TXCReward } from '@/config/txcPolicy';
+export const TXC_MINING_REWARDS = OFFICIAL_TXC_MINING_POLICY;
 
 export const useTXCMining = () => {
   const { user } = useAuth();
@@ -116,10 +27,17 @@ export const useTXCMining = () => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Verify policy integrity on hook initialization
+  useEffect(() => {
+    if (!verifyPolicyIntegrity()) {
+      console.error('🚨 TXC POLICY INTEGRITY VIOLATION IN useTXCMining! 🚨');
+    }
+  }, []);
+
   const canEarnReward = async (action: string): Promise<boolean> => {
     if (!user) return false;
 
-    const reward = TXC_MINING_REWARDS[action];
+    const reward = OFFICIAL_TXC_MINING_POLICY[action];
     if (!reward) return false;
 
     // Check cooldown
@@ -152,7 +70,7 @@ export const useTXCMining = () => {
       return false; // Silent fail when not authenticated
     }
 
-    const reward = TXC_MINING_REWARDS[action];
+    const reward = OFFICIAL_TXC_MINING_POLICY[action];
     if (!reward) {
       return false;
     }
@@ -211,11 +129,11 @@ export const useTXCMining = () => {
   };
 
   const getTXCReward = (action: string): number => {
-    return TXC_MINING_REWARDS[action]?.amount || 0;
+    return OFFICIAL_TXC_MINING_POLICY[action]?.amount || 0;
   };
 
   const getAllRewards = (): TXCReward[] => {
-    return Object.values(TXC_MINING_REWARDS);
+    return Object.values(OFFICIAL_TXC_MINING_POLICY);
   };
 
   const getAvailableActions = async (): Promise<string[]> => {
@@ -223,7 +141,7 @@ export const useTXCMining = () => {
 
     const availableActions: string[] = [];
     
-    for (const action of Object.keys(TXC_MINING_REWARDS)) {
+    for (const action of Object.keys(OFFICIAL_TXC_MINING_POLICY)) {
       const canEarn = await canEarnReward(action);
       if (canEarn) {
         availableActions.push(action);

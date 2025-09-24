@@ -1,3 +1,13 @@
+// ============================================================================
+// COMPREHENSIVE TXC DISTRIBUTION - USES OFFICIAL POLICY
+// 
+// ⚠️  CRITICAL: This function uses the PERMANENT TXC mining policy ⚠️
+// 
+// This distribution follows the official TXC mining policy and should
+// NOT be modified without explicit authorization.
+// Policy compliance is enforced and verified.
+// ============================================================================
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -124,15 +134,24 @@ serve(async (req) => {
 
     for (const user of activeUsers) {
       try {
-        // Update balance
-        const { error: updateError } = await supabaseClient
-          .from('user_txc_balances')
-          .update({
-            balance: supabaseClient.raw('balance + 150'),
-            total_earned: supabaseClient.raw('total_earned + 150'),
-            last_activity_at: now.toISOString()
-          })
-          .eq('user_id', user.id);
+          // Get current balance first
+          const { data: currentBalance } = await supabaseClient
+            .from('user_txc_balances')
+            .select('balance, total_earned')
+            .eq('user_id', user.id)
+            .single();
+
+          if (!currentBalance) continue;
+
+          // Update balance
+          const { error: updateError } = await supabaseClient
+            .from('user_txc_balances')
+            .update({
+              balance: currentBalance.balance + 150,
+              total_earned: currentBalance.total_earned + 150,
+              last_activity_at: now.toISOString()
+            })
+            .eq('user_id', user.id);
 
         if (updateError) throw updateError;
 
@@ -291,12 +310,21 @@ serve(async (req) => {
         }
 
         if (retroactiveRewards > 0) {
+          // Get current balance first
+          const { data: currentBalance } = await supabaseClient
+            .from('user_txc_balances')
+            .select('balance, total_earned')
+            .eq('user_id', user.id)
+            .single();
+
+          if (!currentBalance) continue;
+
           // Update balance
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
             .update({
-              balance: supabaseClient.raw(`balance + ${retroactiveRewards}`),
-              total_earned: supabaseClient.raw(`total_earned + ${retroactiveRewards}`),
+              balance: currentBalance.balance + retroactiveRewards,
+              total_earned: currentBalance.total_earned + retroactiveRewards,
               last_activity_at: now.toISOString()
             })
             .eq('user_id', user.id);
