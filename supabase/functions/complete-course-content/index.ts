@@ -145,10 +145,10 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
     const currentCourseCount = existingCourses?.length || 0;
     console.log(`Found ${currentCourseCount} existing courses`);
 
-    // Create additional courses if we need to reach the target
+    // Always create additional courses if we need to reach the target
     if (currentCourseCount < courseLimit) {
       const coursesToCreate = courseLimit - currentCourseCount;
-      console.log(`Creating ${coursesToCreate} additional courses to reach ${courseLimit} total`);
+      console.log(`🚀 FORCE CREATING ${coursesToCreate} additional courses to reach ${courseLimit} total`);
       
       const additionalCourses = [
         { title: 'Advanced AI & Machine Learning', category: 'Technology', subcategory: 'Artificial Intelligence', level: 'Advanced', duration: '12 weeks' },
@@ -232,21 +232,13 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
       try {
         console.log(`Processing course: ${course.title}`);
         
-        // Check if course already has complete content (3+ modules with lessons)
+        // Force completion - always get existing modules for cleanup
         const { data: existingModules } = await supabaseClient
           .from('course_modules')
           .select('id, course_lessons(id)')
           .eq('course_id', course.id);
 
-        // Only skip if course has 3+ modules with lessons
-        const hasCompleteContent = existingModules && existingModules.length >= 3 && 
-          existingModules.every(module => module.course_lessons && module.course_lessons.length > 0);
-        
-        if (hasCompleteContent) {
-          console.log(`Course ${course.title} already has complete content, skipping...`);
-          processedCourses++;
-          continue;
-        }
+        console.log(`Force completing course: ${course.title} (existing modules: ${existingModules?.length || 0})`)
 
         // Delete any existing incomplete modules/lessons first
         if (existingModules && existingModules.length > 0) {
