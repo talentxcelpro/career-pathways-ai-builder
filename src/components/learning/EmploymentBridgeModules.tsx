@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { LessonViewer } from './LessonViewer';
 import { 
   FileText, 
   Users, 
@@ -31,6 +32,8 @@ interface Module {
     title: string;
     type: 'video' | 'pdf' | 'quiz' | 'assignment';
     duration: string;
+    description?: string;
+    videoUrl?: string;
     completed?: boolean;
   }>;
 }
@@ -45,12 +48,48 @@ const employmentBridgeModules: Module[] = [
     icon: <FileText className="h-5 w-5" />,
     difficulty: 'Beginner',
     lessons: [
-      { id: 'resume-basics', title: 'Resume Fundamentals', type: 'video', duration: '25 min' },
-      { id: 'cover-letter', title: 'Compelling Cover Letters', type: 'video', duration: '20 min' },
-      { id: 'linkedin-opt', title: 'LinkedIn Optimization', type: 'video', duration: '30 min' },
-      { id: 'portfolio', title: 'Digital Portfolio Creation', type: 'video', duration: '35 min' },
-      { id: 'resume-quiz', title: 'Resume Assessment', type: 'quiz', duration: '15 min' },
-      { id: 'resume-template', title: 'Templates & Examples', type: 'pdf', duration: '10 min' },
+      { 
+        id: 'resume-basics', 
+        title: 'Resume Fundamentals', 
+        type: 'video', 
+        duration: '25 min',
+        description: 'Learn the essential components of a compelling resume that gets noticed by employers.'
+      },
+      { 
+        id: 'cover-letter', 
+        title: 'Compelling Cover Letters', 
+        type: 'video', 
+        duration: '20 min',
+        description: 'Master the art of writing cover letters that complement your resume perfectly.'
+      },
+      { 
+        id: 'linkedin-opt', 
+        title: 'LinkedIn Optimization', 
+        type: 'video', 
+        duration: '30 min',
+        description: 'Optimize your LinkedIn profile to attract recruiters and expand your network.'
+      },
+      { 
+        id: 'portfolio', 
+        title: 'Digital Portfolio Creation', 
+        type: 'video', 
+        duration: '35 min',
+        description: 'Build an impressive digital portfolio that showcases your skills and achievements.'
+      },
+      { 
+        id: 'resume-quiz', 
+        title: 'Resume Assessment', 
+        type: 'quiz', 
+        duration: '15 min',
+        description: 'Test your knowledge of resume best practices and common mistakes to avoid.'
+      },
+      { 
+        id: 'resume-template', 
+        title: 'Templates & Examples', 
+        type: 'pdf', 
+        duration: '10 min',
+        description: 'Download professional resume templates and real-world examples.'
+      },
     ]
   },
   {
@@ -62,12 +101,48 @@ const employmentBridgeModules: Module[] = [
     icon: <Users className="h-5 w-5" />,
     difficulty: 'Intermediate',
     lessons: [
-      { id: 'communication', title: 'Effective Communication', type: 'video', duration: '30 min' },
-      { id: 'teamwork', title: 'Collaboration & Teamwork', type: 'video', duration: '25 min' },
-      { id: 'time-mgmt', title: 'Time Management Mastery', type: 'video', duration: '35 min' },
-      { id: 'leadership', title: 'Leadership Foundations', type: 'video', duration: '40 min' },
-      { id: 'conflict-resolution', title: 'Conflict Resolution', type: 'video', duration: '30 min' },
-      { id: 'soft-skills-quiz', title: 'Skills Assessment', type: 'quiz', duration: '20 min' },
+      { 
+        id: 'communication', 
+        title: 'Effective Communication', 
+        type: 'video', 
+        duration: '30 min',
+        description: 'Develop clear, confident communication skills for any workplace environment.'
+      },
+      { 
+        id: 'teamwork', 
+        title: 'Collaboration & Teamwork', 
+        type: 'video', 
+        duration: '25 min',
+        description: 'Learn how to work effectively in teams and build strong professional relationships.'
+      },
+      { 
+        id: 'time-mgmt', 
+        title: 'Time Management Mastery', 
+        type: 'video', 
+        duration: '35 min',
+        description: 'Master time management techniques to boost productivity and reduce stress.'
+      },
+      { 
+        id: 'leadership', 
+        title: 'Leadership Foundations', 
+        type: 'video', 
+        duration: '40 min',
+        description: 'Develop leadership skills that will set you apart in any role.'
+      },
+      { 
+        id: 'conflict-resolution', 
+        title: 'Conflict Resolution', 
+        type: 'video', 
+        duration: '30 min',
+        description: 'Learn strategies to handle workplace conflicts professionally and effectively.'
+      },
+      { 
+        id: 'soft-skills-quiz', 
+        title: 'Skills Assessment', 
+        type: 'quiz', 
+        duration: '20 min',
+        description: 'Evaluate your soft skills and identify areas for improvement.'
+      },
     ]
   },
   {
@@ -125,6 +200,8 @@ const employmentBridgeModules: Module[] = [
 
 export const EmploymentBridgeModules: React.FC = () => {
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [isLessonViewerOpen, setIsLessonViewerOpen] = useState(false);
   const { progress } = useLearningProgress();
 
   const getModuleProgress = (moduleId: string) => {
@@ -156,6 +233,17 @@ export const EmploymentBridgeModules: React.FC = () => {
     module => getModuleProgress(module.id) === 100
   ).length;
   const overallProgress = (completedModules / totalModules) * 100;
+
+  const handleLessonClick = (lesson: any, moduleTitle: string) => {
+    setSelectedLesson({ ...lesson, moduleTitle });
+    setIsLessonViewerOpen(true);
+  };
+
+  const handleLessonComplete = () => {
+    // Update lesson completion status
+    // In a real app, this would update the database
+    console.log('Lesson completed:', selectedLesson);
+  };
 
   return (
     <div className="space-y-6">
@@ -239,7 +327,8 @@ export const EmploymentBridgeModules: React.FC = () => {
                       {module.lessons.map((lesson, lessonIndex) => (
                         <div 
                           key={lesson.id}
-                          className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                          className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                          onClick={() => handleLessonClick(lesson, module.title)}
                         >
                           <div className="flex items-center space-x-3">
                             <div className="p-1.5 rounded bg-background">
@@ -256,6 +345,10 @@ export const EmploymentBridgeModules: React.FC = () => {
                             size="sm" 
                             variant={lesson.completed ? "outline" : "default"}
                             disabled={isLocked}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLessonClick(lesson, module.title);
+                            }}
                           >
                             {lesson.completed ? 'Completed' : 'Start'}
                           </Button>
@@ -281,6 +374,17 @@ export const EmploymentBridgeModules: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Lesson Viewer Modal */}
+      {selectedLesson && (
+        <LessonViewer
+          lesson={selectedLesson}
+          isOpen={isLessonViewerOpen}
+          onClose={() => setIsLessonViewerOpen(false)}
+          onComplete={handleLessonComplete}
+          moduleTitle={selectedLesson.moduleTitle}
+        />
+      )}
     </div>
   );
 };
