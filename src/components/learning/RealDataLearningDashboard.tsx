@@ -214,18 +214,20 @@ export const RealDataLearningDashboard: React.FC<RealDataLearningDashboardProps>
         <h3 className="text-xl font-bold text-foreground mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {quickActions.map((action) => (
-            <Card key={action.title} className="group hover:shadow-md transition-all cursor-pointer">
-              <CardContent className="p-4 text-center">
-                <div className={`w-12 h-12 mx-auto mb-3 rounded-xl ${action.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <action.icon className="h-6 w-6" />
-                </div>
-                <h4 className="font-semibold text-foreground mb-1 text-sm">{action.title}</h4>
-                <p className="text-xs text-muted-foreground">{action.description}</p>
-                <Button asChild variant="ghost" size="sm" className="mt-2 w-full">
-                  <Link to={action.href}>Go</Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <Link key={action.title} to={action.href}>
+              <Card className="group hover:shadow-md transition-all cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <div className={`w-12 h-12 mx-auto mb-3 rounded-xl ${action.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <action.icon className="h-6 w-6" />
+                  </div>
+                  <h4 className="font-semibold text-foreground mb-1 text-sm">{action.title}</h4>
+                  <p className="text-xs text-muted-foreground">{action.description}</p>
+                  <Button variant="ghost" size="sm" className="mt-2 w-full">
+                    Go
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

@@ -126,27 +126,27 @@ export const SmartLearningNav: React.FC = () => {
         <h2 className="text-2xl font-bold text-foreground mb-6">Start Your Journey</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {primaryFeatures.map((feature) => (
-            <Card key={feature.title} className={`group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 ${feature.color}`}>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                    <feature.icon className="h-6 w-6" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-foreground mb-1">{feature.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-3">{feature.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-muted-foreground">{feature.stats}</span>
-                      <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                        <Link to={feature.href}>
+            <Link key={feature.title} to={feature.href}>
+              <Card className={`group hover:shadow-lg transition-all duration-300 cursor-pointer border-2 ${feature.color}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                      <feature.icon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">{feature.title}</h3>
+                      <p className="text-muted-foreground text-sm mb-3">{feature.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground">{feature.stats}</span>
+                        <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
                           Explore <ChevronRight className="h-4 w-4 ml-1" />
-                        </Link>
-                      </Button>
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>
@@ -156,29 +156,29 @@ export const SmartLearningNav: React.FC = () => {
         <h2 className="text-2xl font-bold text-foreground mb-6">Discover Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {discoveryFeatures.map((feature) => (
-            <Card key={feature.title} className="group hover:shadow-md transition-all duration-300 cursor-pointer">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <feature.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-medium text-foreground text-sm">{feature.title}</h3>
-                      <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
-                        {feature.badge}
-                      </span>
+            <Link key={feature.title} to={feature.href}>
+              <Card className="group hover:shadow-md transition-all duration-300 cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <feature.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
                     </div>
-                    <p className="text-xs text-muted-foreground">{feature.description}</p>
-                  </div>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to={feature.href}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-medium text-foreground text-sm">{feature.title}</h3>
+                        <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                          {feature.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{feature.description}</p>
+                    </div>
+                    <Button variant="ghost" size="sm">
                       <ChevronRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>

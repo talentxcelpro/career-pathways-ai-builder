@@ -127,41 +127,39 @@ export const CoreLearningNav: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {coreFeatures.map((feature) => (
-          <Card 
-            key={feature.id} 
-            className={`group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 ${feature.color} hover:scale-105`}
-          >
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className={`w-14 h-14 rounded-2xl ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm`}>
-                    <feature.icon className={`h-7 w-7 ${feature.iconColor}`} />
+          <Link key={feature.id} to={feature.href}>
+            <Card 
+              className={`group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 ${feature.color} hover:scale-105`}
+            >
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className={`w-14 h-14 rounded-2xl ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm`}>
+                      <feature.icon className={`h-7 w-7 ${feature.iconColor}`} />
+                    </div>
+                    {feature.badge && (
+                      <Badge variant="secondary" className="text-xs font-medium bg-primary/10 text-primary border-primary/20">
+                        {feature.badge}
+                      </Badge>
+                    )}
                   </div>
-                  {feature.badge && (
-                    <Badge variant="secondary" className="text-xs font-medium bg-primary/10 text-primary border-primary/20">
-                      {feature.badge}
-                    </Badge>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold">{feature.title}</h3>
-                  <p className="text-sm opacity-80">{feature.description}</p>
-                </div>
-                
-                <Button 
-                  asChild 
-                  variant="ghost" 
-                  className="w-full justify-between group-hover:bg-white/50 transition-colors"
-                >
-                  <Link to={feature.href}>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold">{feature.title}</h3>
+                    <p className="text-sm opacity-80">{feature.description}</p>
+                  </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-between group-hover:bg-white/50 transition-colors"
+                  >
                     <span>Explore</span>
                     <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
