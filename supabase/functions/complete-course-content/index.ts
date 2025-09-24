@@ -128,54 +128,136 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
   let createdModules = 0;
   let createdLessons = 0;
   let integratedVideos = 0;
+  let newCoursesCreated = 0;
   
   try {
-    // Get courses that need completion
-    const { data: courses, error: coursesError } = await supabaseClient
+    // First, get existing courses
+    const { data: existingCourses, error: coursesError } = await supabaseClient
       .from('courses')
       .select('*')
-      .eq('is_active', true)
-      .limit(courseLimit);
+      .eq('is_active', true);
 
     if (coursesError) {
       console.error('Error fetching courses:', coursesError);
       throw new Error(`Failed to fetch courses: ${coursesError.message}`);
     }
 
-    if (!courses || courses.length === 0) {
-      console.log('No active courses found to process');
-      return {
-        success: true,
-        message: 'No active courses found to process',
-        stats: {
-          courses_processed: 0,
-          modules_created: 0,
-          lessons_created: 0,
-          videos_integrated: 0
+    const currentCourseCount = existingCourses?.length || 0;
+    console.log(`Found ${currentCourseCount} existing courses`);
+
+    // Create additional courses if we need to reach the target
+    if (currentCourseCount < courseLimit) {
+      const coursesToCreate = courseLimit - currentCourseCount;
+      console.log(`Creating ${coursesToCreate} additional courses to reach ${courseLimit} total`);
+      
+      const additionalCourses = [
+        { title: 'Advanced AI & Machine Learning', category: 'Technology', subcategory: 'Artificial Intelligence', level: 'Advanced', duration: '12 weeks' },
+        { title: 'Blockchain Development Mastery', category: 'Technology', subcategory: 'Blockchain', level: 'Intermediate', duration: '10 weeks' },
+        { title: 'DevOps Engineering Complete', category: 'Technology', subcategory: 'DevOps', level: 'Intermediate', duration: '8 weeks' },
+        { title: 'Mobile App Development with Flutter', category: 'Technology', subcategory: 'Mobile Development', level: 'Beginner', duration: '14 weeks' },
+        { title: 'Data Engineering with Apache Spark', category: 'Technology', subcategory: 'Data Engineering', level: 'Advanced', duration: '12 weeks' },
+        { title: 'Advanced Digital Marketing Analytics', category: 'Marketing', subcategory: 'Digital Marketing', level: 'Advanced', duration: '8 weeks' },
+        { title: 'E-commerce Business Strategy', category: 'Business', subcategory: 'Strategy', level: 'Intermediate', duration: '6 weeks' },
+        { title: 'Financial Technology Innovation', category: 'Finance', subcategory: 'FinTech', level: 'Advanced', duration: '10 weeks' },
+        { title: 'Supply Chain Management Digital', category: 'Business', subcategory: 'Operations', level: 'Intermediate', duration: '8 weeks' },
+        { title: 'Advanced Product Design Thinking', category: 'Design', subcategory: 'Product Design', level: 'Advanced', duration: '10 weeks' },
+        { title: 'Game Development with Unity', category: 'Technology', subcategory: 'Game Development', level: 'Intermediate', duration: '16 weeks' },
+        { title: 'Quantum Computing Fundamentals', category: 'Technology', subcategory: 'Quantum Computing', level: 'Advanced', duration: '14 weeks' },
+        { title: 'Advanced React Native Development', category: 'Technology', subcategory: 'Mobile Development', level: 'Advanced', duration: '12 weeks' },
+        { title: 'IoT Systems Architecture', category: 'Technology', subcategory: 'IoT', level: 'Advanced', duration: '10 weeks' },
+        { title: 'Advanced Vue.js Development', category: 'Technology', subcategory: 'Frontend', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Microservices with Spring Boot', category: 'Technology', subcategory: 'Backend', level: 'Advanced', duration: '12 weeks' },
+        { title: 'Advanced Angular Development', category: 'Technology', subcategory: 'Frontend', level: 'Advanced', duration: '10 weeks' },
+        { title: 'GraphQL API Development', category: 'Technology', subcategory: 'API Development', level: 'Intermediate', duration: '6 weeks' },
+        { title: 'Advanced Docker & Kubernetes', category: 'Technology', subcategory: 'DevOps', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Serverless Architecture Complete', category: 'Technology', subcategory: 'Cloud Computing', level: 'Advanced', duration: '10 weeks' },
+        { title: 'Advanced PostgreSQL Database', category: 'Technology', subcategory: 'Database', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Redis & Caching Strategies', category: 'Technology', subcategory: 'Database', level: 'Intermediate', duration: '6 weeks' },
+        { title: 'Advanced Git & Version Control', category: 'Technology', subcategory: 'Development Tools', level: 'Intermediate', duration: '4 weeks' },
+        { title: 'Advanced Testing Strategies', category: 'Technology', subcategory: 'Quality Assurance', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Performance Optimization Mastery', category: 'Technology', subcategory: 'Performance', level: 'Advanced', duration: '10 weeks' },
+        { title: 'Advanced API Security', category: 'Technology', subcategory: 'Security', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Advanced MongoDB Database', category: 'Technology', subcategory: 'Database', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Advanced TypeScript Development', category: 'Technology', subcategory: 'Programming', level: 'Advanced', duration: '6 weeks' },
+        { title: 'Advanced Sass & CSS Techniques', category: 'Design', subcategory: 'Frontend Design', level: 'Intermediate', duration: '6 weeks' },
+        { title: 'Advanced Webpack Configuration', category: 'Technology', subcategory: 'Build Tools', level: 'Advanced', duration: '4 weeks' },
+        { title: 'Advanced Jest Testing Framework', category: 'Technology', subcategory: 'Testing', level: 'Advanced', duration: '6 weeks' },
+        { title: 'Advanced Electron Desktop Apps', category: 'Technology', subcategory: 'Desktop Development', level: 'Advanced', duration: '10 weeks' },
+        { title: 'Advanced WebRTC Communication', category: 'Technology', subcategory: 'Real-time Communication', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Advanced Progressive Web Apps', category: 'Technology', subcategory: 'Web Development', level: 'Advanced', duration: '8 weeks' },
+        { title: 'Advanced WordPress Development', category: 'Technology', subcategory: 'CMS Development', level: 'Advanced', duration: '10 weeks' }
+      ];
+
+      for (let i = 0; i < Math.min(coursesToCreate, additionalCourses.length); i++) {
+        const courseData = additionalCourses[i];
+        const { error: createError } = await supabaseClient
+          .from('courses')
+          .insert({
+            title: courseData.title,
+            description: `Comprehensive course covering ${courseData.title.toLowerCase()} with hands-on projects and real-world applications.`,
+            instructor_name: 'TalentXcel Expert',
+            level: courseData.level,
+            duration: courseData.duration,
+            category: courseData.category,
+            subcategory: courseData.subcategory,
+            is_active: true,
+            is_featured: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+
+        if (createError) {
+          console.error(`Error creating course ${courseData.title}:`, createError);
+        } else {
+          newCoursesCreated++;
+          console.log(`✅ Created new course: ${courseData.title}`);
         }
-      };
+      }
     }
 
-    console.log(`Found ${courses.length} courses to process`);
+    // Now get all courses (including newly created ones) to process
+    const { data: allCourses, error: allCoursesError } = await supabaseClient
+      .from('courses')
+      .select('*')
+      .eq('is_active', true)
+      .limit(courseLimit);
 
-    for (const course of courses) {
+    if (allCoursesError) {
+      throw new Error(`Failed to fetch all courses: ${allCoursesError.message}`);
+    }
+
+    console.log(`Processing ${allCourses?.length || 0} courses for content completion`);
+
+    for (const course of allCourses || []) {
       try {
         console.log(`Processing course: ${course.title}`);
         
-        // Check if course already has modules
+        // Check if course already has complete content (3+ modules with lessons)
         const { data: existingModules } = await supabaseClient
           .from('course_modules')
           .select('id, course_lessons(id)')
           .eq('course_id', course.id);
 
-        // Skip if course already has modules with lessons
-        if (existingModules && existingModules.length > 0) {
-          console.log(`Course ${course.title} already has modules, skipping...`);
+        // Only skip if course has 3+ modules with lessons
+        const hasCompleteContent = existingModules && existingModules.length >= 3 && 
+          existingModules.every(module => module.course_lessons && module.course_lessons.length > 0);
+        
+        if (hasCompleteContent) {
+          console.log(`Course ${course.title} already has complete content, skipping...`);
           processedCourses++;
           continue;
         }
 
-        // Create a basic module structure for each course
+        // Delete any existing incomplete modules/lessons first
+        if (existingModules && existingModules.length > 0) {
+          console.log(`Cleaning up incomplete content for ${course.title}...`);
+          for (const module of existingModules) {
+            await supabaseClient.from('course_lessons').delete().eq('module_id', module.id);
+          }
+          await supabaseClient.from('course_modules').delete().eq('course_id', course.id);
+        }
+
+        // Create a complete module structure for each course
         const modules = [
           {
             title: 'Introduction & Fundamentals',
@@ -280,12 +362,13 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
 
     const result = {
       success: true,
-      message: `Successfully processed ${processedCourses} courses`,
+      message: `Successfully processed ${processedCourses} courses (${newCoursesCreated} new courses created)`,
       stats: {
         courses_processed: processedCourses,
         modules_created: createdModules,
         lessons_created: createdLessons,
-        videos_integrated: integratedVideos
+        videos_integrated: integratedVideos,
+        new_courses_created: newCoursesCreated
       }
     };
 
