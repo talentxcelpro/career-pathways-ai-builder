@@ -37,10 +37,10 @@ export const VideoHealthMonitor: React.FC = () => {
   const fixBrokenVideos = async () => {
     setIsScanning(true);
     try {
-      console.log('🔧 Calling fix-video-urls edge function...');
+      console.log('🔧 Calling fix-course-videos edge function...');
       
-      const { data, error } = await supabase.functions.invoke('fix-video-urls', {
-        body: {},
+      const { data, error } = await supabase.functions.invoke('fix-course-videos', {
+        body: { action: 'fix_broken_videos' },
         headers: {
           'Content-Type': 'application/json',
         }
