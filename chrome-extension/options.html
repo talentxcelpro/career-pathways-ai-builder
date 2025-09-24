@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentXcel Extension Settings</title>
+    <link rel="stylesheet" href="styles/options.css">
+</head>
+<body>
+    <div class="options-container">
+        <!-- Header -->
+        <header class="options-header">
+            <div class="header-content">
+                <img src="icons/icon48.png" alt="TalentXcel" class="logo">
+                <div class="header-text">
+                    <h1>TalentXcel Extension Settings</h1>
+                    <p>Customize your career enhancement experience</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="options-nav">
+            <button class="nav-tab active" data-tab="general">General</button>
+            <button class="nav-tab" data-tab="notifications">Notifications</button>
+            <button class="nav-tab" data-tab="automation">Automation</button>
+            <button class="nav-tab" data-tab="privacy">Privacy</button>
+            <button class="nav-tab" data-tab="advanced">Advanced</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="options-content">
+            <!-- General Settings -->
+            <section class="tab-content active" id="general">
+                <h2>General Settings</h2>
+                
+                <div class="setting-group">
+                    <h3>Account Information</h3>
+                    <div class="setting-item">
+                        <div class="account-status" id="accountStatus">
+                            <div class="status-indicator offline" id="statusIndicator"></div>
+                            <span class="status-text" id="statusText">Not Connected</span>
+                        </div>
+                        <button class="btn btn-primary" id="connectAccount">Connect to TalentXcel</button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Extension Behavior</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="autoStart" checked>
+                            <span class="checkmark"></span>
+                            Auto-start extension on browser startup
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="backgroundSync" checked>
+                            <span class="checkmark"></span>
+                            Enable background profile synchronization
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="contextualUI" checked>
+                            <span class="checkmark"></span>
+                            Show contextual UI on supported sites
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Data Sync Frequency</h3>
+                    <div class="setting-item">
+                        <label for="syncFrequency">Sync interval:</label>
+                        <select id="syncFrequency">
+                            <option value="5">Every 5 minutes</option>
+                            <option value="15" selected>Every 15 minutes</option>
+                            <option value="30">Every 30 minutes</option>
+                            <option value="60">Every hour</option>
+                            <option value="0">Manual only</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications Settings -->
+            <section class="tab-content" id="notifications">
+                <h2>Notification Settings</h2>
+                
+                <div class="setting-group">
+                    <h3>Job Alerts</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="jobMatchNotifications" checked>
+                            <span class="checkmark"></span>
+                            Notify me about new job matches
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="applicationUpdates" checked>
+                            <span class="checkmark"></span>
+                            Application status updates
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="deadlineReminders" checked>
+                            <span class="checkmark"></span>
+                            Application deadline reminders
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>TXC Token Notifications</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="tokenEarnings" checked>
+                            <span class="checkmark"></span>
+                            Notify when I earn TXC tokens
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="milestoneRewards" checked>
+                            <span class="checkmark"></span>
+                            Milestone and achievement rewards
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Platform Updates</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="profileUpdates">
+                            <span class="checkmark"></span>
+                            Profile improvement suggestions
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="networkUpdates">
+                            <span class="checkmark"></span>
+                            Network and connection updates
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Automation Settings -->
+            <section class="tab-content" id="automation">
+                <h2>Automation Settings</h2>
+                
+                <div class="setting-group">
+                    <h3>Auto-fill Features</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="autoFillEnabled" checked>
+                            <span class="checkmark"></span>
+                            Enable auto-fill for job applications
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="smartFormDetection" checked>
+                            <span class="checkmark"></span>
+                            Smart form field detection
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="customCoverLetters" checked>
+                            <span class="checkmark"></span>
+                            Generate custom cover letters
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Profile Synchronization</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="linkedinAutoSync" checked>
+                            <span class="checkmark"></span>
+                            Auto-sync LinkedIn profile changes
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="naukriAutoSync" checked>
+                            <span class="checkmark"></span>
+                            Auto-sync Naukri profile changes
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="socialMediaSync">
+                            <span class="checkmark"></span>
+                            Sync social media profiles (Twitter, Instagram)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Smart Suggestions</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="aiSuggestions" checked>
+                            <span class="checkmark"></span>
+                            Enable AI-powered suggestions
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="skillRecommendations" checked>
+                            <span class="checkmark"></span>
+                            Skill improvement recommendations
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Privacy Settings -->
+            <section class="tab-content" id="privacy">
+                <h2>Privacy & Security</h2>
+                
+                <div class="setting-group">
+                    <h3>Data Collection</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="analyticsData" checked>
+                            <span class="checkmark"></span>
+                            Allow anonymous usage analytics
+                        </label>
+                        <p class="setting-description">
+                            Help us improve the extension by sharing anonymous usage data
+                        </p>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="performanceData" checked>
+                            <span class="checkmark"></span>
+                            Share performance and error data
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Data Storage</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="localCache" checked>
+                            <span class="checkmark"></span>
+                            Cache data locally for faster performance
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="cacheRetention">Cache retention period:</label>
+                        <select id="cacheRetention">
+                            <option value="1">1 day</option>
+                            <option value="7" selected>7 days</option>
+                            <option value="30">30 days</option>
+                            <option value="0">Never expire</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Security</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="secureConnection" checked disabled>
+                            <span class="checkmark"></span>
+                            Always use secure connections (HTTPS)
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="biometricAuth">
+                            <span class="checkmark"></span>
+                            Enable biometric authentication (if supported)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Data Management</h3>
+                    <div class="setting-item">
+                        <button class="btn btn-secondary" id="exportData">Export My Data</button>
+                        <button class="btn btn-danger" id="clearData">Clear All Data</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advanced Settings -->
+            <section class="tab-content" id="advanced">
+                <h2>Advanced Settings</h2>
+                
+                <div class="setting-group">
+                    <h3>API Configuration</h3>
+                    <div class="setting-item">
+                        <label for="apiEndpoint">API Endpoint:</label>
+                        <input type="text" id="apiEndpoint" value="https://dthlgsnakhoftinssokm.supabase.co" readonly>
+                    </div>
+                    <div class="setting-item">
+                        <label for="requestTimeout">Request timeout (seconds):</label>
+                        <input type="number" id="requestTimeout" value="30" min="5" max="120">
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Debug Options</h3>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="debugMode">
+                            <span class="checkmark"></span>
+                            Enable debug mode
+                        </label>
+                        <p class="setting-description">
+                            Enables detailed logging for troubleshooting
+                        </p>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="verboseLogging">
+                            <span class="checkmark"></span>
+                            Verbose logging
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Extension Information</h3>
+                    <div class="setting-item">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Version:</label>
+                                <span id="extensionVersion">1.0.0</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Updated:</label>
+                                <span id="lastUpdated">--</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Install Date:</label>
+                                <span id="installDate">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Reset Options</h3>
+                    <div class="setting-item">
+                        <button class="btn btn-secondary" id="resetSettings">Reset to Default Settings</button>
+                        <button class="btn btn-danger" id="factoryReset">Factory Reset</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="options-footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://talentxcel.in/privacy" target="_blank">Privacy Policy</a>
+                    <a href="https://talentxcel.in/terms" target="_blank">Terms of Service</a>
+                    <a href="https://talentxcel.in/support" target="_blank">Support</a>
+                </div>
+                <div class="footer-info">
+                    <p>&copy; 2024 TalentXcel. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Save Status -->
+        <div class="save-status" id="saveStatus" style="display: none;">
+            <span class="save-text">Settings saved!</span>
+        </div>
+    </div>
+
+    <script src="scripts/options.js"></script>
+</body>
+</html>

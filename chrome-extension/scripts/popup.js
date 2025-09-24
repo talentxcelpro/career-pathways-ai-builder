@@ -125,9 +125,13 @@ class TalentXcelPopup {
 
   async loadDashboardData() {
     try {
+      const authData = await chrome.storage.local.get(['txc_user']);
+      if (!authData.txc_user) return;
+
       // Load TXC balance
       const balanceResponse = await chrome.runtime.sendMessage({
-        action: 'getTXCBalance'
+        action: 'getTXCBalance',
+        userId: authData.txc_user.id
       });
 
       if (balanceResponse?.success) {
@@ -137,7 +141,8 @@ class TalentXcelPopup {
 
       // Load profile completion
       const profileResponse = await chrome.runtime.sendMessage({
-        action: 'getProfileCompletion'
+        action: 'getProfileCompletion',
+        userId: authData.txc_user.id
       });
 
       if (profileResponse?.success) {
@@ -146,6 +151,11 @@ class TalentXcelPopup {
     } catch (error) {
       console.error('Dashboard data loading error:', error);
     }
+  }
+
+  updateProfileCompletion(data) {
+    // You can add UI to show profile completion percentage
+    console.log('Profile completion:', data);
   }
 
   async loadNotifications() {

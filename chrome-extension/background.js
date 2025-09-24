@@ -83,6 +83,61 @@ class TalentXcelBackground {
           sendResponse({ success: true, data: notifications });
           break;
 
+        case 'getUserProfile':
+          const profileResult = await this.callChromeExtensionAPI('getUserProfile');
+          sendResponse(profileResult);
+          break;
+
+        case 'getTXCBalance':
+          const balanceResult = await this.callChromeExtensionAPI('getTXCBalance', { userId: request.userId });
+          sendResponse(balanceResult);
+          break;
+
+        case 'getProfileCompletion':
+          const completionResult = await this.callChromeExtensionAPI('getProfileCompletion', { userId: request.userId });
+          sendResponse(completionResult);
+          break;
+
+        case 'analyzeJobMatch':
+          const matchResult = await this.callChromeExtensionAPI('analyzeJobMatch', request);
+          sendResponse(matchResult);
+          break;
+
+        case 'analyzeBrand':
+          const brandResult = await this.callChromeExtensionAPI('analyzeBrand', request);
+          sendResponse(brandResult);
+          break;
+
+        case 'generateContentIdeas':
+          const contentResult = await this.callChromeExtensionAPI('generateContentIdeas', request);
+          sendResponse(contentResult);
+          break;
+
+        case 'analyzeNetworkGrowth':
+          const networkResult = await this.callChromeExtensionAPI('analyzeNetworkGrowth', request);
+          sendResponse(networkResult);
+          break;
+
+        case 'performSmartJobMatching':
+          const smartMatchResult = await this.callChromeExtensionAPI('performSmartJobMatching', request);
+          sendResponse(smartMatchResult);
+          break;
+
+        case 'analyzeJobFit':
+          const jobFitResult = await this.callChromeExtensionAPI('analyzeJobFit', request);
+          sendResponse(jobFitResult);
+          break;
+
+        case 'autoFillJobApplication':
+          const autoFillResult = await this.callChromeExtensionAPI('autoFillJobApplication', request);
+          sendResponse(autoFillResult);
+          break;
+
+        case 'generateInviteLink':
+          const inviteResult = await this.callChromeExtensionAPI('generateInviteLink', request);
+          sendResponse(inviteResult);
+          break;
+
         default:
           sendResponse({ success: false, error: 'Unknown action' });
       }
@@ -126,6 +181,31 @@ class TalentXcelBackground {
     } catch (error) {
       console.error('Authentication error:', error);
       throw error;
+    }
+  }
+
+  async callChromeExtensionAPI(action, payload = {}) {
+    try {
+      const authData = await chrome.storage.local.get(['txc_auth_token']);
+      
+      const response = await fetch(`${this.API_BASE}/functions/v1/chrome-extension-api`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.txc_auth_token}`,
+          'apikey': this.ANON_KEY
+        },
+        body: JSON.stringify({
+          action,
+          authToken: authData.txc_auth_token,
+          ...payload
+        })
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error('Chrome Extension API error:', error);
+      return { success: false, error: error.message };
     }
   }
 
