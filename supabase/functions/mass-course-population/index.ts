@@ -3,7 +3,13 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 }
+
+// Timeout configuration
+const FUNCTION_TIMEOUT = 45000; // 45 seconds
+const BATCH_SIZE = 3; // Smaller batches for stability
+const BATCH_DELAY = 50; // Minimal delay between batches
 
 interface Course {
   title: string;
@@ -223,6 +229,97 @@ const COURSE_DATA: Course[] = [
   }
 ];
 
+// Create a timeout wrapper for the main operation
+async function withTimeout<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Operation timed out')), timeoutMs)
+  );
+  return Promise.race([operation, timeoutPromise]);
+}
+
+// Optimized batch processing function
+async function processBatchOptimized(
+  supabaseClient: any,
+  batch: Course[],
+  batchNumber: number
+): Promise<{ successCount: number; errorCount: number; errors: string[] }> {
+  console.log(`🔄 Processing batch ${batchNumber} (${batch.length} courses)`);
+  
+  let successCount = 0;
+  let errorCount = 0;
+  const errors: string[] = [];
+  
+  try {
+    // Get all existing course titles in one query
+    const existingTitles = batch.map(c => c.title);
+    const { data: existingCourses } = await supabaseClient
+      .from('courses')
+      .select('title')
+      .in('title', existingTitles);
+    
+    const existingTitleSet = new Set(existingCourses?.map((c: any) => c.title) || []);
+    
+    // Filter out existing courses
+    const newCourses = batch.filter(course => !existingTitleSet.has(course.title));
+    
+    if (newCourses.length === 0) {
+      console.log(`📋 All courses in batch ${batchNumber} already exist, skipping...`);
+      return { successCount: 0, errorCount: 0, errors: [] };
+    }
+    
+    // Insert all new courses in a single batch operation
+    const { data: insertedCourses, error: batchInsertError } = await supabaseClient
+      .from('courses')
+      .insert(newCourses)
+      .select('title');
+    
+    if (batchInsertError) {
+      console.error(`❌ Batch insert error for batch ${batchNumber}:`, batchInsertError);
+      
+      // Fallback: try inserting courses individually
+      console.log(`🔄 Falling back to individual inserts for batch ${batchNumber}`);
+      
+      for (const course of newCourses) {
+        try {
+          const { error: individualError } = await supabaseClient
+            .from('courses')
+            .insert([course]);
+          
+          if (individualError) {
+            console.error(`❌ Error inserting "${course.title}":`, individualError);
+            errors.push(`${course.title}: ${individualError.message}`);
+            errorCount++;
+          } else {
+            console.log(`✅ Created: "${course.title}"`);
+            successCount++;
+          }
+        } catch (err: any) {
+          console.error(`💥 Exception inserting "${course.title}":`, err);
+          errors.push(`${course.title}: ${err.message}`);
+          errorCount++;
+        }
+      }
+    } else {
+      // Batch insert successful
+      successCount = insertedCourses?.length || newCourses.length;
+      console.log(`✅ Batch ${batchNumber} completed: ${successCount} courses created`);
+    }
+    
+    // Log skipped courses
+    const skippedCount = batch.length - newCourses.length;
+    if (skippedCount > 0) {
+      console.log(`📋 Skipped ${skippedCount} existing courses in batch ${batchNumber}`);
+    }
+    
+  } catch (err: any) {
+    console.error(`💥 Batch ${batchNumber} processing failed:`, err);
+    errors.push(`Batch ${batchNumber}: ${err.message}`);
+    errorCount = batch.length;
+  }
+  
+  return { successCount, errorCount, errors };
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -230,96 +327,93 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Starting mass course population...');
+    console.log('🚀 Starting optimized mass course population...');
+    console.log(`📊 Configuration: ${COURSE_DATA.length} total courses, batch size: ${BATCH_SIZE}`);
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const operationPromise = (async () => {
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
 
-    let successCount = 0;
-    let errorCount = 0;
-    const errors: string[] = [];
+      let totalSuccessCount = 0;
+      let totalErrorCount = 0;
+      const allErrors: string[] = [];
+      
+      const startTime = Date.now();
 
-    // Process courses in batches
-    const batchSize = 5;
-    for (let i = 0; i < COURSE_DATA.length; i += batchSize) {
-      const batch = COURSE_DATA.slice(i, i + batchSize);
-      console.log(`Processing batch ${Math.floor(i / batchSize) + 1} with ${batch.length} courses...`);
-
-      for (const courseData of batch) {
-        try {
-          // Check if course already exists
-          const { data: existingCourse } = await supabaseClient
-            .from('courses')
-            .select('id')
-            .eq('title', courseData.title)
-            .single();
-
-          if (existingCourse) {
-            console.log(`Course "${courseData.title}" already exists, skipping...`);
-            continue;
-          }
-
-          // Insert new course
-          const { error: insertError } = await supabaseClient
-            .from('courses')
-            .insert([courseData]);
-
-          if (insertError) {
-            console.error(`Error inserting course "${courseData.title}":`, insertError);
-            errors.push(`${courseData.title}: ${insertError.message}`);
-            errorCount++;
-          } else {
-            console.log(`Successfully created course: "${courseData.title}"`);
-            successCount++;
-          }
-        } catch (error) {
-          console.error(`Exception processing course "${courseData.title}":`, error);
-          errors.push(`${courseData.title}: ${error.message}`);
-          errorCount++;
+      // Process courses in optimized batches
+      const totalBatches = Math.ceil(COURSE_DATA.length / BATCH_SIZE);
+      
+      for (let i = 0; i < COURSE_DATA.length; i += BATCH_SIZE) {
+        const batch = COURSE_DATA.slice(i, i + BATCH_SIZE);
+        const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
+        
+        console.log(`🔄 Processing batch ${batchNumber}/${totalBatches}...`);
+        
+        const batchResult = await processBatchOptimized(supabaseClient, batch, batchNumber);
+        
+        totalSuccessCount += batchResult.successCount;
+        totalErrorCount += batchResult.errorCount;
+        allErrors.push(...batchResult.errors);
+        
+        // Progress logging
+        const progress = ((i + BATCH_SIZE) / COURSE_DATA.length * 100).toFixed(1);
+        console.log(`📈 Progress: ${progress}% (${totalSuccessCount} created, ${totalErrorCount} errors)`);
+        
+        // Small delay between batches for stability
+        if (i + BATCH_SIZE < COURSE_DATA.length) {
+          await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
         }
       }
+      
+      const processingTime = Date.now() - startTime;
+      console.log(`⏱️ Total processing time: ${processingTime}ms`);
 
-      // Small delay between batches to avoid overwhelming the database
-      if (i + batchSize < COURSE_DATA.length) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-    }
+      const response = {
+        success: totalErrorCount === 0,
+        message: `Successfully created ${totalSuccessCount} courses`,
+        details: {
+          total_processed: COURSE_DATA.length,
+          successful: totalSuccessCount,
+          errors: totalErrorCount,
+          processing_time_ms: processingTime,
+          batches_processed: totalBatches,
+          error_details: allErrors.slice(0, 10) // Limit error details to prevent large responses
+        }
+      };
 
-    const response = {
-      success: errorCount === 0,
-      message: `Successfully created ${successCount} courses in batch New!`,
-      details: {
-        total_processed: COURSE_DATA.length,
-        successful: successCount,
-        errors: errorCount,
-        error_details: errors
-      }
-    };
+      console.log('✅ Course population completed:', response);
+      return response;
+    })();
 
-    console.log('Course population completed:', response);
+    // Apply timeout wrapper
+    const result = await withTimeout(operationPromise, FUNCTION_TIMEOUT);
 
     return new Response(
-      JSON.stringify(response),
+      JSON.stringify(result),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       },
     );
 
-  } catch (error) {
-    console.error('Mass course population failed:', error);
+  } catch (error: any) {
+    console.error('💥 Mass course population failed:', error);
+    
+    const isTimeout = error.message.includes('timed out');
+    const errorResponse = {
+      success: false,
+      error: error.message,
+      message: isTimeout ? 'Operation timed out - please try again' : 'Failed to populate courses',
+      timeout: isTimeout
+    };
     
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-        message: 'Failed to populate courses'
-      }),
+      JSON.stringify(errorResponse),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+        status: isTimeout ? 408 : 500,
       },
     );
   }
