@@ -215,6 +215,36 @@ serve(async (req) => {
           rewards.push('Profile completion (+300 TXC)');
         }
 
+        // Post likes since start date (+20 TXC each, max 50)
+        const { data: postLikes } = await supabaseClient
+          .from('post_likes')
+          .select('id, created_at')
+          .eq('user_id', user.id)
+          .gte('created_at', startDate.toISOString())
+          .order('created_at', { ascending: true })
+          .limit(50);
+
+        if (postLikes && postLikes.length > 0) {
+          const likeReward = postLikes.length * 20;
+          retroactiveRewards += likeReward;
+          rewards.push(`${postLikes.length} post likes (+${likeReward} TXC)`);
+        }
+
+        // Comments since start date (+20 TXC each, max 25)
+        const { data: comments } = await supabaseClient
+          .from('comments')
+          .select('id, created_at')
+          .eq('user_id', user.id)
+          .gte('created_at', startDate.toISOString())
+          .order('created_at', { ascending: true })
+          .limit(25);
+
+        if (comments && comments.length > 0) {
+          const commentReward = comments.length * 20;
+          retroactiveRewards += commentReward;
+          rewards.push(`${comments.length} comments (+${commentReward} TXC)`);
+        }
+
         // Job applications since start date (+90 TXC each, max 10)
         const { data: applications } = await supabaseClient
           .from('job_applications')
@@ -228,6 +258,36 @@ serve(async (req) => {
           const applicationReward = applications.length * 90;
           retroactiveRewards += applicationReward;
           rewards.push(`${applications.length} job applications (+${applicationReward} TXC)`);
+        }
+
+        // Profile views given since start date (+10 TXC each, max 20)
+        const { data: profileViews } = await supabaseClient
+          .from('profile_views')
+          .select('id, viewed_at')
+          .eq('viewer_id', user.id)
+          .gte('viewed_at', startDate.toISOString())
+          .order('viewed_at', { ascending: true })
+          .limit(20);
+
+        if (profileViews && profileViews.length > 0) {
+          const viewReward = profileViews.length * 10;
+          retroactiveRewards += viewReward;
+          rewards.push(`${profileViews.length} profile views (+${viewReward} TXC)`);
+        }
+
+        // User activities since start date (+10 TXC each, max 30)
+        const { data: activities } = await supabaseClient
+          .from('user_activities')
+          .select('id, created_at')
+          .eq('user_id', user.id)
+          .gte('created_at', startDate.toISOString())
+          .order('created_at', { ascending: true })
+          .limit(30);
+
+        if (activities && activities.length > 0) {
+          const activityReward = activities.length * 10;
+          retroactiveRewards += activityReward;
+          rewards.push(`${activities.length} platform activities (+${activityReward} TXC)`);
         }
 
         if (retroactiveRewards > 0) {
