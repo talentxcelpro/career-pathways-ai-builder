@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { LearningHeader } from '@/components/learning/LearningHeader';
 import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, MessageCircle, Heart, Share2, Calendar, Trophy, Star, BookOpen } from 'lucide-react';
+import { Users, MessageCircle, Heart, Share2, Calendar, Trophy, Star, BookOpen, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CommunityLearning = () => {
   React.useEffect(() => {

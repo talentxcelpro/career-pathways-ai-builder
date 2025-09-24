@@ -1,8 +1,8 @@
 import React from 'react';
-import { LearningHeader } from '@/components/learning/LearningHeader';
 import { MicrolearningHub } from '@/components/learning/microlearning/MicrolearningHub';
 import { updateMetaTags } from '@/utils/metaTags';
-import { Zap } from 'lucide-react';
+import { Zap, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const QuickLearningPage = () => {
   React.useEffect(() => {

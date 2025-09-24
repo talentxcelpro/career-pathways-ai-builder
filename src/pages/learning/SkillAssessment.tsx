@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { LearningHeader } from '@/components/learning/LearningHeader';
 import { updateMetaTags } from '@/utils/metaTags';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Clock, Star, Award, Play, Users } from 'lucide-react';
+import { CheckCircle, Clock, Star, Award, Play, Users, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SkillAssessment = () => {
   const [selectedAssessment, setSelectedAssessment] = useState<string | null>(null);
@@ -48,148 +48,227 @@ const SkillAssessment = () => {
       participants: 8930
     },
     {
-      id: 'node-backend',
-      title: 'Node.js Backend Development',
-      description: 'Server-side development with Node.js, Express, and database integration',
+      id: 'python-data-science',
+      title: 'Python for Data Science',
+      description: 'Evaluate your Python skills for data analysis, pandas, and machine learning',
       duration: 75,
       questions: 35,
       difficulty: 'Intermediate',
       passingScore: 75,
       attempts: 1,
-      bestScore: 72,
-      category: 'Backend',
-      skills: ['Express', 'APIs', 'Databases', 'Authentication', 'Security'],
-      participants: 11250
+      bestScore: 92,
+      category: 'Data Science',
+      skills: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Machine Learning'],
+      participants: 12580
     },
     {
-      id: 'python-data',
-      title: 'Python for Data Science',
-      description: 'Data manipulation, analysis, and visualization with Python libraries',
+      id: 'nodejs-backend',
+      title: 'Node.js Backend Development',
+      description: 'Test your knowledge of Node.js, Express, databases, and API development',
       duration: 90,
       questions: 40,
-      difficulty: 'Intermediate',
-      passingScore: 75,
-      attempts: 0,
-      bestScore: null,
-      category: 'Data Science',
-      skills: ['Pandas', 'NumPy', 'Matplotlib', 'Statistics', 'ML'],
-      participants: 9680
-    },
-    {
-      id: 'aws-cloud',
-      title: 'AWS Cloud Fundamentals',
-      description: 'Core AWS services, cloud architecture, and deployment strategies',
-      duration: 120,
-      questions: 50,
-      difficulty: 'Intermediate',
-      passingScore: 70,
-      attempts: 0,
-      bestScore: null,
-      category: 'Cloud',
-      skills: ['EC2', 'S3', 'Lambda', 'RDS', 'IAM'],
-      participants: 12100
-    },
-    {
-      id: 'cybersecurity',
-      title: 'Cybersecurity Essentials',
-      description: 'Security fundamentals, threat analysis, and protection strategies',
-      duration: 100,
-      questions: 45,
       difficulty: 'Advanced',
       passingScore: 80,
       attempts: 0,
       bestScore: null,
-      category: 'Security',
-      skills: ['Network Security', 'Encryption', 'Risk Assessment', 'Compliance'],
-      participants: 6890
+      category: 'Backend',
+      skills: ['Node.js', 'Express', 'MongoDB', 'REST APIs', 'Authentication'],
+      participants: 7340
+    },
+    {
+      id: 'css-advanced',
+      title: 'Advanced CSS & Design',
+      description: 'Master CSS Grid, Flexbox, animations, and responsive design principles',
+      duration: 50,
+      questions: 28,
+      difficulty: 'Intermediate',
+      passingScore: 70,
+      attempts: 3,
+      bestScore: 78,
+      category: 'Frontend',
+      skills: ['CSS Grid', 'Flexbox', 'Animations', 'Responsive Design', 'SASS'],
+      participants: 18920
     }
   ];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Beginner': return 'text-green-700 bg-green-100';
-      case 'Intermediate': return 'text-blue-700 bg-blue-100';
-      case 'Advanced': return 'text-red-700 bg-red-100';
-      default: return 'text-gray-700 bg-gray-100';
+      case 'Beginner': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Intermediate': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Advanced': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getScoreColor = (score: number, passingScore: number) => {
-    if (score >= passingScore) return 'text-green-600';
+    if (score >= passingScore + 10) return 'text-green-600';
+    if (score >= passingScore) return 'text-yellow-600';
     return 'text-red-600';
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LearningHeader />
-        
+  if (selectedAssessment) {
+    const assessment = assessments.find(a => a.id === selectedAssessment);
+    if (!assessment) return null;
+
+    return (
+      <div className="min-h-screen bg-background">
         {/* Page Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <Award className="h-8 w-8 text-blue-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Skill Assessment</h1>
-            <p className="text-gray-600">
-              Test and validate your skills with comprehensive assessments
-            </p>
+        <div className="bg-primary text-primary-foreground p-6">
+          <div className="max-w-4xl mx-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedAssessment(null)}
+              className="mb-4 text-primary-foreground hover:bg-primary-foreground/10"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Assessments
+            </Button>
+            <h1 className="text-2xl font-bold mb-2">{assessment.title}</h1>
+            <p className="text-primary-foreground/80 mb-4">{assessment.description}</p>
+            
+            <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center space-x-1">
+                <Clock className="h-4 w-4" />
+                <span>{assessment.duration} minutes</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Star className="h-4 w-4" />
+                <span>{assessment.questions} questions</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Award className="h-4 w-4" />
+                <span>{assessment.passingScore}% to pass</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Assessment Overview */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Assessment Interface */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Assessment Starting Soon</span>
+                <Badge className={getDifficultyColor(assessment.difficulty)}>
+                  {assessment.difficulty}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Instructions */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-900 mb-2">Instructions</h3>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• You have {assessment.duration} minutes to complete {assessment.questions} questions</li>
+                  <li>• You need {assessment.passingScore}% to pass this assessment</li>
+                  <li>• Once started, you cannot pause the timer</li>
+                  <li>• You can review and change answers before submitting</li>
+                </ul>
+              </div>
+
+              {/* Skills Covered */}
+              <div>
+                <h3 className="font-semibold mb-3">Skills Covered</h3>
+                <div className="flex flex-wrap gap-2">
+                  {assessment.skills.map((skill, index) => (
+                    <Badge key={index} variant="outline">{skill}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Previous Attempts */}
+              {assessment.attempts > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3">Previous Attempts</h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">
+                        Attempts: {assessment.attempts}/3
+                      </span>
+                      <span className={`font-semibold ${getScoreColor(assessment.bestScore!, assessment.passingScore)}`}>
+                        Best Score: {assessment.bestScore}%
+                      </span>
+                    </div>
+                    <Progress 
+                      value={assessment.bestScore!} 
+                      className="mt-2" 
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Start Button */}
+              <div className="flex justify-center pt-4">
+                <Button size="lg" className="px-8">
+                  <Play className="h-5 w-5 mr-2" />
+                  Start Assessment
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Page Header */}
+      <div className="bg-primary text-primary-foreground p-6">
+        <div className="max-w-6xl mx-auto">
+          <Link
+            to="/learning"
+            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Learning Hub
+          </Link>
+          <div className="flex items-center gap-3 mb-2">
+            <Award className="h-8 w-8" />
+            <h1 className="text-3xl font-bold">Skill Assessments</h1>
+          </div>
+          <p className="text-primary-foreground/80">Test and validate your skills with comprehensive assessments</p>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-blue-50 rounded-full">
-                  <Award className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Assessments Taken</p>
-                  <p className="text-2xl font-bold text-gray-900">3</p>
-                </div>
-              </div>
+            <CardContent className="p-4 text-center">
+              <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-600" />
+              <p className="text-2xl font-bold text-foreground">
+                {assessments.filter(a => a.bestScore && a.bestScore >= a.passingScore).length}
+              </p>
+              <p className="text-sm text-muted-foreground">Passed</p>
             </CardContent>
           </Card>
-          
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-50 rounded-full">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Passed</p>
-                  <p className="text-2xl font-bold text-gray-900">2</p>
-                </div>
-              </div>
+            <CardContent className="p-4 text-center">
+              <Clock className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+              <p className="text-2xl font-bold text-foreground">
+                {assessments.reduce((total, a) => total + a.attempts, 0)}
+              </p>
+              <p className="text-sm text-muted-foreground">Attempts</p>
             </CardContent>
           </Card>
-          
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-yellow-50 rounded-full">
-                  <Star className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Average Score</p>
-                  <p className="text-2xl font-bold text-gray-900">79%</p>
-                </div>
-              </div>
+            <CardContent className="p-4 text-center">
+              <Star className="h-8 w-8 mx-auto mb-2 text-yellow-600" />
+              <p className="text-2xl font-bold text-foreground">
+                {Math.round(assessments.filter(a => a.bestScore).reduce((avg, a, _, arr) => avg + a.bestScore! / arr.length, 0)) || 0}%
+              </p>
+              <p className="text-sm text-muted-foreground">Avg Score</p>
             </CardContent>
           </Card>
-          
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-purple-50 rounded-full">
-                  <Clock className="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Time Spent</p>
-                  <p className="text-2xl font-bold text-gray-900">4.2h</p>
-                </div>
-              </div>
+            <CardContent className="p-4 text-center">
+              <Award className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+              <p className="text-2xl font-bold text-foreground">
+                {assessments.filter(a => a.bestScore && a.bestScore >= 90).length}
+              </p>
+              <p className="text-sm text-muted-foreground">Excellence</p>
             </CardContent>
           </Card>
         </div>
@@ -197,54 +276,61 @@ const SkillAssessment = () => {
         {/* Assessments Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {assessments.map((assessment) => (
-            <Card key={assessment.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex justify-between items-start mb-2">
-                  <Badge className={getDifficultyColor(assessment.difficulty)}>
-                    {assessment.difficulty}
-                  </Badge>
-                  <Badge variant="outline">{assessment.category}</Badge>
-                </div>
-                <CardTitle className="text-lg">{assessment.title}</CardTitle>
-                <p className="text-sm text-gray-600">{assessment.description}</p>
-              </CardHeader>
-              <CardContent>
+            <Card key={assessment.id} className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
                 <div className="space-y-4">
-                  {/* Assessment Info */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-bold text-lg text-foreground mb-1">
+                        {assessment.title}
+                      </h3>
+                      <Badge className={getDifficultyColor(assessment.difficulty)}>
+                        {assessment.difficulty}
+                      </Badge>
+                    </div>
+                    {assessment.bestScore && assessment.bestScore >= assessment.passingScore && (
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground">
+                    {assessment.description}
+                  </p>
+
+                  {/* Stats */}
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4" />
                       <span>{assessment.duration} min</span>
                     </div>
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-2 text-gray-500" />
-                      <span>{assessment.participants.toLocaleString()}</span>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-4 w-4" />
+                      <span>{assessment.questions} questions</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Users className="h-4 w-4" />
+                      <span>{(assessment.participants / 1000).toFixed(0)}k</span>
                     </div>
                   </div>
 
-                  <div className="text-sm text-gray-600">
-                    {assessment.questions} questions • {assessment.passingScore}% to pass
-                  </div>
-
-                  {/* Previous Results */}
-                  {assessment.attempts > 0 && assessment.bestScore && (
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                  {/* Previous Score */}
+                  {assessment.bestScore && (
+                    <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Best Score</span>
-                        <span className={`text-sm font-bold ${getScoreColor(assessment.bestScore, assessment.passingScore)}`}>
+                        <span className="text-sm text-muted-foreground">Best Score</span>
+                        <span className={`font-semibold ${getScoreColor(assessment.bestScore, assessment.passingScore)}`}>
                           {assessment.bestScore}%
                         </span>
                       </div>
-                      <Progress value={assessment.bestScore} className="h-2" />
-                      <p className="text-xs text-gray-500 mt-1">
-                        {assessment.attempts} attempt{assessment.attempts > 1 ? 's' : ''}
-                      </p>
+                      <Progress value={assessment.bestScore} />
                     </div>
                   )}
 
-                  {/* Skills Covered */}
+                  {/* Skills */}
                   <div>
-                    <p className="text-sm font-medium mb-2">Skills Covered:</p>
+                    <p className="text-sm font-medium text-foreground mb-2">Skills</p>
                     <div className="flex flex-wrap gap-1">
                       {assessment.skills.slice(0, 3).map((skill, index) => (
                         <Badge key={index} variant="secondary" className="text-xs">
@@ -253,60 +339,32 @@ const SkillAssessment = () => {
                       ))}
                       {assessment.skills.length > 3 && (
                         <Badge variant="secondary" className="text-xs">
-                          +{assessment.skills.length - 3} more
+                          +{assessment.skills.length - 3}
                         </Badge>
                       )}
                     </div>
                   </div>
 
+                  {/* Action Button */}
                   <Button 
-                    className="w-full"
-                    variant={assessment.attempts > 0 ? "outline" : "default"}
+                    className="w-full" 
+                    onClick={() => setSelectedAssessment(assessment.id)}
+                    variant={assessment.attempts >= 3 ? "outline" : "default"}
+                    disabled={assessment.attempts >= 3}
                   >
-                    <Play className="h-4 w-4 mr-2" />
-                    {assessment.attempts > 0 ? 'Retake Assessment' : 'Start Assessment'}
+                    {assessment.attempts >= 3 ? (
+                      "Max Attempts Reached"
+                    ) : assessment.attempts > 0 ? (
+                      `Retake (${assessment.attempts}/3)`
+                    ) : (
+                      "Start Assessment"
+                    )}
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
-
-        {/* Assessment Benefits */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardContent className="p-8">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Why Take Skill Assessments?</h2>
-              <p className="text-gray-600">Validate your expertise and showcase your abilities to employers</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Award className="h-6 w-6 text-blue-600" />
-                </div>
-                <h3 className="font-semibold mb-2">Earn Certificates</h3>
-                <p className="text-sm text-gray-600">Get industry-recognized certificates to add to your profile</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-                <h3 className="font-semibold mb-2">Validate Skills</h3>
-                <p className="text-sm text-gray-600">Prove your competency with objective skill verification</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Star className="h-6 w-6 text-purple-600" />
-                </div>
-                <h3 className="font-semibold mb-2">Stand Out</h3>
-                <p className="text-sm text-gray-600">Differentiate yourself in the competitive job market</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
