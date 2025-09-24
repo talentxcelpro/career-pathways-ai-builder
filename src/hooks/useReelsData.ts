@@ -71,14 +71,26 @@ export const useReelsData = () => {
           return [] as ReelData[];
         }
 
+        console.log('Raw posts fetched:', posts?.length || 0);
+        console.log('Sample post media_urls:', posts?.[0]?.media_urls);
+
         // Filter for video posts more carefully
         const videoPosts = (posts || []).filter((p: any) => {
-          if (!Array.isArray(p.media_urls)) return false;
-          return p.media_urls.some((u: string) => 
+          if (!Array.isArray(p.media_urls)) {
+            console.log('Post has non-array media_urls:', p.id, p.media_urls);
+            return false;
+          }
+          const hasVideo = p.media_urls.some((u: string) => 
             typeof u === 'string' && 
             (u.toLowerCase().includes('.mp4') || u.toLowerCase().includes('.mov') || u.toLowerCase().includes('.webm'))
           );
+          if (hasVideo) {
+            console.log('Found video post:', p.id, p.media_urls);
+          }
+          return hasVideo;
         });
+
+        console.log('Video posts after filtering:', videoPosts.length);
         const userIds = Array.from(new Set(videoPosts.map((p: any) => p.user_id).filter(Boolean)));
 
         const { data: profiles } = await supabase
