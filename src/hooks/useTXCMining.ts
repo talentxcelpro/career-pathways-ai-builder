@@ -125,7 +125,7 @@ export const useTXCMining = () => {
     // Check cooldown
     if (reward.cooldownMinutes) {
       const { data: lastReward } = await supabase
-        .from('token_transactions')
+        .from('txc_transactions')
         .select('created_at')
         .eq('user_id', user.id)
         .eq('transaction_type', 'mining')
@@ -170,11 +170,15 @@ export const useTXCMining = () => {
     setIsProcessing(true);
 
     try {
-      // Simulate TXC earning locally to prevent edge function errors
-      // In production, this would be replaced with a working edge function
-      const success = Math.random() > 0.1; // 90% success rate
+      // Call the earn-txc edge function
+      const { data, error } = await supabase.functions.invoke('earn-txc', {
+        body: {
+          action,
+          metadata
+        }
+      });
       
-      if (success) {
+      if (data?.success) {
         // Show success message
         if (action === 'joining_bonus') {
           toast({
