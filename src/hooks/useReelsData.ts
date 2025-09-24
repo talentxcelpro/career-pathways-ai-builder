@@ -50,10 +50,21 @@ export const useReelsData = () => {
         
         const { data: posts, error: postsError } = await supabase
           .from('posts')
-          .select('id, user_id, created_at, headline, content, media_urls')
-          .eq('is_deleted', false)
+          .select(`
+            id, 
+            user_id, 
+            created_at, 
+            headline, 
+            content, 
+            media_urls,
+            likes_count,
+            comments_count,
+            shares_count,
+            views_count
+          `)
+          .not('media_urls', 'is', null)
           .order('created_at', { ascending: false })
-          .limit(100);
+          .limit(20);
 
         if (postsError) {
           console.error('Error fetching posts fallback:', postsError);
@@ -84,10 +95,10 @@ export const useReelsData = () => {
             tags: [],
             user_id: p.user_id,
             created_at: p.created_at,
-            views_count: 0,
-            likes_count: 0,
-            comments_count: 0,
-            shares_count: 0,
+            views_count: p.views_count || 0,
+            likes_count: p.likes_count || 0,
+            comments_count: p.comments_count || 0,
+            shares_count: p.shares_count || 0,
             is_following: false,
             has_liked: false,
             user_name: prof?.full_name || 'Creator',
