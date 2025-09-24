@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, Volume2, VolumeX, AlertCircle } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { Play, Pause, Volume2, VolumeX, Volume1, AlertCircle } from 'lucide-react';
 
 interface VideoReelPlayerProps {
   videoUrl: string;
@@ -28,10 +29,12 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [internalMuted, setInternalMuted] = useState(muted);
+  const [volume, setVolume] = useState(1);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [actuallyPlaying, setActuallyPlaying] = useState(false);
   const [showClickToPlay, setShowClickToPlay] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
   // Handle video play with better error handling and user interaction
   const playVideo = useCallback(async () => {
@@ -122,6 +125,34 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
     console.log(`Volume ${newMuted ? 'muted' : 'unmuted'}`);
   }, [internalMuted, hasUserInteracted]);
 
+  // Handle volume change
+  const handleVolumeChange = useCallback((newVolume: number[]) => {
+    const video = videoRef.current;
+    if (!video || !hasUserInteracted) return;
+
+    const volumeLevel = newVolume[0] / 100;
+    setVolume(volumeLevel);
+    video.volume = volumeLevel;
+    
+    // Auto unmute when volume is increased from 0
+    if (volumeLevel > 0 && internalMuted) {
+      setInternalMuted(false);
+      video.muted = false;
+    }
+    // Auto mute when volume is set to 0
+    if (volumeLevel === 0 && !internalMuted) {
+      setInternalMuted(true);
+      video.muted = true;
+    }
+  }, [hasUserInteracted, internalMuted]);
+
+  // Get volume icon based on current volume level
+  const getVolumeIcon = useCallback(() => {
+    if (internalMuted || volume === 0) return VolumeX;
+    if (volume < 0.5) return Volume1;
+    return Volume2;
+  }, [internalMuted, volume]);
+
   // Main effect for play/pause logic
   useEffect(() => {
     if (isActive) {
@@ -130,6 +161,14 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
       pauseVideo();
     }
   }, [isActive, playVideo, pauseVideo]);
+
+  // Sync volume with video element
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && hasUserInteracted) {
+      video.volume = volume;
+    }
+  }, [volume, hasUserInteracted]);
 
   // Sync muted prop with internal state
   useEffect(() => {
@@ -215,19 +254,60 @@ export const VideoReelPlayer: React.FC<VideoReelPlayerProps> = ({
           </div>
 
           {/* Top right controls - Always show volume when user has interacted */}
-          <div className="absolute top-4 right-4 flex space-x-2">
+          <div className="absolute top-4 right-4 flex items-center space-x-2">
+            {/* Volume Slider */}
+            {showVolumeSlider && (
+              <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2 flex items-center space-x-2">
+                <Slider
+                  value={[volume * 100]}
+                  onValueChange={handleVolumeChange}
+                  max={100}
+                  min={0}
+                  step={1}
+                  className="w-20"
+                />
+                <span className="text-white text-xs min-w-[3ch]">
+                  {Math.round(volume * 100)}%
+                </span>
+              </div>
+            )}
+            
+            {/* Volume Button */}
             <Button
               onClick={toggleMute}
+              onMouseEnter={() => setShowVolumeSlider(true)}
+              onMouseLeave={() => setShowVolumeSlider(false)}
               size="sm"
               variant="ghost"
               className="bg-black/30 hover:bg-black/50 text-white border-0"
             >
-              {internalMuted ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
+              {React.createElement(getVolumeIcon(), { className: "h-4 w-4" })}
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Volume Slider Overlay for Mobile */}
+      {showVolumeSlider && (
+        <div 
+          className="absolute top-16 right-4 bg-black/50 backdrop-blur-sm rounded-lg p-3 z-30"
+          onMouseEnter={() => setShowVolumeSlider(true)}
+          onMouseLeave={() => setShowVolumeSlider(false)}
+        >
+          <div className="flex flex-col items-center space-y-2">
+            <span className="text-white text-xs">{Math.round(volume * 100)}%</span>
+            <Slider
+              value={[volume * 100]}
+              onValueChange={handleVolumeChange}
+              max={100}
+              min={0}
+              step={1}
+              orientation="vertical"
+              className="h-20 w-4"
+            />
+            <div className="text-white text-xs">
+              {React.createElement(getVolumeIcon(), { className: "h-3 w-3" })}
+            </div>
           </div>
         </div>
       )}
