@@ -41,8 +41,13 @@ export const useReelsData = () => {
           offset_param: offset
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('RPC get_reel_feed error:', error);
+          throw error;
+        }
+        
         console.log('Fetched reels (rpc):', data?.length || 0);
+        console.log('Sample reel data:', data?.[0]);
         return (data as ReelData[]) || [];
       } catch (err: any) {
         // Fallback: derive reels from posts with video media
