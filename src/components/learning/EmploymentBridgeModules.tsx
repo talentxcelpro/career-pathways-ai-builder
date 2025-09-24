@@ -50,31 +50,35 @@ const employmentBridgeModules: Module[] = [
     lessons: [
       { 
         id: 'resume-basics', 
-        title: 'Resume Fundamentals', 
+        title: 'Cover Letter Writing Mastery', 
         type: 'video', 
-        duration: '25 min',
-        description: 'Learn the essential components of a compelling resume that gets noticed by employers.'
+        duration: '8 min',
+        videoUrl: 'https://www.youtube.com/watch?v=-Qw6_okGPnQ',
+        description: 'Learn to write an amazing cover letter with a foolproof 3-part structure'
       },
       { 
         id: 'cover-letter', 
-        title: 'Compelling Cover Letters', 
+        title: 'LinkedIn Profile Optimization', 
         type: 'video', 
-        duration: '20 min',
-        description: 'Master the art of writing cover letters that complement your resume perfectly.'
+        duration: '12 min',
+        videoUrl: 'https://www.youtube.com/watch?v=QU5BHmuK140',
+        description: 'Complete LinkedIn tutorial for beginners - fix your profile and get noticed'
       },
       { 
         id: 'linkedin-opt', 
-        title: 'LinkedIn Optimization', 
+        title: 'LinkedIn Job Search Strategy', 
         type: 'video', 
-        duration: '30 min',
-        description: 'Optimize your LinkedIn profile to attract recruiters and expand your network.'
+        duration: '10 min',
+        videoUrl: 'https://www.youtube.com/watch?v=K6uO-52UHTw',
+        description: 'Optimize your LinkedIn profile to attract recruiters and job opportunities'
       },
       { 
         id: 'portfolio', 
-        title: 'Digital Portfolio Creation', 
+        title: 'LinkedIn Success Stories', 
         type: 'video', 
-        duration: '35 min',
-        description: 'Build an impressive digital portfolio that showcases your skills and achievements.'
+        duration: '15 min',
+        videoUrl: 'https://www.youtube.com/watch?v=dQ6RNltrXro',
+        description: 'How to optimize LinkedIn profile and get 20+ interview calls'
       },
       { 
         id: 'resume-quiz', 
@@ -103,38 +107,43 @@ const employmentBridgeModules: Module[] = [
     lessons: [
       { 
         id: 'communication', 
-        title: 'Effective Communication', 
+        title: 'Workplace Communication Skills', 
         type: 'video', 
-        duration: '30 min',
-        description: 'Develop clear, confident communication skills for any workplace environment.'
+        duration: '12 min',
+        videoUrl: 'https://www.youtube.com/watch?v=QGHBq5OEsBM',
+        description: 'Master effective communication skills in the workplace'
       },
       { 
         id: 'teamwork', 
-        title: 'Collaboration & Teamwork', 
+        title: 'Essential Soft Skills Guide', 
         type: 'video', 
-        duration: '25 min',
-        description: 'Learn how to work effectively in teams and build strong professional relationships.'
+        duration: '10 min',
+        videoUrl: 'https://www.youtube.com/watch?v=aRUvhkkcLAQ',
+        description: 'Beginner\'s guide to soft skills that boost career success'
       },
       { 
         id: 'time-mgmt', 
-        title: 'Time Management Mastery', 
+        title: '5 Career-Making Soft Skills', 
         type: 'video', 
-        duration: '35 min',
-        description: 'Master time management techniques to boost productivity and reduce stress.'
+        duration: '15 min',
+        videoUrl: 'https://www.youtube.com/watch?v=cKVSy525qnY',
+        description: 'The 5 soft skills that will make or break your career'
       },
       { 
         id: 'leadership', 
-        title: 'Leadership Foundations', 
+        title: 'Communication & Soft Skills Training', 
         type: 'video', 
-        duration: '40 min',
-        description: 'Develop leadership skills that will set you apart in any role.'
+        duration: '8 min',
+        videoUrl: 'https://www.youtube.com/watch?v=olJfMjhNADQ',
+        description: 'Communication and soft skills orientation for professionals'
       },
       { 
         id: 'conflict-resolution', 
-        title: 'Conflict Resolution', 
+        title: 'Top 6 Workplace Soft Skills', 
         type: 'video', 
-        duration: '30 min',
-        description: 'Learn strategies to handle workplace conflicts professionally and effectively.'
+        duration: '6 min',
+        videoUrl: 'https://www.youtube.com/watch?v=SFdSUHslLhU',
+        description: 'Essential soft skills companies look for in employees'
       },
       { 
         id: 'soft-skills-quiz', 
@@ -154,11 +163,46 @@ const employmentBridgeModules: Module[] = [
     icon: <MessageCircle className="h-5 w-5" />,
     difficulty: 'Intermediate',
     lessons: [
-      { id: 'interview-types', title: 'Types of Interviews', type: 'video', duration: '20 min' },
-      { id: 'common-questions', title: 'Common Interview Questions', type: 'video', duration: '30 min' },
-      { id: 'body-language', title: 'Body Language & Presence', type: 'video', duration: '25 min' },
-      { id: 'mock-interview', title: 'Mock Interview Session', type: 'video', duration: '45 min' },
-      { id: 'follow-up', title: 'Post-Interview Follow-up', type: 'video', duration: '15 min' },
+      { 
+        id: 'interview-types', 
+        title: 'Body Language for Interviews', 
+        type: 'video', 
+        duration: '8 min',
+        videoUrl: 'https://www.youtube.com/watch?v=A9-FzOOWBf4',
+        description: 'How to use your hands and body language effectively in job interviews'
+      },
+      { 
+        id: 'common-questions', 
+        title: '30-Minute Mock Interview Practice', 
+        type: 'video', 
+        duration: '30 min',
+        videoUrl: 'https://www.youtube.com/watch?v=xVSdSxkj3CQ',
+        description: 'Complete mock interview with 9 key questions to boost your skills'
+      },
+      { 
+        id: 'body-language', 
+        title: 'Interview Posture Mastery', 
+        type: 'video', 
+        duration: '5 min',
+        videoUrl: 'https://www.youtube.com/watch?v=FiwsWp-stVc',
+        description: 'Expert tips on mastering posture for job interviews'
+      },
+      { 
+        id: 'mock-interview', 
+        title: 'Power of Body Language', 
+        type: 'video', 
+        duration: '12 min',
+        videoUrl: 'https://www.youtube.com/watch?v=u49t2TYovn4',
+        description: 'Understanding how 93% of communication is conveyed through body language'
+      },
+      { 
+        id: 'follow-up', 
+        title: 'Complete Interview Analysis', 
+        type: 'video', 
+        duration: '15 min',
+        videoUrl: 'https://www.youtube.com/watch?v=HG68Ymazo18',
+        description: 'Top interview tips covering questions, nonverbal communication, and etiquette'
+      },
       { id: 'interview-quiz', title: 'Interview Readiness Check', type: 'quiz', duration: '15 min' },
     ]
   },
@@ -171,11 +215,46 @@ const employmentBridgeModules: Module[] = [
     icon: <Search className="h-5 w-5" />,
     difficulty: 'Intermediate',
     lessons: [
-      { id: 'job-market', title: 'Understanding Job Markets', type: 'video', duration: '25 min' },
-      { id: 'networking', title: 'Networking Strategies', type: 'video', duration: '35 min' },
-      { id: 'online-applications', title: 'Online Job Applications', type: 'video', duration: '30 min' },
-      { id: 'referrals', title: 'Getting Referrals', type: 'video', duration: '25 min' },
-      { id: 'salary-negotiation', title: 'Salary Negotiation', type: 'video', duration: '30 min' },
+      { 
+        id: 'job-market', 
+        title: '5 Modern Job Search Strategies', 
+        type: 'video', 
+        duration: '18 min',
+        videoUrl: 'https://www.youtube.com/watch?v=8OTxZyR3tBE',
+        description: '5 job search strategies that actually work in 2025'
+      },
+      { 
+        id: 'networking', 
+        title: 'Never Apply for Jobs Again', 
+        type: 'video', 
+        duration: '12 min',
+        videoUrl: 'https://www.youtube.com/watch?v=jqjiWlyfuvE',
+        description: 'Weekly habit to attract job opportunities directly to you'
+      },
+      { 
+        id: 'online-applications', 
+        title: '2025 Job Search Trends', 
+        type: 'video', 
+        duration: '15 min',
+        videoUrl: 'https://www.youtube.com/watch?v=67lzI0P9V8U',
+        description: 'Latest job search advice and new trends for 2025'
+      },
+      { 
+        id: 'referrals', 
+        title: 'Salary-Specific Job Strategies', 
+        type: 'video', 
+        duration: '20 min',
+        videoUrl: 'https://www.youtube.com/watch?v=CzRq5zYuP2Y',
+        description: 'Job search strategies for $60k, $120k, and $200k+ roles'
+      },
+      { 
+        id: 'salary-negotiation', 
+        title: 'Stop Wasting Time on Job Boards', 
+        type: 'video', 
+        duration: '14 min',
+        videoUrl: 'https://www.youtube.com/watch?v=7kE3922CXCk',
+        description: '3 job search hacks to avoid common mistakes'
+      },
       { id: 'job-search-assignment', title: 'Job Search Plan', type: 'assignment', duration: '60 min' },
     ]
   },
@@ -188,11 +267,46 @@ const employmentBridgeModules: Module[] = [
     icon: <Building className="h-5 w-5" />,
     difficulty: 'Beginner',
     lessons: [
-      { id: 'office-culture', title: 'Understanding Office Culture', type: 'video', duration: '25 min' },
-      { id: 'professional-ethics', title: 'Professional Ethics', type: 'video', duration: '20 min' },
-      { id: 'workplace-comm', title: 'Workplace Communication', type: 'video', duration: '30 min' },
-      { id: 'first-day', title: 'Your First Day Success', type: 'video', duration: '20 min' },
-      { id: 'career-growth', title: 'Career Growth Planning', type: 'video', duration: '25 min' },
+      { 
+        id: 'office-culture', 
+        title: 'Creating Conducive Work Environment', 
+        type: 'video', 
+        duration: '12 min',
+        videoUrl: 'https://www.youtube.com/watch?v=CTruAWXUKuE',
+        description: 'Guide to workplace cultural shifts and adaptation in 2025'
+      },
+      { 
+        id: 'professional-ethics', 
+        title: 'Ethical Office Politics', 
+        type: 'video', 
+        duration: '10 min',
+        videoUrl: 'https://www.youtube.com/watch?v=it5MASGR8lA',
+        description: 'How to navigate office politics the ethical way and win'
+      },
+      { 
+        id: 'workplace-comm', 
+        title: 'Modern Workplace Dynamics', 
+        type: 'video', 
+        duration: '25 min',
+        videoUrl: 'https://www.youtube.com/watch?v=RYYFBR7X8FA',
+        description: 'Understanding Gen Z work ethic and modern workplace culture'
+      },
+      { 
+        id: 'first-day', 
+        title: 'Psychological Safety at Work', 
+        type: 'video', 
+        duration: '18 min',
+        videoUrl: 'https://www.youtube.com/watch?v=LhoLuui9gX8',
+        description: 'Building a psychologically safe workplace environment'
+      },
+      { 
+        id: 'career-growth', 
+        title: 'Professional Business Etiquette', 
+        type: 'video', 
+        duration: '8 min',
+        videoUrl: 'https://www.youtube.com/watch?v=8N3RUDDAHto',
+        description: 'Corporate etiquette and professional conduct training'
+      },
       { id: 'workplace-quiz', title: 'Workplace Readiness', type: 'quiz', duration: '15 min' },
     ]
   }
