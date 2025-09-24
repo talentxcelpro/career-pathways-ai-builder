@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Music, Play, Pause, Volume2, VolumeX } from 'lucide-react';
@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { VideoReelPlayer } from './VideoReelPlayer';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Reel {
   id: string;
@@ -40,105 +41,137 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [reels, setReels] = useState<Reel[]>([]);
+  const [loading, setLoading] = useState(true);
   const { triggerHaptic } = useHapticFeedback();
-  
-  const [reels] = useState<Reel[]>([
-    {
-      id: 'reel-1',
-      user: {
-        id: 'user-1',
-        name: 'Sarah Chen',
-        username: '@sarahtech',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b60e9077?w=150&h=150&fit=crop',
-        verified: true
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
-        duration: 30
-      },
-      caption: '5 Essential tips for your next tech interview! 💻✨ #TechTips #CareerAdvice',
-      hashtags: ['#TechTips', '#CareerAdvice', '#InterviewPrep'],
-      stats: { likes: 12500, comments: 340, shares: 890, views: 45600 },
-      isLiked: false
-    },
-    {
-      id: 'reel-2',
-      user: {
-        id: 'user-2',
-        name: 'Marcus Johnson',
-        username: '@marcusfinance',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop',
-        verified: false
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=600&fit=crop',
-        duration: 45
-      },
-      caption: 'Breaking down cryptocurrency for beginners 🚀 Start your investment journey! #CryptoBasics #Investment',
-      hashtags: ['#CryptoBasics', '#Investment', '#FinanceTips'],
-      stats: { likes: 8920, comments: 234, shares: 567, views: 32100 },
-      isLiked: true
-    },
-    {
-      id: 'reel-3',
-      user: {
-        id: 'user-3',
-        name: 'Dr. Emily Rodriguez',
-        username: '@dremilymed',
-        avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop',
-        verified: true
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=600&fit=crop',
-        duration: 60
-      },
-      caption: 'Quick anatomy lesson: Understanding the human heart ❤️ #MedicalEducation #Anatomy #Healthcare',
-      hashtags: ['#MedicalEducation', '#Anatomy', '#Healthcare'],
-      stats: { likes: 15600, comments: 456, shares: 1200, views: 58900 },
-      isLiked: false
-    },
-    {
-      id: 'reel-4',
-      user: {
-        id: 'user-4',
-        name: 'Alex Creative',
-        username: '@alexcreates',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
-        verified: false
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=600&fit=crop',
-        duration: 35
-      },
-      caption: 'UI/UX design principles that will level up your portfolio 🎨 #UIDesign #UXTips #Design',
-      hashtags: ['#UIDesign', '#UXTips', '#Design', '#Portfolio'],
-      stats: { likes: 9870, comments: 201, shares: 445, views: 38200 },
-      isLiked: false
-    },
-    {
-      id: 'reel-5',
-      user: {
-        id: 'user-5',
-        name: 'Maya Career Coach',
-        username: '@mayacoach',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
-        verified: true
-      },
-      video: {
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=400&h=600&fit=crop',
-        duration: 50
-      },
-      caption: '30-second career tip: How to network effectively at tech events 💼 #CareerTips #Networking',
-      hashtags: ['#CareerTips', '#Networking', '#ProfessionalGrowth'],
-      stats: { likes: 11200, comments: 167, shares: 789, views: 42000 },
-      isLiked: true
-    }
-  ]);
+
+  // Helper function to extract hashtags from content
+  const extractHashtags = (content: string): string[] => {
+    const hashtags = content.match(/#[\w]+/g) || [];
+    return hashtags.slice(0, 5); // Limit to 5 hashtags
+  };
+
+  // Load real videos from database
+  useEffect(() => {
+    const loadRealVideos = async () => {
+      try {
+        const { data: posts } = await supabase
+          .from('posts')
+          .select(`
+            id, 
+            content, 
+            media_urls, 
+            created_at,
+            user_id,
+            likes_count,
+            comments_count,
+            shares_count,
+            views_count,
+            profiles!posts_user_id_fkey (
+              full_name,
+              profile_picture_url
+            )
+          `)
+          .not('media_urls', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (posts) {
+          // Filter posts that have MP4 videos
+          const videoReels = posts
+            .filter(post => 
+              post.media_urls && 
+              Array.isArray(post.media_urls) && 
+              post.media_urls.some((url: string) => url?.includes('.mp4'))
+            )
+            .map((post, index): Reel => {
+              const videoUrl = post.media_urls.find((url: string) => url?.includes('.mp4')) || '';
+              const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+              
+              return {
+                id: post.id,
+                user: {
+                  id: post.user_id,
+                  name: profile?.full_name || 'TalentXcel User',
+                  username: `@${(profile?.full_name || 'user').toLowerCase().replace(/\s+/g, '')}`,
+                  avatar: profile?.profile_picture_url || `https://images.unsplash.com/photo-${1500000000 + index}?w=150&h=150&fit=crop`,
+                  verified: post.user_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062' // Your user ID
+                },
+                video: {
+                  url: videoUrl,
+                  thumbnail: '', // We'll use the video itself as thumbnail
+                  duration: 30 + (index * 5) // Estimated duration
+                },
+                caption: post.content || 'Check out this amazing content! 🚀',
+                hashtags: extractHashtags(post.content || ''),
+                stats: {
+                  likes: post.likes_count || Math.floor(Math.random() * 10000) + 1000,
+                  comments: post.comments_count || Math.floor(Math.random() * 500) + 50,
+                  shares: post.shares_count || Math.floor(Math.random() * 200) + 20,
+                  views: post.views_count || Math.floor(Math.random() * 50000) + 5000
+                },
+                isLiked: Math.random() > 0.7
+              };
+            });
+
+          if (videoReels.length > 0) {
+            setReels(videoReels);
+          } else {
+            // Fallback to working test videos if no real videos found
+            setReels([
+              {
+                id: 'fallback-1',
+                user: {
+                  id: 'user-1',
+                  name: 'TalentXcel Demo',
+                  username: '@talentxcel',
+                  avatar: 'https://images.unsplash.com/photo-1494790108755-2616b60e9077?w=150&h=150&fit=crop',
+                  verified: true
+                },
+                video: {
+                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                  thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
+                  duration: 30
+                },
+                caption: 'Welcome to TalentXcel! 🚀 Your career growth platform #TalentXcel #CareerGrowth',
+                hashtags: ['#TalentXcel', '#CareerGrowth', '#Platform'],
+                stats: { likes: 12500, comments: 340, shares: 890, views: 45600 },
+                isLiked: false
+              }
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading real videos:', error);
+        // Fallback videos
+        setReels([
+          {
+            id: 'fallback-1',
+            user: {
+              id: 'user-1',
+              name: 'TalentXcel Demo',
+              username: '@talentxcel',
+              avatar: 'https://images.unsplash.com/photo-1494790108755-2616b60e9077?w=150&h=150&fit=crop',
+              verified: true
+            },
+            video: {
+              url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+              thumbnail: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=400&h=600&fit=crop',
+              duration: 30
+            },
+            caption: 'Welcome to TalentXcel! 🚀 Your career growth platform #TalentXcel #CareerGrowth',
+            hashtags: ['#TalentXcel', '#CareerGrowth', '#Platform'],
+            stats: { likes: 12500, comments: 340, shares: 890, views: 45600 },
+            isLiked: false
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRealVideos();
+  }, []);
 
   const nextReel = useCallback(() => {
     setCurrentReelIndex(prev => 
@@ -169,6 +202,14 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
     setIsPlaying(!isPlaying);
     triggerHaptic('light');
   }, [isPlaying, triggerHaptic]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -231,7 +272,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({ onUploadCl
             {/* Bottom Content */}
             <div className="absolute bottom-4 left-4 right-20 z-10">
               <div className="mb-4">
-                <p className="text-white text-sm leading-relaxed mb-2">{reel.caption}</p>
+                <p className="text-white text-sm leading-relaxed mb-2 line-clamp-3">{reel.caption}</p>
                 <div className="flex flex-wrap gap-1">
                   {reel.hashtags.slice(0, 3).map((tag, i) => (
                     <span key={i} className="text-blue-300 text-xs">{tag}</span>
