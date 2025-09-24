@@ -202,20 +202,25 @@ const CommunityLearning = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LearningHeader />
-        
-        {/* Page Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <Users className="h-8 w-8 text-blue-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Community Learning</h1>
-            <p className="text-gray-600">
-              Connect with peers, join study groups, and learn together
-            </p>
+      {/* Page Header */}
+      <div className="bg-primary text-primary-foreground p-6">
+        <div className="max-w-6xl mx-auto">
+          <Link
+            to="/learning"
+            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Learning Hub
+          </Link>
+          <div className="flex items-center gap-3 mb-2">
+            <Users className="h-8 w-8" />
+            <h1 className="text-3xl font-bold">Community Learning</h1>
           </div>
+          <p className="text-primary-foreground/80">Connect with peers, join study groups, and learn together</p>
         </div>
+      </div>
 
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Community Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -225,8 +230,8 @@ const CommunityLearning = () => {
                   <Users className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Members</p>
-                  <p className="text-2xl font-bold text-gray-900">12,450</p>
+                  <p className="text-sm font-medium text-muted-foreground">Active Members</p>
+                  <p className="text-2xl font-bold text-foreground">12,450</p>
                 </div>
               </div>
             </CardContent>
