@@ -151,6 +151,7 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
       console.log(`🚀 FORCE CREATING ${coursesToCreate} additional courses to reach ${courseLimit} total`);
       
       const additionalCourses = [
+        { title: 'Google Data Analytics Professional Certificate', category: 'Technology', subcategory: 'Data Analytics', level: 'Beginner', duration: '6 months', isMostPopular: true, rating: 4.6, enrolled: 2100000 },
         { title: 'Advanced AI & Machine Learning', category: 'Technology', subcategory: 'Artificial Intelligence', level: 'Advanced', duration: '12 weeks' },
         { title: 'Blockchain Development Mastery', category: 'Technology', subcategory: 'Blockchain', level: 'Intermediate', duration: '10 weeks' },
         { title: 'DevOps Engineering Complete', category: 'Technology', subcategory: 'DevOps', level: 'Intermediate', duration: '8 weeks' },
@@ -190,18 +191,25 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
 
       for (let i = 0; i < Math.min(coursesToCreate, additionalCourses.length); i++) {
         const courseData = additionalCourses[i];
+        const durationHours = parseInt(courseData.duration.split(' ')[0]) || 8;
+        
         const { error: createError } = await supabaseClient
           .from('courses')
           .insert({
             title: courseData.title,
-            description: `Comprehensive course covering ${courseData.title.toLowerCase()} with hands-on projects and real-world applications.`,
-            instructor_name: 'TalentXcel Expert',
-            level: courseData.level,
-            duration: courseData.duration,
+            description: courseData.title === 'Google Data Analytics Professional Certificate' 
+              ? 'Get job-ready in 6 months. No degree or experience required. This comprehensive program covers data cleaning, analysis, and visualization using industry-standard tools like Excel, SQL, R, and Tableau.'
+              : `Comprehensive course covering ${courseData.title.toLowerCase()} with hands-on projects and real-world applications.`,
+            instructor_name: courseData.title === 'Google Data Analytics Professional Certificate' ? 'Google Career Certificates' : 'TalentXcel Expert',
+            difficulty_level: courseData.level,
+            duration_hours: durationHours,
             category: courseData.category,
             subcategory: courseData.subcategory,
             is_active: true,
-            is_featured: false,
+            rating: courseData.rating || (Math.random() * 2 + 3), // 3-5 rating
+            enrolled_count: courseData.enrolled || Math.floor(Math.random() * 50000 + 5000),
+            is_free: courseData.title === 'Google Data Analytics Professional Certificate' ? false : Math.random() > 0.7,
+            price: courseData.title === 'Google Data Analytics Professional Certificate' ? 49 : (Math.random() > 0.7 ? 0 : Math.floor(Math.random() * 100 + 29)),
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
