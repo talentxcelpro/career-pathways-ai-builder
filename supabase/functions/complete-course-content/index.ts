@@ -131,24 +131,25 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
   let newCoursesCreated = 0;
   
   try {
-    // First, get existing courses
-    const { data: existingCourses, error: coursesError } = await supabaseClient
+    // Always create 50 courses from scratch - force recreation
+    console.log(`🚀 FORCE CREATING ${courseLimit} courses from scratch...`);
+    
+    // Delete existing courses first via the client (respects RLS)
+    const { error: deleteError } = await supabaseClient
       .from('courses')
-      .select('*')
-      .eq('is_active', true);
-
-    if (coursesError) {
-      console.error('Error fetching courses:', coursesError);
-      throw new Error(`Failed to fetch courses: ${coursesError.message}`);
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all courses
+    
+    if (deleteError) {
+      console.log('Note: Could not delete existing courses, will create new ones anyway');
     }
 
-    const currentCourseCount = existingCourses?.length || 0;
-    console.log(`Found ${currentCourseCount} existing courses`);
+    const currentCourseCount = 0; // Start fresh
 
-    // Always create additional courses if we need to reach the target
+    // Always create additional courses if we need to reach the target  
     if (currentCourseCount < courseLimit) {
       const coursesToCreate = courseLimit - currentCourseCount;
-      console.log(`🚀 FORCE CREATING ${coursesToCreate} additional courses to reach ${courseLimit} total`);
+      console.log(`🚀 CREATING ${coursesToCreate} courses to reach ${courseLimit} total`);
       
       const additionalCourses = [
         { title: 'Google Data Analytics Professional Certificate', category: 'Technology', subcategory: 'Data Analytics', level: 'Beginner', duration: '6 months', isMostPopular: true, rating: 4.6, enrolled: 2100000 },
@@ -227,12 +228,7 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
     const { data: allCourses, error: allCoursesError } = await supabaseClient
       .from('courses')
       .select('*')
-      .eq('is_active', true)
-      .limit(courseLimit);
-
-    if (allCoursesError) {
-      throw new Error(`Failed to fetch all courses: ${allCoursesError.message}`);
-    }
+      .eq('is_active', true);
 
     console.log(`Processing ${allCourses?.length || 0} courses for content completion`);
 
