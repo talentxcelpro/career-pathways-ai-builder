@@ -17,6 +17,55 @@ interface Course {
   subcategory: string;
 }
 
+// Helper function to get appropriate video URL based on course and lesson content
+function getAppropriateVideoUrl(course: Course, lesson: any): string {
+  const courseTitle = course.title.toLowerCase();
+  const lessonTitle = lesson.title.toLowerCase();
+  const courseCategory = course.category?.toLowerCase() || '';
+  
+  // Check course-specific content first
+  if (courseTitle.includes('react') || lessonTitle.includes('react')) {
+    return 'https://www.youtube.com/embed/Ke90Tje7VS0'; // React Tutorial for Beginners
+  } else if (courseTitle.includes('python') || lessonTitle.includes('python')) {
+    return 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Tutorial for Beginners
+  } else if (courseTitle.includes('javascript') || lessonTitle.includes('javascript')) {
+    return 'https://www.youtube.com/embed/rfscVS0vtbw'; // Learn JavaScript in 1 Hour
+  } else if (courseTitle.includes('full-stack') || courseTitle.includes('node') || lessonTitle.includes('node')) {
+    return 'https://www.youtube.com/embed/RLtyhwFtXQA'; // Node.js Tutorial
+  } else if (courseTitle.includes('machine learning') || courseTitle.includes('tensorflow') || lessonTitle.includes('tensorflow')) {
+    return 'https://www.youtube.com/embed/tPYj3fFJGjk'; // TensorFlow Tutorial
+  } else if (courseTitle.includes('aws') || courseTitle.includes('cloud') || lessonTitle.includes('cloud')) {
+    return 'https://www.youtube.com/embed/3hLmDS179YE'; // AWS Tutorial
+  }
+  
+  // Check by category
+  if (courseCategory.includes('web development') || courseCategory.includes('development')) {
+    return 'https://www.youtube.com/embed/pQN-pnXPaVg'; // HTML, CSS, JS in 1 Hour
+  } else if (courseCategory.includes('data science') || courseCategory.includes('data')) {
+    return 'https://www.youtube.com/embed/ua-CiDNNj30'; // Data Science Course
+  } else if (courseCategory.includes('marketing')) {
+    return 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Digital Marketing Course
+  } else if (courseCategory.includes('design')) {
+    return 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design Tutorial
+  } else if (courseCategory.includes('business') || courseCategory.includes('management')) {
+    return 'https://www.youtube.com/embed/llKvV8_T95M'; // Leadership Training
+  } else if (courseCategory.includes('technology') || courseCategory.includes('cybersecurity')) {
+    return 'https://www.youtube.com/embed/U_P23SqJaDc'; // Cybersecurity Fundamentals
+  }
+  
+  // Check lesson-specific content as fallback
+  if (lessonTitle.includes('marketing')) {
+    return 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Digital Marketing Course
+  } else if (lessonTitle.includes('design') || lessonTitle.includes('ui') || lessonTitle.includes('ux')) {
+    return 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design Tutorial
+  } else if (lessonTitle.includes('leadership') || lessonTitle.includes('management')) {
+    return 'https://www.youtube.com/embed/llKvV8_T95M'; // Leadership Training
+  }
+  
+  // Default fallback
+  return 'https://www.youtube.com/embed/rfscVS0vtbw'; // Learn JavaScript in 1 Hour
+}
+
 async function completeCourseContent(supabaseClient: any, courseLimit: number = 50) {
   console.log(`Starting completion process for up to ${courseLimit} courses...`);
   
@@ -85,24 +134,8 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
                   if (lessonDetails && lessonDetails.lesson_type === 'video' && !lessonDetails.video_url) {
                     console.log(`Adding video URL to lesson: ${lessonDetails.title}`);
                     
-                    // Generate appropriate video URL based on lesson content
-                    let videoUrl = 'https://www.youtube.com/embed/rfscVS0vtbw'; // Default: Learn JavaScript in 1 Hour
-                    
-                    if (lessonDetails.title.toLowerCase().includes('python')) {
-                      videoUrl = 'https://www.youtube.com/embed/_uQrJ0TkZlc'; // Python Tutorial for Beginners
-                    } else if (lessonDetails.title.toLowerCase().includes('web development') || lessonDetails.title.toLowerCase().includes('html') || lessonDetails.title.toLowerCase().includes('css')) {
-                      videoUrl = 'https://www.youtube.com/embed/pQN-pnXPaVg'; // HTML, CSS, JS in 1 Hour
-                    } else if (lessonDetails.title.toLowerCase().includes('data science') || lessonDetails.title.toLowerCase().includes('data')) {
-                      videoUrl = 'https://www.youtube.com/embed/ua-CiDNNj30'; // Data Science Course
-                    } else if (lessonDetails.title.toLowerCase().includes('react')) {
-                      videoUrl = 'https://www.youtube.com/embed/Ke90Tje7VS0'; // React Tutorial for Beginners
-                    } else if (lessonDetails.title.toLowerCase().includes('marketing')) {
-                      videoUrl = 'https://www.youtube.com/embed/bFOKONpVDAQ'; // Digital Marketing Course
-                    } else if (lessonDetails.title.toLowerCase().includes('leadership') || lessonDetails.title.toLowerCase().includes('management')) {
-                      videoUrl = 'https://www.youtube.com/embed/llKvV8_T95M'; // Leadership Training
-                    } else if (lessonDetails.title.toLowerCase().includes('design') || lessonDetails.title.toLowerCase().includes('ui') || lessonDetails.title.toLowerCase().includes('ux')) {
-                      videoUrl = 'https://www.youtube.com/embed/ByYP60zz3F4'; // UI/UX Design Tutorial
-                    }
+                    // Generate appropriate video URL based on course and lesson content
+                    const videoUrl = getAppropriateVideoUrl(course, lessonDetails);
                     
                     // Update lesson with video URL
                     await supabaseClient
@@ -215,23 +248,23 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
             createdLessons++;
             console.log(`Created lesson: ${lesson.title}`);
 
-            // Add video for video lessons
+            // Add video URL for video lessons directly to the lesson
             if (lesson.type === 'video') {
-              const { error: videoError } = await supabaseClient
-                .from('course_videos')
-                .insert({
-                  title: `${lesson.title} - Video`,
-                  video_url: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`, // Placeholder URL
-                  description: `Video tutorial for ${lesson.title}`,
-                  visibility: 'public',
-                  featured: false
-                });
+              const appropriateVideoUrl = getAppropriateVideoUrl(course, { title: lesson.title });
+              
+              // Update the lesson with the appropriate video URL
+              const { error: videoUpdateError } = await supabaseClient
+                .from('course_lessons')
+                .update({
+                  video_url: appropriateVideoUrl
+                })
+                .eq('id', newLesson.id);
 
-              if (!videoError) {
+              if (!videoUpdateError) {
                 integratedVideos++;
-                console.log(`Integrated video for lesson: ${lesson.title}`);
+                console.log(`Integrated appropriate video for lesson: ${lesson.title} - ${appropriateVideoUrl}`);
               } else {
-                console.error(`Error creating video for lesson ${lesson.title}:`, videoError);
+                console.error(`Error updating video URL for lesson ${lesson.title}:`, videoUpdateError);
               }
             }
           }
