@@ -54,6 +54,10 @@ import { ABTestingSEO } from '@/components/seo/advanced-features/ABTestingSEO';
 import { HreflangManager } from '@/components/seo/advanced-features/HreflangManager';
 import { GoogleSearchConsoleIntegration } from '@/components/seo/enterprise/GoogleSearchConsoleIntegration';
 import { DeploymentDiagnostics } from '@/components/admin/DeploymentDiagnostics';
+import { VoiceSearchOptimizer } from '@/components/seo/VoiceSearchOptimizer';
+import { FeaturedSnippetsTargeting } from '@/components/seo/FeaturedSnippetsTargeting';
+import { AIContentScaler } from '@/components/seo/AIContentScaler';
+import { PredictiveAnalytics } from '@/components/seo/PredictiveAnalytics';
 import { toast } from 'sonner';
 
 const SEOSuite = () => {
@@ -351,6 +355,11 @@ const SEOSuite = () => {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-muted/50">
           <TabsTrigger value="dashboard" className="text-xs">Dashboard</TabsTrigger>
+          <TabsTrigger value="voice-search" className="text-xs">Voice Search</TabsTrigger>
+          <TabsTrigger value="snippets" className="text-xs">Snippets</TabsTrigger>
+          <TabsTrigger value="ai-scaler" className="text-xs">AI Scaler</TabsTrigger>
+          <TabsTrigger value="predictive" className="text-xs">Predictive</TabsTrigger>
+          <TabsTrigger value="international" className="text-xs">International</TabsTrigger>
           <TabsTrigger value="live-rank" className="text-xs">Live Rank</TabsTrigger>
           <TabsTrigger value="live-volume" className="text-xs">Live Volume</TabsTrigger>
           <TabsTrigger value="real-competitor" className="text-xs">Live Competitor</TabsTrigger>
@@ -369,13 +378,30 @@ const SEOSuite = () => {
           <TabsTrigger value="automation" className="text-xs">Automation</TabsTrigger>
           <TabsTrigger value="white-label" className="text-xs">White Label</TabsTrigger>
           <TabsTrigger value="analytics" className="text-xs">Analytics</TabsTrigger>
-          <TabsTrigger value="ai-status" className="text-xs">AI Status</TabsTrigger>
-          <TabsTrigger value="deployments" className="text-xs">Deployments</TabsTrigger>
-          <TabsTrigger value="testing" className="text-xs">Testing</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
           <SEOIssueManager />
+        </TabsContent>
+
+        <TabsContent value="voice-search">
+          <VoiceSearchOptimizer pageTitle="TalentXcel" pageType="general" />
+        </TabsContent>
+
+        <TabsContent value="snippets">
+          <FeaturedSnippetsTargeting pageTitle="TalentXcel" pageType="general" />
+        </TabsContent>
+
+        <TabsContent value="ai-scaler">
+          <AIContentScaler />
+        </TabsContent>
+
+        <TabsContent value="predictive">
+          <PredictiveAnalytics />
+        </TabsContent>
+
+        <TabsContent value="international">
+          <InternationalSEO currentUrl="https://talentxcel.in" />
         </TabsContent>
 
         <TabsContent value="live-rank">
