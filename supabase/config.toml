@@ -167,6 +167,10 @@ verify_jwt = false
 [functions.agent-worker]
 verify_jwt = false
 
+# Course Management
+[functions.mass-course-population]
+verify_jwt = false
+
 # Monitoring & Cleanup
 [functions.database-cleanup]
 verify_jwt = false
