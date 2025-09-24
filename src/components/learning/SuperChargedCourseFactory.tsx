@@ -83,10 +83,9 @@ export const SuperChargedCourseFactory: React.FC = () => {
 
       console.log('🚀 Starting course completion process...');
       
-      const { data, error } = await supabase.functions.invoke('complete-course-content', {
+      const { data, error } = await supabase.functions.invoke('mass-course-population', {
         body: {
-          action: 'complete_existing_courses',
-          course_limit: 50
+          action: 'create_comprehensive_courses'
         }
       });
 
