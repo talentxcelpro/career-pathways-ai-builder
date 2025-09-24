@@ -5,7 +5,7 @@ import { validateProductionData, fetchProductionData } from '@/utils/productionC
 export interface Course {
   id: string;
   title: string;
-  instructor: string;
+  instructor_name: string;
   rating: number;
   students: number;
   duration: string;
@@ -83,7 +83,7 @@ export const searchCourses = async (query: string): Promise<Course[]> => {
       .from('courses')
       .select('*')
       .eq('is_active', true)
-      .or(`title.ilike.%${query}%,category.ilike.%${query}%,instructor.ilike.%${query}%`)
+      .or(`title.ilike.%${query}%,category.ilike.%${query}%,instructor_name.ilike.%${query}%`)
       .order('rating', { ascending: false });
     
     if (error) throw error;
