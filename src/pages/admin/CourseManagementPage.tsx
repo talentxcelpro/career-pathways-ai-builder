@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { CourseGraphenerator } from '@/components/admin/CourseBatchCreator';
+import { SuperChargedCourseFactory } from '@/components/learning/SuperChargedCourseFactory';
 import { toast } from 'sonner';
 import { 
   GraduationCap, 
@@ -133,6 +134,7 @@ export default function CourseManagementPage() {
         </TabsList>
 
         <TabsContent value="batch-creator" className="space-y-6">
+          <SuperChargedCourseFactory />
           <CourseGraphenerator />
         </TabsContent>
 
