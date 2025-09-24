@@ -17,72 +17,106 @@ interface Course {
   subcategory: string;
 }
 
-// Educational YouTube videos for different course topics
-const getEducationalVideos = (courseTitle: string): string[] => {
+// Educational YouTube videos for different course topics with better matching
+const getEducationalVideos = (courseTitle: string, courseCategory?: string): string[] => {
+  const title = courseTitle.toLowerCase();
+  const category = courseCategory?.toLowerCase() || '';
+  
   const videoLibrary = {
-    'webdev': [
+    'react': [
       'https://www.youtube.com/embed/Ke90Tje7VS0', // React Tutorial for Beginners
-      'https://www.youtube.com/embed/w7ejDZ8SWv8', // React Hooks Explained
-      'https://www.youtube.com/embed/hQAHSlTtcmY', // React State Management
+      'https://www.youtube.com/embed/SccSCuHhOw0', // JavaScript ES6+
+      'https://www.youtube.com/embed/hdI2bqOjy3c', // TypeScript Tutorial
+      'https://www.youtube.com/embed/w7ejDZ8SWv8'  // React Hooks Explained
+    ],
+    'python': [
+      'https://www.youtube.com/embed/_uQrJ0TkZlc', // Python Tutorial for Beginners
+      'https://www.youtube.com/embed/kqtD5dpn9C8', // Python for Data Science
+      'https://www.youtube.com/embed/YYXdXT2l-Gg', // Python Machine Learning
+      'https://www.youtube.com/embed/Z1Yd7upQsXY'  // Python Advanced Concepts
+    ],
+    'webdev': [
+      'https://www.youtube.com/embed/pQN-pnXPaVg', // HTML, CSS, JS in 1 Hour
       'https://www.youtube.com/embed/TlB_eWDSMt4', // Node.js Tutorial
       'https://www.youtube.com/embed/fBNz5xF-Kx4', // Express Framework
-      'https://www.youtube.com/embed/L72fhGm1tfE', // Node.js Best Practices
-      'https://www.youtube.com/embed/SccSCuHhOw0', // JavaScript ES6+
-      'https://www.youtube.com/embed/hdI2bqOjy3c'  // TypeScript Tutorial
-    ],
-    'healthcare': [
-      'https://www.youtube.com/embed/YXPyB4XeYLA', // Healthcare Data Analytics
-      'https://www.youtube.com/embed/f7c-LgSN6u4', // Medical Informatics
-      'https://www.youtube.com/embed/QvHPsd8faY4', // HIPAA Compliance
-      'https://www.youtube.com/embed/BHwVBzn5fdA', // Healthcare Systems
-      'https://www.youtube.com/embed/tKXSx5PjgBo', // Medical Data Analysis
-      'https://www.youtube.com/embed/7eh4d6sabA0', // Healthcare Analytics
-      'https://www.youtube.com/embed/CWRTqMGvdpo', // Electronic Health Records
-      'https://www.youtube.com/embed/Y-mY7gRbHBQ'  // Healthcare Technology
+      'https://www.youtube.com/embed/L72fhGm1tfE'  // Node.js Best Practices
     ],
     'design': [
-      'https://www.youtube.com/embed/c9Wg6Cb_YlU', // UI/UX Design Principles
+      'https://www.youtube.com/embed/ByYP60zz3F4', // UI/UX Design Tutorial
       'https://www.youtube.com/embed/68w2VwalD5w', // Figma Tutorial
       'https://www.youtube.com/embed/YiLUYf4HDh4', // Design Systems
-      'https://www.youtube.com/embed/KYmqVesPAnU', // User Experience Design
-      'https://www.youtube.com/embed/TMe0WnkF1Lc', // Adobe Creative Suite
-      'https://www.youtube.com/embed/9z2tgqIqByU', // Prototyping
-      'https://www.youtube.com/embed/ZbrzdMaumNk', // User Interface Design
-      'https://www.youtube.com/embed/a9mJN8BK1cI'  // Design Thinking
+      'https://www.youtube.com/embed/KYmqVesPAnU'  // User Experience Design
     ],
     'business': [
-      'https://www.youtube.com/embed/rJgjgSjyzzU', // Business Intelligence
-      'https://www.youtube.com/embed/nv7eJkXO6DQ', // Data Analytics
-      'https://www.youtube.com/embed/9z84K7Y9g7E', // Power BI Tutorial
-      'https://www.youtube.com/embed/TPMlZxRRaBQ', // Tableau Tutorial
-      'https://www.youtube.com/embed/7S_tz1z_5bA', // SQL for Business
-      'https://www.youtube.com/embed/airArVXyr44', // Machine Learning for Business
+      'https://www.youtube.com/embed/ua-CiDNNj30', // Data Science Course
       'https://www.youtube.com/embed/M4CXOocovZ4', // Data Visualization
-      'https://www.youtube.com/embed/l_C9E2Gkmtk'  // Business Analytics
+      'https://www.youtube.com/embed/l_C9E2Gkmtk', // Business Analytics
+      'https://www.youtube.com/embed/7S_tz1z_5bA'  // SQL for Business
+    ],
+    'marketing': [
+      'https://www.youtube.com/embed/bFOKONpVDAQ', // Digital Marketing Course
+      'https://www.youtube.com/embed/vnVuqfXohxc', // Content Writing Tutorial
+      'https://www.youtube.com/embed/gvTNl8HhcWc', // Social Media Marketing
+      'https://www.youtube.com/embed/hnUjzVoditc'  // SEO Tutorial
+    ],
+    'leadership': [
+      'https://www.youtube.com/embed/llKvV8_T95M', // Leadership Training
+      'https://www.youtube.com/embed/WEDIj9JBTC8', // Finance Basics
+      'https://www.youtube.com/embed/gqOzc7r0L_g', // Management Skills
+      'https://www.youtube.com/embed/VDiyQub6vpw'  // Communication Skills
+    ],
+    'tech': [
+      'https://www.youtube.com/embed/JMUxmLyrhSk', // Machine Learning Explained
+      'https://www.youtube.com/embed/SSo_EIwHSd4', // Blockchain Explained
+      'https://www.youtube.com/embed/aircArVXyr44', // AI Fundamentals
+      'https://www.youtube.com/embed/rfscVS0vtbw'  // Learn JavaScript in 1 Hour
     ]
   };
   
-  if (courseTitle.toLowerCase().includes('web development') || courseTitle.toLowerCase().includes('react') || courseTitle.toLowerCase().includes('node')) {
+  // Enhanced matching logic
+  if (title.includes('react') || title.includes('javascript') && title.includes('bootcamp')) {
+    return videoLibrary.react;
+  }
+  if (title.includes('python') || title.includes('data science')) {
+    return videoLibrary.python;
+  }
+  if (title.includes('web development') || title.includes('full stack') || title.includes('node')) {
     return videoLibrary.webdev;
   }
-  if (courseTitle.toLowerCase().includes('healthcare') || courseTitle.toLowerCase().includes('medical')) {
-    return videoLibrary.healthcare;
-  }
-  if (courseTitle.toLowerCase().includes('design') || courseTitle.toLowerCase().includes('ui/ux')) {
+  if (title.includes('design') || title.includes('ui/ux') || title.includes('creative')) {
     return videoLibrary.design;
   }
-  if (courseTitle.toLowerCase().includes('business') || courseTitle.toLowerCase().includes('analytics')) {
+  if (title.includes('marketing') || title.includes('digital marketing') || title.includes('content writing')) {
+    return videoLibrary.marketing;
+  }
+  if (title.includes('leadership') || title.includes('management') || title.includes('project management')) {
+    return videoLibrary.leadership;
+  }
+  if (title.includes('business') || title.includes('analytics') || title.includes('intelligence')) {
     return videoLibrary.business;
   }
+  if (title.includes('machine learning') || title.includes('tensorflow') || title.includes('blockchain') || title.includes('cybersecurity') || title.includes('cloud')) {
+    return videoLibrary.tech;
+  }
   
-  return videoLibrary.webdev; // Default fallback
+  // Category-based fallback
+  if (category.includes('technology')) return videoLibrary.tech;
+  if (category.includes('business')) return videoLibrary.business;
+  if (category.includes('design')) return videoLibrary.design;
+  if (category.includes('marketing')) return videoLibrary.marketing;
+  
+  return videoLibrary.tech; // Default fallback to tech videos
 };
 
 // Helper function to get appropriate video URL based on course and lesson content
-function getAppropriateVideoUrl(course: Course, lesson: any): string {
-  const educationalVideos = getEducationalVideos(course.title);
-  const videoIndex = Math.floor(Math.random() * educationalVideos.length);
-  return educationalVideos[videoIndex];
+function getAppropriateVideoUrl(course: Course, lesson: any, lessonIndex: number): string {
+  const educationalVideos = getEducationalVideos(course.title, course.category);
+  // Use lesson index to get consistent video assignment instead of random
+  const videoIndex = lessonIndex % educationalVideos.length;
+  const selectedVideo = educationalVideos[videoIndex];
+  
+  console.log(`Assigning video for course "${course.title}", lesson "${lesson.title}": ${selectedVideo}`);
+  return selectedVideo;
 }
 
 async function completeCourseContent(supabaseClient: any, courseLimit: number = 50) {
@@ -205,8 +239,9 @@ async function completeCourseContent(supabaseClient: any, courseLimit: number = 
             
             let videoUrl = null;
             if (lessonData.type === 'video') {
-              videoUrl = getAppropriateVideoUrl(course, lessonData);
+              videoUrl = getAppropriateVideoUrl(course, lessonData, lessonIndex);
               integratedVideos++;
+              console.log(`Video integrated for lesson "${lessonData.title}": ${videoUrl}`);
             }
 
             const { error: lessonError } = await supabaseClient
