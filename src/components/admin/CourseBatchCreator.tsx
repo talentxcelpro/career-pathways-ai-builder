@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { createCertificationCourses } from '@/utils/createCertificationCourses';
+import { CoursePopulationTest } from './CoursePopulationTest';
 import { toast } from 'sonner';
 import { 
   GraduationCap, 
@@ -84,7 +85,9 @@ export const CourseGraphenerator: React.FC = () => {
       if (error) throw error;
       setProgress(100);
 
-      toast.success(`Successfully created ${result.courses_created} courses in batch ${result.batch_number}!`);
+      const coursesCreated = result?.courses_created || 0;
+      const batchNumber = result?.batch_number || 'New';
+      toast.success(`Successfully created ${coursesCreated} courses in batch ${batchNumber}!`);
       
       // Reset form and refresh data
       setBatchName('');
@@ -122,6 +125,8 @@ export const CourseGraphenerator: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <CoursePopulationTest />
+      
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

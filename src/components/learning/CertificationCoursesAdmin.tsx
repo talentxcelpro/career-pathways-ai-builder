@@ -23,12 +23,12 @@ export const CertificationCoursesAdmin: React.FC = () => {
         setProgress(prev => Math.min(prev + 10, 90));
       }, 500);
       
-      await createCertificationCourses();
+      const result = await createCertificationCourses();
       
       clearInterval(progressInterval);
       setProgress(100);
       
-      toast.success('Successfully created 50+ certification courses!');
+      toast.success(`Successfully created ${result?.courses_created || 20}+ certification courses!`);
     } catch (error) {
       toast.error('Failed to create courses. Please try again.');
       console.error('Error:', error);

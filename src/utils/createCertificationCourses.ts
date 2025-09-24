@@ -2,10 +2,22 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const createCertificationCourses = async () => {
   try {
-    console.log('Creating 150+ certification courses...');
+    console.log('Creating 50+ certification courses...');
     
-    // Delete existing courses to start fresh
-    await supabase.from('courses').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    // Use the edge function for better performance
+    const response = await supabase.functions.invoke('mass-course-population', {
+      body: {
+        action: 'populate_professional_courses',
+        count: 50
+      }
+    });
+
+    if (response.error) {
+      throw response.error;
+    }
+
+    console.log('Course creation response:', response.data);
+    return response.data;
     
     const courses = getCertificationCoursesData();
     
