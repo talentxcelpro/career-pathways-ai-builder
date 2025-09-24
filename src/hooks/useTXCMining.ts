@@ -22,7 +22,7 @@ export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
     action: 'connection_made', 
     amount: 75,
     description: 'Connect with someone',
-    cooldownMinutes: 30
+    cooldownMinutes: 60 // 1h cooldown
   },
   'profile_completed': {
     action: 'profile_completed',
@@ -46,13 +46,13 @@ export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
     action: 'recommendation_given',
     amount: 120,
     description: 'Give a recommendation',
-    cooldownMinutes: 120
+    cooldownMinutes: 120 // 2h cooldown
   },
   'skill_added': {
     action: 'skill_added',
     amount: 60,
     description: 'Add skills to profile',
-    cooldownMinutes: 180
+    cooldownMinutes: 180 // 3h cooldown
   },
   'daily_login': {
     action: 'daily_login',
@@ -94,13 +94,13 @@ export const TXC_MINING_REWARDS: Record<string, TXCReward> = {
     action: 'post_liked',
     amount: 20,
     description: 'Like a post',
-    cooldownMinutes: 5 // 5 minutes between likes
+    cooldownMinutes: 0 // No cooldown for likes
   },
   'comment_made': {
     action: 'comment_made',
     amount: 20,
     description: 'Comment on a post',
-    cooldownMinutes: 10 // 10 minutes between comments
+    cooldownMinutes: 0 // No cooldown for comments
   },
   'article_posted': {
     action: 'article_posted',

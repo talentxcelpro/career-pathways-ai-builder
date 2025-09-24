@@ -39,7 +39,7 @@ interface Database {
 const TXC_REWARDS: Record<string, { amount: number; description: string; cooldownMinutes: number }> = {
   'daily_login': { amount: 75, description: 'Daily login bonus', cooldownMinutes: 1440 },
   'post_created': { amount: 150, description: 'Create a post', cooldownMinutes: 60 },
-  'connection_made': { amount: 75, description: 'Connect with someone', cooldownMinutes: 30 },
+  'connection_made': { amount: 75, description: 'Connect with someone', cooldownMinutes: 60 },
   'profile_completed': { amount: 300, description: 'Complete your profile', cooldownMinutes: 1440 },
   'resume_created': { amount: 225, description: 'Create a resume', cooldownMinutes: 240 },
   'job_applied': { amount: 90, description: 'Apply to a job', cooldownMinutes: 60 },
@@ -50,8 +50,8 @@ const TXC_REWARDS: Record<string, { amount: number; description: string; cooldow
   'social_activity_bonus': { amount: 300, description: 'Social activity bonus', cooldownMinutes: 10080 },
   'joining_bonus': { amount: 500, description: 'Welcome to TalentXcel!', cooldownMinutes: 0 },
   'referral_made': { amount: 1000, description: 'Refer a friend', cooldownMinutes: 0 },
-  'post_liked': { amount: 20, description: 'Like a post', cooldownMinutes: 5 },
-  'comment_made': { amount: 20, description: 'Comment on a post', cooldownMinutes: 10 },
+  'post_liked': { amount: 20, description: 'Like a post', cooldownMinutes: 0 },
+  'comment_made': { amount: 20, description: 'Comment on a post', cooldownMinutes: 0 },
   'article_posted': { amount: 500, description: 'Post an article', cooldownMinutes: 240 }
 };
 
