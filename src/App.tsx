@@ -10,6 +10,7 @@ import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { AuthProvider } from "./contexts/AuthContext";
+import { TXCAutoMiner } from '@/components/txc/TXCAutoMiner';
 import { FinalLaunchChecklist } from '@/components/deployment/FinalLaunchChecklist';
 import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
 import SubdomainGateway from "@/pages/SubdomainGateway";
@@ -201,6 +202,7 @@ const App = () => {
           <TooltipProvider delayDuration={200}>
             <BrowserRouter>
               <AuthProvider>
+                <TXCAutoMiner />
                     <NotificationProvider>
               {/* <SecurityProvider> */}
                 {/* <AIProvider> */}
