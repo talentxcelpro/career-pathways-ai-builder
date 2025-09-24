@@ -2,8 +2,8 @@ import React from 'react';
 import { updateMetaTags } from "@/utils/metaTags";
 import { CourseraStyleHeader } from '@/components/learning/CourseraStyleHeader';
 import { CoreLearningNav } from '@/components/learning/CoreLearningNav';
-import { LearningSearchHub } from '@/components/learning/LearningSearchHub';
-import { PersonalizedDashboard } from '@/components/learning/PersonalizedDashboard';
+import { RealLearningSearchHub } from '@/components/learning/RealLearningSearchHub';
+import { RealDataLearningDashboard } from '@/components/learning/RealDataLearningDashboard';
 import { SmartLearningNav } from '@/components/learning/SmartLearningNav';
 import { useAdvancedLearningData } from '@/hooks/useAdvancedLearningData';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,26 +46,15 @@ export default function CompleteLearningHub() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
         {/* Personalized Dashboard for users */}
-        {user ? (
-          <section className="mb-16">
-            <PersonalizedDashboard />
-          </section>
-        ) : (
-          <section className="mb-16">
-            <div className="text-center py-8">
-              <h2 className="text-2xl font-bold text-foreground mb-4">Welcome to TalentXcel Learning</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Sign in to access your personalized learning dashboard, track progress, and get AI-powered recommendations.
-              </p>
-            </div>
-          </section>
-        )}
+        <section className="mb-16">
+          <RealDataLearningDashboard userId={user?.id} />
+        </section>
 
         <Separator className="mb-16" />
 
         {/* Search and Discovery Hub */}
         <section className="mb-16">
-          <LearningSearchHub />
+          <RealLearningSearchHub />
         </section>
 
         <Separator className="mb-16" />
