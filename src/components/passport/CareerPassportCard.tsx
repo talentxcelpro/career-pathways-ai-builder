@@ -195,7 +195,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                 </svg>
               </div>
               <div className="text-white text-3xl font-bold mb-1">{displayMetrics?.skillsAdded || 0}</div>
-              <div className="text-white text-sm">Certificat-</div>
+              <div className="text-white text-sm">Certificates</div>
             </div>
 
             {/* Connections */}
@@ -206,7 +206,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                 </svg>
               </div>
               <div className="text-white text-3xl font-bold mb-1">{displayMetrics?.connections || 0}</div>
-              <div className="text-white text-sm">Certifications</div>
+              <div className="text-white text-sm">Connections</div>
             </div>
           </div>
         </div>
