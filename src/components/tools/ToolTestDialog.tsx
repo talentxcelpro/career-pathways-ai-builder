@@ -43,6 +43,8 @@ interface Tool {
 interface ToolTestDialogProps {
   tool: Tool;
   onTest: (toolSlug: string) => Promise<void>;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface TestResult {
@@ -54,11 +56,23 @@ interface TestResult {
   details?: string;
 }
 
-export const ToolTestDialog: React.FC<ToolTestDialogProps> = ({ tool, onTest }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const ToolTestDialog: React.FC<ToolTestDialogProps> = ({ tool, onTest, isOpen = false, onOpenChange }) => {
+  const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const [isRunning, setIsRunning] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [overallProgress, setOverallProgress] = useState(0);
+
+  // Sync with external open state
+  React.useEffect(() => {
+    setIsModalOpen(isOpen);
+  }, [isOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  };
 
   const testSuites = [
     {
@@ -151,7 +165,7 @@ export const ToolTestDialog: React.FC<ToolTestDialogProps> = ({ tool, onTest }) 
   const totalTests = testSuites.length;
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button 
           variant="outline" 

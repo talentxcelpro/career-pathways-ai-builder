@@ -84,7 +84,7 @@ const Tools = () => {
     updateMetaTags({
       title: "AI-Powered Career Tools | Transform Your Professional Journey",
       description: "Access 26+ AI tools for career development, resume building, interview prep, and job matching. Unlock premium features with TXC tokens.",
-      keywords: "AI career tools, resume builder, interview simulator, job matching, career development, professional skills"
+      keywords: ["AI career tools", "resume builder", "interview simulator", "job matching", "career development", "professional skills"]
     });
   }, []);
 
@@ -112,8 +112,8 @@ const Tools = () => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory, selectedDifficulty]);
 
-  // Get unique categories
-  const categories: string[] = ['all', ...Array.from(new Set(tools.map(tool => tool.category)))];
+  // Get unique categories and difficulties
+  const categories = ['all', ...Array.from(new Set(tools.map(tool => tool.category)))];
   const difficulties = ['all', 'beginner', 'intermediate', 'advanced'];
 
   // Count completed tools for unlocking logic
@@ -553,12 +553,16 @@ const Tools = () => {
             <ToolTestDialog
               tool={selectedTool}
               isOpen={showTestDialog}
-              onOpenChange={() => setShowTestDialog(false)}
+              onOpenChange={(open) => setShowTestDialog(open)}
+              onTest={async (toolSlug: string) => {
+                console.log('Testing tool:', toolSlug);
+                setShowTestDialog(false);
+              }}
             />
             <ToolBenefitsModal
               tool={selectedTool}
               isOpen={showBenefitsModal}
-              onOpenChange={() => setShowBenefitsModal(false)}
+              onOpenChange={(open) => setShowBenefitsModal(open)}
               onStartTesting={() => {
                 setShowBenefitsModal(false);
                 setShowTestDialog(true);

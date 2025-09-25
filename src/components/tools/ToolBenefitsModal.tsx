@@ -45,6 +45,9 @@ interface Tool {
 
 interface ToolBenefitsModalProps {
   tool: Tool;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onStartTesting?: () => void;
 }
 
 interface Benefit {
@@ -64,10 +67,20 @@ interface Feature {
   category: 'ai' | 'analytics' | 'export' | 'collaboration';
 }
 
-export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOpen = false, onOpenChange, onStartTesting }) => {
+  const [isModalOpen, setIsModalOpen] = useState(isOpen);
 
-  // Generate benefits based on tool category
+  // Sync with external open state
+  React.useEffect(() => {
+    setIsModalOpen(isOpen);
+  }, [isOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (onOpenChange) {
+      onOpenChange(open);
+    }
+  };
   const getBenefits = (): Benefit[] => {
     const baseBenefits: Benefit[] = [
       {
@@ -200,7 +213,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool }) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
@@ -507,7 +520,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool }) =>
           </div>
           <Button 
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={() => handleOpenChange(false)}
           >
             Start Using Tool
             <ArrowRight className="ml-2 h-4 w-4" />
