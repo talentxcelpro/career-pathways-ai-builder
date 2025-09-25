@@ -140,11 +140,11 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
             {displayProfile.full_name || 'Your Name'}
           </h3>
           <p className="text-white text-lg mb-4">
-            {displayProfile.headline || displayProfile.title || 'Your Professional Title'}
+            {displayProfile.headline || displayProfile.title || 'Transforming Businesses and Lives'}
           </p>
           <div className="flex items-center text-white">
             <MapPin className="w-5 h-5 mr-2 text-white" />
-            <span className="text-lg text-white">{displayProfile.location || 'Your Location'}</span>
+            <span className="text-lg text-white">{displayProfile.location || 'India'}</span>
           </div>
         </div>
 
