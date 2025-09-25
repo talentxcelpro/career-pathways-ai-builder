@@ -82,54 +82,61 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     }
   };
   const getBenefits = (): Benefit[] => {
-    const baseBenefits: Benefit[] = [
-      {
-        id: 'instant-results',
-        title: 'Instant AI-Powered Results',
-        description: 'Get immediate, personalized insights using advanced AI algorithms',
-        icon: Zap,
-        category: 'immediate',
-        impact: 'high'
-      },
-      {
-        id: 'career-advancement',
-        title: 'Accelerated Career Growth',
-        description: 'Fast-track your career progression with data-driven recommendations',
-        icon: TrendingUp,
-        category: 'career',
-        impact: 'high'
-      },
-      {
-        id: 'skill-development',
-        title: 'Skill Gap Analysis',
-        description: 'Identify and bridge critical skill gaps in your field',
-        icon: Target,
-        category: 'skills',
-        impact: 'medium'
-      },
-      {
-        id: 'network-building',
-        title: 'Network Enhancement',
-        description: 'Connect with relevant professionals and expand your network',
-        icon: Users,
-        category: 'network',
-        impact: 'medium'
-      }
-    ];
-
-    // Add category-specific benefits
-    const categoryBenefits: Record<string, Benefit[]> = {
-      'Interview': [
+    // Tool-specific benefits based on slug or name
+    const toolSpecificBenefits: Record<string, Benefit[]> = {
+      'role-fit-evaluator': [
         {
-          id: 'interview-confidence',
-          title: 'Interview Confidence Boost',
-          description: 'Practice with AI interviewer and get real-time feedback',
+          id: 'role-matching',
+          title: 'Perfect Role Matching',
+          description: 'AI analyzes your skills against role requirements for perfect fit assessment',
+          icon: Target,
+          category: 'immediate',
+          impact: 'high'
+        },
+        {
+          id: 'career-alignment',
+          title: 'Career Path Alignment',
+          description: 'Discover roles that align with your career goals and aspirations',
+          icon: TrendingUp,
+          category: 'career',
+          impact: 'high'
+        },
+        {
+          id: 'skill-gap-analysis',
+          title: 'Skill Gap Identification',
+          description: 'Identify specific skills needed to excel in your target role',
+          icon: Brain,
+          category: 'skills',
+          impact: 'medium'
+        }
+      ],
+      'interview-simulator': [
+        {
+          id: 'interview-practice',
+          title: 'Realistic Interview Practice',
+          description: 'Practice with AI interviewer in realistic interview scenarios',
           icon: Award,
           category: 'skills',
           impact: 'high'
+        },
+        {
+          id: 'confidence-building',
+          title: 'Confidence Building',
+          description: 'Build confidence through repeated practice and feedback',
+          icon: TrendingUp,
+          category: 'immediate',
+          impact: 'high'
+        },
+        {
+          id: 'feedback-insights',
+          title: 'Detailed Feedback',
+          description: 'Get specific feedback on your answers and presentation style',
+          icon: BarChart3,
+          category: 'skills',
+          impact: 'medium'
         }
       ],
-      'Resume': [
+      'resume-optimizer': [
         {
           id: 'ats-optimization',
           title: 'ATS Optimization',
@@ -137,80 +144,254 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
           icon: Shield,
           category: 'immediate',
           impact: 'high'
+        },
+        {
+          id: 'keyword-optimization',
+          title: 'Keyword Optimization',
+          description: 'Optimize your resume with industry-relevant keywords',
+          icon: Zap,
+          category: 'immediate',
+          impact: 'high'
+        },
+        {
+          id: 'impact-enhancement',
+          title: 'Impact Enhancement',
+          description: 'Transform your experiences into compelling achievements',
+          icon: Star,
+          category: 'career',
+          impact: 'medium'
         }
       ],
-      'Analytics': [
+      'salary-negotiator': [
         {
-          id: 'data-insights',
-          title: 'Data-Driven Insights',
-          description: 'Make informed career decisions with comprehensive analytics',
+          id: 'market-insights',
+          title: 'Market Salary Insights',
+          description: 'Get real-time salary data for your role and location',
           icon: BarChart3,
-          category: 'career',
+          category: 'immediate',
           impact: 'high'
+        },
+        {
+          id: 'negotiation-strategy',
+          title: 'Negotiation Strategy',
+          description: 'Learn proven negotiation tactics and conversation starters',
+          icon: Target,
+          category: 'skills',
+          impact: 'high'
+        },
+        {
+          id: 'value-proposition',
+          title: 'Value Proposition Builder',
+          description: 'Build compelling arguments for your salary increase',
+          icon: TrendingUp,
+          category: 'career',
+          impact: 'medium'
         }
       ]
     };
 
-    return [...baseBenefits, ...(categoryBenefits[tool.category] || [])];
+    // Get tool-specific benefits or fallback to generic ones
+    const specificBenefits = toolSpecificBenefits[tool.slug] || [
+      {
+        id: 'ai-powered',
+        title: 'AI-Powered Analysis',
+        description: `Get intelligent insights tailored for ${tool.name}`,
+        icon: Brain,
+        category: 'immediate',
+        impact: 'high'
+      },
+      {
+        id: 'career-growth',
+        title: 'Career Growth',
+        description: 'Accelerate your professional development and career advancement',
+        icon: TrendingUp,
+        category: 'career',
+        impact: 'high'
+      },
+      {
+        id: 'time-saving',
+        title: 'Time Efficiency',
+        description: 'Save hours of manual work with automated analysis and recommendations',
+        icon: Clock,
+        category: 'immediate',
+        impact: 'medium'
+      }
+    ];
+
+    return specificBenefits;
   };
 
-  // Generate advanced features
+  // Generate tool-specific features
   const getAdvancedFeatures = (): Feature[] => {
-    return [
+    const toolSpecificFeatures: Record<string, Feature[]> = {
+      'role-fit-evaluator': [
+        {
+          id: 'skills-mapping',
+          name: 'Skills Mapping Engine',
+          description: 'Advanced algorithm that maps your skills to role requirements',
+          isPremium: false,
+          category: 'ai'
+        },
+        {
+          id: 'role-analytics',
+          name: 'Role Analytics Dashboard',
+          description: 'Comprehensive analysis of role compatibility and growth potential',
+          isPremium: false,
+          category: 'analytics'
+        },
+        {
+          id: 'detailed-reports',
+          name: 'Detailed Assessment Reports',
+          description: 'Export comprehensive role fit reports in multiple formats',
+          isPremium: true,
+          category: 'export'
+        },
+        {
+          id: 'mentor-sharing',
+          name: 'Share with Mentors',
+          description: 'Share your assessment results with career mentors and coaches',
+          isPremium: true,
+          category: 'collaboration'
+        }
+      ],
+      'interview-simulator': [
+        {
+          id: 'question-bank',
+          name: 'Extensive Question Bank',
+          description: 'Access to 1000+ interview questions across all industries',
+          isPremium: false,
+          category: 'ai'
+        },
+        {
+          id: 'performance-tracking',
+          name: 'Performance Tracking',
+          description: 'Track your improvement over multiple practice sessions',
+          isPremium: false,
+          category: 'analytics'
+        },
+        {
+          id: 'video-recording',
+          name: 'Video Recording & Analysis',
+          description: 'Record your practice sessions and get AI body language feedback',
+          isPremium: true,
+          category: 'ai'
+        },
+        {
+          id: 'mock-interviews',
+          name: 'Live Mock Interviews',
+          description: 'Schedule live mock interviews with industry professionals',
+          isPremium: true,
+          category: 'collaboration'
+        }
+      ],
+      'resume-optimizer': [
+        {
+          id: 'ats-scanner',
+          name: 'ATS Compatibility Scanner',
+          description: 'Check if your resume will pass applicant tracking systems',
+          isPremium: false,
+          category: 'ai'
+        },
+        {
+          id: 'keyword-analysis',
+          name: 'Keyword Analysis',
+          description: 'Analyze keyword density and relevance for your target role',
+          isPremium: false,
+          category: 'analytics'
+        },
+        {
+          id: 'multiple-formats',
+          name: 'Multiple Format Export',
+          description: 'Export optimized resumes in ATS-friendly and design formats',
+          isPremium: true,
+          category: 'export'
+        },
+        {
+          id: 'recruiter-insights',
+          name: 'Recruiter Feedback',
+          description: 'Get feedback from real recruiters in your industry',
+          isPremium: true,
+          category: 'collaboration'
+        }
+      ]
+    };
+
+    // Fallback features for tools not specifically defined
+    const defaultFeatures: Feature[] = [
       {
-        id: 'ai-personalization',
-        name: 'AI Personalization Engine',
-        description: 'Learns from your preferences and career goals to provide tailored recommendations',
+        id: 'ai-analysis',
+        name: 'AI-Powered Analysis',
+        description: `Smart analysis capabilities specifically designed for ${tool.name}`,
         isPremium: false,
         category: 'ai'
       },
       {
-        id: 'realtime-analytics',
-        name: 'Real-time Analytics Dashboard',
-        description: 'Track your progress and performance metrics in real-time',
+        id: 'progress-tracking',
+        name: 'Progress Tracking',
+        description: 'Monitor your improvement and track key metrics over time',
         isPremium: false,
         category: 'analytics'
       },
       {
-        id: 'export-options',
-        name: 'Multiple Export Formats',
-        description: 'Export results in PDF, Word, JSON, and other formats',
+        id: 'export-results',
+        name: 'Export Results',
+        description: 'Download your results in professional formats',
         isPremium: true,
         category: 'export'
       },
       {
-        id: 'team-collaboration',
-        name: 'Team Collaboration',
-        description: 'Share insights and collaborate with mentors or career coaches',
-        isPremium: true,
-        category: 'collaboration'
-      },
-      {
-        id: 'advanced-ai',
-        name: 'GPT-4 Powered Analysis',
-        description: 'Access to the most advanced AI models for superior results',
-        isPremium: true,
-        category: 'ai'
-      },
-      {
-        id: 'priority-support',
-        name: 'Priority Support & Feedback',
-        description: 'Get priority access to our support team and expert feedback',
+        id: 'expert-support',
+        name: 'Expert Support',
+        description: 'Get personalized guidance from industry experts',
         isPremium: true,
         category: 'collaboration'
       }
     ];
+
+    return toolSpecificFeatures[tool.slug] || defaultFeatures;
   };
 
   const benefits = getBenefits();
   const features = getAdvancedFeatures();
 
-  const stats = {
-    avgTimeReduction: '75%',
-    accuracyImprovement: '92%',
-    userSatisfaction: '4.8/5',
-    careerAdvancement: '3x faster'
+  // Tool-specific stats
+  const getToolStats = () => {
+    const toolStats: Record<string, any> = {
+      'role-fit-evaluator': {
+        avgTimeReduction: '80%',
+        accuracyImprovement: '95%',
+        userSatisfaction: '4.9/5',
+        careerAdvancement: '2.5x faster'
+      },
+      'interview-simulator': {
+        avgTimeReduction: '65%',
+        accuracyImprovement: '88%',
+        userSatisfaction: '4.7/5',
+        careerAdvancement: '3x faster'
+      },
+      'resume-optimizer': {
+        avgTimeReduction: '90%',
+        accuracyImprovement: '94%',
+        userSatisfaction: '4.8/5',
+        careerAdvancement: '2.8x faster'
+      },
+      'salary-negotiator': {
+        avgTimeReduction: '70%',
+        accuracyImprovement: '91%',
+        userSatisfaction: '4.6/5',
+        careerAdvancement: '4x faster'
+      }
+    };
+
+    return toolStats[tool.slug] || {
+      avgTimeReduction: '75%',
+      accuracyImprovement: '92%',
+      userSatisfaction: '4.8/5',
+      careerAdvancement: '3x faster'
+    };
   };
+
+  const stats = getToolStats();
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
