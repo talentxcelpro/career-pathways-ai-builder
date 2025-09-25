@@ -117,23 +117,23 @@ export const LearningDashboard: React.FC = () => {
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span>Course Completion Rate</span>
-                <span>68%</span>
+                <span>{learningStats?.completionRate || 0}%</span>
               </div>
-              <Progress value={68} className="h-2" />
+              <Progress value={learningStats?.completionRate || 0} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span>User Engagement</span>
-                <span>84%</span>
+                <span>{Math.round(learningStats?.engagementScore || 0)}%</span>
               </div>
-              <Progress value={84} className="h-2" />
+              <Progress value={learningStats?.engagementScore || 0} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span>Content Quality Score</span>
-                <span>92%</span>
+                <span>Average Progress</span>
+                <span>{learningStats?.averageProgress || 0}%</span>
               </div>
-              <Progress value={92} className="h-2" />
+              <Progress value={learningStats?.averageProgress || 0} className="h-2" />
             </div>
           </CardContent>
         </Card>
