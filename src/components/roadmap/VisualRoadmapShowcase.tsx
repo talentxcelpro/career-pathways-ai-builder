@@ -7,6 +7,8 @@ import { RealTimelineVisualization } from './RealTimelineVisualization';
 import { RealTimeCareerData } from './RealTimeCareerData';
 import { CreateRoadmapModal } from '../modals/CreateRoadmapModal';
 import { SkillsAnalysisModal } from '../modals/SkillsAnalysisModal';
+import { EmptyCareerState } from '../career-map/EmptyCareerState';
+import { BuildingPathState } from '../career-map/BuildingPathState';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -194,6 +196,7 @@ interface VisualRoadmapShowcaseProps {
 export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ className }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
+  const [isBuilding, setIsBuilding] = useState(false);
   // Fetch user profile for dynamic data
   const { data: userProfile } = useQuery({
     queryKey: ['user_profile_roadmap'],
@@ -337,6 +340,20 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
       }
     };
   }, [userProfile, careerGoals]);
+
+  // Show loading state while building
+  if (isBuilding) {
+    return <BuildingPathState />;
+  }
+
+  // Show empty state if no career goals exist
+  if (careerGoals.length === 0) {
+    return (
+      <EmptyCareerState 
+        onCreateGoal={() => setCreateModalOpen(true)}
+      />
+    );
+  }
 
   return (
     <div className={className}>
@@ -509,8 +526,22 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
       </Card>
 
       {/* Modals */}
-      <CreateRoadmapModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
-      <SkillsAnalysisModal open={skillsModalOpen} onOpenChange={setSkillsModalOpen} />
+      <CreateRoadmapModal 
+        open={createModalOpen} 
+        onOpenChange={setCreateModalOpen}
+        onSuccess={() => {
+          setIsBuilding(true);
+          setTimeout(() => setIsBuilding(false), 3000);
+        }}
+      />
+      <SkillsAnalysisModal 
+        open={skillsModalOpen} 
+        onOpenChange={setSkillsModalOpen}
+        onAnalysisComplete={() => {
+          setIsBuilding(true);
+          setTimeout(() => setIsBuilding(false), 2000);
+        }}
+      />
     </div>
   );
 };

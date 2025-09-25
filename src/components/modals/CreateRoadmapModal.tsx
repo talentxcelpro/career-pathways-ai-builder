@@ -13,11 +13,13 @@ import { toast } from 'sonner';
 interface CreateRoadmapModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
 export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
   open,
   onOpenChange,
+  onSuccess
 }) => {
   const [formData, setFormData] = useState({
     currentRole: '',
@@ -89,6 +91,7 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
       });
 
       onOpenChange(false);
+      onSuccess?.();
     } catch (error: any) {
       toast.error('Failed to create roadmap: ' + error.message);
     } finally {
