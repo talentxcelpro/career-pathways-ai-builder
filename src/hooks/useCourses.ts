@@ -76,8 +76,13 @@ export const useCourseEnrollments = (userId?: string) => {
   return useQuery({
     queryKey: ['course-enrollments', userId],
     queryFn: async () => {
-      if (!userId) return [];
+      console.log('useCourseEnrollments - queryFn called with userId:', userId);
+      if (!userId) {
+        console.log('useCourseEnrollments - No userId provided, returning empty array');
+        return [];
+      }
       
+      console.log('useCourseEnrollments - Fetching enrollments for user:', userId);
       const { data, error } = await supabase
         .from('course_enrollments')
         .select(`
@@ -95,10 +100,17 @@ export const useCourseEnrollments = (userId?: string) => {
         .eq('user_id', userId)
         .order('enrolled_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('useCourseEnrollments - Error fetching enrollments:', error);
+        throw error;
+      }
+      
+      console.log('useCourseEnrollments - Fetched enrollments:', data);
       return data;
     },
-    enabled: !!userId
+    enabled: !!userId,
+    staleTime: 0, // Always refetch for debugging
+    retry: 1
   });
 };
 

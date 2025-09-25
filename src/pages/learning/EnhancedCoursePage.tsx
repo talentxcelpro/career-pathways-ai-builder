@@ -42,11 +42,25 @@ export default function EnhancedCoursePage() {
 
   const { generateSpeech, isLoading: ttsLoading } = useTextToSpeech();
 
-  // Debug logging
+  // Debug logging - Enhanced
   React.useEffect(() => {
-    console.log('EnhancedCoursePage - User state:', user);
-    console.log('EnhancedCoursePage - Enrollments:', enrollments);
-    console.log('EnhancedCoursePage - CourseId:', courseId);
+    console.log('=== DEBUG INFO ===');
+    console.log('User:', user);
+    console.log('User ID:', user?.id);
+    console.log('CourseId:', courseId);
+    console.log('Enrollments data:', enrollments);
+    console.log('Enrollments length:', enrollments?.length);
+    if (enrollments) {
+      enrollments.forEach((enrollment, index) => {
+        console.log(`Enrollment ${index}:`, {
+          id: enrollment.id,
+          course_id: enrollment.course_id,
+          user_id: enrollment.user_id,
+          status: enrollment.status
+        });
+      });
+    }
+    console.log('=================');
   }, [user, enrollments, courseId]);
 
   // Fetch course with modules and lessons
@@ -147,26 +161,45 @@ export default function EnhancedCoursePage() {
     total + (module.course_lessons?.length || 0), 0
   ) || 0;
 
-  const isEnrolled = enrollments?.some(enrollment => {
-    console.log('Checking enrollment:', enrollment);
-    // Fix: use course_id instead of courses.id
-    return enrollment.course_id === courseId;
-  }) || false;
-
-  console.log('IsEnrolled status:', isEnrolled);
+  const isEnrolled = React.useMemo(() => {
+    if (!enrollments || !courseId) {
+      console.log('No enrollments or courseId:', { enrollments: !!enrollments, courseId });
+      return false;
+    }
+    
+    const enrolled = enrollments.some(enrollment => {
+      console.log('Checking enrollment:', {
+        enrollmentCourseId: enrollment.course_id,
+        targetCourseId: courseId,
+        matches: enrollment.course_id === courseId
+      });
+      return enrollment.course_id === courseId;
+    });
+    
+    console.log('Final isEnrolled status:', enrolled);
+    return enrolled;
+  }, [enrollments, courseId]);
 
   const handleEnroll = async () => {
+    console.log('Enroll button clicked!');
+    console.log('User exists:', !!user);
+    console.log('User ID:', user?.id);
+    console.log('Course ID:', courseId);
+    
     if (!user) {
+      console.log('No user, redirecting to login');
       // Redirect to sign in page
       window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
       return;
     }
 
     if (!courseId) {
+      console.log('No courseId provided');
       toast.error('Course not found');
       return;
     }
 
+    console.log('Attempting to enroll user', user.id, 'in course', courseId);
     try {
       console.log('Attempting to enroll:', { courseId, userId: user.id });
       await enrollMutation.mutateAsync({
