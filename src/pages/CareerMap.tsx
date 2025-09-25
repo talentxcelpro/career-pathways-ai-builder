@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Target, Calendar, Users, BookOpen, ArrowRight, Plus, Brain, Map, Zap, Star, BarChart, Rocket, Award, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcase';
 
 const CareerMap = () => {
   const { data: careerGoals = [], isLoading } = useQuery({
@@ -202,6 +203,11 @@ const CareerMap = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Visual Roadmaps Section */}
+        <div className="mb-8">
+          <VisualRoadmapShowcase />
+        </div>
         
         {/* Footer Note */}
         <div className="text-center py-8 mt-12">

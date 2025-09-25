@@ -2,6 +2,7 @@ import React from 'react';
 import { InteractiveCareerPath } from './InteractiveCareerPath';
 import { SkillProgressionTree } from './SkillProgressionTree';
 import { TimelineVisualization } from './TimelineVisualization';
+import { RealTimeCareerData } from './RealTimeCareerData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -192,7 +193,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
           <div className="flex items-center justify-center gap-2 mb-4">
             <Brain className="h-6 w-6 text-blue-600" />
             <Badge className="bg-blue-100 text-blue-800 px-3 py-1">
-              AI-Powered Visualizations
+              Real-time AI Visualizations
             </Badge>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
@@ -200,10 +201,13 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
           </h1>
           <p className="text-lg text-gray-600">
             Experience your career journey through intelligent, personalized visual roadmaps 
-            with AI-driven insights and interactive elements.
+            with real-time AI insights and interactive elements.
           </p>
         </div>
       </div>
+
+      {/* Real-time Career Data */}
+      <RealTimeCareerData />
 
       {/* Personalization Indicators */}
       <Card className="mb-8 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-indigo-200">
