@@ -60,6 +60,7 @@ interface Tool {
   slug: string;
   estimated_time: string;
   txc_cost: number;
+  unlock_level?: number;
 }
 
 const Tools = () => {
@@ -113,6 +114,7 @@ const Tools = () => {
       ...tool,
       isLocked: index >= unlockedToolsCount,
       txc_cost: index >= unlockedToolsCount ? UNLOCK_COSTS.individual : 0,
+      unlock_level: Math.floor(index / 3) + 1,
       unlockRequirement: index >= unlockedToolsCount 
         ? `Complete ${Math.ceil((index + 1 - 3) / 3) * 3 - tools.filter(t => t.isCompleted).length} more tools`
         : undefined
@@ -122,59 +124,32 @@ const Tools = () => {
   // Filter tools based on search and category
   const filteredTools = useMemo(() => {
     return gameAwareTools.filter(tool => {
-      const matchesSearch = !searchQuery || 
+      const matchesSearch = searchQuery === '' || 
         tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+        tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tool.category.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
       const matchesDifficulty = selectedDifficulty === 'all' || tool.difficulty === selectedDifficulty;
       
       return matchesSearch && matchesCategory && matchesDifficulty;
     });
-  }, [tools, searchQuery, selectedCategory, selectedDifficulty]);
+  }, [gameAwareTools, searchQuery, selectedCategory, selectedDifficulty]);
 
-  // Process and paginate tools with gaming logic
-  const paginatedTools = useMemo(() => {
-    const startIndex = (currentPage - 1) * TOOLS_PER_PAGE;
-    const endIndex = startIndex + TOOLS_PER_PAGE;
-    const pageTools = filteredTools.slice(startIndex, endIndex);
-    
-    // Apply gaming logic - lock tools based on progression
-    return pageTools.map((tool, index) => {
-      const globalIndex = startIndex + index;
-      const pageIndex = Math.floor(globalIndex / TOOLS_PER_PAGE) + 1;
-      
-      // First page (6 tools) - unlock first 3, lock rest until progression
-      if (pageIndex === 1) {
-        const isInFirstThree = index < 3;
-        const completedInFirstThree = pageTools.slice(0, 3).filter(t => t.isCompleted).length;
-        const shouldUnlock = isInFirstThree || completedInFirstThree >= 3;
-        
-        return {
-          ...tool,
-          isLocked: !shouldUnlock && !tool.isCompleted,
-          unlockRequirement: isInFirstThree ? null : 'Complete first 3 tools',
-          txc_cost: isInFirstThree ? 0 : UNLOCK_COSTS.individual
-        };
-      }
-      
-      // Other pages - check if previous page is completed
-      const prevPageStartIndex = (pageIndex - 2) * TOOLS_PER_PAGE;
-      const prevPageEndIndex = prevPageStartIndex + TOOLS_PER_PAGE;
-      const prevPageTools = filteredTools.slice(prevPageStartIndex, prevPageEndIndex);
-      const prevPageCompleted = prevPageTools.filter(t => t.isCompleted).length;
-      const pageUnlocked = prevPageCompleted >= 3;
-      
-      return {
-        ...tool,
-        isLocked: !pageUnlocked && !tool.isCompleted,
-        unlockRequirement: pageUnlocked ? null : `Complete 3 tools from page ${pageIndex - 1}`,
-        txc_cost: pageUnlocked ? 0 : UNLOCK_COSTS.individual
-      };
-    });
-  }, [filteredTools, currentPage]);
-
+  // Pagination logic
   const totalPages = Math.ceil(filteredTools.length / TOOLS_PER_PAGE);
+  const startIndex = (currentPage - 1) * TOOLS_PER_PAGE;
+  const paginatedTools = filteredTools.slice(startIndex, startIndex + TOOLS_PER_PAGE);
+
+  // Gaming: Check if current page should be unlocked
+  const isPageUnlocked = (pageNum: number) => {
+    const toolsOnPage = (pageNum - 1) * TOOLS_PER_PAGE;
+    return toolsOnPage < unlockedToolsCount;
+  };
+
+  const canUnlockPageWithTXC = (pageNum: number) => {
+    return userBalance >= UNLOCK_COSTS.page;
+  };
 
   // Reset page when filters change
   useEffect(() => {
@@ -245,7 +220,6 @@ const Tools = () => {
   const handleUnlockSuccess = () => {
     // Refresh data or update state as needed
     window.location.reload();
-  };
   };
 
   const handlePageChange = (newPage: number) => {
@@ -350,40 +324,37 @@ const Tools = () => {
               <div className="flex gap-4 items-center">
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Filters:</span>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="bg-background border border-border rounded-md px-3 py-2 text-sm"
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat === 'all' ? 'All Categories' : cat}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={selectedDifficulty}
+                    onChange={(e) => setSelectedDifficulty(e.target.value)}
+                    className="bg-background border border-border rounded-md px-3 py-2 text-sm"
+                  >
+                    {difficulties.map((diff) => (
+                      <option key={diff} value={diff}>
+                        {diff === 'all' ? 'All Levels' : diff}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 bg-background/50 border border-border/50 rounded-xl text-sm"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>
-                      {cat === 'all' ? 'All Categories' : cat}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="px-3 py-2 bg-background/50 border border-border/50 rounded-xl text-sm"
-                >
-                  {difficulties.map(diff => (
-                    <option key={diff} value={diff}>
-                      {diff === 'all' ? 'All Levels' : diff}
-                    </option>
-                  ))}
-                </select>
-
                 {/* View Mode Toggle */}
-                <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-xl">
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('grid')}
-                    className="p-2"
+                    className="h-8 w-8 p-0"
                   >
                     <Grid3X3 className="w-4 h-4" />
                   </Button>
@@ -391,7 +362,7 @@ const Tools = () => {
                     variant={viewMode === 'list' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('list')}
-                    className="p-2"
+                    className="h-8 w-8 p-0"
                   >
                     <List className="w-4 h-4" />
                   </Button>
@@ -400,213 +371,125 @@ const Tools = () => {
             </div>
 
             {/* Results info */}
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
+            <div className="flex justify-between items-center text-sm text-muted-foreground">
+              <span>
                 Showing {paginatedTools.length} of {filteredTools.length} tools
                 {searchQuery && ` for "${searchQuery}"`}
-              </p>
-              <p className="text-sm text-primary font-medium">
+              </span>
+              <span>
                 Page {currentPage} of {totalPages}
-              </p>
+              </span>
             </div>
           </div>
 
-          {/* Tools Grid */}
-          {paginatedTools.length === 0 ? (
-            <div className="text-center py-24">
-              <div className="max-w-md mx-auto space-y-4">
-                <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto">
-                  <Search className="w-12 h-12 text-muted-foreground" />
-                </div>
-                <h3 className="text-xl font-semibold">No tools found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your search or filter criteria
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('all');
-                    setSelectedDifficulty('all');
-                  }}
-                >
-                  Clear filters
-                </Button>
-              </div>
+          {/* Tools Grid - Gaming Style */}
+          {!isPageUnlocked(currentPage) ? (
+            <div className="text-center py-16">
+              <Card className="max-w-md mx-auto border-border/50 bg-muted/20">
+                <CardContent className="p-8">
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-full bg-muted/50 w-16 h-16 mx-auto flex items-center justify-center">
+                      <Lock className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Page {currentPage} Locked</h3>
+                    <p className="text-muted-foreground">
+                      Complete more tools on previous pages to unlock this level
+                    </p>
+                    <div className="space-y-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Go Back
+                      </Button>
+                      {canUnlockPageWithTXC(currentPage) && (
+                        <TXCFeaturePurchase
+                          featureId={`page-${currentPage}`}
+                          featureName={`Tools Page ${currentPage}`}
+                          cost={UNLOCK_COSTS.page}
+                          onSuccess={handleUnlockSuccess}
+                          className="w-full"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           ) : (
             <div className={cn(
-              "grid gap-8",
+              "grid gap-6 mb-12",
               viewMode === 'grid' 
-                ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3" 
-                : "grid-cols-1 max-w-4xl mx-auto"
+                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                : "grid-cols-1"
             )}>
               {paginatedTools.map((tool) => (
-                <Card
+                <GameToolCard 
                   key={tool.id}
-                  onClick={() => handleToolClick(tool)}
-                  className={cn(
-                    "group relative overflow-hidden cursor-pointer",
-                    "bg-gradient-to-br from-card to-card/90 backdrop-blur-xl",
-                    "border-2 rounded-3xl p-8",
-                    "transition-all duration-500 ease-out",
-                    isToolLocked(tool) 
-                      ? "border-border/30 opacity-75 hover:opacity-85" 
-                      : "border-border/50 hover:shadow-2xl hover:scale-[1.02] hover:border-primary/40",
-                    tool.isCompleted && "ring-2 ring-green-500/20 border-green-500/30"
-                  )}
-                >
-                  {/* Apple-style glassmorphism */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl" />
-                  
-                  {/* Level indicator */}
-                  <div className={cn(
-                    "absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold",
-                    "bg-gradient-to-r text-white shadow-lg",
-                    tool.unlock_level === 1 && "from-emerald-500 to-green-600",
-                    tool.unlock_level === 2 && "from-blue-500 to-cyan-600", 
-                    tool.unlock_level === 3 && "from-purple-500 to-violet-600",
-                    (tool.unlock_level || 1) >= 4 && "from-amber-500 to-orange-600"
-                  )}>
-                    L{tool.unlock_level || 1}
-                  </div>
-                  
-                  {/* Lock overlay for locked tools */}
-                  {isToolLocked(tool) && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-background/95 to-background/85 backdrop-blur-md rounded-3xl flex items-center justify-center z-10">
-                      <div className="text-center space-y-4 p-6">
-                        <div className="relative">
-                          <div className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl border border-border/50">
-                            <Lock className="w-10 h-10 text-muted-foreground mx-auto" />
-                          </div>
-                          <div className="absolute -top-2 -right-2 p-2 bg-primary rounded-full">
-                            <Crown className="w-4 h-4 text-primary-foreground" />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <p className="font-bold text-lg text-foreground">Level {tool.unlock_level || 1} Tool</p>
-                          <p className="text-sm text-muted-foreground max-w-xs">
-                            {getUnlockMessage(tool)}
-                          </p>
-                          <div className="flex items-center justify-center gap-2 text-xs text-primary">
-                            <Zap className="w-3 h-3" />
-                            {tool.txc_cost && `${tool.txc_cost} TXC to unlock instantly`}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Tool header */}
-                  <div className="relative z-0 flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "p-4 rounded-2xl backdrop-blur-sm border-2 transition-all duration-300",
-                        isToolLocked(tool) 
-                          ? "bg-muted/30 border-border/30" 
-                          : "bg-primary/10 border-primary/20 group-hover:bg-primary/15"
-                      )}>
-                        <tool.icon className={cn(
-                          "w-8 h-8 transition-colors",
-                          isToolLocked(tool) ? "text-muted-foreground" : "text-primary"
-                        )} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className={cn(
-                          "text-xl font-bold transition-colors",
-                          isToolLocked(tool) 
-                            ? "text-muted-foreground" 
-                            : "text-foreground group-hover:text-primary"
-                        )}>
-                          {tool.name}
-                        </h3>
-                        <div className="flex items-center gap-3 mt-2">
-                          <Badge 
-                            variant="secondary" 
-                            className={cn(
-                              "text-xs font-medium",
-                              isToolLocked(tool) ? "bg-muted/30" : "bg-secondary/50"
-                            )}
-                          >
-                            {tool.difficulty}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {tool.estimated_time}
-                          </span>
-                          {tool.txc_cost && tool.txc_cost > 0 && (
-                            <Badge variant="outline" className="text-xs border-primary/30 text-primary">
-                              <Coins className="w-3 h-3 mr-1" />
-                              {tool.txc_cost}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {tool.isCompleted && (
-                      <div className="p-2 bg-green-500/20 rounded-full">
-                        <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <div className="relative z-0 mb-6">
-                    <p className={cn(
-                      "text-sm leading-relaxed",
-                      isToolLocked(tool) ? "text-muted-foreground/70" : "text-muted-foreground"
-                    )}>
-                      {tool.description}
-                    </p>
-                  </div>
-
-                  {/* Progress bar or unlock info */}
-                  <div className="relative z-0 space-y-3">
-                    {!isToolLocked(tool) ? (
-                      <>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Progress</span>
-                          <span className="font-medium">{Math.round(tool.progress)}%</span>
-                        </div>
-                        <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-700 ease-out"
-                            style={{ width: `${tool.progress}%` }}
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex items-center justify-center py-2">
-                        <Badge variant="outline" className="border-muted-foreground/30 text-muted-foreground">
-                          <Lock className="w-3 h-3 mr-1" />
-                          Click to unlock
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Hover effect arrow */}
-                  <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className={cn(
-                      "p-2 rounded-full backdrop-blur-sm",
-                      isToolLocked(tool) 
-                        ? "bg-muted/30" 
-                        : "bg-primary/20"
-                    )}>
-                      <ChevronRight className={cn(
-                        "w-5 h-5",
-                        isToolLocked(tool) ? "text-muted-foreground" : "text-primary"
-                      )} />
-                    </div>
-                  </div>
-                </Card>
+                  tool={tool}
+                  viewMode={viewMode}
+                  onToolClick={handleToolClick}
+                  onUnlockClick={handleToolClick}
+                />
               ))}
             </div>
           )}
 
-          {/* Pagination */}
-          {renderPaginationControls()}
+          {/* Gaming Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              
+              <div className="flex space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNum = i + 1;
+                  const isUnlocked = isPageUnlocked(pageNum);
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => isUnlocked && setCurrentPage(pageNum)}
+                      disabled={!isUnlocked}
+                      className={cn(
+                        "w-10 h-10 relative",
+                        !isUnlocked && "opacity-50"
+                      )}
+                    >
+                      {!isUnlocked && (
+                        <Lock className="w-3 h-3 absolute -top-1 -right-1" />
+                      )}
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                onClick={() => {
+                  const nextPage = currentPage + 1;
+                  if (isPageUnlocked(nextPage)) {
+                    setCurrentPage(nextPage);
+                  }
+                }}
+                disabled={currentPage === totalPages || !isPageUnlocked(currentPage + 1)}
+                className="gap-2"
+              >
+                Next
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Modals */}
@@ -614,6 +497,10 @@ const Tools = () => {
           tool={selectedTool}
           isOpen={showTestDialog}
           onOpenChange={setShowTestDialog}
+          onTest={async (toolSlug: string) => {
+            console.log('Testing tool:', toolSlug);
+            setShowTestDialog(false);
+          }}
         />
         
         <ToolBenefitsModal 
