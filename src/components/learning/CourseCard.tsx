@@ -1,9 +1,10 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Star, Play, Award } from "lucide-react";
+import { Clock, Users, Star, Play, Award, ExternalLink } from "lucide-react";
 
 interface Course {
   id: string;
@@ -47,7 +48,14 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEn
             {course.difficulty_level || course.level || 'Beginner'}
           </Badge>
         </div>
-        <CardTitle className="text-lg">{course.title}</CardTitle>
+        <CardTitle className="text-lg">
+          <Link 
+            to={`/learning/courses/${course.id}`}
+            className="hover:text-primary transition-colors"
+          >
+            {course.title}
+          </Link>
+        </CardTitle>
         <CardDescription className="line-clamp-2">
           {course.description || 'Learn essential skills for your career growth'}
         </CardDescription>
@@ -94,23 +102,31 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, isEnrolled, onEn
             <span className="text-lg font-bold text-green-600">
               {formatPrice(course.price, course.is_free)}
             </span>
-            <Button
-              onClick={() => onEnroll(course.id)}
-              disabled={isEnrolled}
-              size="sm"
-            >
-              {isEnrolled ? (
-                <>
-                  <Award className="h-4 w-4 mr-1" />
-                  Enrolled
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4 mr-1" />
-                  Enroll
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Link to={`/learning/courses/${course.id}`}>
+                <Button variant="outline" size="sm">
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  View Details
+                </Button>
+              </Link>
+              <Button
+                onClick={() => onEnroll(course.id)}
+                disabled={isEnrolled}
+                size="sm"
+              >
+                {isEnrolled ? (
+                  <>
+                    <Award className="h-4 w-4 mr-1" />
+                    Enrolled
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-1" />
+                    Enroll
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

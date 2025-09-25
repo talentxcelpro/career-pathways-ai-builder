@@ -351,10 +351,12 @@ export default function LearningHub() {
                     </div>
                   </div>
                   
-                  <Button className="w-full">
-                    <Play className="h-4 w-4 mr-2" />
-                    View Course
-                  </Button>
+                  <Link to="/learning/courses">
+                    <Button className="w-full">
+                      <Play className="h-4 w-4 mr-2" />
+                      View Course
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
