@@ -23,6 +23,11 @@ const Tools = () => {
     isLoading 
   } = useRealToolsData();
 
+  // Debug logging
+  console.log('Tools page - isLoading:', isLoading);
+  console.log('Tools page - toolsByCategory:', toolsByCategory);
+  console.log('Tools page - userStats:', userStats);
+
   useEffect(() => {
     updateMetaTags({
       title: "AI-Powered Career Tools | TalentXcel",
@@ -75,10 +80,10 @@ const Tools = () => {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                AI-Powered Career Tools
+                🚀 AI-Powered Career Tools (Real Data)
               </h2>
               <p className="text-muted-foreground">
-                25+ tools to accelerate your career growth
+                {Object.keys(toolsByCategory).length} categories • {Object.values(toolsByCategory).flat().length} tools loaded from database
               </p>
             </div>
             

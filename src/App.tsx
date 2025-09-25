@@ -55,7 +55,7 @@ import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 
 import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
-import ToolsHub from './pages/tools/ToolsHub';
+import Tools from './pages/Tools';
 import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
 import PublicJobSearch from './pages/tools/PublicJobSearch';
 import PublicMarketInsights from './pages/tools/PublicMarketInsights';
@@ -339,7 +339,7 @@ const App = () => {
                         <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
                         
                          {/* Tools Routes */}
-                         <Route path="/tools" element={<ToolsHub />} />
+                         <Route path="/tools" element={<Tools />} />
                          <Route path="/tools/resume-check" element={<ResumeChecker />} />
                          <Route path="/tools/cover-letter" element={<CoverLetterGenerator />} />
                          <Route path="/tools/interview-prep" element={<InterviewPrep />} />
