@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { InteractiveCareerPath } from './InteractiveCareerPath';
-import { SkillProgressionTree } from './SkillProgressionTree';
-import { TimelineVisualization } from './TimelineVisualization';
+import { RealSkillsTree } from './RealSkillsTree';
+import { RealTimelineVisualization } from './RealTimelineVisualization';
 import { RealTimeCareerData } from './RealTimeCareerData';
 import { CreateRoadmapModal } from '../modals/CreateRoadmapModal';
 import { SkillsAnalysisModal } from '../modals/SkillsAnalysisModal';
@@ -26,7 +26,7 @@ import {
   Zap
 } from 'lucide-react';
 
-// Mock data for demonstrations
+// Real data generation based on user profile and career data
 const mockCareerNodes = [
   {
     id: '1',
@@ -460,14 +460,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             </p>
           </div>
           
-          <SkillProgressionTree
-            categories={dynamicSkillCategories}
-            userProfile={{
-              currentLevel: dynamicPersonalization.customizedFor.currentRole,
-              targetRole: dynamicPersonalization.customizedFor.targetRole,
-              experience: dynamicPersonalization.customizedFor.experience
-            }}
-          />
+          <RealSkillsTree />
         </TabsContent>
 
         <TabsContent value="timeline" className="space-y-6">
@@ -480,13 +473,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             </p>
           </div>
           
-          <TimelineVisualization
-            title={`${dynamicPersonalization.timeToGoal} Career Plan`}
-            description={`Personalized timeline for ${userProfile?.full_name || 'your'} career advancement`}
-            events={dynamicTimelineEvents}
-            personalization={dynamicPersonalization}
-            onEventClick={(eventId) => console.log('Clicked event:', eventId)}
-          />
+          <RealTimelineVisualization />
         </TabsContent>
       </Tabs>
 

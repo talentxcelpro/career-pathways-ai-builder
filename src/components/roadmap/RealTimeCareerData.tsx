@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -46,6 +47,65 @@ interface UserScore {
   profile_completion_score: number;
   last_updated: string;
 }
+
+export const useRealTimeCareerData = () => {
+  const { user } = useAuth();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['real-career-data', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+
+      try {
+        // Fetch user profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        // Fetch career goals
+        const { data: careerGoals } = await supabase
+          .from('career_goals')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_active', true);
+
+        // Fetch AI recommendations
+        const { data: aiRecommendations } = await supabase
+          .from('ai_career_recommendations')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_dismissed', false)
+          .order('priority', { ascending: false })
+          .limit(5);
+
+        // Fetch job matches
+        const { data: jobMatches } = await supabase
+          .from('ai_job_matches')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('match_score', { ascending: false })
+          .limit(10);
+
+        return {
+          profile,
+          careerGoals: careerGoals || [],
+          aiRecommendations: aiRecommendations || [],
+          jobMatches: jobMatches || []
+        };
+      } catch (error) {
+        console.error('Error fetching career data:', error);
+        return null;
+      }
+    },
+    enabled: !!user?.id,
+    staleTime: 30000,
+    refetchInterval: 60000
+  });
+
+  return { data, isLoading, error };
+};
 
 export const RealTimeCareerData: React.FC = () => {
   const [realTimeUpdates, setRealTimeUpdates] = useState<string[]>([]);
