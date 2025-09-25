@@ -2,202 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { ServiceCard } from './ServiceCard';
 import { ServiceFilters } from './ServiceFilters';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Grid3X3, List, Filter, X } from 'lucide-react';
+import { Grid3X3, List, Filter, X, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { allMockServices, serviceCategories } from '@/data/mockServices';
+import { appleTextSizes, appleSpacing, appleVariants } from '@/utils/appleTypeScale';
 
-// Mock data - this would typically come from your database
-const mockServices = [
-  {
-    id: '1',
-    title: 'Professional Resume Writing Service',
-    description: 'Get a professionally written resume that stands out to employers and passes ATS systems.',
-    category: 'career-services',
-    subcategory: 'resume-writing',
-    price: 2500,
-    currency: 'INR',
-    provider: {
-      id: 'provider-1',
-      name: 'Sarah Johnson',
-      avatar: '/api/placeholder/40/40',
-      verified: true,
-      rating: 4.9,
-      reviewCount: 127
-    },
-    images: ['/api/placeholder/400/300'],
-    location: 'Mumbai, India',
-    deliveryTime: '2-3 days',
-    tags: ['ATS-friendly', 'Executive', 'Career Change'],
-    rating: 4.9,
-    reviewCount: 89,
-    isFavorite: false
-  },
-  {
-    id: '2',
-    title: 'LinkedIn Profile Optimization',
-    description: 'Optimize your LinkedIn profile to attract recruiters and build your professional brand.',
-    category: 'career-services',
-    subcategory: 'profile-optimization',
-    price: 1500,
-    currency: 'INR',
-    provider: {
-      id: 'provider-2',
-      name: 'Rajesh Kumar',
-      avatar: '/api/placeholder/40/40',
-      verified: true,
-      rating: 4.8,
-      reviewCount: 95
-    },
-    images: ['/api/placeholder/400/300'],
-    location: 'Bangalore, India',
-    deliveryTime: '1-2 days',
-    tags: ['LinkedIn', 'Personal Branding', 'SEO'],
-    rating: 4.8,
-    reviewCount: 67,
-    isFavorite: true
-  },
-  {
-    id: '3',
-    title: 'Interview Coaching Session',
-    description: 'One-on-one interview coaching to help you ace your next job interview.',
-    category: 'career-services',
-    subcategory: 'interview-prep',
-    price: 3000,
-    currency: 'INR',
-    provider: {
-      id: 'provider-3',
-      name: 'Priya Sharma',
-      avatar: '/api/placeholder/40/40',
-      verified: true,
-      rating: 4.9,
-      reviewCount: 156
-    },
-    images: ['/api/placeholder/400/300'],
-    location: 'Delhi, India',
-    deliveryTime: '1 hour session',
-    tags: ['Behavioral', 'Technical', 'Mock Interview'],
-    rating: 4.9,
-    reviewCount: 134,
-    isFavorite: false
-  },
-  {
-    id: '4',
-    title: 'Custom Website Development',
-    description: 'Build a professional website for your business with modern design and functionality.',
-    category: 'web-development',
-    subcategory: 'full-stack',
-    price: 25000,
-    currency: 'INR',
-    provider: {
-      id: 'provider-4',
-      name: 'Tech Solutions Inc',
-      avatar: '/api/placeholder/40/40',
-      verified: true,
-      rating: 4.7,
-      reviewCount: 78
-    },
-    images: ['/api/placeholder/400/300'],
-    location: 'Pune, India',
-    deliveryTime: '2-3 weeks',
-    tags: ['React', 'Node.js', 'Responsive'],
-    rating: 4.7,
-    reviewCount: 45,
-    isFavorite: false
-  },
-  {
-    id: '5',
-    title: 'Digital Marketing Strategy',
-    description: 'Comprehensive digital marketing strategy to grow your business online.',
-    category: 'marketing',
-    subcategory: 'digital-marketing',
-    price: 8000,
-    currency: 'INR',
-    provider: {
-      id: 'provider-5',
-      name: 'Marketing Pros',
-      avatar: '/api/placeholder/40/40',
-      verified: false,
-      rating: 4.6,
-      reviewCount: 52
-    },
-    images: ['/api/placeholder/400/300'],
-    location: 'Hyderabad, India',
-    deliveryTime: '1 week',
-    tags: ['SEO', 'Social Media', 'PPC'],
-    rating: 4.6,
-    reviewCount: 32,
-    isFavorite: false
-  },
-  {
-    id: '6',
-    title: 'Graphic Design Package',
-    description: 'Complete branding package including logo, business cards, and marketing materials.',
-    category: 'design',
-    subcategory: 'branding',
-    price: 5000,
-    currency: 'INR',
-    provider: {
-      id: 'provider-6',
-      name: 'Creative Studio',
-      avatar: '/api/placeholder/40/40',
-      verified: true,
-      rating: 4.8,
-      reviewCount: 91
-    },
-    images: ['/api/placeholder/400/300'],
-    location: 'Chennai, India',
-    deliveryTime: '5-7 days',
-    tags: ['Logo', 'Branding', 'Print Design'],
-    rating: 4.8,
-    reviewCount: 73,
-    isFavorite: false
-  }
-];
+// Use the comprehensive service data
+const mockServices = allMockServices;
 
-const categories = [
-  {
-    id: 'career-services',
-    name: 'Career Services',
-    subcategories: [
-      { id: 'resume-writing', name: 'Resume Writing' },
-      { id: 'profile-optimization', name: 'Profile Optimization' },
-      { id: 'interview-prep', name: 'Interview Preparation' },
-      { id: 'career-coaching', name: 'Career Coaching' }
-    ]
-  },
-  {
-    id: 'web-development',
-    name: 'Web Development',
-    subcategories: [
-      { id: 'frontend', name: 'Frontend Development' },
-      { id: 'backend', name: 'Backend Development' },
-      { id: 'full-stack', name: 'Full Stack Development' },
-      { id: 'ecommerce', name: 'E-commerce Development' }
-    ]
-  },
-  {
-    id: 'marketing',
-    name: 'Marketing',
-    subcategories: [
-      { id: 'digital-marketing', name: 'Digital Marketing' },
-      { id: 'content-marketing', name: 'Content Marketing' },
-      { id: 'social-media', name: 'Social Media Marketing' },
-      { id: 'seo', name: 'SEO Services' }
-    ]
-  },
-  {
-    id: 'design',
-    name: 'Design',
-    subcategories: [
-      { id: 'graphic-design', name: 'Graphic Design' },
-      { id: 'ui-ux', name: 'UI/UX Design' },
-      { id: 'branding', name: 'Branding' },
-      { id: 'illustration', name: 'Illustration' }
-    ]
-  }
-];
+const categories = serviceCategories.map(cat => ({
+  id: cat.id,
+  name: cat.name,
+  subcategories: cat.subcategories.map((sub, index) => ({
+    id: sub.toLowerCase().replace(/\s+/g, '-'),
+    name: sub
+  }))
+}));
 
 const locations = [
   'Mumbai, India',
@@ -211,15 +34,15 @@ const locations = [
 ];
 
 const popularTags = [
-  'ATS-friendly',
-  'LinkedIn',
-  'React',
-  'SEO',
-  'Branding',
   'Professional',
+  'Quality',
   'Fast Delivery',
   'Beginner Friendly',
-  'Premium Quality'
+  'Premium Quality',
+  'Modern Design',
+  'Custom Solution',
+  'Expert Level',
+  'Consultation'
 ];
 
 export interface ServiceMarketplaceProps {
@@ -260,12 +83,12 @@ export const ServiceMarketplace: React.FC<ServiceMarketplaceProps> = ({ classNam
 
     // Category filter
     if (selectedCategory) {
-      filtered = filtered.filter(service => service.category === selectedCategory);
+      filtered = filtered.filter(service => service.category.toLowerCase().replace(/\s+/g, '-') === selectedCategory);
     }
 
     // Subcategory filter
     if (selectedSubcategory) {
-      filtered = filtered.filter(service => service.subcategory === selectedSubcategory);
+      filtered = filtered.filter(service => service.subcategory?.toLowerCase().replace(/\s+/g, '-') === selectedSubcategory);
     }
 
     // Price range filter
@@ -310,11 +133,9 @@ export const ServiceMarketplace: React.FC<ServiceMarketplaceProps> = ({ classNam
         filtered.sort((a, b) => b.reviewCount - a.reviewCount);
         break;
       case 'newest':
-        // For demo, just reverse the order
         filtered.reverse();
         break;
       default:
-        // Relevance - keep original order
         break;
     }
 
@@ -357,186 +178,327 @@ export const ServiceMarketplace: React.FC<ServiceMarketplaceProps> = ({ classNam
   };
 
   const handleShare = (serviceId: string) => {
-    // Implement share functionality
     console.log('Share service:', serviceId);
   };
 
   const handleServiceClick = (serviceId: string) => {
-    // Navigate to service detail page
     console.log('View service:', serviceId);
   };
 
   return (
-    <div className={cn("container mx-auto px-4 py-8", className)}>
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filters Sidebar */}
-        <div className={cn(
-          "lg:w-80 transition-all duration-200",
-          showFilters ? "block" : "hidden lg:block"
-        )}>
-          <ServiceFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedCategory={selectedCategory}
-            onCategoryChange={(category) => {
-              setSelectedCategory(category);
-              setSelectedSubcategory(''); // Reset subcategory when category changes
-            }}
-            selectedSubcategory={selectedSubcategory}
-            onSubcategoryChange={setSelectedSubcategory}
-            priceRange={priceRange}
-            onPriceRangeChange={setPriceRange}
-            selectedLocation={selectedLocation}
-            onLocationChange={setSelectedLocation}
-            minRating={minRating}
-            onMinRatingChange={setMinRating}
-            deliveryTime={deliveryTime}
-            onDeliveryTimeChange={setDeliveryTime}
-            verifiedOnly={verifiedOnly}
-            onVerifiedOnlyChange={setVerifiedOnly}
-            selectedTags={selectedTags}
-            onTagsChange={setSelectedTags}
-            sortBy={sortBy}
-            onSortByChange={setSortBy}
-            onClearFilters={clearFilters}
-            categories={categories}
-            locations={locations}
-            popularTags={popularTags}
-            className="sticky top-4"
-          />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 space-y-6">
-          {/* Controls Bar */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="lg:hidden"
-                  >
-                    <Filter className="h-4 w-4 mr-2" />
-                    {showFilters ? 'Hide' : 'Show'} Filters
-                  </Button>
-                  
-                  <div className="text-sm text-muted-foreground">
-                    {filteredServices.length} services found
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Active Filters */}
-              {(selectedCategory || selectedLocation || minRating > 0 || verifiedOnly || selectedTags.length > 0) && (
-                <>
-                  <Separator className="my-4" />
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium">Active Filters:</div>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedCategory && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          {categories.find(c => c.id === selectedCategory)?.name}
-                          <X
-                            className="h-3 w-3 cursor-pointer"
-                            onClick={() => setSelectedCategory('')}
-                          />
-                        </Badge>
-                      )}
-                      {selectedLocation && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          {selectedLocation}
-                          <X
-                            className="h-3 w-3 cursor-pointer"
-                            onClick={() => setSelectedLocation('')}
-                          />
-                        </Badge>
-                      )}
-                      {minRating > 0 && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          {minRating}+ Rating
-                          <X
-                            className="h-3 w-3 cursor-pointer"
-                            onClick={() => setMinRating(0)}
-                          />
-                        </Badge>
-                      )}
-                      {verifiedOnly && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          Verified Only
-                          <X
-                            className="h-3 w-3 cursor-pointer"
-                            onClick={() => setVerifiedOnly(false)}
-                          />
-                        </Badge>
-                      )}
-                      {selectedTags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                          {tag}
-                          <X
-                            className="h-3 w-3 cursor-pointer"
-                            onClick={() => setSelectedTags(prev => prev.filter(t => t !== tag))}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Services Grid/List */}
-          {filteredServices.length > 0 ? (
-            <div className={cn(
-              viewMode === 'grid'
-                ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                : "space-y-4"
-            )}>
-              {filteredServices.map(service => (
-                <ServiceCard
-                  key={service.id}
-                  {...service}
-                  onFavorite={() => handleFavorite(service.id)}
-                  onShare={() => handleShare(service.id)}
-                  onClick={() => handleServiceClick(service.id)}
-                  className={viewMode === 'list' ? "flex flex-col md:flex-row" : undefined}
-                />
-              ))}
+    <div className={cn("min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20", className)}>
+      {/* Apple-inspired Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-3xl">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0iaHNsKHZhcigtLXByaW1hcnkpIC8gMC4xKSIvPgo8L3N2Zz4K')] opacity-30"></div>
+        
+        <div className="container mx-auto px-6 py-16 relative">
+          <div className="text-center space-y-6 max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-full px-4 py-2 border border-border/50">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">100+ Professional Services Available</span>
             </div>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="space-y-4">
-                  <div className="text-muted-foreground text-lg">No services found</div>
-                  <p className="text-sm text-muted-foreground">
-                    Try adjusting your filters or search terms
-                  </p>
-                  <Button onClick={clearFilters}>Clear All Filters</Button>
+            
+            <h1 className={cn(appleTextSizes['display-medium'], "font-bold text-foreground leading-tight")}>
+              Find the Perfect
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"> Service </span>
+              for Your Needs
+            </h1>
+            
+            <p className={cn(appleTextSizes['title-large'], "text-muted-foreground max-w-2xl mx-auto leading-relaxed")}>
+              Connect with verified professionals offering world-class services. From creative design to technical development, 
+              find exactly what you need with transparent pricing and instant booking.
+            </p>
+            
+            <div className="flex flex-wrap justify-center gap-4 pt-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Users className="w-4 h-4 text-green-500" />
+                <span>500+ Verified Providers</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Star className="w-4 h-4 text-yellow-500" />
+                <span>4.8+ Average Rating</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <TrendingUp className="w-4 h-4 text-blue-500" />
+                <span>1000+ Completed Projects</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Category Showcase */}
+      <div className="container mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h2 className={cn(appleTextSizes['headline-large'], "font-semibold mb-4")}>
+            Explore Service Categories
+          </h2>
+          <p className={cn(appleTextSizes['body-large'], "text-muted-foreground")}>
+            Browse our curated collection of professional services
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16">
+          {serviceCategories.map((category) => (
+            <Card 
+              key={category.id} 
+              className={cn(
+                appleVariants.card.interactive,
+                "group border-border/50 hover:border-border transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
+              )}
+              onClick={() => setSelectedCategory(category.id)}
+            >
+              <CardContent className="p-6 text-center space-y-3">
+                <div className={cn(
+                  "w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br flex items-center justify-center text-2xl",
+                  category.color
+                )}>
+                  {category.icon}
                 </div>
+                <h3 className={cn(appleTextSizes['title-small'], "font-medium text-center")}>
+                  {category.name}
+                </h3>
               </CardContent>
             </Card>
-          )}
+          ))}
+        </div>
+      </div>
+
+      <div className="container mx-auto px-6 pb-12">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Apple-inspired Filters Sidebar */}
+          <div className={cn(
+            "lg:w-80 transition-all duration-300",
+            showFilters ? "block" : "hidden lg:block"
+          )}>
+            <div className="sticky top-6">
+              <Card className={cn(appleVariants.card.base, "backdrop-blur-xl bg-background/80 border-border/50")}>
+                <CardHeader className="pb-4">
+                  <h3 className={cn(appleTextSizes['title-medium'], "font-semibold")}>
+                    Filter Services
+                  </h3>
+                </CardHeader>
+                <ServiceFilters
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={(category) => {
+                    setSelectedCategory(category);
+                    setSelectedSubcategory('');
+                  }}
+                  selectedSubcategory={selectedSubcategory}
+                  onSubcategoryChange={setSelectedSubcategory}
+                  priceRange={priceRange}
+                  onPriceRangeChange={setPriceRange}
+                  selectedLocation={selectedLocation}
+                  onLocationChange={setSelectedLocation}
+                  minRating={minRating}
+                  onMinRatingChange={setMinRating}
+                  deliveryTime={deliveryTime}
+                  onDeliveryTimeChange={setDeliveryTime}
+                  verifiedOnly={verifiedOnly}
+                  onVerifiedOnlyChange={setVerifiedOnly}
+                  selectedTags={selectedTags}
+                  onTagsChange={setSelectedTags}
+                  sortBy={sortBy}
+                  onSortByChange={setSortBy}
+                  onClearFilters={clearFilters}
+                  categories={categories}
+                  locations={locations}
+                  popularTags={popularTags}
+                  className="px-6 pb-6"
+                />
+              </Card>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 space-y-8">
+            {/* Apple-inspired Controls Bar */}
+            <Card className={cn(appleVariants.card.base, "backdrop-blur-xl bg-background/80 border-border/50")}>
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-6">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFilters(!showFilters)}
+                      className={cn(
+                        "lg:hidden transition-all duration-200",
+                        appleVariants.button.ghost
+                      )}
+                    >
+                      <Filter className="h-4 w-4 mr-2" />
+                      {showFilters ? 'Hide' : 'Show'} Filters
+                    </Button>
+                    
+                    <div className="space-y-1">
+                      <div className={cn(appleTextSizes['title-small'], "font-semibold")}>
+                        {filteredServices.length} services available
+                      </div>
+                      <div className={cn(appleTextSizes['body-medium'], "text-muted-foreground")}>
+                        Trusted professionals ready to help
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+                      <Button
+                        variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('grid')}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Grid3X3 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === 'list' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('list')}
+                        className="h-8 w-8 p-0"
+                      >
+                        <List className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active Filters */}
+                {(selectedCategory || selectedLocation || minRating > 0 || verifiedOnly || selectedTags.length > 0) && (
+                  <>
+                    <Separator className="my-6" />
+                    <div className="space-y-3">
+                      <div className={cn(appleTextSizes['title-small'], "font-medium")}>Active Filters</div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCategory && (
+                          <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border-primary/20">
+                            {categories.find(c => c.id === selectedCategory)?.name}
+                            <X
+                              className="h-3 w-3 cursor-pointer hover:scale-110 transition-transform"
+                              onClick={() => setSelectedCategory('')}
+                            />
+                          </Badge>
+                        )}
+                        {selectedLocation && (
+                          <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary-foreground border-secondary/20">
+                            {selectedLocation}
+                            <X
+                              className="h-3 w-3 cursor-pointer hover:scale-110 transition-transform"
+                              onClick={() => setSelectedLocation('')}
+                            />
+                          </Badge>
+                        )}
+                        {minRating > 0 && (
+                          <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 border-yellow-200">
+                            {minRating}+ Rating
+                            <X
+                              className="h-3 w-3 cursor-pointer hover:scale-110 transition-transform"
+                              onClick={() => setMinRating(0)}
+                            />
+                          </Badge>
+                        )}
+                        {verifiedOnly && (
+                          <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-800 border-green-200">
+                            Verified Only
+                            <X
+                              className="h-3 w-3 cursor-pointer hover:scale-110 transition-transform"
+                              onClick={() => setVerifiedOnly(false)}
+                            />
+                          </Badge>
+                        )}
+                        {selectedTags.map(tag => (
+                          <Badge key={tag} variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent-foreground border-accent/20">
+                            {tag}
+                            <X
+                              className="h-3 w-3 cursor-pointer hover:scale-110 transition-transform"
+                              onClick={() => setSelectedTags(prev => prev.filter(t => t !== tag))}
+                            />
+                          </Badge>
+                        ))}
+                        {(selectedCategory || selectedLocation || minRating > 0 || verifiedOnly || selectedTags.length > 0) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="text-xs h-8 px-3 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          >
+                            Clear All
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Apple-inspired Services Grid/List */}
+            {filteredServices.length > 0 ? (
+              <div className={cn(
+                "transition-all duration-300",
+                viewMode === 'grid' 
+                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                  : "space-y-6"
+              )}>
+                {filteredServices.map((service, index) => (
+                  <div
+                    key={service.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <ServiceCard
+                      {...service}
+                      onClick={() => handleServiceClick(service.id)}
+                      onFavorite={() => handleFavorite(service.id)}
+                      onShare={() => handleShare(service.id)}
+                      className={cn(
+                        appleVariants.card.interactive,
+                        "hover:shadow-xl hover:scale-[1.02] transition-all duration-300",
+                        viewMode === 'list' ? 'w-full' : ''
+                      )}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Card className={cn(appleVariants.card.base, "backdrop-blur-xl bg-background/80 border-border/50")}>
+                <CardContent className="p-16 text-center">
+                  <div className={cn(appleSpacing['large'], "max-w-md mx-auto")}>
+                    <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted/50 flex items-center justify-center">
+                      <Filter className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h3 className={cn(appleTextSizes['headline-small'], "font-semibold mb-2")}>
+                      No services found
+                    </h3>
+                    <p className={cn(appleTextSizes['body-large'], "text-muted-foreground mb-6")}>
+                      Try adjusting your filters or search terms to discover amazing services from our talented providers.
+                    </p>
+                    <Button 
+                      onClick={clearFilters} 
+                      variant="outline"
+                      className={cn(appleVariants.button.secondary, "rounded-full px-6")}
+                    >
+                      Clear All Filters
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Load More Button for Pagination */}
+            {filteredServices.length > 12 && (
+              <div className="text-center pt-8">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className={cn(appleVariants.button.secondary, "rounded-full px-8")}
+                >
+                  Load More Services
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
