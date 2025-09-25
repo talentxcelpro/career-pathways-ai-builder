@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils';
 
 const Tools = () => {
   console.log('🎯 Tools component mounted - VERIFY THIS APPEARS');
-  alert('Tools component loaded - if you see this, the component is working');
   
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -72,8 +71,24 @@ const Tools = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-red-500">
         <div className="container mx-auto px-4 py-8 space-y-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-white mb-4">
+              🔥 NEW TOOLS PAGE WITH REAL DATA 🔥
+            </h1>
+            <p className="text-white text-xl">
+              If you see this RED background, the new Tools component is working!
+            </p>
+            <div className="bg-white p-4 rounded-lg mt-4 text-black">
+              <p>Debug Info:</p>
+              <p>isLoading: {isLoading ? 'true' : 'false'}</p>
+              <p>userName: {userName}</p>
+              <p>tools count: {Object.values(toolsByCategory).flat().length}</p>
+              <p>categories: {Object.keys(toolsByCategory).join(', ')}</p>
+            </div>
+          </div>
+
           {/* Game Progress Header */}
           <GameProgressHeader
             userName={userName}
@@ -84,82 +99,70 @@ const Tools = () => {
             userLevel={userStats.userLevel}
             nextLevelProgress={userStats.nextLevelProgress}
           />
-
-          {/* Apple-style Tools Grid */}
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                🚀 AI-Powered Career Tools (Real Data)
-              </h2>
-              <p className="text-muted-foreground">
-                {Object.keys(toolsByCategory).length} categories • {Object.values(toolsByCategory).flat().length} tools loaded from database
-              </p>
-            </div>
-            
-            {/* Simplified Tools Display */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Object.entries(toolsByCategory).map(([category, categoryTools]) => (
-                <div key={category} className="space-y-4">
-                  <h3 className="text-lg font-semibold text-primary">{category}</h3>
-                  <div className="space-y-3">
-                    {categoryTools.map((tool) => (
-                      <div
-                        key={tool.id}
-                        className={cn(
-                          "p-4 rounded-lg border transition-all duration-200",
-                          tool.isLocked 
-                            ? "bg-muted/50 border-muted" 
-                            : "bg-card border-border hover:border-primary/50 cursor-pointer"
-                        )}
-                      >
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={cn(
-                            "p-2 rounded-lg",
-                            tool.isLocked ? "bg-muted" : "bg-primary/10"
+          
+          {/* Simplified Tools Display */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Object.entries(toolsByCategory).map(([category, categoryTools]) => (
+              <div key={category} className="space-y-4">
+                <h3 className="text-lg font-semibold text-primary">{category}</h3>
+                <div className="space-y-3">
+                  {categoryTools.map((tool) => (
+                    <div
+                      key={tool.id}
+                      className={cn(
+                        "p-4 rounded-lg border transition-all duration-200",
+                        tool.isLocked 
+                          ? "bg-muted/50 border-muted" 
+                          : "bg-card border-border hover:border-primary/50 cursor-pointer"
+                      )}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className={cn(
+                          "p-2 rounded-lg",
+                          tool.isLocked ? "bg-muted" : "bg-primary/10"
+                        )}>
+                          {React.createElement(tool.icon as any, { 
+                            className: cn(
+                              "w-5 h-5",
+                              tool.isLocked ? "text-muted-foreground" : "text-primary"
+                            )
+                          })}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={cn(
+                            "font-medium",
+                            tool.isLocked ? "text-muted-foreground" : "text-foreground"
                           )}>
-                            {React.createElement(tool.icon as any, { 
-                              className: cn(
-                                "w-5 h-5",
-                                tool.isLocked ? "text-muted-foreground" : "text-primary"
-                              )
-                            })}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className={cn(
-                              "font-medium",
-                              tool.isLocked ? "text-muted-foreground" : "text-foreground"
-                            )}>
-                              {tool.name}
-                            </h4>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {tool.description}
-                            </p>
-                          </div>
-                          {tool.isLocked && <Lock className="w-4 h-4 text-muted-foreground" />}
-                          {tool.isCompleted && <CheckCircle className="w-4 h-4 text-success" />}
+                            {tool.name}
+                          </h4>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {tool.description}
+                          </p>
                         </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {tool.difficulty}
-                            </Badge>
-                            <Badge variant="secondary" className="text-xs">
-                              {tool.estimated_time}
-                            </Badge>
-                          </div>
-                          {tool.txc_cost > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              {tool.txc_cost} TXC
-                            </Badge>
-                          )}
-                        </div>
+                        {tool.isLocked && <Lock className="w-4 h-4 text-muted-foreground" />}
+                        {tool.isCompleted && <CheckCircle className="w-4 h-4 text-success" />}
                       </div>
-                    ))}
-                  </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {tool.difficulty}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {tool.estimated_time}
+                          </Badge>
+                        </div>
+                        {tool.txc_cost > 0 && (
+                          <Badge variant="outline" className="text-xs">
+                            {tool.txc_cost} TXC
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
