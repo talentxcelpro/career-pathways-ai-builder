@@ -29,18 +29,21 @@ export class WebSocketManager {
     this.channels.set(channelName, channel);
     this.retryAttempts.set(channelName, 0);
 
-    // Add error handling with better logging
+    // Add error handling with better logging and prevent retry loops
     channel.subscribe((status, err) => {
       console.log(`Channel ${channelName} status:`, status);
       
       if (status === 'CHANNEL_ERROR') {
         console.warn(`Channel ${channelName} error:`, err);
         // Don't retry on connection errors, just log
-        if (err && typeof err === 'object' && (err as any)._type === 'undefined') {
-          console.warn(`WebSocket connection error for ${channelName}, ignoring...`);
+        if (err && typeof err === 'object' && ((err as any)._type === 'undefined' || (err as any).message?.includes('WebSocket'))) {
+          console.warn(`WebSocket connection error for ${channelName}, ignoring retry...`);
           return;
         }
-        this.handleChannelError(channelName, err);
+        // Only handle non-connection errors
+        if (err && !(err as any).message?.includes('WebSocket') && !(err as any).message?.includes('post_likes')) {
+          this.handleChannelError(channelName, err);
+        }
       } else if (status === 'SUBSCRIBED') {
         console.log(`✅ Channel ${channelName} subscribed successfully`);
         this.retryAttempts.set(channelName, 0);
