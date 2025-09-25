@@ -66,45 +66,129 @@ export function useRealCareerData() {
           profileCompletion = Math.round((fields.filter(Boolean).length / fields.length) * 100);
         }
 
-        // Get user scores and achievements
-        const { data: userScores } = await supabase
-          .from('user_scores')
-          .select('total_points')
+        // Get all real data in parallel
+        const [
+          userScoresResponse,
+          achievementsResponse,
+          txcBalanceResponse,
+          jobApplicationsResponse,
+          connectionsResponse,
+          postsResponse,
+          courseCompletionsResponse,
+          loginStreakResponse
+        ] = await Promise.all([
+          supabase
+            .from('user_scores')
+            .select('total_points')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('career_achievements')
+            .select('*')
+            .eq('user_id', user.id),
+          supabase
+            .from('user_txc_balances')
+            .select('total_earned')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('job_applications')
+            .select('id')
+            .eq('user_id', user.id),
+          supabase
+            .from('connections')
+            .select('id')
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+            .eq('status', 'accepted'),
+          supabase
+            .from('posts')
+            .select('id')
+            .eq('user_id', user.id),
+          supabase
+            .from('career_passport')
+            .select('tests_completed_count')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+          supabase
+            .from('txc_transactions')
+            .select('created_at')
+            .eq('user_id', user.id)
+            .eq('activity_type', 'daily_login')
+            .order('created_at', { ascending: false })
+            .limit(30)
+        ]);
+
+        // Calculate login streak from transaction data
+        const calculateLoginStreak = (transactions: any[]) => {
+          if (!transactions || transactions.length === 0) return 0;
+          
+          const today = new Date();
+          let streak = 0;
+          let currentDate = new Date(today);
+          
+          for (let i = 0; i < 30; i++) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const hasLoginForDate = transactions.some(t => 
+              t.created_at.split('T')[0] === dateStr
+            );
+            
+            if (hasLoginForDate) {
+              streak++;
+            } else if (i > 0) {
+              break; // Break streak if no login found (except for today)
+            }
+            
+            currentDate.setDate(currentDate.getDate() - 1);
+          }
+          
+          return streak;
+        };
+
+        // Calculate application streak from job applications
+        const calculateApplicationStreak = (applications: any[]) => {
+          if (!applications || applications.length === 0) return 0;
+          
+          const today = new Date();
+          let streak = 0;
+          let currentDate = new Date(today);
+          
+          for (let i = 0; i < 30; i++) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const hasApplicationForDate = applications.some(app => 
+              app.applied_at && app.applied_at.split('T')[0] === dateStr
+            );
+            
+            if (hasApplicationForDate) {
+              streak++;
+            } else if (i > 0) {
+              break; // Break streak if no application found
+            }
+            
+            currentDate.setDate(currentDate.getDate() - 1);
+          }
+          
+          return streak;
+        };
+
+        // Get application data with dates for streak calculation
+        const { data: applicationDates } = await supabase
+          .from('job_applications')
+          .select('applied_at')
           .eq('user_id', user.id)
-          .single();
+          .order('applied_at', { ascending: false })
+          .limit(30);
 
-        // Get achievements
-        const { data: achievements } = await supabase
-          .from('career_achievements')
-          .select('*')
-          .eq('user_id', user.id);
-
-        // Get token balance
-        const { data: tokenBalance } = await supabase
-          .from('token_balances')
-          .select('lifetime_earned')
-          .eq('user_id', user.id)
-          .single();
-
-        // Get user streaks
-        const { data: streaks } = await supabase
-          .from('user_streaks')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        // Mock some data for now (can be replaced with real queries)
         const metrics: CareerMetrics = {
           profileCompletion,
-          jobApplications: Math.floor(Math.random() * 20) + 1,
-          connections: Math.floor(Math.random() * 50) + 5,
+          jobApplications: jobApplicationsResponse.data?.length || 0,
+          connections: connectionsResponse.data?.length || 0,
           skillsAdded: (profile?.skills?.length || 0),
-          coursesCompleted: Math.floor(Math.random() * 10),
-          postsCreated: Math.floor(Math.random() * 15),
-          achievementsEarned: achievements?.length || 0,
-          totalTXCEarned: tokenBalance?.lifetime_earned || 0,
-          loginStreak: streaks?.current_login_streak || 0,
-          applicationStreak: streaks?.current_application_streak || 0,
+          coursesCompleted: courseCompletionsResponse.data?.tests_completed_count || 0,
+          postsCreated: postsResponse.data?.length || 0,
+          achievementsEarned: achievementsResponse.data?.length || 0,
+          totalTXCEarned: txcBalanceResponse.data?.total_earned || 0,
+          loginStreak: calculateLoginStreak(loginStreakResponse.data || []),
+          applicationStreak: calculateApplicationStreak(applicationDates || []),
           lastActivityDate: new Date().toISOString()
         };
 

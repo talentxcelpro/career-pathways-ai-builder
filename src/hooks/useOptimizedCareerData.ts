@@ -36,8 +36,17 @@ export function useOptimizedCareerData() {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      // Single query to get all career-related data
-      const [passportResponse, profileResponse, connectionsResponse] = await Promise.all([
+      // Get all real data in parallel
+      const [
+        passportResponse, 
+        profileResponse, 
+        connectionsResponse,
+        jobApplicationsResponse,
+        postsResponse,
+        achievementsResponse,
+        txcBalanceResponse,
+        loginTransactionsResponse
+      ] = await Promise.all([
         supabase
           .from('career_passport')
           .select('*')
@@ -45,41 +54,121 @@ export function useOptimizedCareerData() {
           .maybeSingle(),
         supabase
           .from('profiles')
-          .select('full_name, headline, location, profile_picture_url')
+          .select('full_name, headline, location, profile_picture_url, skills')
           .eq('id', user.id)
           .maybeSingle(),
         supabase
           .from('connections')
           .select('id')
           .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted')
+          .eq('status', 'accepted'),
+        supabase
+          .from('job_applications')
+          .select('id, applied_at')
+          .eq('user_id', user.id),
+        supabase
+          .from('posts')
+          .select('id')
+          .eq('user_id', user.id),
+        supabase
+          .from('career_achievements')
+          .select('*')
+          .eq('user_id', user.id),
+        supabase
+          .from('user_txc_balances')
+          .select('total_earned')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        supabase
+          .from('txc_transactions')
+          .select('created_at')
+          .eq('user_id', user.id)
+          .eq('activity_type', 'daily_login')
+          .order('created_at', { ascending: false })
+          .limit(30)
       ]);
 
       const passport = passportResponse.data;
       const profile = profileResponse.data;
       const connectionsCount = connectionsResponse.data?.length || 0;
+      const jobApplicationsCount = jobApplicationsResponse.data?.length || 0;
+      const postsCount = postsResponse.data?.length || 0;
+      const achievementsCount = achievementsResponse.data?.length || 0;
+      const totalTXCEarned = txcBalanceResponse.data?.total_earned || 0;
 
-      // Calculate profile completion
+      // Calculate profile completion with skills
       let profileCompletion = 0;
-      if (profile?.full_name) profileCompletion += 25;
-      if (profile?.headline) profileCompletion += 25;
-      if (profile?.location) profileCompletion += 25;
-      if (profile?.profile_picture_url) profileCompletion += 25;
+      if (profile?.full_name) profileCompletion += 20;
+      if (profile?.headline) profileCompletion += 20;
+      if (profile?.location) profileCompletion += 20;
+      if (profile?.profile_picture_url) profileCompletion += 20;
+      if (profile?.skills && profile.skills.length > 0) profileCompletion += 20;
+
+      // Calculate streaks from real data
+      const calculateLoginStreak = (transactions: any[]) => {
+        if (!transactions || transactions.length === 0) return 0;
+        
+        const today = new Date();
+        let streak = 0;
+        let currentDate = new Date(today);
+        
+        for (let i = 0; i < 30; i++) {
+          const dateStr = currentDate.toISOString().split('T')[0];
+          const hasLoginForDate = transactions.some(t => 
+            t.created_at.split('T')[0] === dateStr
+          );
+          
+          if (hasLoginForDate) {
+            streak++;
+          } else if (i > 0) {
+            break;
+          }
+          
+          currentDate.setDate(currentDate.getDate() - 1);
+        }
+        
+        return streak;
+      };
+
+      const calculateApplicationStreak = (applications: any[]) => {
+        if (!applications || applications.length === 0) return 0;
+        
+        const today = new Date();
+        let streak = 0;
+        let currentDate = new Date(today);
+        
+        for (let i = 0; i < 30; i++) {
+          const dateStr = currentDate.toISOString().split('T')[0];
+          const hasApplicationForDate = applications.some(app => 
+            app.applied_at && app.applied_at.split('T')[0] === dateStr
+          );
+          
+          if (hasApplicationForDate) {
+            streak++;
+          } else if (i > 0) {
+            break;
+          }
+          
+          currentDate.setDate(currentDate.getDate() - 1);
+        }
+        
+        return streak;
+      };
 
       return {
         passport,
         profile,
         metrics: {
           profileCompletion,
-          jobApplications: passport?.jobs_applied_count || 0,
+          jobApplications: jobApplicationsCount,
           connections: connectionsCount,
-          skillsAdded: 0,
+          skillsAdded: profile?.skills?.length || 0,
           coursesCompleted: passport?.tests_completed_count || 0,
-          postsCreated: 0,
-          achievementsEarned: 0,
-          totalTXCEarned: 0,
-          loginStreak: 0,
-          applicationStreak: 0,
+          postsCreated: postsCount,
+          achievementsEarned: achievementsCount,
+          totalTXCEarned: totalTXCEarned,
+          loginStreak: calculateLoginStreak(loginTransactionsResponse.data || []),
+          applicationStreak: calculateApplicationStreak(jobApplicationsResponse.data || []),
           lastActivityDate: new Date().toISOString()
         } as CareerMetrics,
         insights: {
