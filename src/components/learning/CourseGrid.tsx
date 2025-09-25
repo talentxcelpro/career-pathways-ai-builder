@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock, Users, Star, Award, Search, Filter, BookOpen, Play, CheckCircle } from 'lucide-react';
-import { useCourses, Course } from '@/hooks/useCourses';
+import { useCourses, Course, useCourseEnrollments, useEnrollInCourse } from '@/hooks/useCourses';
 import { useCurrentUserProfile } from '@/hooks/useCurrentUserProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { EnrollmentForm } from './EnrollmentForm';
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -27,6 +28,7 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showEnrollment, setShowEnrollment] = useState(false);
 
+  const { user } = useAuth();
   const { displayName } = useCurrentUserProfile();
   const { courses, isLoading } = useCourses({
     category: category && category !== 'all' ? category : undefined,
@@ -34,6 +36,8 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
     search: search || undefined,
     limit
   });
+  const { data: enrollments } = useCourseEnrollments(user?.id);
+  const enrollMutation = useEnrollInCourse();
 
   const formatPrice = (price: number, isFree: boolean) => {
     if (isFree || price === 0) return "Free";
@@ -50,12 +54,15 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
   };
 
   const handleEnrollClick = (course: Course) => {
-    if (!displayName) {
+    if (!user) {
       // Redirect to login or show login modal
       return;
     }
-    setSelectedCourse(course);
-    setShowEnrollment(true);
+    enrollMutation.mutate({ courseId: course.id, userId: user.id });
+  };
+
+  const isEnrolled = (courseId: string) => {
+    return enrollments?.some(enrollment => enrollment.course_id === courseId);
   };
 
   if (isLoading) {
@@ -206,13 +213,24 @@ export const CourseGrid: React.FC<CourseGridProps> = ({
                 </div>
               </div>
 
-              <Button 
-                onClick={() => handleEnrollClick(course)}
-                className="w-full bg-primary hover:bg-primary/90 text-white"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Enroll Now
-              </Button>
+              {isEnrolled(course.id) ? (
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  disabled
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Enrolled
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => handleEnrollClick(course)}
+                  className="w-full bg-primary hover:bg-primary/90 text-white"
+                  disabled={enrollMutation.isPending || !user}
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Now'}
+                </Button>
+              )}
             </CardContent>
           </Card>
         ))}
