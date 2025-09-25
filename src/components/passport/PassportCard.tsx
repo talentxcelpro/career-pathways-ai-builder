@@ -55,10 +55,10 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
       <div className="p-4 sm:p-6 pb-3 sm:pb-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0 mb-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-cyan-400 mb-1 !important">
+            <h2 className="text-lg sm:text-xl font-bold !text-white mb-1">
               TalentXcel Career Passport
             </h2>
-            <div className="flex items-center text-red-400 text-sm">
+            <div className="flex items-center !text-white text-sm">
               <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
               Career Builder
             </div>
@@ -90,7 +90,7 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
               </div>
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-base sm:text-lg font-semibold text-white !important truncate">
+              <h3 className="text-base sm:text-lg font-semibold !text-white truncate">
                 {userProfile?.full_name || 'TalentXcel Pro'}
               </h3>
               <p className="text-cyan-400 text-xs sm:text-sm line-clamp-1 !important">
@@ -112,24 +112,24 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
           <div className="text-3xl sm:text-4xl font-bold text-orange-400 mb-1">
             {insights.career_readiness_score}%
           </div>
-          <div className="text-white text-sm !important">Career Ready</div>
+          <div className="!text-white text-sm">Career Ready</div>
         </div>
 
         {/* Market Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-white text-xs sm:text-sm mb-1 !important">Market Rank</div>
-            <div className="text-white font-semibold text-sm sm:text-base !important">
+            <div className="!text-white text-xs sm:text-sm mb-1">Market Rank</div>
+            <div className="!text-white font-semibold text-sm sm:text-base">
               {insights.industry_percentile > 0 ? `${insights.industry_percentile}th percentile` : 'Not ranked'}
             </div>
-            <div className="text-white text-xs !important">vs peers</div>
+            <div className="!text-white text-xs">vs peers</div>
           </div>
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-white text-xs sm:text-sm mb-1 !important">Competitiveness</div>
-            <div className="text-white font-semibold text-sm sm:text-base !important">
+            <div className="!text-white text-xs sm:text-sm mb-1">Competitiveness</div>
+            <div className="!text-white font-semibold text-sm sm:text-base">
               {insights.market_competitiveness_score}%
             </div>
-            <div className="text-white text-xs !important">Score</div>
+            <div className="!text-white text-xs">Score</div>
           </div>
         </div>
 
