@@ -7,6 +7,7 @@ import ServicesMarketplace from "../pages/marketplace/ServicesMarketplace";
 import ServicesIntegration from "../pages/marketplace/ServicesIntegration";
 import TestingOptimization from "../pages/marketplace/TestingOptimization";
 import ServiceBookingForm from "../pages/marketplace/ServiceBookingForm";
+import BusinessModelsHub from "../components/business-models/BusinessModelsHub";
 
 export const marketplaceRoutes = [
   {
@@ -66,6 +67,12 @@ export const marketplaceRoutes = [
     title: "Testing & Optimization",
     to: "/services/testing",
     page: <TestingOptimization />,
+    isPublic: true,
+  },
+  {
+    title: "Business Models",
+    to: "/business-models",
+    page: <BusinessModelsHub />,
     isPublic: true,
   },
 ];
