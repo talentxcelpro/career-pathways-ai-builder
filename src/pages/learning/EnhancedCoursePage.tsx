@@ -44,23 +44,26 @@ export default function EnhancedCoursePage() {
 
   // Debug logging - Enhanced
   React.useEffect(() => {
-    console.log('=== DEBUG INFO ===');
+    console.log('🔍 EnhancedCoursePage DEBUG INFO 🔍');
     console.log('User:', user);
     console.log('User ID:', user?.id);
-    console.log('CourseId:', courseId);
+    console.log('CourseId from URL:', courseId);
     console.log('Enrollments data:', enrollments);
-    console.log('Enrollments length:', enrollments?.length);
-    if (enrollments) {
+    console.log('Enrollments length:', enrollments?.length || 0);
+    if (enrollments && enrollments.length > 0) {
       enrollments.forEach((enrollment, index) => {
-        console.log(`Enrollment ${index}:`, {
+        console.log(`📚 Enrollment ${index + 1}:`, {
           id: enrollment.id,
           course_id: enrollment.course_id,
           user_id: enrollment.user_id,
-          status: enrollment.status
+          status: enrollment.status,
+          matches_current: enrollment.course_id === courseId
         });
       });
+    } else {
+      console.log('❌ No enrollments found for user');
     }
-    console.log('=================');
+    console.log('🔍 END DEBUG INFO 🔍');
   }, [user, enrollments, courseId]);
 
   // Fetch course with modules and lessons
@@ -181,34 +184,42 @@ export default function EnhancedCoursePage() {
   }, [enrollments, courseId]);
 
   const handleEnroll = async () => {
-    console.log('Enroll button clicked!');
+    console.log('🚀 ENROLL BUTTON CLICKED! 🚀');
     console.log('User exists:', !!user);
     console.log('User ID:', user?.id);
     console.log('Course ID:', courseId);
+    console.log('Is already enrolled:', isEnrolled);
     
     if (!user) {
-      console.log('No user, redirecting to login');
-      // Redirect to sign in page
+      console.log('❌ No user, redirecting to login');
+      toast.error('Please sign in to enroll in courses');
       window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
       return;
     }
 
     if (!courseId) {
-      console.log('No courseId provided');
+      console.log('❌ No courseId provided');
       toast.error('Course not found');
       return;
     }
 
-    console.log('Attempting to enroll user', user.id, 'in course', courseId);
+    if (isEnrolled) {
+      console.log('⚠️ User already enrolled in this course');
+      toast.info('You are already enrolled in this course!');
+      return;
+    }
+
+    console.log('✅ Starting enrollment process...');
     try {
-      console.log('Attempting to enroll:', { courseId, userId: user.id });
+      console.log('📝 Attempting to enroll:', { courseId, userId: user.id });
       await enrollMutation.mutateAsync({
         courseId: courseId,
         userId: user.id
       });
+      console.log('🎉 Enrollment successful!');
       toast.success('Successfully enrolled in course!');
     } catch (error: any) {
-      console.error('Enrollment error:', error);
+      console.error('💥 Enrollment error:', error);
       toast.error(error.message || 'Failed to enroll in course. Please try again.');
     }
   };
