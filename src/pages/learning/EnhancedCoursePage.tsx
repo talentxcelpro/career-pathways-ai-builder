@@ -26,12 +26,13 @@ import { AITutorChat } from '@/components/learning/AITutorChat';
 import { InteractiveCodeEditor } from '@/components/learning/InteractiveCodeEditor';
 import { useInteractiveExercises, useTextToSpeech } from '@/hooks/useAdvancedLearning';
 import { useEnrollInCourse, useCourseEnrollments } from '@/hooks/useCourses';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function EnhancedCoursePage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const { user } = useAuth();
   const [selectedTab, setSelectedTab] = useState('overview');
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
@@ -41,11 +42,12 @@ export default function EnhancedCoursePage() {
 
   const { generateSpeech, isLoading: ttsLoading } = useTextToSpeech();
 
+  // Debug logging
   React.useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-  }, []);
+    console.log('EnhancedCoursePage - User state:', user);
+    console.log('EnhancedCoursePage - Enrollments:', enrollments);
+    console.log('EnhancedCoursePage - CourseId:', courseId);
+  }, [user, enrollments, courseId]);
 
   // Fetch course with modules and lessons
   const { data: course, isLoading } = useQuery({
@@ -145,9 +147,13 @@ export default function EnhancedCoursePage() {
     total + (module.course_lessons?.length || 0), 0
   ) || 0;
 
-  const isEnrolled = enrollments?.some(enrollment => 
-    enrollment.courses.id === courseId
-  ) || false;
+  const isEnrolled = enrollments?.some(enrollment => {
+    console.log('Checking enrollment:', enrollment);
+    // Fix: use course_id instead of courses.id
+    return enrollment.course_id === courseId;
+  }) || false;
+
+  console.log('IsEnrolled status:', isEnrolled);
 
   const handleEnroll = async () => {
     if (!user) {
