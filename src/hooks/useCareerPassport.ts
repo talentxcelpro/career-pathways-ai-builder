@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
+import { websocketManager } from '@/utils/websocketManager';
 
 export interface CareerPassport {
   id: string;
@@ -47,6 +49,58 @@ export interface UserJourneyEvent {
 export function useCareerPassport() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Set up real-time subscriptions for career passport data
+  useEffect(() => {
+    if (!user?.id) return;
+
+    // Create channels for real-time updates
+    const passportChannel = websocketManager.createChannel(`career_passport_${user.id}`);
+    const achievementsChannel = websocketManager.createChannel(`career_achievements_${user.id}`);
+    const journeyChannel = websocketManager.createChannel(`user_journey_${user.id}`);
+
+    // Subscribe to career passport changes
+    passportChannel
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'career_passport',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ['career-passport', user.id] });
+      })
+      .subscribe();
+
+    // Subscribe to achievements changes
+    achievementsChannel
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'career_achievements',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ['career-achievements', user.id] });
+      })
+      .subscribe();
+
+    // Subscribe to journey tracking changes
+    journeyChannel
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_journey_tracking',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ['user-journey', user.id] });
+      })
+      .subscribe();
+
+    return () => {
+      websocketManager.removeChannel(`career_passport_${user.id}`);
+      websocketManager.removeChannel(`career_achievements_${user.id}`);
+      websocketManager.removeChannel(`user_journey_${user.id}`);
+    };
+  }, [user?.id, queryClient]);
 
   const { data: careerPassport, isLoading: passportLoading, error: passportError } = useQuery({
     queryKey: ['career-passport', user?.id],

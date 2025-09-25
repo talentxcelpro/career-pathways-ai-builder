@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useRealTimeCareerMetrics } from './useRealTimeCareerMetrics';
+import { useRealTimeAchievements } from './useRealTimeAchievements';
+import { websocketManager } from '@/utils/websocketManager';
 
 interface CareerMetrics {
   profileCompletion: number;
@@ -29,8 +32,13 @@ interface CareerInsights {
 
 export function useOptimizedCareerData() {
   const { user } = useAuth();
+  
+  // Use real-time hooks for live data
+  const { metrics: realTimeMetrics, isLoading: metricsLoading } = useRealTimeCareerMetrics();
+  const realTimeAchievements = useRealTimeAchievements();
+  const { achievements, progressAchievements, isLoading: achievementsLoading, triggerAchievementCheck, isAwarding } = realTimeAchievements;
 
-  // Fetch career passport data with optimized query
+  // Fetch career passport data with optimized query and real-time updates
   const { data: careerData, isLoading, error } = useQuery({
     queryKey: ['optimized-career-data', user?.id],
     queryFn: async () => {
@@ -187,20 +195,61 @@ export function useOptimizedCareerData() {
     refetchOnWindowFocus: false,
   });
 
+  // Set up real-time subscription for career passport updates
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const passportChannel = websocketManager.createChannel(`optimized_career_${user.id}`);
+    
+    passportChannel
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'career_passport',
+        filter: `user_id=eq.${user.id}`
+      }, (payload) => {
+        console.log('Career passport updated:', payload);
+        // The query will automatically refresh due to real-time invalidation
+      })
+      .subscribe();
+
+    return () => {
+      websocketManager.removeChannel(`optimized_career_${user.id}`);
+    };
+  }, [user?.id]);
+
   // Memoize processed data to prevent unnecessary re-renders
   const processedData = useMemo(() => {
-    if (!careerData) return { metrics: null, insights: null, profile: null };
+    if (!careerData) return { 
+      metrics: realTimeMetrics, 
+      insights: null, 
+      profile: null,
+      achievements,
+      progressAchievements 
+    };
+    
+    // Merge real-time metrics with career passport data
+    const enhancedMetrics = realTimeMetrics ? {
+      ...careerData.metrics,
+      ...realTimeMetrics
+    } : careerData.metrics;
     
     return {
-      metrics: careerData.metrics,
+      metrics: enhancedMetrics,
       insights: careerData.insights,
-      profile: careerData.profile
+      profile: careerData.profile,
+      achievements,
+      progressAchievements,
+      triggerAchievementCheck,
+      isAwarding
     };
-  }, [careerData]);
+  }, [careerData, realTimeMetrics, achievements, progressAchievements]);
 
   return {
     ...processedData,
-    isLoading,
-    error
+    isLoading: isLoading || metricsLoading || achievementsLoading,
+    error,
+    realTimeEnabled: true,
+    lastUpdated: realTimeMetrics?.lastUpdated
   };
 }
