@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { IndustrySelector } from '@/components/jobs/IndustrySelector';
 import { 
   Filter, 
   X, 
@@ -332,11 +333,15 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
 
           {/* Industry */}
           <FilterSection title="Industry" icon={<Building2 className="h-4 w-4" />} defaultOpen={false}>
-            <CheckboxFilter
-              options={INDUSTRY_OPTIONS}
-              selected={filters.industry || []}
-              onChange={(values) => updateFilters({ industry: values })}
-            />
+            <div className="px-2">
+              <IndustrySelector
+                selectedIndustries={filters.industry || []}
+                onIndustryChange={(industries) => updateFilters({ industry: industries })}
+                maxSelections={10}
+                showTrending={true}
+                compact={true}
+              />
+            </div>
           </FilterSection>
 
           <Separator />

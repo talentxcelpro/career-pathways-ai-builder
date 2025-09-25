@@ -19,6 +19,9 @@ import { useStructuredData } from '@/hooks/useStructuredData';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// Industry Data
+import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIGH_GROWTH_INDUSTRIES } from '@/data/industries';
+
 // New Components for TalentSpark Experience
 import { TalentSparkJobCard } from '@/components/jobs/TalentSparkJobCard';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
@@ -28,6 +31,7 @@ import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
 import { TXCCoinBalance } from '@/components/jobs/TXCCoinBalance';
 import { QuickApplyWidget } from '@/components/jobs/QuickApplyWidget';
 import { SalaryTransparencyWidget } from '@/components/jobs/SalaryTransparencyWidget';
+import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -692,6 +696,11 @@ const Jobs = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Hundreds of Industries Section */}
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <HundredsOfIndustriesSection />
         </div>
 
         {/* Floating Action Button for Mobile */}
