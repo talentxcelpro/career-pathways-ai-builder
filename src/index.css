@@ -620,6 +620,12 @@ img.loaded {
     --ai-violet-medium: 251 91% 73%; /* Medium AI violet #a855f7 */
     --ai-violet-dark: 251 91% 50%; /* Deep AI violet #8b5cf6 */
     --ai-violet-foreground: 0 0% 100%;
+    
+    /* Learning Hub specific colors */
+    --learning-primary: 212 100% 48%; /* Apple Blue */
+    --learning-secondary: 251 91% 73%; /* AI Violet */
+    --learning-accent: 35 91% 62%; /* Apple Orange */
+    --learning-success: 120 60% 50%; /* Apple Green */
 
     --secondary: 251 91% 50%; /* AI Violet as secondary */
     --secondary-foreground: 0 0% 100%;

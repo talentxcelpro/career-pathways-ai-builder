@@ -142,35 +142,35 @@ export default function LearningHub() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-ai-violet-medium/5">
       {/* Header */}
-      <header className="bg-white border-b">
+      <header className="bg-white/80 backdrop-blur-apple border-b border-white/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
+          <Link to="/" className="flex items-center gap-2 transform hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-ai-violet-medium rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">T</span>
             </div>
-            <span className="text-xl font-bold text-primary">TalentXcel</span>
+            <span className="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-ai-violet-medium bg-clip-text text-transparent">TalentXcel</span>
           </Link>
           
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="bg-primary text-white hover:bg-primary/90">
+            <Button variant="premium" className="bg-gradient-to-r from-primary to-ai-violet-medium text-white hover:shadow-glow transform hover:scale-105 transition-all duration-300">
               Explore
             </Button>
             <Input
               placeholder="What do you want to learn?"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-96 hidden md:block"
+              className="w-96 hidden md:block apple-rounded-lg border-2 border-primary/20 focus:border-primary/40 bg-white/80 backdrop-blur"
             />
-            <Button>
+            <Button className="apple-rounded-lg bg-gradient-to-r from-primary to-ai-violet-medium hover:shadow-glow">
               <Search className="h-4 w-4" />
             </Button>
             <Link to="/learning/my-courses">
-              <Button variant="ghost">My Learning</Button>
+              <Button variant="ghost" className="font-semibold hover:bg-primary/10 hover:text-primary">My Learning</Button>
             </Link>
             <Link to="/learning/certificates">
-              <Button variant="ghost">Certificates</Button>
+              <Button variant="ghost" className="font-semibold hover:bg-primary/10 hover:text-primary">Certificates</Button>
             </Link>
           </div>
         </div>
@@ -179,89 +179,93 @@ export default function LearningHub() {
       {/* Hero Navigation Section */}
       <LearningHeroNav />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-12">
         {/* Your Learning Journey */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold">Your Learning Journey</h2>
-            <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-yellow-500" />
-              <span className="font-semibold">4.8/5</span>
-              <span className="text-gray-600">4.8</span>
+        <section className="mb-16 animate-fade-in">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-4xl font-heading font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">Your Learning Journey</h2>
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-apple rounded-full px-4 py-2 shadow-card">
+              <Star className="h-5 w-5 text-orange-500 animate-glow-pulse" />
+              <span className="font-semibold text-foreground">4.8/5</span>
+              <span className="text-muted-foreground">4.8</span>
             </div>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="border-primary/20">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <BookOpen className="h-5 w-5 text-primary" />
+          <div className="grid md:grid-cols-3 gap-8 stagger-children">
+            <Card variant="elegant" className="border-primary/30 bg-gradient-to-br from-white to-primary/5 hover:shadow-glow transform hover:scale-105 transition-all duration-500">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-primary to-ai-violet-medium rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                    <BookOpen className="h-7 w-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">Expert-Led Courses</h3>
-                    <Badge className="bg-primary/10 text-primary border-primary/20">●</Badge>
+                    <h3 className="font-heading font-semibold text-lg">Expert-Led Courses</h3>
+                    <Badge className="bg-gradient-to-r from-primary/20 to-ai-violet-medium/20 text-primary border-primary/30 font-semibold">●</Badge>
                   </div>
                 </div>
-                <p className="text-gray-600">Learn from top instructors at leading universities</p>
+                <p className="text-muted-foreground leading-relaxed">Learn from top instructors at leading universities</p>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Award className="h-5 w-5 text-gray-600" />
+            <Card variant="elegant" className="border-green-500/30 bg-gradient-to-br from-white to-green-500/5 hover:shadow-glow transform hover:scale-105 transition-all duration-500">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                    <Award className="h-7 w-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">Career Certificates</h3>
-                    <Badge variant="secondary" className="bg-green-100 text-green-700">Certificate Ready</Badge>
+                    <h3 className="font-heading font-semibold text-lg">Career Certificates</h3>
+                    <Badge variant="premium" className="bg-gradient-to-r from-green-100 to-green-200 text-green-700 border-green-300 font-semibold">Certificate Ready</Badge>
                   </div>
                 </div>
-                <p className="text-gray-600">Earn industry-recognized credentials</p>
+                <p className="text-muted-foreground leading-relaxed">Earn industry-recognized credentials</p>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <BarChart3 className="h-5 w-5 text-gray-600" />
+            <Card variant="elegant" className="border-orange-500/30 bg-gradient-to-br from-white to-orange-500/5 hover:shadow-glow transform hover:scale-105 transition-all duration-500">
+              <CardContent className="p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                    <BarChart3 className="h-7 w-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">Skill Assessment</h3>
+                    <h3 className="font-heading font-semibold text-lg">Skill Assessment</h3>
                   </div>
                 </div>
-                <p className="text-gray-600">Track your progress with detailed analytics</p>
+                <p className="text-muted-foreground leading-relaxed">Track your progress with detailed analytics</p>
               </CardContent>
             </Card>
           </div>
         </section>
 
         {/* What do you want to learn today? */}
-        <section className="mb-12 text-center">
-          <h2 className="text-4xl font-bold mb-8">What do you want to learn today?</h2>
+        <section className="mb-16 text-center animate-fade-in-up delay-300">
+          <h2 className="text-5xl font-heading font-bold bg-gradient-to-r from-foreground via-primary to-ai-violet-medium bg-clip-text text-transparent mb-12">What do you want to learn today?</h2>
           
-          <div className="flex justify-center mb-8">
-            <div className="relative w-full max-w-2xl">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <div className="flex justify-center mb-12">
+            <div className="relative w-full max-w-3xl">
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-muted-foreground" />
               <Input
                 placeholder="Search for courses, skills, or topics..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 py-4 text-lg border-2 rounded-full"
+                className="pl-16 pr-32 py-6 text-lg border-2 border-primary/20 rounded-full bg-white/80 backdrop-blur-apple focus:border-primary/40 focus:shadow-glow transition-all duration-300"
               />
-              <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full">
+              <Button className="absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full bg-gradient-to-r from-primary to-ai-violet-medium hover:shadow-glow px-8 py-3 font-semibold">
                 Search
               </Button>
             </div>
           </div>
           
-          <div className="mb-8">
-            <p className="text-gray-600 mb-4">Trending searches:</p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {trendingSearches.map((search) => (
-                <Badge key={search} className="bg-primary text-white px-4 py-2 cursor-pointer hover:bg-primary/90">
+          <div className="mb-12">
+            <p className="text-muted-foreground mb-6 text-lg font-medium">Trending searches:</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {trendingSearches.map((search, index) => (
+                <Badge 
+                  key={search} 
+                  className="bg-gradient-to-r from-primary to-ai-violet-medium text-white px-6 py-3 cursor-pointer hover:shadow-glow transform hover:scale-105 transition-all duration-300 apple-rounded-lg font-semibold text-sm"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   {search}
                 </Badge>
               ))}
