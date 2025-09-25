@@ -108,6 +108,8 @@ import { SkillsVerificationCenter } from "./pages/SkillsVerificationCenter";
 import DynamicAchievementSystem from "./pages/DynamicAchievementSystem";
 import InteractiveCareerRoadmapBuilder from "./pages/InteractiveCareerRoadmapBuilder";
 import Services from "./pages/Services";
+import ServicesMarketplacePage from "./pages/ServicesMarketplacePage";
+import ProviderDashboard from "./pages/ProviderDashboard";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { turboCore } from "@/utils/turboCore";
 import AdminVideoManager from "./pages/AdminVideoManager";
@@ -283,6 +285,11 @@ const App = () => {
                               <Route path="/achievements" element={<DynamicAchievementSystem />} />
                               <Route path="/roadmap-builder" element={<InteractiveCareerRoadmapBuilder />} />
                               <Route path="/complete-intelligence" element={<CompletedCareerIntelligenceSystem />} />
+                              
+                              {/* Services Platform Routes */}
+                              <Route path="/marketplace" element={<ServicesMarketplacePage />} />
+                              <Route path="/provider/dashboard" element={<ProviderDashboard />} />
+                              
                          <Route path="/dashboard" element={<UnifiedDashboard />} />
                           <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
                            <Route path="/mobile/passport" element={<MobilePassport />} />
