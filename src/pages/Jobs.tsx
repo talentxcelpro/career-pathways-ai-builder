@@ -473,7 +473,19 @@ const Jobs = () => {
           {currentUser && (
             <div className="mb-8">
               <SmartJobMatchingBar 
-                onFiltersChange={(newFilters) => setFilters(prev => ({ ...prev, ...newFilters }))}
+                onFiltersChange={(aiFilters) => {
+                  setFilters(prev => ({ 
+                    ...prev, 
+                    search: aiFilters.search || prev.search,
+                    location: aiFilters.location || prev.location,
+                    employment_type: aiFilters.employment_type || prev.employment_type,
+                    experience_level: aiFilters.experience_level || prev.experience_level,
+                    salary_min: aiFilters.salary_min || prev.salary_min,
+                    salary_max: aiFilters.salary_max || prev.salary_max,
+                    is_remote: aiFilters.is_remote !== undefined ? aiFilters.is_remote : prev.is_remote,
+                    skills: aiFilters.skills || prev.skills
+                  }));
+                }}
                 onSearch={refetch}
               />
             </div>
@@ -498,7 +510,22 @@ const Jobs = () => {
               <div className="sticky top-6 space-y-6">
                 <ComprehensiveJobFilters
                   filters={filters}
-                  onFiltersChange={setFilters}
+                  onFiltersChange={(newFilters) => {
+                    setFilters(prev => ({ 
+                      ...prev, 
+                      ...newFilters,
+                      // Ensure all required properties are present
+                      department: newFilters.department || prev.department,
+                      company_type: newFilters.company_type || prev.company_type,
+                      work_mode: newFilters.work_mode || prev.work_mode,
+                      industry: newFilters.industry || prev.industry,
+                      role_category: newFilters.role_category || prev.role_category,
+                      education: newFilters.education || prev.education,
+                      posted_by: newFilters.posted_by || prev.posted_by,
+                      freshness: newFilters.freshness || prev.freshness,
+                      company_id: newFilters.company_id || prev.company_id
+                    }));
+                  }}
                   onClearFilters={() => {
                     setFilters({
                       search: '', location: '', employment_type: [], experience_level: [],

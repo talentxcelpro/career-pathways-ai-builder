@@ -36,6 +36,7 @@ interface JobFilters {
   education?: string[];
   posted_by?: string[];
   freshness?: string[];
+  company_id?: string;
 }
 
 interface ComprehensiveJobFiltersProps {
