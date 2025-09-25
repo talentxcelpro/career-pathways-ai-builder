@@ -13,10 +13,18 @@ import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
 import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
 
 const CareerMap = () => {
-  // Real-time career data integration
+  // Real-time career data integration (with fallback)
   const { metrics, achievementTriggers, isLoading: careerLoading, refreshMetrics } = useRealCareerData();
   const { metrics: optimizedMetrics, insights, profile, isLoading: optimizedLoading } = useOptimizedCareerData();
-  const { isConnected, lastUpdate } = useRealtimeContext();
+  
+  // Optional realtime context - gracefully handle if provider not available
+  let realtimeData = { isConnected: false, lastUpdate: null };
+  try {
+    realtimeData = useRealtimeContext();
+  } catch (error) {
+    console.log('RealtimeProvider not available, using offline mode');
+  }
+  const { isConnected, lastUpdate } = realtimeData;
 
   // Use optimized data when available, fallback to real career data
   const currentMetrics = optimizedMetrics || metrics;
