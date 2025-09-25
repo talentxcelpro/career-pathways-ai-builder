@@ -37,6 +37,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { updateMetaTags } from '@/utils/metaTags';
 import { SimpleCourseCompletion } from '@/components/learning/SimpleCourseCompletion';
 import { toast } from 'sonner';
+import { useCourseEnrollments, useEnrollInCourse } from '@/hooks/useCourses';
 
 // Enhanced course categories with professional icons and descriptions
 const courseCategories = [
@@ -144,6 +145,34 @@ export default function ComprehensiveCoursesPage() {
     });
   }, []);
 
+  // Get user enrollments
+  const { data: enrollments = [] } = useCourseEnrollments(user?.id);
+  const enrollMutation = useEnrollInCourse();
+
+  // Check if user is enrolled in a course
+  const isEnrolled = (courseId: string) => {
+    return enrollments.some((enrollment: any) => enrollment.course_id === courseId);
+  };
+
+  // Handle enrollment
+  const handleEnroll = async (courseId: string) => {
+    if (!user) {
+      toast.error('Please log in to enroll in courses');
+      return;
+    }
+
+    if (isEnrolled(courseId)) {
+      toast.info('You are already enrolled in this course');
+      return;
+    }
+
+    try {
+      await enrollMutation.mutateAsync({ courseId, userId: user.id });
+    } catch (error) {
+      console.error('Enrollment error:', error);
+    }
+  };
+
   // Fetch courses with advanced filtering
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses-comprehensive', selectedCategory, selectedDifficulty, sortBy, searchTerm],
@@ -233,6 +262,8 @@ export default function ComprehensiveCoursesPage() {
     const totalLessons = course.course_modules?.reduce((total: number, module: any) => 
       total + (module.course_lessons?.length || 0), 0
     ) || 0;
+    
+    const userEnrolled = isEnrolled(course.id);
 
     return (
       <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm">
@@ -320,11 +351,22 @@ export default function ComprehensiveCoursesPage() {
                   Preview
                 </Link>
               </Button>
-              <Button size="sm" asChild>
-                <Link to={`/learning/courses/${course.id}`}>
-                  <Play className="h-3 w-3 mr-1" />
-                  Start
-                </Link>
+              <Button 
+                size="sm" 
+                onClick={() => handleEnroll(course.id)}
+                disabled={userEnrolled || enrollMutation.isPending}
+              >
+                {userEnrolled ? (
+                  <>
+                    <Award className="h-3 w-3 mr-1" />
+                    Enrolled
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-3 w-3 mr-1" />
+                    {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Now'}
+                  </>
+                )}
               </Button>
             </div>
           </div>
