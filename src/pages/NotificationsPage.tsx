@@ -1,5 +1,6 @@
 import React from 'react';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { ComprehensiveNotificationSettings } from '@/components/notifications/ComprehensiveNotificationSettings';
 import { SEOHead } from '@/components/seo/SEOHead';
 
 const NotificationsPage: React.FC = () => {
@@ -23,6 +24,10 @@ const NotificationsPage: React.FC = () => {
           </div>
           
           <NotificationCenter />
+          
+          <div className="mt-8">
+            <ComprehensiveNotificationSettings />
+          </div>
         </div>
       </div>
     </div>
