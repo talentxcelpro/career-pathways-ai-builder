@@ -19,9 +19,9 @@ interface ToolUnlockModalProps {
     name: string;
     description: string;
     icon: React.ReactNode;
-    txcCost?: number;
-    requiredCompletions?: number;
-    isPremium: boolean;
+    txc_cost?: number;
+    required_completions?: number;
+    is_premium: boolean;
   } | null;
   userTXCBalance: number;
   completedToolsCount: number;
@@ -40,8 +40,8 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
 }) => {
   if (!tool) return null;
 
-  const canAffordTXC = tool.txcCost ? userTXCBalance >= tool.txcCost : false;
-  const meetsRequirements = tool.requiredCompletions ? completedToolsCount >= tool.requiredCompletions : true;
+  const canAffordTXC = tool.txc_cost ? userTXCBalance >= tool.txc_cost : false;
+  const meetsRequirements = tool.required_completions ? completedToolsCount >= tool.required_completions : true;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -54,7 +54,7 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 {tool.name}
-                {tool.isPremium && <Crown className="w-5 h-5 text-yellow-500" />}
+                {tool.is_premium && <Crown className="w-5 h-5 text-yellow-500" />}
               </div>
               <DialogDescription className="text-left mt-1">
                 {tool.description}
@@ -72,7 +72,7 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
             </div>
             
             <div className="space-y-3">
-              {tool.txcCost && (
+              {tool.txc_cost && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Coins className="w-4 h-4 text-primary" />
@@ -80,14 +80,14 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={canAffordTXC ? "default" : "destructive"}>
-                      {tool.txcCost} TXC
+                      {tool.txc_cost} TXC
                     </Badge>
                     {canAffordTXC && <Star className="w-4 h-4 text-success" />}
                   </div>
                 </div>
               )}
 
-              {tool.requiredCompletions && (
+              {tool.required_completions && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Zap className="w-4 h-4 text-secondary" />
@@ -95,7 +95,7 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant={meetsRequirements ? "default" : "secondary"}>
-                      {completedToolsCount}/{tool.requiredCompletions}
+                      {completedToolsCount}/{tool.required_completions}
                     </Badge>
                     {meetsRequirements && <Star className="w-4 h-4 text-success" />}
                   </div>
@@ -112,7 +112,7 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
 
           {/* Unlock Options */}
           <div className="space-y-3">
-            {tool.txcCost && (
+            {tool.txc_cost && (
               <Button
                 onClick={onUnlockWithTXC}
                 disabled={!canAffordTXC}
@@ -127,7 +127,7 @@ export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
                   <Coins className="w-5 h-5" />
                   <span>Unlock with TXC</span>
                 </div>
-                <Badge variant="secondary">{tool.txcCost} TXC</Badge>
+                <Badge variant="secondary">{tool.txc_cost} TXC</Badge>
               </Button>
             )}
 
