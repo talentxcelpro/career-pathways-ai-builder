@@ -236,6 +236,17 @@ const Tools = () => {
     setShowBenefitsModal(true);
   };
 
+  const handleStartTesting = () => {
+    setShowBenefitsModal(false);
+    setShowTestDialog(true);
+  };
+
+  const handleUnlockSuccess = () => {
+    // Refresh data or update state as needed
+    window.location.reload();
+  };
+  };
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -303,14 +314,19 @@ const Tools = () => {
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Game Progress Header */}
-        <GameProgressHeader
-          userName={userName}
-          totalTools={tools.length}
-          completedTools={completedToolsCount}
-          currentStreak={userStats.currentStreak}
-          totalTXC={userBalance}
-          userLevel={userStats.userLevel}
-          nextLevelProgress={userStats.nextLevelProgress}
+        <GameProgressHeader 
+          userStats={{
+            totalTools: tools.length,
+            completedTools: tools.filter(t => t.isCompleted).length,
+            currentStreak: userStats?.currentStreak || 0,
+            totalTXC: userBalance || 0,
+            userLevel: userStats?.userLevel || 1,
+            nextLevelProgress: userStats?.nextLevelProgress || 0
+          }}
+          userName={userName || 'Player'}
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredTools.length / TOOLS_PER_PAGE)}
+          unlockedToolsCount={tools.filter(t => !t.isLocked).length}
         />
 
         {/* Main Content */}
@@ -593,51 +609,29 @@ const Tools = () => {
         </div>
 
         {/* Modals */}
-        {selectedTool && (
-          <>
-            <ToolUnlockModal
-              isOpen={showUnlockModal}
-              onClose={() => setShowUnlockModal(false)}
-              tool={{
-                ...selectedTool,
-                unlock_level: tools.find(t => t.id === selectedTool.id)?.unlock_level || 1,
-                txc_cost: tools.find(t => t.id === selectedTool.id)?.txc_cost || 0,
-                required_completions: tools.find(t => t.id === selectedTool.id)?.required_completions || 0,
-                is_premium: tools.find(t => t.id === selectedTool.id)?.is_premium || false
-              }}
-              userTXCBalance={userBalance}
-              completedToolsCount={completedToolsCount}
-              userLevel={userStats.userLevel}
-              onUnlockWithTXC={() => {
-                // TODO: Implement TXC purchase
-                console.log('Unlock with TXC');
-                setShowUnlockModal(false);
-              }}
-              onViewRequirements={() => {
-                setShowUnlockModal(false);
-                setShowBenefitsModal(true);
-              }}
-            />
-            <ToolTestDialog
-              tool={selectedTool}
-              isOpen={showTestDialog}
-              onOpenChange={(open) => setShowTestDialog(open)}
-              onTest={async (toolSlug: string) => {
-                console.log('Testing tool:', toolSlug);
-                setShowTestDialog(false);
-              }}
-            />
-            <ToolBenefitsModal
-              tool={selectedTool}
-              isOpen={showBenefitsModal}
-              onOpenChange={(open) => setShowBenefitsModal(open)}
-              onStartTesting={() => {
-                setShowBenefitsModal(false);
-                setShowTestDialog(true);
-              }}
-            />
-          </>
-        )}
+        <ToolTestDialog 
+          tool={selectedTool}
+          isOpen={showTestDialog}
+          onOpenChange={setShowTestDialog}
+        />
+        
+        <ToolBenefitsModal 
+          tool={selectedTool}
+          isOpen={showBenefitsModal}
+          onOpenChange={setShowBenefitsModal}
+          onStartTesting={handleStartTesting}
+        />
+
+        <ToolUnlockModal
+          tool={selectedTool}
+          isOpen={showUnlockModal}
+          onOpenChange={setShowUnlockModal}
+          onUnlockSuccess={handleUnlockSuccess}
+          userTXCBalance={userBalance || 0}
+          canUnlockWithProgress={true}
+          completedRequiredTools={tools.filter(t => t.isCompleted).length}
+          requiredToolsCount={3}
+        />
       </div>
     </PageTransition>
   );
