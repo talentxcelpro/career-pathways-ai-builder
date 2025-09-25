@@ -126,7 +126,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
           {/* Right side - User ID Badge */}
           <div className="flex-shrink-0">
             <div className="bg-transparent border-2 border-cyan-400 rounded-xl px-4 py-3 text-center min-w-[80px]">
-              <div className="text-white font-bold text-lg mb-2">{userId}</div>
+              <div className="text-white font-bold text-lg mb-2 !text-white">{userId}</div>
               <svg className="w-8 h-8 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -139,12 +139,12 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
           <h3 className="text-white text-3xl font-bold mb-2">
             {displayProfile.full_name || 'Your Name'}
           </h3>
-          <p className="text-white text-lg mb-4">
+          <p className="text-white text-lg mb-4 !text-white">
             {displayProfile.headline || displayProfile.title || 'Transforming Businesses and Lives'}
           </p>
           <div className="flex items-center text-white">
             <MapPin className="w-5 h-5 mr-2 text-white" />
-            <span className="text-lg text-white">{displayProfile.location || 'India'}</span>
+            <span className="text-lg text-white !text-white">{displayProfile.location || 'India'}</span>
           </div>
         </div>
 
