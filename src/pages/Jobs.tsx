@@ -340,7 +340,7 @@ const Jobs = () => {
                   <p className="text-sm text-muted-foreground">AI-Powered • TXC Rewards</p>
                 </div>
               </div>
-              {currentUser && <TXCCoinBalance balance={txcCoins} />}
+              
             </div>
 
             {/* Compact Search Bar */}
