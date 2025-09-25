@@ -6,10 +6,12 @@ import { Progress } from '@/components/ui/progress';
 import { 
   Heart, Bookmark, Share2, MapPin, DollarSign, Clock, 
   Users, Building2, Zap, Brain, Star, Award, ChevronRight,
-  Eye, MessageCircle, TrendingUp, Shield, Target, Sparkles
+  Eye, MessageCircle, TrendingUp, Shield, Target, Sparkles,
+  Send
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getJobDetailUrl } from '@/utils/seoUrls';
+import { JobApplicationDialog } from '@/components/jobs/JobApplicationDialog';
 
 interface TalentSparkJobCardProps {
   job: any;
@@ -31,6 +33,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [aiMatchScore] = useState(Math.floor(Math.random() * 30) + 70); // 70-100%
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   
   const formatSalary = (min?: number, max?: number) => {
     if (!min && !max) return 'Salary undisclosed';
@@ -172,11 +175,11 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 group"
               onClick={(e) => {
                 e.stopPropagation();
-                onQuickApply(job.id);
+                setShowApplicationDialog(true);
               }}
             >
-              <Zap className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-              Quick Apply (+{txcReward} TXC)
+              <Send className="h-4 w-4 mr-2 group-hover:animate-pulse" />
+              Apply Now (+{txcReward} TXC)
             </Button>
             
             <Button
@@ -257,10 +260,10 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               className="flex-1"
               onClick={(e) => {
                 e.stopPropagation();
-                onQuickApply(job.id);
+                setShowApplicationDialog(true);
               }}
             >
-              <Zap className="h-4 w-4 mr-1" />
+              <Send className="h-4 w-4 mr-1" />
               Apply
             </Button>
             <Button
@@ -444,11 +447,11 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
               onClick={(e) => {
                 e.stopPropagation();
-                onQuickApply(job.id);
+                setShowApplicationDialog(true);
               }}
             >
-              <Zap className="h-4 w-4 mr-2" />
-              Quick Apply (+{txcReward} TXC)
+              <Send className="h-4 w-4 mr-2" />
+              Apply Now (+{txcReward} TXC)
             </Button>
           </div>
         </div>
@@ -458,6 +461,19 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 pointer-events-none transition-opacity duration-300" />
         )}
       </div>
+
+      {/* Job Application Dialog */}
+      <JobApplicationDialog
+        isOpen={showApplicationDialog}
+        onClose={() => setShowApplicationDialog(false)}
+        jobId={job.id}
+        jobTitle={job.title}
+        companyName={job.company?.name || 'Company Name'}
+        onApplicationSubmit={() => {
+          onQuickApply(job.id);
+          setShowApplicationDialog(false);
+        }}
+      />
     </Card>
   );
 };
