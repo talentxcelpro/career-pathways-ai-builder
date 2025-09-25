@@ -39,19 +39,29 @@ export const useRealToolsData = () => {
   const { balance } = useTokenBalance();
 
   // Fetch tools from database
-  const { data: tools = [], isLoading: toolsLoading } = useQuery({
+  const { data: tools = [], isLoading: toolsLoading, error: toolsError } = useQuery({
     queryKey: ['tools-registry'],
     queryFn: async () => {
+      console.log('🔍 Fetching tools from database...');
       const { data, error } = await supabase
         .from('tool_registry')
         .select('*')
         .eq('is_active', true)
         .order('category, sort_order');
       
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error fetching tools:', error);
+        throw error;
+      }
+      console.log('✅ Tools fetched:', data?.length, 'tools');
       return data || [];
     }
   });
+
+  // Log errors
+  if (toolsError) {
+    console.error('Tools fetch error:', toolsError);
+  }
 
   // Fetch user's tool usage data
   const { data: userUsage = [], isLoading: usageLoading } = useQuery({
