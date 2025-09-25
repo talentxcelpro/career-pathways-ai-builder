@@ -161,12 +161,15 @@ export default function EnhancedCoursePage() {
     }
 
     try {
+      console.log('Attempting to enroll:', { courseId, userId: user.id });
       await enrollMutation.mutateAsync({
         courseId: courseId,
         userId: user.id
       });
+      toast.success('Successfully enrolled in course!');
     } catch (error: any) {
       console.error('Enrollment error:', error);
+      toast.error(error.message || 'Failed to enroll in course. Please try again.');
     }
   };
 

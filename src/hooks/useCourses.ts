@@ -113,7 +113,7 @@ export const useEnrollInCourse = () => {
         .select('id')
         .eq('user_id', userId)
         .eq('course_id', courseId)
-        .single();
+        .maybeSingle();
 
       if (existingEnrollment) {
         throw new Error('Already enrolled in this course');
