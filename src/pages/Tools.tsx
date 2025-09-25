@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { GameProgressHeader } from '@/components/tools/GameProgressHeader';
 import { ToolTestDialog } from '@/components/tools/ToolTestDialog';
 import { ToolBenefitsModal } from '@/components/tools/ToolBenefitsModal';
+import { ToolUnlockModal } from '@/components/tools/ToolUnlockModal';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { updateMetaTags } from '@/utils/metaTags';
 import { useRealToolsData } from '@/hooks/useRealToolsData';
@@ -27,11 +28,31 @@ import {
   List,
   Zap,
   Target,
-  Activity
+  Activity,
+  Coins,
+  Trophy,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const TOOLS_PER_PAGE = 9;
+const TOOLS_PER_PAGE = 6;
+
+interface Tool {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimatedTime: string;
+  isLocked: boolean;
+  isCompleted: boolean;
+  progress: number;
+  icon: React.ComponentType<any>;
+  slug: string;
+  estimated_time: string;
+  txc_cost: number;
+}
 
 const Tools = () => {
   const navigate = useNavigate();
@@ -48,460 +69,503 @@ const Tools = () => {
     toolsByCategory, 
     userStats, 
     userName,
-    userTXCBalance,
-    isLoading 
+    userTXCBalance: userBalance,
+    isLoading: loading,
+    getToolBySlug
   } = useRealToolsData();
 
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+  const [showTestDialog, setShowTestDialog] = useState(false);
+  const [showBenefitsModal, setShowBenefitsModal] = useState(false);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+
+  // Update document meta tags
   useEffect(() => {
     updateMetaTags({
-      title: "AI-Powered Career Tools | TalentXcel",
-      description: "Unlock your career potential with 26+ AI tools for resume building, interview prep, job search, and career growth. Start your journey today!",
-      keywords: ["AI career tools", "resume builder", "interview preparation", "job search", "career development", "ATS optimization"]
+      title: "AI-Powered Career Tools | Transform Your Professional Journey",
+      description: "Access 26+ AI tools for career development, resume building, interview prep, and job matching. Unlock premium features with TXC tokens.",
+      keywords: "AI career tools, resume builder, interview simulator, job matching, career development, professional skills"
     });
   }, []);
 
-  // Filter and search tools
+  // Filter tools based on search and category
   const filteredTools = useMemo(() => {
-    let filtered = tools;
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(tool =>
+    return tools.filter(tool => {
+      const matchesSearch = !searchQuery || 
         tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Category filter
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(tool => tool.category === selectedCategory);
-    }
-
-    // Difficulty filter
-    if (selectedDifficulty !== 'all') {
-      filtered = filtered.filter(tool => tool.difficulty === selectedDifficulty);
-    }
-
-    return filtered;
+        tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
+      const matchesDifficulty = selectedDifficulty === 'all' || tool.difficulty === selectedDifficulty;
+      
+      return matchesSearch && matchesCategory && matchesDifficulty;
+    });
   }, [tools, searchQuery, selectedCategory, selectedDifficulty]);
 
   // Pagination
   const totalPages = Math.ceil(filteredTools.length / TOOLS_PER_PAGE);
-  const paginatedTools = useMemo(() => {
-    const startIndex = (currentPage - 1) * TOOLS_PER_PAGE;
-    return filteredTools.slice(startIndex, startIndex + TOOLS_PER_PAGE);
-  }, [filteredTools, currentPage]);
+  const startIndex = (currentPage - 1) * TOOLS_PER_PAGE;
+  const paginatedTools = filteredTools.slice(startIndex, startIndex + TOOLS_PER_PAGE);
 
-  // Categories
-  const categories = useMemo(() => {
-    const cats = ['all', ...Object.keys(toolsByCategory)];
-    return cats;
-  }, [toolsByCategory]);
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, selectedDifficulty]);
 
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
+  // Get unique categories
+  const categories: string[] = ['all', ...Array.from(new Set(tools.map(tool => tool.category)))];
+  const difficulties = ['all', 'beginner', 'intermediate', 'advanced'];
 
-  if (isLoading) {
+  // Count completed tools for unlocking logic
+  const completedToolsCount = tools.filter(tool => tool.isCompleted).length;
+
+  // Progressive unlock system
+  const isToolLocked = (tool: any) => {
+    // First 3 tools are always unlocked (Level 1)
+    if (tool.unlock_level === 1) return false;
+    
+    // Level 2 tools: need 3 completions
+    if (tool.unlock_level === 2) return completedToolsCount < 3;
+    
+    // Level 3 tools: need 6 completions  
+    if (tool.unlock_level === 3) return completedToolsCount < 6;
+    
+    // Level 4+ tools: need (level-1) * 3 completions
+    const requiredCompletions = (tool.unlock_level - 1) * 3;
+    return completedToolsCount < requiredCompletions;
+  };
+
+  const getUnlockMessage = (tool: any) => {
+    if (tool.unlock_level === 2) return "Complete 3 tools to unlock Level 2";
+    if (tool.unlock_level === 3) return "Complete 6 tools to unlock Level 3";
+    return `Complete ${(tool.unlock_level - 1) * 3} tools to unlock Level ${tool.unlock_level}`;
+  };
+
+  const handleToolClick = (tool: any) => {
+    const mappedTool: Tool = {
+      id: tool.id,
+      name: tool.name,
+      description: tool.description,
+      category: tool.category,
+      difficulty: tool.difficulty as 'beginner' | 'intermediate' | 'advanced',
+      estimatedTime: tool.estimated_time,
+      isLocked: isToolLocked(tool),
+      isCompleted: tool.isCompleted,
+      progress: tool.progress,
+      icon: tool.icon,
+      slug: tool.slug,
+      estimated_time: tool.estimated_time,
+      txc_cost: tool.txc_cost
+    };
+    
+    if (isToolLocked(tool)) {
+      setSelectedTool(mappedTool);
+      setShowUnlockModal(true);
+      return;
+    }
+    
+    setSelectedTool(mappedTool);
+    setShowBenefitsModal(true);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const renderPaginationControls = () => {
+    if (totalPages <= 1) return null;
+
     return (
-      <PageTransition>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-          <div className="container mx-auto px-4 py-8">
-            <div className="animate-pulse space-y-8">
-              {/* Header skeleton */}
-              <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-3xl p-8 border border-slate-200/50 dark:border-slate-700/50">
-                <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded-2xl w-64 mb-4"></div>
-                <div className="h-48 bg-slate-200 dark:bg-slate-700 rounded-2xl"></div>
-              </div>
-              
-              {/* Tools grid skeleton */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-6">
-                    <div className="h-12 w-12 bg-slate-200 dark:bg-slate-700 rounded-2xl mb-4"></div>
-                    <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded-xl mb-2"></div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded-lg mb-4"></div>
-                    <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="flex items-center justify-center gap-4 mt-12 mb-8">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Previous
+        </Button>
+        
+        <div className="flex items-center gap-2">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <Button
+              key={page}
+              variant={currentPage === page ? "default" : "outline"}
+              size="sm"
+              onClick={() => handlePageChange(page)}
+              className={cn(
+                "w-10 h-10",
+                currentPage === page && "bg-primary text-primary-foreground"
+              )}
+            >
+              {page}
+            </Button>
+          ))}
         </div>
-      </PageTransition>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="gap-2"
+        >
+          Next
+          <ArrowRight className="w-4 h-4" />
+        </Button>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading your personalized toolkit...</p>
+        </div>
+      </div>
     );
   }
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          
-          {/* Apple-style Header */}
-          <div className="mb-12">
-            <GameProgressHeader 
-              userName={userName}
-              totalTools={userStats.totalTools}
-              completedTools={userStats.completedTools}
-              currentStreak={userStats.currentStreak}
-              totalTXC={userStats.totalTXC}
-              userLevel={userStats.userLevel}
-              nextLevelProgress={userStats.nextLevelProgress}
-            />
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        {/* Game Progress Header */}
+        <GameProgressHeader
+          userName={userName}
+          totalTools={tools.length}
+          completedTools={completedToolsCount}
+          currentStreak={userStats.currentStreak}
+          totalTXC={userBalance}
+          userLevel={userStats.userLevel}
+          nextLevelProgress={userStats.nextLevelProgress}
+        />
 
-          {/* Hero Section */}
-          <div className="text-center mb-16">
-            <h1 className="text-6xl font-light text-slate-900 dark:text-white mb-6 tracking-tight">
-              Career <span className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Intelligence</span>
-            </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
-              26 AI-powered tools designed to accelerate your career journey. From resume optimization to interview mastery.
-            </p>
-          </div>
-
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-12">
           {/* Search and Filters */}
-          <div className="mb-12">
-            <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50 shadow-xl">
-              <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Search */}
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
-                    <Input
-                      placeholder="Search tools by name, description, or category..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 h-12 bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 rounded-2xl text-lg"
-                    />
-                  </div>
+          <div className="mb-12 space-y-6">
+            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <Input
+                  placeholder="Search tools..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50"
+                />
+              </div>
 
-                  {/* Category Filter */}
-                  <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="flex-shrink-0">
-                    <TabsList className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-1">
-                      {categories.map((category) => (
-                        <TabsTrigger
-                          key={category}
-                          value={category}
-                          className="px-6 py-2 rounded-xl font-medium capitalize data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm"
-                        >
-                          {category === 'all' ? 'All Tools' : category}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                  </Tabs>
-
-                  {/* View Toggle */}
-                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-2xl p-1">
-                    <Button
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('grid')}
-                      className="rounded-xl"
-                    >
-                      <Grid3X3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('list')}
-                      className="rounded-xl"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                  </div>
+              {/* Filters */}
+              <div className="flex gap-4 items-center">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Filters:</span>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-3 py-2 bg-background/50 border border-border/50 rounded-xl text-sm"
+                >
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>
+                      {cat === 'all' ? 'All Categories' : cat}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  className="px-3 py-2 bg-background/50 border border-border/50 rounded-xl text-sm"
+                >
+                  {difficulties.map(diff => (
+                    <option key={diff} value={diff}>
+                      {diff === 'all' ? 'All Levels' : diff}
+                    </option>
+                  ))}
+                </select>
+
+                {/* View Mode Toggle */}
+                <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-xl">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className="p-2"
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className="p-2"
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Results info */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Showing {paginatedTools.length} of {filteredTools.length} tools
+                {searchQuery && ` for "${searchQuery}"`}
+              </p>
+              <p className="text-sm text-primary font-medium">
+                Page {currentPage} of {totalPages}
+              </p>
+            </div>
           </div>
 
-          {/* Tools Grid/List */}
-          <div className="mb-12">
-            {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {paginatedTools.map((tool) => (
-                  <Card
-                    key={tool.id}
-                    className={cn(
-                      "group cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl",
-                      "bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50",
-                      tool.isLocked ? "opacity-60" : "",
-                      tool.isCompleted && "ring-2 ring-green-500/20 bg-green-50/50 dark:bg-green-900/10"
-                    )}
-                    onClick={() => !tool.isLocked && navigate(`/tools/${tool.slug}`)}
-                  >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={cn(
-                          "p-4 rounded-2xl transition-all duration-300 group-hover:scale-110",
-                          tool.isLocked 
-                            ? "bg-slate-100 dark:bg-slate-800" 
-                            : "bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:from-blue-500/20 group-hover:to-purple-500/20"
-                        )}>
-                          {React.createElement(tool.icon as any, { 
-                            className: cn(
-                              "h-8 w-8 transition-colors",
-                              tool.isLocked ? "text-slate-400" : "text-blue-600"
-                            )
-                          })}
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          {tool.isLocked && <Lock className="h-4 w-4 text-slate-400" />}
-                          {tool.isCompleted && <CheckCircle2 className="h-5 w-5 text-green-500" />}
-                          {tool.is_premium && <Crown className="h-4 w-4 text-amber-500" />}
-                        </div>
-                      </div>
-
-                      <CardTitle className={cn(
-                        "text-xl font-semibold leading-tight",
-                        tool.isLocked ? "text-slate-500" : "text-slate-900 dark:text-white"
-                      )}>
-                        {tool.name}
-                      </CardTitle>
-                      
-                      <CardDescription className="text-slate-600 dark:text-slate-300 line-clamp-2 text-base leading-relaxed">
-                        {tool.description}
-                      </CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="pt-0">
-                      <div className="space-y-4">
-                        {/* Stats */}
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="flex items-center gap-4">
-                            <Badge 
-                              variant="outline" 
-                              className={cn(
-                                "rounded-full",
-                                tool.difficulty === 'beginner' && "border-green-500 text-green-700 bg-green-50",
-                                tool.difficulty === 'intermediate' && "border-yellow-500 text-yellow-700 bg-yellow-50",
-                                tool.difficulty === 'advanced' && "border-red-500 text-red-700 bg-red-50"
-                              )}
-                            >
-                              {tool.difficulty}
-                            </Badge>
-                            <div className="flex items-center gap-1 text-slate-500">
-                              <Clock className="h-3 w-3" />
-                              {tool.estimated_time}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-xs text-slate-500">
-                            <span>Progress</span>
-                            <span>{tool.progress}%</span>
-                          </div>
-                          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                            <div 
-                              className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${tool.progress}%` }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* TXC Cost */}
-                        {tool.txc_cost > 0 && (
-                          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                            <div className="flex items-center gap-2">
-                              <Zap className="h-4 w-4 text-yellow-500" />
-                              <span className="text-sm font-medium">{tool.txc_cost} TXC</span>
-                            </div>
-                            <span className="text-xs text-slate-500">
-                              Balance: {userTXCBalance}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="space-y-3">
-                          <div className="flex gap-2">
-                            <ToolTestDialog 
-                              tool={tool} 
-                              onTest={async (slug) => console.log('Testing:', slug)} 
-                            />
-                            <ToolBenefitsModal tool={tool} />
-                          </div>
-                          
-                          <Button 
-                            className={cn(
-                              "w-full rounded-2xl font-medium transition-all duration-300",
-                              tool.isLocked 
-                                ? "bg-slate-200 text-slate-500 cursor-not-allowed hover:bg-slate-200" 
-                                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
-                            )}
-                            disabled={tool.isLocked}
-                          >
-                            {tool.isLocked ? 'Locked' : tool.isCompleted ? 'Redo Tool' : 'Start Tool'}
-                            {!tool.isLocked && <ChevronRight className="ml-2 h-4 w-4" />}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+          {/* Tools Grid */}
+          {paginatedTools.length === 0 ? (
+            <div className="text-center py-24">
+              <div className="max-w-md mx-auto space-y-4">
+                <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto">
+                  <Search className="w-12 h-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold">No tools found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search or filter criteria
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('all');
+                    setSelectedDifficulty('all');
+                  }}
+                >
+                  Clear filters
+                </Button>
               </div>
-            ) : (
-              // List View
-              <div className="space-y-4">
-                {paginatedTools.map((tool) => (
-                  <Card
-                    key={tool.id}
-                    className={cn(
-                      "group cursor-pointer transition-all duration-300 hover:shadow-lg",
-                      "bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50",
-                      tool.isLocked ? "opacity-60" : "",
-                      tool.isCompleted && "ring-2 ring-green-500/20"
-                    )}
-                    onClick={() => !tool.isLocked && navigate(`/tools/${tool.slug}`)}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6 flex-1">
-                          <div className={cn(
-                            "p-3 rounded-2xl",
-                            tool.isLocked 
-                              ? "bg-slate-100 dark:bg-slate-800" 
-                              : "bg-gradient-to-br from-blue-500/10 to-purple-500/10"
-                          )}>
-                            {React.createElement(tool.icon as any, { 
-                              className: cn(
-                                "h-6 w-6",
-                                tool.isLocked ? "text-slate-400" : "text-blue-600"
-                              )
-                            })}
+            </div>
+          ) : (
+            <div className={cn(
+              "grid gap-8",
+              viewMode === 'grid' 
+                ? "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3" 
+                : "grid-cols-1 max-w-4xl mx-auto"
+            )}>
+              {paginatedTools.map((tool) => (
+                <Card
+                  key={tool.id}
+                  onClick={() => handleToolClick(tool)}
+                  className={cn(
+                    "group relative overflow-hidden cursor-pointer",
+                    "bg-gradient-to-br from-card to-card/90 backdrop-blur-xl",
+                    "border-2 rounded-3xl p-8",
+                    "transition-all duration-500 ease-out",
+                    isToolLocked(tool) 
+                      ? "border-border/30 opacity-75 hover:opacity-85" 
+                      : "border-border/50 hover:shadow-2xl hover:scale-[1.02] hover:border-primary/40",
+                    tool.isCompleted && "ring-2 ring-green-500/20 border-green-500/30"
+                  )}
+                >
+                  {/* Apple-style glassmorphism */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl" />
+                  
+                  {/* Level indicator */}
+                  <div className={cn(
+                    "absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold",
+                    "bg-gradient-to-r text-white shadow-lg",
+                    tool.unlock_level === 1 && "from-emerald-500 to-green-600",
+                    tool.unlock_level === 2 && "from-blue-500 to-cyan-600", 
+                    tool.unlock_level === 3 && "from-purple-500 to-violet-600",
+                    (tool.unlock_level || 1) >= 4 && "from-amber-500 to-orange-600"
+                  )}>
+                    L{tool.unlock_level || 1}
+                  </div>
+                  
+                  {/* Lock overlay for locked tools */}
+                  {isToolLocked(tool) && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-background/95 to-background/85 backdrop-blur-md rounded-3xl flex items-center justify-center z-10">
+                      <div className="text-center space-y-4 p-6">
+                        <div className="relative">
+                          <div className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 rounded-3xl border border-border/50">
+                            <Lock className="w-10 h-10 text-muted-foreground mx-auto" />
                           </div>
-
-                          <div className="flex-1">
-                            <h3 className={cn(
-                              "text-lg font-semibold mb-1",
-                              tool.isLocked ? "text-slate-500" : "text-slate-900 dark:text-white"
-                            )}>
-                              {tool.name}
-                            </h3>
-                            <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-1">
-                              {tool.description}
-                            </p>
+                          <div className="absolute -top-2 -right-2 p-2 bg-primary rounded-full">
+                            <Crown className="w-4 h-4 text-primary-foreground" />
                           </div>
                         </div>
+                        <div className="space-y-2">
+                          <p className="font-bold text-lg text-foreground">Level {tool.unlock_level || 1} Tool</p>
+                          <p className="text-sm text-muted-foreground max-w-xs">
+                            {getUnlockMessage(tool)}
+                          </p>
+                          <div className="flex items-center justify-center gap-2 text-xs text-primary">
+                            <Zap className="w-3 h-3" />
+                            {tool.txc_cost && `${tool.txc_cost} TXC to unlock instantly`}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
-                        <div className="flex items-center gap-4">
-                          <Badge variant="outline" className="rounded-full">
+                  {/* Tool header */}
+                  <div className="relative z-0 flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className={cn(
+                        "p-4 rounded-2xl backdrop-blur-sm border-2 transition-all duration-300",
+                        isToolLocked(tool) 
+                          ? "bg-muted/30 border-border/30" 
+                          : "bg-primary/10 border-primary/20 group-hover:bg-primary/15"
+                      )}>
+                        <tool.icon className={cn(
+                          "w-8 h-8 transition-colors",
+                          isToolLocked(tool) ? "text-muted-foreground" : "text-primary"
+                        )} />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className={cn(
+                          "text-xl font-bold transition-colors",
+                          isToolLocked(tool) 
+                            ? "text-muted-foreground" 
+                            : "text-foreground group-hover:text-primary"
+                        )}>
+                          {tool.name}
+                        </h3>
+                        <div className="flex items-center gap-3 mt-2">
+                          <Badge 
+                            variant="secondary" 
+                            className={cn(
+                              "text-xs font-medium",
+                              isToolLocked(tool) ? "bg-muted/30" : "bg-secondary/50"
+                            )}
+                          >
                             {tool.difficulty}
                           </Badge>
-                          
-                          <div className="flex items-center gap-1 text-slate-500 text-sm">
-                            <Clock className="h-3 w-3" />
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
                             {tool.estimated_time}
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            {tool.isLocked && <Lock className="h-4 w-4 text-slate-400" />}
-                            {tool.isCompleted && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                            {tool.is_premium && <Crown className="h-4 w-4 text-amber-500" />}
-                          </div>
-
-                          <ChevronRight className="h-5 w-5 text-slate-400" />
+                          </span>
+                          {tool.txc_cost && tool.txc_cost > 0 && (
+                            <Badge variant="outline" className="text-xs border-primary/30 text-primary">
+                              <Coins className="w-3 h-3 mr-1" />
+                              {tool.txc_cost}
+                            </Badge>
+                          )}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
+                    </div>
+                    
+                    {tool.isCompleted && (
+                      <div className="p-2 bg-green-500/20 rounded-full">
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      </div>
+                    )}
+                  </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className="rounded-2xl"
-              >
-                Previous
-              </Button>
-              
-              <div className="flex gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => setCurrentPage(page)}
-                    className="w-12 h-12 rounded-2xl"
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </div>
+                  {/* Description */}
+                  <div className="relative z-0 mb-6">
+                    <p className={cn(
+                      "text-sm leading-relaxed",
+                      isToolLocked(tool) ? "text-muted-foreground/70" : "text-muted-foreground"
+                    )}>
+                      {tool.description}
+                    </p>
+                  </div>
 
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className="rounded-2xl"
-              >
-                Next
-              </Button>
+                  {/* Progress bar or unlock info */}
+                  <div className="relative z-0 space-y-3">
+                    {!isToolLocked(tool) ? (
+                      <>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Progress</span>
+                          <span className="font-medium">{Math.round(tool.progress)}%</span>
+                        </div>
+                        <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-700 ease-out"
+                            style={{ width: `${tool.progress}%` }}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-center py-2">
+                        <Badge variant="outline" className="border-muted-foreground/30 text-muted-foreground">
+                          <Lock className="w-3 h-3 mr-1" />
+                          Click to unlock
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Hover effect arrow */}
+                  <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className={cn(
+                      "p-2 rounded-full backdrop-blur-sm",
+                      isToolLocked(tool) 
+                        ? "bg-muted/30" 
+                        : "bg-primary/20"
+                    )}>
+                      <ChevronRight className={cn(
+                        "w-5 h-5",
+                        isToolLocked(tool) ? "text-muted-foreground" : "text-primary"
+                      )} />
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           )}
 
-          {/* Stats Footer */}
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50 text-center">
-              <CardContent className="p-6">
-                <Target className="h-8 w-8 text-blue-600 mx-auto mb-4" />
-                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                  {filteredTools.length}
-                </div>
-                <div className="text-sm text-slate-600 dark:text-slate-300">
-                  Available Tools
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50 text-center">
-              <CardContent className="p-6">
-                <Activity className="h-8 w-8 text-green-600 mx-auto mb-4" />
-                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                  {userStats.completedTools}
-                </div>
-                <div className="text-sm text-slate-600 dark:text-slate-300">
-                  Completed
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50 text-center">
-              <CardContent className="p-6">
-                <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-4" />
-                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                  {userStats.userLevel}
-                </div>
-                <div className="text-sm text-slate-600 dark:text-slate-300">
-                  User Level
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border-slate-200/50 dark:border-slate-700/50 text-center">
-              <CardContent className="p-6">
-                <Zap className="h-8 w-8 text-yellow-600 mx-auto mb-4" />
-                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                  {userTXCBalance}
-                </div>
-                <div className="text-sm text-slate-600 dark:text-slate-300">
-                  TXC Balance
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Pagination */}
+          {renderPaginationControls()}
         </div>
+
+        {/* Modals */}
+        {selectedTool && (
+          <>
+            <ToolUnlockModal
+              isOpen={showUnlockModal}
+              onClose={() => setShowUnlockModal(false)}
+              tool={{
+                ...selectedTool,
+                unlock_level: tools.find(t => t.id === selectedTool.id)?.unlock_level || 1,
+                txc_cost: tools.find(t => t.id === selectedTool.id)?.txc_cost || 0,
+                required_completions: tools.find(t => t.id === selectedTool.id)?.required_completions || 0,
+                is_premium: tools.find(t => t.id === selectedTool.id)?.is_premium || false
+              }}
+              userTXCBalance={userBalance}
+              completedToolsCount={completedToolsCount}
+              userLevel={userStats.userLevel}
+              onUnlockWithTXC={() => {
+                // TODO: Implement TXC purchase
+                console.log('Unlock with TXC');
+                setShowUnlockModal(false);
+              }}
+              onViewRequirements={() => {
+                setShowUnlockModal(false);
+                setShowBenefitsModal(true);
+              }}
+            />
+            <ToolTestDialog
+              tool={selectedTool}
+              isOpen={showTestDialog}
+              onOpenChange={() => setShowTestDialog(false)}
+            />
+            <ToolBenefitsModal
+              tool={selectedTool}
+              isOpen={showBenefitsModal}
+              onOpenChange={() => setShowBenefitsModal(false)}
+              onStartTesting={() => {
+                setShowBenefitsModal(false);
+                setShowTestDialog(true);
+              }}
+            />
+          </>
+        )}
       </div>
     </PageTransition>
   );
