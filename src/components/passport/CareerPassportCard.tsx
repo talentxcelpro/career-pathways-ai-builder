@@ -33,8 +33,8 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
   if (isLoading || !displayProfile) {
     return (
-      <Card className="w-full max-w-sm mx-auto h-[700px] bg-[#1e293b] border-none rounded-3xl animate-pulse">
-        <div className="h-full flex items-center justify-center">
+      <Card className="w-full max-w-sm mx-auto min-h-[500px] bg-[#1e293b] border-none rounded-3xl animate-pulse">
+        <div className="h-full flex items-center justify-center p-8">
           <div className="text-white">Loading...</div>
         </div>
       </Card>
@@ -53,7 +53,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
   return (
     <Card className="w-full max-w-sm mx-auto bg-[#1e293b] border-none overflow-hidden rounded-3xl shadow-2xl">
-      <div className="relative p-8 text-white h-[700px]">
+      <div className="relative p-4 sm:p-8 text-white min-h-[500px] sm:min-h-[600px]">
         {/* Decorative corner element */}
         <div className="absolute top-6 right-6">
           <svg width="64" height="64" viewBox="0 0 64 64" className="text-cyan-400">
@@ -67,24 +67,24 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
         </div>
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">TALENTXCEL</h1>
-          <h2 className="text-xl font-bold text-cyan-400">CAREER PASSPORT</h2>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">TALENTXCEL</h1>
+          <h2 className="text-lg sm:text-xl font-bold text-cyan-400">CAREER PASSPORT</h2>
         </div>
 
         {/* Main content layout */}
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex justify-between items-start mb-6 sm:mb-8">
           {/* Left side - Profile */}
           <div className="flex-1">
             {/* Profile Picture */}
-            <div className="w-28 h-28 mb-6 bg-slate-400 rounded-2xl overflow-hidden">
+            <div className="w-20 h-20 sm:w-28 sm:h-28 mb-4 sm:mb-6 bg-slate-400 rounded-2xl overflow-hidden">
               <Avatar className="w-full h-full rounded-2xl">
                 <AvatarImage 
                   src={displayProfile.profile_picture_url || ''} 
                   alt={displayProfile.full_name || 'User'} 
                   className="object-cover"
                 />
-                <AvatarFallback className="bg-slate-400 text-slate-800 text-2xl font-bold rounded-2xl">
+                <AvatarFallback className="bg-slate-400 text-slate-800 text-xl sm:text-2xl font-bold rounded-2xl">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
@@ -92,42 +92,42 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
           </div>
 
           {/* Center - Career Readiness Circle */}
-          <div className="flex flex-col items-center mx-6">
+          <div className="flex flex-col items-center mx-3 sm:mx-6">
             <div className="relative">
-              <svg className="w-24 h-24 transform -rotate-90">
+              <svg className="w-16 h-16 sm:w-24 sm:h-24 transform -rotate-90">
                 <circle
-                  cx="48"
-                  cy="48"
-                  r="40"
+                  cx={window.innerWidth < 640 ? "32" : "48"}
+                  cy={window.innerWidth < 640 ? "32" : "48"}
+                  r={window.innerWidth < 640 ? "28" : "40"}
                   stroke="rgba(156, 163, 175, 0.3)"
-                  strokeWidth="4"
+                  strokeWidth="3"
                   fill="none"
                 />
                 <circle
-                  cx="48"
-                  cy="48"
-                  r="40"
+                  cx={window.innerWidth < 640 ? "32" : "48"}
+                  cy={window.innerWidth < 640 ? "32" : "48"}
+                  r={window.innerWidth < 640 ? "28" : "40"}
                   stroke="#06b6d4"
-                  strokeWidth="4"
+                  strokeWidth="3"
                   fill="none"
-                  strokeDasharray={`${2 * Math.PI * 40}`}
-                  strokeDashoffset={`${2 * Math.PI * 40 * (1 - careerReadiness / 100)}`}
+                  strokeDasharray={`${2 * Math.PI * (window.innerWidth < 640 ? 28 : 40)}`}
+                  strokeDashoffset={`${2 * Math.PI * (window.innerWidth < 640 ? 28 : 40) * (1 - careerReadiness / 100)}`}
                   className="transition-all duration-1000"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-cyan-400 text-sm font-normal mb-1">CAREER</span>
-                <span className="text-white text-3xl font-bold">{Math.round(careerReadiness)}%</span>
-                <span className="text-cyan-400 text-sm font-normal mt-1">READY</span>
+                <span className="text-cyan-400 text-xs sm:text-sm font-normal mb-1">CAREER</span>
+                <span className="text-white text-xl sm:text-3xl font-bold">{Math.round(careerReadiness)}%</span>
+                <span className="text-cyan-400 text-xs sm:text-sm font-normal mt-1">READY</span>
               </div>
             </div>
           </div>
 
           {/* Right side - User ID Badge */}
           <div className="flex-shrink-0">
-            <div className="bg-transparent border-2 border-cyan-400 rounded-xl px-4 py-3 text-center min-w-[80px]">
-              <div className="text-white font-bold text-lg mb-2 !text-white">{userId}</div>
-              <svg className="w-8 h-8 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-transparent border-2 border-cyan-400 rounded-xl px-2 py-2 sm:px-4 sm:py-3 text-center min-w-[60px] sm:min-w-[80px]">
+              <div className="text-white font-bold text-sm sm:text-lg mb-1 sm:mb-2 !text-white">{userId}</div>
+              <svg className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -135,45 +135,45 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
         </div>
 
         {/* Profile Info */}
-        <div className="mb-8">
-          <h3 className="text-white text-3xl font-bold mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h3 className="text-white text-2xl sm:text-3xl font-bold mb-2">
             {displayProfile.full_name || 'Your Name'}
           </h3>
-          <p className="text-white text-lg mb-4 !text-white">
+          <p className="text-white text-base sm:text-lg mb-3 sm:mb-4 !text-white">
             {displayProfile.headline || displayProfile.title || 'Transforming Businesses and Lives'}
           </p>
           <div className="flex items-center text-white">
-            <MapPin className="w-5 h-5 mr-2 text-white" />
-            <span className="text-lg text-white !text-white">{displayProfile.location || 'India'}</span>
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white" />
+            <span className="text-base sm:text-lg text-white !text-white">{displayProfile.location || 'India'}</span>
           </div>
         </div>
 
         {/* Performance Metrics Section */}
-        <div className="bg-slate-800/80 rounded-xl p-6 mb-8">
-          <div className="grid grid-cols-2">
+        <div className="bg-slate-800/80 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-cyan-400 text-2xl font-bold">TOP {Math.round(industryPercentile)}%</div>
-              <div className="text-white text-base">vs peers</div>
+              <div className="text-cyan-400 text-xl sm:text-2xl font-bold">TOP {Math.round(industryPercentile)}%</div>
+              <div className="text-white text-sm sm:text-base">vs peers</div>
             </div>
             <div>
-              <div className="text-cyan-400 text-sm font-bold mb-1">COMPETITIVENESS</div>
-              <div className="text-white text-3xl font-bold">{Math.round(competitiveness)}%</div>
+              <div className="text-cyan-400 text-xs sm:text-sm font-bold mb-1">COMPETITIVENESS</div>
+              <div className="text-white text-2xl sm:text-3xl font-bold">{Math.round(competitiveness)}%</div>
             </div>
           </div>
         </div>
 
         {/* Bottom Stats Grid */}
-        <div className="border-t border-cyan-400 pt-6">
-          <div className="grid grid-cols-4 gap-4">
+        <div className="border-t border-cyan-400 pt-4 sm:pt-6">
+          <div className="grid grid-cols-4 gap-2 sm:gap-4">
             {/* Resumes */}
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div className="text-white text-3xl font-bold mb-1">{displayMetrics?.coursesCompleted || 0}</div>
-              <div className="text-white text-sm">Resumes</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.coursesCompleted || 0}</div>
+              <div className="text-white text-xs sm:text-sm">Resumes</div>
             </div>
 
             {/* Jobs */}
@@ -189,24 +189,24 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
             {/* Certificates */}
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div className="text-white text-3xl font-bold mb-1">{displayMetrics?.skillsAdded || 0}</div>
-              <div className="text-white text-sm">Certificates</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.skillsAdded || 0}</div>
+              <div className="text-white text-xs sm:text-sm">Certificates</div>
             </div>
 
             {/* Connections */}
             <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <div className="text-white text-3xl font-bold mb-1">{displayMetrics?.connections || 0}</div>
-              <div className="text-white text-sm">Connections</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.connections || 0}</div>
+              <div className="text-white text-xs sm:text-sm">Connections</div>
             </div>
           </div>
         </div>
