@@ -4,13 +4,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useLearningData } from '@/hooks/useLearningData';
+import { useCourseEnrollments, useEnrollInCourse } from '@/hooks/useCourses';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   BookOpen,
   Clock,
   Users,
   Star,
   PlayCircle,
-  ChevronRight
+  ChevronRight,
+  CheckCircle
 } from 'lucide-react';
 
 interface RealCourseGridProps {
@@ -28,6 +31,7 @@ export const RealCourseGrid: React.FC<RealCourseGridProps> = ({
   category,
   className
 }) => {
+  const { user } = useAuth();
   const { 
     filteredCourses, 
     categories, 
@@ -39,8 +43,24 @@ export const RealCourseGrid: React.FC<RealCourseGridProps> = ({
     selectedDifficulty,
     setSelectedDifficulty
   } = useLearningData();
+  const { data: enrollments } = useCourseEnrollments(user?.id);
+  const enrollMutation = useEnrollInCourse();
 
   const displayCourses = limit ? filteredCourses.slice(0, limit) : filteredCourses;
+
+  const handleEnrollClick = (courseId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      window.location.href = '/auth';
+      return;
+    }
+    enrollMutation.mutate({ courseId, userId: user.id });
+  };
+
+  const isEnrolled = (courseId: string) => {
+    return enrollments?.some(enrollment => enrollment.course_id === courseId);
+  };
 
   if (isLoading) {
     return (
@@ -230,17 +250,25 @@ export const RealCourseGrid: React.FC<RealCourseGridProps> = ({
                         ) : (
                           <span className="font-bold text-lg text-green-600">Free</span>
                         )}
-                        <Button 
-                          size="sm" 
-                          className="group-hover:bg-primary group-hover:text-primary-foreground"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            window.location.href = `/learning/courses/${course.id}`;
-                          }}
-                        >
-                          Enroll Now
-                        </Button>
+                        {isEnrolled(course.id) ? (
+                          <Button 
+                            size="sm" 
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            disabled
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Enrolled
+                          </Button>
+                        ) : (
+                          <Button 
+                            size="sm" 
+                            className="group-hover:bg-primary group-hover:text-primary-foreground"
+                            onClick={(e) => handleEnrollClick(course.id, e)}
+                            disabled={enrollMutation.isPending || !user}
+                          >
+                            {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Now'}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
