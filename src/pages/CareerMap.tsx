@@ -173,41 +173,12 @@ const CareerMap = () => {
           </div>
         </div>
 
-        {/* Get Started Section - Minimal and Elegant */}
-        {roadmaps.length === 0 && careerGoals.length === 0 && (
-          <Card className="border-0 shadow-apple-light bg-white/95 backdrop-blur-apple rounded-xl">
-            <CardContent className="text-center py-8">
-              <div className="max-w-lg mx-auto">
-                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-apple-light">
-                  <Brain className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-text-primary mb-2 font-display">Start Your AI Journey</h3>
-                <p className="text-text-secondary text-xs mb-6">
-                  Create personalized career roadmaps with AI technology
-                </p>
-                <div className="flex gap-3 justify-center">
-                  <Link to="/career-map/ai-roadmap-builder">
-                    <Button size="sm" className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 text-xs font-semibold rounded-lg shadow-apple-light">
-                      <Brain className="h-3 w-3 mr-1" />
-                      Create Roadmap
-                    </Button>
-                  </Link>
-                  <Link to="/career-map/skills-gap">
-                    <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 text-xs font-semibold rounded-lg shadow-apple-light">
-                      <Target className="h-3 w-3 mr-1" />
-                      Analyze Skills
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Visual Roadmaps Section */}
-        <div className="mb-8">
+        {/* Career Components Section */}
+        <div className="space-y-8">
+          {/* Visual Roadmaps Section */}
           <VisualRoadmapShowcase />
         </div>
+
         
         {/* Footer Note */}
         <div className="text-center py-8 mt-12">
