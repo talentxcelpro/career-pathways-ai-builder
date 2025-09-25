@@ -117,6 +117,7 @@ import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
 import CoursePlayer from "./pages/learning/CoursePlayer";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
+const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
 
 // Create query client optimized for performance and SEO
 const queryClient = new QueryClient({
@@ -296,9 +297,12 @@ const App = () => {
                               <Route path="/roadmap-builder" element={<InteractiveCareerRoadmapBuilder />} />
                               <Route path="/complete-intelligence" element={<CompletedCareerIntelligenceSystem />} />
                               
-                              {/* Services Platform Routes */}
+                          {/* Services Platform Routes */}
                               <Route path="/marketplace" element={<ServicesMarketplacePage />} />
                               <Route path="/provider/dashboard" element={<ProviderDashboard />} />
+                              
+                              {/* New TalentSpark Jobs Discovery */}
+                              <Route path="/jobs1" element={<React.Suspense fallback={<div>Loading...</div>}><Jobs1 /></React.Suspense>} />
                               
                          <Route path="/dashboard" element={<UnifiedDashboard />} />
                           <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
