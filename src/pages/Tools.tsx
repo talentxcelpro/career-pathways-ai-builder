@@ -5,6 +5,7 @@ import { GameProgressHeader } from '@/components/tools/GameProgressHeader';
 import { ToolTestDialog } from '@/components/tools/ToolTestDialog';
 import { ToolBenefitsModal } from '@/components/tools/ToolBenefitsModal';
 import { ToolUnlockModal } from '@/components/tools/ToolUnlockModal';
+import { GameToolCard } from '@/components/tools/GameToolCard';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { updateMetaTags } from '@/utils/metaTags';
 import { useRealToolsData } from '@/hooks/useRealToolsData';
@@ -37,6 +38,12 @@ import {
 import { cn } from '@/lib/utils';
 
 const TOOLS_PER_PAGE = 6;
+
+const UNLOCK_COSTS = {
+  individual: 100,  // TXC cost to unlock individual tool
+  page: 500,        // TXC cost to unlock entire page (6 tools)
+  premium: 1000     // TXC cost for premium unlock bundle
+};
 
 interface Tool {
   id: string;
@@ -102,10 +109,48 @@ const Tools = () => {
     });
   }, [tools, searchQuery, selectedCategory, selectedDifficulty]);
 
-  // Pagination
+  // Process and paginate tools with gaming logic
+  const paginatedTools = useMemo(() => {
+    const startIndex = (currentPage - 1) * TOOLS_PER_PAGE;
+    const endIndex = startIndex + TOOLS_PER_PAGE;
+    const pageTools = filteredTools.slice(startIndex, endIndex);
+    
+    // Apply gaming logic - lock tools based on progression
+    return pageTools.map((tool, index) => {
+      const globalIndex = startIndex + index;
+      const pageIndex = Math.floor(globalIndex / TOOLS_PER_PAGE) + 1;
+      
+      // First page (6 tools) - unlock first 3, lock rest until progression
+      if (pageIndex === 1) {
+        const isInFirstThree = index < 3;
+        const completedInFirstThree = pageTools.slice(0, 3).filter(t => t.isCompleted).length;
+        const shouldUnlock = isInFirstThree || completedInFirstThree >= 3;
+        
+        return {
+          ...tool,
+          isLocked: !shouldUnlock && !tool.isCompleted,
+          unlockRequirement: isInFirstThree ? null : 'Complete first 3 tools',
+          txc_cost: isInFirstThree ? 0 : UNLOCK_COSTS.individual
+        };
+      }
+      
+      // Other pages - check if previous page is completed
+      const prevPageStartIndex = (pageIndex - 2) * TOOLS_PER_PAGE;
+      const prevPageEndIndex = prevPageStartIndex + TOOLS_PER_PAGE;
+      const prevPageTools = filteredTools.slice(prevPageStartIndex, prevPageEndIndex);
+      const prevPageCompleted = prevPageTools.filter(t => t.isCompleted).length;
+      const pageUnlocked = prevPageCompleted >= 3;
+      
+      return {
+        ...tool,
+        isLocked: !pageUnlocked && !tool.isCompleted,
+        unlockRequirement: pageUnlocked ? null : `Complete 3 tools from page ${pageIndex - 1}`,
+        txc_cost: pageUnlocked ? 0 : UNLOCK_COSTS.individual
+      };
+    });
+  }, [filteredTools, currentPage]);
+
   const totalPages = Math.ceil(filteredTools.length / TOOLS_PER_PAGE);
-  const startIndex = (currentPage - 1) * TOOLS_PER_PAGE;
-  const paginatedTools = filteredTools.slice(startIndex, startIndex + TOOLS_PER_PAGE);
 
   // Reset page when filters change
   useEffect(() => {
