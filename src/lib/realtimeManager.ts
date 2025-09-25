@@ -38,6 +38,11 @@ class RealtimeManager {
   private flushTimers = new Map<string, number>();
   private broadcastChannel: BroadcastChannel | null = null;
   private channelStatuses = new Map<string, string>();
+  private maxRetries = 3;
+  private retryDelays = [1000, 3000, 5000]; // Progressive delays
+  private disabledChannels: Set<string> = new Set();
+  private circuitBreaker: Map<string, { failures: number; lastFailure: number }> = new Map();
+  private connectionAttempts: Map<string, number> = new Map();
 
   constructor() {
     // Initialize BroadcastChannel for cross-tab communication
@@ -147,7 +152,10 @@ class RealtimeManager {
           console.error('   - Network/connectivity issues');
           console.error('   - Project realtime disabled');
           if (err) console.error('   - Error details:', err);
-          // Remove faulty channel to prevent repeated errors and force a clean reconnect
+          
+          this.recordFailure(table);
+          
+          // Remove faulty channel to prevent repeated errors
           const channelName = `realtime:public:${table}`;
           try {
             supabase.removeChannel(channel);
@@ -156,17 +164,21 @@ class RealtimeManager {
           }
           this.channels.delete(channelName);
           this.channelStatuses.delete(table);
-          // Don't auto-reconnect on CHANNEL_ERROR to prevent infinite loops
-          console.log(`❌ Channel ${table} disabled due to persistent errors`);
+          
+          // Check if we should disable this table
+          const attempts = this.connectionAttempts.get(table) || 0;
+          if (attempts >= this.maxRetries) {
+            console.log(`🛑 Disabling ${table} after ${attempts} failed attempts`);
+            this.disabledChannels.add(table);
+          }
         } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
-          console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table} - will not auto-reconnect`);
+          console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table}`);
+          this.recordFailure(table);
           const channelName = `realtime:public:${table}`;
           // Ensure we drop the stale channel
           try { supabase.removeChannel(channel); } catch (_) {}
           this.channels.delete(channelName);
           this.channelStatuses.delete(table);
-          // Log but don't reconnect to prevent loops
-          console.log(`🛑 Channel ${table} closed, manual restart required`);
         }
       });
 
@@ -332,7 +344,40 @@ class RealtimeManager {
     
     this.isInitialized = false;
     this.isCleaningUp = false;
+    this.disabledChannels.clear();
+    this.circuitBreaker.clear();
+    this.connectionAttempts.clear();
     console.log('✅ Realtime cleanup completed');
+  }
+
+  private isCircuitOpen(table: WatchedTable): boolean {
+    const breaker = this.circuitBreaker.get(table);
+    if (!breaker) return false;
+    
+    const now = Date.now();
+    const timeSinceLastFailure = now - breaker.lastFailure;
+    
+    // Circuit opens after 3 failures, stays open for 60 seconds
+    return breaker.failures >= 3 && timeSinceLastFailure < 60000;
+  }
+
+  private recordFailure(table: WatchedTable): void {
+    const existing = this.circuitBreaker.get(table) || { failures: 0, lastFailure: 0 };
+    this.circuitBreaker.set(table, {
+      failures: existing.failures + 1,
+      lastFailure: Date.now()
+    });
+  }
+
+  private resetCircuitBreaker(table: WatchedTable): void {
+    this.circuitBreaker.delete(table);
+  }
+
+  public enableTable(table: WatchedTable): void {
+    console.log(`🔄 Re-enabling table: ${table}`);
+    this.disabledChannels.delete(table);
+    this.resetCircuitBreaker(table);
+    this.connectionAttempts.delete(table);
   }
 
   /**
