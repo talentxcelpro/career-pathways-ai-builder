@@ -6,12 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
 import { RealTimeReferralDashboard } from '@/components/referral/RealTimeReferralDashboard';
-import { ReferralContest } from '@/components/referral/ReferralContest';
-import { UrgencyBooster } from '@/components/referral/UrgencyBooster';
-import { SocialGameHub } from '@/components/referral/SocialGameHub';
-import { SocialShare } from '@/components/shared/SocialShare';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
-import { TouchButton } from '@/components/mobile/TouchButton';
 import { 
   Gift, 
   Users, 
@@ -92,14 +87,11 @@ const ReferAndEarn: React.FC = () => {
     { friends: 400, reward: '4-Month Pro + Bonus AI Tools', icon: Rocket, color: 'bg-red-500' }
   ];
 
-  const proFeatures = [
-    'Enhanced AI-Powered Career Profile',
-    'Unlimited Resume, Cover Letter & Job Applications', 
-    'Advanced Analytics & Career Insights',
-    'Priority Support & Early Access to New Tools',
-    'Up to 100 Career Services in One Place',
-    'TalentXcel AI Toolbox (Resume Scorer, Career Mapper, Smart Apply)',
-    'Lead Generation Tools (for Freelancers & Coaches)'
+  const quickFeatures = [
+    'AI-Powered Career Tools',
+    'Priority Support', 
+    'Advanced Analytics',
+    'Early Access to New Features'
   ];
 
   if (loading) {
@@ -276,97 +268,35 @@ const ReferAndEarn: React.FC = () => {
         </div>
       </section>
 
-      {/* Compact Pro Features Section */}
-      <section className="py-8 px-4 bg-card/30">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <Zap className="w-6 h-6 text-primary mr-2" />
-              <h2 className="text-xl md:text-2xl font-bold text-foreground">
-                What You'll Unlock
-              </h2>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Premium AI-powered features to accelerate your career growth
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {proFeatures.map((feature, index) => (
-              <Card key={index} className="gradient-card border-primary/10 hover:shadow-elegant transition-smooth">
-                <CardContent className="p-3">
-                  <div className="flex items-start space-x-2">
-                    <div className="p-0.5 bg-brand-green/10 rounded-full mt-0.5">
-                      <CheckCircle className="w-3 h-3 text-brand-green flex-shrink-0" />
-                    </div>
-                    <span className="text-foreground font-medium text-xs leading-relaxed">{feature}</span>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Quick Features Section */}
+      <section className="py-6 px-4 bg-card/30">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-lg font-bold text-foreground mb-4">
+            What You'll Unlock
+          </h2>
+          <div className="flex flex-wrap justify-center gap-2">
+            {quickFeatures.map((feature, index) => (
+              <Badge key={index} variant="secondary" className="text-xs px-3 py-1">
+                <CheckCircle className="w-3 h-3 mr-1" />
+                {feature}
+              </Badge>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Mobile-Optimized Sections - Show only on mobile */}
-      <div className="block md:hidden">
-        {/* Compact Urgency Boosters */}
-        <section className="py-6 px-4 bg-card/30">
-          <div className="max-w-2xl mx-auto">
-            <UrgencyBooster />
-          </div>
-        </section>
-
-        {/* Mobile Referral Dashboard */}
-        {referralData && (
-          <section id="dashboard" className="py-6 px-4 gradient-hero">
-            <div className="max-w-2xl mx-auto">
-              <div className="text-center mb-4">
-                <h2 className="text-lg font-bold text-foreground mb-1">Your Dashboard</h2>
-                <p className="text-sm text-muted-foreground">Track progress and share your link</p>
-              </div>
-              <RealTimeReferralDashboard />
+      {/* Referral Dashboard */}
+      {referralData && (
+        <section id="dashboard" className="py-8 px-4 gradient-hero">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-foreground mb-2">Your Dashboard</h2>
+              <p className="text-sm text-muted-foreground">Track progress and share your link</p>
             </div>
-          </section>
-        )}
-      </div>
-
-      {/* Desktop Sections - Hidden on mobile */}
-      <div className="hidden md:block">
-        {/* Urgency Boosters */}
-        <section className="py-16 px-4 bg-card/30">
-          <div className="max-w-6xl mx-auto">
-            <UrgencyBooster />
+            <RealTimeReferralDashboard />
           </div>
         </section>
-
-        {/* Contests */}
-        <section className="py-16 px-4 gradient-hero">
-          <div className="max-w-6xl mx-auto">
-            <ReferralContest />
-          </div>
-        </section>
-
-        {/* Social Game Hub */}
-        <section className="py-16 px-4 bg-card/30">
-          <div className="max-w-6xl mx-auto">
-            <SocialGameHub />
-          </div>
-        </section>
-
-        {/* Referral Dashboard */}
-        {referralData && (
-          <section id="dashboard" className="py-16 px-4 gradient-hero">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-foreground mb-2">Your Referral Dashboard</h2>
-                <p className="text-muted-foreground">Track your progress and share your referral link</p>
-              </div>
-              <RealTimeReferralDashboard />
-            </div>
-          </section>
-        )}
-      </div>
+      )}
 
       {/* Compact CTA Section */}
       <section className="py-8 px-4">
