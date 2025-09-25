@@ -8,6 +8,8 @@ import { CreateRoadmapModal } from '../modals/CreateRoadmapModal';
 import { SkillsAnalysisModal } from '../modals/SkillsAnalysisModal';
 import { EmptyCareerState } from '../career-map/EmptyCareerState';
 import { BuildingPathState } from '../career-map/BuildingPathState';
+import { ReadyToAccelerateCard } from '../career-map/ReadyToAccelerateCard';
+import { PersonalizedDashboard } from '../career-map/PersonalizedDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -354,26 +356,22 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
 
   return (
     <div className={className}>
-      {/* Apple-inspired Header */}
-      <div className="mb-8">
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-apple-lg flex items-center justify-center shadow-apple-light">
-              <Brain className="h-4 w-4 text-white" />
-            </div>
-            <Badge className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border-0 px-3 py-1 shadow-apple-subtle">
-              Personalized for {userProfile?.full_name?.split(' ')[0] || 'You'}
-            </Badge>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-blue-800 bg-clip-text text-transparent mb-4">
-            Your Interactive Career Roadmap
-          </h1>
-          <p className="text-lg text-text-secondary">
-            Experience your personalized career journey with real-time AI insights 
-            tailored to your profile and goals.
-          </p>
-        </div>
-      </div>
+      {/* Personalized Dashboard */}
+      <PersonalizedDashboard 
+        userName={userProfile?.full_name || "User"}
+        userRole={userProfile?.title || userProfile?.headline || "Professional"}
+        profileMatch={dynamicPersonalization.profileMatch}
+        aiConfidence={dynamicPersonalization.confidenceScore}
+        estimatedTimeline={dynamicPersonalization.timeToGoal}
+        className="mb-8"
+      />
+
+      {/* Ready to Accelerate Card */}
+      <ReadyToAccelerateCard 
+        userName={userProfile?.full_name?.split(' ')[0] || "your"}
+        currentRole={userProfile?.title || userProfile?.headline || "Professional"}
+        className="mb-8"
+      />
 
       {/* Real-time Career Data */}
       <RealTimeCareerData />
