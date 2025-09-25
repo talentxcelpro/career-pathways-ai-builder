@@ -181,9 +181,9 @@ export const ToolTestDialog: React.FC<ToolTestDialogProps> = ({ tool, onTest, is
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-xl">
-              {React.createElement(tool.icon, { className: "h-6 w-6 text-blue-600" })}
+              {tool?.icon && React.createElement(tool.icon, { className: "h-6 w-6 text-blue-600" })}
             </div>
-            Testing: {tool.name}
+            Testing: {tool?.name || 'Unknown Tool'}
           </DialogTitle>
           <DialogDescription>
             Comprehensive testing suite for {tool.name} - {tool.description}

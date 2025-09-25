@@ -155,22 +155,18 @@ class RealtimeManager {
             console.warn(`⚠️ Error removing faulty channel ${channelName}:`, error);
           }
           this.channels.delete(channelName);
-          // Try to reconnect after a short delay
-          setTimeout(() => {
-            console.log(`🔄 Reconnecting channel after error for ${table}...`);
-            this._setupSingleConnection(table);
-          }, 3000);
+          this.channelStatuses.delete(table);
+          // Don't auto-reconnect on CHANNEL_ERROR to prevent infinite loops
+          console.log(`❌ Channel ${table} disabled due to persistent errors`);
         } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
-          console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table} - attempting reconnect`);
+          console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table} - will not auto-reconnect`);
           const channelName = `realtime:public:${table}`;
-          // Ensure we drop the stale channel before reconnecting
+          // Ensure we drop the stale channel
           try { supabase.removeChannel(channel); } catch (_) {}
           this.channels.delete(channelName);
-          // Auto-reconnect after a short delay
-          setTimeout(() => {
-            console.log(`🔄 Reconnecting channel for ${table}...`);
-            this._setupSingleConnection(table);
-          }, 3000);
+          this.channelStatuses.delete(table);
+          // Log but don't reconnect to prevent loops
+          console.log(`🛑 Channel ${table} closed, manual restart required`);
         }
       });
 
@@ -214,10 +210,8 @@ class RealtimeManager {
         const channelName = `realtime:public:${table}`;
         try { supabase.removeChannel(channel); } catch (_) {}
         this.channels.delete(channelName);
-        setTimeout(() => {
-          console.log(`🔁 Retrying reconnect for ${table}...`);
-          this._setupSingleConnection(table);
-        }, 3000);
+        this.channelStatuses.delete(table);
+        console.log(`🛑 Single connection failed for ${table}, not retrying to prevent loops`);
       }
     });
 
