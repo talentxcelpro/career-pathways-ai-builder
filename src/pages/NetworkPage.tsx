@@ -31,8 +31,13 @@ import {
   Building,
   GraduationCap,
   Award,
-  Clock
+  Clock,
+  Shield
 } from 'lucide-react';
+import { SkillSwapNetwork } from '@/components/network/advanced/SkillSwapNetwork';
+import { EventlessNetworking } from '@/components/network/advanced/EventlessNetworking';
+import { NetworkingWithProof } from '@/components/network/advanced/NetworkingWithProof';
+import { InterestFirstNetwork } from '@/components/network/advanced/InterestFirstNetwork';
 
 interface NetworkProfile {
   id: string;
@@ -429,24 +434,40 @@ const NetworkPage = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           {/* Tab Navigation */}
           <div className="flex items-center justify-between mb-6">
-            <TabsList className="grid grid-cols-4 w-fit">
-              <TabsTrigger value="discover" className="flex items-center gap-2">
-                <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">Discover</span>
-              </TabsTrigger>
-              <TabsTrigger value="connections" className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                <span className="hidden sm:inline">My Network</span>
-              </TabsTrigger>
-              <TabsTrigger value="requests" className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4" />
-                <span className="hidden sm:inline">Requests</span>
-              </TabsTrigger>
-              <TabsTrigger value="messages" className="flex items-center gap-2">
-                <MessageCircle className="w-4 h-4" />
-                <span className="hidden sm:inline">Messages</span>
-              </TabsTrigger>
-            </TabsList>
+          <TabsList className="grid grid-cols-8 w-fit">
+            <TabsTrigger value="discover" className="flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline">Discover</span>
+            </TabsTrigger>
+            <TabsTrigger value="connections" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">My Network</span>
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="flex items-center gap-2">
+              <UserPlus className="w-4 h-4" />
+              <span className="hidden sm:inline">Requests</span>
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="flex items-center gap-2">
+              <MessageCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Messages</span>
+            </TabsTrigger>
+            <TabsTrigger value="skill-swap" className="flex items-center gap-2">
+              <Award className="w-4 h-4" />
+              <span className="hidden sm:inline">Skill Swap</span>
+            </TabsTrigger>
+            <TabsTrigger value="eventless" className="flex items-center gap-2">
+              <Video className="w-4 h-4" />
+              <span className="hidden sm:inline">Video Intros</span>
+            </TabsTrigger>
+            <TabsTrigger value="proof" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              <span className="hidden sm:inline">Verified</span>
+            </TabsTrigger>
+            <TabsTrigger value="interests" className="flex items-center gap-2">
+              <Star className="w-4 h-4" />
+              <span className="hidden sm:inline">Communities</span>
+            </TabsTrigger>
+          </TabsList>
 
             {/* Global Search Bar */}
             <div className="flex items-center gap-2">
@@ -593,10 +614,37 @@ const NetworkPage = () => {
           </TabsContent>
 
           <TabsContent value="messages">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Messages</CardTitle>
+            <Card className="text-center py-12">
+              <CardContent>
+                <MessageCircle className="w-12 h-12 mx-auto text-slate-400 mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Messages Coming Soon</h3>
+                <p className="text-slate-600">Direct messaging feature will be available soon.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="skill-swap">
+            <SkillSwapNetwork />
+          </TabsContent>
+
+          <TabsContent value="eventless">
+            <EventlessNetworking />
+          </TabsContent>
+
+          <TabsContent value="proof">
+            <NetworkingWithProof />
+          </TabsContent>
+
+          <TabsContent value="interests">
+            <InterestFirstNetwork />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default NetworkPage;
                   <CardDescription>Stay connected with your professional network</CardDescription>
                 </CardHeader>
                 <CardContent>
