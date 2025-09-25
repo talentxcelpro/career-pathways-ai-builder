@@ -44,7 +44,7 @@ interface Tool {
 }
 
 interface ToolBenefitsModalProps {
-  tool: Tool;
+  tool: Tool | null;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   onStartTesting?: () => void;
@@ -70,6 +70,11 @@ interface Feature {
 export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOpen = false, onOpenChange, onStartTesting }) => {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
 
+  // Early return if tool is null to prevent rendering issues
+  if (!tool) {
+    return null;
+  }
+
   // Sync with external open state
   React.useEffect(() => {
     setIsModalOpen(isOpen);
@@ -81,6 +86,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
       onOpenChange(open);
     }
   };
+
   const getBenefits = (): Benefit[] => {
     // Tool-specific benefits based on slug or name
     const toolSpecificBenefits: Record<string, Benefit[]> = {
@@ -191,11 +197,11 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     };
 
     // Get tool-specific benefits or fallback to generic ones
-    const specificBenefits = toolSpecificBenefits[tool?.slug] || [
+    const specificBenefits = toolSpecificBenefits[tool.slug] || [
       {
         id: 'ai-powered',
         title: 'AI-Powered Analysis',
-        description: `Get intelligent insights tailored for ${tool?.name || 'this tool'}`,
+        description: `Get intelligent insights tailored for ${tool.name}`,
         icon: Brain,
         category: 'immediate',
         impact: 'high'
@@ -348,11 +354,12 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
       }
     ];
 
-    return toolSpecificFeatures[tool?.slug] || defaultFeatures;
+    return toolSpecificFeatures[tool.slug] || defaultFeatures;
   };
 
-  const benefits = getBenefits();
-  const features = getAdvancedFeatures();
+  // Memoize expensive computations and ensure they only run when tool is valid
+  const benefits = React.useMemo(() => getBenefits(), [tool.slug]);
+  const features = React.useMemo(() => getAdvancedFeatures(), [tool.slug]);
 
   // Tool-specific stats
   const getToolStats = () => {
@@ -383,7 +390,7 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
       }
     };
 
-    return toolStats[tool?.slug] || {
+    return toolStats[tool.slug] || {
       avgTimeReduction: '75%',
       accuracyImprovement: '92%',
       userSatisfaction: '4.8/5',
@@ -391,7 +398,8 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
     };
   };
 
-  const stats = getToolStats();
+  // Memoize stats computation
+  const stats = React.useMemo(() => getToolStats(), [tool.slug]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
@@ -410,12 +418,12 @@ export const ToolBenefitsModal: React.FC<ToolBenefitsModalProps> = ({ tool, isOp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl">
-              {tool?.icon && React.createElement(tool.icon, { className: "h-6 w-6 text-purple-600" })}
+              {tool.icon && React.createElement(tool.icon, { className: "h-6 w-6 text-purple-600" })}
             </div>
-            Benefits & Features: {tool?.name || 'Tool'}
+            Benefits & Features: {tool.name}
           </DialogTitle>
           <DialogDescription>
-            Discover how {tool?.name || 'this tool'} can accelerate your career growth and maximize your potential
+            Discover how {tool.name} can accelerate your career growth and maximize your potential
           </DialogDescription>
         </DialogHeader>
 

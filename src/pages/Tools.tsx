@@ -124,6 +124,12 @@ const ToolsContent = ({ tools, toolsByCategory, userStats, userName, userTXCBala
   const paginatedTools = filteredTools.slice(startIndex, startIndex + TOOLS_PER_PAGE);
 
   const handleToolClick = (tool: any) => {
+    // Validate tool data before setting
+    if (!tool || !tool.name || !tool.slug) {
+      console.error('Invalid tool data:', tool);
+      return;
+    }
+
     const mappedTool: Tool = {
       id: tool.id,
       name: tool.name,
@@ -190,12 +196,14 @@ const ToolsContent = ({ tools, toolsByCategory, userStats, userName, userTXCBala
           ))}
         </div>
         
-        <ToolBenefitsModal 
-          tool={selectedTool}
-          isOpen={showBenefitsModal}
-          onOpenChange={setShowBenefitsModal}
-          onStartTesting={() => setShowBenefitsModal(false)}
-        />
+        {selectedTool && (
+          <ToolBenefitsModal 
+            tool={selectedTool}
+            isOpen={showBenefitsModal}
+            onOpenChange={setShowBenefitsModal}
+            onStartTesting={() => setShowBenefitsModal(false)}
+          />
+        )}
       </div>
     </div>
   );
