@@ -69,7 +69,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-white mb-1">TALENTXCEL</h1>
-          <h2 className="text-xl font-bold text-white">CAREER PASSPORT</h2>
+          <h2 className="text-xl font-bold text-cyan-400">CAREER PASSPORT</h2>
         </div>
 
         {/* Main content layout */}
@@ -126,7 +126,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
           {/* Right side - User ID Badge */}
           <div className="flex-shrink-0">
             <div className="bg-transparent border-2 border-cyan-400 rounded-xl px-4 py-3 text-center min-w-[80px]">
-              <div className="text-cyan-400 font-bold text-lg mb-2">{userId}</div>
+              <div className="text-white font-bold text-lg mb-2">{userId}</div>
               <svg className="w-8 h-8 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
