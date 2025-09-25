@@ -28,6 +28,7 @@ import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
+import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
@@ -209,7 +210,8 @@ const App = () => {
       <ErrorBoundary FallbackComponent={BundleErrorFallback}>
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
-            <AuthProvider>
+            <ReactContextErrorBoundary>
+              <AuthProvider>
               <TooltipProvider delayDuration={200}>
                 <TXCAutoMiner />
                     <NotificationProvider>
@@ -517,7 +519,8 @@ const App = () => {
                 </RealtimeProvider>
                        </NotificationProvider>
               </TooltipProvider>
-            </AuthProvider>
+              </AuthProvider>
+            </ReactContextErrorBoundary>
           </BrowserRouter>
         </QueryClientProvider>
       </ErrorBoundary>
