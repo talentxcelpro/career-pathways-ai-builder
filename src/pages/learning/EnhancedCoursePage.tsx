@@ -30,6 +30,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function EnhancedCoursePage() {
+  console.log('🎯 EnhancedCoursePage component is mounting!');
   const { courseId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -136,6 +137,7 @@ export default function EnhancedCoursePage() {
   };
 
   if (isLoading) {
+    console.log('📍 Course is loading...');
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
