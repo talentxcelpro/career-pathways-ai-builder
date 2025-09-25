@@ -322,116 +322,87 @@ const Jobs = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
         
-        {/* Revolutionary Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 border-b border-border/20">
-          {/* Animated Background */}
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-secondary/30 to-accent/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          </div>
-
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-4">
+        {/* Simplified Hero Section - Compact */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 border-b border-border/10">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {/* Compact Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
                 <img 
                   src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                   alt="TalentXcel" 
-                  className="h-10 w-10 rounded-xl"
+                  className="h-8 w-8 rounded-lg"
                 />
                 <div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     TalentSpark Job Discovery
                   </h1>
-                  <p className="text-muted-foreground">Powered by AI • Rewarded with TXC</p>
+                  <p className="text-sm text-muted-foreground">AI-Powered • TXC Rewards</p>
                 </div>
               </div>
-
               {currentUser && <TXCCoinBalance balance={txcCoins} />}
             </div>
 
-            {/* Dynamic Stats Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <Card className="p-4 bg-white/50 backdrop-blur-sm border-0">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{totalCount.toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground">Live Jobs</div>
+            {/* Compact Search Bar */}
+            <div className="max-w-3xl mx-auto mb-4">
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search jobs, skills, companies..."
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && refetch()}
+                    className="pl-10 pr-4 h-10 border border-primary/20 focus:border-primary/50 rounded-lg bg-white/80"
+                  />
                 </div>
-              </Card>
-              <Card className="p-4 bg-white/50 backdrop-blur-sm border-0">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">2,450+</div>
-                  <div className="text-xs text-muted-foreground">Hiring Companies</div>
-                </div>
-              </Card>
-              <Card className="p-4 bg-white/50 backdrop-blur-sm border-0">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">94%</div>
-                  <div className="text-xs text-muted-foreground">AI Match Rate</div>
-                </div>
-              </Card>
-              <Card className="p-4 bg-white/50 backdrop-blur-sm border-0">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">₹4.2L</div>
-                  <div className="text-xs text-muted-foreground">Avg Salary Boost</div>
-                </div>
-              </Card>
+                <Button
+                  size="sm"
+                  onClick={handleVoiceSearch}
+                  disabled={isVoiceSearching}
+                  variant="outline"
+                  className="h-10 px-3"
+                >
+                  <Mic className={`h-4 w-4 ${isVoiceSearching ? 'animate-pulse text-red-400' : ''}`} />
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => refetch()}
+                  className="h-10 px-6"
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Search
+                </Button>
+              </div>
             </div>
 
-            {/* Revolutionary Search Bar */}
-            <div className="max-w-4xl mx-auto mb-8">
-              <div className="relative">
-                <div className="flex gap-2">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Search jobs, skills, companies... (try 'Remote React Developer')"
-                      value={filters.search}
-                      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                      onKeyDown={(e) => e.key === 'Enter' && refetch()}
-                      className="pl-12 pr-4 h-14 text-lg border-2 border-primary/20 focus:border-primary/50 rounded-2xl bg-white/80 backdrop-blur-sm"
-                    />
-                  </div>
-                  <Button
-                    size="lg"
-                    onClick={handleVoiceSearch}
-                    disabled={isVoiceSearching}
-                    className="h-14 px-6 rounded-2xl bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
-                  >
-                    <Mic className={`h-5 w-5 ${isVoiceSearching ? 'animate-pulse text-red-400' : ''}`} />
-                  </Button>
-                  <Button
-                    size="lg"
-                    onClick={() => refetch()}
-                    className="h-14 px-8 rounded-2xl bg-accent hover:bg-accent/90"
-                  >
-                    <Search className="h-5 w-5 mr-2" />
-                    Search
-                  </Button>
-                </div>
-              </div>
-
-              {/* Quick Search Tags */}
-              <div className="flex flex-wrap gap-2 mt-4 justify-center">
-                {['Remote Jobs', 'React Developer', 'Data Scientist', 'Product Manager', 'UI/UX Designer', 'DevOps Engineer'].map((tag) => (
-                  <Button
-                    key={tag}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setFilters(prev => ({ ...prev, search: tag }));
-                      refetch();
-                    }}
-                    className="rounded-full bg-white/60 backdrop-blur-sm hover:bg-primary hover:text-white transition-all"
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
+            {/* Quick Search Tags - All Clickable */}
+            <div className="flex flex-wrap gap-2 justify-center">
+              {[
+                { label: 'Remote Jobs', filter: { is_remote: true } },
+                { label: 'React Developer', filter: { search: 'React Developer' } },
+                { label: 'Data Scientist', filter: { search: 'Data Scientist' } },
+                { label: 'Product Manager', filter: { search: 'Product Manager' } },
+                { label: 'UI/UX Designer', filter: { search: 'UI/UX Designer' } },
+                { label: 'DevOps Engineer', filter: { search: 'DevOps Engineer' } }
+              ].map((tag) => (
+                <Button
+                  key={tag.label}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, ...tag.filter }));
+                    refetch();
+                  }}
+                  className="rounded-full bg-white/60 backdrop-blur-sm hover:bg-primary hover:text-white transition-all text-xs"
+                >
+                  {tag.label}
+                </Button>
+              ))}
             </div>
 
             {/* View Mode Selector */}
-            <div className="flex justify-center gap-2 mb-6">
+            <div className="flex justify-center gap-2 mt-4">
               <Button
                 variant={viewMode === 'card' ? 'default' : 'outline'}
                 size="sm"
@@ -701,6 +672,108 @@ const Jobs = () => {
         {/* Hundreds of Industries Section */}
         <div className="max-w-7xl mx-auto px-4 py-16">
           <HundredsOfIndustriesSection />
+        </div>
+
+        {/* Dynamic Stats Banner - Bottom Placement */}
+        <div className="bg-gradient-to-r from-yellow-50 via-orange-50 to-yellow-50 border-t border-yellow-200/50 mt-16">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">
+                TalentXcel Job Portal Statistics
+              </h2>
+              <p className="text-sm text-gray-600">Real-time insights from India's fastest-growing job platform</p>
+            </div>
+            
+            {/* Clickable Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <Button
+                variant="ghost"
+                className="h-auto p-4 flex flex-col items-center bg-white/60 hover:bg-white/80 border border-yellow-200 rounded-lg transition-all"
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, search: '' }));
+                  refetch();
+                }}
+              >
+                <div className="text-2xl font-bold text-green-600">{totalCount.toLocaleString()}</div>
+                <div className="text-xs text-gray-600">Live Jobs</div>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                className="h-auto p-4 flex flex-col items-center bg-white/60 hover:bg-white/80 border border-yellow-200 rounded-lg transition-all"
+                onClick={() => navigate('/companies')}
+              >
+                <div className="text-2xl font-bold text-blue-600">2,450+</div>
+                <div className="text-xs text-gray-600">Hiring Companies</div>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                className="h-auto p-4 flex flex-col items-center bg-white/60 hover:bg-white/80 border border-yellow-200 rounded-lg transition-all"
+                onClick={() => {
+                  if (currentUser) {
+                    navigate('/jobs/recommendations');
+                  } else {
+                    toast.info('Login to see AI recommendations');
+                  }
+                }}
+              >
+                <div className="text-2xl font-bold text-purple-600">94%</div>
+                <div className="text-xs text-gray-600">AI Match Rate</div>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                className="h-auto p-4 flex flex-col items-center bg-white/60 hover:bg-white/80 border border-yellow-200 rounded-lg transition-all"
+                onClick={() => {
+                  setFilters(prev => ({ ...prev, is_remote: true }));
+                  refetch();
+                }}
+              >
+                <div className="text-2xl font-bold text-orange-600">₹4.2L</div>
+                <div className="text-xs text-gray-600">Avg Salary Boost</div>
+              </Button>
+            </div>
+
+            {/* Clickable Job Roles */}
+            <div className="text-center mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-3">Trending Job Roles</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  { role: 'React Developer', path: '/jobs/role/react-developer' },
+                  { role: 'Data Scientist', path: '/jobs/role/data-scientist' },
+                  { role: 'Product Manager', path: '/jobs/role/product-manager' },
+                  { role: 'UI/UX Designer', path: '/jobs/role/ui-ux-designer' },
+                  { role: 'DevOps Engineer', path: '/jobs/role/devops-engineer' }
+                ].map((item) => (
+                  <Button
+                    key={item.role}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setFilters(prev => ({ ...prev, search: item.role }));
+                      refetch();
+                    }}
+                    className="bg-white/60 hover:bg-primary hover:text-white border-yellow-300 text-xs rounded-full transition-all"
+                  >
+                    {item.role}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Welcome Message for Logged Users */}
+            {currentUser && (
+              <div className="text-center bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-lg border border-primary/20">
+                <p className="text-sm font-medium text-gray-800">
+                  Welcome back, TalentXcel Pro! 👋
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  Your AI Career Assistant found 19 new matches today
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Floating Action Button for Mobile */}

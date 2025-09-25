@@ -157,11 +157,6 @@ class RealtimeManager {
           
           // Remove faulty channel to prevent repeated errors
           const channelName = `realtime:public:${table}`;
-          try {
-            supabase.removeChannel(channel);
-          } catch (error) {
-            console.warn(`⚠️ Error removing faulty channel ${channelName}:`, error);
-          }
           this.channels.delete(channelName);
           this.channelStatuses.delete(table);
           
@@ -176,7 +171,6 @@ class RealtimeManager {
           this.recordFailure(table);
           const channelName = `realtime:public:${table}`;
           // Ensure we drop the stale channel
-          try { supabase.removeChannel(channel); } catch (_) {}
           this.channels.delete(channelName);
           this.channelStatuses.delete(table);
         }
@@ -321,7 +315,10 @@ class RealtimeManager {
     // Clear all channels with error handling
     this.channels.forEach((channel, channelName) => {
       try {
-        supabase.removeChannel(channel);
+        // Only remove if channel still exists
+        if (channel && typeof channel.unsubscribe === 'function') {
+          channel.unsubscribe();
+        }
         console.log(`❌ Removed channel: ${channelName}`);
       } catch (error) {
         console.warn(`⚠️ Error removing channel ${channelName}:`, error);
