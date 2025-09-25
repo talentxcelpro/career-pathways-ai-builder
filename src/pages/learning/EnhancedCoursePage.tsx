@@ -151,7 +151,8 @@ export default function EnhancedCoursePage() {
 
   const handleEnroll = async () => {
     if (!user) {
-      toast.error('Please sign in to enroll in this course');
+      // Redirect to sign in page
+      window.location.href = '/auth/login?redirect=' + encodeURIComponent(window.location.pathname);
       return;
     }
 
