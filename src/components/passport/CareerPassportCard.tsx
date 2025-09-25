@@ -116,9 +116,9 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-cyan-400 text-xs sm:text-sm font-normal mb-1">CAREER</span>
-                <span className="text-white text-xl sm:text-3xl font-bold">{Math.round(careerReadiness)}%</span>
-                <span className="text-cyan-400 text-xs sm:text-sm font-normal mt-1">READY</span>
+                <span className="text-cyan-400 text-xs sm:text-sm font-normal mb-1 !text-cyan-400">CAREER</span>
+                <span className="text-white text-xl sm:text-3xl font-bold !text-white">{Math.round(careerReadiness)}%</span>
+                <span className="text-cyan-400 text-xs sm:text-sm font-normal mt-1 !text-cyan-400">READY</span>
               </div>
             </div>
           </div>
@@ -136,7 +136,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
         {/* Profile Info */}
         <div className="mb-6 sm:mb-8">
-          <h3 className="text-white text-2xl sm:text-3xl font-bold mb-2">
+          <h3 className="text-white text-2xl sm:text-3xl font-bold mb-2 !text-white">
             {displayProfile.full_name || 'Your Name'}
           </h3>
           <p className="text-white text-base sm:text-lg mb-3 sm:mb-4 !text-white">
@@ -152,12 +152,13 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
         <div className="bg-slate-800/80 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-cyan-400 text-xl sm:text-2xl font-bold">TOP {Math.round(industryPercentile)}%</div>
-              <div className="text-white text-sm sm:text-base">vs peers</div>
+              <div className="text-cyan-400 text-xl sm:text-2xl font-bold !text-cyan-400">TOP {Math.round(industryPercentile)}%</div>
+              <div className="text-white text-sm sm:text-base !text-white">vs peers</div>
             </div>
             <div>
-              <div className="text-cyan-400 text-xs sm:text-sm font-bold mb-1">COMPETITIVENESS</div>
-              <div className="text-white text-2xl sm:text-3xl font-bold">{Math.round(competitiveness)}%</div>
+              <div className="text-cyan-400 text-xs sm:text-sm font-bold mb-1 !text-cyan-400">COMPETITIVENESS</div>
+              <div className="text-white text-2xl sm:text-3xl font-bold !text-white">{Math.round(competitiveness)}%</div>
+              <div className="text-white text-xs sm:text-sm !text-white">Score</div>
             </div>
           </div>
         </div>
@@ -172,8 +173,8 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.coursesCompleted || 0}</div>
-              <div className="text-white text-xs sm:text-sm">Resumes</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1 !text-white">{displayMetrics?.coursesCompleted || 0}</div>
+              <div className="text-white text-xs sm:text-sm !text-white">Resumes</div>
             </div>
 
             {/* Jobs */}
@@ -194,8 +195,8 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.skillsAdded || 0}</div>
-              <div className="text-white text-xs sm:text-sm">Certificates</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1 !text-white">{displayMetrics?.skillsAdded || 0}</div>
+              <div className="text-white text-xs sm:text-sm !text-white">Certificates</div>
             </div>
 
             {/* Connections */}
@@ -205,8 +206,8 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1">{displayMetrics?.connections || 0}</div>
-              <div className="text-white text-xs sm:text-sm">Connections</div>
+              <div className="text-white text-xl sm:text-3xl font-bold mb-1 !text-white">{displayMetrics?.connections || 0}</div>
+              <div className="text-white text-xs sm:text-sm !text-white">Connections</div>
             </div>
           </div>
         </div>
