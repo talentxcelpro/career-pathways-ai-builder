@@ -114,15 +114,6 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
         stroke: node.id === currentNodeId ? '#3b82f6' : '#e5e7eb',
         strokeWidth: node.id === currentNodeId ? 4 : 2,
         selectable: false,
-        shadow: {
-          color: 'rgba(0,0,0,0.1)',
-          blur: 10,
-          offsetX: 2,
-          offsetY: 2,
-          affectStroke: false,
-          includeDefaultValues: true,
-          nonScaling: false
-        }
       });
 
       // Node icon/number
