@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LearningHeader } from '@/components/learning/LearningHeader';
+import { LearningPageLayout } from '@/components/learning/LearningPageLayout';
 import { LearningProgress } from '@/components/learning/LearningProgress';
 import { MyLearningCard } from '@/components/learning/MyLearningCard';
 import { EmptyMyLearning } from '@/components/learning/EmptyMyLearning';
@@ -91,45 +91,32 @@ const MyCoursesPage = () => {
 
   if (userCourses.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <LearningHeader />
+      <LearningPageLayout heroTitle="My Learning" heroDescription="Track your progress and continue your learning journey">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <EmptyMyLearning onBrowseCourses={() => window.location.href = '/learning/courses'} />
         </div>
-      </div>
+      </LearningPageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <LearningHeader />
+    <LearningPageLayout heroTitle="My Learning" heroDescription="Track your progress and continue your learning journey">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* Page Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <BookOpen className="h-8 w-8 text-blue-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Learning</h1>
-            <p className="text-gray-600">
-              Track your progress and continue your learning journey
-            </p>
-          </div>
-        </div>
-
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
-              <Card key={index}>
+              <Card key={index} className="bg-gradient-card backdrop-blur-apple border-glass-border shadow-card">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-gray-50 rounded-full">
+                    <div className="p-3 bg-primary/10 rounded-full">
                       <IconComponent className={`h-6 w-6 ${stat.color}`} />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -143,7 +130,7 @@ const MyCoursesPage = () => {
 
         {/* Courses Tabs */}
         <Tabs defaultValue="all" className="space-y-6">
-          <TabsList>
+          <TabsList className="bg-gradient-card backdrop-blur-apple border-glass-border">
             <TabsTrigger value="all" className="flex items-center gap-2">
               All Courses
               <Badge variant="secondary">{allCourses.length}</Badge>
@@ -169,9 +156,9 @@ const MyCoursesPage = () => {
           <TabsContent value="in-progress">
             {inProgressCourses.length === 0 ? (
               <div className="text-center py-12">
-                <Target className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No courses in progress</h3>
-                <p className="text-gray-500">Start learning to see your progress here.</p>
+                <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-foreground mb-2">No courses in progress</h3>
+                <p className="text-muted-foreground">Start learning to see your progress here.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -185,9 +172,9 @@ const MyCoursesPage = () => {
           <TabsContent value="completed">
             {completedCourses.length === 0 ? (
               <div className="text-center py-12">
-                <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">No completed courses yet</h3>
-                <p className="text-gray-500">Complete your first course to earn achievements.</p>
+                <Trophy className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-foreground mb-2">No completed courses yet</h3>
+                <p className="text-muted-foreground">Complete your first course to earn achievements.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -199,7 +186,7 @@ const MyCoursesPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </LearningPageLayout>
   );
 };
 

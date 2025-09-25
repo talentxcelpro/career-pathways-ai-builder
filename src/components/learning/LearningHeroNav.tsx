@@ -113,23 +113,36 @@ export const LearningHeroNav = () => {
             TALENTXCEL PLUS
           </div>
           
-          <h1 className="text-5xl lg:text-7xl font-heading font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-8 animate-fade-in-down">
+          <h1 className="text-3xl lg:text-5xl font-heading font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-8 animate-fade-in-down">
             Learn without limits
           </h1>
           
-          <p className="text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed animate-fade-in delay-200">
+          <p className="text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed animate-fade-in delay-200">
             Start, switch, or advance your career with thousands of courses from world-class universities and companies.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up delay-300">
-            <Button size="xl" className="bg-gradient-to-r from-primary to-ai-violet-medium hover:from-primary/90 hover:to-ai-violet-medium/90 text-white font-semibold shadow-lg hover:shadow-glow transform hover:scale-105 transition-all duration-300 apple-rounded-lg">
-              <Zap className="h-5 w-5 mr-2" />
-              Start Learning
-            </Button>
-            <Button size="xl" variant="outline" className="border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 font-semibold apple-rounded-lg transform hover:scale-105 transition-all duration-300">
-              <BookOpen className="h-5 w-5 mr-2" />
-              Browse Courses
-            </Button>
+          <div className="flex flex-col sm:flex-row items-center gap-6 justify-center animate-fade-in-up delay-300">
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                placeholder="What do you want to learn?"
+                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/90 backdrop-blur-apple border border-white/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 text-sm font-medium shadow-lg hover:shadow-glow transition-all duration-300"
+              />
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-ai-violet-medium flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <Link to="/learning/my-courses">
+              <Button size="xl" className="bg-gradient-to-r from-primary to-ai-violet-medium hover:from-primary/90 hover:to-ai-violet-medium/90 text-white font-semibold shadow-lg hover:shadow-glow transform hover:scale-105 transition-all duration-300 apple-rounded-lg">
+                <GraduationCap className="h-5 w-5 mr-2" />
+                My Learning
+                <span className="ml-2">→</span>
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -159,7 +172,7 @@ export const LearningHeroNav = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <h3 className="font-heading font-semibold text-foreground text-base leading-tight">{item.title}</h3>
+                    <h3 className="font-heading font-semibold text-foreground text-sm leading-tight">{item.title}</h3>
                     {item.subtitle && (
                       <p className="text-sm text-muted-foreground font-medium">{item.subtitle}</p>
                     )}

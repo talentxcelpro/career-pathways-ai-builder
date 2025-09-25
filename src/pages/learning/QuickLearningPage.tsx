@@ -1,8 +1,7 @@
 import React from 'react';
 import { MicrolearningHub } from '@/components/learning/microlearning/MicrolearningHub';
+import { LearningPageLayout } from '@/components/learning/LearningPageLayout';
 import { updateMetaTags } from '@/utils/metaTags';
-import { Zap, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 const QuickLearningPage = () => {
   React.useEffect(() => {
@@ -117,29 +116,14 @@ const QuickLearningPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Page Header */}
-      <div className="bg-primary text-primary-foreground p-6">
-        <div className="max-w-6xl mx-auto">
-          <Link
-            to="/learning"
-            className="inline-flex items-center text-sm text-primary-foreground/80 hover:text-primary-foreground mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Learning Hub
-          </Link>
-          <div className="flex items-center gap-3 mb-2">
-            <Zap className="h-8 w-8" />
-            <h1 className="text-3xl font-bold">Quick Learning</h1>
-          </div>
-          <p className="text-primary-foreground/80">Bite-sized lessons, quizzes, and flashcards for learning on the go</p>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <LearningPageLayout 
+      heroTitle="Quick Learning" 
+      heroDescription="Bite-sized lessons, quizzes, and flashcards for learning on the go"
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <MicrolearningHub {...mockMicrolearning} />
       </div>
-    </div>
+    </LearningPageLayout>
   );
 };
 
