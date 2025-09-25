@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { InteractiveCareerPath } from './InteractiveCareerPath';
 import { SkillProgressionTree } from './SkillProgressionTree';
 import { TimelineVisualization } from './TimelineVisualization';
 import { RealTimeCareerData } from './RealTimeCareerData';
+import { CreateRoadmapModal } from '../modals/CreateRoadmapModal';
+import { SkillsAnalysisModal } from '../modals/SkillsAnalysisModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { 
   Brain, 
   Target, 
@@ -18,7 +21,9 @@ import {
   Users,
   Code,
   Briefcase,
-  GraduationCap
+  GraduationCap,
+  Rocket,
+  Zap
 } from 'lucide-react';
 
 // Mock data for demonstrations
@@ -187,6 +192,8 @@ interface VisualRoadmapShowcaseProps {
 }
 
 export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ className }) => {
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [skillsModalOpen, setSkillsModalOpen] = useState(false);
   // Fetch user profile for dynamic data
   const { data: userProfile } = useQuery({
     queryKey: ['user_profile_roadmap'],
@@ -496,15 +503,27 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             tailored specifically for {userProfile?.full_name || 'your success'}.
           </p>
           <div className="flex gap-4 justify-center">
-            <button className="bg-white text-blue-600 px-8 py-4 rounded-apple-lg font-semibold hover:bg-white/90 transition-all shadow-apple-medium hover:shadow-apple-large hover:-translate-y-0.5">
-              Start My Journey
-            </button>
-            <button className="border-2 border-white/30 text-white px-8 py-4 rounded-apple-lg font-semibold hover:bg-white/10 transition-all backdrop-blur-sm">
-              Explore Features
-            </button>
+            <Button
+              onClick={() => setCreateModalOpen(true)}
+              className="bg-white text-blue-600 px-8 py-4 rounded-apple-lg font-semibold hover:bg-white/90 transition-all shadow-apple-medium hover:shadow-apple-large hover:-translate-y-0.5"
+            >
+              <Rocket className="h-4 w-4 mr-2" />
+              Create My Roadmap
+            </Button>
+            <Button
+              onClick={() => setSkillsModalOpen(true)}
+              className="border-2 border-white/30 text-white px-8 py-4 rounded-apple-lg font-semibold hover:bg-white/10 transition-all backdrop-blur-sm"
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Analyze My Skills
+            </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Modals */}
+      <CreateRoadmapModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
+      <SkillsAnalysisModal open={skillsModalOpen} onOpenChange={setSkillsModalOpen} />
     </div>
   );
 };

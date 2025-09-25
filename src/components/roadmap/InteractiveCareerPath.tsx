@@ -1,21 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Rect, Path, Text } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Text as FabricText, Line } from 'fabric';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Zap, 
-  Target, 
-  Trophy, 
-  Calendar, 
-  Users, 
-  BookOpen, 
-  ArrowRight,
-  RotateCcw,
-  Download,
-  Expand
-} from 'lucide-react';
+import { Brain, Target, Clock, Star, TrendingUp, Zap, Calendar, ArrowRight, RotateCcw, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CareerNode {
@@ -23,11 +12,11 @@ interface CareerNode {
   title: string;
   level: number;
   position: { x: number; y: number };
-  status: 'completed' | 'current' | 'upcoming' | 'locked';
+  status: 'completed' | 'current' | 'upcoming';
   duration: string;
   skills: string[];
-  confidence?: number;
-  match?: number;
+  confidence: number;
+  match: number;
 }
 
 interface InteractiveCareerPathProps {
@@ -35,7 +24,7 @@ interface InteractiveCareerPathProps {
   description: string;
   nodes: CareerNode[];
   currentNodeId: string;
-  onNodeClick?: (nodeId: string) => void;
+  onNodeClick: (nodeId: string) => void;
   className?: string;
 }
 
@@ -48,126 +37,127 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
   className
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>();
   const [selectedNode, setSelectedNode] = useState<CareerNode | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800,
-      height: 500,
-      backgroundColor: '#f8fafc',
+      width: isFullscreen ? window.innerWidth : 800,
+      height: isFullscreen ? window.innerHeight : 500,
+      backgroundColor: '#fafafa',
       selection: false,
     });
 
     setFabricCanvas(canvas);
-    
+
     return () => {
       canvas.dispose();
     };
-  }, []);
+  }, [isFullscreen]);
 
   useEffect(() => {
-    if (!fabricCanvas) return;
+    if (!fabricCanvas || nodes.length === 0) return;
 
+    setAnimating(true);
     // Clear canvas
     fabricCanvas.clear();
-    fabricCanvas.backgroundColor = '#f8fafc';
+    fabricCanvas.backgroundColor = '#fafafa';
 
-    // Draw connections between nodes
-    for (let i = 0; i < nodes.length - 1; i++) {
-      const currentNode = nodes[i];
-      const nextNode = nodes[i + 1];
-      
-      const line = new Path(
-        `M ${currentNode.position.x + 60} ${currentNode.position.y + 30} 
-         Q ${(currentNode.position.x + nextNode.position.x) / 2 + 60} ${currentNode.position.y + 15}
-         ${nextNode.position.x + 60} ${nextNode.position.y + 30}`,
-        {
-          stroke: currentNode.status === 'completed' ? '#10b981' : '#e5e7eb',
+    // Create connections between nodes with animation
+    const createConnections = () => {
+      for (let i = 0; i < nodes.length - 1; i++) {
+        const currentNode = nodes[i];
+        const nextNode = nodes[i + 1];
+        
+        const line = new Line([
+          currentNode.position.x + 50,
+          currentNode.position.y + 25,
+          nextNode.position.x,
+          nextNode.position.y + 25
+        ], {
+          stroke: nextNode.status === 'upcoming' ? '#e5e7eb' : '#3b82f6',
           strokeWidth: 3,
-          fill: '',
           selectable: false,
-          strokeDashArray: currentNode.status === 'upcoming' ? [5, 5] : undefined,
-        }
-      );
-      
-      fabricCanvas.add(line);
-    }
+          strokeDashArray: nextNode.status === 'upcoming' ? [5, 5] : [],
+          opacity: 0
+        });
 
-    // Draw nodes
-    nodes.forEach((node) => {
-      const nodeGroup = new Path('', {
-        selectable: true,
-        hoverCursor: 'pointer',
-        moveCursor: 'pointer',
+        fabricCanvas.add(line);
+      }
+    };
+
+    // Create nodes with simple styling (removed animations for stability)
+    const createNodes = () => {
+      nodes.forEach((node, index) => {
+        const getNodeColor = () => {
+          switch (node.status) {
+            case 'completed': return '#10b981';
+            case 'current': return '#3b82f6';
+            case 'upcoming': return '#9ca3af';
+            default: return '#6b7280';
+          }
+        };
+
+        const circle = new Circle({
+          left: node.position.x,
+          top: node.position.y,
+          radius: 25,
+          fill: getNodeColor(),
+          stroke: node.id === currentNodeId ? '#1d4ed8' : '#ffffff',
+          strokeWidth: node.id === currentNodeId ? 4 : 2,
+          selectable: false,
+        });
+
+        const nodeText = new FabricText(String(node.level), {
+          left: node.position.x - 8,
+          top: node.position.y - 8,
+          fontSize: 16,
+          fill: '#ffffff',
+          fontWeight: 'bold',
+          selectable: false,
+        });
+
+        const titleText = new FabricText(node.title, {
+          left: node.position.x - 40,
+          top: node.position.y + 40,
+          fontSize: 12,
+          fill: '#1f2937',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          selectable: false,
+        });
+
+        fabricCanvas.add(circle, nodeText, titleText);
+
+        // Click handlers
+        circle.on('mousedown', () => {
+          setSelectedNode(node);
+          onNodeClick(node.id);
+        });
+
+        circle.on('mouseover', () => {
+          circle.set('scaleX', 1.1);
+          circle.set('scaleY', 1.1);
+          fabricCanvas.renderAll();
+        });
+
+        circle.on('mouseout', () => {
+          circle.set('scaleX', 1);
+          circle.set('scaleY', 1);
+          fabricCanvas.renderAll();
+        });
       });
+    };
 
-      // Node circle
-      const circle = new Circle({
-        radius: 30,
-        left: node.position.x,
-        top: node.position.y,
-        fill: getNodeColor(node.status),
-        stroke: node.id === currentNodeId ? '#3b82f6' : '#e5e7eb',
-        strokeWidth: node.id === currentNodeId ? 4 : 2,
-        selectable: false,
-      });
-
-      // Node icon/number
-      const nodeText = new Text((nodes.indexOf(node) + 1).toString(), {
-        left: node.position.x + 22,
-        top: node.position.y + 15,
-        fontSize: 16,
-        fontWeight: 'bold',
-        fill: '#ffffff',
-        selectable: false,
-        textAlign: 'center',
-      });
-
-      // Node title
-      const titleText = new Text(node.title, {
-        left: node.position.x + 70,
-        top: node.position.y + 10,
-        fontSize: 14,
-        fontWeight: '600',
-        fill: '#1f2937',
-        selectable: false,
-        width: 140,
-      });
-
-      // Duration badge
-      const durationText = new Text(node.duration, {
-        left: node.position.x + 70,
-        top: node.position.y + 35,
-        fontSize: 12,
-        fill: '#6b7280',
-        selectable: false,
-      });
-
-      fabricCanvas.add(circle, nodeText, titleText, durationText);
-
-      // Add click handler
-      circle.on('mousedown', () => {
-        setSelectedNode(node);
-        onNodeClick?.(node.id);
-      });
-    });
+    createConnections();
+    createNodes();
 
     fabricCanvas.renderAll();
   }, [fabricCanvas, nodes, currentNodeId, onNodeClick]);
-
-  const getNodeColor = (status: CareerNode['status']) => {
-    switch (status) {
-      case 'completed': return '#10b981';
-      case 'current': return '#3b82f6';
-      case 'upcoming': return '#f59e0b';
-      case 'locked': return '#9ca3af';
-      default: return '#e5e7eb';
-    }
-  };
 
   const resetCanvas = () => {
     if (fabricCanvas) {
@@ -191,150 +181,183 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
     }
   };
 
+  const currentNode = nodes.find(node => node.id === currentNodeId);
+
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
-              {title}
-            </CardTitle>
-            <p className="text-sm text-slate-600 mt-1">{description}</p>
+    <div className={cn("space-y-6 animate-fade-in", className)}>
+      <Card className="border-0 shadow-apple-medium bg-white/95 backdrop-blur-apple rounded-apple overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-blue-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold text-text-primary flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-blue-600" />
+                {title}
+              </CardTitle>
+              <p className="text-sm text-text-secondary mt-1">{description}</p>
+            </div>
+            <div className="flex gap-2">
+              <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 px-3 py-1 shadow-apple-light">
+                <Brain className="h-3 w-3 mr-1" />
+                AI Optimized
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetCanvas}
+                className="h-8 w-8 p-0 rounded-apple-lg"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportCanvas}
+                className="h-8 w-8 p-0 rounded-apple-lg"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetCanvas}
-              className="h-8 w-8 p-0"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={exportCanvas}
-              className="h-8 w-8 p-0"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              className="h-8 w-8 p-0"
-            >
-              <Expand className="h-4 w-4" />
-            </Button>
+        </CardHeader>
+        
+        <CardContent className="p-6">
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Target className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium text-text-primary">Interactive Career Progression</span>
+            </div>
+            <p className="text-xs text-text-secondary">
+              Click on any node to explore detailed information and AI insights
+            </p>
           </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="p-0">
-        <div className="flex">
-          {/* Canvas Area */}
-          <div className={cn(
-            "flex-1 relative",
-            isFullscreen ? "h-screen" : "h-[500px]"
-          )}>
+
+          <div className="relative">
             <canvas 
-              ref={canvasRef}
-              className="border-r border-slate-200"
+              ref={canvasRef} 
+              className="border border-gray-200 rounded-apple-lg shadow-apple-subtle w-full"
+              style={{ maxWidth: '100%', height: 'auto' }}
             />
             
-            {/* Legend */}
-            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border">
-              <h4 className="text-xs font-semibold text-slate-700 mb-2">Status Legend</h4>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span>Completed</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span>Current</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                  <span>Upcoming</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                  <span>Locked</span>
-                </div>
+            {/* Interactive Legend */}
+            <div className="absolute top-4 right-4 space-y-2">
+              <div className="flex items-center gap-2 text-xs bg-white/90 backdrop-blur-sm px-3 py-2 rounded-apple-lg shadow-apple-subtle">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Completed</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs bg-white/90 backdrop-blur-sm px-3 py-2 rounded-apple-lg shadow-apple-subtle">
+                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <span>Current</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs bg-white/90 backdrop-blur-sm px-3 py-2 rounded-apple-lg shadow-apple-subtle">
+                <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                <span>Upcoming</span>
               </div>
             </div>
+
+            {/* Loading Animation Overlay */}
+            {animating && (
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-apple-lg flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-apple-lg flex items-center justify-center mx-auto mb-3 animate-pulse">
+                    <Brain className="h-6 w-6 text-white" />
+                  </div>
+                  <p className="text-sm font-medium text-text-primary">Building your path...</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Node Details Panel */}
           {selectedNode && (
-            <div className="w-80 bg-slate-50 border-l border-slate-200 p-4">
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div 
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: getNodeColor(selectedNode.status) }}
-                    ></div>
-                    <h3 className="font-semibold text-slate-800">{selectedNode.title}</h3>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    Level {selectedNode.level}
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-apple-lg border border-blue-100 animate-fade-in">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-text-primary flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  {selectedNode.title}
+                </h3>
+                <div className="flex gap-2">
+                  <Badge className="bg-blue-100 text-blue-700 text-xs">
+                    {selectedNode.confidence}% confidence
+                  </Badge>
+                  <Badge className="bg-purple-100 text-purple-700 text-xs">
+                    {selectedNode.match}% match
                   </Badge>
                 </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <Calendar className="h-4 w-4" />
-                    <span>Duration: {selectedNode.duration}</span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center gap-2 text-sm text-text-secondary mb-2">
+                    <Clock className="h-3 w-3" />
+                    Duration: {selectedNode.duration}
                   </div>
-
-                  {selectedNode.confidence && (
+                  <div className="flex items-center gap-2 text-sm text-text-secondary mb-2">
+                    <Zap className="h-3 w-3" />
+                    Status: <span className="capitalize font-medium">{selectedNode.status}</span>
+                  </div>
+                  
+                  {/* Progress Bars */}
+                  <div className="space-y-2">
                     <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-slate-600">AI Confidence</span>
-                        <span className="font-medium">{selectedNode.confidence}%</span>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span>AI Confidence</span>
+                        <span>{selectedNode.confidence}%</span>
                       </div>
                       <Progress value={selectedNode.confidence} className="h-2" />
                     </div>
-                  )}
-
-                  {selectedNode.match && (
                     <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-slate-600">Profile Match</span>
-                        <span className="font-medium">{selectedNode.match}%</span>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span>Profile Match</span>
+                        <span>{selectedNode.match}%</span>
                       </div>
                       <Progress value={selectedNode.match} className="h-2" />
                     </div>
-                  )}
-
+                  </div>
+                </div>
+                
+                {selectedNode.skills.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-slate-700 mb-2">Key Skills</h4>
+                    <p className="text-xs text-text-secondary mb-2">Key Skills:</p>
                     <div className="flex flex-wrap gap-1">
-                      {selectedNode.skills.map((skill, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                      {selectedNode.skills.slice(0, 3).map((skill, index) => (
+                        <Badge key={index} variant="outline" className="text-xs bg-white/80">
                           {skill}
                         </Badge>
                       ))}
+                      {selectedNode.skills.length > 3 && (
+                        <Badge variant="outline" className="text-xs bg-white/80">
+                          +{selectedNode.skills.length - 3}
+                        </Badge>
+                      )}
                     </div>
+                    
+                    <Button 
+                      size="sm"
+                      className="w-full mt-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-apple-lg"
+                    >
+                      <ArrowRight className="h-3 w-3 mr-2" />
+                      {selectedNode.status === 'current' ? 'Continue Path' : 'View Details'}
+                    </Button>
                   </div>
-                </div>
-
-                <Button 
-                  className="w-full" 
-                  size="sm"
-                  disabled={selectedNode.status === 'locked'}
-                >
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  {selectedNode.status === 'current' ? 'Continue Learning' : 'View Details'}
-                </Button>
+                )}
               </div>
             </div>
           )}
-        </div>
-      </CardContent>
-    </Card>
+
+          {/* Current Progress Summary */}
+          {currentNode && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-apple-lg border border-green-100">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-800">Currently: {currentNode.title}</span>
+              </div>
+              <p className="text-xs text-green-700">
+                AI recommends focusing on {currentNode.skills.slice(0, 2).join(' and ')} to accelerate your progress.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
