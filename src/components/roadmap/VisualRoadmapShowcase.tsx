@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { InteractiveCareerPath } from './InteractiveCareerPath';
 import { RealSkillsTree } from './RealSkillsTree';
 import { RealTimelineVisualization } from './RealTimelineVisualization';
 import { RealTimeCareerData } from './RealTimeCareerData';
 import { CreateRoadmapModal } from '../modals/CreateRoadmapModal';
 import { SkillsAnalysisModal } from '../modals/SkillsAnalysisModal';
+import { EmptyCareerState } from '../career-map/EmptyCareerState';
+import { BuildingPathState } from '../career-map/BuildingPathState';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -194,46 +195,21 @@ interface VisualRoadmapShowcaseProps {
 export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ className }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
-  // Fetch user profile for dynamic data
-  const { data: userProfile } = useQuery({
-    queryKey: ['user_profile_roadmap'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  
+  // Use real career data hook
+  const {
+    userProfile,
+    careerGoals,
+    aiRecommendations,
+    careerPassport,
+    isLoading,
+    hasCareerGoals,
+    hasProfile
+  } = useRealCareerData();
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) return null;
-      return data;
-    }
-  });
-
-  // Fetch career goals for dynamic roadmap generation
-  const { data: careerGoals = [] } = useQuery({
-    queryKey: ['career_goals_roadmap'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('career_goals')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-      
-      if (error) return [];
-      return data;
-    }
-  });
-
-  // Generate dynamic career nodes based on user data
+  // Generate dynamic career nodes based on real user data
   const dynamicCareerNodes = React.useMemo(() => {
-    if (careerGoals.length === 0) return mockCareerNodes;
+    if (!hasCareerGoals) return [];
 
     return careerGoals.map((goal, index) => ({
       id: goal.id,
@@ -246,11 +222,11 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
       confidence: Math.max(95 - (index * 8), 65),
       match: Math.max(92 - (index * 5), 75)
     }));
-  }, [careerGoals]);
+  }, [careerGoals, hasCareerGoals]);
 
-  // Generate dynamic skill categories based on user profile
+  // Generate dynamic skill categories based on real user profile
   const dynamicSkillCategories = React.useMemo(() => {
-    if (!userProfile) return mockSkillCategories;
+    if (!hasProfile || !userProfile) return [];
 
     const userSkills = userProfile.skills || [];
     const categories = [
@@ -261,7 +237,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
         color: 'from-green-500 to-emerald-500',
         description: 'Skills you already possess',
         progress: 85,
-        skills: userSkills.slice(0, 3).map((skill, idx) => ({
+        skills: userSkills.slice(0, 5).map((skill, idx) => ({
           id: `current-${idx}`,
           name: skill,
           level: 4,
@@ -273,37 +249,39 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
           description: `Expert level proficiency in ${skill}`,
           resources: { courses: 5, projects: 10, certifications: 2 }
         }))
-      },
-      {
+      }
+    ];
+
+    // Add target skills if goals exist
+    if (hasCareerGoals && careerGoals.length > 0) {
+      categories.push({
         id: 'target',
         name: 'Target Skills',
         icon: <Target className="h-5 w-5 text-white" />,
         color: 'from-blue-500 to-cyan-500',
         description: 'Skills to develop for your goals',
         progress: 30,
-        skills: careerGoals.length > 0 
-          ? careerGoals[0].skills_needed?.slice(0, 3).map((skill, idx) => ({
-              id: `target-${idx}`,
-              name: skill,
-              level: 1,
-              maxLevel: 5,
-              category: 'target' as const,
-              isUnlocked: true,
-              isCompleted: false,
-              estimatedTime: '2-4 months',
-              description: `Essential skill for ${careerGoals[0].target_role}`,
-              resources: { courses: 8, projects: 5, certifications: 3 }
-            })) || []
-          : []
-      }
-    ];
+        skills: careerGoals[0].skills_needed?.slice(0, 5).map((skill, idx) => ({
+          id: `target-${idx}`,
+          name: skill,
+          level: 1,
+          maxLevel: 5,
+          category: 'target' as any,
+          isUnlocked: true,
+          isCompleted: false,
+          estimatedTime: '2-4 months',
+          description: `Essential skill for ${careerGoals[0].target_role}`,
+          resources: { courses: 8, projects: 5, certifications: 3 }
+        })) || []
+      });
+    }
 
     return categories;
-  }, [userProfile, careerGoals]);
+  }, [userProfile, careerGoals, hasProfile, hasCareerGoals]);
 
-  // Generate dynamic timeline based on career goals
+  // Generate dynamic timeline based on real career goals
   const dynamicTimelineEvents = React.useMemo(() => {
-    if (careerGoals.length === 0) return mockTimelineEvents;
+    if (!hasCareerGoals) return [];
 
     return careerGoals.map((goal, index) => ({
       id: goal.id,
@@ -318,25 +296,61 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
       confidence: Math.max(90 - (index * 10), 70),
       importance: index === 0 ? 'high' as const : 'medium' as const
     }));
-  }, [careerGoals]);
+  }, [careerGoals, hasCareerGoals]);
 
   // Dynamic personalization data
   const dynamicPersonalization = React.useMemo(() => {
-    if (!userProfile) return mockPersonalization;
+    if (!hasProfile || !userProfile) {
+      return {
+        profileMatch: 0,
+        confidenceScore: 0,
+        successProbability: 0,
+        timeToGoal: '0 months',
+        customizedFor: {
+          currentRole: 'Not set',
+          targetRole: 'Not set',
+          experience: '0 years',
+          industry: 'Unknown'
+        }
+      };
+    }
 
     return {
       profileMatch: 95,
-      confidenceScore: careerGoals.length > 0 ? 90 : 65,
-      successProbability: careerGoals.length > 0 ? 85 : 60,
-      timeToGoal: careerGoals.length > 0 ? `${careerGoals[0].timeline_months} months` : '18 months',
+      confidenceScore: hasCareerGoals ? 90 : 65,
+      successProbability: hasCareerGoals ? 85 : 60,
+      timeToGoal: hasCareerGoals ? `${careerGoals[0].timeline_months} months` : '0 months',
       customizedFor: {
-        currentRole: userProfile.title || 'Professional',
-        targetRole: careerGoals.length > 0 ? careerGoals[0].target_role : 'Senior Role',
-        experience: `${userProfile.experience_years || 3} years`,
+        currentRole: userProfile.title || userProfile.headline || 'Professional',
+        targetRole: hasCareerGoals ? careerGoals[0].target_role : 'Set a goal',
+        experience: `${userProfile.experience_years || 0} years`,
         industry: 'Technology'
       }
     };
-  }, [userProfile, careerGoals]);
+  }, [userProfile, careerGoals, hasProfile, hasCareerGoals]);
+
+  // Show loading state while data is being fetched
+  if (isLoading) {
+    return (
+      <div className={className}>
+        <BuildingPathState />
+      </div>
+    );
+  }
+
+  // Show empty state if no career goals exist
+  if (!hasCareerGoals) {
+    return (
+      <div className={className}>
+        <EmptyCareerState onCreateGoal={() => setCreateModalOpen(true)} />
+        
+        <CreateRoadmapModal
+          open={createModalOpen}
+          onOpenChange={setCreateModalOpen}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={className}>
@@ -445,7 +459,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             title={`${dynamicPersonalization.customizedFor.currentRole} to ${dynamicPersonalization.customizedFor.targetRole}`}
             description={`AI-optimized progression path based on your ${dynamicPersonalization.customizedFor.experience} experience`}
             nodes={dynamicCareerNodes}
-            currentNodeId={dynamicCareerNodes[0]?.id || "1"}
+            currentNodeId={dynamicCareerNodes[0]?.id || ""}
             onNodeClick={(nodeId) => console.log('Clicked node:', nodeId)}
           />
         </TabsContent>
@@ -460,7 +474,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             </p>
           </div>
           
-          <RealSkillsTree />
+          <RealSkillsTree skillCategories={dynamicSkillCategories} />
         </TabsContent>
 
         <TabsContent value="timeline" className="space-y-6">
@@ -473,7 +487,7 @@ export const VisualRoadmapShowcase: React.FC<VisualRoadmapShowcaseProps> = ({ cl
             </p>
           </div>
           
-          <RealTimelineVisualization />
+          <RealTimelineVisualization timelineEvents={dynamicTimelineEvents} />
         </TabsContent>
       </Tabs>
 

@@ -38,7 +38,11 @@ interface TimelineEvent {
   importance: 'high' | 'medium' | 'low';
 }
 
-export const RealTimelineVisualization: React.FC = () => {
+interface RealTimelineVisualizationProps {
+  timelineEvents?: any[];
+}
+
+export const RealTimelineVisualization: React.FC<RealTimelineVisualizationProps> = ({ timelineEvents: propTimelineEvents = [] }) => {
   const { data, isLoading } = useRealTimeCareerData();
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
