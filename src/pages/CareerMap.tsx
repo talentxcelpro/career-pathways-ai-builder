@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,11 +11,17 @@ import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcas
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
 import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
+import { InteractiveCareerPath } from '@/components/career-map/InteractiveCareerPath';
+import { CareerInputModal } from '@/components/career-map/CareerInputModal';
 
 const CareerMap = () => {
   // Real-time career data integration (with fallback)
   const { metrics, achievementTriggers, isLoading: careerLoading, refreshMetrics } = useRealCareerData();
   const { metrics: optimizedMetrics, insights, profile, isLoading: optimizedLoading } = useOptimizedCareerData();
+  
+  // Interactive path builder state
+  const [showPathBuilder, setShowPathBuilder] = useState(false);
+  const [showCareerModal, setShowCareerModal] = useState(false);
   
   // Optional realtime context - gracefully handle if provider not available
   let realtimeData = { isConnected: false, lastUpdate: null };
@@ -327,6 +333,47 @@ const CareerMap = () => {
           </Card>
         )}
 
+        {/* Interactive Career Path Builder */}
+        <div className="mb-8">
+          <div className="text-center mb-6">
+            <h2 className="text-lg font-bold text-text-primary mb-2 font-display">
+              Interactive Career Progression
+            </h2>
+            <p className="text-sm text-text-secondary mb-4">
+              Build your personalized career path step by step
+            </p>
+            
+            <div className="flex gap-3 justify-center">
+              <Button
+                onClick={() => setShowPathBuilder(!showPathBuilder)}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 shadow-apple-light"
+              >
+                <Target className="h-4 w-4 mr-2" />
+                {showPathBuilder ? 'Hide' : 'Build'} Career Path
+              </Button>
+              
+              <Button
+                onClick={() => setShowCareerModal(true)}
+                variant="outline"
+                className="px-4 py-2"
+              >
+                <Brain className="h-4 w-4 mr-2" />
+                AI Generate Path
+              </Button>
+            </div>
+          </div>
+          
+          {showPathBuilder && (
+            <InteractiveCareerPath
+              onSave={(path) => {
+                console.log('Career path saved:', path);
+                // Here you could save to Supabase or local storage
+              }}
+              className="mb-6"
+            />
+          )}
+        </div>
+
         {/* Visual Roadmaps Section */}
         <div className="mb-8">
           <VisualRoadmapShowcase />
@@ -339,6 +386,18 @@ const CareerMap = () => {
           </p>
         </div>
       </div>
+
+      {/* Career Input Modal */}
+      <CareerInputModal
+        open={showCareerModal}
+        onOpenChange={setShowCareerModal}
+        onSubmit={(data) => {
+          console.log('Career goal submitted:', data);
+          setShowCareerModal(false);
+          setShowPathBuilder(true);
+          // Here you could generate AI roadmap and populate the path builder
+        }}
+      />
     </div>
   );
 };
