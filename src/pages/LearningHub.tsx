@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { LearningHeroNav } from '@/components/learning/LearningHeroNav';
 import { 
   BookOpen, 
   Play, 
@@ -67,7 +68,7 @@ export default function LearningHub() {
       description: 'Structured learning journeys',
       badge: 'Popular',
       icon: Target,
-      link: '/learning/learning-paths'
+      link: '/learning/paths'
     },
     {
       title: 'Community Learning',
@@ -175,35 +176,10 @@ export default function LearningHub() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <section className="text-center py-16 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl mb-12">
-          <Button className="mb-6 bg-primary text-white hover:bg-primary/90 px-6 py-2">
-            TALENTXCEL PLUS
-          </Button>
-          
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Learn without limits
-          </h1>
-          
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Start, switch, or advance your career with thousands of courses from world-class universities and companies.
-          </p>
-          
-          <div className="flex items-center justify-center gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90">
-              <Play className="h-5 w-5 mr-2" />
-              Start Learning
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/learning/courses">
-                <BookOpen className="h-5 w-5 mr-2" />
-                Browse Courses
-              </Link>
-            </Button>
-          </div>
-        </section>
+      {/* Hero Navigation Section */}
+      <LearningHeroNav />
 
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Your Learning Journey */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
@@ -345,22 +321,24 @@ export default function LearningHub() {
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
-                <Card key={feature.title} className="cursor-pointer hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Icon className="h-5 w-5 text-primary" />
+                <Link key={feature.title} to={feature.link}>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{feature.title}</h3>
+                          <Badge variant="secondary" className="text-xs">
+                            {feature.badge}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{feature.title}</h3>
-                        <Badge variant="secondary" className="text-xs">
-                          {feature.badge}
-                        </Badge>
-                      </div>
-                    </div>
-                    <p className="text-gray-600">{feature.description}</p>
-                  </CardContent>
-                </Card>
+                      <p className="text-gray-600">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>
@@ -389,16 +367,18 @@ export default function LearningHub() {
             {solutions.map((solution) => {
               const Icon = solution.icon;
               return (
-                <Card key={solution.title} className="text-center cursor-pointer hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="font-semibold mb-2">{solution.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4">{solution.description}</p>
-                    <Button variant="outline" size="sm">Learn More</Button>
-                  </CardContent>
-                </Card>
+                <Link key={solution.title} to={solution.link}>
+                  <Card className="text-center cursor-pointer hover:shadow-lg transition-shadow h-full">
+                    <CardContent className="p-6">
+                      <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <Icon className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-2">{solution.title}</h3>
+                      <p className="text-gray-600 text-sm mb-4">{solution.description}</p>
+                      <Button variant="outline" size="sm">Learn More</Button>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>

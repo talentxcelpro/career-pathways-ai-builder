@@ -28,6 +28,7 @@ import IndividualsPage from "../pages/learning/IndividualsPage";
 import BusinessesPage from "../pages/learning/BusinessesPage";
 import UniversitiesPage from "../pages/learning/UniversitiesPage";
 import GovernmentsPage from "../pages/learning/GovernmentsPage";
+import AIFeaturesPage from "../pages/learning/AIFeaturesPage";
 import AdminCourses from "../pages/admin/AdminCourses";
 
 export const learningRoutes = [
@@ -228,6 +229,12 @@ export const learningRoutes = [
     title: "For Governments",
     to: "/learning/governments",
     page: <GovernmentsPage />,
+    isPublic: true,
+  },
+  {
+    title: "AI Features",
+    to: "/learning/ai-features",
+    page: <AIFeaturesPage />,
     isPublic: true,
   },
   {
