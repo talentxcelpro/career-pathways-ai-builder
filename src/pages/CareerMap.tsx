@@ -8,10 +8,23 @@ import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Target, Calendar, Users, BookOpen, ArrowRight, Plus, Brain, Map, Zap, Star, BarChart, Rocket, Award, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcase';
+import { useRealCareerData } from '@/hooks/useRealCareerData';
+import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
+import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
 
 const CareerMap = () => {
-  const { data: careerGoals = [], isLoading } = useQuery({
-    queryKey: ['career_goals'],
+  // Real-time career data integration
+  const { metrics, achievementTriggers, isLoading: careerLoading, refreshMetrics } = useRealCareerData();
+  const { metrics: optimizedMetrics, insights, profile, isLoading: optimizedLoading } = useOptimizedCareerData();
+  const { isConnected, lastUpdate } = useRealtimeContext();
+
+  // Use optimized data when available, fallback to real career data
+  const currentMetrics = optimizedMetrics || metrics;
+  const isLoading = careerLoading || optimizedLoading;
+
+  // Query for career goals with real-time updates
+  const { data: careerGoals = [] } = useQuery({
+    queryKey: ['career_goals', lastUpdate?.table],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -25,11 +38,14 @@ const CareerMap = () => {
       
       if (error) throw error;
       return data;
-    }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: isConnected ? 30000 : 5000, // Longer cache when realtime connected
   });
 
+  // Query for roadmaps with real-time updates
   const { data: roadmaps = [] } = useQuery({
-    queryKey: ['roadmaps_overview'],
+    queryKey: ['roadmaps_overview', lastUpdate?.table],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -44,7 +60,9 @@ const CareerMap = () => {
       
       if (error) throw error;
       return data;
-    }
+    },
+    refetchOnWindowFocus: false,
+    staleTime: isConnected ? 30000 : 5000,
   });
 
   if (isLoading) {
@@ -173,8 +191,105 @@ const CareerMap = () => {
           </div>
         </div>
 
+        {/* Real-time Career Progress - Enhanced */}
+        {currentMetrics && (
+          <div className="mb-8">
+            <div className="text-center mb-4">
+              <h2 className="text-lg font-bold text-text-primary mb-1 font-display">Your Career Progress</h2>
+              <p className="text-xs text-text-secondary flex items-center justify-center gap-2">
+                Live data from your TalentXcel profile
+                {isConnected && (
+                  <Badge className="bg-green-50 text-green-700 border-0 px-1.5 py-0.5 rounded-md text-xs">
+                    Live
+                  </Badge>
+                )}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
+                <CardContent className="p-3 text-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <Users className="h-4 w-4 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xs text-text-primary mb-1">Profile</h3>
+                  <p className="text-lg font-bold text-text-primary">{currentMetrics.profileCompletion}%</p>
+                  <Progress value={currentMetrics.profileCompletion} className="h-1 mt-1" />
+                </CardContent>
+              </Card>
+              
+              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
+                <CardContent className="p-3 text-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <Target className="h-4 w-4 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xs text-text-primary mb-1">Applications</h3>
+                  <p className="text-lg font-bold text-text-primary">{currentMetrics.jobApplications}</p>
+                  <p className="text-xs text-text-secondary">Jobs applied</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
+                <CardContent className="p-3 text-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <Users className="h-4 w-4 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xs text-text-primary mb-1">Network</h3>
+                  <p className="text-lg font-bold text-text-primary">{currentMetrics.connections}</p>
+                  <p className="text-xs text-text-secondary">Connections</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
+                <CardContent className="p-3 text-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <Award className="h-4 w-4 text-white" />
+                  </div>
+                  <h3 className="font-bold text-xs text-text-primary mb-1">TXC Earned</h3>
+                  <p className="text-lg font-bold text-text-primary">{currentMetrics.totalTXCEarned}</p>
+                  <p className="text-xs text-text-secondary">Tokens</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Achievement Progress */}
+            {achievementTriggers && achievementTriggers.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-bold text-text-primary mb-3">Next Milestones</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {achievementTriggers
+                    .filter(achievement => !achievement.earned)
+                    .slice(0, 4)
+                    .map((achievement) => (
+                      <Card key={achievement.id} className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
+                        <CardContent className="p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-xs font-semibold text-text-primary">{achievement.title}</h4>
+                            <Badge className="bg-blue-50 text-blue-700 border-0 px-1.5 py-0.5 rounded-md text-xs">
+                              {achievement.points} TXC
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-text-secondary mb-2">{achievement.description}</p>
+                          <div className="flex items-center gap-2">
+                            <Progress 
+                              value={(achievement.progress / achievement.requirement) * 100} 
+                              className="h-1 flex-1" 
+                            />
+                            <span className="text-xs text-text-secondary">
+                              {achievement.progress}/{achievement.requirement}
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Get Started Section - Minimal and Elegant */}
-        {roadmaps.length === 0 && careerGoals.length === 0 && (
+        {(!currentMetrics || (roadmaps.length === 0 && careerGoals.length === 0)) && (
           <Card className="border-0 shadow-apple-light bg-white/95 backdrop-blur-apple rounded-xl">
             <CardContent className="text-center py-8">
               <div className="max-w-lg mx-auto">
