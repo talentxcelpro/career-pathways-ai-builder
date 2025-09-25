@@ -51,7 +51,11 @@ const CareerMap = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data?.map(goal => ({
+        ...goal,
+        clickable: true,
+        link: `/career-map/goal/${goal.id}`
+      })) || [];
     },
     refetchOnWindowFocus: false,
     staleTime: isConnected ? 30000 : 5000, // Longer cache when realtime connected
@@ -73,7 +77,11 @@ const CareerMap = () => {
         .limit(3);
       
       if (error) throw error;
-      return data;
+      return data?.map(roadmap => ({
+        ...roadmap,
+        clickable: true,
+        link: `/career-map/${roadmap.id}`
+      })) || [];
     },
     refetchOnWindowFocus: false,
     staleTime: isConnected ? 30000 : 5000,
@@ -103,18 +111,24 @@ const CareerMap = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center max-w-2xl mx-auto">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <img 
-                src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
-                alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg"
-              />
+              <Link to="/" className="hover:opacity-80 transition-opacity">
+                <img 
+                  src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                  alt="TalentXcel" 
+                  className="h-12 w-12 rounded-lg"
+                />
+              </Link>
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                  <Brain className="h-4 w-4 text-white" />
-                </div>
-                <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-sm rounded-md backdrop-blur-sm">
-                  AI Intelligence
-                </Badge>
+                <Link to="/ai" className="hover:opacity-80 transition-opacity">
+                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <Brain className="h-4 w-4 text-white" />
+                  </div>
+                </Link>
+                <Link to="/ai" className="hover:opacity-80 transition-opacity">
+                  <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-sm rounded-md backdrop-blur-sm">
+                    AI Intelligence
+                  </Badge>
+                </Link>
               </div>
             </div>
             <h1 className="text-3xl font-bold mb-3 font-display">TalentXcel AI-Powered Career Roadmaps Designed for You</h1>
@@ -221,49 +235,57 @@ const CareerMap = () => {
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
-                <CardContent className="p-3 text-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <Users className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="font-bold text-xs text-text-primary mb-1">Profile</h3>
-                  <p className="text-lg font-bold text-text-primary">{currentMetrics.profileCompletion}%</p>
-                  <Progress value={currentMetrics.profileCompletion} className="h-1 mt-1" />
-                </CardContent>
-              </Card>
+              <Link to="/profile/edit">
+                <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                  <CardContent className="p-3 text-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Users className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="font-bold text-xs text-text-primary mb-1">Profile</h3>
+                    <p className="text-lg font-bold text-text-primary">{currentMetrics.profileCompletion}%</p>
+                    <Progress value={currentMetrics.profileCompletion} className="h-1 mt-1" />
+                  </CardContent>
+                </Card>
+              </Link>
               
-              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
-                <CardContent className="p-3 text-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <Target className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="font-bold text-xs text-text-primary mb-1">Applications</h3>
-                  <p className="text-lg font-bold text-text-primary">{currentMetrics.jobApplications}</p>
-                  <p className="text-xs text-text-secondary">Jobs applied</p>
-                </CardContent>
-              </Card>
+              <Link to="/jobs/applications">
+                <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                  <CardContent className="p-3 text-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Target className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="font-bold text-xs text-text-primary mb-1">Applications</h3>
+                    <p className="text-lg font-bold text-text-primary">{currentMetrics.jobApplications}</p>
+                    <p className="text-xs text-text-secondary">Jobs applied</p>
+                  </CardContent>
+                </Card>
+              </Link>
               
-              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
-                <CardContent className="p-3 text-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-600 rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <Users className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="font-bold text-xs text-text-primary mb-1">Network</h3>
-                  <p className="text-lg font-bold text-text-primary">{currentMetrics.connections}</p>
-                  <p className="text-xs text-text-secondary">Connections</p>
-                </CardContent>
-              </Card>
+              <Link to="/network">
+                <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                  <CardContent className="p-3 text-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Users className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="font-bold text-xs text-text-primary mb-1">Network</h3>
+                    <p className="text-lg font-bold text-text-primary">{currentMetrics.connections}</p>
+                    <p className="text-xs text-text-secondary">Connections</p>
+                  </CardContent>
+                </Card>
+              </Link>
               
-              <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
-                <CardContent className="p-3 text-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg flex items-center justify-center mx-auto mb-2">
-                    <Award className="h-4 w-4 text-white" />
-                  </div>
-                  <h3 className="font-bold text-xs text-text-primary mb-1">TXC Earned</h3>
-                  <p className="text-lg font-bold text-text-primary">{currentMetrics.totalTXCEarned}</p>
-                  <p className="text-xs text-text-secondary">Tokens</p>
-                </CardContent>
-              </Card>
+              <Link to="/wallet/txc">
+                <Card className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5">
+                  <CardContent className="p-3 text-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Award className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="font-bold text-xs text-text-primary mb-1">TXC Earned</h3>
+                    <p className="text-lg font-bold text-text-primary">{currentMetrics.totalTXCEarned}</p>
+                    <p className="text-xs text-text-secondary">Tokens</p>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
 
             {/* Achievement Progress */}
@@ -274,8 +296,45 @@ const CareerMap = () => {
                   {achievementTriggers
                     .filter(achievement => !achievement.earned)
                     .slice(0, 4)
-                    .map((achievement) => (
-                      <Card key={achievement.id} className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light">
+                    .map((achievement) => {
+                      const handleAchievementClick = () => {
+                        // Navigate to relevant section based on achievement type
+                        switch (achievement.type) {
+                          case 'profile':
+                            window.location.href = '/profile/edit';
+                            break;
+                          case 'networking':
+                            window.location.href = '/network';
+                            break;
+                          case 'applications':
+                            window.location.href = '/jobs/applications';
+                            break;
+                          case 'skills':
+                            window.location.href = '/profile/skills';
+                            break;
+                          case 'content':
+                            window.location.href = '/network/posts';
+                            break;
+                          case 'learning':
+                            window.location.href = '/learning';
+                            break;
+                          case 'tokens':
+                            window.location.href = '/wallet/txc';
+                            break;
+                          case 'streaks':
+                            window.location.href = '/dashboard/streaks';
+                            break;
+                          default:
+                            window.location.href = '/dashboard';
+                        }
+                      };
+                      
+                      return (
+                        <Card 
+                          key={achievement.id} 
+                          className="border-0 bg-white/90 backdrop-blur-apple rounded-xl shadow-apple-light hover:shadow-apple-medium transition-all duration-300 cursor-pointer hover:-translate-y-0.5"
+                          onClick={handleAchievementClick}
+                        >
                         <CardContent className="p-3">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="text-xs font-semibold text-text-primary">{achievement.title}</h4>
@@ -295,7 +354,8 @@ const CareerMap = () => {
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                     );
+                    })}
                 </div>
               </div>
             )}
@@ -346,7 +406,7 @@ const CareerMap = () => {
             <div className="flex gap-3 justify-center">
               <Button
                 onClick={() => setShowPathBuilder(!showPathBuilder)}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 shadow-apple-light"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 shadow-apple-light hover:shadow-apple-medium transition-all duration-300"
               >
                 <Target className="h-4 w-4 mr-2" />
                 {showPathBuilder ? 'Hide' : 'Build'} Career Path
@@ -355,7 +415,7 @@ const CareerMap = () => {
               <Button
                 onClick={() => setShowCareerModal(true)}
                 variant="outline"
-                className="px-4 py-2"
+                className="px-4 py-2 hover:shadow-apple-medium transition-all duration-300"
               >
                 <Brain className="h-4 w-4 mr-2" />
                 AI Generate Path
@@ -381,9 +441,11 @@ const CareerMap = () => {
         
         {/* Footer Note */}
         <div className="text-center py-8 mt-12">
-          <p className="text-sm text-text-secondary">
-            Powered by TalentXcel AI – India's Intelligent Career Platform
-          </p>
+          <Link to="/" className="hover:opacity-80 transition-opacity">
+            <p className="text-sm text-text-secondary">
+              Powered by TalentXcel AI – India's Intelligent Career Platform
+            </p>
+          </Link>
         </div>
       </div>
 
