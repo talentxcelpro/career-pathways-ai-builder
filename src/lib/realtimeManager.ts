@@ -32,6 +32,7 @@ export type RealtimeCallback = (table: WatchedTable, payload: RealtimePayload) =
 class RealtimeManager {
   private channels: Map<string, any> = new Map();
   private isInitialized = false;
+  private isCleaningUp = false;
   private callbacks = new Set<RealtimeCallback>();
   private queues = new Map<string, RealtimePayload[]>();
   private flushTimers = new Map<string, number>();
@@ -148,7 +149,11 @@ class RealtimeManager {
           if (err) console.error('   - Error details:', err);
           // Remove faulty channel to prevent repeated errors and force a clean reconnect
           const channelName = `realtime:public:${table}`;
-          supabase.removeChannel(channel);
+          try {
+            supabase.removeChannel(channel);
+          } catch (error) {
+            console.warn(`⚠️ Error removing faulty channel ${channelName}:`, error);
+          }
           this.channels.delete(channelName);
           // Try to reconnect after a short delay
           setTimeout(() => {
@@ -300,10 +305,21 @@ class RealtimeManager {
   cleanup() {
     console.log('🧹 Cleaning up realtime subscriptions...');
     
-    // Clear all channels
+    // Prevent recursive cleanup calls
+    if (this.isCleaningUp) {
+      console.log('🧹 Cleanup already in progress, skipping...');
+      return;
+    }
+    this.isCleaningUp = true;
+    
+    // Clear all channels with error handling
     this.channels.forEach((channel, channelName) => {
-      supabase.removeChannel(channel);
-      console.log(`❌ Removed channel: ${channelName}`);
+      try {
+        supabase.removeChannel(channel);
+        console.log(`❌ Removed channel: ${channelName}`);
+      } catch (error) {
+        console.warn(`⚠️ Error removing channel ${channelName}:`, error);
+      }
     });
     this.channels.clear();
 
@@ -312,6 +328,7 @@ class RealtimeManager {
     this.flushTimers.forEach(timerId => clearTimeout(timerId));
     this.flushTimers.clear();
     this.queues.clear();
+    this.channelStatuses.clear();
 
     // Close broadcast channel
     if (this.broadcastChannel) {
@@ -320,6 +337,7 @@ class RealtimeManager {
     }
     
     this.isInitialized = false;
+    this.isCleaningUp = false;
     console.log('✅ Realtime cleanup completed');
   }
 

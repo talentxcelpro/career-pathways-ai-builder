@@ -37,7 +37,7 @@ interface Tool {
   isLocked: boolean;
   isCompleted: boolean;
   progress: number;
-  icon: React.ReactNode;
+  icon: React.ComponentType<any>;
 }
 
 interface ToolTestDialogProps {

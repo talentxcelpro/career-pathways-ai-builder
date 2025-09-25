@@ -12,7 +12,7 @@ interface RealTool {
   category: string;
   slug: string;
   icon_name: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<any>;
   txc_cost: number;
   difficulty: string;
   estimated_time: string;
