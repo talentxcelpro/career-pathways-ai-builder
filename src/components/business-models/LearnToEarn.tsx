@@ -18,95 +18,10 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  duration_hours: number;
-  reward_txc: number;
-  completion_rate: number;
-  enrolled_count: number;
-  rating: number;
-  instructor: string;
-  thumbnail_url?: string;
-  is_premium: boolean;
-  requirements: string[];
-  learning_outcomes: string[];
-}
-
-// Mock data for Learn & Earn courses
-const mockCourses: Course[] = [
-  {
-    id: '1',
-    title: 'JavaScript Fundamentals',
-    description: 'Master the basics of JavaScript programming and earn TXC tokens',
-    category: 'programming',
-    level: 'beginner',
-    duration_hours: 12,
-    reward_txc: 500,
-    completion_rate: 85,
-    enrolled_count: 1240,
-    rating: 4.8,
-    instructor: 'Priya Sharma',
-    is_premium: false,
-    requirements: ['Basic computer knowledge'],
-    learning_outcomes: ['Variables and functions', 'DOM manipulation', 'Basic algorithms']
-  },
-  {
-    id: '2',
-    title: 'UI/UX Design Principles',
-    description: 'Learn design thinking and user experience fundamentals',
-    category: 'design',
-    level: 'intermediate',
-    duration_hours: 16,
-    reward_txc: 750,
-    completion_rate: 92,
-    enrolled_count: 890,
-    rating: 4.9,
-    instructor: 'Rahul Kumar',
-    is_premium: true,
-    requirements: ['Basic design knowledge', 'Figma account'],
-    learning_outcomes: ['Design thinking process', 'User research methods', 'Prototype creation']
-  },
-  {
-    id: '3',
-    title: 'Digital Marketing Basics',
-    description: 'Master social media marketing and content creation',
-    category: 'marketing',
-    level: 'beginner',
-    duration_hours: 10,
-    reward_txc: 400,
-    completion_rate: 78,
-    enrolled_count: 2100,
-    rating: 4.6,
-    instructor: 'Anjali Patel',
-    is_premium: false,
-    requirements: ['None'],
-    learning_outcomes: ['Social media strategy', 'Content planning', 'Analytics basics']
-  },
-  {
-    id: '4',
-    title: 'Data Analysis with Python',
-    description: 'Analyze data and create insights using Python libraries',
-    category: 'data_science',
-    level: 'advanced',
-    duration_hours: 24,
-    reward_txc: 1200,
-    completion_rate: 65,
-    enrolled_count: 560,
-    rating: 4.7,
-    instructor: 'Dr. Vikash Singh',
-    is_premium: true,
-    requirements: ['Python basics', 'Statistics knowledge'],
-    learning_outcomes: ['Pandas and NumPy', 'Data visualization', 'Statistical analysis']
-  }
-];
+import { useBusinessModels } from '@/hooks/useBusinessModels';
 
 export const LearnToEarn: React.FC = () => {
-  const [courses] = useState<Course[]>(mockCourses);
+  const { courses, loading } = useBusinessModels();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
@@ -168,7 +83,7 @@ export const LearnToEarn: React.FC = () => {
                 <GraduationCap className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">42</p>
+                <p className="text-2xl font-bold">{courses.length}</p>
                 <p className="text-sm text-muted-foreground">Courses</p>
               </div>
             </div>
@@ -261,101 +176,123 @@ export const LearnToEarn: React.FC = () => {
       </Card>
 
       {/* Courses Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCourses.map((course) => (
-          <Card key={course.id} className="hover:shadow-lg transition-shadow group overflow-hidden">
-            <div className="relative">
-              <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <BookOpen className="h-12 w-12 text-primary" />
-              </div>
-              {course.is_premium && (
-                <Badge className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-orange-600">
-                  Premium
-                </Badge>
-              )}
-              <div className="absolute bottom-2 left-2 bg-black/75 text-white px-2 py-1 rounded text-xs">
-                {course.duration_hours}h
-              </div>
-            </div>
-
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-1">
-                    {course.title}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">by {course.instructor}</p>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <div className="h-32 bg-muted"></div>
+              <CardHeader>
+                <div className="h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="h-3 bg-muted rounded"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
                 </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1">
-                    <Coins className="h-4 w-4 text-yellow-600" />
-                    <span className="font-bold text-yellow-600">+{course.reward_txc}</span>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCourses.map((course) => (
+            <Card key={course.id} className="hover:shadow-lg transition-shadow group overflow-hidden">
+              <div className="relative">
+                <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <BookOpen className="h-12 w-12 text-primary" />
+                </div>
+                {course.is_premium && (
+                  <Badge className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-orange-600">
+                    Premium
+                  </Badge>
+                )}
+                <div className="absolute bottom-2 left-2 bg-black/75 text-white px-2 py-1 rounded text-xs">
+                  {course.duration_hours}h
+                </div>
+              </div>
+
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-1">
+                      {course.title}
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      by {course.instructor_profile?.full_name || 'Professional Instructor'}
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">TXC reward</p>
+                  <div className="text-right">
+                    <div className="flex items-center gap-1">
+                      <Coins className="h-4 w-4 text-yellow-600" />
+                      <span className="font-bold text-yellow-600">+{course.reward_txc}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">TXC reward</p>
+                  </div>
                 </div>
-              </div>
-              <CardDescription className="line-clamp-2">
-                {course.description}
-              </CardDescription>
-            </CardHeader>
+                <CardDescription className="line-clamp-2">
+                  {course.description}
+                </CardDescription>
+              </CardHeader>
 
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between text-sm">
-                <Badge 
-                  variant="outline" 
-                  className={cn(
-                    "text-xs",
-                    getLevelColor(course.level)
-                  )}
-                >
-                  {course.level}
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {formatCategory(course.category)}
-                </Badge>
-              </div>
-
-              <div className="space-y-2">
+              <CardContent className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Progress</span>
-                  <span className="font-medium">{course.completion_rate}%</span>
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      "text-xs",
+                      getLevelColor(course.level)
+                    )}
+                  >
+                    {course.level}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {formatCategory(course.category)}
+                  </Badge>
                 </div>
-                <Progress value={course.completion_rate} className="h-2" />
-              </div>
 
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4" />
-                  {course.enrolled_count.toLocaleString()}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Progress</span>
+                    <span className="font-medium">{course.completion_rate}%</span>
+                  </div>
+                  <Progress value={course.completion_rate} className="h-2" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <Award className="h-4 w-4" />
-                  {course.rating}
+
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    {course.enrolled_count.toLocaleString()}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Award className="h-4 w-4" />
+                    {course.rating.toFixed(1)}
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">You'll learn:</p>
-                <ul className="text-xs text-muted-foreground space-y-1">
-                  {course.learning_outcomes.slice(0, 2).map((outcome, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
-                      {outcome}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">You'll learn:</p>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    {course.learning_outcomes.slice(0, 2).map((outcome, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                        {outcome}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              <Button className="w-full">
-                <Play className="h-4 w-4 mr-2" />
-                Start Learning
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <Button className="w-full">
+                  <Play className="h-4 w-4 mr-2" />
+                  Start Learning
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      {filteredCourses.length === 0 && (
+      {filteredCourses.length === 0 && !loading && (
         <Card>
           <CardContent className="p-8 text-center">
             <GraduationCap className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

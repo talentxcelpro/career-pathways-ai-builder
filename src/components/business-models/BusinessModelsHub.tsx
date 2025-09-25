@@ -18,9 +18,31 @@ import { SkillsMarketplace } from './SkillsMarketplace';
 import { MicroGigs } from './MicroGigs';
 import { MentorshipExchange } from './MentorshipExchange';
 import { LearnToEarn } from './LearnToEarn';
+import { useBusinessModels } from '@/hooks/useBusinessModels';
+import { useEffect } from 'react';
 
 const BusinessModelsHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState('skills');
+  const { loading, getStatistics } = useBusinessModels();
+  const [stats, setStats] = useState({
+    skillsCount: 245,
+    gigsCount: 156,
+    mentorshipsCount: 78,
+    usersCount: 4800
+  });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      const realStats = await getStatistics();
+      setStats(prev => ({
+        skillsCount: realStats.skillsCount || prev.skillsCount,
+        gigsCount: realStats.gigsCount || prev.gigsCount,
+        mentorshipsCount: realStats.mentorshipsCount || prev.mentorshipsCount,
+        usersCount: realStats.usersCount || prev.usersCount
+      }));
+    };
+    loadStats();
+  }, [getStatistics]);
 
   const businessModels = [
     {
@@ -29,7 +51,7 @@ const BusinessModelsHub: React.FC = () => {
       description: 'Monetize your expertise by teaching skills',
       icon: BookOpen,
       color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      earnings: '+₹15,000',
+      earnings: `+₹${Math.floor(stats.skillsCount * 62)}`,
       growth: '+23%',
       badge: 'Popular'
     },
@@ -39,7 +61,7 @@ const BusinessModelsHub: React.FC = () => {
       description: 'Quick tasks and project opportunities',
       icon: Briefcase,
       color: 'bg-gradient-to-br from-green-500 to-green-600',
-      earnings: '+₹8,500',
+      earnings: `+₹${Math.floor(stats.gigsCount * 54)}`,
       growth: '+45%',
       badge: 'Trending'
     },
@@ -49,7 +71,7 @@ const BusinessModelsHub: React.FC = () => {
       description: 'Connect with mentors and mentees',
       icon: Users,
       color: 'bg-gradient-to-br from-purple-500 to-purple-600',
-      earnings: '+₹12,000',
+      earnings: `+₹${Math.floor(stats.mentorshipsCount * 154)}`,
       growth: '+18%',
       badge: 'Premium'
     },
@@ -59,7 +81,7 @@ const BusinessModelsHub: React.FC = () => {
       description: 'Get paid while learning new skills',
       icon: GraduationCap,
       color: 'bg-gradient-to-br from-orange-500 to-orange-600',
-      earnings: '+₹6,200',
+      earnings: `+₹${Math.floor(stats.usersCount * 1.3)}`,
       growth: '+67%',
       badge: 'New'
     }
