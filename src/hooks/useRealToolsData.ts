@@ -110,8 +110,45 @@ export const useRealToolsData = () => {
     if (!tools.length) return [];
 
     return tools.map(tool => {
-      // Get icon from Lucide Icons
-      const IconComponent = (LucideIcons as any)[tool.icon_name] || LucideIcons.Wrench;
+      // Get unique icon from Lucide Icons with fallbacks for each tool type
+      const getUniqueIcon = (iconName: string, toolName: string, category: string) => {
+        // Try the specified icon first
+        if (iconName && (LucideIcons as any)[iconName]) {
+          return (LucideIcons as any)[iconName];
+        }
+        
+        // Fallback based on tool name keywords
+        const name = toolName.toLowerCase();
+        const cat = category.toLowerCase();
+        
+        if (name.includes('resume') || name.includes('cv')) return LucideIcons.FileText;
+        if (name.includes('interview')) return LucideIcons.MessageCircle;
+        if (name.includes('job') || name.includes('match')) return LucideIcons.Briefcase;
+        if (name.includes('cover') || name.includes('letter')) return LucideIcons.Mail;
+        if (name.includes('salary') || name.includes('negotiat')) return LucideIcons.DollarSign;
+        if (name.includes('network') || name.includes('linkedin')) return LucideIcons.Users;
+        if (name.includes('skill') || name.includes('assessment')) return LucideIcons.Target;
+        if (name.includes('career') || name.includes('path')) return LucideIcons.TrendingUp;
+        if (name.includes('ai') || name.includes('gpt')) return LucideIcons.Brain;
+        if (name.includes('learning') || name.includes('course')) return LucideIcons.GraduationCap;
+        if (name.includes('outreach') || name.includes('message')) return LucideIcons.Send;
+        if (name.includes('swot') || name.includes('analysis')) return LucideIcons.BarChart3;
+        if (name.includes('score') || name.includes('rating')) return LucideIcons.Star;
+        if (name.includes('change') || name.includes('transition')) return LucideIcons.ArrowRight;
+        if (name.includes('growth') || name.includes('development')) return LucideIcons.TrendingUp;
+        
+        // Category-based fallbacks
+        if (cat.includes('resume')) return LucideIcons.FileText;
+        if (cat.includes('interview')) return LucideIcons.MessageCircle;
+        if (cat.includes('job')) return LucideIcons.Briefcase;
+        if (cat.includes('assessment')) return LucideIcons.CheckCircle;
+        if (cat.includes('career')) return LucideIcons.Compass;
+        
+        // Final fallback
+        return LucideIcons.Wrench;
+      };
+      
+      const IconComponent = getUniqueIcon(tool.icon_name, tool.name, tool.category);
       
       // Calculate user's progress with this tool
       const toolUsages = userUsage.filter(usage => usage.tool_slug === tool.slug);

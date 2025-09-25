@@ -178,23 +178,104 @@ const ToolsContent = ({ tools, toolsByCategory, userStats, userName, userTXCBala
         unlockedToolsCount={tools.filter(t => !t.isLocked).length}
       />
 
-      <div className="container mx-auto px-4 py-12">
-        <div className={cn(
-          "grid gap-6 mb-12",
-          viewMode === 'grid' 
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-            : "grid-cols-1"
-        )}>
-          {paginatedTools.map((tool) => (
-            <GameToolCard 
-              key={tool.id}
-              tool={tool}
-              viewMode={viewMode}
-              onToolClick={handleToolClick}
-              onUnlockClick={handleToolClick}
+      {/* Mobile-first compact container */}
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-7xl">
+        
+        {/* Search and filters */}
+        <div className="mb-6 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search tools..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-11 bg-background/60 backdrop-blur-sm border-border/50"
             />
+          </div>
+          
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+            {toolsByCategory && Object.keys(toolsByCategory).map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className="whitespace-nowrap text-xs"
+              >
+                {category} ({toolsByCategory[category]?.length || 0})
+              </Button>
+            ))}
+            <Button
+              variant={selectedCategory === 'all' ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory('all')}
+              className="whitespace-nowrap text-xs"
+            >
+              All ({tools.length})
+            </Button>
+          </div>
+        </div>
+
+        {/* Tools grid - optimized for mobile */}
+        <div className={cn(
+          "grid gap-4 sm:gap-6 mb-8 stagger-children",
+          "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        )}>
+          {paginatedTools.map((tool, index) => (
+            <div key={tool.id} style={{ animationDelay: `${index * 100}ms` }}>
+              <GameToolCard 
+                tool={tool}
+                viewMode="grid"
+                onToolClick={handleToolClick}
+                onUnlockClick={handleToolClick}
+              />
+            </div>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 pt-6 border-t border-border/50">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="h-9"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + Math.max(1, currentPage - 2);
+                if (page > totalPages) return null;
+                
+                return (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className="w-9 h-9 text-xs"
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="h-9"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
         
         {selectedTool && (
           <ToolBenefitsModal 
