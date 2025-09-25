@@ -55,7 +55,7 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
       <div className="p-4 sm:p-6 pb-3 sm:pb-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-2 sm:space-y-0 mb-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-orange-400 mb-1">
+            <h2 className="text-lg sm:text-xl font-bold text-cyan-400 mb-1 !important">
               TalentXcel Career Passport
             </h2>
             <div className="flex items-center text-red-400 text-sm">
@@ -90,13 +90,13 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
               </div>
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-base sm:text-lg font-semibold text-white truncate">
+              <h3 className="text-base sm:text-lg font-semibold text-white !important truncate">
                 {userProfile?.full_name || 'TalentXcel Pro'}
               </h3>
-              <p className="text-orange-300 text-xs sm:text-sm line-clamp-1">
+              <p className="text-cyan-400 text-xs sm:text-sm line-clamp-1 !important">
                 {userProfile?.headline || 'Transforming Businesses and Lives'}
               </p>
-              <div className="flex items-center text-yellow-300 text-xs sm:text-sm">
+              <div className="flex items-center text-white text-xs sm:text-sm !important">
                 <span className="mr-1">🇮🇳</span>
                 <span className="truncate">{userProfile?.location || 'India'}</span>
               </div>
@@ -112,24 +112,24 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
           <div className="text-3xl sm:text-4xl font-bold text-orange-400 mb-1">
             {insights.career_readiness_score}%
           </div>
-          <div className="text-gray-300 text-sm">Career Ready</div>
+          <div className="text-white text-sm !important">Career Ready</div>
         </div>
 
         {/* Market Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-gray-300 text-xs sm:text-sm mb-1">Market Rank</div>
-            <div className="text-white font-semibold text-sm sm:text-base">
+            <div className="text-white text-xs sm:text-sm mb-1 !important">Market Rank</div>
+            <div className="text-white font-semibold text-sm sm:text-base !important">
               {insights.industry_percentile > 0 ? `${insights.industry_percentile}th percentile` : 'Not ranked'}
             </div>
-            <div className="text-gray-400 text-xs">vs peers</div>
+            <div className="text-white text-xs !important">vs peers</div>
           </div>
           <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-gray-300 text-xs sm:text-sm mb-1">Competitiveness</div>
-            <div className="text-white font-semibold text-sm sm:text-base">
+            <div className="text-white text-xs sm:text-sm mb-1 !important">Competitiveness</div>
+            <div className="text-white font-semibold text-sm sm:text-base !important">
               {insights.market_competitiveness_score}%
             </div>
-            <div className="text-gray-400 text-xs">Score</div>
+            <div className="text-white text-xs !important">Score</div>
           </div>
         </div>
 
@@ -139,25 +139,25 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
             <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.resumes_count}
             </div>
-            <div className="text-gray-300 text-xs">Resumes</div>
+            <div className="text-white text-xs !important">Resumes</div>
           </div>
           <div className="text-center p-2 sm:p-0">
             <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.jobs_applied_count}
             </div>
-            <div className="text-gray-300 text-xs">Jobs Applied</div>
+            <div className="text-white text-xs !important">Jobs Applied</div>
           </div>
           <div className="text-center p-2 sm:p-0">
             <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.certifications_count}
             </div>
-            <div className="text-gray-300 text-xs">Certifications</div>
+            <div className="text-white text-xs !important">Certifications</div>
           </div>
           <div className="text-center p-2 sm:p-0">
             <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {metrics.connections_count}
             </div>
-            <div className="text-gray-300 text-xs">Connections</div>
+            <div className="text-white text-xs !important">Connections</div>
           </div>
         </div>
 
