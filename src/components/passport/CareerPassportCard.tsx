@@ -1,7 +1,7 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
 
@@ -33,7 +33,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
   if (isLoading || !displayProfile) {
     return (
-      <Card className="w-full max-w-sm mx-auto min-h-[500px] bg-[#1e293b] border-none rounded-3xl animate-pulse">
+      <Card className="w-full max-w-sm mx-auto min-h-[500px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 border-none rounded-3xl animate-pulse">
         <div className="h-full flex items-center justify-center p-8">
           <div className="text-white">Loading...</div>
         </div>
@@ -46,168 +46,155 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
   const industryPercentile = insights?.industry_percentile || Math.min(careerReadiness + (displayMetrics?.skillsAdded || 0) * 5, 95);
   
   // Generate user ID (simplified version)
-  const userId = user?.id?.slice(0, 6)?.toUpperCase().replace(/-/g, '').slice(0, 6) || 'TXL116';
+  const userId = user?.id?.slice(0, 6)?.toUpperCase().replace(/-/g, '').slice(0, 6) || 'TAL169';
   const userInitials = displayProfile.full_name ? 
     displayProfile.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() : 
-    'U';
+    'TP';
+
+  // Generate QR code URL
+  const qrCodeUrl = `${window.location.origin}/passport/${displayProfile.username || user?.id}`;
+
+  // Format dates
+  const issueDate = new Date().toLocaleDateString('en-US', { 
+    month: 'short', 
+    year: 'numeric' 
+  });
+  
+  const expiryDate = new Date(Date.now() + 3 * 365 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { 
+    month: 'short', 
+    year: 'numeric' 
+  });
 
   return (
-    <Card className="w-full max-w-sm mx-auto bg-[#1e293b] border-none overflow-hidden rounded-3xl shadow-2xl">
-      <div className="relative p-4 sm:p-8 text-white min-h-[500px] sm:min-h-[600px]">
-        {/* Decorative corner element */}
-        <div className="absolute top-6 right-6">
-          <svg width="64" height="64" viewBox="0 0 64 64" className="text-cyan-400">
-            <path
-              d="M16 16 Q48 16 48 48"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          </svg>
-        </div>
-
+    <Card className="w-full max-w-sm mx-auto bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 border-none overflow-hidden rounded-3xl shadow-2xl">
+      <div className="relative p-6 text-white min-h-[600px]">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">TALENTXCEL</h1>
-          <h2 className="text-lg sm:text-xl font-bold text-cyan-400 !text-cyan-400">CAREER PASSPORT</h2>
-        </div>
-
-        {/* Main content layout */}
-        <div className="flex justify-between items-start mb-6 sm:mb-8">
-          {/* Left side - Profile */}
-          <div className="flex-1">
-            {/* Profile Picture */}
-            <div className="w-20 h-20 sm:w-28 sm:h-28 mb-4 sm:mb-6 bg-slate-400 rounded-2xl overflow-hidden">
-              <Avatar className="w-full h-full rounded-2xl">
-                <AvatarImage 
-                  src={displayProfile.profile_picture_url || ''} 
-                  alt={displayProfile.full_name || 'User'} 
-                  className="object-cover"
-                />
-                <AvatarFallback className="bg-slate-400 text-slate-800 text-xl sm:text-2xl font-bold rounded-2xl">
-                  {userInitials}
-                </AvatarFallback>
-              </Avatar>
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-xl font-bold text-orange-400 mb-1 !text-orange-400">TalentXcel Career</h1>
+            <h2 className="text-xl font-bold text-orange-400 !text-orange-400">Passport</h2>
+            <div className="flex items-center mt-3">
+              <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+              <span className="text-red-400 text-sm !text-red-400">Career Builder</span>
             </div>
           </div>
+          <div className="text-right">
+            <div className="text-white text-sm mb-1 !text-white">Unique ID</div>
+            <div className="text-orange-400 font-bold text-lg !text-orange-400">{userId}679</div>
+          </div>
+        </div>
 
-          {/* Center - Career Readiness Circle */}
-          <div className="flex flex-col items-center mx-3 sm:mx-6">
+        {/* Profile Section */}
+        <div className="flex justify-between items-start mb-8">
+          {/* Left - Profile Info */}
+          <div className="flex items-start space-x-4 flex-1">
             <div className="relative">
-              <svg className="w-16 h-16 sm:w-24 sm:h-24 transform -rotate-90">
-                <circle
-                  cx={window.innerWidth < 640 ? "32" : "48"}
-                  cy={window.innerWidth < 640 ? "32" : "48"}
-                  r={window.innerWidth < 640 ? "28" : "40"}
-                  stroke="rgba(156, 163, 175, 0.3)"
-                  strokeWidth="3"
-                  fill="none"
-                />
-                <circle
-                  cx={window.innerWidth < 640 ? "32" : "48"}
-                  cy={window.innerWidth < 640 ? "32" : "48"}
-                  r={window.innerWidth < 640 ? "28" : "40"}
-                  stroke="#06b6d4"
-                  strokeWidth="3"
-                  fill="none"
-                  strokeDasharray={`${2 * Math.PI * (window.innerWidth < 640 ? 28 : 40)}`}
-                  strokeDashoffset={`${2 * Math.PI * (window.innerWidth < 640 ? 28 : 40) * (1 - careerReadiness / 100)}`}
-                  className="transition-all duration-1000"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-cyan-400 text-xs sm:text-sm font-normal mb-1 !text-cyan-400">CAREER</span>
-                <span className="text-white text-xl sm:text-3xl font-bold !text-white">{Math.round(careerReadiness)}%</span>
-                <span className="text-cyan-400 text-xs sm:text-sm font-normal mt-1 !text-cyan-400">READY</span>
+              <div className="w-20 h-20 bg-white rounded-2xl overflow-hidden">
+                <Avatar className="w-full h-full rounded-2xl">
+                  <AvatarImage 
+                    src={displayProfile.profile_picture_url || ''} 
+                    alt={displayProfile.full_name || 'User'} 
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-400 to-cyan-300 text-white text-xl font-bold rounded-2xl">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-lg">✓</span>
+              </div>
+            </div>
+            
+            <div className="flex-1">
+              <h3 className="text-white text-xl font-bold mb-1 !text-white">
+                {displayProfile.full_name || 'TalentXcel Pro'}
+              </h3>
+              <p className="text-orange-400 text-sm mb-2 !text-orange-400">
+                {displayProfile.headline || 'Transforming Businesses'}
+              </p>
+              <p className="text-orange-400 text-sm mb-2 !text-orange-400">and Lives</p>
+              <div className="flex items-center">
+                <span className="text-lg mr-2">🇮🇳</span>
+                <span className="text-orange-400 text-sm !text-orange-400">
+                  {displayProfile.location || 'india'}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Right side - User ID Badge */}
-          <div className="flex-shrink-0">
-            <div className="bg-transparent border-2 border-cyan-400 rounded-xl px-2 py-2 sm:px-4 sm:py-3 text-center min-w-[60px] sm:min-w-[80px]">
-              <div className="text-white font-bold text-sm sm:text-lg mb-1 sm:mb-2 !text-white">{userId}</div>
-              <svg className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Profile Info */}
-        <div className="mb-6 sm:mb-8">
-          <h3 className="text-white text-2xl sm:text-3xl font-bold mb-2 !text-white">
-            {displayProfile.full_name || 'Your Name'}
-          </h3>
-          <p className="text-white text-base sm:text-lg mb-3 sm:mb-4 !text-white">
-            {displayProfile.headline || displayProfile.title || 'Transforming Businesses and Lives'}
-          </p>
-          <div className="flex items-center text-white">
-            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white" />
-            <span className="text-base sm:text-lg text-white !text-white">{displayProfile.location || 'India'}</span>
+          {/* Right - QR Code */}
+          <div className="bg-white p-3 rounded-2xl">
+            <QRCodeSVG value={qrCodeUrl} size={80} />
           </div>
         </div>
 
-        {/* Performance Metrics Section */}
-        <div className="bg-slate-800/80 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-cyan-400 text-xl sm:text-2xl font-bold !text-cyan-400">TOP {Math.round(industryPercentile)}%</div>
-              <div className="text-white text-sm sm:text-base !text-white">vs peers</div>
+        {/* Career Readiness */}
+        <div className="text-center mb-8">
+          <div className="text-6xl font-bold text-orange-400 mb-2 !text-orange-400">
+            {Math.round(careerReadiness)}%
+          </div>
+          <div className="text-white text-lg !text-white">Career Ready</div>
+        </div>
+
+        {/* Metrics Row */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-blue-800/40 rounded-2xl p-4">
+            <div className="text-white text-base mb-1 !text-white">Market Rank</div>
+            <div className="text-white text-xl font-bold mb-1 !text-white">
+              {industryPercentile > 0 ? 'Not ranked' : 'Not ranked'}
             </div>
-            <div>
-              <div className="text-cyan-400 text-xs sm:text-sm font-bold mb-1 !text-cyan-400">COMPETITIVENESS</div>
-              <div className="text-white text-2xl sm:text-3xl font-bold !text-white">{Math.round(competitiveness)}%</div>
-              <div className="text-white text-xs sm:text-sm !text-white">Score</div>
+            <div className="text-gray-300 text-sm !text-gray-300">vs peers</div>
+          </div>
+          
+          <div className="bg-blue-800/40 rounded-2xl p-4">
+            <div className="text-white text-base mb-1 !text-white">Competitiveness</div>
+            <div className="text-white text-xl font-bold mb-1 !text-white">
+              {Math.round(competitiveness)}%
             </div>
+            <div className="text-gray-300 text-sm !text-gray-300">Score</div>
           </div>
         </div>
 
-        {/* Bottom Stats Grid */}
-        <div className="border-t border-cyan-400 pt-4 sm:pt-6">
-          <div className="grid grid-cols-4 gap-2 sm:gap-4">
-            {/* Resumes */}
-            <div className="text-center">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1 !text-white">{displayMetrics?.coursesCompleted || 0}</div>
-              <div className="text-white text-xs sm:text-sm !text-white">Resumes</div>
-            </div>
+        {/* Bottom Stats */}
+        <div className="grid grid-cols-4 gap-4 mb-8">
+          <div className="text-center">
+            <div className="text-white text-sm !text-white">Resumes</div>
+          </div>
+          <div className="text-center">
+            <div className="text-white text-sm !text-white">Jobs</div>
+            <div className="text-white text-sm !text-white">Applied</div>
+          </div>
+          <div className="text-center">
+            <div className="text-white text-sm !text-white">Certifications</div>
+          </div>
+          <div className="text-center">
+            <div className="text-white text-sm !text-white">Connections</div>
+          </div>
+        </div>
 
-            {/* Jobs */}
-            <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div className="text-white text-3xl font-bold mb-1">{displayMetrics?.jobApplications || 0}</div>
-              <div className="text-white text-sm">Jobs</div>
+        {/* Footer with dates and numbers */}
+        <div className="border-t border-blue-400 pt-4">
+          <div className="grid grid-cols-4 gap-4 mb-4 text-center">
+            <div className="text-white text-2xl font-bold !text-white">
+              {displayMetrics?.coursesCompleted || 0}
             </div>
-
-            {/* Certificates */}
-            <div className="text-center">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1 !text-white">{displayMetrics?.skillsAdded || 0}</div>
-              <div className="text-white text-xs sm:text-sm !text-white">Certificates</div>
+            <div className="text-white text-2xl font-bold !text-white">
+              {displayMetrics?.jobApplications || 16}
             </div>
-
-            {/* Connections */}
-            <div className="text-center">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 flex items-center justify-center">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <div className="text-white text-xl sm:text-3xl font-bold mb-1 !text-white">{displayMetrics?.connections || 0}</div>
-              <div className="text-white text-xs sm:text-sm !text-white">Connections</div>
+            <div className="text-white text-2xl font-bold !text-white">
+              {displayMetrics?.skillsAdded || 5}
+            </div>
+            <div className="text-white text-2xl font-bold !text-white">
+              {displayMetrics?.connections || 35}
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center text-sm">
+            <div className="text-gray-300 !text-gray-300">Issued {issueDate}</div>
+            <div className="flex items-center text-gray-300">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+              <span className="!text-gray-300">Valid Thru {expiryDate}</span>
             </div>
           </div>
         </div>
