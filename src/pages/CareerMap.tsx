@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,8 +8,18 @@ import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Target, Calendar, Users, BookOpen, ArrowRight, Plus, Brain, Map, Zap, Star, BarChart, Rocket, Award, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcase';
+import { EmptyCareerState } from '@/components/career-map/EmptyCareerState';
+import { BuildingPathState } from '@/components/career-map/BuildingPathState';
+import { ReadyToAccelerateCard } from '@/components/career-map/ReadyToAccelerateCard';
+import { PersonalizedDashboard } from '@/components/career-map/PersonalizedDashboard';
 
 const CareerMap = () => {
+  const [careerState, setCareerState] = useState<'empty' | 'building' | 'ready' | 'dashboard'>('empty');
+  
+  const handleCreateGoal = () => {
+    setCareerState('building');
+    setTimeout(() => setCareerState('ready'), 2000);
+  };
   const { data: careerGoals = [], isLoading } = useQuery({
     queryKey: ['career_goals'],
     queryFn: async () => {
@@ -175,6 +185,45 @@ const CareerMap = () => {
 
         {/* Career Components Section */}
         <div className="space-y-8">
+          {careerState === 'empty' && (
+            <EmptyCareerState onCreateGoal={handleCreateGoal} />
+          )}
+          
+          {careerState === 'building' && (
+            <BuildingPathState />
+          )}
+          
+          {careerState === 'ready' && (
+            <div className="space-y-8">
+              <ReadyToAccelerateCard 
+                userName="Arshid" 
+                currentRole="Junior Developer" 
+              />
+              <div className="text-center">
+                <button 
+                  onClick={() => setCareerState('dashboard')}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  View My Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {careerState === 'dashboard' && (
+            <div className="space-y-8">
+              <PersonalizedDashboard />
+              <div className="text-center">
+                <button 
+                  onClick={() => setCareerState('empty')}
+                  className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Reset Demo
+                </button>
+              </div>
+            </div>
+          )}
+          
           {/* Visual Roadmaps Section */}
           <VisualRoadmapShowcase />
         </div>
