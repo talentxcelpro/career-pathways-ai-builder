@@ -76,41 +76,63 @@ export const useCourseEnrollments = (userId?: string) => {
   return useQuery({
     queryKey: ['course-enrollments', userId],
     queryFn: async () => {
-      console.log('useCourseEnrollments - queryFn called with userId:', userId);
+      console.log('🔍 useCourseEnrollments - Starting query with userId:', userId);
+      
       if (!userId) {
-        console.log('useCourseEnrollments - No userId provided, returning empty array');
+        console.log('❌ useCourseEnrollments - No userId provided, returning empty array');
         return [];
       }
       
-      console.log('useCourseEnrollments - Fetching enrollments for user:', userId);
-      const { data, error } = await supabase
-        .from('course_enrollments')
-        .select(`
-          *,
-          courses (
-            id,
-            title,
-            instructor_name,
-            thumbnail_url,
-            category,
-            difficulty_level,
-            duration_hours
-          )
-        `)
-        .eq('user_id', userId)
-        .order('enrolled_at', { ascending: false });
-
-      if (error) {
-        console.error('useCourseEnrollments - Error fetching enrollments:', error);
-        throw error;
-      }
+      console.log('📡 useCourseEnrollments - Fetching enrollments for user:', userId);
       
-      console.log('useCourseEnrollments - Fetched enrollments:', data);
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from('course_enrollments')
+          .select(`
+            *,
+            courses (
+              id,
+              title,
+              instructor_name,
+              thumbnail_url,
+              category,
+              difficulty_level,
+              duration_hours
+            )
+          `)
+          .eq('user_id', userId)
+          .order('enrolled_at', { ascending: false });
+
+        if (error) {
+          console.error('❌ useCourseEnrollments - Supabase error:', error);
+          throw error;
+        }
+        
+        console.log('✅ useCourseEnrollments - Successfully fetched enrollments:', data);
+        console.log('📊 useCourseEnrollments - Number of enrollments found:', data?.length || 0);
+        
+        if (data && data.length > 0) {
+          data.forEach((enrollment, index) => {
+            console.log(`📋 Enrollment ${index + 1}:`, {
+              id: enrollment.id,
+              course_id: enrollment.course_id,
+              status: enrollment.status,
+              course_title: enrollment.courses?.title
+            });
+          });
+        }
+        
+        return data || [];
+      } catch (err) {
+        console.error('💥 useCourseEnrollments - Catch block error:', err);
+        throw err;
+      }
     },
     enabled: !!userId,
-    staleTime: 0, // Always refetch for debugging
-    retry: 1
+    staleTime: 0, // Force fresh data for debugging
+    retry: 1,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
   });
 };
 
