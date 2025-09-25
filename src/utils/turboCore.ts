@@ -20,6 +20,13 @@ class TurboCore {
   }
 
   /**
+   * Check if TurboCore is initialized
+   */
+  get initialized() {
+    return this.isInitialized;
+  }
+
+  /**
    * Ultra-fast initialization - Apple style
    */
   init() {
@@ -128,12 +135,19 @@ class TurboCore {
 // Export singleton instance
 export const turboCore = TurboCore.getInstance();
 
-// Auto-initialize on load
+// Auto-initialize on load (but prevent double initialization)
 if (typeof document !== 'undefined') {
+  // Only auto-initialize if not being called from React
+  const autoInit = () => {
+    if (!turboCore.initialized) {
+      turboCore.init();
+    }
+  };
+  
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => turboCore.init());
+    document.addEventListener('DOMContentLoaded', autoInit);
   } else {
-    turboCore.init();
+    autoInit();
   }
 }
 

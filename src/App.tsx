@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -176,14 +175,20 @@ const publicRoutes = [
 const App = () => {
   // Initialize turbo optimizations
   useEffect(() => {
-    // Apply color scheme
-    const savedColorScheme = localStorage.getItem('colorScheme');
-    if (savedColorScheme) {
-      document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+    try {
+      // Apply color scheme
+      const savedColorScheme = localStorage.getItem('colorScheme');
+      if (savedColorScheme) {
+        document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
+      }
+      
+      // Initialize turbo core only if not already initialized
+      if (turboCore && typeof turboCore.init === 'function') {
+        turboCore.init();
+      }
+    } catch (error) {
+      console.warn('App initialization error:', error);
     }
-    
-    // Initialize turbo core
-    turboCore.init();
   }, []);
 
   // Check if this is a subdomain - simplified as fallback only

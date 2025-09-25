@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +40,7 @@ interface InteractiveCareerPathProps {
   className?: string;
 }
 
-export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
+export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = memo(({
   initialPath = [],
   onSave,
   className = ""
@@ -419,4 +419,4 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
       )}
     </div>
   );
-};
+});
