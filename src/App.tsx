@@ -210,10 +210,10 @@ const App = () => {
     <ReactErrorBoundary>
       <ErrorBoundary FallbackComponent={BundleErrorFallback}>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <ReactContextErrorBoundary>
-              <AuthProvider>
-              <TooltipProvider delayDuration={200}>
+          <TooltipProvider delayDuration={200}>
+            <BrowserRouter>
+              <ReactContextErrorBoundary>
+                <AuthProvider>
                 <TXCAutoMiner />
                     <NotificationProvider>
               {/* <SecurityProvider> */}
@@ -521,13 +521,13 @@ const App = () => {
                    </div>
                  </MobileAppWrapper>
                    
-                   </CopilotProvider>
-                </RealtimeProvider>
-                       </NotificationProvider>
-              </TooltipProvider>
-              </AuthProvider>
-            </ReactContextErrorBoundary>
-          </BrowserRouter>
+                    </CopilotProvider>
+                 </RealtimeProvider>
+                        </NotificationProvider>
+                </AuthProvider>
+              </ReactContextErrorBoundary>
+            </BrowserRouter>
+          </TooltipProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </ReactErrorBoundary>
