@@ -4,51 +4,56 @@ class TwitterIntegration {
     this.init();
   }
 
-  async init() {
-    console.log('TalentXcel Twitter integration loaded');
-    this.setupIntegration();
+  init() {
+    console.log('TalentXcel: Twitter integration starting...');
+    this.setupMessageListener();
+    this.enhanceProfessionalPresence();
   }
 
-  setupIntegration() {
-    this.addTalentXcelButton();
-    this.observePageChanges();
-  }
-
-  addTalentXcelButton() {
-    const profileHeader = document.querySelector('[data-testid="UserProfileHeader_Items"]');
-    if (profileHeader && !profileHeader.querySelector('.txc-twitter-btn')) {
-      const button = document.createElement('button');
-      button.className = 'txc-twitter-btn';
-      button.innerHTML = `
-        <img src="${chrome.runtime.getURL('icons/icon16.png')}" alt="TalentXcel">
-        Sync to TalentXcel
-      `;
-      button.addEventListener('click', () => this.syncProfile());
-      profileHeader.appendChild(button);
-    }
-  }
-
-  async syncProfile() {
-    const profileData = this.extractTwitterProfile();
-    await chrome.runtime.sendMessage({
-      action: 'syncToTalentXcel',
-      profileData: profileData
+  setupMessageListener() {
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      this.handleMessage(request, sender, sendResponse);
+      return true;
     });
   }
 
-  extractTwitterProfile() {
+  async handleMessage(request, sender, sendResponse) {
+    try {
+      switch (request.action) {
+        case 'extractProfile':
+          const profileData = await this.extractProfileData();
+          sendResponse({ success: true, data: profileData });
+          break;
+        default:
+          sendResponse({ success: false, error: 'Unknown action' });
+      }
+    } catch (error) {
+      sendResponse({ success: false, error: error.message });
+    }
+  }
+
+  async extractProfileData() {
     return {
-      username: document.querySelector('[data-testid="UserName"] span')?.textContent || '',
-      displayName: document.querySelector('[data-testid="UserName"] div span')?.textContent || '',
-      bio: document.querySelector('[data-testid="UserDescription"]')?.textContent || '',
-      source: 'twitter'
+      source: 'twitter',
+      handle: this.extractText('[data-testid="UserName"]') || '',
+      displayName: this.extractText('[data-testid="UserDisplayName"]') || '',
+      bio: this.extractText('[data-testid="UserDescription"]') || '',
+      followers: 0,
+      following: 0
     };
   }
 
-  observePageChanges() {
-    new MutationObserver(() => {
-      setTimeout(() => this.addTalentXcelButton(), 1000);
-    }).observe(document, { subtree: true, childList: true });
+  extractText(selector) {
+    const element = document.querySelector(selector);
+    return element ? element.textContent.trim() : '';
+  }
+
+  enhanceProfessionalPresence() {
+    this.addBrandAnalysisTools();
+  }
+
+  addBrandAnalysisTools() {
+    // Add professional brand analysis tools to Twitter profiles
   }
 }
 
