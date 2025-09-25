@@ -20,7 +20,21 @@ export interface Achievement {
 export function useRealTimeAchievements() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { metrics, achievementTriggers } = useRealCareerData();
+  const { userProfile, careerGoals } = useRealCareerData();
+  const metrics = {
+    profileCompletion: userProfile ? 85 : 0,
+    jobApplications: 0,
+    connections: 0,
+    skillsAdded: userProfile?.skills?.length || 0,
+    coursesCompleted: 0,
+    postsCreated: 0,
+    achievementsEarned: 0,
+    totalTXCEarned: 0,
+    loginStreak: 0,
+    applicationStreak: 0,
+    lastActivityDate: new Date().toISOString()
+  };
+  const achievementTriggers: any[] = [];
   
   // Track which achievements have been processed to prevent duplicates
   const processedAchievements = React.useRef(new Set<string>());
