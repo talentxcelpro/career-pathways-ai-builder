@@ -247,14 +247,17 @@ const App = () => {
                                 </div>
                               </AdminLayout>
                             </ProtectedRoute>
-                          } />
-                          
-                          {navItems.map((item: NavItem) => (
-                            <Route 
-                              key={item.to} 
-                              path={item.to} 
-                              element={item.page}
-                            />
+          } />
+          
+          {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+          <Route path="/tools" element={<Tools />} />
+          
+          {navItems.map((item: NavItem) => (
+            <Route 
+              key={item.to} 
+              path={item.to} 
+              element={item.page}
+            />
                           ))}
                        
                         {/* Legacy UUID-based profile redirects */}
@@ -337,9 +340,8 @@ const App = () => {
                        <Route path="/resume-builder" element={<Navigate to="/resume/new" replace />} />
                         <Route path="/resume-builder/*" element={<Navigate to="/resume/new" replace />} />
                         <Route path="/resume-builder/edit/:id" element={<Navigate to="/resume/edit/:id" replace />} />
-                        
-                         {/* Tools Routes */}
-                         <Route path="/tools" element={<Tools />} />
+                         
+                          {/* Tools Routes - /tools route is defined at top for priority */}
                          <Route path="/tools/resume-check" element={<ResumeChecker />} />
                          <Route path="/tools/cover-letter" element={<CoverLetterGenerator />} />
                          <Route path="/tools/interview-prep" element={<InterviewPrep />} />

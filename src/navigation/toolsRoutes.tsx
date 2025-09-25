@@ -44,7 +44,7 @@ export const toolsRoutes = [
     title: "Tools",
     to: "/tools",
     icon: <Brain className="h-4 w-4" />,
-    page: <ToolsDashboard />,
+    page: <div>This should not be used - check App.tsx</div>,
     isPublic: true,
   },
   {
