@@ -11,6 +11,8 @@ interface RealTimeCareerMetrics {
   achievementsEarned: number;
   totalTXCEarned: number;
   profileCompletion: number;
+  skillsAdded: number;
+  coursesCompleted: number;
   lastUpdated: string;
 }
 
@@ -59,6 +61,8 @@ export function useRealTimeCareerMetrics() {
           achievementsEarned: achievementsResponse.data?.length || 0,
           totalTXCEarned: txcResponse.data?.total_earned || 0,
           profileCompletion,
+          skillsAdded: profileResponse.data?.skills?.length || 0,
+          coursesCompleted: 0, // Add logic for courses when available
           lastUpdated: new Date().toISOString()
         });
       } catch (error) {

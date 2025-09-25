@@ -7,6 +7,7 @@ import { useUserScores } from '@/hooks/useUserScores';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useUsernameRouting } from '@/hooks/useUsernameRouting';
 import { EnhancedCareerPassport } from '@/components/passport/EnhancedCareerPassport';
+import { CareerPassportCard } from '@/components/passport/CareerPassportCard';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -334,9 +335,34 @@ export function CareerPassportDashboard() {
 
   const displayData = getDisplayData();
 
+  const [activeView, setActiveView] = useState<'card' | 'detailed'>('card');
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-4">{/* Reduced padding from py-8 to py-4 */}
+      <div className="max-w-6xl mx-auto px-4 py-4">
+        {/* View Toggle */}
+        {!hasAuthError && (
+          <div className="flex justify-center mb-6">
+            <div className="bg-card border rounded-lg p-1 flex">
+              <Button
+                variant={activeView === 'card' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveView('card')}
+                className="px-6"
+              >
+                Card View
+              </Button>
+              <Button
+                variant={activeView === 'detailed' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveView('detailed')}
+                className="px-6"
+              >
+                Detailed View
+              </Button>
+            </div>
+          </div>
+        )}
         {/* Authentication Error */}
         {hasAuthError && (
           <div className="text-center py-12">
@@ -444,13 +470,23 @@ export function CareerPassportDashboard() {
               </div>
             )}
 
-            {/* Original Enhanced Career Passport */}
-            <EnhancedCareerPassport 
-              userId={targetUserId || user?.id}
-              userProfile={displayData.profile}
-              isOwner={displayData.isOwner}
-              publicPassport={isPublicView ? publicPassportData : undefined}
-            />
+            {/* Content based on active view */}
+            {activeView === 'card' ? (
+              <div className="flex justify-center">
+                <CareerPassportCard 
+                  userProfile={displayData.profile}
+                  isOwner={displayData.isOwner}
+                  publicPassport={isPublicView ? publicPassportData : undefined}
+                />
+              </div>
+            ) : (
+              <EnhancedCareerPassport 
+                userId={targetUserId || user?.id}
+                userProfile={displayData.profile}
+                isOwner={displayData.isOwner}
+                publicPassport={isPublicView ? publicPassportData : undefined}
+              />
+            )}
           </div>
         ) : !hasAuthError ? (
           <div className="text-center py-12">
