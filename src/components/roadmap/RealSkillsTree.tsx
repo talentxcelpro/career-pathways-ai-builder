@@ -44,11 +44,7 @@ interface SkillCategory {
   progress: number;
 }
 
-interface RealSkillsTreeProps {
-  skillCategories?: any[];
-}
-
-export const RealSkillsTree: React.FC<RealSkillsTreeProps> = ({ skillCategories: propSkillCategories = [] }) => {
+export const RealSkillsTree: React.FC = () => {
   const { data, isLoading } = useRealTimeCareerData();
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['technical']);
   const [selectedSkill, setSelectedSkill] = useState<SkillNode | null>(null);
@@ -209,8 +205,7 @@ export const RealSkillsTree: React.FC<RealSkillsTreeProps> = ({ skillCategories:
     );
   }
 
-  const generatedSkillCategories = generateSkillCategories();
-  const skillCategories = propSkillCategories.length > 0 ? propSkillCategories : generatedSkillCategories;
+  const skillCategories = generateSkillCategories();
 
   if (!skillCategories.length) {
     return (
