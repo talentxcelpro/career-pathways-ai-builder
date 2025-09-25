@@ -1,93 +1,9 @@
 
-/* TXC Blockchain Platform - Critical CSS */
+/* Critical CSS - Inlined for above-the-fold content */
 
 @tailwind base;
-@tailwind components; 
+@tailwind components;
 @tailwind utilities;
-
-/* TXC Design System Variables */
-@layer base {
-  :root {
-    /* TXC Brand Colors - Blockchain Theme */
-    --background: 7 9 13; /* Deep space blue */
-    --foreground: 247 248 248; /* Near white */
-    
-    /* TXC Primary - Blockchain Green */
-    --primary: 120 100% 28%; /* Deep blockchain green */
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 120 100% 35%;
-    --primary-lighter: 120 100% 45%;
-    
-    /* TXC Secondary - Digital Blue */
-    --secondary: 200 100% 15%; /* Deep tech blue */
-    --secondary-foreground: 0 0% 100%;
-    
-    /* TXC Accent - Mining Gold */
-    --accent: 45 100% 50%; /* Digital gold */
-    --accent-foreground: 0 0% 0%;
-    
-    /* TXC Muted - Professional grays */
-    --muted: 210 11% 15%;
-    --muted-foreground: 210 11% 71%;
-    
-    /* TXC UI Components */
-    --card: 210 11% 3%;
-    --card-foreground: 210 11% 98%;
-    
-    --popover: 210 11% 5%;
-    --popover-foreground: 210 11% 98%;
-    
-    --border: 210 11% 20%;
-    --input: 210 11% 15%;
-    --ring: 120 100% 28%;
-    
-    /* TXC Status Colors */
-    --success: 120 100% 28%; /* TXC Green */
-    --success-foreground: 0 0% 100%;
-    
-    --warning: 45 100% 50%; /* Mining Gold */
-    --warning-foreground: 0 0% 0%;
-    
-    --destructive: 0 84% 60%; /* Alert Red */
-    --destructive-foreground: 0 0% 100%;
-    
-    --info: 200 100% 50%; /* Tech Blue */
-    --info-foreground: 0 0% 100%;
-    
-    /* TXC Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(120 100% 28%), hsl(120 100% 35%));
-    --gradient-brand: linear-gradient(135deg, hsl(120 100% 28%), hsl(200 100% 15%));
-    --gradient-hero: linear-gradient(135deg, hsl(7 9 13), hsl(120 100% 5%));
-    --gradient-txc: linear-gradient(135deg, hsl(120 100% 28%), hsl(45 100% 50%));
-    
-    /* TXC Shadows */
-    --shadow-txc: 0 10px 30px -10px hsl(120 100% 28% / 0.3);
-    --shadow-glow: 0 0 40px hsl(120 100% 28% / 0.4);
-    --shadow-card: 0 4px 12px hsl(0 0% 0% / 0.15);
-    
-    /* TXC Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Light mode adjustments for TXC */
-  .light {
-    --background: 247 248 248;
-    --foreground: 7 9 13;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 7 9 13;
-    
-    --popover: 0 0% 100%;
-    --popover-foreground: 7 9 13;
-    
-    --border: 210 11% 82%;
-    --input: 210 11% 96%;
-    --muted: 210 11% 96%;
-    --muted-foreground: 210 11% 45%;
-    
-    --shadow-card: 0 4px 12px hsl(0 0% 0% / 0.08);
-  }
-}
 
 /* Shimmer animation for skeleton loaders */
 @keyframes shimmer {

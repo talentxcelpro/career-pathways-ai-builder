@@ -42,7 +42,6 @@ import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper"
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
 import NotFound from "@/pages/NotFound";
-import { TXCApplicationUI } from '@/components/txc/TXCApplicationUI';
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { SearchConsoleVerification } from "./components/analytics/SearchConsoleVerification";
@@ -231,14 +230,7 @@ const App = () => {
                     <Navbar />
                     <main className="flex-1">
                         <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
-                        <Routes>
-                          {/* TXC Platform Route */}
-                          <Route path="/" element={
-                            <div className="min-h-screen">
-                              <TXCApplicationUI />
-                            </div>
-                          } />
-                          
+                          <Routes>
                           {/* Final Launch Checklist Route */}
                           <Route path="/launch/final" element={
                             <ProtectedRoute>
