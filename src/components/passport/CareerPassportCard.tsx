@@ -69,7 +69,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">TALENTXCEL</h1>
-          <h2 className="text-lg sm:text-xl font-bold text-cyan-400">CAREER PASSPORT</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-cyan-400 !text-cyan-400">CAREER PASSPORT</h2>
         </div>
 
         {/* Main content layout */}
