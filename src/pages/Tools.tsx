@@ -6,6 +6,7 @@ import { ToolTestDialog } from '@/components/tools/ToolTestDialog';
 import { ToolBenefitsModal } from '@/components/tools/ToolBenefitsModal';
 import { ToolUnlockModal } from '@/components/tools/ToolUnlockModal';
 import { GameToolCard } from '@/components/tools/GameToolCard';
+import { TXCFeaturePurchase } from '@/components/txc/TXCFeaturePurchase';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { updateMetaTags } from '@/utils/metaTags';
 import { useRealToolsData } from '@/hooks/useRealToolsData';
