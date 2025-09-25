@@ -645,22 +645,3 @@ const NetworkPage = () => {
 };
 
 export default NetworkPage;
-                  <CardDescription>Stay connected with your professional network</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <MessageCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No messages yet</h3>
-                    <p className="text-slate-600">Start a conversation with your connections</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-};
-
-export default NetworkPage;
