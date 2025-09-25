@@ -347,12 +347,18 @@ export default function EnhancedCoursePage() {
                       <div className="flex justify-between">
                         <span>Lessons:</span>
                         <span>{totalLessons}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Category:</span>
-                        <span>{course.category}</span>
-                      </div>
-                    </div>
+                       </div>
+                       <div className="flex justify-between">
+                         <span>Category:</span>
+                         <span>{course.category}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span>Price:</span>
+                         <span className="font-semibold text-primary">
+                           {course.is_free ? 'Free' : `₹${course.price}`}
+                         </span>
+                       </div>
+                     </div>
                     <Separator />
                     {isEnrolled ? (
                       <Button className="w-full" size="lg" asChild>
