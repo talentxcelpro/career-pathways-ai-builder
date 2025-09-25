@@ -427,7 +427,14 @@ const Tools = () => {
               {paginatedTools.map((tool) => (
                 <GameToolCard 
                   key={tool.id}
-                  tool={tool}
+                  tool={{
+                    ...tool,
+                    estimatedTime: tool.estimated_time || '5-10 min',
+                    difficulty: tool.difficulty as 'beginner' | 'intermediate' | 'advanced',
+                    isLocked: isToolLocked(tool),
+                    txc_cost: tool.txc_cost || UNLOCK_COSTS.individual,
+                    unlockRequirement: getUnlockMessage(tool)
+                  }}
                   viewMode={viewMode}
                   onToolClick={handleToolClick}
                   onUnlockClick={handleToolClick}
