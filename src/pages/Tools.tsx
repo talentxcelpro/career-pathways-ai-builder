@@ -10,7 +10,8 @@ import { Lock, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Tools = () => {
-  console.log('🎯 Tools component mounted');
+  console.log('🎯 Tools component mounted - VERIFY THIS APPEARS');
+  alert('Tools component loaded - if you see this, the component is working');
   
   const navigate = useNavigate();
   const { user } = useAuth();
