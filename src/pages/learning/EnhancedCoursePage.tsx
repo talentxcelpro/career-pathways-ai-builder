@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AITutorChat } from '@/components/learning/AITutorChat';
 import { InteractiveCodeEditor } from '@/components/learning/InteractiveCodeEditor';
 import { useInteractiveExercises, useTextToSpeech } from '@/hooks/useAdvancedLearning';
+import { useEnrollInCourse, useCourseEnrollments } from '@/hooks/useCourses';
 import { toast } from 'sonner';
 
 export default function EnhancedCoursePage() {
@@ -34,6 +35,9 @@ export default function EnhancedCoursePage() {
   const [selectedTab, setSelectedTab] = useState('overview');
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
+  const enrollMutation = useEnrollInCourse();
+  const { data: enrollments } = useCourseEnrollments(user?.id);
 
   const { generateSpeech, isLoading: ttsLoading } = useTextToSpeech();
 
@@ -140,6 +144,31 @@ export default function EnhancedCoursePage() {
   const totalLessons = course.course_modules?.reduce((total, module) => 
     total + (module.course_lessons?.length || 0), 0
   ) || 0;
+
+  const isEnrolled = enrollments?.some(enrollment => 
+    enrollment.courses.id === courseId
+  ) || false;
+
+  const handleEnroll = async () => {
+    if (!user) {
+      toast.error('Please sign in to enroll in this course');
+      return;
+    }
+
+    if (!courseId) {
+      toast.error('Course not found');
+      return;
+    }
+
+    try {
+      await enrollMutation.mutateAsync({
+        courseId: courseId,
+        userId: user.id
+      });
+    } catch (error: any) {
+      console.error('Enrollment error:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -325,10 +354,24 @@ export default function EnhancedCoursePage() {
                       </div>
                     </div>
                     <Separator />
-                    <Button className="w-full" size="lg">
-                      <Play className="h-4 w-4 mr-2" />
-                      Start Learning
-                    </Button>
+                    {isEnrolled ? (
+                      <Button className="w-full" size="lg" asChild>
+                        <Link to={`/learning/courses/${courseId}/player`}>
+                          <Play className="h-4 w-4 mr-2" />
+                          Continue Learning
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="w-full" 
+                        size="lg" 
+                        onClick={handleEnroll}
+                        disabled={enrollMutation.isPending}
+                      >
+                        <Award className="h-4 w-4 mr-2" />
+                        {enrollMutation.isPending ? 'Enrolling...' : 'Enroll Now'}
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
 
