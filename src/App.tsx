@@ -112,6 +112,8 @@ import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntell
 import { turboCore } from "@/utils/turboCore";
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
+import CourseDetail from "./pages/learning/CourseDetail";
+import CoursePlayer from "./pages/learning/CoursePlayer";
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 
 // Create query client optimized for performance and SEO
