@@ -33,9 +33,9 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
   if (isLoading || !displayProfile) {
     return (
-      <Card className="w-full max-w-sm mx-auto h-[700px] bg-gradient-to-br from-slate-900 to-slate-800 animate-pulse rounded-3xl">
+      <Card className="w-full max-w-sm mx-auto h-[700px] bg-[#1e293b] border-none rounded-3xl animate-pulse">
         <div className="h-full flex items-center justify-center">
-          <div className="text-slate-400">Loading...</div>
+          <div className="text-white">Loading...</div>
         </div>
       </Card>
     );
@@ -116,7 +116,7 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-white text-sm font-normal mb-1">CAREER</span>
+                <span className="text-cyan-400 text-sm font-normal mb-1">CAREER</span>
                 <span className="text-white text-3xl font-bold">{Math.round(careerReadiness)}%</span>
                 <span className="text-cyan-400 text-sm font-normal mt-1">READY</span>
               </div>
@@ -136,15 +136,15 @@ export function CareerPassportCard({ userProfile, isOwner = true, publicPassport
 
         {/* Profile Info */}
         <div className="mb-8">
-          <h3 className="text-3xl font-bold text-white mb-2">
+          <h3 className="text-white text-3xl font-bold mb-2">
             {displayProfile.full_name || 'Your Name'}
           </h3>
           <p className="text-white text-lg mb-4">
             {displayProfile.headline || displayProfile.title || 'Your Professional Title'}
           </p>
           <div className="flex items-center text-white">
-            <MapPin className="w-5 h-5 mr-2" />
-            <span className="text-lg">{displayProfile.location || 'Your Location'}</span>
+            <MapPin className="w-5 h-5 mr-2 text-white" />
+            <span className="text-lg text-white">{displayProfile.location || 'Your Location'}</span>
           </div>
         </div>
 
