@@ -10,11 +10,17 @@ import { Lock, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Tools = () => {
+  console.log('🎯 Tools component mounted');
+  
   const navigate = useNavigate();
   const { user } = useAuth();
+  
+  console.log('👤 User in Tools:', user?.id);
+  
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
   // Use real tools data
+  console.log('🔧 About to call useRealToolsData...');
   const { 
     toolsByCategory, 
     userStats, 
@@ -22,11 +28,13 @@ const Tools = () => {
     userTXCBalance,
     isLoading 
   } = useRealToolsData();
-
-  // Debug logging
-  console.log('Tools page - isLoading:', isLoading);
-  console.log('Tools page - toolsByCategory:', toolsByCategory);
-  console.log('Tools page - userStats:', userStats);
+  
+  console.log('📊 useRealToolsData results:');
+  console.log('- isLoading:', isLoading);
+  console.log('- toolsByCategory:', toolsByCategory);
+  console.log('- userStats:', userStats);
+  console.log('- userName:', userName);
+  console.log('- userTXCBalance:', userTXCBalance);
 
   useEffect(() => {
     updateMetaTags({

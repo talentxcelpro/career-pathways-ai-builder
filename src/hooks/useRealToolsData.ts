@@ -35,8 +35,13 @@ interface UserStats {
 }
 
 export const useRealToolsData = () => {
+  console.log('🚀 useRealToolsData hook called');
+  
   const { user } = useAuth();
   const { balance } = useTokenBalance();
+  
+  console.log('👤 User in hook:', user?.id);
+  console.log('💰 Balance in hook:', balance);
 
   // Fetch tools from database
   const { data: tools = [], isLoading: toolsLoading, error: toolsError } = useQuery({
@@ -154,7 +159,7 @@ export const useRealToolsData = () => {
       totalTools: tools.length,
       completedTools: uniqueCompletedTools,
       currentStreak: profile?.current_streak || 0,
-      totalTXC: balance.total || 0,
+      totalTXC: balance?.total || 0,
       userLevel,
       nextLevelProgress
     };
@@ -180,7 +185,7 @@ export const useRealToolsData = () => {
     toolsByCategory,
     userStats,
     userName: profile?.full_name || 'there',
-    userTXCBalance: balance.total || 0,
+    userTXCBalance: balance?.total || 0,
     isLoading,
     
     // Helper functions
