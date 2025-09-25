@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLearningData } from '@/hooks/useLearningData';
+import { useLearningProgress } from '@/hooks/useLearningProgress';
 import { updateMetaTags } from '@/utils/metaTags';
+import { toast } from 'sonner';
 import {
   ArrowLeft,
   Clock,
@@ -23,8 +25,12 @@ import {
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { courses, isLoading } = useLearningData();
+  const { addCourse, isAdding, progress } = useLearningProgress();
   
   const course = courses.find(c => c.id === id);
+  
+  // Check if user is already enrolled
+  const isEnrolled = progress.some(p => p.course_id === id);
 
   React.useEffect(() => {
     if (course) {
@@ -91,6 +97,28 @@ const CourseDetail = () => {
   };
 
   const difficultyConfig = getDifficultyConfig(course.level || course.difficulty_level);
+
+  const handleEnrollment = async () => {
+    if (!course || isEnrolled) return;
+    
+    try {
+      await addCourse({
+        course_id: course.id,
+        course_title: course.title,
+        course_provider: course.instructor_name || 'TalentXcel',
+        total_lessons: course.duration_hours || 10,
+        skill_tags: course.skills_taught || []
+      });
+      
+      // Navigate to course player after successful enrollment
+      setTimeout(() => {
+        window.location.href = `/learning/courses/${course.id}/player`;
+      }, 1500);
+    } catch (error) {
+      console.error('Enrollment failed:', error);
+      toast.error('Failed to enroll in course. Please try again.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -212,10 +240,24 @@ const CourseDetail = () => {
                   )}
                 </div>
                 
-                <Button className="w-full" size="lg">
-                  <PlayCircle className="h-5 w-5 mr-2" />
-                  Enroll Now
-                </Button>
+                {isEnrolled ? (
+                  <Button className="w-full" size="lg" variant="outline" asChild>
+                    <Link to={`/learning/courses/${course.id}/player`}>
+                      <PlayCircle className="h-5 w-5 mr-2" />
+                      Continue Learning
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    onClick={handleEnrollment}
+                    disabled={isAdding}
+                  >
+                    <PlayCircle className="h-5 w-5 mr-2" />
+                    {isAdding ? 'Enrolling...' : 'Enroll Now'}
+                  </Button>
+                )}
                 
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
