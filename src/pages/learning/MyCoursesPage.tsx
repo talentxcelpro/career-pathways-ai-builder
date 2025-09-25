@@ -4,59 +4,54 @@ import { LearningProgress } from '@/components/learning/LearningProgress';
 import { MyLearningCard } from '@/components/learning/MyLearningCard';
 import { EmptyMyLearning } from '@/components/learning/EmptyMyLearning';
 import { updateMetaTags } from '@/utils/metaTags';
+import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Trophy, Clock, Target } from 'lucide-react';
 
 const MyCoursesPage = () => {
-  // Mock user courses data - in real app, this would come from API
-  const [userCourses] = useState([
-    {
-      id: '1',
-      course_id: 'course_1',
-      progress_percentage: 75,
-      enrolled_at: '2024-01-15',
-      courses: {
-        title: 'React Advanced Patterns',
-        duration_hours: 20,
-        skills_taught: ['React', 'TypeScript', 'State Management'],
-        thumbnail_url: '/placeholder-course.jpg'
-      }
-    },
-    {
-      id: '2',
-      course_id: 'course_2',
-      progress_percentage: 100,
-      enrolled_at: '2024-01-01',
-      completed_at: '2024-01-30',
-      courses: {
-        title: 'JavaScript Fundamentals',
-        duration_hours: 15,
-        skills_taught: ['JavaScript', 'ES6', 'DOM Manipulation'],
-        thumbnail_url: '/placeholder-course.jpg'
-      }
-    },
-    {
-      id: '3',
-      course_id: 'course_3',
-      progress_percentage: 30,
-      enrolled_at: '2024-02-01',
-      courses: {
-        title: 'Node.js Backend Development',
-        duration_hours: 25,
-        skills_taught: ['Node.js', 'Express', 'MongoDB'],
-        thumbnail_url: '/placeholder-course.jpg'
-      }
-    }
-  ]);
+  const [userCourses, setUserCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
     updateMetaTags({
       title: 'My Courses | TalentXcel Learning',
       description: 'Track your learning progress, continue courses, and view your achievements.'
     });
+    
+    fetchUserCourses();
   }, []);
+
+  const fetchUserCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('course_enrollments')
+        .select(`
+          *,
+          courses(
+            id,
+            title,
+            duration_hours,
+            skills_taught,
+            thumbnail_url,
+            instructor_name,
+            difficulty_level,
+            category
+          )
+        `)
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .order('enrolled_at', { ascending: false });
+
+      if (error) throw error;
+      setUserCourses(data || []);
+    } catch (error) {
+      console.error('Error fetching user courses:', error);
+      setUserCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const completedCourses = userCourses.filter(uc => uc.progress_percentage === 100);
   const inProgressCourses = userCourses.filter(uc => uc.progress_percentage > 0 && uc.progress_percentage < 100);
@@ -88,6 +83,22 @@ const MyCoursesPage = () => {
       color: 'text-purple-600'
     }
   ];
+
+  if (loading) {
+    return (
+      <LearningPageLayout heroTitle="My Learning" heroDescription="Track your progress and continue your learning journey">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-gradient-card backdrop-blur-apple rounded-lg p-6 h-24" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </LearningPageLayout>
+    );
+  }
 
   if (userCourses.length === 0) {
     return (

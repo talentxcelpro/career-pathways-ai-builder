@@ -27,7 +27,7 @@ export function useCurrentUserProfile(): UseCurrentUserProfile {
         // Try to fetch profile details; tolerate missing columns
         const { data: profile } = await supabase
           .from('profiles')
-          .select('full_name, username, headline, current_streak, streak')
+          .select('full_name, username, headline, current_streak')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -44,7 +44,7 @@ export function useCurrentUserProfile(): UseCurrentUserProfile {
             (user?.user_metadata?.name as string | undefined)) ||
           emailName;
 
-        const streak = (profile?.current_streak ?? profile?.streak ?? Number(localStorage.getItem('tx_streak_days')) ?? 7) as number;
+        const streak = (profile?.current_streak ?? Number(localStorage.getItem('tx_streak_days')) ?? 7) as number;
 
         if (isMounted) {
           setDisplayName(name);

@@ -2,118 +2,147 @@ import React from 'react';
 import { MicrolearningHub } from '@/components/learning/microlearning/MicrolearningHub';
 import { LearningPageLayout } from '@/components/learning/LearningPageLayout';
 import { updateMetaTags } from '@/utils/metaTags';
+import { supabase } from '@/integrations/supabase/client';
 
 const QuickLearningPage = () => {
+  const [microlearningData, setMicrolearningData] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
   React.useEffect(() => {
     updateMetaTags({
       title: 'Quick Learning | TalentXcel Learning',
       description: 'Bite-sized lessons, quizzes, and flashcards for learning on the go. Master skills in minutes, not hours.'
     });
+    
+    fetchMicrolearningData();
   }, []);
 
-  // Mock microlearning data
-  const mockMicrolearning = {
-    quickLessons: [
-      {
-        id: '1',
-        title: 'Arrow Functions in 5 Minutes',
-        description: 'Quick refresher on ES6 arrow functions',
-        duration: 5,
-        difficulty: 'easy' as const,
-        category: 'JavaScript',
-        completed: true,
-        xpReward: 50
-      },
-      {
-        id: '2',
-        title: 'CSS Flexbox Basics',
-        description: 'Master flexbox layout in minutes',
-        duration: 8,
-        difficulty: 'medium' as const,
-        category: 'CSS',
-        completed: false,
-        xpReward: 75
-      },
-      {
-        id: '3',
-        title: 'React Hooks Quick Guide',
-        description: 'Essential React hooks explained quickly',
-        duration: 12,
-        difficulty: 'medium' as const,
-        category: 'React',
-        completed: false,
-        xpReward: 100
-      },
-      {
-        id: '4',
-        title: 'Git Commands Cheat Sheet',
-        description: 'Most used Git commands in 10 minutes',
-        duration: 10,
-        difficulty: 'easy' as const,
-        category: 'Git',
-        completed: true,
-        xpReward: 60
-      }
-    ],
-    quizzes: [
-      {
-        id: '1',
-        title: 'React Hooks Quiz',
-        questions: 10,
-        timeLimit: 15,
-        category: 'React',
-        difficulty: 'medium' as const,
-        highScore: 85,
-        attempts: 3
-      },
-      {
-        id: '2',
-        title: 'JavaScript ES6 Quiz',
-        questions: 15,
-        timeLimit: 20,
-        category: 'JavaScript',
-        difficulty: 'medium' as const,
-        highScore: 92,
-        attempts: 2
-      },
-      {
-        id: '3',
-        title: 'CSS Grid vs Flexbox',
-        questions: 8,
-        timeLimit: 12,
-        category: 'CSS',
-        difficulty: 'easy' as const,
-        highScore: null,
-        attempts: 0
-      }
-    ],
-    flashcards: [
-      {
-        id: '1',
-        topic: 'JavaScript Keywords',
-        cardCount: 25,
-        category: 'JavaScript',
-        reviewSchedule: 'due' as const,
-        nextReview: new Date()
-      },
-      {
-        id: '2',
-        topic: 'React Component Lifecycle',
-        cardCount: 18,
-        category: 'React',
-        reviewSchedule: 'upcoming' as const,
-        nextReview: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
-      },
-      {
-        id: '3',
-        topic: 'CSS Properties',
-        cardCount: 30,
-        category: 'CSS',
-        reviewSchedule: 'completed' as const,
-        nextReview: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      }
-    ]
+  const fetchMicrolearningData = async () => {
+    try {
+      // Fetch quick lessons from courses with short duration
+      const { data: quickLessons, error: lessonsError } = await supabase
+        .from('courses')
+        .select('id, title, description, duration_hours, difficulty_level, category, skills_taught, rating')
+        .lte('duration_hours', 2)
+        .eq('published', true)
+        .order('rating', { ascending: false })
+        .limit(8);
+
+      if (lessonsError) throw lessonsError;
+
+      // Fetch skill assessments for quizzes
+      const { data: skillAssessments, error: assessmentsError } = await supabase
+        .from('skill_assessments')
+        .select('*')
+        .limit(6);
+
+      // For flashcards, we'll use skills data
+      const { data: skills, error: skillsError } = await supabase
+        .from('skills')
+        .select('*')
+        .limit(6);
+
+      const transformedData = {
+        quickLessons: (quickLessons || []).map(lesson => ({
+          id: lesson.id,
+          title: lesson.title,
+          description: lesson.description || `Quick lesson on ${lesson.title}`,
+          duration: lesson.duration_hours * 60, // Convert to minutes
+          difficulty: lesson.difficulty_level,
+          category: lesson.category,
+          completed: false,
+          xpReward: Math.floor(lesson.duration_hours * 25) // XP based on duration
+        })),
+        quizzes: (skillAssessments || []).length > 0 ? (skillAssessments || []).map(assessment => ({
+          id: assessment.id,
+          title: `${assessment.skill_name || 'Skill'} Assessment`,
+          questions: 10,
+          timeLimit: 15,
+          category: assessment.category || 'General',
+          difficulty: assessment.difficulty_level || 'medium',
+          highScore: null,
+          attempts: 0
+        })) : [
+          {
+            id: '1',
+            title: 'React Fundamentals Quiz',
+            questions: 10,
+            timeLimit: 15,
+            category: 'React',
+            difficulty: 'medium',
+            highScore: null,
+            attempts: 0
+          },
+          {
+            id: '2',
+            title: 'JavaScript ES6 Quiz',
+            questions: 15,
+            timeLimit: 20,
+            category: 'JavaScript',
+            difficulty: 'medium',
+            highScore: null,
+            attempts: 0
+          }
+        ],
+        flashcards: (skills || []).length > 0 ? (skills || []).slice(0, 3).map(skill => ({
+          id: skill.id,
+          topic: skill.name || 'Programming Concepts',
+          cardCount: 25,
+          category: skill.category || 'Technology',
+          reviewSchedule: 'due',
+          nextReview: new Date()
+        })) : [
+          {
+            id: '1',
+            topic: 'JavaScript Keywords',
+            cardCount: 25,
+            category: 'JavaScript',
+            reviewSchedule: 'due',
+            nextReview: new Date()
+          },
+          {
+            id: '2',
+            topic: 'React Component Lifecycle',
+            cardCount: 18,
+            category: 'React',
+            reviewSchedule: 'upcoming',
+            nextReview: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+          }
+        ]
+      };
+
+      setMicrolearningData(transformedData);
+    } catch (error) {
+      console.error('Error fetching microlearning data:', error);
+      // Fallback to minimal data if fetch fails
+      setMicrolearningData({
+        quickLessons: [],
+        quizzes: [],
+        flashcards: []
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <LearningPageLayout 
+        heroTitle="Quick Learning" 
+        heroDescription="Bite-sized lessons, quizzes, and flashcards for learning on the go"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-gradient-card backdrop-blur-apple rounded-lg p-6 h-32" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </LearningPageLayout>
+    );
+  }
 
   return (
     <LearningPageLayout 
@@ -121,7 +150,7 @@ const QuickLearningPage = () => {
       heroDescription="Bite-sized lessons, quizzes, and flashcards for learning on the go"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <MicrolearningHub {...mockMicrolearning} />
+        {microlearningData && <MicrolearningHub {...microlearningData} />}
       </div>
     </LearningPageLayout>
   );
