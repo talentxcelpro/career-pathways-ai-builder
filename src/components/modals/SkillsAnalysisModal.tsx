@@ -11,7 +11,6 @@ import { useQuery } from '@tanstack/react-query';
 interface SkillsAnalysisModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAnalysisComplete?: () => void;
 }
 
 interface SkillAnalysis {
@@ -34,7 +33,6 @@ interface AnalysisInsight {
 export const SkillsAnalysisModal: React.FC<SkillsAnalysisModalProps> = ({
   open,
   onOpenChange,
-  onAnalysisComplete
 }) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<SkillAnalysis[]>([]);
@@ -124,7 +122,6 @@ export const SkillsAnalysisModal: React.FC<SkillsAnalysisModalProps> = ({
     setAnalysis(mockAnalysis);
     setInsights(mockInsights);
     setAnalyzing(false);
-    onAnalysisComplete?.();
   };
 
   useEffect(() => {
