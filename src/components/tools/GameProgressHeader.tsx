@@ -1,170 +1,194 @@
 import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Target, Clock, Zap, Crown, Star } from 'lucide-react';
+import { 
+  Trophy, 
+  Star, 
+  Target, 
+  Coins, 
+  Zap, 
+  Activity,
+  Crown,
+  Flame,
+  ChevronRight
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GameProgressHeaderProps {
-  userName?: string;
-  totalTools: number;
-  completedTools: number;
-  currentStreak: number;
-  totalTXC: number;
-  userLevel: number;
-  nextLevelProgress: number;
+  userStats: {
+    totalTools: number;
+    completedTools: number;
+    currentStreak: number;
+    totalTXC: number;
+    userLevel: number;
+    nextLevelProgress: number;
+  };
+  userName: string;
+  currentPage: number;
+  totalPages: number;
+  unlockedToolsCount: number;
 }
 
 export const GameProgressHeader: React.FC<GameProgressHeaderProps> = ({
-  userName = 'there',
-  totalTools,
-  completedTools,
-  currentStreak,
-  totalTXC,
-  userLevel,
-  nextLevelProgress
+  userStats,
+  userName,
+  currentPage,
+  totalPages,
+  unlockedToolsCount
 }) => {
-  const progressPercentage = (completedTools / totalTools) * 100;
+  const { 
+    totalTools, 
+    completedTools, 
+    currentStreak, 
+    totalTXC, 
+    userLevel, 
+    nextLevelProgress 
+  } = userStats;
+
+  const completionRate = totalTools > 0 ? (completedTools / totalTools) * 100 : 0;
+  const xpToNextLevel = 1000 - (nextLevelProgress * 10); // Simplified calculation
 
   const getLevelBadge = (level: number) => {
-    if (level >= 10) return { icon: Crown, color: 'bg-yellow-500', title: 'Master' };
-    if (level >= 7) return { icon: Trophy, color: 'bg-purple-500', title: 'Expert' };
-    if (level >= 4) return { icon: Star, color: 'bg-blue-500', title: 'Pro' };
-    return { icon: Target, color: 'bg-green-500', title: 'Explorer' };
+    if (level >= 10) return { icon: Crown, color: 'bg-purple-500/10 text-purple-700 border-purple-500/20', title: 'Master' };
+    if (level >= 5) return { icon: Star, color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20', title: 'Expert' };
+    if (level >= 2) return { icon: Target, color: 'bg-blue-500/10 text-blue-700 border-blue-500/20', title: 'Advanced' };
+    return { icon: Zap, color: 'bg-green-500/10 text-green-700 border-green-500/20', title: 'Beginner' };
   };
 
   const levelBadge = getLevelBadge(userLevel);
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-accent/5 to-accent/10" />
-      
-      <div className="relative p-8 rounded-3xl backdrop-blur-xl border border-border/50 bg-card/80">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Welcome back, {userName}! 🚀
-            </h1>
-            <p className="text-muted-foreground">
-              Ready to level up your career with AI-powered tools?
-            </p>
-          </div>
-          
-          {/* Level Badge */}
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-full text-white font-medium shadow-lg",
-              levelBadge.color
-            )}>
-              <levelBadge.icon className="w-5 h-5" />
-              <span>Level {userLevel}</span>
-              <span className="text-xs opacity-90">{levelBadge.title}</span>
-            </div>
-          </div>
-        </div>
+    <div className="mb-8 space-y-6">
+      {/* Welcome Section */}
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          Welcome back, {userName}
+        </h1>
+        <p className="text-muted-foreground">
+          Continue your journey to career mastery
+        </p>
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-4 border border-primary/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-primary/20 rounded-lg">
-                <Target className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{completedTools}</div>
-                <div className="text-xs text-muted-foreground">Tools Completed</div>
-              </div>
-            </div>
-            <Progress value={progressPercentage} className="h-2" />
-            <div className="text-xs text-muted-foreground mt-1">
-              {completedTools} of {totalTools}
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-2xl p-4 border border-success/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-success/20 rounded-lg">
-                <Zap className="w-5 h-5 text-success" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{currentStreak}</div>
-                <div className="text-xs text-muted-foreground">Day Streak</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              {Array.from({ length: 7 }, (_, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "w-1.5 h-4 rounded-full",
-                    i < currentStreak ? "bg-success" : "bg-muted"
-                  )}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-warning/10 to-warning/5 rounded-2xl p-4 border border-warning/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-warning/20 rounded-lg">
-                <Trophy className="w-5 h-5 text-warning" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{totalTXC}</div>
-                <div className="text-xs text-muted-foreground">TXC Earned</div>
-              </div>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              Lifetime Total
-            </Badge>
-          </div>
-
-          <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-4 border border-accent/20">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-accent/20 rounded-lg">
-                <Clock className="w-5 h-5 text-accent" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-foreground">{userLevel}</div>
-                <div className="text-xs text-muted-foreground">Current Level</div>
-              </div>
-            </div>
-            <Progress value={nextLevelProgress} className="h-2" />
-            <div className="text-xs text-muted-foreground mt-1">
-              {nextLevelProgress}% to next level
-            </div>
-          </div>
-        </div>
-
-        {/* Achievement Notifications */}
-        {currentStreak >= 7 && (
-          <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-2xl p-4 border border-success/20 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-success/20 rounded-lg">
-                <Trophy className="w-6 h-6 text-success" />
-              </div>
-              <div>
-                <div className="font-semibold text-success">Week Warrior!</div>
-                <div className="text-sm text-muted-foreground">
-                  You've maintained a 7-day streak. Bonus TXC earned!
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Level Progress */}
+        <Card className="relative overflow-hidden border-border/50 bg-gradient-to-br from-primary/5 to-transparent">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <levelBadge.icon className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Level {userLevel}</p>
+                  <p className="text-xs text-muted-foreground">{levelBadge.title}</p>
                 </div>
               </div>
+              <Badge className={cn("border text-xs", levelBadge.color)}>
+                {xpToNextLevel} XP to next
+              </Badge>
+            </div>
+            <Progress value={nextLevelProgress} className="h-2" />
+          </CardContent>
+        </Card>
+
+        {/* Tools Completion */}
+        <Card className="relative overflow-hidden border-border/50 bg-gradient-to-br from-green-500/5 to-transparent">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-green-500/10">
+                <Trophy className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <p className="text-lg font-bold">{completedTools}/{unlockedToolsCount}</p>
+                <p className="text-xs text-muted-foreground">Tools Mastered</p>
+              </div>
+            </div>
+            <div className="mt-2">
+              <Progress value={completionRate} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-1">
+                {Math.round(completionRate)}% completion rate
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Current Streak */}
+        <Card className="relative overflow-hidden border-border/50 bg-gradient-to-br from-orange-500/5 to-transparent">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-orange-500/10">
+                <Flame className="w-4 h-4 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-lg font-bold">{currentStreak}</p>
+                <p className="text-xs text-muted-foreground">Day Streak</p>
+              </div>
+            </div>
+            <div className="mt-2">
+              <Badge variant="outline" className="text-xs">
+                Keep it going! 🔥
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* TXC Balance */}
+        <Card className="relative overflow-hidden border-border/50 bg-gradient-to-br from-yellow-500/5 to-transparent">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-yellow-500/10">
+                <Coins className="w-4 h-4 text-yellow-600" />
+              </div>
+              <div>
+                <p className="text-lg font-bold">{totalTXC.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">TXC Balance</p>
+              </div>
+            </div>
+            <div className="mt-2">
+              <Button variant="outline" size="sm" className="text-xs h-6">
+                Earn More <ChevronRight className="w-3 h-3 ml-1" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Page Indicator */}
+      <Card className="border-border/50 bg-gradient-to-r from-accent/10 to-primary/5">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-5 h-5 text-primary" />
+                <span className="font-semibold">Tools Collection</span>
+              </div>
+              <Badge variant="outline">
+                Page {currentPage} of {totalPages}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Badge className="bg-green-500/10 text-green-700 border-green-500/20">
+                {unlockedToolsCount} Unlocked
+              </Badge>
+              <Badge className="bg-yellow-500/10 text-yellow-700 border-yellow-500/20">
+                {totalTools - unlockedToolsCount} Locked
+              </Badge>
             </div>
           </div>
-        )}
-
-        {/* Quick Actions */}
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            Complete 3 tools on any page to unlock the next one
-          </div>
-          <Badge variant="secondary" className="animate-pulse">
-            {Math.round(progressPercentage)}% Complete
-          </Badge>
-        </div>
-      </div>
+          
+          {currentPage > 1 && (
+            <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/10">
+              <p className="text-sm text-primary font-medium">
+                🎉 Great progress! You've unlocked page {currentPage}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

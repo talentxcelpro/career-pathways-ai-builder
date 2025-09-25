@@ -95,9 +95,32 @@ const Tools = () => {
     });
   }, []);
 
+  // Gaming logic: Calculate unlocked tools based on progression
+  const unlockedToolsCount = useMemo(() => {
+    const baseUnlocked = 3; // First 3 tools are always unlocked
+    const completedCount = tools.filter(tool => tool.isCompleted).length;
+    
+    // Unlock 3 more tools for every 3 completed
+    const progressUnlocked = Math.floor(completedCount / 3) * 3;
+    
+    return Math.min(baseUnlocked + progressUnlocked, tools.length);
+  }, [tools]);
+
+  // Apply gaming locks to tools
+  const gameAwareTools = useMemo(() => {
+    return tools.map((tool, index) => ({
+      ...tool,
+      isLocked: index >= unlockedToolsCount,
+      txc_cost: index >= unlockedToolsCount ? UNLOCK_COSTS.individual : 0,
+      unlockRequirement: index >= unlockedToolsCount 
+        ? `Complete ${Math.ceil((index + 1 - 3) / 3) * 3 - tools.filter(t => t.isCompleted).length} more tools`
+        : undefined
+    }));
+  }, [tools, unlockedToolsCount]);
+
   // Filter tools based on search and category
   const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
+    return gameAwareTools.filter(tool => {
       const matchesSearch = !searchQuery || 
         tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tool.description.toLowerCase().includes(searchQuery.toLowerCase());

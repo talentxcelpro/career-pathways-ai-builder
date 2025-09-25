@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,254 +8,258 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Coins, Crown, Lock, Star, Zap, Trophy, Target, Users } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { TXCFeaturePurchase } from '@/components/txc/TXCFeaturePurchase';
+import { 
+  Lock, 
+  Unlock, 
+  Coins, 
+  Star, 
+  Crown, 
+  Zap, 
+  CheckCircle2,
+  Target,
+  Trophy,
+  Gift,
+  Sparkles
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ToolUnlockModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   tool: {
     id: string;
     name: string;
     description: string;
+    category: string;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    estimatedTime: string;
+    txc_cost: number;
     icon: React.ComponentType<any>;
-    txc_cost?: number;
-    required_completions?: number;
-    is_premium: boolean;
-    unlock_level?: number;
-    difficulty?: string;
-    estimated_time?: string;
+    unlockRequirement?: string;
   } | null;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onUnlockSuccess: () => void;
   userTXCBalance: number;
-  completedToolsCount: number;
-  userLevel: number;
-  onUnlockWithTXC: () => void;
-  onViewRequirements: () => void;
+  canUnlockWithProgress?: boolean;
+  completedRequiredTools?: number;
+  requiredToolsCount?: number;
 }
 
 export const ToolUnlockModal: React.FC<ToolUnlockModalProps> = ({
-  isOpen,
-  onClose,
   tool,
+  isOpen,
+  onOpenChange,
+  onUnlockSuccess,
   userTXCBalance,
-  completedToolsCount,
-  userLevel,
-  onUnlockWithTXC,
-  onViewRequirements
+  canUnlockWithProgress = false,
+  completedRequiredTools = 0,
+  requiredToolsCount = 3
 }) => {
+  const [unlockMode, setUnlockMode] = useState<'txc' | 'progress'>('txc');
+
   if (!tool) return null;
 
-  const canAffordTXC = tool.txc_cost ? userTXCBalance >= tool.txc_cost : false;
-  const meetsRequirements = tool.required_completions ? completedToolsCount >= tool.required_completions : true;
   const IconComponent = tool.icon;
-  
-  const progressToNext = tool.required_completions ? (completedToolsCount / tool.required_completions) * 100 : 100;
-  const remainingTools = tool.required_completions ? Math.max(0, tool.required_completions - completedToolsCount) : 0;
 
-  const getLevelColor = (level: number) => {
-    switch (level) {
-      case 1: return "from-emerald-500 to-green-600";
-      case 2: return "from-blue-500 to-cyan-600";
-      case 3: return "from-purple-500 to-violet-600";
-      case 4: return "from-amber-500 to-orange-600";
-      default: return "from-slate-500 to-gray-600";
+  const getDifficultyBadge = (difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner': return { color: 'bg-green-500/10 text-green-700 border-green-500/20', icon: Zap };
+      case 'intermediate': return { color: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20', icon: Star };
+      case 'advanced': return { color: 'bg-red-500/10 text-red-700 border-red-500/20', icon: Crown };
+      default: return { color: 'bg-gray-500/10 text-gray-700 border-gray-500/20', icon: Star };
     }
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-background/95 to-muted/50 border-border/50 backdrop-blur-xl">
-        <DialogHeader className="text-center space-y-4">
-          {/* Tool Icon and Badge */}
-          <div className="flex items-center justify-center relative">
-            <div className={cn(
-              "p-6 rounded-3xl backdrop-blur-md border-2",
-              "bg-gradient-to-br from-primary/10 to-primary/20",
-              "border-primary/20 shadow-2xl"
-            )}>
-              <IconComponent className="w-16 h-16 text-primary" />
-            </div>
-            {tool.is_premium && (
-              <div className="absolute -top-2 -right-2">
-                <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 py-1 text-xs font-bold">
-                  <Crown className="w-3 h-3 mr-1" />
-                  PREMIUM
-                </Badge>
-              </div>
-            )}
-          </div>
+  const difficultyBadge = getDifficultyBadge(tool.difficulty);
 
-          <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            {tool.name}
+  const progressPercentage = (completedRequiredTools / requiredToolsCount) * 100;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Lock className="w-5 h-5 text-primary" />
+            </div>
+            Unlock Tool
           </DialogTitle>
-          
-          <DialogDescription className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            {tool.description}
+          <DialogDescription>
+            Choose how you'd like to unlock this premium tool
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-8 mt-8">
-          {/* Level and Progress Section */}
-          <div className="bg-gradient-to-r from-muted/30 to-muted/50 rounded-3xl p-6 border border-border/50">
-            <div className="flex items-center gap-4 mb-4">
-              <div className={cn(
-                "p-3 rounded-2xl bg-gradient-to-r text-white font-bold text-sm",
-                getLevelColor(tool.unlock_level || 1)
-              )}>
-                <Trophy className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">Level {tool.unlock_level || 1} Tool</h3>
-                <p className="text-sm text-muted-foreground">
-                  {tool.difficulty} • {tool.estimated_time}
-                </p>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            {tool.required_completions && tool.required_completions > 0 && (
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Unlock Progress</span>
-                  <span className="font-medium">{completedToolsCount}/{tool.required_completions} tools</span>
+        <div className="space-y-6">
+          {/* Tool Preview */}
+          <Card className="border-border/50">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-primary/10">
+                  <IconComponent className="w-6 h-6 text-primary" />
                 </div>
-                <Progress 
-                  value={progressToNext} 
-                  className="h-3 bg-muted"
-                />
-                {remainingTools > 0 && (
-                  <p className="text-sm text-center text-muted-foreground">
-                    Complete {remainingTools} more tool{remainingTools > 1 ? 's' : ''} to unlock
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-lg">{tool.name}</h3>
+                    <Badge className={cn("border", difficultyBadge.color)}>
+                      <difficultyBadge.icon className="w-3 h-3 mr-1" />
+                      {tool.difficulty}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {tool.description}
                   </p>
-                )}
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span>⏱️ {tool.estimatedTime}</span>
+                    <Badge variant="outline" className="text-xs">{tool.category}</Badge>
+                  </div>
+                </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Unlock Options */}
+          <div className="space-y-3">
+            {/* TXC Unlock */}
+            <Card className={cn(
+              "cursor-pointer transition-all duration-200 border-2",
+              unlockMode === 'txc' 
+                ? "border-primary bg-primary/5" 
+                : "border-border/50 hover:border-primary/50"
+            )}>
+              <CardContent className="p-4" onClick={() => setUnlockMode('txc')}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-yellow-500/10">
+                      <Coins className="w-4 h-4 text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Instant Unlock</p>
+                      <p className="text-sm text-muted-foreground">Use TXC tokens</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-lg">{tool.txc_cost}</p>
+                    <p className="text-xs text-muted-foreground">TXC</p>
+                  </div>
+                </div>
+                
+                {userTXCBalance < tool.txc_cost && (
+                  <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-xs text-red-600">
+                      Insufficient balance. You need {tool.txc_cost - userTXCBalance} more TXC.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Progress Unlock */}
+            {canUnlockWithProgress && (
+              <Card className={cn(
+                "cursor-pointer transition-all duration-200 border-2",
+                unlockMode === 'progress' 
+                  ? "border-green-500 bg-green-500/5" 
+                  : "border-border/50 hover:border-green-500/50"
+              )}>
+                <CardContent className="p-4" onClick={() => setUnlockMode('progress')}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-green-500/10">
+                        <Target className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Progress Unlock</p>
+                        <p className="text-sm text-muted-foreground">Complete previous tools</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-lg">{completedRequiredTools}/{requiredToolsCount}</p>
+                      <p className="text-xs text-muted-foreground">completed</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${progressPercentage}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {progressPercentage === 100 
+                        ? "✅ Ready to unlock!" 
+                        : `Complete ${requiredToolsCount - completedRequiredTools} more tools`
+                      }
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
 
-          {/* Unlock Requirements */}
-          <div className="bg-muted/30 rounded-3xl p-6 border border-border/50">
-            <div className="flex items-center gap-3 mb-6">
-              <Lock className="w-6 h-6 text-muted-foreground" />
-              <span className="font-bold text-xl">Unlock Options</span>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
             
-            <div className="grid gap-4">
-              {/* TXC Option */}
-              {tool.txc_cost && tool.txc_cost > 0 && (
-                <div className={cn(
-                  "p-4 rounded-2xl border-2 transition-all duration-300",
-                  canAffordTXC 
-                    ? "border-primary/50 bg-primary/5 hover:border-primary" 
-                    : "border-destructive/30 bg-destructive/5"
-                )}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "p-2 rounded-xl",
-                        canAffordTXC ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                      )}>
-                        <Coins className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-medium">Instant Unlock</div>
-                        <div className="text-sm text-muted-foreground">
-                          Pay {tool.txc_cost} TXC tokens
-                        </div>
-                      </div>
-                    </div>
-                    <Badge variant={canAffordTXC ? "default" : "destructive"}>
-                      {tool.txc_cost} TXC
-                    </Badge>
-                  </div>
-                  
-                  <Button
-                    onClick={onUnlockWithTXC}
-                    disabled={!canAffordTXC}
-                    className={cn(
-                      "w-full mt-4 h-12 font-semibold",
-                      canAffordTXC 
-                        ? "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70" 
-                        : "opacity-50"
-                    )}
-                  >
-                    <Coins className="w-5 h-5 mr-2" />
-                    {canAffordTXC ? "Unlock with TXC" : "Insufficient TXC"}
-                  </Button>
-                </div>
-              )}
-
-              {/* Progress Option */}
-              <div className="p-4 rounded-2xl border-2 border-accent/30 bg-accent/5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-accent text-accent-foreground">
-                      <Target className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="font-medium">Earn Through Progress</div>
-                      <div className="text-sm text-muted-foreground">
-                        Complete tools to unlock naturally
-                      </div>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="border-accent text-accent">
-                    FREE
-                  </Badge>
-                </div>
-                
-                <Button
-                  variant="outline"
-                  onClick={onViewRequirements}
-                  className="w-full h-12 border-accent hover:bg-accent/10"
-                >
-                  <Star className="w-5 h-5 mr-2" />
-                  View Requirements
-                </Button>
-              </div>
-            </div>
-
-            {/* Current Balance Display */}
-            <div className="flex items-center justify-between pt-6 mt-6 border-t border-border">
-              <span className="text-sm text-muted-foreground">Your TXC Balance</span>
-              <div className="flex items-center gap-2">
-                <Coins className="w-4 h-4 text-primary" />
-                <Badge variant="outline" className="font-mono text-lg px-3 py-1">
-                  {userTXCBalance.toLocaleString()}
-                </Badge>
-              </div>
-            </div>
+            {unlockMode === 'txc' ? (
+              <TXCFeaturePurchase
+                featureId={`tool-${tool.id}`}
+                featureName={tool.name}
+                cost={tool.txc_cost}
+                onSuccess={() => {
+                  onUnlockSuccess();
+                  onOpenChange(false);
+                }}
+                className="flex-1"
+                disabled={userTXCBalance < tool.txc_cost}
+              />
+            ) : (
+              <Button 
+                onClick={() => {
+                  if (progressPercentage === 100) {
+                    onUnlockSuccess();
+                    onOpenChange(false);
+                  }
+                }}
+                disabled={progressPercentage < 100}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                <Trophy className="w-4 h-4 mr-2" />
+                {progressPercentage === 100 ? 'Unlock Now' : 'Complete Requirements'}
+              </Button>
+            )}
           </div>
 
-          {/* Gaming Tips */}
-          <div className="bg-gradient-to-r from-accent/10 to-accent/20 rounded-3xl p-6 border border-accent/20">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-accent/20 rounded-2xl">
-                <Zap className="w-6 h-6 text-accent" />
+          {/* Benefits Preview */}
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="font-medium text-sm">What you'll get:</span>
               </div>
-              <div className="flex-1">
-                <div className="font-bold text-lg mb-3 text-accent">Pro Gaming Tips 🎮</div>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-accent" />
-                    Complete 3 tools per level to unlock the next tier
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-accent" />
-                    Maintain daily streaks for bonus TXC rewards
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-accent" />
-                    Share achievements to earn social bonuses
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-accent" />
-                    Higher level tools provide better career insights
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  Unlimited access to {tool.name}
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  Advanced AI-powered features
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  Progress tracking & analytics
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       </DialogContent>
     </Dialog>
