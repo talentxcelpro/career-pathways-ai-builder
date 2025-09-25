@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { LearningSearch } from './LearningSearch';
 import { 
   Home,
   BookOpen,
@@ -13,9 +14,9 @@ import {
   Briefcase,
   Target,
   BarChart3,
-  Users,
-  Share2
+  Users
 } from 'lucide-react';
+import heroImage from '@/assets/learning-hero.jpg';
 
 export const LearningHeroNav = () => {
   const navigationItems = [
@@ -100,6 +101,16 @@ export const LearningHeroNav = () => {
 
   return (
     <section className="bg-gradient-to-br from-primary/10 via-ai-violet-medium/10 to-primary/5 py-16 relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 opacity-10">
+        <img
+          src={heroImage}
+          alt="Learning Hub Hero"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-ai-violet-medium/30" />
+      </div>
+      
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-ai-violet-medium/5" />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -110,7 +121,7 @@ export const LearningHeroNav = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-ai-violet-medium text-white px-6 py-3 rounded-full text-sm font-semibold mb-8 shadow-lg hover:shadow-glow transition-all duration-300 transform hover:scale-105">
             <Sparkles className="h-4 w-4 animate-glow-pulse" />
-            TALENTXCEL PLUS
+            TalentXcel Academy
           </div>
           
           <h1 className="text-3xl lg:text-5xl font-heading font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent mb-8 animate-fade-in-down">
@@ -122,19 +133,8 @@ export const LearningHeroNav = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center gap-6 justify-center animate-fade-in-up delay-300">
-            <div className="relative flex-1 max-w-md">
-              <input
-                type="text"
-                placeholder="What do you want to learn?"
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/90 backdrop-blur-apple border border-white/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 text-sm font-medium shadow-lg hover:shadow-glow transition-all duration-300"
-              />
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-ai-violet-medium flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
+            <div className="flex-1 max-w-md">
+              <LearningSearch />
             </div>
             <Link to="/learning/my-courses">
               <Button size="xl" className="bg-gradient-to-r from-primary to-ai-violet-medium hover:from-primary/90 hover:to-ai-violet-medium/90 text-white font-semibold shadow-lg hover:shadow-glow transform hover:scale-105 transition-all duration-300 apple-rounded-lg">
