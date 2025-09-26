@@ -1,5 +1,5 @@
 // Production-ready authentication context with improved session management
-import React from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, useContext, createContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -13,10 +13,10 @@ interface AuthContextType {
   refreshSession: () => Promise<void>;
 }
 
-const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext);
+  const context = useContext(AuthContext);
   if (context === undefined) {
     // Fail-safe: provide a non-throwing fallback to avoid crashing before provider mounts
     if (ENV.isDevelopment) {
@@ -38,13 +38,13 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = React.useState<User | null>(null);
-  const [session, setSession] = React.useState<Session | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const authStateRef = React.useRef<any>(null);
+  const authStateRef = useRef<any>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let mounted = true;
     
     const initializeAuth = async () => {
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const signOut = React.useCallback(async () => {
+  const signOut = useCallback(async () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
@@ -154,7 +154,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [navigate]);
 
-  const refreshSession = React.useCallback(async () => {
+  const refreshSession = useCallback(async () => {
     try {
       const { data: { session }, error } = await supabase.auth.refreshSession();
       
@@ -181,7 +181,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const value = React.useMemo(() => ({
+  const value = useMemo(() => ({
     user,
     session,
     loading,

@@ -208,14 +208,12 @@ const App = () => {
   }
 
   return (
-    <ReactErrorBoundary>
-      <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-        <QueryClientProvider client={queryClient}>
-          <HelmetProvider>
-            <BrowserRouter>
-              <ReactContextErrorBoundary>
-                <AuthProvider>
-                  <NotificationProvider>
+    <ErrorBoundary FallbackComponent={BundleErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>
+          <BrowserRouter>
+            <AuthProvider>
+              <NotificationProvider>
               <RealtimeProvider showToasts={false}>
                 <CopilotProvider>
                   <TooltipProvider>
@@ -535,13 +533,11 @@ const App = () => {
               <GoogleOneTapLogin />
               <MobileAppInitializer />
             </TooltipProvider>
-                </AuthProvider>
-              </ReactContextErrorBoundary>
-            </BrowserRouter>
-          </HelmetProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </ReactErrorBoundary>
+            </AuthProvider>
+          </BrowserRouter>
+        </HelmetProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
