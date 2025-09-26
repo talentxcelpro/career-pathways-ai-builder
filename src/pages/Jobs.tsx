@@ -660,44 +660,7 @@ const Jobs = () => {
                       ))}
                     </div>
 
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                      <div className="flex justify-center mt-8">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            disabled={currentPage === 1}
-                            onClick={() => goToPage(currentPage - 1)}
-                          >
-                            Previous
-                          </Button>
-                          
-                          <div className="flex items-center gap-1">
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                              const page = i + 1;
-                              return (
-                                <Button
-                                  key={page}
-                                  variant={currentPage === page ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => goToPage(page)}
-                                >
-                                  {page}
-                                </Button>
-                              );
-                            })}
-                          </div>
-                          
-                          <Button
-                            variant="outline"
-                            disabled={currentPage === totalPages}
-                            onClick={() => goToPage(currentPage + 1)}
-                          >
-                            Next
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                    {/* Real-time job loading - no pagination needed */}
                   </div>
                 )}
               </div>
