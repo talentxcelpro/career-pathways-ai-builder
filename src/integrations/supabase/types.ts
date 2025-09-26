@@ -930,6 +930,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_content_generation_queue: {
+        Row: {
+          ai_model: string | null
+          completed_at: string | null
+          content_type: string
+          created_at: string | null
+          error_message: string | null
+          generated_content: string | null
+          human_reviewed: boolean | null
+          id: string
+          input_parameters: Json
+          processing_time_ms: number | null
+          quality_score: number | null
+          status: string | null
+          template_type: string
+        }
+        Insert: {
+          ai_model?: string | null
+          completed_at?: string | null
+          content_type: string
+          created_at?: string | null
+          error_message?: string | null
+          generated_content?: string | null
+          human_reviewed?: boolean | null
+          id?: string
+          input_parameters: Json
+          processing_time_ms?: number | null
+          quality_score?: number | null
+          status?: string | null
+          template_type: string
+        }
+        Update: {
+          ai_model?: string | null
+          completed_at?: string | null
+          content_type?: string
+          created_at?: string | null
+          error_message?: string | null
+          generated_content?: string | null
+          human_reviewed?: boolean | null
+          id?: string
+          input_parameters?: Json
+          processing_time_ms?: number | null
+          quality_score?: number | null
+          status?: string | null
+          template_type?: string
+        }
+        Relationships: []
+      }
       ai_content_library: {
         Row: {
           approved_by: string | null
@@ -8878,6 +8926,57 @@ export type Database = {
           severity_level?: number | null
           status?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      content_performance_analytics: {
+        Row: {
+          avg_position: number | null
+          bounce_rate: number | null
+          content_id: string
+          content_type: string
+          conversion_events: number | null
+          created_at: string | null
+          date_recorded: string | null
+          id: string
+          page_views: number | null
+          search_clicks: number | null
+          search_impressions: number | null
+          social_shares: number | null
+          time_on_page: number | null
+          unique_visitors: number | null
+        }
+        Insert: {
+          avg_position?: number | null
+          bounce_rate?: number | null
+          content_id: string
+          content_type: string
+          conversion_events?: number | null
+          created_at?: string | null
+          date_recorded?: string | null
+          id?: string
+          page_views?: number | null
+          search_clicks?: number | null
+          search_impressions?: number | null
+          social_shares?: number | null
+          time_on_page?: number | null
+          unique_visitors?: number | null
+        }
+        Update: {
+          avg_position?: number | null
+          bounce_rate?: number | null
+          content_id?: string
+          content_type?: string
+          conversion_events?: number | null
+          created_at?: string | null
+          date_recorded?: string | null
+          id?: string
+          page_views?: number | null
+          search_clicks?: number | null
+          search_impressions?: number | null
+          social_shares?: number | null
+          time_on_page?: number | null
+          unique_visitors?: number | null
         }
         Relationships: []
       }
@@ -25453,6 +25552,47 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_content_combinations: {
+        Row: {
+          combination_type: string
+          competition_level: string | null
+          created_at: string | null
+          estimated_search_volume: number | null
+          id: string
+          is_processed: boolean | null
+          landing_page_id: string | null
+          parameters: Json
+        }
+        Insert: {
+          combination_type: string
+          competition_level?: string | null
+          created_at?: string | null
+          estimated_search_volume?: number | null
+          id?: string
+          is_processed?: boolean | null
+          landing_page_id?: string | null
+          parameters: Json
+        }
+        Update: {
+          combination_type?: string
+          competition_level?: string | null
+          created_at?: string | null
+          estimated_search_volume?: number | null
+          id?: string
+          is_processed?: boolean | null
+          landing_page_id?: string | null
+          parameters?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_content_combinations_landing_page_id_fkey"
+            columns: ["landing_page_id"]
+            isOneToOne: false
+            referencedRelation: "seo_landing_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_generated_content: {
         Row: {
           content_blocks: Json | null
@@ -25612,6 +25752,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seo_landing_pages: {
+        Row: {
+          ai_generated: boolean | null
+          changefreq: string | null
+          content_template: string
+          conversion_rate: number | null
+          created_at: string | null
+          h1_heading: string
+          id: string
+          is_generated: boolean | null
+          keywords: Json
+          last_crawled: string | null
+          meta_description: string
+          page_type: string
+          priority: number | null
+          social_media_shared: boolean | null
+          title: string
+          traffic_score: number | null
+          updated_at: string | null
+          url_path: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          changefreq?: string | null
+          content_template: string
+          conversion_rate?: number | null
+          created_at?: string | null
+          h1_heading: string
+          id?: string
+          is_generated?: boolean | null
+          keywords?: Json
+          last_crawled?: string | null
+          meta_description: string
+          page_type: string
+          priority?: number | null
+          social_media_shared?: boolean | null
+          title: string
+          traffic_score?: number | null
+          updated_at?: string | null
+          url_path: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          changefreq?: string | null
+          content_template?: string
+          conversion_rate?: number | null
+          created_at?: string | null
+          h1_heading?: string
+          id?: string
+          is_generated?: boolean | null
+          keywords?: Json
+          last_crawled?: string | null
+          meta_description?: string
+          page_type?: string
+          priority?: number | null
+          social_media_shared?: boolean | null
+          title?: string
+          traffic_score?: number | null
+          updated_at?: string | null
+          url_path?: string
+        }
+        Relationships: []
       }
       seo_learning_paths: {
         Row: {
@@ -27043,6 +27246,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sitemap_generation_log: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          file_size_bytes: number | null
+          generated_urls: number | null
+          generation_time_ms: number | null
+          id: string
+          s3_url: string | null
+          sitemap_type: string
+          status: string | null
+          total_urls: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          generated_urls?: number | null
+          generation_time_ms?: number | null
+          id?: string
+          s3_url?: string | null
+          sitemap_type: string
+          status?: string | null
+          total_urls?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          generated_urls?: number | null
+          generation_time_ms?: number | null
+          id?: string
+          s3_url?: string | null
+          sitemap_type?: string
+          status?: string | null
+          total_urls?: number | null
+        }
+        Relationships: []
+      }
       sitemap_queue: {
         Row: {
           created_at: string | null
@@ -27814,6 +28056,57 @@ export type Database = {
           target_id?: string
           target_type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      social_media_content: {
+        Row: {
+          content: string
+          content_type: string
+          created_at: string | null
+          engagement_metrics: Json | null
+          hashtags: Json | null
+          id: string
+          is_published: boolean | null
+          media_urls: Json | null
+          platform: string
+          published_at: string | null
+          reach_metrics: Json | null
+          scheduled_at: string | null
+          target_audience: Json | null
+          title: string
+        }
+        Insert: {
+          content: string
+          content_type: string
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          hashtags?: Json | null
+          id?: string
+          is_published?: boolean | null
+          media_urls?: Json | null
+          platform: string
+          published_at?: string | null
+          reach_metrics?: Json | null
+          scheduled_at?: string | null
+          target_audience?: Json | null
+          title: string
+        }
+        Update: {
+          content?: string
+          content_type?: string
+          created_at?: string | null
+          engagement_metrics?: Json | null
+          hashtags?: Json | null
+          id?: string
+          is_published?: boolean | null
+          media_urls?: Json | null
+          platform?: string
+          published_at?: string | null
+          reach_metrics?: Json | null
+          scheduled_at?: string | null
+          target_audience?: Json | null
+          title?: string
         }
         Relationships: []
       }
