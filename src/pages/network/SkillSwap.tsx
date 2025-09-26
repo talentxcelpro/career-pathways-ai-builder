@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Plus, ArrowUpDown, Clock, Star, Users, Coins, Search, Filter } from "lucide-react";
-import { useAuth } from '@/contexts/AuthContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAdvancedNetworking } from '@/hooks/useAdvancedNetworking';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  Plus, 
+  Search, 
+  ArrowRight, 
+  ArrowLeft, 
+  ArrowLeftRight,
+  Clock, 
+  Coins, 
+  User, 
+  MessageSquare,
+  TrendingUp,
+  Star,
+  Calendar,
+  CheckCircle
+} from 'lucide-react';
 
 interface SkillExchange {
   id: string;
@@ -22,29 +34,25 @@ interface SkillExchange {
   credits_required: number;
   status: string;
   created_at: string;
-  user_profile?: {
+  user_profile: {
     full_name: string;
     title: string;
-    profile_picture_url: string;
+    profile_picture_url?: string;
   };
-}
-
-interface UserCredits {
-  total_credits: number;
-  earned_credits: number;
-  spent_credits: number;
 }
 
 const SkillSwap: React.FC = () => {
   const { user } = useAuth();
+  const { createSkillExchange, loading } = useAdvancedNetworking();
+  const { toast } = useToast();
   const [skillExchanges, setSkillExchanges] = useState<SkillExchange[]>([]);
-  const [userCredits, setUserCredits] = useState<UserCredits>({ total_credits: 100, earned_credits: 0, spent_credits: 0 });
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [difficultyFilter, setDifficultyFilter] = useState('all');
+  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [sortBy, setSortBy] = useState('recent');
+  const [userCredits, setUserCredits] = useState(250);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  
-  const [newExchange, setNewExchange] = useState({
+  const [formData, setFormData] = useState({
     skill_offered: '',
     skill_sought: '',
     description: '',
@@ -82,7 +90,7 @@ const SkillSwap: React.FC = () => {
 
   const fetchSkillExchanges = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       
       const { data, error } = await supabase
         .from('skill_exchanges')
@@ -111,48 +119,53 @@ const SkillSwap: React.FC = () => {
       setSkillExchanges(formattedData);
     } catch (error) {
       console.error('Error fetching skill exchanges:', error);
-      toast.error('Failed to load skill exchanges');
+      toast({
+        title: "Error",
+        description: "Failed to load skill exchanges",
+        variant: "destructive"
+      });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const fetchUserCredits = async () => {
+    if (!user?.id) return;
+    
     try {
-      // Simulate user credits
-      setUserCredits({
-        total_credits: 150,
-        earned_credits: 75,
-        spent_credits: 25
-      });
+      const { data, error } = await supabase
+        .from('user_credits')
+        .select('txc_balance')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      setUserCredits(data?.txc_balance || 250);
     } catch (error) {
       console.error('Error fetching user credits:', error);
     }
   };
 
-  const createSkillExchange = async () => {
+  const handleCreateExchange = async () => {
     if (!user) {
-      toast.error('Please log in to create a skill exchange');
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to create a skill exchange",
+        variant: "destructive"
+      });
       return;
     }
 
-    try {
-      // Simulate creating a new skill exchange
-      const newSkillExchange: SkillExchange = {
-        id: Date.now().toString(),
-        ...newExchange,
-        status: 'active',
-        created_at: new Date().toISOString(),
-        user_profile: {
-          full_name: 'You',
-          title: 'Your Title',
-          profile_picture_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-        }
-      };
+    const result = await createSkillExchange(
+      formData.skill_offered,
+      formData.skill_sought,
+      formData.description
+    );
 
-      setSkillExchanges([newSkillExchange, ...skillExchanges]);
+    if (result.success) {
       setShowCreateForm(false);
-      setNewExchange({
+      setFormData({
         skill_offered: '',
         skill_sought: '',
         description: '',
@@ -160,291 +173,278 @@ const SkillSwap: React.FC = () => {
         session_length: 60,
         credits_required: 10
       });
-      
-      toast.success('Skill exchange created successfully!');
-    } catch (error) {
-      console.error('Error creating skill exchange:', error);
-      toast.error('Failed to create skill exchange');
+      fetchSkillExchanges();
     }
   };
 
-  const requestSkillExchange = async (exchangeId: string, credits: number) => {
+  const handleExchangeRequest = async (exchangeId: string) => {
     if (!user) {
-      toast.error('Please log in to request a skill exchange');
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to request an exchange",
+        variant: "destructive"
+      });
       return;
     }
 
-    if (userCredits.total_credits < credits) {
-      toast.error('Insufficient credits for this exchange');
-      return;
-    }
+    toast({
+      title: "Exchange Requested!",
+      description: "Your exchange request has been sent successfully",
+    });
+  };
 
-    try {
-      // Simulate skill exchange request
-      setUserCredits(prev => ({
-        ...prev,
-        total_credits: prev.total_credits - credits,
-        spent_credits: prev.spent_credits + credits
-      }));
-      
-      toast.success('Skill exchange request sent! You will be notified when accepted.');
-    } catch (error) {
-      console.error('Error requesting skill exchange:', error);
-      toast.error('Failed to send request');
+  const getBadgeVariant = (level: string) => {
+    switch (level) {
+      case 'beginner':
+        return 'bg-green-100 text-green-700 border-green-200';
+      case 'intermediate':
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'advanced':
+        return 'bg-red-100 text-red-700 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
   const filteredExchanges = skillExchanges.filter(exchange => {
-    const matchesSearch = exchange.skill_offered.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exchange.skill_sought.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exchange.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = 
+      exchange.skill_offered.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exchange.skill_sought.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exchange.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesDifficulty = difficultyFilter === 'all' || exchange.difficulty_level === difficultyFilter;
+    const matchesLevel = selectedLevel === 'all' || exchange.difficulty_level === selectedLevel;
     
-    return matchesSearch && matchesDifficulty;
+    return matchesSearch && matchesLevel;
   });
 
-  const getDifficultyColor = (level: string) => {
-    switch (level) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="space-y-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading skill exchanges...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">🔄 Skill Swap</h1>
-          <p className="text-gray-600">Exchange Skills & Earn Credits</p>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-            <Coins className="h-5 w-5" />
-            <span className="font-semibold">{userCredits.total_credits} Credits</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        {/* Hero Section */}
+        <div className="text-center mb-16 fade-in-up">
+          <div className="inline-flex items-center justify-center p-2 bg-blue-100 rounded-full mb-6">
+            <ArrowLeftRight className="h-8 w-8 text-blue-600" />
           </div>
-          
-          <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
-                <Plus className="h-4 w-4 mr-2" />
-                Offer Skill
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Create Skill Exchange</DialogTitle>
-                <DialogDescription>
-                  Offer your expertise and request skills you want to learn
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="skill_offered">Skill You Offer</Label>
-                    <Input
-                      id="skill_offered"
-                      value={newExchange.skill_offered}
-                      onChange={(e) => setNewExchange(prev => ({ ...prev, skill_offered: e.target.value }))}
-                      placeholder="e.g., React Development"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="skill_sought">Skill You Want</Label>
-                    <Input
-                      id="skill_sought"
-                      value={newExchange.skill_sought}
-                      onChange={(e) => setNewExchange(prev => ({ ...prev, skill_sought: e.target.value }))}
-                      placeholder="e.g., UI/UX Design"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={newExchange.description}
-                    onChange={(e) => setNewExchange(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe what you can teach and what you want to learn..."
-                    rows={3}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="difficulty">Difficulty Level</Label>
-                    <Select value={newExchange.difficulty_level} onValueChange={(value) => setNewExchange(prev => ({ ...prev, difficulty_level: value }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="session_length">Session Length (min)</Label>
-                    <Input
-                      id="session_length"
-                      type="number"
-                      value={newExchange.session_length}
-                      onChange={(e) => setNewExchange(prev => ({ ...prev, session_length: parseInt(e.target.value) }))}
-                      min="30"
-                      max="180"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="credits">Credits Required</Label>
-                    <Input
-                      id="credits"
-                      type="number"
-                      value={newExchange.credits_required}
-                      onChange={(e) => setNewExchange(prev => ({ ...prev, credits_required: parseInt(e.target.value) }))}
-                      min="5"
-                      max="50"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button variant="outline" onClick={() => setShowCreateForm(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={createSkillExchange}>
-                    Create Exchange
-                  </Button>
-                </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            Skill Exchange Network
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            Exchange skills, learn from others, and earn TXC credits in our vibrant learning community
+          </p>
+          <Button 
+            onClick={() => setShowCreateForm(true)}
+            className="apple-button text-lg px-8 py-4 smooth-bounce"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Create Exchange
+          </Button>
+        </div>
+
+        {/* User Credits Display */}
+        <div className="apple-card mb-12 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+          <div className="relative flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                <Coins className="h-8 w-8 text-white" />
               </div>
-            </DialogContent>
-          </Dialog>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{userCredits} TXC Credits</p>
+                <p className="text-gray-600">Available for skill exchanges</p>
+              </div>
+            </div>
+            <div className="text-center">
+              <Badge className="bg-green-100 text-green-700 border-green-200 px-4 py-2">
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Active Trader
+              </Badge>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Search skills, descriptions..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
-          <SelectTrigger className="w-full sm:w-48">
-            <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="All Levels" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Levels</SelectItem>
-            <SelectItem value="beginner">Beginner</SelectItem>
-            <SelectItem value="intermediate">Intermediate</SelectItem>
-            <SelectItem value="advanced">Advanced</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <Tabs defaultValue="browse" className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="bg-white/50 backdrop-blur-sm border border-white/20 rounded-2xl p-2 shadow-lg">
+              <TabsTrigger value="browse" className="rounded-xl px-6 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                Browse Exchanges
+              </TabsTrigger>
+              <TabsTrigger value="my-exchanges" className="rounded-xl px-6 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                My Exchanges
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-      {/* Skill Exchange Cards */}
-      <div className="grid gap-6">
-        {filteredExchanges.map((exchange) => (
-          <Card key={exchange.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
+          <TabsContent value="browse" className="space-y-8">
+            {/* Filters */}
+            <div className="apple-card">
               <div className="flex flex-col lg:flex-row gap-6">
-                {/* User Profile */}
-                <div className="flex items-center gap-4 lg:w-64">
-                  <img
-                    src={exchange.user_profile?.profile_picture_url}
-                    alt={exchange.user_profile?.full_name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{exchange.user_profile?.full_name}</h3>
-                    <p className="text-sm text-gray-600">{exchange.user_profile?.title}</p>
-                  </div>
-                </div>
-
-                {/* Exchange Details */}
                 <div className="flex-1">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                        {exchange.skill_offered}
-                      </Badge>
-                      <ArrowUpDown className="h-4 w-4 text-gray-400" />
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">
-                        {exchange.skill_sought}
-                      </Badge>
-                    </div>
-                    <Badge className={getDifficultyColor(exchange.difficulty_level)}>
-                      {exchange.difficulty_level}
-                    </Badge>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-4">{exchange.description}</p>
-                  
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {exchange.session_length} min
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Coins className="h-4 w-4" />
-                      {exchange.credits_required} credits
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span>4.8 (23 reviews)</span>
-                    </div>
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      placeholder="Search skills..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="apple-input pl-12 text-lg"
+                    />
                   </div>
                 </div>
-
-                {/* Action Button */}
-                <div className="lg:w-32 flex lg:justify-end">
-                  <Button 
-                    onClick={() => requestSkillExchange(exchange.id, exchange.credits_required)}
-                    className="w-full lg:w-auto"
-                    disabled={userCredits.total_credits < exchange.credits_required}
+                
+                <div className="flex gap-4">
+                  <select
+                    value={selectedLevel}
+                    onChange={(e) => setSelectedLevel(e.target.value)}
+                    className="apple-input"
                   >
-                    Request Swap
-                  </Button>
+                    <option value="all">All Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
+                  
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="apple-input"
+                  >
+                    <option value="recent">Most Recent</option>
+                    <option value="credits-low">Credits: Low to High</option>
+                    <option value="credits-high">Credits: High to Low</option>
+                  </select>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
 
-      {filteredExchanges.length === 0 && (
-        <div className="text-center py-12">
-          <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No skill exchanges found</h3>
-          <p className="text-gray-600">Try adjusting your search or filters, or create a new skill exchange!</p>
-        </div>
-      )}
+            {/* Exchanges Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+              {filteredExchanges.map((exchange, index) => (
+                <div 
+                  key={exchange.id} 
+                  className="apple-card group cursor-pointer relative overflow-hidden"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full transform translate-x-16 -translate-y-16"></div>
+                  
+                  <div className="relative">
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden shadow-lg">
+                        {exchange.user_profile?.profile_picture_url ? (
+                          <img 
+                            src={exchange.user_profile.profile_picture_url} 
+                            alt={exchange.user_profile.full_name}
+                            className="w-14 h-14 rounded-2xl object-cover"
+                          />
+                        ) : (
+                          <User className="h-7 w-7 text-white" />
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 text-lg">
+                          {exchange.user_profile?.full_name || 'Anonymous User'}
+                        </h3>
+                        <p className="text-gray-600">
+                          {exchange.user_profile?.title || 'Professional'}
+                        </p>
+                      </div>
+                      
+                      <Badge className={`${getBadgeVariant(exchange.difficulty_level)} px-3 py-1 rounded-full text-xs font-medium`}>
+                        {exchange.difficulty_level}
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-4 mb-6">
+                      <div className="p-4 bg-green-50 rounded-xl border border-green-100">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-green-100 rounded-lg">
+                            <ArrowRight className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-green-700">Offering</span>
+                            <p className="font-semibold text-green-900">{exchange.skill_offered}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <ArrowLeft className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-blue-700">Seeking</span>
+                            <p className="font-semibold text-blue-900">{exchange.skill_sought}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
+                      {exchange.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2 text-gray-500">
+                          <Clock className="h-5 w-5" />
+                          <span className="font-medium">{exchange.session_length}min</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <Coins className="h-5 w-5" />
+                          <span className="font-bold">{exchange.credits_required} TXC</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <Button 
+                        className="flex-1 apple-button"
+                        onClick={() => handleExchangeRequest(exchange.id)}
+                        disabled={loading || userCredits < exchange.credits_required}
+                      >
+                        {userCredits < exchange.credits_required ? 'Insufficient Credits' : 'Request Exchange'}
+                      </Button>
+                      <Button className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl border-0 transition-all duration-200">
+                        <MessageSquare className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="my-exchanges" className="space-y-6">
+            <div className="text-center py-16">
+              <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <ArrowLeftRight className="h-12 w-12 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">No exchanges yet</h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                Start by creating your first skill exchange or browsing available opportunities
+              </p>
+              <Button 
+                onClick={() => setShowCreateForm(true)}
+                className="apple-button"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Create Your First Exchange
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

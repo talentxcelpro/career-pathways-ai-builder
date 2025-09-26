@@ -153,27 +153,32 @@ const Verified: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Shield className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold text-foreground">Verified Professionals</h1>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        {/* Hero Section */}
+        <div className="text-center mb-16 fade-in-up">
+          <div className="inline-flex items-center justify-center p-2 bg-green-100 rounded-full mb-6">
+            <Shield className="h-8 w-8 text-green-600" />
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            Verified Professionals
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            Connect with authenticated and verified industry professionals
+          </p>
         </div>
-        <p className="text-muted-foreground">Connect with authenticated and verified industry professionals</p>
-      </div>
 
-      {/* Filters */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+        {/* Filters */}
+        <div className="apple-card mb-12">
+          <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
                   placeholder="Search verified professionals..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
+                  className="apple-input pl-12 text-lg"
                 />
               </div>
             </div>
@@ -182,7 +187,7 @@ const Verified: React.FC = () => {
               <select
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="px-3 py-2 border border-input rounded-md bg-background"
+                className="apple-input"
               >
                 <option value="all">All Industries</option>
                 <option value="Technology">Technology</option>
@@ -195,7 +200,7 @@ const Verified: React.FC = () => {
               <select
                 value={verificationLevel}
                 onChange={(e) => setVerificationLevel(e.target.value)}
-                className="px-3 py-2 border border-input rounded-md bg-background"
+                className="apple-input"
               >
                 <option value="all">All Levels</option>
                 <option value="gold">Gold Verified</option>
@@ -203,8 +208,7 @@ const Verified: React.FC = () => {
               </select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

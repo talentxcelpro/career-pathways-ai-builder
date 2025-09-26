@@ -170,56 +170,68 @@ const Communities: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex flex-col lg:flex-row justify-between items-start mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Professional Communities</h1>
-          <p className="text-muted-foreground">Join interest-based communities and connect with like-minded professionals</p>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
+      <div className="container mx-auto px-4 py-12 max-w-7xl">
+        {/* Hero Section */}
+        <div className="text-center mb-16 fade-in-up">
+          <div className="inline-flex items-center justify-center p-2 bg-orange-100 rounded-full mb-6">
+            <Users className="h-8 w-8 text-orange-600" />
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
+            Professional Communities
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            Join interest-based communities and connect with like-minded professionals
+          </p>
+          <Button className="apple-button text-lg px-8 py-4 smooth-bounce bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700">
+            <Plus className="h-5 w-5 mr-2" />
+            Create Community
+          </Button>
         </div>
-        
-        <Button className="mt-4 lg:mt-0">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Community
-        </Button>
-      </div>
 
-      <Tabs defaultValue="discover" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="discover">Discover</TabsTrigger>
-          <TabsTrigger value="my-communities">My Communities ({myCommunities.length})</TabsTrigger>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="discover" className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="bg-white/50 backdrop-blur-sm border border-white/20 rounded-2xl p-2 shadow-lg">
+              <TabsTrigger value="discover" className="rounded-xl px-6 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                Discover
+              </TabsTrigger>
+              <TabsTrigger value="my-communities" className="rounded-xl px-6 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                My Communities ({myCommunities.length})
+              </TabsTrigger>
+              <TabsTrigger value="featured" className="rounded-xl px-6 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md">
+                Featured
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TabsContent value="discover" className="space-y-6">
+        <TabsContent value="discover" className="space-y-8">
           {/* Search and Filters */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search communities..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
+          <div className="apple-card">
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    placeholder="Search communities..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="apple-input pl-12 text-lg"
+                  />
                 </div>
-                
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-input rounded-md bg-background"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
               </div>
-            </CardContent>
-          </Card>
+              
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="apple-input"
+              >
+                <option value="all">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           {/* Communities Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
