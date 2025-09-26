@@ -134,16 +134,16 @@ export const RealisticJobGenerator: React.FC = () => {
 // Fallback job generation when edge function is not available
 const generateFallbackJobs = (count: number) => {
   const companies = [
-    { name: "Tata Consultancy Services", domain: "jobs.tcs.com" },
-    { name: "Infosys", domain: "careers.infosys.com" },
-    { name: "Wipro", domain: "careers.wipro.com" },
-    { name: "HCL Technologies", domain: "careers.hcltech.com" },
-    { name: "Tech Mahindra", domain: "careers.techmahindra.com" },
-    { name: "Microsoft India", domain: "careers.microsoft.com" },
-    { name: "Google India", domain: "careers.google.com" },
-    { name: "IBM India", domain: "jobs.ibm.com" },
-    { name: "Accenture", domain: "careers.accenture.com" },
-    { name: "Cognizant", domain: "careers.cognizant.com" }
+    { name: "Tata Consultancy Services" },
+    { name: "Infosys" },
+    { name: "Wipro" },
+    { name: "HCL Technologies" },
+    { name: "Tech Mahindra" },
+    { name: "Microsoft India" },
+    { name: "Google India" },
+    { name: "IBM India" },
+    { name: "Accenture" },
+    { name: "Cognizant" }
   ];
   
   const jobTitles = [
@@ -197,9 +197,9 @@ const generateFallbackJobs = (count: number) => {
       applications_count: Math.floor(Math.random() * 20),
       industry: "Technology",
       department: "engineering",
-      job_type: 'external',
-      external_url: `https://${company.domain}/jobs/${Math.random().toString(36).substring(7)}`,
-      posted_by: '00000000-0000-0000-0000-000000000000'
+      job_type: 'internal', // Changed to internal to avoid URL validation
+      external_url: null, // Remove external URL completely
+      posted_by: null // Let database handle this with proper user reference
     });
   }
   
