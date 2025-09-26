@@ -648,6 +648,43 @@ const Jobs = () => {
                       {regularJobs.length} opportunities
                     </Badge>
                   </div>
+                </div>
+
+                {/* Mobile Quick Job Categories */}
+                <div className="md:hidden mb-6 p-4 bg-card/50 rounded-lg border border-border/50">
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { emoji: '🏠', label: 'Remote Jobs', filter: { is_remote: true } },
+                      { emoji: '⚛️', label: 'React Developer', filter: { skills: ['react'] } },
+                      { emoji: '📊', label: 'Data Scientist', filter: { search: 'data scientist' } },
+                      { emoji: '🚀', label: 'Product Manager', filter: { search: 'product manager' } },
+                      { emoji: '🎨', label: 'UI/UX Designer', filter: { search: 'ui ux designer' } },
+                      { emoji: '🔧', label: 'DevOps Engineer', filter: { search: 'devops engineer' } },
+                      { emoji: '💰', label: 'High Salary', filter: { salary_min: 1000000 } },
+                      { emoji: '🌟', label: 'Fresher Jobs', filter: { experience_level: ['entry'] } },
+                      { emoji: '🏢', label: 'Fortune 500', filter: { company_type: ['MNC'] } },
+                      { emoji: '⚡', label: 'Quick Apply', filter: { search: 'quick apply' } }
+                    ].map((category, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        className="h-auto p-2 text-left hover:bg-primary/5 hover:border-primary/20"
+                        onClick={() => {
+                          updateFilters(category.filter);
+                          refetch();
+                        }}
+                      >
+                        <div className="flex items-center gap-2 w-full">
+                          <span className="text-base">{category.emoji}</span>
+                          <span className="text-xs font-medium">{category.label}</span>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
                   
                   <div className="flex items-center gap-2">
                     <select
