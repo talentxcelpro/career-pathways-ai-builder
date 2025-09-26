@@ -26,14 +26,8 @@ import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIG
 // New Components for TalentSpark Experience
 import { TalentSparkJobCard } from '@/components/jobs/TalentSparkJobCard';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
-import { PersonalCareerDashboard } from '@/components/jobs/PersonalCareerDashboard';
-import { SmartJobMatchingBar } from '@/components/jobs/SmartJobMatchingBar';
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
-import { TXCCoinBalance } from '@/components/jobs/TXCCoinBalance';
-import { QuickApplyWidget } from '@/components/jobs/QuickApplyWidget';
-import { SalaryTransparencyWidget } from '@/components/jobs/SalaryTransparencyWidget';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
-import { TopCompaniesSalaries } from '@/components/jobs/TopCompaniesSalaries';
 
 // Core job search components only
 
@@ -478,45 +472,25 @@ const Jobs = () => {
         {/* Main Content - Simplified */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-widget-id="job-search">
           
-          {/* Personal Dashboard for logged-in users */}
-          {currentUser && (
-            <div className="mb-8" data-widget-id="personal-dashboard">
-              <PersonalCareerDashboard />
+          {/* Career Dashboard CTA */}
+          <div className="mb-8 text-center" data-widget-id="career-dashboard-cta">
+            <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 rounded-2xl p-8 border border-primary/20">
+              <div className="max-w-2xl mx-auto">
+                <Brain className="h-12 w-12 mx-auto text-primary mb-4" />
+                <h2 className="text-2xl font-apple-bold mb-3">AI Career Intelligence Hub</h2>
+                <p className="text-muted-foreground font-apple-medium mb-6">
+                  Get personalized job recommendations, salary insights, career progress tracking, and AI-powered application assistance.
+                </p>
+                <Button 
+                  onClick={() => navigate('/career-dashboard')}
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white font-apple-bold px-8 py-4 shadow-lg"
+                >
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Open Career Dashboard
+                </Button>
+              </div>
             </div>
-          )}
-
-          {/* AI Job Matching Bar */}
-          {currentUser && (
-            <div className="mb-8" data-widget-id="ai-matching">
-              <SmartJobMatchingBar 
-                onFiltersChange={(aiFilters) => {
-                  setFilters(prev => ({ 
-                    ...prev, 
-                    search: aiFilters.search || prev.search,
-                    location: aiFilters.location || prev.location,
-                    employment_type: aiFilters.employment_type || prev.employment_type,
-                    experience_level: aiFilters.experience_level || prev.experience_level,
-                    salary_min: aiFilters.salary_min || prev.salary_min,
-                    salary_max: aiFilters.salary_max || prev.salary_max,
-                    is_remote: aiFilters.is_remote !== undefined ? aiFilters.is_remote : prev.is_remote,
-                    skills: aiFilters.skills || prev.skills
-                  }));
-                }}
-                onSearch={refetch}
-              />
-            </div>
-          )}
-
-          {/* Quick Apply Widget */}
-          {currentUser && (
-            <div className="mb-8" data-widget-id="quick-apply">
-              <QuickApplyWidget />
-            </div>
-          )}
-
-          {/* Salary Transparency Widget */}
-          <div className="mb-8" data-widget-id="salary-widget">
-            <SalaryTransparencyWidget />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -554,11 +528,6 @@ const Jobs = () => {
                 />
                 
                 <JobCategoriesGrid />
-                
-                {/* Top Companies Salaries */}
-                <div className="mt-8" data-widget-id="top-companies">
-                  <TopCompaniesSalaries />
-                </div>
               </div>
             </div>
 
