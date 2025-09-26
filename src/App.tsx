@@ -211,22 +211,22 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AuthProvider>
-            <TXCAutoMiner />
             <NotificationProvider>
               <RealtimeProvider showToasts={false}>
                 <CopilotProvider>
+                  
                   <Toaster
                     duration={10000}
                     position="top-right"
-                    toastOptions={{
-                      style: {
-                        background: 'hsl(var(--background))',
-                        color: 'hsl(var(--foreground))',
-                        border: '1px solid hsl(var(--border))',
-                        marginTop: '80px',
-                      },
-                    }}
-                  />
+                      toastOptions={{
+                        style: {
+                          background: 'hsl(var(--background))',
+                          color: 'hsl(var(--foreground))',
+                          border: '1px solid hsl(var(--border))',
+                          marginTop: '80px',
+                        },
+                      }}
+                    />
                 <MobileAppWrapper>
                   <div className="min-h-screen flex flex-col">
                     <Navbar />
@@ -519,6 +519,7 @@ const App = () => {
                  </RealtimeProvider>
                         </NotificationProvider>
             <TooltipProvider delayDuration={200}>
+              <TXCAutoMiner />
               <HealthMonitor />
               <MetaTags />
               <GoogleAnalytics />
