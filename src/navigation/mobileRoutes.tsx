@@ -1,6 +1,6 @@
 import React from "react";
 import { NavItem } from "../types/nav-item";
-import { MobileJobs } from "../pages/mobile/MobileJobs";
+import MobileJobs from "../pages/mobile/MobileJobs";
 import MobileReelsPage from "../pages/MobileReelsPage";
 import { MobileNetwork } from "../pages/mobile/MobileNetwork";
 import { MobileProfile } from "../pages/mobile/MobileProfile";

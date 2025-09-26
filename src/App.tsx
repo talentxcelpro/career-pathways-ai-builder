@@ -73,6 +73,7 @@ import ResumeBuilderV2 from './pages/resume/ResumeBuilderV2';
 import UnifiedDashboard from './pages/UnifiedDashboard';
 import MobileReelsPage from './pages/MobileReelsPage';
 import { MobilePassport } from './pages/mobile/MobilePassport';
+import MobileJobs from './pages/mobile/MobileJobs';
 import UserManagement from "@/pages/admin/UserManagement";
 import TalentDatabase from "@/pages/admin/TalentDatabase";
 import SecurityCenter from "@/pages/admin/SecurityCenter";

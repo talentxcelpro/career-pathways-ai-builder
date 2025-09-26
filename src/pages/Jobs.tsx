@@ -701,23 +701,22 @@ const Jobs = () => {
                         <SwipeableJobCard
                           jobs={sortedJobs}
                           currentIndex={swipeIndex}
-                          onSwipe={async (direction, job) => {
-                            if (direction === 'left') {
-                              // Reject - Award 2 TXC coins for engagement
-                              if (currentUser) {
-                                await supabase.rpc('update_user_txc_coins', {
-                                  user_uuid: currentUser.id,
-                                  coin_change: 2,
-                                  reason: 'job_rejected'
-                                });
-                                toast.success('Job rejected! +2 TXC coins for engagement', {
-                                  icon: '❌',
-                                  className: 'animate-fade-in'
-                                });
-                              }
-                            } else if (direction === 'right') {
-                              // Save job - Award 5 TXC coins
-                              await handleSaveJob(job.id);
+                          onSave={handleSaveJob}
+                          onQuickApply={handleQuickApply}
+                          onReject={async (jobId) => {
+                            if (currentUser) {
+                              await supabase.rpc('update_user_txc_coins', {
+                                user_uuid: currentUser.id,
+                                coin_change: 2,
+                                reason: 'job_rejected'
+                              });
+                              toast.success('Job rejected! +2 TXC coins for engagement');
+                            }
+                            setSwipeIndex(prev => prev + 1);
+                          }}
+                          onApplication={handleJobApplication}
+                          isLoggedIn={!!currentUser}
+                        />
                             } else if (direction === 'up') {
                               // Super Apply - Award 20 TXC coins
                               if (currentUser) {

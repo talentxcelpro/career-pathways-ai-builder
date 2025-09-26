@@ -8,19 +8,21 @@ import { Button } from '@/components/ui/button';
 interface SwipeableJobCardProps {
   jobs: any[];
   currentIndex: number;
-  onSwipe: (direction: 'left' | 'right' | 'up', job: any) => void;
-  onSave: (jobId: string) => void;
-  savedJobs: string[];
-  onApply?: (jobId: string, applicationData: any) => void;
+  onSave: (jobId: string) => Promise<void>;
+  onQuickApply: (jobId: string) => Promise<void>;
+  onReject: (jobId: string) => Promise<void>;
+  onApplication: (jobId: string, applicationData: any) => Promise<void>;
+  isLoggedIn: boolean;
 }
 
 export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   jobs,
   currentIndex,
-  onSwipe,
   onSave,
-  savedJobs,
-  onApply
+  onQuickApply,
+  onReject,
+  onApplication,
+  isLoggedIn
 }) => {
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'up' | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -50,103 +52,101 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
     );
   }
 
-  const handleSwipeAction = (direction: 'left' | 'right' | 'up') => {
-    console.log('🎯 SWIPE ACTION TRIGGERED:', direction, 'Job:', currentJob?.id);
-    setSwipeDirection(direction);
-    setIsAnimating(true);
+  const handleSwipeAction = async (direction: 'left' | 'right' | 'up') => {
+    if (isAnimating) return;
+
+    console.log(`🎯 SWIPE ACTION: ${direction} for job ${currentJob.id}`);
     
-    // Animate out based on direction
-    let animationTransform = '';
-    if (direction === 'left') {
-      animationTransform = 'translateX(-100%) rotate(-30deg)';
-    } else if (direction === 'right') {
-      animationTransform = 'translateX(100%) rotate(30deg)';
-    } else if (direction === 'up') {
-      animationTransform = 'translateY(-50%) scale(1.1)';
-    }
+    setIsAnimating(true);
+    setSwipeDirection(direction);
+
+    // Visual feedback
+    const animationTransform = direction === 'left' 
+      ? 'translateX(-150%) rotate(-30deg)' 
+      : direction === 'right'
+        ? 'translateX(150%) rotate(30deg)'
+        : 'translateY(-150%) scale(0.8)';
     
     setTransform(animationTransform);
 
-    // For Super Apply, show dialog immediately then proceed
-    if (direction === 'up') {
-      setShowApplicationDialog(true);
+    try {
+      // Execute the appropriate action
+      if (direction === 'left') {
+        await onReject(currentJob.id);
+      } else if (direction === 'right') {
+        await onSave(currentJob.id);
+      } else if (direction === 'up') {
+        setShowApplicationDialog(true);
+      }
+    } catch (error) {
+      console.error('Swipe action error:', error);
     }
 
-    // Execute action after animation
+    // Reset animation after delay
     setTimeout(() => {
-      onSwipe(direction, currentJob);
       setSwipeDirection(null);
       setIsAnimating(false);
       setTransform('translateX(0px) translateY(0px) rotate(0deg)');
     }, 300);
   };
 
-  const handleApplicationSubmit = (applicationData: any) => {
-    if (onApply) {
-      onApply(currentJob.id, applicationData);
+  const handleApplicationSubmit = async (applicationData: any) => {
+    try {
+      await onApplication(currentJob.id, applicationData);
+      setShowApplicationDialog(false);
+    } catch (error) {
+      console.error('Application submission error:', error);
     }
-    setShowApplicationDialog(false);
-    // Note: The card will already have moved to the next one due to the swipe action
   };
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      console.log('📱 react-swipeable: onSwipedLeft triggered');
+      console.log('👈 SWIPED LEFT detected');
       handleSwipeAction('left');
     },
     onSwipedRight: () => {
-      console.log('📱 react-swipeable: onSwipedRight triggered');
+      console.log('👉 SWIPED RIGHT detected');
       handleSwipeAction('right');
     },
     onSwipedUp: () => {
-      console.log('📱 react-swipeable: onSwipedUp triggered');
+      console.log('👆 SWIPED UP detected');
       handleSwipeAction('up');
     },
-    onSwiping: (eventData) => {
-      console.log('📱 react-swipeable: onSwiping', eventData.deltaX, eventData.deltaY);
-      if (!isAnimating) {
-        if (Math.abs(eventData.deltaX) > 50) {
-          const rotation = eventData.deltaX * 0.1;
-          setTransform(`translateX(${eventData.deltaX}px) rotate(${rotation}deg)`);
-        } else if (Math.abs(eventData.deltaY) > 50 && eventData.deltaY < 0) {
-          setTransform(`translateY(${eventData.deltaY}px) scale(${1 + eventData.deltaY * 0.001})`);
-        }
-      }
-    },
-    onSwiped: () => {
-      console.log('📱 react-swipeable: onSwiped - resetting transform');
-      if (!isAnimating) {
-        setTransform('translateX(0px) translateY(0px) rotate(0deg)');
-      }
-    },
+    
     trackMouse: true,
-    preventScrollOnSwipe: true,
+    delta: 10,
+    swipeDuration: 500,
+    touchEventOptions: { passive: false }
   });
 
   return (
-    <div className="relative w-full max-w-sm mx-auto h-[450px] md:h-[600px]">
-      {/* Card Stack Background */}
-      <div className="absolute inset-0">
-        {/* Background Cards Stack */}
-        {jobs.slice(currentIndex + 1, currentIndex + 3).map((job, index) => (
-          <div
-            key={job.id}
-            className={`absolute inset-0 transition-all duration-300`}
-            style={{
-              transform: `scale(${0.95 - index * 0.02}) translateY(${(index + 1) * 8}px)`,
-              opacity: 0.8 - index * 0.2,
-              zIndex: 10 - index
-            }}
+    <div className="relative w-full h-[600px] mx-auto max-w-md">
+      {/* Background Cards for Depth */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        {/* Next card (background) */}
+        {nextJob && (
+          <div 
+            className="absolute w-[95%] h-[95%] bg-white rounded-2xl shadow-lg border border-gray-100 opacity-50 -z-10"
+            style={{ transform: 'scale(0.95) translateY(10px)' }}
           >
-            <div className="w-full h-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="p-4 h-full flex flex-col">
-                <div className="h-8 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                <div className="h-4 bg-gray-100 rounded mb-4 animate-pulse"></div>
-                <div className="flex-1 bg-gray-50 rounded animate-pulse"></div>
-              </div>
-            </div>
+            <TalentSparkJobCard
+              job={nextJob}
+              onSave={onSave}
+              onQuickApply={onQuickApply}
+              isSaved={false}
+              txcReward={10}
+              viewMode="swipe"
+            />
           </div>
-        ))}
+        )}
+
+        {/* Third card (background) */}
+        {jobs[currentIndex + 2] && (
+          <div 
+            className="absolute w-[90%] h-[90%] bg-white rounded-2xl shadow border border-gray-100 opacity-25 -z-20"
+            style={{ transform: 'scale(0.9) translateY(20px)' }}
+          />
+        )}
       </div>
 
       {/* Swipe Action Indicators */}
@@ -183,8 +183,8 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
           <TalentSparkJobCard
             job={currentJob}
             onSave={onSave}
-            onQuickApply={(jobId) => setShowApplicationDialog(true)}
-            isSaved={savedJobs.includes(currentJob.id)}
+            onQuickApply={() => setShowApplicationDialog(true)}
+            isSaved={false}
             txcReward={10}
             viewMode="swipe"
           />
@@ -250,18 +250,11 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
         </div>
       </div>
 
-      {/* Progress Indicator */}
-      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-40">
-        <div className="text-xs text-gray-600 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm">
-          {currentIndex + 1} / {jobs.length}
-        </div>
-      </div>
-
-      {/* Job Application Dialog */}
+      {/* Application Dialog */}
       <JobApplicationDialog
+        job={currentJob}
         isOpen={showApplicationDialog}
         onClose={() => setShowApplicationDialog(false)}
-        job={currentJob}
         onApply={handleApplicationSubmit}
       />
     </div>
