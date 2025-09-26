@@ -97,17 +97,22 @@ export const useScraperLogs = (filters?: { source?: string; status?: string; lim
 
 // Utility function to validate trusted domains
 export const TRUSTED_DOMAINS = [
+  // Job portals
   'naukri.com', 'indeed.com', 'foundit.in', 'instahyre.com', 'angel.co',
   'cutshort.io', 'shine.com', 'glassdoor.com', 'linkedin.com', 'timesjobs.com',
   'hiringplug.com', 'workindia.in', 'jobhai.com', 'monsterindia.com', 'apna.co',
-  'internshala.com', 'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
-  'jobs.tcs.com', 'hcltech.com', 'careers.cognizant.com', 'jobs.sap.com',
-  'jobs.ibm.com', 'jobs.wipro.com', 'careers.infosys.com', 'careers.wipro.com',
-  'careers.hcltech.com', 'careers.techmahindra.com', 'unstop.com', 'hireclap.com',
-  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com',
-  'wipro.com', 'hcltech.com', 'accenture.com', 'infosys.com', 'techmahindra.com', 'cognizant.com',
-  // Real Infosys career domains
-  'career.infosys.com', 'sjobs.brassring.com', 'digitalcareers.infosys.com'
+  'internshala.com', 'unstop.com', 'hireclap.com', 'talent500.co', 'relevel.com',
+  'remoteok.io', 'weworkremotely.com', 'simplyhired.com',
+  // Company career pages - specific subdomains
+  'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
+  'jobs.tcs.com', 'careers.cognizant.com', 'jobs.sap.com', 'jobs.ibm.com',
+  'careers.infosys.com', 'careers.wipro.com', 'careers.hcltech.com', 
+  'careers.techmahindra.com', 'career.infosys.com', 'sjobs.brassring.com', 
+  'digitalcareers.infosys.com',
+  // Company root domains
+  'tcs.com', 'wipro.com', 'hcltech.com', 'accenture.com', 'infosys.com', 
+  'techmahindra.com', 'cognizant.com', 'google.com', 'microsoft.com', 
+  'sap.com', 'ibm.com'
 ];
 
 export const isTrustedDomain = (url: string): boolean => {
