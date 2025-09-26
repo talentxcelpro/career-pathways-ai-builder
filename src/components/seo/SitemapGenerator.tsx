@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Download, ExternalLink } from 'lucide-react';
+import { Loader2, Download, ExternalLink, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { MassiveSitemapManager } from './MassiveSitemapManager';
 
 export const SitemapGenerator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -80,12 +81,21 @@ Crawl-delay: 1
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          SEO Sitemap Generator
-        </CardTitle>
-      </CardHeader>
+    <div className="space-y-6">
+      {/* Massive Sitemap Manager */}
+      <MassiveSitemapManager />
+      
+      {/* Legacy Sitemap Generator */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="h-5 w-5" />
+            Legacy Sitemap Generator
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Traditional sitemap generation for smaller scale operations
+          </p>
+        </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-3">
           <Button 
@@ -155,5 +165,6 @@ Crawl-delay: 1
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };

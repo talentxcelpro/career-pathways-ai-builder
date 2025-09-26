@@ -1,11 +1,18 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.1';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+);
+
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -16,221 +23,269 @@ serve(async (req) => {
     const { 
       contentType, 
       topic, 
-      tone = 'professional', 
-      targetAudience = 'professionals',
-      context,
-      userProfile
+      targetAudience = 'job seekers', 
+      tone = 'professional',
+      keywords = [],
+      generateBulk = false,
+      bulkCount = 10 
     } = await req.json();
 
-    if (!contentType || !topic) {
-      return new Response(JSON.stringify({ error: 'Content type and topic are required' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    console.log(`Generating AI content: ${contentType} for topic: ${topic}`);
+
+    if (generateBulk) {
+      return await generateBulkContent({
+        contentType,
+        topic,
+        targetAudience,
+        tone,
+        keywords,
+        bulkCount
+      });
+    } else {
+      return await generateSingleContent({
+        contentType,
+        topic,
+        targetAudience,
+        tone,
+        keywords
       });
     }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get user from auth header
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Authorization required' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-    
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Initialize OpenAI
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Content templates and guidelines
-    const contentTemplates = {
-      linkedin_post: {
-        structure: "Hook → Value/Insight → Call to Action",
-        guidelines: "Engaging opening, valuable insights, relevant hashtags, professional tone",
-        maxLength: "1500 characters"
-      },
-      outreach_email: {
-        structure: "Personalized opening → Value proposition → Clear ask → Professional closing",
-        guidelines: "Concise, personalized, value-focused, clear CTA",
-        maxLength: "200-300 words"
-      },
-      project_summary: {
-        structure: "Project overview → Technologies used → Challenges overcome → Results achieved",
-        guidelines: "Technical details, quantified results, learning outcomes",
-        maxLength: "300-500 words"
-      },
-      cover_letter: {
-        structure: "Opening → Relevant experience → Value proposition → Closing",
-        guidelines: "Tailored to role, highlight achievements, show enthusiasm",
-        maxLength: "300-400 words"
-      }
-    };
-
-    const template = contentTemplates[contentType as keyof typeof contentTemplates] || contentTemplates.linkedin_post;
-
-    // Build generation prompt
-    const generationPrompt = `As a professional content creator and career expert, create ${contentType.replace('_', ' ')} content.
-
-CONTENT TYPE: ${contentType}
-TOPIC: ${topic}
-TONE: ${tone}
-TARGET AUDIENCE: ${targetAudience}
-STRUCTURE: ${template.structure}
-GUIDELINES: ${template.guidelines}
-MAX LENGTH: ${template.maxLength}
-
-${userProfile ? `USER PROFILE:
-Name: ${userProfile.name}
-Role: ${userProfile.role}
-Industry: ${userProfile.industry}
-` : ''}
-
-${context ? `ADDITIONAL CONTEXT: ${context}` : ''}
-
-Create compelling, professional content that:
-1. Captures attention immediately
-2. Provides genuine value to the audience
-3. Reflects the specified tone and style
-4. Includes appropriate call-to-action
-5. Is optimized for the platform/purpose
-6. Uses relevant industry terminology
-7. Follows best practices for engagement
-
-For LinkedIn posts: Include 3-5 relevant hashtags
-For emails: Include subject line suggestion
-For project summaries: Include key metrics and outcomes
-For cover letters: Highlight specific qualifications
-
-Provide the content in this JSON format:
-{
-  "content": "The main content here",
-  "subjectLine": "Email subject line (if applicable)",
-  "hashtags": ["#hashtag1", "#hashtag2"],
-  "keyPoints": ["Point 1", "Point 2", "Point 3"],
-  "wordCount": 150,
-  "tone": "${tone}",
-  "engagementTips": ["Tip 1", "Tip 2"],
-  "variations": {
-    "shorter": "Condensed version",
-    "longer": "Extended version"
-  }
-}`;
-
-    // Call OpenAI API
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert content creator specializing in professional communication, LinkedIn content, and career-focused writing. Create engaging, valuable content in valid JSON format.' 
-          },
-          { role: 'user', content: generationPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1500,
-      }),
-    });
-
-    if (!openAIResponse.ok) {
-      const error = await openAIResponse.text();
-      console.error('OpenAI API error:', error);
-      throw new Error('OpenAI API request failed');
-    }
-
-    const aiData = await openAIResponse.json();
-    let contentResult;
-
-    try {
-      // Try to parse JSON response
-      const responseText = aiData.choices[0].message.content;
-      contentResult = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse AI response as JSON:', parseError);
-      // Fallback response
-      const content = aiData.choices[0].message.content;
-      contentResult = {
-        content: content,
-        subjectLine: contentType === 'outreach_email' ? 'Professional Inquiry' : null,
-        hashtags: contentType === 'linkedin_post' ? ['#career', '#professional', '#growth'] : [],
-        keyPoints: ['Professional content created', 'Tailored for audience', 'Optimized for engagement'],
-        wordCount: content.split(' ').length,
-        tone: tone,
-        engagementTips: ['Share at optimal times', 'Engage with comments', 'Use relevant hashtags'],
-        variations: {
-          shorter: content.substring(0, Math.floor(content.length * 0.7)),
-          longer: content + '\n\nWhat are your thoughts on this?'
-        }
-      };
-    }
-
-    // Store content generation result
-    await supabase
-      .from('ai_operations')
-      .insert({
-        user_id: user.id,
-        operation_type: 'generate_post',
-        input_data: { 
-          contentType,
-          topic,
-          tone,
-          targetAudience,
-          context: context?.substring(0, 500)
-        },
-        output_data: {
-          ...contentResult,
-          content: contentResult.content?.substring(0, 1000) + '...' // Truncate for storage
-        },
-        status: 'completed',
-        tokens_used: aiData.usage?.total_tokens || 0,
-        completed_at: new Date().toISOString()
-      });
-
-    return new Response(JSON.stringify({
-      success: true,
-      content: contentResult,
-      metadata: {
-        tokens_used: aiData.usage?.total_tokens || 0,
-        model: 'gpt-4o-mini',
-        contentType
-      }
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
 
   } catch (error) {
-    console.error('Error in ai-content-generator function:', error);
+    console.error('Error in AI content generator:', error);
     return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      details: (error as Error).message 
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
+
+async function generateSingleContent(params: any) {
+  const { contentType, topic, targetAudience, tone, keywords } = params;
+  
+  // Add to queue
+  const { data: queueItem } = await supabase
+    .from('ai_content_generation_queue')
+    .insert({
+      content_type: contentType,
+      input_parameters: {
+        topic,
+        targetAudience,
+        tone,
+        keywords
+      },
+      status: 'processing'
+    })
+    .select()
+    .single();
+
+  try {
+    const content = await generateContentWithOpenAI(params);
+    
+    // Update queue item with generated content
+    await supabase
+      .from('ai_content_generation_queue')
+      .update({
+        status: 'completed',
+        generated_content: content.content,
+        metadata: content.metadata,
+        completed_at: new Date().toISOString(),
+        is_published: true
+      })
+      .eq('id', queueItem.id);
+
+    return new Response(JSON.stringify({
+      success: true,
+      content: content.content,
+      metadata: content.metadata,
+      contentId: queueItem.id
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    // Update queue item with error
+    await supabase
+      .from('ai_content_generation_queue')
+      .update({
+        status: 'failed',
+        error_message: error instanceof Error ? error.message : 'Unknown error'
+      })
+      .eq('id', queueItem.id);
+
+    throw error;
+  }
+}
+
+async function generateBulkContent(params: any) {
+  const { contentType, topic, targetAudience, tone, keywords, bulkCount } = params;
+  
+  const results = [];
+  
+  for (let i = 0; i < bulkCount; i++) {
+    const variation = `${topic} - Variation ${i + 1}`;
+    
+    // Add to queue
+    const { data: queueItem } = await supabase
+      .from('ai_content_generation_queue')
+      .insert({
+        content_type: contentType,
+        input_parameters: {
+          topic: variation,
+          targetAudience,
+          tone,
+          keywords
+        },
+        status: 'processing'
+      })
+      .select()
+      .single();
+
+    try {
+      const content = await generateContentWithOpenAI({
+        ...params,
+        topic: variation
+      });
+      
+      // Update queue item
+      await supabase
+        .from('ai_content_generation_queue')
+        .update({
+          status: 'completed',
+          generated_content: content.content,
+          metadata: content.metadata,
+          completed_at: new Date().toISOString(),
+          is_published: true
+        })
+        .eq('id', queueItem.id);
+
+      results.push({
+        success: true,
+        contentId: queueItem.id,
+        content: content.content,
+        metadata: content.metadata
+      });
+
+    } catch (error) {
+      await supabase
+        .from('ai_content_generation_queue')
+        .update({
+          status: 'failed',
+          error_message: error instanceof Error ? error.message : 'Unknown error'
+        })
+        .eq('id', queueItem.id);
+
+      results.push({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+
+    // Small delay to avoid rate limits
+    if (i < bulkCount - 1) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+
+  return new Response(JSON.stringify({
+    success: true,
+    results,
+    totalGenerated: results.filter(r => r.success).length,
+    totalRequested: bulkCount
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
+async function generateContentWithOpenAI(params: any) {
+  const { contentType, topic, targetAudience, tone, keywords } = params;
+  
+  const systemPrompt = getSystemPrompt(contentType);
+  const userPrompt = getUserPrompt(contentType, topic, targetAudience, tone, keywords);
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      max_tokens: 2000,
+      temperature: 0.7
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const generatedContent = data.choices[0].message.content;
+
+  // Extract metadata from generated content
+  const lines = generatedContent.split('\n');
+  const title = lines.find((line: string) => line.startsWith('Title:'))?.replace('Title:', '').trim() || topic;
+  const description = lines.find((line: string) => line.startsWith('Description:'))?.replace('Description:', '').trim() || '';
+  
+  return {
+    content: generatedContent,
+    metadata: {
+      title,
+      description,
+      keywords: keywords.join(', '),
+      slug: generateSlug(title),
+      contentType,
+      wordCount: generatedContent.split(' ').length
+    }
+  };
+}
+
+function getSystemPrompt(contentType: string): string {
+  switch (contentType) {
+    case 'job_description':
+      return 'You are an expert HR professional who writes compelling job descriptions. Create detailed, engaging job descriptions that attract top talent while clearly outlining requirements and benefits.';
+    case 'company_page':
+      return 'You are a corporate content writer specializing in company profiles. Create engaging company pages that showcase culture, values, and opportunities while maintaining professionalism.';
+    case 'blog_post':
+      return 'You are a professional content writer specializing in career advice and industry insights. Write informative, engaging blog posts that provide value to job seekers and professionals.';
+    case 'landing_page':
+      return 'You are a conversion copywriter who creates high-converting landing pages. Focus on benefits, clear value propositions, and compelling calls-to-action.';
+    case 'course_description':
+      return 'You are an educational content specialist. Create detailed course descriptions that clearly communicate learning outcomes, prerequisites, and benefits.';
+    default:
+      return 'You are a professional content writer. Create high-quality, engaging content that serves the specified purpose and target audience.';
+  }
+}
+
+function getUserPrompt(contentType: string, topic: string, targetAudience: string, tone: string, keywords: string[]): string {
+  const keywordText = keywords.length > 0 ? ` Include these keywords naturally: ${keywords.join(', ')}.` : '';
+  
+  return `Create a ${contentType} about "${topic}" for ${targetAudience}. 
+
+Use a ${tone} tone.${keywordText}
+
+Please structure your response as follows:
+Title: [Main title]
+Description: [Brief description/summary]
+
+[Main content here]
+
+Make sure the content is SEO-optimized, engaging, and provides real value to the target audience.`;
+}
+
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
