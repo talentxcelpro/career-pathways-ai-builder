@@ -155,8 +155,11 @@ const jobTemplates: JobTemplate[] = [
 
 const additionalCompanies = [
   "Microsoft India", "Google India", "Amazon India", "Flipkart", "Zomato", "Swiggy", "Paytm", "BYJU'S", 
-  "Ola", "Uber India", "Infosys", "TCS", "Wipro", "HCL Technologies", "Tech Mahindra", "Mindtree",
-  "Freshworks", "Zoho", "Razorpay", "PhonePe", "Nykaa", "BigBasket", "MakeMyTrip", "BookMyShow"
+  "Ola", "Uber India", "Infosys", "TCS", "Wipro", "HCL Technologies", "Tech Mahindra", "Cognizant",
+  "Freshworks", "Zoho", "Razorpay", "PhonePe", "Nykaa", "BigBasket", "MakeMyTrip", "BookMyShow",
+  "Tata Consultancy Services", "Accenture", "IBM India", "Oracle", "SAP", "Adobe", "Meta", "Myntra",
+  "Apollo Hospitals", "HDFC Bank", "ICICI Bank", "Axis Bank", "Kotak Mahindra Bank", "Reliance Industries",
+  "Deloitte", "PwC", "EY", "KPMG", "Dr. Reddy's", "Cipla", "Sun Pharma", "Mahindra Group", "Bajaj Group"
 ]
 
 const cities = [

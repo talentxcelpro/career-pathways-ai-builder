@@ -134,7 +134,6 @@ export const RealisticJobGenerator: React.FC = () => {
   );
 };
 
-// Fallback job generation when edge function is not available
 const generateFallbackJobs = (count: number) => {
   const companies = [
     { name: "Tata Consultancy Services" },
@@ -156,7 +155,27 @@ const generateFallbackJobs = (count: number) => {
     { name: "Ola" },
     { name: "Uber India" },
     { name: "Myntra" },
-    { name: "BigBasket" }
+    { name: "BigBasket" },
+    { name: "Razorpay" },
+    { name: "PhonePe" },
+    { name: "Nykaa" },
+    { name: "HDFC Bank" },
+    { name: "ICICI Bank" },
+    { name: "Axis Bank" },
+    { name: "Kotak Mahindra Bank" },
+    { name: "Reliance Industries" },
+    { name: "Deloitte" },
+    { name: "PwC" },
+    { name: "EY" },
+    { name: "KPMG" },
+    { name: "Apollo Hospitals" },
+    { name: "Dr. Reddy's" },
+    { name: "Cipla" },
+    { name: "Sun Pharma" },
+    { name: "Oracle" },
+    { name: "SAP" },
+    { name: "Adobe" },
+    { name: "Meta" }
   ];
 
   const industries = [
