@@ -38,12 +38,6 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // Add error boundary and React context validation
-  if (!React || typeof React.useState !== 'function') {
-    console.error('React hooks not available in AuthProvider');
-    return <div>Loading authentication...</div>;
-  }
-
   const [user, setUser] = React.useState<User | null>(null);
   const [session, setSession] = React.useState<Session | null>(null);
   const [loading, setLoading] = React.useState(true);
