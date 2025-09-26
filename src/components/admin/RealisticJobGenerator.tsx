@@ -30,13 +30,15 @@ export const RealisticJobGenerator: React.FC = () => {
         console.log('🔄 Using fallback method...');
         const fallbackJobs = generateFallbackJobs(jobCount);
         
+        // Insert jobs directly bypassing any validation
         const { data: insertedJobs, error: insertError } = await supabase
           .from('jobs')
           .insert(fallbackJobs)
           .select('id, title, company_name');
 
         if (insertError) {
-          throw new Error(insertError.message || 'Failed to insert jobs');
+          console.error('❌ Fallback insert error:', insertError);
+          throw new Error(`Fallback generation failed: ${insertError.message}`);
         }
 
         setLastGenerated(insertedJobs || []);
