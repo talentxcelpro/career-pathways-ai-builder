@@ -33,7 +33,7 @@ export const useJobsOptimized = (
   mode: 'pagination' | 'infinite' = 'pagination'
 ): OptimizedJobsResult => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 20; // Better pagination experience with smaller page size
+  const pageSize = 15; // Reduced for faster loading
   const prefetchTimeoutRef = useRef<NodeJS.Timeout>();
 
   // For infinite scroll mode
@@ -78,8 +78,8 @@ export const useJobsOptimized = (
       return lastPage.hasMore ? pages.length + 1 : undefined;
     },
     enabled: mode === 'infinite',
-    staleTime: 30000, // 30 seconds
-    gcTime: 300000, // 5 minutes
+    staleTime: 60000, // 1 minute for better performance
+    gcTime: 180000, // 3 minutes to reduce memory usage
   });
 
   // For pagination mode
@@ -119,7 +119,7 @@ export const useJobsOptimized = (
       };
     },
     enabled: mode === 'pagination',
-    staleTime: 30000, // 30 seconds
+    staleTime: 90000, // 1.5 minutes for better caching
     gcTime: 300000, // 5 minutes
   });
 

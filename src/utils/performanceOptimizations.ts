@@ -215,11 +215,28 @@ export const initializePerformanceOptimizations = () => {
   // Preload critical chunks
   preloadCriticalChunks();
   
-  // Setup font optimization
-  const link = document.createElement('link');
-  link.rel = 'preload';
-  link.as = 'font';
-  link.type = 'font/woff2';
-  link.crossOrigin = 'anonymous';
-  document.head.appendChild(link);
+  // Setup font optimization with performance hints
+  const fontLink = document.createElement('link');
+  fontLink.rel = 'preload';
+  fontLink.as = 'font';
+  fontLink.type = 'font/woff2';
+  fontLink.crossOrigin = 'anonymous';
+  document.head.appendChild(fontLink);
+
+  // Add performance monitoring
+  if ('performance' in window && 'observe' in window.PerformanceObserver.prototype) {
+    const observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        if (entry.entryType === 'largest-contentful-paint') {
+          console.log('LCP:', entry.startTime);
+        }
+        if (entry.entryType === 'first-input') {
+          const fidEntry = entry as PerformanceEventTiming;
+          console.log('FID:', fidEntry.processingStart - entry.startTime);
+        }
+      });
+    });
+    
+    observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input'] });
+  }
 };

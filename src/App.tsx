@@ -19,6 +19,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { HealthMonitor } from '@/components/monitoring/HealthMonitor';
 import { MetaTags } from '@/components/seo/MetaTags';
 import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
+import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
+import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
 import { GoogleOneTap } from '@/components/auth/GoogleOneTap';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
@@ -149,6 +151,12 @@ const App = () => {
       if (turboCore && typeof turboCore.init === 'function') {
         turboCore.init();
       }
+
+      // Initialize performance optimizations
+      initializePerformanceOptimizations();
+      
+      // Initialize jobs-specific optimizations
+      initializeJobsOptimizations(queryClient).catch(console.error);
     } catch (error) {
       console.warn('App initialization error:', error);
     }

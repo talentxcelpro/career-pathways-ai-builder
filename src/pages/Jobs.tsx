@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useJobsOptimized } from '@/hooks/useJobsOptimized';
+import { useJobsCriticalPath } from '@/hooks/useJobsCriticalPath';
 import { useRealtimeJobs, useRealtimeJobStats } from '@/hooks/useRealtimeJobs';
 import { useStructuredData } from '@/hooks/useStructuredData';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
@@ -34,6 +35,7 @@ import { GlobalSearch } from '@/components/jobs/GlobalSearch';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
+import { OptimizedJobCard } from '@/components/jobs/OptimizedJobCard';
 
 // Input validation schema for security
 const filtersSchema = z.object({
@@ -114,14 +116,15 @@ const Jobs = () => {
     getCurrentUser();
   }, []);
 
-  // Real-time job data with optimized caching
+  // Critical path loading for faster initial render
   const { 
     jobs: allJobs, 
     totalCount,
     hasMore,
     isLoading, 
-    refetch 
-  } = useJobsOptimized(filters, sortBy);
+    isEnhancing,
+    refetch
+  } = useJobsCriticalPath(filters, sortBy);
 
   // Real-time job statistics
   const { stats: jobStats } = useRealtimeJobStats();
@@ -720,14 +723,12 @@ const Jobs = () => {
                         'space-y-4'
                       }>
                         {regularJobs.map((job) => (
-                          <TalentSparkJobCard
+                          <OptimizedJobCard
                             key={job.id}
                             job={job}
                             onSave={handleSaveJob}
-                            onQuickApply={handleQuickApply}
+                            onApply={handleQuickApply}
                             isSaved={savedJobs.includes(job.id)}
-                            txcReward={10}
-                            viewMode={viewMode}
                           />
                         ))}
                       </div>
