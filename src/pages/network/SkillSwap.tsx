@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { sampleSkillExchanges } from './sample-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdvancedNetworking } from '@/hooks/useAdvancedNetworking';
 import { supabase } from '@/integrations/supabase/client';
@@ -236,15 +237,15 @@ const SkillSwap: React.FC = () => {
           <div className="inline-flex items-center justify-center p-2 bg-blue-100 rounded-full mb-6">
             <ArrowLeftRight className="h-8 w-8 text-blue-600" />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-apple-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
             Skill Exchange Network
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8 font-apple-medium">
             Exchange skills, learn from others, and earn TXC credits in our vibrant learning community
           </p>
           <Button 
             onClick={() => setShowCreateForm(true)}
-            className="apple-button text-lg px-8 py-4 smooth-bounce"
+            className="apple-button text-lg px-8 py-4 smooth-bounce font-apple-medium"
           >
             <Plus className="h-5 w-5 mr-2" />
             Create Exchange

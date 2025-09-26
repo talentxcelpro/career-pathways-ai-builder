@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { sampleVerifiedProfiles } from './sample-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -68,6 +69,39 @@ const Verified: React.FC = () => {
     };
   }, []);
 
+  const getSampleData = () => [
+    {
+      id: 'sample-1',
+      full_name: 'Dr. Jennifer Walsh',
+      title: 'Chief Technology Officer',
+      location: 'San Francisco, CA',
+      about: 'Technology leader with 15+ years building scalable products at Fortune 500 companies.',
+      profile_picture_url: null,
+      is_verified: true,
+      verification_level: 'gold',
+      company: 'TechCorp Inc',
+      experience_years: 15,
+      skills: ['Leadership', 'Cloud Architecture', 'Team Management'],
+      industry: 'Technology',
+      created_at: new Date().toISOString()
+    },
+    {
+      id: 'sample-2',
+      full_name: 'Mark Peterson',
+      title: 'Senior Product Manager',
+      location: 'New York, NY',
+      about: 'Product strategist focused on user-centered design and data-driven decisions.',
+      profile_picture_url: null,
+      is_verified: true,
+      verification_level: 'silver',
+      company: 'StartupHub',
+      experience_years: 8,
+      skills: ['Product Strategy', 'User Research', 'Agile'],
+      industry: 'Technology',
+      created_at: new Date().toISOString()
+    }
+  ];
+
   const fetchVerifiedProfiles = async () => {
     try {
       setLoading(true);
@@ -106,9 +140,11 @@ const Verified: React.FC = () => {
         created_at: verification.created_at || new Date().toISOString()
       }));
 
-      setVerifiedProfiles(verifiedData);
+      const profiles = verifiedData.length > 0 ? verifiedData : sampleVerifiedProfiles;
+      setVerifiedProfiles(profiles);
     } catch (error) {
       console.error('Error fetching verified profiles:', error);
+      setVerifiedProfiles(sampleVerifiedProfiles);
     } finally {
       setLoading(false);
     }
@@ -160,10 +196,10 @@ const Verified: React.FC = () => {
           <div className="inline-flex items-center justify-center p-2 bg-green-100 rounded-full mb-6">
             <Shield className="h-8 w-8 text-green-600" />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-apple-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
             Verified Professionals
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8 font-apple-medium">
             Connect with authenticated and verified industry professionals
           </p>
         </div>

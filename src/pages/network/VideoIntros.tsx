@@ -167,15 +167,15 @@ const VideoIntros: React.FC = () => {
           <div className="inline-flex items-center justify-center p-2 bg-purple-100 rounded-full mb-6">
             <Video className="h-8 w-8 text-purple-600" />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-apple-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             Video Introductions
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8 font-apple-medium">
             Connect through authentic video introductions and build meaningful professional relationships
           </p>
           <Button 
             onClick={() => setShowCreateForm(true)}
-            className="apple-button text-lg px-8 py-4 smooth-bounce bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+            className="apple-button text-lg px-8 py-4 smooth-bounce bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 font-apple-medium"
           >
             <Video className="h-5 w-5 mr-2" />
             Create Video Intro

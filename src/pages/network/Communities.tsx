@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { sampleCommunities } from './sample-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdvancedNetworking } from '@/hooks/useAdvancedNetworking';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,6 +85,35 @@ const Communities: React.FC = () => {
     };
   }, [user?.id]);
 
+  const getSampleData = () => [
+    {
+      id: 'sample-1',
+      name: 'React Developers',
+      description: 'A community for React developers to share knowledge, discuss best practices, and collaborate on projects.',
+      category: 'Technology',
+      member_count: 1247,
+      is_private: false,
+      is_featured: true,
+      activity_level: 'high',
+      recent_activity: '2 hours ago',
+      created_at: new Date().toISOString(),
+      avatar_url: null
+    },
+    {
+      id: 'sample-2',
+      name: 'UI/UX Designers',
+      description: 'Connect with fellow designers, share portfolios, get feedback, and stay updated with design trends.',
+      category: 'Design',
+      member_count: 892,
+      is_private: false,
+      is_featured: false,
+      activity_level: 'medium',
+      recent_activity: '1 day ago',
+      created_at: new Date().toISOString(),
+      avatar_url: null
+    }
+  ];
+
   const fetchCommunities = async () => {
     try {
       setIsLoading(true);
@@ -95,9 +125,11 @@ const Communities: React.FC = () => {
       
       if (error) throw error;
       
-      setCommunities(data || []);
+      const communities = data && data.length > 0 ? data : sampleCommunities;
+      setCommunities(communities);
     } catch (error) {
       console.error('Error fetching communities:', error);
+      setCommunities(sampleCommunities);
     } finally {
       setIsLoading(false);
     }
@@ -177,13 +209,13 @@ const Communities: React.FC = () => {
           <div className="inline-flex items-center justify-center p-2 bg-orange-100 rounded-full mb-6">
             <Users className="h-8 w-8 text-orange-600" />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-apple-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
             Professional Communities
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8 font-apple-medium">
             Join interest-based communities and connect with like-minded professionals
           </p>
-          <Button className="apple-button text-lg px-8 py-4 smooth-bounce bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700">
+          <Button className="apple-button text-lg px-8 py-4 smooth-bounce bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 font-apple-medium">
             <Plus className="h-5 w-5 mr-2" />
             Create Community
           </Button>
