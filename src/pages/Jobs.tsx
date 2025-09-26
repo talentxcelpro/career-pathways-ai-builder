@@ -35,12 +35,7 @@ import { SalaryTransparencyWidget } from '@/components/jobs/SalaryTransparencyWi
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
 import { TopCompaniesSalaries } from '@/components/jobs/TopCompaniesSalaries';
 
-// Enhanced UX Components
-import { JobComparisonPanel } from '@/components/jobs/JobComparisonPanel';
-import { EnhancedCompanyProfile } from '@/components/jobs/EnhancedCompanyProfile';
-import { ApplicationTracker } from '@/components/jobs/ApplicationTracker';
-import { ProgressiveDisclosure } from '@/components/jobs/ProgressiveDisclosure';
-import { FilterDiscoveryWidget } from '@/components/jobs/FilterDiscoveryWidget';
+// Core job search components only
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -77,11 +72,6 @@ const Jobs = () => {
   const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>('card');
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
 
-  // Enhanced UX State
-  const [comparisonJobs, setComparisonJobs] = useState<any[]>([]);
-  const [isComparisonOpen, setIsComparisonOpen] = useState(false);
-  const [isApplicationTrackerOpen, setIsApplicationTrackerOpen] = useState(false);
-  const [isNewUser, setIsNewUser] = useState(false);
 
   // Get current user
   useEffect(() => {
@@ -348,30 +338,6 @@ const Jobs = () => {
     }
   };
 
-  // Enhanced UX Functions
-  const addToComparison = (job: any) => {
-    if (comparisonJobs.length >= 3) {
-      toast.error('You can only compare up to 3 jobs at once');
-      return;
-    }
-    
-    if (comparisonJobs.find(j => j.id === job.id)) {
-      toast.error('Job already in comparison');
-      return;
-    }
-    
-    setComparisonJobs(prev => [...prev, job]);
-    toast.success('Job added to comparison');
-  };
-
-  const removeFromComparison = (jobId: string) => {
-    setComparisonJobs(prev => prev.filter(j => j.id !== jobId));
-  };
-
-  const clearComparison = () => {
-    setComparisonJobs([]);
-    setIsComparisonOpen(false);
-  };
 
   return (
     <>
@@ -509,19 +475,8 @@ const Jobs = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <ProgressiveDisclosure isNewUser={isNewUser}>
+        {/* Main Content - Simplified */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-widget-id="job-search">
-          
-          {/* Filter Discovery Widget */}
-          <div className="mb-8">
-            <FilterDiscoveryWidget
-              activeFilters={filters}
-              onFilterChange={setFilters}
-              totalJobs={totalCount}
-              isMobile={false}
-            />
-          </div>
           
           {/* Personal Dashboard for logged-in users */}
           {currentUser && (
@@ -610,29 +565,8 @@ const Jobs = () => {
             {/* Jobs Display */}
             <div className="lg:col-span-3" data-widget-id="main-jobs">
               
-              {/* Enhanced Action Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsApplicationTrackerOpen(true)}
-                    className="gap-2"
-                  >
-                    📊 My Applications
-                  </Button>
-                  {comparisonJobs.length > 0 && (
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => setIsComparisonOpen(true)}
-                      className="gap-2"
-                    >
-                      📋 Compare Jobs ({comparisonJobs.length})
-                    </Button>
-                  )}
-                </div>
-                
+              {/* Jobs Count */}
+              <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">
                     {totalCount.toLocaleString()} total jobs
@@ -658,9 +592,7 @@ const Jobs = () => {
                         job={job}
                         onSave={handleSaveJob}
                         onQuickApply={handleQuickApply}
-                        onCompare={addToComparison}
                         isSaved={savedJobs.includes(job.id)}
-                        isInComparison={comparisonJobs.some(j => j.id === job.id)}
                         txcReward={15}
                         viewMode="featured"
                       />
@@ -740,9 +672,7 @@ const Jobs = () => {
                           job={job}
                           onSave={handleSaveJob}
                           onQuickApply={handleQuickApply}
-                          onCompare={addToComparison}
                           isSaved={savedJobs.includes(job.id)}
-                          isInComparison={comparisonJobs.some(j => j.id === job.id)}
                           txcReward={10}
                           viewMode={viewMode}
                         />
@@ -755,26 +685,6 @@ const Jobs = () => {
               </div>
             </div>
           </div>
-        </div>
-        </ProgressiveDisclosure>
-
-        {/* Enhanced Features */}
-        <JobComparisonPanel
-          jobs={comparisonJobs}
-          onRemoveJob={removeFromComparison}
-          onClearAll={clearComparison}
-          isOpen={isComparisonOpen}
-          onClose={() => setIsComparisonOpen(false)}
-        />
-
-        <ApplicationTracker
-          isOpen={isApplicationTrackerOpen}
-          onClose={() => setIsApplicationTrackerOpen(false)}
-        />
-
-        {/* Hundreds of Industries Section */}
-        <div className="max-w-7xl mx-auto px-4 py-16" data-widget-id="industries">
-          <HundredsOfIndustriesSection />
         </div>
 
         {/* Floating Action Button for Mobile */}
