@@ -22,6 +22,7 @@ import { assessmentRoutes } from "./navigation/assessmentRoutes";
 import { referralRoutes } from "./navigation/referralRoutes";
 import { passportRoutes } from "./navigation/passportRoutes";
 import { mobileRoutes } from "./navigation/mobileRoutes";
+import { aiRoutes } from "./navigation/aiRoutes";
 import { analyticsRoutes } from "./navigation/analyticsRoutes";
 import { growthRoutes } from "./navigation/growthRoutes";
 import { gamificationRoutes } from "./navigation/gamificationRoutes";
@@ -146,6 +147,7 @@ export const navItems = [
   ...servicesRoutes,
   ...analyticsRoutes,
   ...growthRoutes,
+  ...aiRoutes,
   ...aiAgentRoutes,
   ...campaignRoutes,
   ...embedRoutes,

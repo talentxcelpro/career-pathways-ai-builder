@@ -79,6 +79,7 @@ import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobA
 import EdgeFunctionsMonitor from "@/pages/admin/EdgeFunctionsMonitor";
 import NewsManagement from "@/pages/admin/NewsManagement";
 import NewsPage from "@/pages/NewsPage";
+import AIServicesPage from "@/pages/AIServicesPage";
 import JobsByRole from "@/pages/JobsByRole";
 import JobsByLocation from "@/pages/JobsByLocation";
 import JobsBySkill from "@/pages/JobsBySkill";
@@ -229,6 +230,13 @@ const App = () => {
                                   }>
                                     <CareerPlatformShowcasePage />
                                   </React.Suspense>
+                                } />
+
+                                {/* AI Services Route */}
+                                <Route path="/ai/services" element={
+                                  <ProtectedRoute>
+                                    <AIServicesPage />
+                                  </ProtectedRoute>
                                 } />
 
                                 {/* All other routes */}
