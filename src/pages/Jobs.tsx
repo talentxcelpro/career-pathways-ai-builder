@@ -488,6 +488,17 @@ const Jobs = () => {
               >
                 ⚡ Quick Apply
               </Button>
+              
+              {/* Additional AI Hub CTA */}
+              <Button
+                onClick={() => navigate('/career-dashboard')}
+                variant="default"
+                size="sm"
+                className="whitespace-nowrap flex items-center gap-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
+              >
+                <Brain className="h-3 w-3" />
+                AI Hub
+              </Button>
             </div>
 
             {/* Enhanced Global Search Bar */}
@@ -749,8 +760,21 @@ const Jobs = () => {
                     )}
                   </>
                 )}
-              </div>
             </div>
+          </div>
+        </div>
+        
+        {/* Floating AI Career Intelligence Hub Button */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={() => navigate('/career-dashboard')}
+            size="lg"
+            className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 group"
+          >
+            <Brain className="h-6 w-6 group-hover:animate-pulse" />
+          </Button>
+          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            AI Career Hub
           </div>
         </div>
       </div>
