@@ -22,6 +22,7 @@ export const useMobileGestures = (
   const currentPos = useRef<TouchPosition | null>(null);
 
   const handleTouchStart = useCallback((event: TouchEvent | React.TouchEvent) => {
+    console.log('👆 TOUCH START detected');
     const touch = 'touches' in event ? event.touches[0] : event;
     startPos.current = {
       x: touch.clientX,
@@ -65,6 +66,9 @@ export const useMobileGestures = (
       } else {
         direction = deltaY > 0 ? 'down' : 'up';
       }
+      console.log('✅ SWIPE DETECTED:', direction, 'Distance:', distance, 'Velocity:', velocity);
+    } else {
+      console.log('❌ SWIPE NOT DETECTED - Distance:', distance, 'Velocity:', velocity, 'Threshold:', threshold);
     }
 
     setSwipe({ direction, distance, velocity });

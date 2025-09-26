@@ -44,6 +44,7 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   }
 
   const handleSwipeAction = (direction: 'left' | 'right' | 'up') => {
+    console.log('🎯 SWIPE ACTION TRIGGERED:', direction, 'Job:', currentJob?.id);
     setSwipeDirection(direction);
     setIsAnimating(true);
     
