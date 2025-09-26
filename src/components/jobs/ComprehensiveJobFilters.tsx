@@ -60,16 +60,16 @@ const FilterSection: React.FC<{
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
-          className="w-full justify-between p-3 h-auto font-medium"
+          className="w-full justify-between p-2 h-auto text-sm font-medium"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {icon}
-            <span>{title}</span>
+            <span className="text-sm">{title}</span>
           </div>
-          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-3 pb-3">
+      <CollapsibleContent className="px-2 pb-2">
         {children}
       </CollapsibleContent>
     </Collapsible>
@@ -90,16 +90,16 @@ const CheckboxFilter: React.FC<{
   };
 
   return (
-    <div className="space-y-2 max-h-48 overflow-y-auto">
+    <div className="space-y-1.5 max-h-48 overflow-y-auto">
       {options.map((option) => (
-        <div key={option.value} className="flex items-center space-x-2">
+        <div key={option.value} className="flex items-center space-x-1.5">
           <Checkbox
             id={option.value}
             checked={selected.includes(option.value)}
             onCheckedChange={(checked) => handleChange(option.value, checked as boolean)}
           />
-          <label htmlFor={option.value} className="text-sm cursor-pointer flex-1 flex items-center justify-between">
-            <span>{option.label}</span>
+          <label htmlFor={option.value} className="text-xs cursor-pointer flex-1 flex items-center justify-between">
+            <span className="text-xs">{option.label}</span>
             {showCount && option.count && (
               <span className="text-xs text-muted-foreground">({option.count})</span>
             )}
@@ -222,13 +222,13 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
 
   return (
     <Card className={`h-fit sticky top-4 ${className}`}>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            <CardTitle className="text-base">Job Filters</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <Filter className="h-3 w-3" />
+            <CardTitle className="text-sm">Job Filters</CardTitle>
             {activeFiltersCount > 0 && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs h-4 px-1.5">
                 {activeFiltersCount}
               </Badge>
             )}
@@ -238,7 +238,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
               variant="ghost"
               size="sm"
               onClick={onClearFilters}
-              className="text-xs h-8 px-2"
+              className="text-xs h-6 px-2"
             >
               <X className="h-3 w-3 mr-1" />
               Clear All
@@ -251,7 +251,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
         <div className="space-y-1">
           
           {/* Experience */}
-          <FilterSection title="Experience" icon={<Clock className="h-4 w-4" />}>
+          <FilterSection title="Experience" icon={<Clock className="h-3 w-3" />}>
             <CheckboxFilter
               options={EXPERIENCE_OPTIONS}
               selected={filters.experience_level}
@@ -274,11 +274,11 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>₹{filters.salary_min / 1000}k</span>
-                  <span>₹{filters.salary_max / 1000}k</span>
+                  <span className="text-xs">₹{filters.salary_min / 1000}k</span>
+                  <span className="text-xs">₹{filters.salary_max / 1000}k</span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-1 text-xs">
                 {[
                   { range: '0-3 Lakhs', count: 145 },
                   { range: '3-6 Lakhs', count: 189 },
@@ -287,9 +287,9 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
                   { range: '15-25 Lakhs', count: 56 },
                   { range: '25+ Lakhs', count: 34 }
                 ].map((item) => (
-                  <div key={item.range} className="flex justify-between text-muted-foreground">
-                    <span>{item.range}</span>
-                    <span>({item.count})</span>
+                  <div key={item.range} className="flex justify-between text-muted-foreground text-xs">
+                    <span className="text-xs">{item.range}</span>
+                    <span className="text-xs">({item.count})</span>
                   </div>
                 ))}
               </div>
@@ -299,7 +299,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Department */}
-          <FilterSection title="Department" icon={<Briefcase className="h-4 w-4" />}>
+          <FilterSection title="Department" icon={<Briefcase className="h-3 w-3" />}>
             <CheckboxFilter
               options={DEPARTMENT_OPTIONS}
               selected={filters.department || []}
@@ -310,7 +310,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Company Type */}
-          <FilterSection title="Company Type" icon={<Building2 className="h-4 w-4" />}>
+          <FilterSection title="Company Type" icon={<Building2 className="h-3 w-3" />}>
             <CheckboxFilter
               options={COMPANY_TYPE_OPTIONS}
               selected={filters.company_type || []}
@@ -321,7 +321,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Work Mode */}
-          <FilterSection title="Work Mode" icon={<MapPin className="h-4 w-4" />}>
+          <FilterSection title="Work Mode" icon={<MapPin className="h-3 w-3" />}>
             <CheckboxFilter
               options={WORK_MODE_OPTIONS}
               selected={filters.work_mode || []}
@@ -332,7 +332,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Industry */}
-          <FilterSection title="Industry" icon={<Building2 className="h-4 w-4" />} defaultOpen={false}>
+          <FilterSection title="Industry" icon={<Building2 className="h-3 w-3" />} defaultOpen={false}>
             <div className="px-2">
               <IndustrySelector
                 selectedIndustries={filters.industry || []}
@@ -347,7 +347,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Role Category */}
-          <FilterSection title="Role Category" icon={<Users className="h-4 w-4" />} defaultOpen={false}>
+          <FilterSection title="Role Category" icon={<Users className="h-3 w-3" />} defaultOpen={false}>
             <CheckboxFilter
               options={ROLE_CATEGORY_OPTIONS}
               selected={filters.role_category || []}
@@ -358,7 +358,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Education */}
-          <FilterSection title="Education" icon={<GraduationCap className="h-4 w-4" />} defaultOpen={false}>
+          <FilterSection title="Education" icon={<GraduationCap className="h-3 w-3" />} defaultOpen={false}>
             <CheckboxFilter
               options={EDUCATION_OPTIONS}
               selected={filters.education || []}
@@ -369,7 +369,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Posted By */}
-          <FilterSection title="Posted By" icon={<Users className="h-4 w-4" />} defaultOpen={false}>
+          <FilterSection title="Posted By" icon={<Users className="h-3 w-3" />} defaultOpen={false}>
             <CheckboxFilter
               options={POSTED_BY_OPTIONS}
               selected={filters.posted_by || []}
@@ -380,7 +380,7 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
           <Separator />
 
           {/* Freshness */}
-          <FilterSection title="Freshness" icon={<Clock className="h-4 w-4" />} defaultOpen={false}>
+          <FilterSection title="Freshness" icon={<Clock className="h-3 w-3" />} defaultOpen={false}>
             <CheckboxFilter
               options={FRESHNESS_OPTIONS}
               selected={filters.freshness || []}
