@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings, Search } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings, Search, Video } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -234,17 +234,17 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                   </Button>
                 </Link>
                 {hasEmployerAccess ? (
-                  <Link to="/pro/services" className="block">
+                  <Link to="/network/video-intros" className="block">
                     <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                      <Settings className="h-3.5 w-3.5 mr-3" />
-                      Set Up Services
+                      <Video className="h-3.5 w-3.5 mr-3" />
+                      Video Intros
                     </Button>
                   </Link>
                 ) : (
-                  <Link to="/pro/subscription" className="block">
+                  <Link to="/network/video-intros" className="block">
                     <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                      <Settings className="h-3.5 w-3.5 mr-3" />
-                      Set Up Services
+                      <Video className="h-3.5 w-3.5 mr-3" />
+                      Video Intros
                     </Button>
                   </Link>
                 )}
