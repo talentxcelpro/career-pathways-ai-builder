@@ -215,7 +215,7 @@ const App = () => {
             <NotificationProvider>
               <RealtimeProvider showToasts={false}>
                 <CopilotProvider>
-                  
+                  <TooltipProvider>
                   <Toaster
                     duration={10000}
                     position="top-right"
@@ -227,8 +227,9 @@ const App = () => {
                           marginTop: '80px',
                         },
                       }}
-                    />
-                <MobileAppWrapper>
+                        />
+                    </TooltipProvider>
+                 <MobileAppWrapper>
                   <div className="min-h-screen flex flex-col">
                     <Navbar />
                     <main className="flex-1">
