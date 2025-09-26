@@ -5,7 +5,8 @@ import { Helmet } from 'react-helmet-async';
 import { 
   Search, Brain, Filter, TrendingUp, Building, MapPin, Zap, 
   Star, Heart, Clock, Users, Award, Sparkles, Target, 
-  ChevronRight, Play, Mic, Shield, Rocket, Bell
+  ChevronRight, Play, Mic, Shield, Rocket, Bell, Grid3X3,
+  List, RotateCcw
 } from 'lucide-react';
 
 // Components
@@ -25,6 +26,7 @@ import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIG
 
 // New Components for TalentSpark Experience
 import { TalentSparkJobCard } from '@/components/jobs/TalentSparkJobCard';
+import { SwipeableJobCard } from '@/components/jobs/SwipeableJobCard';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
@@ -64,6 +66,7 @@ const Jobs = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [txcCoins, setTxcCoins] = useState(0); // Will be loaded from real user data
   const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>('card');
+  const [swipeIndex, setSwipeIndex] = useState(0);
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
 
 
@@ -446,34 +449,63 @@ const Jobs = () => {
             </div>
 
             {/* View Mode Selector */}
-            <div className="flex justify-center gap-2 mt-4">
-              <Button
-                variant={viewMode === 'card' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('card')}
-                className="rounded-full"
-              >
-                <Building className="h-4 w-4 mr-2" />
-                Card View
-              </Button>
-              <Button
-                variant={viewMode === 'swipe' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('swipe')}
-                className="rounded-full"
-              >
-                <Zap className="h-4 w-4 mr-2" />
-                Swipe Mode
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-full"
-              >
-                <Users className="h-4 w-4 mr-2" />
-                List View
-              </Button>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div className="text-center mb-3">
+                <h3 className="font-bold text-sm text-gray-900">Choose Your View</h3>
+                <p className="text-xs text-muted-foreground">Customize how you browse jobs</p>
+              </div>
+              
+              <div className="flex justify-center gap-2">
+                <Button
+                  variant={viewMode === 'card' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('card')}
+                  className="rounded-full px-4 py-2 text-xs transition-all hover:scale-105"
+                >
+                  <Grid3X3 className="h-3 w-3 mr-1" />
+                  Card View
+                </Button>
+                <Button
+                  variant={viewMode === 'swipe' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => {
+                    setViewMode('swipe');
+                    setSwipeIndex(0);
+                  }}
+                  className="rounded-full px-4 py-2 text-xs transition-all hover:scale-105"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Swipe Mode
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                  className="rounded-full px-4 py-2 text-xs transition-all hover:scale-105"
+                >
+                  <List className="h-3 w-3 mr-1" />
+                  List View
+                </Button>
+              </div>
+              
+              {/* View Mode Descriptions */}
+              <div className="mt-3 text-center">
+                {viewMode === 'card' && (
+                  <p className="text-xs text-muted-foreground">
+                    📱 Detailed cards with full job information
+                  </p>
+                )}
+                {viewMode === 'swipe' && (
+                  <p className="text-xs text-muted-foreground">
+                    👆 Swipe left to pass, right to save - like dating for jobs!
+                  </p>
+                )}
+                {viewMode === 'list' && (
+                  <p className="text-xs text-muted-foreground">
+                    📋 Compact list view for quick scanning
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -620,23 +652,106 @@ const Jobs = () => {
                   </Card>
                 ) : (
                   <div className="space-y-6">
-                  <div className={
-                      viewMode === 'card' ? 'grid grid-cols-1 xl:grid-cols-2 gap-6' :
-                      viewMode === 'swipe' ? 'space-y-4' :
-                      'space-y-4'
-                    }>
-                      {regularJobs.map((job) => (
-                        <TalentSparkJobCard
-                          key={job.id}
-                          job={job}
-                          onSave={handleSaveJob}
-                          onQuickApply={handleQuickApply}
-                          isSaved={savedJobs.includes(job.id)}
-                          txcReward={10}
-                          viewMode={viewMode}
-                        />
-                      ))}
-                    </div>
+                    {/* View Mode Specific Content */}
+                    {viewMode === 'swipe' ? (
+                      <div className="max-w-md mx-auto">
+                        <div className="text-center mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                          <div className="flex items-center justify-center gap-2 mb-2">
+                            <RotateCcw className="h-5 w-5 text-purple-600" />
+                            <span className="font-bold text-purple-800">Swipe Mode Active</span>
+                          </div>
+                          <p className="text-sm text-purple-700 mb-2">
+                            Find your perfect job match with intelligent swiping
+                          </p>
+                          <div className="flex items-center justify-center gap-4 text-xs">
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                              <span>Pass</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                              <span>Save</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                              <span>Apply</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Swipe Stack */}
+                        <div className="relative">
+                          {regularJobs.slice(swipeIndex, swipeIndex + 3).map((job, index) => (
+                            <div
+                              key={job.id}
+                              className={`${
+                                index === 0 ? 'z-30' : index === 1 ? 'z-20' : 'z-10'
+                              } ${index > 0 ? 'absolute inset-0' : ''}`}
+                              style={{
+                                transform: index > 0 ? `scale(${1 - index * 0.05}) translateY(${index * 10}px)` : 'none',
+                                opacity: index === 0 ? 1 : 0.7
+                              }}
+                            >
+                              {index === 0 ? (
+                                <SwipeableJobCard
+                                  job={job}
+                                  onSave={handleSaveJob}
+                                  onQuickApply={handleQuickApply}
+                                  onPass={(jobId) => {
+                                    console.log('Passed on job:', jobId);
+                                  }}
+                                  isSaved={savedJobs.includes(job.id)}
+                                  txcReward={10}
+                                  onSwipeComplete={() => {
+                                    setSwipeIndex(prev => prev + 1);
+                                  }}
+                                />
+                              ) : (
+                                <TalentSparkJobCard
+                                  job={job}
+                                  onSave={handleSaveJob}
+                                  onQuickApply={handleQuickApply}
+                                  isSaved={savedJobs.includes(job.id)}
+                                  txcReward={10}
+                                  viewMode="swipe"
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {swipeIndex >= regularJobs.length && (
+                          <div className="text-center py-8">
+                            <div className="text-6xl mb-4">🎉</div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">All caught up!</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              You've seen all available jobs. Check back later for new opportunities.
+                            </p>
+                            <Button onClick={() => setSwipeIndex(0)}>
+                              Start Over
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className={
+                        viewMode === 'card' ? 'grid grid-cols-1 xl:grid-cols-2 gap-6' :
+                        viewMode === 'list' ? 'space-y-2' :
+                        'space-y-4'
+                      }>
+                        {regularJobs.map((job) => (
+                          <TalentSparkJobCard
+                            key={job.id}
+                            job={job}
+                            onSave={handleSaveJob}
+                            onQuickApply={handleQuickApply}
+                            isSaved={savedJobs.includes(job.id)}
+                            txcReward={10}
+                            viewMode={viewMode}
+                          />
+                        ))}
+                      </div>
+                    )}
 
                     {/* Real-time job loading - no pagination needed */}
                   </div>

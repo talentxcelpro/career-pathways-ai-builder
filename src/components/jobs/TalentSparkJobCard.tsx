@@ -286,6 +286,96 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
     );
   }
 
+  // List view (compact horizontal layout)
+  if (viewMode === 'list') {
+    return (
+      <Card className="group hover:shadow-md transition-all duration-200 cursor-pointer border-l-2 border-l-primary/30 hover:border-l-primary">
+        <div className="p-4" onClick={handleViewJob}>
+          <div className="flex items-center gap-4">
+            {/* Company Logo */}
+            <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              {job.companies?.logo_url ? (
+                <img 
+                  src={job.companies.logo_url} 
+                  alt={job.companies.name}
+                  className="w-6 h-6 object-contain rounded"
+                />
+              ) : (
+                <Building2 className="h-5 w-5 text-primary" />
+              )}
+            </div>
+            
+            {/* Job Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors text-sm line-clamp-1">
+                    {job.title}
+                  </h3>
+                  <p className="text-sm text-primary font-medium">
+                    {job.companies?.name || job.company_name}
+                  </p>
+                </div>
+                
+                {/* AI Match Score */}
+                <div className="flex items-center gap-2 ml-4">
+                  <div className="text-xs text-muted-foreground">AI Match</div>
+                  <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
+                </div>
+              </div>
+              
+              {/* Details Row */}
+              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {job.location}
+                </div>
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-3 w-3" />
+                  {formatSalary(job.salary_min, job.salary_max)}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {getTimeAgo(job.posted_at || job.created_at)}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  {job.employment_type}
+                </div>
+              </div>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex items-center gap-2 ml-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSave(job.id);
+                }}
+                className={`h-8 w-8 p-0 ${isSaved ? 'text-red-500 border-red-200' : ''}`}
+              >
+                <Heart className={`h-3 w-3 ${isSaved ? 'fill-red-500' : ''}`} />
+              </Button>
+              
+              <Button 
+                size="sm"
+                className="h-8 px-3 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowApplicationDialog(true);
+                }}
+              >
+                Apply
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   // Default card view
   return (
     <Card 
