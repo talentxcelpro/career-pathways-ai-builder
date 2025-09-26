@@ -17,7 +17,7 @@ import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
 import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
-import { JobGenerator } from '@/components/admin/JobGenerator';
+import { RealisticJobGenerator } from '@/components/admin/RealisticJobGenerator';
 import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';
 import { VideoUrlFixer } from '@/components/admin/VideoUrlFixer';
@@ -84,9 +84,9 @@ const AdminDashboard = () => {
           <JoiningBonusPanel />
         </div>
 
-        {/* Job Generator for SEO - High Priority */}
+        {/* Realistic Job Generator - High Priority */}
         <div className="mt-8">
-          <JobGenerator />
+          <RealisticJobGenerator />
         </div>
 
         {/* Email System Test Section */}
