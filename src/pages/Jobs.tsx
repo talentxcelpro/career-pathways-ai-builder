@@ -717,28 +717,6 @@ const Jobs = () => {
                           onApplication={handleJobApplication}
                           isLoggedIn={!!currentUser}
                         />
-                            } else if (direction === 'up') {
-                              // Super Apply - Award 20 TXC coins
-                              if (currentUser) {
-                                await supabase.rpc('update_user_txc_coins', {
-                                  user_uuid: currentUser.id,
-                                  coin_change: 20,
-                                  reason: 'super_apply'
-                                });
-                                toast.success('Super Apply submitted! +20 TXC coins earned', {
-                                  icon: '⭐',
-                                  className: 'animate-scale-in'
-                                });
-                              }
-                            }
-                            
-                            // Move to next job
-                            setSwipeIndex(prev => prev + 1);
-                          }}
-                          onSave={handleSaveJob}
-                          onApply={handleJobApplication}
-                          savedJobs={savedJobs}
-                        />
                         
                         {swipeIndex >= regularJobs.length && (
                           <div className="text-center py-8">

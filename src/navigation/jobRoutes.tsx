@@ -19,6 +19,7 @@ import JobApplicants from "../pages/jobs/JobApplicants";
 import ApplicantDetail from "../pages/jobs/ApplicantDetail";
 import ComprehensiveJobs from "../pages/ComprehensiveJobs";
 import { JobUrlRedirect } from "../components/seo/JobUrlRedirect";
+import MobileJobs from "../pages/mobile/MobileJobs";
 import CareerDashboard from "../pages/CareerDashboard";
 
 export const jobRoutes = [
@@ -27,6 +28,14 @@ export const jobRoutes = [
     to: "/jobs",
     icon: <Briefcase className="h-4 w-4" />,
     page: <JobsPage />,
+    isPublic: true,
+    requiresAuth: false,
+  },
+  {
+    title: "Mobile Jobs",
+    to: "/jobs/mobile",
+    icon: <Briefcase className="h-4 w-4" />,
+    page: <MobileJobs />,
     isPublic: true,
     requiresAuth: false,
   },
