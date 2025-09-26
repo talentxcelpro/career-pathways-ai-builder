@@ -269,12 +269,20 @@ const Marketplace = () => {
                   {filteredServices.length} amazing services found
                 </span>
               </div>
-              <Link to="/marketplace/post-service">
-                <Button className="bg-gradient-to-r from-[#28C76F] to-emerald-500 hover:from-[#28C76F]/90 hover:to-emerald-500/90 text-white font-semibold px-6 py-3 rounded-xl hover-scale">
-                  <Zap className="mr-2 h-4 w-4" />
-                  Offer Your Services
-                </Button>
-              </Link>
+              <div className="flex gap-3">
+                <Link to="/business-models">
+                  <Button variant="outline" className="border-2 border-[#28C76F] text-[#28C76F] hover:bg-[#28C76F] hover:text-white font-semibold px-6 py-3 rounded-xl hover-scale transition-all">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Business Models
+                  </Button>
+                </Link>
+                <Link to="/marketplace/post-service">
+                  <Button className="bg-gradient-to-r from-[#28C76F] to-emerald-500 hover:from-[#28C76F]/90 hover:to-emerald-500/90 text-white font-semibold px-6 py-3 rounded-xl hover-scale">
+                    <Zap className="mr-2 h-4 w-4" />
+                    Offer Your Services
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>
