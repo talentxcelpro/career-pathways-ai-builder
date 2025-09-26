@@ -184,7 +184,7 @@ const generateFallbackJobs = (count: number) => {
       salary_max: salaryMax,
       salary_range: `₹${(salaryMin/100000).toFixed(0)}-${(salaryMax/100000).toFixed(0)} LPA`,
       employment_type: "Full-time",
-      experience_level: ["entry-level", "mid-level", "senior-level"][Math.floor(Math.random() * 3)],
+      experience_level: ["fresher", "mid-level", "senior-level"][Math.floor(Math.random() * 3)],
       skills_required: skillSet,
       is_remote: Math.random() > 0.7,
       is_featured: Math.random() > 0.9,
