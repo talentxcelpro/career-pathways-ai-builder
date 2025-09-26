@@ -208,11 +208,14 @@ const App = () => {
   }
 
   return (
-    <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthProvider>
-            <NotificationProvider>
+    <ReactErrorBoundary>
+      <ErrorBoundary FallbackComponent={BundleErrorFallback}>
+        <QueryClientProvider client={queryClient}>
+          <HelmetProvider>
+            <BrowserRouter>
+              <ReactContextErrorBoundary>
+                <AuthProvider>
+                  <NotificationProvider>
               <RealtimeProvider showToasts={false}>
                 <CopilotProvider>
                   <TooltipProvider>
@@ -533,9 +536,12 @@ const App = () => {
               <MobileAppInitializer />
             </TooltipProvider>
                 </AuthProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
+              </ReactContextErrorBoundary>
+            </BrowserRouter>
+          </HelmetProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </ReactErrorBoundary>
   );
 };
 
