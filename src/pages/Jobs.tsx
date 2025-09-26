@@ -505,16 +505,16 @@ const Jobs = () => {
           </div>
         </div>
 
-        {/* Main Content - Simplified */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-widget-id="job-search">
-          
-          
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Mobile-First Layout with Filters at Bottom */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Mobile: Vertical Stack, Desktop: Grid */}
+          <div className="flex flex-col lg:grid lg:grid-cols-12 lg:gap-8">
             
-            {/* Advanced Filters Sidebar */}
-            <div className="lg:col-span-1" data-filter-sidebar>
-              <div className="sticky top-6 space-y-6">
+            {/* Job Content - Mobile: Top 70%, Desktop: 9/12 columns */}
+            <div className="order-1 lg:col-span-9 mb-6 lg:mb-0">
+              
+              {/* Mobile Job View Area - Takes 2/3 of screen */}
+              <div className="min-h-[65vh] lg:min-h-0">
                 <ComprehensiveJobFilters
                   filters={filters}
                   onFiltersChange={(newFilters) => {

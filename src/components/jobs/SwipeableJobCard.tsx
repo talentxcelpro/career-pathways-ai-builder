@@ -88,7 +88,7 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   });
 
   return (
-    <div className="relative w-full max-w-sm mx-auto h-[600px]">
+    <div className="relative w-full max-w-sm mx-auto h-[450px] md:h-[600px]">
       {/* Card Stack Background */}
       <div className="absolute inset-0">
         {/* Background Cards Stack */}
@@ -155,47 +155,47 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons - Always Visible */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex justify-center gap-6 z-50">
+      {/* Action Buttons - Always Visible at Bottom */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center gap-4 z-50">
         <Button
           variant="outline"
           size="lg"
-          className="w-16 h-16 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110 shadow-lg bg-white"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110 shadow-lg bg-white"
           onClick={() => handleSwipeAction('left')}
           disabled={isAnimating}
         >
-          <X className="h-8 w-8 text-red-500" />
+          <X className="h-5 w-5 md:h-8 md:w-8 text-red-500" />
         </Button>
         
         <Button
           size="lg"
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110 shadow-lg"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110 shadow-lg"
           onClick={() => handleSwipeAction('up')}
           disabled={isAnimating}
         >
-          <Star className="h-8 w-8 text-white" />
+          <Star className="h-5 w-5 md:h-8 md:w-8 text-white" />
         </Button>
         
         <Button
           size="lg"
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 transition-all hover:scale-110 shadow-lg"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 transition-all hover:scale-110 shadow-lg"
           onClick={() => handleSwipeAction('right')}
           disabled={isAnimating}
         >
-          <Heart className="h-8 w-8 text-white" />
+          <Heart className="h-5 w-5 md:h-8 md:w-8 text-white" />
         </Button>
       </div>
 
-      {/* Swipe Instructions */}
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center space-y-1 z-40">
-        <div className="text-xs text-gray-600 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1">
-          Swipe or tap to interact
-        </div>
+      {/* Action Labels - Mobile Optimized */}
+      <div className="absolute bottom-16 md:bottom-20 left-1/2 transform -translate-x-1/2 flex justify-center gap-8 md:gap-12 z-40">
+        <span className="text-xs text-red-600 font-medium">Reject</span>
+        <span className="text-xs text-blue-600 font-medium">Super Apply</span>
+        <span className="text-xs text-green-600 font-medium">Save</span>
       </div>
 
       {/* Progress Indicator */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
-        <div className="text-xs text-gray-600 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm">
+      <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-40">
+        <div className="text-xs text-gray-600 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm">
           {currentIndex + 1} / {jobs.length}
         </div>
       </div>

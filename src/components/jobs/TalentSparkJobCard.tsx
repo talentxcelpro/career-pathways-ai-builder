@@ -234,15 +234,16 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
     );
   }
 
-  // Swipe mode card (mobile-optimized)
+  // Enhanced swipe mode card (mobile-optimized)
   if (viewMode === 'swipe') {
     return (
-      <Card className="group relative overflow-hidden bg-gradient-to-br from-white to-primary/5 hover:shadow-xl transition-all duration-300">
+      <Card className="group relative overflow-hidden bg-gradient-to-br from-white to-primary/5 hover:shadow-xl transition-all duration-300 h-full">
         {/* AI Match Score Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
         
-        <div className="p-4" onClick={handleViewJob}>
-          <div className="flex items-start gap-3">
+        <div className="p-4 h-full flex flex-col" onClick={handleViewJob}>
+          {/* Header with Company Logo */}
+          <div className="flex items-start gap-3 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
               {job.companies?.logo_url ? (
                 <img 
@@ -256,51 +257,75 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2">
+              <h3 className="text-sm font-bold text-gray-900 line-clamp-2 mb-1">
                 {job.title}
               </h3>
-              <p className="text-xs text-primary font-medium">
+              <p className="text-sm text-primary font-medium mb-2">
                 {job.companies?.name || job.company_name}
               </p>
-              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+              
+              {/* Location and Salary */}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                 <MapPin className="h-3 w-3" />
-                <span className="truncate max-w-16">{job.location}</span>
+                <span className="truncate">{job.location}</span>
                 <span>•</span>
                 <DollarSign className="h-3 w-3" />
                 <span className="truncate">{formatSalary(job.salary_min, job.salary_max)}</span>
               </div>
             </div>
             
+            {/* AI Match Score */}
             <div className="text-right">
               <div className="text-xs text-muted-foreground mb-1">AI Match</div>
               <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
             </div>
           </div>
           
-          {/* Swipe Actions */}
-          <div className="flex gap-2 mt-4">
-            <Button 
-              size="sm" 
-              className="flex-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowApplicationDialog(true);
-              }}
-            >
-              <Send className="h-4 w-4 mr-1" />
-              Apply
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSave(job.id);
-              }}
-            >
-              <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500 text-red-500' : ''}`} />
-            </Button>
+          {/* Job Description Preview */}
+          <div className="flex-1 mb-4">
+            <p className="text-xs text-gray-600 line-clamp-3">
+              {job.description || "Exciting opportunity to join our growing team. We offer competitive salary, great benefits, and a collaborative work environment."}
+            </p>
           </div>
+          
+          {/* Skills */}
+          {job.skills_required && job.skills_required.length > 0 && (
+            <div className="mb-4">
+              <div className="text-xs font-medium mb-2 text-gray-700">Required Skills</div>
+              <div className="flex flex-wrap gap-1">
+                {job.skills_required.slice(0, 3).map((skill: string) => (
+                  <Badge key={skill} variant="secondary" className="text-xs px-2 py-1">
+                    {skill}
+                  </Badge>
+                ))}
+                {job.skills_required.length > 3 && (
+                  <Badge variant="outline" className="text-xs px-2 py-1">
+                    +{job.skills_required.length - 3}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+          
+          {/* Employment Type and Experience */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+            <span className="bg-gray-100 px-2 py-1 rounded">{job.employment_type}</span>
+            <span>{job.experience_level}</span>
+            <span>{getTimeAgo(job.posted_at || job.created_at)}</span>
+          </div>
+          
+          {/* Action Button */}
+          <Button 
+            size="sm" 
+            className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowApplicationDialog(true);
+            }}
+          >
+            <Send className="h-3 w-3 mr-2" />
+            Quick Apply (+{txcReward} TXC)
+          </Button>
         </div>
       </Card>
     );
