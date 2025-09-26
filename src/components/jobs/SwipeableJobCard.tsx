@@ -30,6 +30,13 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   const currentJob = jobs[currentIndex];
   const nextJob = jobs[currentIndex + 1];
 
+  console.log('🎯 SwipeableJobCard RENDER:', {
+    currentIndex,
+    jobsLength: jobs.length,
+    currentJobId: currentJob?.id,
+    hasCurrentJob: !!currentJob
+  });
+
   if (!currentJob) {
     return (
       <div className="text-center py-12">
