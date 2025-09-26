@@ -1,36 +1,241 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Core Pages Sitemap -->
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-network.xml</loc>
+    <loc>https://talentxcel.in/sitemap-core.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+
+  <!-- Jobs Sitemaps - Multiple for scalability -->
   <sitemap>
     <loc>https://talentxcel.in/sitemap-jobs.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-employer.xml</loc>
+    <loc>https://talentxcel.in/sitemap-jobs-by-location.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-by-skill.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-by-role.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-by-company.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-by-experience.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-by-salary.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Companies Sitemaps -->
   <sitemap>
     <loc>https://talentxcel.in/sitemap-companies.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-resume.xml</loc>
+    <loc>https://talentxcel.in/sitemap-companies-by-location.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-tools.xml</loc>
+    <loc>https://talentxcel.in/sitemap-companies-by-industry.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-services.xml</loc>
+    <loc>https://talentxcel.in/sitemap-companies-by-size.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+
+  <!-- Location-based Landing Pages -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-locations-india.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-locations-cities.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-locations-metro.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Skill & Role Combinations -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-skills-tech.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-skills-business.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-roles-combinations.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Industry Specific Pages -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-industry-tech.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-industry-finance.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-industry-healthcare.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-industry-manufacturing.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Salary Range Pages -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-salary-ranges.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-salary-insights.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Experience Level Pages -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-fresher-jobs.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-experienced-jobs.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Learning & Education -->
   <sitemap>
     <loc>https://talentxcel.in/sitemap-learning.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-courses.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
   <sitemap>
     <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+
+  <!-- Career Tools & Resources -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-tools.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-resume.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-interview-questions.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Network & Community -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Employer Section -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-employer.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Services -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-services.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Career Guidance -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-career-advice.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
   <sitemap>
     <loc>https://talentxcel.in/sitemap-careermap.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+  
   <sitemap>
     <loc>https://talentxcel.in/sitemap-careerpassport.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
   </sitemap>
+
+  <!-- News & Articles -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-news.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-articles.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- Dynamic Combination Pages -->
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-dynamic-combinations-1.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-dynamic-combinations-2.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+  
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-dynamic-combinations-3.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
+  <!-- RSS & Special Feeds -->
+  <sitemap>
+    <loc>https://talentxcel.in/rss-feed.xml</loc>
+    <lastmod>2024-12-26T12:00:00+00:00</lastmod>
+  </sitemap>
+
 </sitemapindex>
