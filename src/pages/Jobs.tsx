@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useJobsOptimized } from '@/hooks/useJobsOptimized';
+import { useRealtimeJobs, useRealtimeJobStats } from '@/hooks/useRealtimeJobs';
 import { useStructuredData } from '@/hooks/useStructuredData';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -64,7 +65,7 @@ const Jobs = () => {
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [txcCoins, setTxcCoins] = useState(1250);
+  const [txcCoins, setTxcCoins] = useState(0); // Will be loaded from real user data
   const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>('card');
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
 
@@ -74,32 +75,55 @@ const Jobs = () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
       if (user) {
-        // Get user's TXC coin balance
+        // Get user's real TXC coin balance
         const { data } = await supabase
           .from('profiles')
           .select('txc_coins')
           .eq('id', user.id)
           .single();
         
-        if (data?.txc_coins) {
-          setTxcCoins(data.txc_coins);
-        }
+        setTxcCoins(data?.txc_coins || 0);
+        
+        // Set up real-time coin balance updates
+        const coinChannel = supabase
+          .channel(`user-coins-${user.id}`)
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'profiles',
+              filter: `id=eq.${user.id}`
+            },
+            (payload) => {
+              const newCoins = payload.new?.txc_coins;
+              if (newCoins !== undefined) {
+                setTxcCoins(newCoins);
+              }
+            }
+          )
+          .subscribe();
+          
+        return () => {
+          supabase.removeChannel(coinChannel);
+        };
       }
     };
     getCurrentUser();
   }, []);
 
-  // Real-time job data
+  // Real-time job data with live updates
   const { 
     jobs: allJobs, 
     totalCount, 
     hasMore,
     isLoading, 
-    refetch, 
-    currentPage,
-    totalPages,
-    goToPage
-  } = useJobsOptimized(filters, sortBy, 'pagination');
+    isConnected,
+    refetch 
+  } = useRealtimeJobs(filters, sortBy);
+
+  // Real-time job statistics
+  const { stats: jobStats } = useRealtimeJobStats();
 
   // Google Jobs Schema
   const jobsSchema = useMemo(() => {
@@ -253,7 +277,14 @@ const Jobs = () => {
           .insert({ user_id: currentUser.id, job_id: jobId });
         
         setSavedJobs(prev => [...prev, jobId]);
-        setTxcCoins(prev => prev + 5); // Reward for saving jobs
+        
+        // Update TXC coins in database with real-time sync
+        await supabase.rpc('update_user_txc_coins', {
+          user_uuid: currentUser.id,
+          coin_change: 5,
+          reason: 'job_saved'
+        });
+        
         toast.success('Job saved! +5 TXC coins earned');
       }
     } catch (error) {
@@ -267,8 +298,13 @@ const Jobs = () => {
       return;
     }
 
-    // Quick apply logic
-    setTxcCoins(prev => prev + 10); // Reward for applying
+    // Quick apply with real TXC coin update
+    await supabase.rpc('update_user_txc_coins', {
+      user_uuid: currentUser.id,
+      coin_change: 10,
+      reason: 'job_application'
+    });
+    
     toast.success('Quick Apply submitted! +10 TXC coins earned');
   };
 
