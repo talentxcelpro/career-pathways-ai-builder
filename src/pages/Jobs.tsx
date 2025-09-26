@@ -648,7 +648,135 @@ const Jobs = () => {
                       {regularJobs.length} opportunities
                     </Badge>
                   </div>
-                  
+
+                  {/* View Mode Toggle */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={viewMode === 'card' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('card')}
+                      className="hidden md:flex"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'swipe' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('swipe')}
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                      className="hidden md:flex"
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Mobile Quick Job Categories - Only show on mobile after AI-Matched Jobs */}
+                <div className="md:hidden">
+                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-4 mb-6">
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ is_remote: true })}
+                      >
+                        <span className="text-base">🏠</span>
+                        <span className="text-sm font-medium">Remote Jobs</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ skills: ['React'] })}
+                      >
+                        <span className="text-base">⚛️</span>
+                        <span className="text-sm font-medium">React Developer</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ search: 'Data Scientist' })}
+                      >
+                        <span className="text-base">📊</span>
+                        <span className="text-sm font-medium">Data Scientist</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ search: 'Product Manager' })}
+                      >
+                        <span className="text-base">🚀</span>
+                        <span className="text-sm font-medium">Product Manager</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ search: 'UI/UX Designer' })}
+                      >
+                        <span className="text-base">🎨</span>
+                        <span className="text-sm font-medium">UI/UX Designer</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ search: 'DevOps Engineer' })}
+                      >
+                        <span className="text-base">🔧</span>
+                        <span className="text-sm font-medium">DevOps Engineer</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ salary_min: 1500000 })}
+                      >
+                        <span className="text-base">💰</span>
+                        <span className="text-sm font-medium">High Salary</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ experience_level: ['0-1 years'] })}
+                      >
+                        <span className="text-base">🌟</span>
+                        <span className="text-sm font-medium">Fresher Jobs</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => updateFilters({ company_type: ['Fortune 500'] })}
+                      >
+                        <span className="text-base">🏢</span>
+                        <span className="text-sm font-medium">Fortune 500</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 justify-start p-3 h-auto"
+                        onClick={() => setViewMode('swipe')}
+                      >
+                        <span className="text-base">⚡</span>
+                        <span className="text-sm font-medium">Quick Apply</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sort and Filter Controls */}
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <select
                       value={sortBy}
