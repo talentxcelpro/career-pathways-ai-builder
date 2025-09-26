@@ -190,7 +190,10 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
           variant="outline"
           size="lg"
           className="w-12 h-12 md:w-16 md:h-16 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110 shadow-lg bg-white group animate-fade-in"
-          onClick={() => handleSwipeAction('left')}
+          onClick={() => {
+            console.log('🔴 REJECT BUTTON CLICKED');
+            handleSwipeAction('left');
+          }}
           disabled={isAnimating}
         >
           <X className="h-5 w-5 md:h-8 md:w-8 text-red-500 group-hover:animate-pulse" />
@@ -199,7 +202,10 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
         <Button
           size="lg"
           className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110 shadow-lg group animate-scale-in relative overflow-hidden"
-          onClick={() => handleSwipeAction('up')}
+          onClick={() => {
+            console.log('🌟 SUPER APPLY BUTTON CLICKED');
+            handleSwipeAction('up');
+          }}
           disabled={isAnimating}
         >
           <Star className="h-5 w-5 md:h-8 md:w-8 text-white group-hover:animate-pulse" />
@@ -211,7 +217,10 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
         <Button
           size="lg"
           className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all hover:scale-110 shadow-lg group animate-fade-in"
-          onClick={() => handleSwipeAction('right')}
+          onClick={() => {
+            console.log('💚 SAVE BUTTON CLICKED');
+            handleSwipeAction('right');
+          }}
           disabled={isAnimating}
         >
           <Heart className="h-5 w-5 md:h-8 md:w-8 text-white group-hover:animate-pulse" />
