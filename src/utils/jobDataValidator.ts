@@ -288,6 +288,24 @@ export class JobDataValidator {
       // Union Territories
       'port blair', 'chandigarh', 'daman', 'diu', 'kavaratti', 'delhi', 'new delhi', 'puducherry', 'pondicherry',
       
+      // Additional Maharashtra cities
+      'akot', 'baramati', 'dahanu', 'ichalkaranji', 'jalgaon jamod', 'kalyan', 'lonavala', 'malegaon', 'nandgaon', 'pandharpur', 'parli', 'sangamner', 'shirdi', 'udgir', 'yeotmal',
+      
+      // Additional Tamil Nadu cities
+      'karaikudi', 'kumbakonam', 'nagercoil', 'namakkal', 'pollachi', 'ramanathapuram', 'sivakasi', 'theni', 'thiruvarur', 'tirupattur', 'vaniyambadi', 'viluppuram',
+      
+      // Additional Karnataka cities
+      'chikballapur', 'hospet', 'gudibanda', 'manipal', 'ranebennur', 'puttur', 'kundapura',
+      
+      // Additional Rajasthan cities
+      'banswara', 'baran', 'bundi', 'dungarpur', 'jhalawar', 'sirohi', 'tonk', 'chittorgarh', 'rajsamand',
+      
+      // Additional Gujarat cities
+      'vyara', 'mandvi', 'narmada', 'deesa', 'patan', 'wankaner',
+      
+      // Additional Uttar Pradesh cities
+      'amethi', 'bijnor', 'etah', 'firozabad', 'hathras', 'kasganj', 'mau', 'rampur', 'shahjahanpur',
+      
       // Common location formats
       'remote', 'work from home', 'wfh', 'hybrid', 'remote - india', 'remote - global', 'flexible location', 'multi-city', 'travel required',
       
