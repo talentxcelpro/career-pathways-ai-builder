@@ -200,12 +200,6 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     Verified
                   </Button>
                 </Link>
-                <Link to="/dashboard" className="block">
-                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                    <Sparkles className="h-3.5 w-3.5 mr-3" />
-                    Dashboard
-                  </Button>
-                </Link>
                 <Link to="/network/connections" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
                     <Users className="h-3.5 w-3.5 mr-3" />
@@ -218,19 +212,16 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     Skill Swap
                   </Button>
                 </Link>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200"
-                  onClick={() => setShowModernMessenger(true)}
-                >
-                  <MessageCircle className="h-3.5 w-3.5 mr-3" />
-                  Messages
-                </Button>
-                <Link to="/network/notifications" className="block">
+                <Link to="/network/communities" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                    <Bell className="h-3.5 w-3.5 mr-3" />
-                    Notifications
+                    <Users className="h-3.5 w-3.5 mr-3" />
+                    Communities
+                  </Button>
+                </Link>
+                <Link to="/dashboard" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Sparkles className="h-3.5 w-3.5 mr-3" />
+                    Dashboard
                   </Button>
                 </Link>
                 {hasEmployerAccess ? (
@@ -248,6 +239,12 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     </Button>
                   </Link>
                 )}
+                <Link to="/network/notifications" className="block">
+                  <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
+                    <Bell className="h-3.5 w-3.5 mr-3" />
+                    Notifications
+                  </Button>
+                </Link>
               </div>
               
               <div className="space-y-1 mt-4 pt-3 border-t border-gray-200/60">
