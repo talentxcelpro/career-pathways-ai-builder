@@ -205,14 +205,18 @@ const Marketplace = () => {
                 <Rocket className="mr-2 h-4 w-4" />
                 Explore Services
               </Button>
-              <Button size="sm" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm font-semibold px-6 py-2 rounded-full" onClick={() => window.location.href = '/business-models'}>
-                <Briefcase className="mr-2 h-4 w-4" />
-                Business Models
-              </Button>
-              <Button size="sm" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm font-semibold px-6 py-2 rounded-full">
-                <Zap className="mr-2 h-4 w-4" />
-                Offer Your Skills
-              </Button>
+              <Link to="/business-models">
+                <Button size="sm" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm font-semibold px-6 py-2 rounded-full">
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Business Models
+                </Button>
+              </Link>
+              <Link to="/marketplace/post-service">
+                <Button size="sm" variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm font-semibold px-6 py-2 rounded-full">
+                  <Zap className="mr-2 h-4 w-4" />
+                  Offer Your Skills
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
