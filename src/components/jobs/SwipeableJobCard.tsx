@@ -88,108 +88,114 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   });
 
   return (
-    <div className="relative max-w-sm mx-auto">
-      {/* Background Cards (Next Jobs Preview) */}
-      {nextJob && (
-        <div className="absolute inset-0 z-0 opacity-50 scale-95">
-          <TalentSparkJobCard
-            job={nextJob}
-            onSave={() => {}}
-            onQuickApply={() => {}}
-            isSaved={savedJobs.includes(nextJob.id)}
-            txcReward={10}
-            viewMode="swipe"
-          />
-        </div>
-      )}
+    <div className="relative w-full max-w-sm mx-auto h-[600px]">
+      {/* Card Stack Background */}
+      <div className="absolute inset-0">
+        {/* Background Cards Stack */}
+        {jobs.slice(currentIndex + 1, currentIndex + 3).map((job, index) => (
+          <div
+            key={job.id}
+            className={`absolute inset-0 transition-all duration-300`}
+            style={{
+              transform: `scale(${0.95 - index * 0.02}) translateY(${(index + 1) * 8}px)`,
+              opacity: 0.8 - index * 0.2,
+              zIndex: 10 - index
+            }}
+          >
+            <div className="w-full h-full bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+              <div className="p-4 h-full flex flex-col">
+                <div className="h-8 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div className="h-4 bg-gray-100 rounded mb-4 animate-pulse"></div>
+                <div className="flex-1 bg-gray-50 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Swipe Action Indicators */}
-      <div className="absolute inset-0 flex items-center justify-between pointer-events-none z-10">
-        <div className={`w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white transition-all duration-200 ${
-          swipeDirection === 'left' || (transform.includes('translateX(-') && transform.includes('-')) ? 'opacity-100 scale-110' : 'opacity-0 scale-90'
+      <div className="absolute inset-0 flex items-center justify-between pointer-events-none z-50">
+        <div className={`w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white transition-all duration-200 shadow-xl ${
+          swipeDirection === 'left' || (transform.includes('translateX(-') && transform.includes('-')) ? 'opacity-100 scale-125' : 'opacity-0 scale-90'
         }`}>
-          <X className="h-6 w-6" />
+          <X className="h-8 w-8" />
         </div>
-        <div className={`w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white transition-all duration-200 ${
-          swipeDirection === 'right' || (transform.includes('translateX(') && !transform.includes('translateX(-')) ? 'opacity-100 scale-110' : 'opacity-0 scale-90'
+        <div className={`w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white transition-all duration-200 shadow-xl ${
+          swipeDirection === 'right' || (transform.includes('translateX(') && !transform.includes('translateX(-')) ? 'opacity-100 scale-125' : 'opacity-0 scale-90'
         }`}>
-          <Heart className="h-6 w-6" />
+          <Heart className="h-8 w-8" />
         </div>
       </div>
 
-      {/* Super Like Indicator (Swipe Up) */}
-      <div className={`absolute top-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white transition-all duration-200 z-10 ${
-        swipeDirection === 'up' || transform.includes('translateY(-') ? 'opacity-100 scale-110' : 'opacity-0 scale-90'
+      {/* Super Apply Indicator (Swipe Up) */}
+      <div className={`absolute top-4 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white transition-all duration-200 z-50 shadow-xl ${
+        swipeDirection === 'up' || transform.includes('translateY(-') ? 'opacity-100 scale-125' : 'opacity-0 scale-90'
       }`}>
-        <Star className="h-6 w-6" />
+        <Star className="h-8 w-8" />
       </div>
 
       {/* Main Swipeable Card */}
       <div
         {...handlers}
-        className={`relative z-20 transition-transform duration-300 ease-out cursor-grab active:cursor-grabbing ${isAnimating ? 'pointer-events-none' : ''}`}
+        className={`relative z-40 w-full h-full transition-transform duration-300 ease-out cursor-grab active:cursor-grabbing ${isAnimating ? 'pointer-events-none' : ''}`}
         style={{
           transform,
           touchAction: 'pan-y pan-x'
         }}
       >
-        <TalentSparkJobCard
-          job={currentJob}
-          onSave={onSave}
-          onQuickApply={(jobId) => handleSwipeAction('up')}
-          isSaved={savedJobs.includes(currentJob.id)}
-          txcReward={10}
-          viewMode="swipe"
-        />
+        <div className="w-full h-full bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+          <TalentSparkJobCard
+            job={currentJob}
+            onSave={onSave}
+            onQuickApply={(jobId) => handleSwipeAction('up')}
+            isSaved={savedJobs.includes(currentJob.id)}
+            txcReward={10}
+            viewMode="swipe"
+          />
+        </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-center gap-4 mt-6">
+      {/* Action Buttons - Always Visible */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex justify-center gap-6 z-50">
         <Button
           variant="outline"
           size="lg"
-          className="w-14 h-14 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110"
+          className="w-16 h-16 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110 shadow-lg bg-white"
           onClick={() => handleSwipeAction('left')}
           disabled={isAnimating}
         >
-          <X className="h-6 w-6 text-red-500" />
+          <X className="h-8 w-8 text-red-500" />
         </Button>
         
         <Button
           size="lg"
-          className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110"
+          className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110 shadow-lg"
           onClick={() => handleSwipeAction('up')}
           disabled={isAnimating}
         >
-          <Star className="h-6 w-6 text-white" />
+          <Star className="h-8 w-8 text-white" />
         </Button>
         
         <Button
           size="lg"
-          className="w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all hover:scale-110"
+          className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 transition-all hover:scale-110 shadow-lg"
           onClick={() => handleSwipeAction('right')}
           disabled={isAnimating}
         >
-          <Heart className="h-6 w-6 text-white" />
+          <Heart className="h-8 w-8 text-white" />
         </Button>
       </div>
 
       {/* Swipe Instructions */}
-      <div className="text-center mt-4 space-y-1">
-        <div className="text-xs text-muted-foreground">
-          ← Swipe left to <span className="text-red-500 font-medium">reject</span>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          ↑ Swipe up to <span className="text-blue-500 font-medium">super apply</span>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          → Swipe right to <span className="text-green-500 font-medium">save</span>
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-center space-y-1 z-40">
+        <div className="text-xs text-gray-600 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1">
+          Swipe or tap to interact
         </div>
       </div>
 
       {/* Progress Indicator */}
-      <div className="flex justify-center mt-4">
-        <div className="text-xs text-muted-foreground bg-white/50 backdrop-blur-sm rounded-full px-3 py-1">
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
+        <div className="text-xs text-gray-600 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm">
           {currentIndex + 1} / {jobs.length}
         </div>
       </div>

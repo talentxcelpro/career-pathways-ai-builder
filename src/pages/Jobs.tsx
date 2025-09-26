@@ -80,7 +80,10 @@ const Jobs = () => {
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [txcCoins, setTxcCoins] = useState(0); // Will be loaded from real user data
-  const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>('card');
+  const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>(() => {
+    // Default to swipe mode on mobile devices
+    return window.innerWidth < 768 ? 'swipe' : 'card';
+  });
   const [swipeIndex, setSwipeIndex] = useState(0);
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
 
