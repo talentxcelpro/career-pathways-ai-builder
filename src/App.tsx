@@ -314,8 +314,14 @@ const App = () => {
                                   <Route key={route.path} path={route.path} element={route.element} />
                                 ))}
 
-                                {/* Networking Hub Routes */}
-                                <Route path="/networking" element={<NetworkingHub />} />
+                {/* Networking Hub Routes */}
+                <Route path="/networking" element={<NetworkingHub />} />
+
+                {/* Phase 4: Enhanced Analytics & Real-time Communication Routes */}
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/admin" element={<AdminPage />} />
 
                                 {/* Enhanced SEO Demo Route */}
                                 <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />

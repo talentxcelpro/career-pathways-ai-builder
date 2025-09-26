@@ -13,13 +13,27 @@ export interface AppNotification {
   created_at: string;
   action_url?: string;
   metadata?: Record<string, any>;
+  priority?: 'low' | 'medium' | 'high';
+  module?: string;
+  link?: string;
 }
 
-export const useNotifications = () => {
+export interface NotificationStats {
+  total: number;
+  unread: number;
+  byModule?: Record<string, number>;
+  thisWeek?: number;
+}
+
+export const useNotifications = (filters?: any) => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isMarkingAsRead, setIsMarkingAsRead] = useState(false);
+  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
+  const [isDeletingNotification, setIsDeletingNotification] = useState(false);
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -48,6 +62,7 @@ export const useNotifications = () => {
   }, [user]);
 
   const markAsRead = useCallback(async (notificationId: string) => {
+    setIsMarkingAsRead(true);
     try {
       const { error } = await supabase
         .from('notifications')
@@ -63,12 +78,16 @@ export const useNotifications = () => {
 
     } catch (err: any) {
       console.error('Failed to mark notification as read:', err);
+      setError(err.message);
+    } finally {
+      setIsMarkingAsRead(false);
     }
   }, []);
 
   const markAllAsRead = useCallback(async () => {
     if (!user) return;
 
+    setIsMarkingAllAsRead(true);
     try {
       const { error } = await supabase
         .from('notifications')
@@ -84,11 +103,15 @@ export const useNotifications = () => {
 
     } catch (err: any) {
       console.error('Failed to mark all notifications as read:', err);
+      setError(err.message);
       toast.error('Failed to update notifications');
+    } finally {
+      setIsMarkingAllAsRead(false);
     }
   }, [user]);
 
   const deleteNotification = useCallback(async (notificationId: string) => {
+    setIsDeletingNotification(true);
     try {
       const { error } = await supabase
         .from('notifications')
@@ -106,7 +129,10 @@ export const useNotifications = () => {
 
     } catch (err: any) {
       console.error('Failed to delete notification:', err);
+      setError(err.message);
       toast.error('Failed to delete notification');
+    } finally {
+      setIsDeletingNotification(false);
     }
   }, [notifications]);
 
@@ -165,14 +191,40 @@ export const useNotifications = () => {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  const toggleSound = useCallback(() => {
+    // Mock function for compatibility
+    console.log('Sound toggled');
+  }, []);
+
+  const stats: NotificationStats = {
+    total: notifications.length,
+    unread: unreadCount,
+    thisWeek: notifications.filter(n => {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return new Date(n.created_at) > weekAgo;
+    }).length,
+    byModule: notifications.reduce((acc, n) => {
+      const module = n.module || 'general';
+      acc[module] = (acc[module] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>)
+  };
+
   return {
     notifications,
     unreadCount,
     isLoading,
+    error,
+    stats,
     fetchNotifications,
     markAsRead,
     markAllAsRead,
     deleteNotification,
-    createNotification
+    createNotification,
+    toggleSound,
+    isMarkingAsRead,
+    isMarkingAllAsRead,
+    isDeletingNotification
   };
 };

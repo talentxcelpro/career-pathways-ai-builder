@@ -30,7 +30,7 @@ import { publicRoutes } from "./navigation/publicRoutes";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import CampaignManager from "./pages/CampaignManager";
 import MobileSearch from "./pages/mobile/MobileSearch";
-import NotificationsPage from "./pages/NotificationsPage";
+import { NotificationsPage } from "./pages/NotificationsPage";
 import TalentXcelServices from "./pages/TalentXcelServices";
 import FeedEmbeds from "./pages/FeedEmbeds";
 import LinkedInToolsHub from "./pages/admin/LinkedInToolsHub";
