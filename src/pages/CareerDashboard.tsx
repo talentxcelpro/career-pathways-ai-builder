@@ -128,10 +128,10 @@ const CareerDashboard = () => {
   // SEO meta tags
   useEffect(() => {
     updateMetaTags({
-      title: 'Career Intelligence Hub | AI-Powered Career Assistant | TalentXcel',
-      description: 'Your personalized AI career command center. Track progress, discover opportunities, get salary insights, and accelerate your career growth with intelligent recommendations.',
+      title: 'TalentXcel Career Intelligence Hub | AI-Powered Career Assistant | TalentXcel',
+      description: 'Your personalized TalentXcel AI career command center with intelligent job matching, salary insights, and career growth recommendations powered by advanced AI technology.',
       url: `${window.location.origin}/career-dashboard`,
-      keywords: ['career dashboard', 'AI career assistant', 'job matching', 'salary insights', 'career analytics', 'professional growth', 'career intelligence'],
+      keywords: ['TalentXcel career dashboard', 'AI career assistant', 'job matching', 'salary insights', 'career analytics', 'professional growth', 'TalentXcel intelligence'],
       type: 'website'
     });
   }, []);
@@ -179,12 +179,12 @@ const CareerDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Career Intelligence Hub | AI-Powered Career Assistant | TalentXcel</title>
-        <meta name="description" content="Your personalized AI career command center with intelligent job matching, salary insights, and career growth recommendations." />
-        <meta name="keywords" content="career dashboard, AI career assistant, job matching, salary insights, career analytics, professional growth" />
+        <title>TalentXcel Career Intelligence Hub | AI-Powered Career Assistant | TalentXcel</title>
+        <meta name="description" content="Your personalized TalentXcel AI career command center with intelligent job matching, salary insights, and career growth recommendations." />
+        <meta name="keywords" content="TalentXcel career dashboard, AI career assistant, job matching, salary insights, career analytics, professional growth" />
         <link rel="canonical" href="https://talentxcel.in/career-dashboard" />
-        <meta property="og:title" content="Career Intelligence Hub | TalentXcel" />
-        <meta property="og:description" content="Your AI-powered career command center for intelligent job matching and career growth." />
+        <meta property="og:title" content="TalentXcel Career Intelligence Hub | TalentXcel" />
+        <meta property="og:description" content="Your AI-powered TalentXcel career command center for intelligent job matching and career growth." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://talentxcel.in/career-dashboard" />
       </Helmet>
@@ -196,11 +196,15 @@ const CareerDashboard = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <Brain className="h-7 w-7 text-white" />
+                  <img 
+                    src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
+                    alt="TalentXcel" 
+                    className="h-7 w-7"
+                  />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold tracking-tight">
-                    Career Intelligence Hub
+                    TalentXcel Career Intelligence Hub
                   </h1>
                   <p className="text-sm text-white/80 font-medium">
                     Your AI-powered career command center
@@ -233,12 +237,12 @@ const CareerDashboard = () => {
                       <Trophy className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-gray-900">
-                        Welcome back, {userProfile?.full_name || 'TalentXcel Pro'}! 👋
-                      </h2>
-                      <p className="text-sm text-gray-600 font-medium">
-                        Your AI Career Assistant found <span className="font-bold text-blue-600">15 new matches</span> today
-                      </p>
+                    <h2 className="text-lg font-bold text-gray-900">
+                      Welcome back, {userProfile?.full_name || 'TalentXcel Pro'}! 👋
+                    </h2>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Your TalentXcel AI Career Assistant found <span className="font-bold text-blue-600">15 new matches</span> today
+                    </p>
                     </div>
                   </div>
                 </CardContent>
@@ -282,7 +286,7 @@ const CareerDashboard = () => {
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-blue-600" />
-                  AI Career Assistant
+                  TalentXcel AI Career Assistant
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -560,12 +564,12 @@ const CareerDashboard = () => {
           </div>
 
           {/* AI Career Recommendations */}
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Rocket className="h-5 w-5 text-indigo-600" />
-                AI Career Recommendations
-              </CardTitle>
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Rocket className="h-5 w-5 text-indigo-600" />
+                  TalentXcel AI Career Recommendations
+                </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -781,8 +785,8 @@ const CareerDashboard = () => {
                 >
                   <Brain className="h-5 w-5 mr-3 text-blue-600" />
                   <div>
-                    <div className="font-bold text-sm">Ask AI Career Assistant</div>
-                    <div className="text-xs text-gray-600">Get personalized advice</div>
+                    <div className="font-bold text-sm">Ask TalentXcel AI Career Assistant</div>
+                    <div className="text-xs text-gray-600">Get personalized career advice</div>
                   </div>
                 </Button>
                 <Button 
