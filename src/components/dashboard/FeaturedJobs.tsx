@@ -2,9 +2,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Clock, Building } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
+import { getCompanyLogoWithFallback } from "@/services/companyLogoService";
 
 interface Job {
   id: string;
@@ -62,8 +64,19 @@ export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
             jobs.slice(0, 3).map((job) => (
               <div key={job.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <h3 className="font-semibold text-lg">{job.title}</h3>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage 
+                          src={job.companies?.logo_url || getCompanyLogoWithFallback(job.companies?.name || "Company")} 
+                          alt={job.companies?.name || "Company"} 
+                        />
+                        <AvatarFallback className="text-xs bg-muted">
+                          {(job.companies?.name || "Company").slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <h3 className="font-semibold text-lg">{job.title}</h3>
+                    </div>
                     <div className="flex items-center space-x-4 text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
                         <Building className="h-4 w-4" />

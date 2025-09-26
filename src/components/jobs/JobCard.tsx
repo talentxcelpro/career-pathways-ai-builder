@@ -8,6 +8,7 @@ import { MapPin, IndianRupee, Clock, Users, Heart, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
+import { getCompanyLogoWithFallback } from "@/services/companyLogoService";
 
 interface JobCardProps {
   job: {
@@ -84,7 +85,10 @@ export const JobCard: React.FC<JobCardProps> = ({
             {showCompany && job.company && (
               <div className="flex items-center gap-2 mt-1">
                 <Avatar className="h-6 w-6">
-                  <AvatarImage src={job.company.logo_url} alt={job.company.name} />
+                  <AvatarImage 
+                    src={job.company.logo_url || getCompanyLogoWithFallback(job.company.name)} 
+                    alt={job.company.name} 
+                  />
                   <AvatarFallback className="text-apple-small bg-muted">
                     {job.company.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
