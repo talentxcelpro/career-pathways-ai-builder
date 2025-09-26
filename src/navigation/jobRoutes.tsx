@@ -19,6 +19,7 @@ import JobApplicants from "../pages/jobs/JobApplicants";
 import ApplicantDetail from "../pages/jobs/ApplicantDetail";
 import ComprehensiveJobs from "../pages/ComprehensiveJobs";
 import { JobUrlRedirect } from "../components/seo/JobUrlRedirect";
+import CareerDashboard from "../pages/CareerDashboard";
 
 export const jobRoutes = [
   {
@@ -28,6 +29,15 @@ export const jobRoutes = [
     page: <JobsPage />,
     isPublic: true,
     requiresAuth: false,
+  },
+  {
+    title: "Career Dashboard",
+    to: "/career-dashboard",
+    icon: <BarChart3 className="h-4 w-4" />,
+    page: <CareerDashboard />,
+    description: "AI-powered career intelligence and job matching dashboard",
+    isPublic: false,
+    requiresAuth: true,
   },
   {
     title: "Job Details",
