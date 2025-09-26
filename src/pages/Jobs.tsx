@@ -35,6 +35,13 @@ import { SalaryTransparencyWidget } from '@/components/jobs/SalaryTransparencyWi
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
 import { TopCompaniesSalaries } from '@/components/jobs/TopCompaniesSalaries';
 
+// Enhanced UX Components
+import { JobComparisonPanel } from '@/components/jobs/JobComparisonPanel';
+import { EnhancedCompanyProfile } from '@/components/jobs/EnhancedCompanyProfile';
+import { ApplicationTracker } from '@/components/jobs/ApplicationTracker';
+import { ProgressiveDisclosure } from '@/components/jobs/ProgressiveDisclosure';
+import { FilterDiscoveryWidget } from '@/components/jobs/FilterDiscoveryWidget';
+
 const Jobs = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -764,13 +771,11 @@ const Jobs = () => {
           isOpen={isApplicationTrackerOpen}
           onClose={() => setIsApplicationTrackerOpen(false)}
         />
-        </div>
 
         {/* Hundreds of Industries Section */}
         <div className="max-w-7xl mx-auto px-4 py-16" data-widget-id="industries">
           <HundredsOfIndustriesSection />
         </div>
-
 
         {/* Floating Action Button for Mobile */}
         <div className="fixed bottom-6 right-6 md:hidden">

@@ -22,10 +22,18 @@ import { formatDistanceToNow } from "date-fns";
 
 interface ApplicationTrackerProps {
   userId?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({ userId }) => {
+export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({ 
+  userId, 
+  isOpen = true, 
+  onClose 
+}) => {
   const [selectedStatus, setSelectedStatus] = useState('all');
+  
+  if (!isOpen) return null;
 
   // Mock application data
   const applications = [
@@ -148,8 +156,21 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({ userId }
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Application Tracker</h2>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            )}
+          </div>
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -343,6 +364,8 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({ userId }
           </CardContent>
         </Card>
       )}
+        </div>
+      </div>
     </div>
   );
 };

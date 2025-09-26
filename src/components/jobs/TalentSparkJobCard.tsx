@@ -17,7 +17,9 @@ interface TalentSparkJobCardProps {
   job: any;
   onSave: (jobId: string) => void;
   onQuickApply: (jobId: string) => void;
+  onCompare?: (job: any) => void;
   isSaved: boolean;
+  isInComparison?: boolean;
   txcReward: number;
   viewMode: 'card' | 'swipe' | 'list' | 'featured';
 }
@@ -26,7 +28,9 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   job,
   onSave,
   onQuickApply,
+  onCompare,
   isSaved,
+  isInComparison = false,
   txcReward,
   viewMode
 }) => {
