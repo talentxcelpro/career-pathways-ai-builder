@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
   Briefcase, 
@@ -19,11 +20,18 @@ import {
   Brain,
   Shield,
   Award,
-  Sparkles
+  Sparkles,
+  Play,
+  MessageSquare,
+  FileText,
+  Calendar,
+  ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const BusinessModelsHub: React.FC = () => {
+  const [activeModel, setActiveModel] = useState<string | null>(null);
+
   const businessModels = [
     {
       id: 'skills',
@@ -34,6 +42,8 @@ const BusinessModelsHub: React.FC = () => {
       gradient: 'from-blue-500 to-blue-600',
       earning: '₹15,000 – ₹1,00,000+/month',
       description: 'Monetize your expertise by teaching others.',
+      route: '/marketplace/post-service',
+      actionText: 'Start Teaching',
       whyHelps: [
         'Converts your knowledge into an income source',
         'Builds a personal brand as a trainer or industry expert',
@@ -58,6 +68,8 @@ const BusinessModelsHub: React.FC = () => {
       gradient: 'from-green-500 to-green-600',
       earning: '₹10,000 – ₹75,000/month',
       description: 'Quick, short-term freelance tasks.',
+      route: '/services',
+      actionText: 'Browse Gigs',
       whyHelps: [
         'Provides fast income with no long contracts',
         'Great for students and side hustlers who want flexible work',
@@ -82,6 +94,8 @@ const BusinessModelsHub: React.FC = () => {
       gradient: 'from-purple-500 to-purple-600',
       earning: '₹20,000 – ₹1,20,000/month',
       description: 'Connect with mentors and mentees for career growth.',
+      route: '/network',
+      actionText: 'Find Mentors',
       whyHelps: [
         'For mentors: earn while giving back & grow influence',
         'For mentees: career shortcuts by learning directly from experts',
@@ -106,6 +120,8 @@ const BusinessModelsHub: React.FC = () => {
       gradient: 'from-orange-500 to-orange-600',
       earning: '₹5,000 – ₹25,000/month',
       description: 'Earn rewards while building new skills.',
+      route: '/learning',
+      actionText: 'Start Learning',
       whyHelps: [
         'Removes financial stress of learning by rewarding progress',
         'Keeps you motivated through gamified learning',
@@ -123,212 +139,327 @@ const BusinessModelsHub: React.FC = () => {
     }
   ];
 
+  const crossPlatformFeatures = [
+    {
+      icon: Wallet,
+      title: 'Unified Wallet',
+      description: 'Credits, rewards, and payouts managed in one place',
+      link: '/dashboard',
+      gradient: 'from-blue-500 to-blue-600'
+    },
+    {
+      icon: Brain,
+      title: 'AI-Powered Recommendations',
+      description: 'Suggests gigs, mentors, or skills based on your profile',
+      link: '/dashboard',
+      gradient: 'from-green-500 to-green-600'
+    },
+    {
+      icon: Award,
+      title: 'Gamified Growth',
+      description: 'Leader boards, streak rewards, and community badges',
+      link: '/dashboard',
+      gradient: 'from-purple-500 to-purple-600'
+    },
+    {
+      icon: Shield,
+      title: 'Trust & Verification',
+      description: 'Verified mentors, gigs, and skills boost credibility',
+      link: '/profile',
+      gradient: 'from-orange-500 to-orange-600'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0iaHNsKHZhcigtLXByaW1hcnkpIC8gMC4xKSIvPgo8L3N2Zz4K')] opacity-30"></div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background">
+      {/* Apple-inspired Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent)] opacity-50"></div>
         
-        <div className="container mx-auto px-6 py-20 relative">
+        <div className="relative container mx-auto px-6 py-16">
           <div className="text-center space-y-6 max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-full px-4 py-2 border border-border/50">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">TalentXcel Business Models</span>
+            <div className="inline-flex items-center gap-2 bg-background/80 backdrop-blur-xl rounded-full px-3 py-1.5 border border-border/20 shadow-sm">
+              <TrendingUp className="w-3 h-3 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">TalentXcel Business Models</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+            <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
               Unlock Multiple
               <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"> Revenue Streams</span>
             </h1>
             
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               📈 <strong>Overall Potential:</strong> Earn up to ₹1,00,000+ per month while building your skills, brand, and network.
             </p>
+
+            <div className="flex flex-wrap justify-center gap-3 pt-4">
+              <Link to="/marketplace/post-service">
+                <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm px-6 py-2 shadow-sm">
+                  <Rocket className="mr-2 h-4 w-4" />
+                  Get Started
+                </Button>
+              </Link>
+              <Link to="/learning">
+                <Button variant="outline" className="rounded-full border-border/20 text-sm px-6 py-2 shadow-sm">
+                  <Play className="mr-2 h-4 w-4" />
+                  Watch Demo
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-6 py-12">
         {/* Business Models Grid */}
-        <div className="space-y-16">
+        <div className="space-y-12">
           {businessModels.map((model, index) => {
             const IconComponent = model.icon;
+            const isExpanded = activeModel === model.id;
             
             return (
-              <Card key={model.id} className="overflow-hidden border-0 shadow-lg bg-background/80 backdrop-blur-sm">
-                <CardHeader className="pb-8">
+              <Card 
+                key={model.id} 
+                className={cn(
+                  "overflow-hidden border-0 shadow-sm bg-background/80 backdrop-blur-xl transition-all duration-500 hover:shadow-lg cursor-pointer",
+                  isExpanded && "shadow-xl"
+                )}
+                onClick={() => setActiveModel(isExpanded ? null : model.id)}
+              >
+                <CardHeader className="pb-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
                       <div className={cn(
-                        "p-4 rounded-2xl text-white bg-gradient-to-br",
+                        "p-3 rounded-xl text-white bg-gradient-to-br shadow-sm",
                         model.gradient
                       )}>
-                        <IconComponent className="h-8 w-8" />
+                        <IconComponent className="h-6 w-6" />
                       </div>
                       <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <h2 className="text-2xl font-bold">{index + 1}. {model.title}</h2>
-                          <Badge className={cn("text-white", model.statusColor)}>
+                        <div className="flex items-center gap-3 mb-1">
+                          <h2 className="text-xl font-semibold tracking-tight">{index + 1}. {model.title}</h2>
+                          <Badge className={cn("text-white text-xs px-2 py-0.5", model.statusColor)}>
                             {model.status}
                           </Badge>
                         </div>
-                        <p className="text-lg text-muted-foreground">{model.description}</p>
+                        <p className="text-sm text-muted-foreground">{model.description}</p>
                       </div>
                     </div>
+                    <Link to={model.route}>
+                      <Button size="sm" className="rounded-full text-xs px-4 py-1.5 shadow-sm">
+                        {model.actionText}
+                        <ArrowRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </Link>
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-8">
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {/* Why It Helps You */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Star className="h-5 w-5 text-yellow-500" />
-                        <h3 className="text-xl font-semibold">Why It Helps You</h3>
+                {isExpanded && (
+                  <CardContent className="space-y-6 pt-0">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Why It Helps You */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Star className="h-4 w-4 text-yellow-500" />
+                          <h3 className="text-sm font-semibold">Why It Helps You</h3>
+                        </div>
+                        <ul className="space-y-2">
+                          {model.whyHelps.map((item, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <CheckCircle className="h-3 w-3 text-green-500 mt-1 flex-shrink-0" />
+                              <span className="text-xs text-muted-foreground leading-relaxed">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="space-y-3">
-                        {model.whyHelps.map((item, i) => (
-                          <li key={i} className="flex items-start gap-3">
-                            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span className="text-muted-foreground">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
+
+                      {/* How It Works */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-4 w-4 text-blue-500" />
+                          <h3 className="text-sm font-semibold">How It Works</h3>
+                        </div>
+                        <ul className="space-y-2">
+                          {model.howWorks.map((step, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <div className="bg-primary/20 text-primary rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                {i + 1}
+                              </div>
+                              <span className="text-xs text-muted-foreground leading-relaxed">{step}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
 
-                    {/* How It Works */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-5 w-5 text-blue-500" />
-                        <h3 className="text-xl font-semibold">How It Works</h3>
+                    {/* Earnings and Stats */}
+                    <div className="bg-gradient-to-r from-green-50/80 to-emerald-50/80 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl p-4 backdrop-blur-sm">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <DollarSign className="h-4 w-4 text-green-600" />
+                            <span className="text-xs font-semibold text-green-600">Potential</span>
+                          </div>
+                          <p className="text-sm font-bold text-green-700">{model.earning}</p>
+                          <p className="text-xs text-muted-foreground">depending on hours & expertise</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <TrendingUp className="h-4 w-4 text-blue-600" />
+                            <span className="text-xs font-semibold text-blue-600">Top Trending</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{model.trending}</p>
+                        </div>
+                        <div className="text-center">
+                          <Link to={model.route}>
+                            <Button size="sm" variant="outline" className="rounded-full text-xs px-4 py-1.5">
+                              <ExternalLink className="mr-1 h-3 w-3" />
+                              {model.actionText}
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
-                      <ul className="space-y-3">
-                        {model.howWorks.map((step, i) => (
-                          <li key={i} className="flex items-start gap-3">
-                            <div className="bg-primary/20 text-primary rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
-                              {i + 1}
-                            </div>
-                            <span className="text-muted-foreground">{step}</span>
-                          </li>
-                        ))}
-                      </ul>
                     </div>
-                  </div>
 
-                  {/* Earnings and Stats */}
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl p-6">
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <div className="text-center">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <DollarSign className="h-5 w-5 text-green-600" />
-                          <span className="font-semibold text-green-600">Potential</span>
+                    {/* Use Case Example */}
+                    <div className="bg-accent/10 rounded-xl p-4 backdrop-blur-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="bg-accent/20 rounded-full p-1.5">
+                          <Sparkles className="h-3 w-3 text-accent-foreground" />
                         </div>
-                        <p className="text-lg font-bold text-green-700">{model.earning}</p>
-                        <p className="text-sm text-muted-foreground">depending on hours & expertise</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <TrendingUp className="h-5 w-5 text-blue-600" />
-                          <span className="font-semibold text-blue-600">Top Trending</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{model.trending}</p>
-                      </div>
-                      <div className="text-center">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <Target className="h-5 w-5 text-purple-600" />
-                          <span className="font-semibold text-purple-600">Use Case</span>
+                        <div>
+                          <h4 className="text-xs font-semibold mb-1">📌 Use Case</h4>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{model.useCase}</p>
                         </div>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Use Case Example */}
-                  <div className="bg-accent/20 rounded-xl p-6">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-accent/40 rounded-full p-2">
-                        <Sparkles className="h-4 w-4 text-accent-foreground" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2">📌 Use Case</h4>
-                        <p className="text-muted-foreground">{model.useCase}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
+                )}
               </Card>
             );
           })}
         </div>
 
         {/* Cross-Platform Value */}
-        <Card className="mt-16 overflow-hidden border-0 shadow-xl bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
-          <CardHeader className="text-center pb-8">
-            <CardTitle className="text-3xl font-bold flex items-center justify-center gap-3">
-              <Rocket className="h-8 w-8 text-primary" />
+        <Card className="mt-16 overflow-hidden border-0 shadow-sm bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-xl">
+          <CardHeader className="text-center pb-6">
+            <CardTitle className="text-2xl font-semibold flex items-center justify-center gap-3 tracking-tight">
+              <Rocket className="h-6 w-6 text-primary" />
               Cross-Platform Value
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center space-y-3">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 mx-auto w-fit">
-                  <Wallet className="h-6 w-6" />
-                </div>
-                <h3 className="font-semibold">Unified Wallet</h3>
-                <p className="text-sm text-muted-foreground">Credits, rewards, and payouts managed in one place</p>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-4 mx-auto w-fit">
-                  <Brain className="h-6 w-6" />
-                </div>
-                <h3 className="font-semibold">AI-Powered Recommendations</h3>
-                <p className="text-sm text-muted-foreground">Suggests gigs, mentors, or skills based on your profile</p>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-4 mx-auto w-fit">
-                  <Award className="h-6 w-6" />
-                </div>
-                <h3 className="font-semibold">Gamified Growth</h3>
-                <p className="text-sm text-muted-foreground">Leader boards, streak rewards, and community badges</p>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-4 mx-auto w-fit">
-                  <Shield className="h-6 w-6" />
-                </div>
-                <h3 className="font-semibold">Trust & Verification</h3>
-                <p className="text-sm text-muted-foreground">Verified mentors, gigs, and skills boost credibility</p>
-              </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {crossPlatformFeatures.map((feature, index) => {
+                const IconComponent = feature.icon;
+                return (
+                  <Link key={index} to={feature.link}>
+                    <Card className="text-center space-y-3 p-4 hover:shadow-md transition-all duration-300 cursor-pointer border-0 bg-background/60 backdrop-blur-sm">
+                      <div className={cn(
+                        "bg-gradient-to-br text-white rounded-xl p-3 mx-auto w-fit shadow-sm",
+                        feature.gradient
+                      )}>
+                        <IconComponent className="h-5 w-5" />
+                      </div>
+                      <h3 className="text-sm font-semibold">{feature.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
             
-            <div className="mt-8 text-center">
-              <div className="inline-flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-full px-4 py-2 border border-border/50">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">Community Tie-in → Showcase skills, projects, and mentorship inside /network/communities</span>
-              </div>
+            <div className="mt-6 text-center">
+              <Link to="/network/communities">
+                <div className="inline-flex items-center gap-2 bg-background/80 backdrop-blur-xl rounded-full px-4 py-2 border border-border/20 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
+                  <Users className="w-3 h-3 text-primary" />
+                  <span className="text-xs font-medium">Community Tie-in → Showcase skills, projects, and mentorship inside /network/communities</span>
+                  <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                </div>
+              </Link>
             </div>
           </CardContent>
         </Card>
 
+        {/* Quick Actions Section */}
+        <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link to="/marketplace/post-service">
+            <Card className="p-4 hover:shadow-md transition-all duration-300 cursor-pointer border-0 bg-blue-50/50 dark:bg-blue-950/20">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-500 text-white rounded-lg p-2">
+                  <BookOpen className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Teach Skills</h3>
+                  <p className="text-xs text-muted-foreground">Start monetizing your expertise</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link to="/services">
+            <Card className="p-4 hover:shadow-md transition-all duration-300 cursor-pointer border-0 bg-green-50/50 dark:bg-green-950/20">
+              <div className="flex items-center gap-3">
+                <div className="bg-green-500 text-white rounded-lg p-2">
+                  <Briefcase className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Find Gigs</h3>
+                  <p className="text-xs text-muted-foreground">Quick freelance opportunities</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link to="/network">
+            <Card className="p-4 hover:shadow-md transition-all duration-300 cursor-pointer border-0 bg-purple-50/50 dark:bg-purple-950/20">
+              <div className="flex items-center gap-3">
+                <div className="bg-purple-500 text-white rounded-lg p-2">
+                  <Users className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Connect</h3>
+                  <p className="text-xs text-muted-foreground">Find mentors & mentees</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link to="/learning">
+            <Card className="p-4 hover:shadow-md transition-all duration-300 cursor-pointer border-0 bg-orange-50/50 dark:bg-orange-950/20">
+              <div className="flex items-center gap-3">
+                <div className="bg-orange-500 text-white rounded-lg p-2">
+                  <GraduationCap className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Learn & Earn</h3>
+                  <p className="text-xs text-muted-foreground">Get rewarded for learning</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        </div>
+
         {/* CTA Section */}
-        <div className="text-center mt-16">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold">Ready to Start Earning?</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of professionals already building multiple revenue streams on TalentXcel
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
-                <Rocket className="mr-2 h-5 w-5" />
+        <div className="text-center mt-16 space-y-6">
+          <h2 className="text-2xl font-semibold tracking-tight">Ready to Start Earning?</h2>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Join thousands of professionals already building multiple revenue streams on TalentXcel
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link to="/auth/register">
+              <Button size="lg" className="rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-sm px-6 py-2.5 shadow-sm">
+                <Rocket className="mr-2 h-4 w-4" />
                 Get Started Today
               </Button>
-              <Button size="lg" variant="outline">
-                <Users className="mr-2 h-5 w-5" />
+            </Link>
+            <Link to="/network/communities">
+              <Button size="lg" variant="outline" className="rounded-full border-border/20 text-sm px-6 py-2.5 shadow-sm">
+                <Users className="mr-2 h-4 w-4" />
                 Join Community
               </Button>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
