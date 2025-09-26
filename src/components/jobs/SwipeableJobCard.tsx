@@ -83,10 +83,20 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   };
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => handleSwipeAction('left'),
-    onSwipedRight: () => handleSwipeAction('right'),
-    onSwipedUp: () => handleSwipeAction('up'),
+    onSwipedLeft: () => {
+      console.log('📱 react-swipeable: onSwipedLeft triggered');
+      handleSwipeAction('left');
+    },
+    onSwipedRight: () => {
+      console.log('📱 react-swipeable: onSwipedRight triggered');
+      handleSwipeAction('right');
+    },
+    onSwipedUp: () => {
+      console.log('📱 react-swipeable: onSwipedUp triggered');
+      handleSwipeAction('up');
+    },
     onSwiping: (eventData) => {
+      console.log('📱 react-swipeable: onSwiping', eventData.deltaX, eventData.deltaY);
       if (!isAnimating) {
         if (Math.abs(eventData.deltaX) > 50) {
           const rotation = eventData.deltaX * 0.1;
@@ -97,6 +107,7 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
       }
     },
     onSwiped: () => {
+      console.log('📱 react-swipeable: onSwiped - resetting transform');
       if (!isAnimating) {
         setTransform('translateX(0px) translateY(0px) rotate(0deg)');
       }
