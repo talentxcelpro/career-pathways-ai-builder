@@ -105,7 +105,7 @@ export const TRUSTED_DOMAINS = [
   'jobs.ibm.com', 'jobs.wipro.com', 'careers.infosys.com', 'careers.wipro.com',
   'careers.hcltech.com', 'careers.techmahindra.com', 'unstop.com', 'hireclap.com',
   'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com',
-  'wipro.com', 'hcltech.com', 'accenture.com', 'infosys.com', 'techmahindra.com',
+  'wipro.com', 'hcltech.com', 'accenture.com', 'infosys.com', 'techmahindra.com', 'cognizant.com',
   // Real Infosys career domains
   'career.infosys.com', 'sjobs.brassring.com', 'digitalcareers.infosys.com'
 ];
