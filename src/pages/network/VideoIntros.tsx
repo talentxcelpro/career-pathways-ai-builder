@@ -48,6 +48,26 @@ const VideoIntros: React.FC = () => {
 
   useEffect(() => {
     fetchVideoIntros();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('video-intros-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'video_intros'
+        },
+        () => {
+          fetchVideoIntros();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchVideoIntros = async () => {

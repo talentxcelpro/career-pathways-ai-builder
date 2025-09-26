@@ -49,85 +49,53 @@ const Communities: React.FC = () => {
     if (user?.id) {
       fetchMyCommunities();
     }
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('communities-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'communities'
+        },
+        () => {
+          fetchCommunities();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'community_memberships'
+        },
+        () => {
+          if (user?.id) {
+            fetchMyCommunities();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user?.id]);
 
   const fetchCommunities = async () => {
     try {
       setIsLoading(true);
       
-      // For now, we'll create mock communities since the table might not exist yet
-      const mockCommunities: Community[] = [
-        {
-          id: '1',
-          name: 'AI & Machine Learning',
-          description: 'Discuss the latest in artificial intelligence, machine learning, and data science',
-          category: 'Technology',
-          member_count: 12547,
-          is_private: false,
-          created_at: new Date().toISOString(),
-          is_featured: true,
-          activity_level: 'high',
-          recent_activity: '5 min ago'
-        },
-        {
-          id: '2',
-          name: 'Startup Founders',
-          description: 'Connect with fellow entrepreneurs and startup founders',
-          category: 'Business',
-          member_count: 8934,
-          is_private: false,
-          created_at: new Date().toISOString(),
-          is_featured: true,
-          activity_level: 'high',
-          recent_activity: '12 min ago'
-        },
-        {
-          id: '3',
-          name: 'UI/UX Designers',
-          description: 'Share designs, get feedback, and discuss design trends',
-          category: 'Design',
-          member_count: 15632,
-          is_private: false,
-          created_at: new Date().toISOString(),
-          activity_level: 'medium',
-          recent_activity: '1 hour ago'
-        },
-        {
-          id: '4',
-          name: 'Remote Workers',
-          description: 'Tips, tools, and community for remote work professionals',
-          category: 'Career',
-          member_count: 23156,
-          is_private: false,
-          created_at: new Date().toISOString(),
-          activity_level: 'high',
-          recent_activity: '30 min ago'
-        },
-        {
-          id: '5',
-          name: 'Product Managers',
-          description: 'Product management strategies, frameworks, and best practices',
-          category: 'Product',
-          member_count: 9876,
-          is_private: false,
-          created_at: new Date().toISOString(),
-          activity_level: 'medium',
-          recent_activity: '2 hours ago'
-        },
-        {
-          id: '6',
-          name: 'Elite Leaders Circle',
-          description: 'Exclusive community for C-level executives and senior leaders',
-          category: 'Leadership',
-          member_count: 456,
-          is_private: true,
-          created_at: new Date().toISOString(),
-          activity_level: 'low',
-          recent_activity: '1 day ago'
-        }
-      ];
-
-      setCommunities(mockCommunities);
+      const { data, error } = await supabase
+        .from('communities')
+        .select('*')
+        .order('member_count', { ascending: false });
+      
+      if (error) throw error;
+      
+      setCommunities(data || []);
     } catch (error) {
       console.error('Error fetching communities:', error);
     } finally {
@@ -136,10 +104,21 @@ const Communities: React.FC = () => {
   };
 
   const fetchMyCommunities = async () => {
+    if (!user?.id) return;
+    
     try {
-      // Mock user communities
-      const mockMyCommunities = communities.slice(0, 2);
-      setMyCommunities(mockMyCommunities);
+      const { data, error } = await supabase
+        .from('community_memberships')
+        .select(`
+          *,
+          communities (*)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+      
+      if (error) throw error;
+      
+      setMyCommunities(data?.map(membership => membership.communities).filter(Boolean) || []);
     } catch (error) {
       console.error('Error fetching my communities:', error);
     }

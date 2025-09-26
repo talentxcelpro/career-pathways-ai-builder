@@ -46,35 +46,64 @@ const Verified: React.FC = () => {
 
   useEffect(() => {
     fetchVerifiedProfiles();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('verified-profiles-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_verifications'
+        },
+        () => {
+          fetchVerifiedProfiles();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchVerifiedProfiles = async () => {
     try {
       setLoading(true);
       
-      // Since we don't have a verification system yet, we'll simulate verified profiles
-      // by showing profiles with complete information
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .not('title', 'is', null)
-        .not('about', 'is', null)
-        .not('location', 'is', null)
-        .not('linkedin_url', 'is', null)
-        .limit(20)
-        .order('created_at', { ascending: false });
-
+        .from('user_verifications')
+        .select(`
+          *,
+          profiles!user_verifications_user_id_fkey (
+            id,
+            full_name,
+            title,
+            location,
+            profile_picture_url,
+            about
+          )
+        `)
+        .eq('verification_status', 'verified')
+        .order('verified_at', { ascending: false });
+      
       if (error) throw error;
-
-      // Add mock verification data
-      const verifiedData = (data || []).map(profile => ({
-        ...profile,
+      
+      const verifiedData = (data || []).map(verification => ({
+        id: verification.profiles?.id || verification.id,
+        full_name: verification.profiles?.full_name || 'Anonymous User',
+        title: verification.profiles?.title || 'Professional',
+        location: verification.profiles?.location || 'Location not specified',
+        about: verification.profiles?.about || 'No bio available',
+        profile_picture_url: verification.profiles?.profile_picture_url,
         is_verified: true,
-        verification_level: Math.random() > 0.5 ? 'gold' : 'silver',
-        company: profile.title?.includes('at ') ? profile.title.split('at ')[1] : 'Company Name',
-        experience_years: Math.floor(Math.random() * 15) + 1,
-        skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS'].slice(0, Math.floor(Math.random() * 3) + 2),
-        industry: ['Technology', 'Finance', 'Healthcare', 'Education', 'Marketing'][Math.floor(Math.random() * 5)]
+        verification_level: verification.verification_level || 'silver',
+        company: verification.company || 'Company Name',
+        experience_years: verification.experience_years || Math.floor(Math.random() * 15) + 1,
+        skills: verification.skills || ['Professional Skills'],
+        industry: verification.industry || 'Technology',
+        created_at: verification.created_at || new Date().toISOString()
       }));
 
       setVerifiedProfiles(verifiedData);

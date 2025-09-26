@@ -58,97 +58,57 @@ const SkillSwap: React.FC = () => {
     if (user) {
       fetchUserCredits();
     }
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('skill-exchanges-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'skill_exchanges'
+        },
+        () => {
+          fetchSkillExchanges();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const fetchSkillExchanges = async () => {
     try {
       setLoading(true);
       
-      // Simulate fetching data with sample data
-      const sampleData: SkillExchange[] = [
-        {
-          id: '1',
-          skill_offered: 'React Development',
-          skill_sought: 'UI/UX Design',
-          description: 'I can teach modern React patterns, hooks, and state management in exchange for learning design principles and user experience best practices.',
-          difficulty_level: 'intermediate',
-          session_length: 90,
-          credits_required: 15,
-          status: 'active',
-          created_at: new Date().toISOString(),
-          user_profile: {
-            full_name: 'Sarah Chen',
-            title: 'Senior Frontend Developer',
-            profile_picture_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
-          }
-        },
-        {
-          id: '2',
-          skill_offered: 'Digital Marketing',
-          skill_sought: 'Data Analysis',
-          description: 'Share growth hacking techniques, social media strategies, and content marketing for analytics insights and dashboard creation.',
-          difficulty_level: 'beginner',
-          session_length: 60,
-          credits_required: 10,
-          status: 'active',
-          created_at: new Date().toISOString(),
-          user_profile: {
-            full_name: 'Marcus Rodriguez',
-            title: 'Growth Marketing Specialist',
-            profile_picture_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-          }
-        },
-        {
-          id: '3',
-          skill_offered: 'Python Programming',
-          skill_sought: 'DevOps & Cloud',
-          description: 'Python automation, machine learning, and web scraping skills for AWS/Docker deployment and CI/CD knowledge.',
-          difficulty_level: 'advanced',
-          session_length: 120,
-          credits_required: 20,
-          status: 'active',
-          created_at: new Date().toISOString(),
-          user_profile: {
-            full_name: 'Dr. Priya Patel',
-            title: 'AI Research Engineer',
-            profile_picture_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face'
-          }
-        },
-        {
-          id: '4',
-          skill_offered: 'Content Writing',
-          skill_sought: 'SEO & Analytics',
-          description: 'Creative writing, copywriting, and storytelling skills for technical SEO expertise and Google Analytics mastery.',
-          difficulty_level: 'intermediate',
-          session_length: 75,
-          credits_required: 12,
-          status: 'active',
-          created_at: new Date().toISOString(),
-          user_profile: {
-            full_name: 'Alex Thompson',
-            title: 'Content Strategy Lead',
-            profile_picture_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
-          }
-        },
-        {
-          id: '5',
-          skill_offered: 'Graphic Design',
-          skill_sought: 'Frontend Development',
-          description: 'Adobe Creative Suite, branding, and visual design in exchange for HTML/CSS/JavaScript and responsive design skills.',
-          difficulty_level: 'beginner',
-          session_length: 90,
-          credits_required: 14,
-          status: 'active',
-          created_at: new Date().toISOString(),
-          user_profile: {
-            full_name: 'Emma Wilson',
-            title: 'Visual Designer',
-            profile_picture_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
-          }
-        }
-      ];
+      const { data, error } = await supabase
+        .from('skill_exchanges')
+        .select(`
+          *,
+          profiles!skill_exchanges_user_id_fkey (
+            full_name,
+            title,
+            profile_picture_url
+          )
+        `)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
       
-      setSkillExchanges(sampleData);
+      if (error) throw error;
+      
+      const formattedData = data?.map(exchange => ({
+        ...exchange,
+        user_profile: {
+          full_name: exchange.profiles?.full_name || 'Anonymous User',
+          title: exchange.profiles?.title || 'Professional',
+          profile_picture_url: exchange.profiles?.profile_picture_url
+        }
+      })) || [];
+      
+      setSkillExchanges(formattedData);
     } catch (error) {
       console.error('Error fetching skill exchanges:', error);
       toast.error('Failed to load skill exchanges');
