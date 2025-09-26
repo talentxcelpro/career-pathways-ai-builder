@@ -207,32 +207,26 @@ const App = () => {
   }
 
   return (
-    <ReactErrorBoundary>
-      <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider delayDuration={200}>
-            <BrowserRouter>
-              <ReactContextErrorBoundary>
-                <AuthProvider>
-                <TXCAutoMiner />
-                    <NotificationProvider>
-              {/* <SecurityProvider> */}
-                {/* <AIProvider> */}
-                <RealtimeProvider showToasts={false}>
+    <ErrorBoundary FallbackComponent={BundleErrorFallback}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <TXCAutoMiner />
+            <NotificationProvider>
+              <RealtimeProvider showToasts={false}>
                 <CopilotProvider>
-                  {/* <ContentSecurityPolicy /> */}
-                <Toaster
-                  duration={10000}
-                  position="top-right"
-                  toastOptions={{
-                    style: {
-                      background: 'hsl(var(--background))',
-                      color: 'hsl(var(--foreground))',
-                      border: '1px solid hsl(var(--border))',
-                      marginTop: '80px', // Avoid navbar overlap
-                    },
-                  }}
-                />
+                  <Toaster
+                    duration={10000}
+                    position="top-right"
+                    toastOptions={{
+                      style: {
+                        background: 'hsl(var(--background))',
+                        color: 'hsl(var(--foreground))',
+                        border: '1px solid hsl(var(--border))',
+                        marginTop: '80px',
+                      },
+                    }}
+                  />
                 <MobileAppWrapper>
                   <div className="min-h-screen flex flex-col">
                     <Navbar />
@@ -524,13 +518,21 @@ const App = () => {
                     </CopilotProvider>
                  </RealtimeProvider>
                         </NotificationProvider>
+            <TooltipProvider delayDuration={200}>
+              <HealthMonitor />
+              <MetaTags />
+              <GoogleAnalytics />
+              <SearchConsoleVerification />
+              <SilentAuthHandler>
+                <div />
+              </SilentAuthHandler>
+              <GoogleOneTapLogin />
+              <MobileAppInitializer />
+            </TooltipProvider>
                 </AuthProvider>
-              </ReactContextErrorBoundary>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </ReactErrorBoundary>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
