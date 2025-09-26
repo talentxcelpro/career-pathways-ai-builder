@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Eye, EyeOff, Mail, Lock, User, Loader2, Gift, Check, X, Shield, Zap } f
 import { SocialLogin } from './SocialLogin';
 import { useOptimizedRegistration } from '@/hooks/useOptimizedRegistration';
 import { useTurbo, useInView } from '@/hooks/useTurbo';
+import { toast } from '@/hooks/use-toast';
 
 export const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -46,6 +47,7 @@ export const RegisterForm = () => {
     getPasswordStrengthDetails 
   } = useOptimizedRegistration();
   const { ref: formRef, isInView } = useInView();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // Optimized email availability checker with debounce
   useEffect(() => {
@@ -74,12 +76,20 @@ export const RegisterForm = () => {
 
     // Instant validation
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Profile picture must be less than 5MB');
+      toast({
+        title: 'Error',
+        description: 'Profile picture must be less than 5MB',
+        variant: 'destructive'
+      });
       return;
     }
     
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file');
+      toast({
+        title: 'Error',
+        description: 'Please select a valid image file',
+        variant: 'destructive'
+      });
       return;
     }
 
@@ -112,7 +122,11 @@ export const RegisterForm = () => {
     e.preventDefault();
     
     if (emailAvailable === false) {
-      toast.error('This email is already registered. Please use a different email or try signing in.');
+      toast({
+        title: 'Email Already Registered',
+        description: 'This email is already registered. Please use a different email or try signing in.',
+        variant: 'destructive'
+      });
       return;
     }
 
@@ -134,7 +148,7 @@ export const RegisterForm = () => {
   }, [formData, profilePicture, agreeToTerms, subscribeUpdates, emailAvailable, referralCode, register, navigate]);
 
   return (
-    <Card ref={formRef} className="w-full max-w-md mx-auto shadow-xl">
+    <Card ref={cardRef} className="w-full max-w-md mx-auto shadow-xl">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
         <CardDescription>

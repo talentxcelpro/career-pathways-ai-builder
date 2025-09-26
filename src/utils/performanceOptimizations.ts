@@ -96,13 +96,10 @@ export const preloadRouteComponent = async (routePath: string) => {
   try {
     switch (routePath) {
       case '/auth/login':
-        await import('@/pages/auth/Login');
-        break;
-      case '/network':
-        await import('@/pages/network/NetworkHub');
+        // await import('@/pages/auth/Login');
         break;
       case '/dashboard':
-        await import('@/pages/Dashboard');
+        // await import('@/pages/Dashboard');
         break;
       default:
         break;
@@ -117,7 +114,6 @@ export const preloadRouteComponent = async (routePath: string) => {
  */
 export const preloadCriticalChunks = () => {
   // Preload authentication related chunks
-  import('@/hooks/useAuth').catch(() => {});
   import('@/components/auth/SocialLogin').catch(() => {});
   
   // Preload UI components that are likely to be used
