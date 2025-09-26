@@ -365,6 +365,7 @@ const Verified: React.FC = () => {
           <p className="text-muted-foreground">Try adjusting your search criteria</p>
         </div>
       )}
+      </div>
     </div>
   );
 };

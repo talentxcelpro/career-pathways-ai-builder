@@ -391,6 +391,7 @@ const Communities: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 };
