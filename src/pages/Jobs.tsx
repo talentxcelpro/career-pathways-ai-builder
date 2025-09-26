@@ -465,34 +465,6 @@ const Jobs = () => {
               />
             </div>
 
-            {/* Smart Quick Search Tags */}
-            <div className="flex flex-wrap gap-2 justify-center">
-              {[
-                { label: '🏠 Remote Jobs', filter: { is_remote: true, search: '' } },
-                { label: '⚛️ React Developer', filter: { search: 'React Developer' } },
-                { label: '📊 Data Scientist', filter: { search: 'Data Scientist' } },
-                { label: '🚀 Product Manager', filter: { search: 'Product Manager' } },
-                { label: '🎨 UI/UX Designer', filter: { search: 'UI/UX Designer' } },
-                { label: '🔧 DevOps Engineer', filter: { search: 'DevOps Engineer' } },
-                { label: '💰 High Salary', filter: { salary_min: 100000, search: '' } },
-                { label: '🌟 Fresher Jobs', filter: { experience_level: ['Entry Level'], search: '' } },
-                { label: '🏢 Fortune 500', filter: { search: 'Google Microsoft Amazon Apple Meta' } },
-                { label: '⚡ Quick Apply', filter: { search: 'quick apply' } }
-              ].map((tag) => (
-                  <Button
-                    key={tag.label}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setFilters(prev => ({ ...prev, ...tag.filter }));
-                      refetch();
-                    }}
-                    className="rounded-full bg-white/70 backdrop-blur-sm hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-white transition-all text-xs border-primary/20 hover:border-primary/50 shadow-sm hover:shadow-md transform hover:scale-105 px-2 py-1"
-                  >
-                    <span className="text-xs">{tag.label}</span>
-                  </Button>
-              ))}
-            </div>
 
             {/* View Mode Selector */}
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
