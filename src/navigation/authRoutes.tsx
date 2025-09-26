@@ -4,6 +4,8 @@ import Register from "../pages/auth/Register";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 import OAuthCallback from "../pages/auth/OAuthCallback";
+import Terms from "../pages/auth/Terms";
+import PrivacyPolicy from "../pages/auth/PrivacyPolicy";
 import { AuthPage } from "../pages/auth/AuthPage";
 import { AuthErrorBoundaryWrapper } from "../components/auth/AuthErrorBoundaryWrapper";
 
@@ -46,6 +48,18 @@ export const authRoutes = [
     title: "OAuth Callback",
     to: "/auth/callback",
     page: <OAuthCallback />,
+    isPublic: true
+  },
+  {
+    title: "Terms of Service",
+    to: "/terms",
+    page: <Terms />,
+    isPublic: true
+  },
+  {
+    title: "Privacy Policy", 
+    to: "/privacypolicy",
+    page: <PrivacyPolicy />,
     isPublic: true
   },
 ];

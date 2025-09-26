@@ -20,7 +20,9 @@ export const RegisterForm = () => {
     fullName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    jobTitle: '',
+    company: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -28,10 +30,47 @@ export const RegisterForm = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [subscribeUpdates, setSubscribeUpdates] = useState(true);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const referralCode = searchParams.get('ref');
   const navigate = useNavigate();
   const { triggerWelcomeEmail } = useEmailAutomation();
+
+  // Email availability checker with debounce
+  useEffect(() => {
+    const checkEmailAvailability = async (email: string) => {
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setEmailAvailable(null);
+        return;
+      }
+
+      setCheckingEmail(true);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .single();
+        
+        setEmailAvailable(!data);
+      } catch (error) {
+        setEmailAvailable(true); // Assume available on error
+      } finally {
+        setCheckingEmail(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (formData.email) {
+        checkEmailAvailability(formData.email);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.email]);
 
   // Password strength calculator
   const calculatePasswordStrength = (password: string) => {
@@ -56,6 +95,29 @@ export const RegisterForm = () => {
     if (strength < 60) return 'Fair';
     if (strength < 80) return 'Good';
     return 'Strong';
+  };
+
+  // Handle profile picture upload
+  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('Profile picture must be less than 5MB');
+        return;
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select a valid image file');
+        return;
+      }
+
+      setProfilePicture(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePicturePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,9 +179,35 @@ export const RegisterForm = () => {
       return;
     }
 
+    if (emailAvailable === false) {
+      toast.error('This email is already registered. Please use a different email or try signing in.');
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Upload profile picture if provided
+      let profilePictureUrl = null;
+      if (profilePicture) {
+        const fileExt = profilePicture.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('profile-pictures')
+          .upload(fileName, profilePicture);
+
+        if (uploadError) {
+          console.error('Profile picture upload failed:', uploadError);
+          toast.error('Failed to upload profile picture, but account will still be created');
+        } else {
+          const { data: { publicUrl } } = supabase.storage
+            .from('profile-pictures')
+            .getPublicUrl(fileName);
+          profilePictureUrl = publicUrl;
+        }
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: sanitizedEmail,
         password: formData.password,
@@ -127,6 +215,10 @@ export const RegisterForm = () => {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: sanitizedFullName,
+            job_title: formData.jobTitle,
+            company: formData.company,
+            profile_picture_url: profilePictureUrl,
+            subscribe_to_updates: subscribeUpdates
           }
         }
       });
@@ -201,6 +293,40 @@ export const RegisterForm = () => {
           </div>
         </div>
 
+        {/* Profile Picture Upload */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Profile Picture (Optional)</Label>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50">
+                {profilePicturePreview ? (
+                  <img 
+                    src={profilePicturePreview} 
+                    alt="Profile preview" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-6 h-6 text-gray-400" />
+                )}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePictureChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">
+                Upload a profile picture to personalize your account
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Max 5MB • JPG, PNG, GIF
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
@@ -231,8 +357,54 @@ export const RegisterForm = () => {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className="pl-10 h-11"
+                className="pl-10 pr-10 h-11"
                 required
+              />
+              {/* Email availability indicator */}
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                {checkingEmail && (
+                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                )}
+                {!checkingEmail && emailAvailable === true && formData.email && (
+                  <Check className="h-4 w-4 text-green-500" />
+                )}
+                {!checkingEmail && emailAvailable === false && (
+                  <X className="h-4 w-4 text-red-500" />
+                )}
+              </div>
+            </div>
+            {emailAvailable === false && (
+              <p className="text-xs text-red-600">This email is already registered</p>
+            )}
+            {emailAvailable === true && formData.email && (
+              <p className="text-xs text-green-600">Email is available</p>
+            )}
+          </div>
+
+          {/* Optional professional details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="jobTitle" className="text-sm font-medium">Job Title (Optional)</Label>
+              <Input
+                id="jobTitle"
+                name="jobTitle"
+                type="text"
+                placeholder="e.g. Software Engineer"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                className="h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="company" className="text-sm font-medium">Company (Optional)</Label>
+              <Input
+                id="company"
+                name="company"
+                type="text"
+                placeholder="e.g. TechCorp"
+                value={formData.company}
+                onChange={handleChange}
+                className="h-11"
               />
             </div>
           </div>
@@ -414,7 +586,7 @@ export const RegisterForm = () => {
           <Button 
             type="submit" 
             className="w-full h-11 font-semibold" 
-            disabled={loading || !agreeToTerms}
+            disabled={loading || !agreeToTerms || emailAvailable === false || checkingEmail}
           >
             {loading ? (
               <>
