@@ -87,6 +87,9 @@ verify_jwt = false
 [functions.ai-resume-content]
 verify_jwt = false
 
+[functions.ai-service-matching]
+verify_jwt = true
+
 # Testing
 [functions.simple-test]
 verify_jwt = false
