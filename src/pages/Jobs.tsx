@@ -156,11 +156,6 @@ const Jobs = () => {
     refetch 
   } = useJobsOptimized(filters, sortBy);
 
-  // Debug swipe index changes
-  React.useEffect(() => {
-    console.log('📊 Swipe index changed to:', swipeIndex, 'Total jobs:', allJobs?.length);
-  }, [swipeIndex, allJobs?.length]);
-
   // Real-time job statistics
   const { stats: jobStats } = useRealtimeJobStats();
 
@@ -707,8 +702,6 @@ const Jobs = () => {
                           jobs={sortedJobs}
                           currentIndex={swipeIndex}
                           onSwipe={async (direction, job) => {
-                            console.log('🔄 Swipe action:', direction, 'Job ID:', job.id, 'Current index:', swipeIndex);
-                            
                             if (direction === 'left') {
                               // Reject - Award 2 TXC coins for engagement
                               if (currentUser) {
@@ -740,10 +733,8 @@ const Jobs = () => {
                               }
                             }
                             
-                            // Always advance to next card
-                            const newIndex = swipeIndex + 1;
-                            console.log('📈 Advancing from index', swipeIndex, 'to', newIndex);
-                            setSwipeIndex(newIndex);
+                            // Move to next job
+                            setSwipeIndex(prev => prev + 1);
                           }}
                           onSave={handleSaveJob}
                           onApply={handleJobApplication}

@@ -30,13 +30,6 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   const currentJob = jobs[currentIndex];
   const nextJob = jobs[currentIndex + 1];
 
-  console.log('🎯 SwipeableJobCard render:', {
-    currentIndex,
-    totalJobs: jobs.length,
-    currentJobId: currentJob?.id,
-    currentJobTitle: currentJob?.title
-  });
-
   if (!currentJob) {
     return (
       <div className="text-center py-12">
@@ -51,7 +44,6 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   }
 
   const handleSwipeAction = (direction: 'left' | 'right' | 'up') => {
-    console.log('🚀 handleSwipeAction called:', direction, 'Job:', currentJob?.id);
     setSwipeDirection(direction);
     setIsAnimating(true);
     
@@ -74,7 +66,6 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
 
     // Execute action after animation
     setTimeout(() => {
-      console.log('⏰ Animation timeout reached, calling onSwipe with:', direction, currentJob?.id);
       onSwipe(direction, currentJob);
       setSwipeDirection(null);
       setIsAnimating(false);
