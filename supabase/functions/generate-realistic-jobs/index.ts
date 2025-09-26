@@ -160,10 +160,37 @@ const additionalCompanies = [
 ]
 
 const cities = [
+  // Major Metro Cities
   "Bangalore, Karnataka", "Mumbai, Maharashtra", "Delhi, Delhi", "Hyderabad, Telangana", 
   "Pune, Maharashtra", "Chennai, Tamil Nadu", "Kolkata, West Bengal", "Ahmedabad, Gujarat",
   "Jaipur, Rajasthan", "Kochi, Kerala", "Indore, Madhya Pradesh", "Noida, Uttar Pradesh",
-  "Gurgaon, Haryana", "Chandigarh, Punjab", "Bhubaneswar, Odisha", "Coimbatore, Tamil Nadu"
+  "Gurgaon, Haryana", "Chandigarh, Punjab", "Bhubaneswar, Odisha", "Coimbatore, Tamil Nadu",
+  
+  // Tier 2 Cities  
+  "Mysore, Karnataka", "Mangalore, Karnataka", "Vizag, Andhra Pradesh", "Lucknow, Uttar Pradesh",
+  "Patna, Bihar", "Bhopal, Madhya Pradesh", "Nagpur, Maharashtra", "Aurangabad, Maharashtra",
+  "Rajkot, Gujarat", "Madurai, Tamil Nadu", "Kanpur, Uttar Pradesh", "Agra, Uttar Pradesh",
+  "Varanasi, Uttar Pradesh", "Meerut, Uttar Pradesh", "Faridabad, Haryana", "Ghaziabad, Uttar Pradesh",
+  
+  // Punjab Cities
+  "Ludhiana, Punjab", "Amritsar, Punjab", "Jalandhar, Punjab", "Patiala, Punjab", "Bathinda, Punjab",
+  "Mohali, Punjab", "Pathankot, Punjab", "Hoshiarpur, Punjab", "Batala, Punjab", "Abohar, Punjab",
+  
+  // Additional Cities
+  "Dehradun, Uttarakhand", "Shimla, Himachal Pradesh", "Panaji, Goa", "Thiruvananthapuram, Kerala",
+  "Calicut, Kerala", "Thrissur, Kerala", "Kollam, Kerala", "Palakkad, Kerala", "Kannur, Kerala",
+  "Malappuram, Kerala", "Salem, Tamil Nadu", "Tirupur, Tamil Nadu", "Erode, Tamil Nadu", "Vellore, Tamil Nadu",
+  "Vijayawada, Andhra Pradesh", "Guntur, Andhra Pradesh", "Nellore, Andhra Pradesh", "Kurnool, Andhra Pradesh",
+  "Warangal, Telangana", "Nizamabad, Telangana", "Siliguri, West Bengal", "Durgapur, West Bengal",
+  "Jodhpur, Rajasthan", "Kota, Rajasthan", "Bikaner, Rajasthan", "Udaipur, Rajasthan", "Ajmer, Rajasthan",
+  "Bareilly, Uttar Pradesh", "Moradabad, Uttar Pradesh", "Saharanpur, Uttar Pradesh", "Gorakhpur, Uttar Pradesh",
+  "Gwalior, Madhya Pradesh", "Jabalpur, Madhya Pradesh", "Ujjain, Madhya Pradesh", "Sagar, Madhya Pradesh",
+  "Panipat, Haryana", "Ambala, Haryana", "Yamunanagar, Haryana", "Rohtak, Haryana", "Hisar, Haryana",
+  "Gaya, Bihar", "Bhagalpur, Bihar", "Muzaffarpur, Bihar", "Purnia, Bihar", "Darbhanga, Bihar",
+  "Cuttack, Odisha", "Rourkela, Odisha", "Brahmapur, Odisha", "Sambalpur, Odisha", "Puri, Odisha",
+  "Ranchi, Jharkhand", "Jamshedpur, Jharkhand", "Dhanbad, Jharkhand", "Bokaro, Jharkhand",
+  "Raipur, Chhattisgarh", "Bilaspur, Chhattisgarh", "Korba, Chhattisgarh", "Durg, Chhattisgarh",
+  "Haridwar, Uttarakhand", "Rishikesh, Uttarakhand", "Roorkee, Uttarakhand", "Haldwani, Uttarakhand"
 ]
 
 function generateRandomJob(): JobTemplate {

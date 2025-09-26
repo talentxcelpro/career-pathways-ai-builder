@@ -380,7 +380,7 @@ const generateFallbackJobs = (count: number) => {
   ];
 
   const employmentTypes = [
-    "Full-time", "Part-time", "Contract", "Freelance", "Internship", "Temporary", "Permanent"
+    "Full-time", "Part-time", "Contract", "Freelance", "Internship", "Temporary"
   ];
   
   const skills = [
