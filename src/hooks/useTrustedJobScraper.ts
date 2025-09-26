@@ -102,7 +102,8 @@ export const TRUSTED_DOMAINS = [
   'hiringplug.com', 'workindia.in', 'jobhai.com', 'monsterindia.com', 'apna.co',
   'internshala.com', 'careers.google.com', 'careers.microsoft.com', 'careers.accenture.com',
   'jobs.tcs.com', 'hcltech.com', 'careers.cognizant.com', 'jobs.sap.com',
-  'jobs.ibm.com', 'jobs.wipro.com', 'unstop.com', 'hireclap.com',
+  'jobs.ibm.com', 'jobs.wipro.com', 'careers.infosys.com', 'careers.wipro.com',
+  'careers.hcltech.com', 'careers.techmahindra.com', 'unstop.com', 'hireclap.com',
   'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com'
 ];
 
