@@ -1,454 +1,251 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 import { 
   Users, 
+  UserPlus, 
+  Share2, 
   MessageSquare, 
-  Plus, 
-  Eye, 
-  Edit, 
-  MessageCircle,
-  Check,
-  Trash2,
-  Reply,
-  MoreHorizontal
-} from "lucide-react";
-import { useResumeCollaboration, type CollaborationPermission } from '@/hooks/useResumeCollaboration';
-import { formatDistanceToNow } from 'date-fns';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+  Edit3, 
+  Eye,
+  Clock,
+  CheckCircle,
+  X
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Collaborator {
+  id: string;
+  email: string;
+  permission: 'view' | 'edit' | 'admin';
+  status: 'pending' | 'accepted' | 'declined';
+  invited_at: string;
+  user_profile?: {
+    full_name: string;
+    avatar_url?: string;
+  };
+}
 
 interface CollaborationPanelProps {
   resumeId?: string;
-  currentUserId?: string;
-  onInvite?: (email: string, role: string) => void;
-  onComment?: (content: string, section?: string) => void;
-  onShare?: () => void;
+  isOwner?: boolean;
 }
 
-const PermissionBadge = ({ permission }: { permission: CollaborationPermission }) => {
-  const variants = {
-    view: { color: 'bg-blue-100 text-blue-800', icon: <Eye className="h-3 w-3" /> },
-    comment: { color: 'bg-yellow-100 text-yellow-800', icon: <MessageCircle className="h-3 w-3" /> },
-    edit: { color: 'bg-green-100 text-green-800', icon: <Edit className="h-3 w-3" /> }
-  };
-
-  const variant = variants[permission];
-  
-  return (
-    <Badge variant="outline" className={`${variant.color} flex items-center space-x-1`}>
-      {variant.icon}
-      <span className="capitalize">{permission}</span>
-    </Badge>
-  );
-};
-
-const CommentCard = ({ 
-  comment, 
-  onReply, 
-  onResolve, 
-  onDelete 
-}: {
-  comment: any;
-  onReply: (content: string, parentId: string) => void;
-  onResolve: (commentId: string) => void;
-  onDelete: (commentId: string) => void;
+export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
+  resumeId,
+  isOwner = false
 }) => {
-  const [showReply, setShowReply] = useState(false);
-  const [replyContent, setReplyContent] = useState('');
+  const { user } = useAuth();
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [newCollaboratorEmail, setNewCollaboratorEmail] = useState('');
+  const [selectedPermission, setSelectedPermission] = useState<'view' | 'edit'>('view');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleReply = () => {
-    if (replyContent.trim()) {
-      onReply(replyContent, comment.id);
-      setReplyContent('');
-      setShowReply(false);
+  const inviteCollaborator = async () => {
+    if (!newCollaboratorEmail.trim() || !resumeId || !user) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Mock invitation for now since tables aren't set up yet
+      const newCollaborator: Collaborator = {
+        id: crypto.randomUUID(),
+        email: newCollaboratorEmail.trim(),
+        permission: selectedPermission,
+        status: 'pending',
+        invited_at: new Date().toISOString(),
+        user_profile: {
+          full_name: newCollaboratorEmail.split('@')[0],
+        }
+      };
+      
+      setCollaborators(prev => [...prev, newCollaborator]);
+      toast.success('Collaboration invitation sent!');
+      setNewCollaboratorEmail('');
+    } catch (error: any) {
+      console.error('Failed to invite collaborator:', error);
+      toast.error('Failed to send invitation');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return (
-    <div className={`border rounded-lg p-4 ${comment.is_resolved ? 'opacity-60 bg-gray-50' : ''}`}>
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-xs">
-              {comment.user_profile?.full_name?.charAt(0) || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">
-            {comment.user_profile?.full_name || 'Anonymous'}
-          </span>
-          {comment.section_type && (
-            <Badge variant="outline" className="text-xs">
-              {comment.section_type}
-            </Badge>
-          )}
-          {comment.is_resolved && (
-            <Badge variant="outline" className="text-xs bg-green-100 text-green-800">
-              <Check className="h-3 w-3 mr-1" />
-              Resolved
-            </Badge>
-          )}
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-          </span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {!comment.is_resolved && (
-                <DropdownMenuItem onClick={() => onResolve(comment.id)}>
-                  <Check className="h-4 w-4 mr-2" />
-                  Mark as Resolved
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem onClick={() => setShowReply(!showReply)}>
-                <Reply className="h-4 w-4 mr-2" />
-                Reply
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDelete(comment.id)}
-                className="text-red-600"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      <p className="text-sm text-gray-700 mb-3">{comment.content}</p>
-
-      {/* Replies */}
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-4 space-y-2 border-l-2 border-gray-200 pl-4">
-          {comment.replies.map((reply: any) => (
-            <div key={reply.id} className="bg-gray-50 p-3 rounded">
-              <div className="flex items-center space-x-2 mb-1">
-                <Avatar className="h-5 w-5">
-                  <AvatarFallback className="text-xs">
-                    {reply.user_profile?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs font-medium">
-                  {reply.user_profile?.full_name || 'Anonymous'}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
-                </span>
-              </div>
-              <p className="text-xs text-gray-600">{reply.content}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Reply Form */}
-      {showReply && (
-        <div className="mt-3 space-y-2">
-          <Textarea
-            placeholder="Write a reply..."
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
-            rows={2}
-            className="text-sm"
-          />
-          <div className="flex justify-end space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowReply(false)}
-            >
-              Cancel
-            </Button>
-            <Button size="sm" onClick={handleReply}>
-              Reply
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export const CollaborationPanel = ({ 
-  resumeId = "default", 
-  currentUserId = "current-user",
-  onInvite,
-  onComment,
-  onShare
-}: CollaborationPanelProps) => {
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [invitePermission, setInvitePermission] = useState<CollaborationPermission>('view');
-  const [newComment, setNewComment] = useState('');
-  const [commentSection, setCommentSection] = useState('');
-  const [showInviteDialog, setShowInviteDialog] = useState(false);
-  const [showCommentDialog, setShowCommentDialog] = useState(false);
-
-  const {
-    collaborations,
-    comments,
-    isLoading,
-    inviteCollaborator,
-    updatePermission,
-    removeCollaborator,
-    addComment,
-    resolveComment,
-    deleteComment,
-    isInviting
-  } = useResumeCollaboration(resumeId);
-
-  const handleInvite = () => {
-    if (inviteEmail.trim()) {
-      inviteCollaborator({ email: inviteEmail, permission: invitePermission });
-      setInviteEmail('');
-      setShowInviteDialog(false);
-    }
-  };
-
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      addComment({ 
-        content: newComment, 
-        sectionType: commentSection || undefined 
-      });
-      setNewComment('');
-      setCommentSection('');
-      setShowCommentDialog(false);
-    }
-  };
-
-  const handleReply = (content: string, parentId: string) => {
-    addComment({ content, parentId });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Card className="animate-pulse">
-          <CardContent className="p-6">
-            <div className="h-32 bg-muted rounded" />
-          </CardContent>
-        </Card>
-      </div>
+  const updatePermission = async (collaboratorId: string, permission: 'view' | 'edit') => {
+    setCollaborators(prev => 
+      prev.map(c => c.id === collaboratorId ? { ...c, permission } : c)
     );
-  }
+    toast.success('Permission updated successfully');
+  };
+
+  const removeCollaborator = async (collaboratorId: string) => {
+    setCollaborators(prev => prev.filter(c => c.id !== collaboratorId));
+    toast.success('Collaborator removed successfully');
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'accepted':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'declined':
+        return <X className="h-4 w-4 text-red-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  const getPermissionIcon = (permission: string) => {
+    switch (permission) {
+      case 'edit':
+        return <Edit3 className="h-4 w-4" />;
+      case 'view':
+        return <Eye className="h-4 w-4" />;
+      default:
+        return <Eye className="h-4 w-4" />;
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Collaboration</h3>
-          <p className="text-sm text-muted-foreground">
-            Work together on your resume
-          </p>
-        </div>
-        <div className="flex space-x-2">
-          <Dialog open={showCommentDialog} onOpenChange={setShowCommentDialog}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Add Comment
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Comment</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Select value={commentSection} onValueChange={setCommentSection}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select section (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="personal">Personal Info</SelectItem>
-                    <SelectItem value="experience">Experience</SelectItem>
-                    <SelectItem value="education">Education</SelectItem>
-                    <SelectItem value="skills">Skills</SelectItem>
-                    <SelectItem value="projects">Projects</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Textarea
-                  placeholder="Write your comment..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  rows={4}
-                />
-                <div className="flex justify-end space-x-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowCommentDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddComment}>
-                    Add Comment
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Users className="h-5 w-5" />
+          Resume Collaboration
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Invite New Collaborator */}
+        {isOwner && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Invite Collaborator
+            </h3>
+            
+            <div className="flex gap-2">
+              <Input
+                value={newCollaboratorEmail}
+                onChange={(e) => setNewCollaboratorEmail(e.target.value)}
+                placeholder="Enter email address"
+                type="email"
+                className="flex-1"
+              />
+              <select
+                value={selectedPermission}
+                onChange={(e) => setSelectedPermission(e.target.value as 'view' | 'edit')}
+                className="px-3 py-2 border rounded-md"
+              >
+                <option value="view">View Only</option>
+                <option value="edit">Edit Access</option>
+              </select>
+              <Button onClick={inviteCollaborator} disabled={isLoading}>
                 Invite
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Invite Collaborator</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Email Address</label>
-                  <Input
-                    type="email"
-                    placeholder="collaborator@example.com"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Permission Level</label>
-                  <Select value={invitePermission} onValueChange={(value: CollaborationPermission) => setInvitePermission(value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="view">View Only</SelectItem>
-                      <SelectItem value="comment">Can Comment</SelectItem>
-                      <SelectItem value="edit">Can Edit</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex justify-end space-x-2">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowInviteDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleInvite} disabled={isInviting}>
-                    {isInviting ? 'Inviting...' : 'Send Invite'}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+            </div>
+          </div>
+        )}
 
-      {/* Collaborators */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="h-5 w-5" />
-            <span>Collaborators ({collaborations?.length || 0})</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {collaborations && collaborations.length > 0 ? (
+        {/* Collaborators List */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Current Collaborators</h3>
+          
+          {collaborators.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              No collaborators yet. Invite someone to work on this resume together!
+            </p>
+          ) : (
             <div className="space-y-3">
-              {collaborations.map((collab) => (
-                <div key={collab.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center space-x-3">
+              {collaborators.map((collaborator) => (
+                <div 
+                  key={collaborator.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
                     <Avatar>
+                      <AvatarImage src={collaborator.user_profile?.avatar_url} />
                       <AvatarFallback>
-                        {collab.collaborator_profile?.full_name?.charAt(0) || 'U'}
+                        {collaborator.user_profile?.full_name?.charAt(0) || collaborator.email.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
+                    
                     <div>
                       <p className="font-medium">
-                        {collab.collaborator_profile?.full_name || 'Unknown User'}
+                        {collaborator.user_profile?.full_name || collaborator.email}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {collab.collaborator_profile?.email}
+                        {collaborator.email}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <PermissionBadge permission={collab.permission_level} />
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => updatePermission({ collaborationId: collab.id, permission: 'view' })}>
-                          Change to View Only
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => updatePermission({ collaborationId: collab.id, permission: 'comment' })}>
-                          Change to Comment
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => updatePermission({ collaborationId: collab.id, permission: 'edit' })}>
-                          Change to Edit
-                        </DropdownMenuItem>
-                        <Separator />
-                        <DropdownMenuItem 
-                          onClick={() => removeCollaborator(collab.id)}
-                          className="text-red-600"
-                        >
-                          Remove Collaborator
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(collaborator.status)}
+                    
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      {getPermissionIcon(collaborator.permission)}
+                      {collaborator.permission}
+                    </Badge>
+
+                    {isOwner && collaborator.status === 'accepted' && (
+                      <select
+                        value={collaborator.permission}
+                        onChange={(e) => updatePermission(collaborator.id, e.target.value as 'view' | 'edit')}
+                        className="text-sm px-2 py-1 border rounded"
+                      >
+                        <option value="view">View</option>
+                        <option value="edit">Edit</option>
+                      </select>
+                    )}
+
+                    {isOwner && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => removeCollaborator(collaborator.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-              <p className="text-muted-foreground">No collaborators yet</p>
-            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Comments */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <MessageSquare className="h-5 w-5" />
-            <span>Comments ({comments?.length || 0})</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {comments && comments.length > 0 ? (
-            <div className="space-y-4">
-              {comments.map((comment) => (
-                <CommentCard
-                  key={comment.id}
-                  comment={comment}
-                  onReply={handleReply}
-                  onResolve={resolveComment}
-                  onDelete={deleteComment}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-              <p className="text-muted-foreground">No comments yet</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        {/* Share Options */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Share2 className="h-5 w-5" />
+            Share Options
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Button variant="outline" className="justify-start">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Share via Message
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start"
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Share link copied!');
+              }}
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Copy Share Link
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

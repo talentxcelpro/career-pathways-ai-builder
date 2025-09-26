@@ -229,10 +229,7 @@ export const EnhancedAIBuilder = ({
               <div className="lg:col-span-1">
                 <CollaborationPanel
                   resumeId="current-resume"
-                  currentUserId="current-user"
-                  onInvite={handleCollaboration.onInvite}
-                  onComment={handleCollaboration.onComment}
-                  onShare={handleCollaboration.onShare}
+                  isOwner={true}
                 />
               </div>
             </div>

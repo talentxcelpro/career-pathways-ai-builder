@@ -32,14 +32,27 @@ export const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
   };
 
   const downloadQR = () => {
-    const canvas = document.querySelector('canvas');
-    if (canvas) {
-      const url = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = 'resume-qr-code.png';
-      link.href = url;
-      link.click();
-      toast.success('QR code downloaded successfully!');
+    // For SVG, we'll use a different approach to download
+    const svg = document.querySelector('svg');
+    if (svg) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        canvas.width = qrSize;
+        canvas.height = qrSize;
+        ctx?.drawImage(img, 0, 0);
+        const url = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'resume-qr-code.png';
+        link.href = url;
+        link.click();
+        toast.success('QR code downloaded successfully!');
+      };
+      
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
     }
   };
 
