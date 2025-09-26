@@ -106,7 +106,7 @@ export const useTriggerDailyJobScraping = () => {
             url: `${source.base_url}/job-${i + 1}`,
             salary: `₹${(8 + i) * 100000} - ₹${(12 + i) * 100000}`,
             job_type: i % 3 === 0 ? "Full-time" : i % 3 === 1 ? "Part-time" : "Contract",
-            experience_level: i % 3 === 0 ? "Entry" : i % 3 === 1 ? "Mid" : "Senior"
+            experience_level: i % 3 === 0 ? "fresher" : i % 3 === 1 ? "mid" : "senior"
           }));
 
           const data = {

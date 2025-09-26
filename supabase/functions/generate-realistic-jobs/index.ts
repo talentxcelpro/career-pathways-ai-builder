@@ -433,6 +433,9 @@ serve(async (req) => {
     for (let i = 0; i < count; i++) {
       const jobData = generateRandomJob()
       
+      // Debug logging to check experience level
+      console.log(`Generated job ${i + 1}: experience_level = "${jobData.experience_level}"`)
+      
       const job = {
         title: jobData.title,
         description: jobData.description,
@@ -466,6 +469,9 @@ serve(async (req) => {
     }
 
     // Insert jobs in batches
+    console.log(`Attempting to insert ${jobsToInsert.length} jobs with experience levels:`, 
+      jobsToInsert.map(j => j.experience_level))
+    
     const { data, error } = await supabaseClient
       .from('jobs')
       .insert(jobsToInsert)
