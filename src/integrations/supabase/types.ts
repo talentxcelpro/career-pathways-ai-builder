@@ -15840,6 +15840,7 @@ export type Database = {
           seo_slug: string | null
           seo_tags: string[] | null
           skills_required: string[] | null
+          slug: string | null
           source: string | null
           source_type: string | null
           specialization_fields: string[] | null
@@ -15979,6 +15980,7 @@ export type Database = {
           seo_slug?: string | null
           seo_tags?: string[] | null
           skills_required?: string[] | null
+          slug?: string | null
           source?: string | null
           source_type?: string | null
           specialization_fields?: string[] | null
@@ -16118,6 +16120,7 @@ export type Database = {
           seo_slug?: string | null
           seo_tags?: string[] | null
           skills_required?: string[] | null
+          slug?: string | null
           source?: string | null
           source_type?: string | null
           specialization_fields?: string[] | null
@@ -33783,13 +33786,8 @@ export type Database = {
         Returns: Json
       }
       validate_session: {
-        Args: { p_token: string }
-        Returns: {
-          expires_at: string
-          is_valid: boolean
-          session_id: string
-          user_id: string
-        }[]
+        Args: { session_token: string }
+        Returns: boolean
       }
       validate_txc_purchase: {
         Args: { p_cost: number; p_feature_id: string; p_user_id: string }
