@@ -184,6 +184,17 @@ verify_jwt = false
 [functions.retroactive-txc-rewards]
 verify_jwt = false
 
+# Job Generation
+[functions.generate-realistic-jobs]
+verify_jwt = false
+
+# Achievement System
+[functions.achievement-tracker]
+verify_jwt = false
+
+[functions.activity-reward-engine]
+verify_jwt = false
+
 # Monitoring & Cleanup
 [functions.database-cleanup]
 verify_jwt = false
