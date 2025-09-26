@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { TalentSparkJobCard } from './TalentSparkJobCard';
+import { JobApplicationDialog } from './JobApplicationDialog';
 import { Heart, X, Zap, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -10,6 +11,7 @@ interface SwipeableJobCardProps {
   onSwipe: (direction: 'left' | 'right' | 'up', job: any) => void;
   onSave: (jobId: string) => void;
   savedJobs: string[];
+  onApply?: (jobId: string, applicationData: any) => void;
 }
 
 export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
@@ -17,11 +19,13 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   currentIndex,
   onSwipe,
   onSave,
-  savedJobs
+  savedJobs,
+  onApply
 }) => {
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'up' | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [transform, setTransform] = useState('translateX(0px) translateY(0px) rotate(0deg)');
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
 
   const currentJob = jobs[currentIndex];
   const nextJob = jobs[currentIndex + 1];
@@ -40,6 +44,12 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   }
 
   const handleSwipeAction = (direction: 'left' | 'right' | 'up') => {
+    if (direction === 'up') {
+      // Super Apply - show application dialog
+      setShowApplicationDialog(true);
+      return;
+    }
+    
     setSwipeDirection(direction);
     setIsAnimating(true);
     
@@ -49,8 +59,6 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
       animationTransform = 'translateX(-100%) rotate(-30deg)';
     } else if (direction === 'right') {
       animationTransform = 'translateX(100%) rotate(30deg)';
-    } else if (direction === 'up') {
-      animationTransform = 'translateY(-100%) scale(0.8)';
     }
     
     setTransform(animationTransform);
@@ -62,6 +70,13 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
       setIsAnimating(false);
       setTransform('translateX(0px) translateY(0px) rotate(0deg)');
     }, 300);
+  };
+
+  const handleApplicationSubmit = (applicationData: any) => {
+    if (onApply) {
+      onApply(currentJob.id, applicationData);
+    }
+    setShowApplicationDialog(false);
   };
 
   const handlers = useSwipeable({
@@ -147,7 +162,7 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
           <TalentSparkJobCard
             job={currentJob}
             onSave={onSave}
-            onQuickApply={(jobId) => handleSwipeAction('up')}
+            onQuickApply={(jobId) => setShowApplicationDialog(true)}
             isSaved={savedJobs.includes(currentJob.id)}
             txcReward={10}
             viewMode="swipe"
@@ -199,6 +214,14 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
           {currentIndex + 1} / {jobs.length}
         </div>
       </div>
+
+      {/* Job Application Dialog */}
+      <JobApplicationDialog
+        isOpen={showApplicationDialog}
+        onClose={() => setShowApplicationDialog(false)}
+        job={currentJob}
+        onApply={handleApplicationSubmit}
+      />
     </div>
   );
 };

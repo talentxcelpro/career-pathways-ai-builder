@@ -342,6 +342,57 @@ const Jobs = () => {
     toast.success('Quick Apply submitted! +10 TXC coins earned');
   };
 
+  const handleJobApplication = async (jobId: string, applicationData: any) => {
+    if (!currentUser) {
+      toast.error('Please login to apply');
+      return;
+    }
+
+    try {
+      // Submit the application data to the enhanced_job_applications table
+      const { error } = await supabase
+        .from('enhanced_job_applications')
+        .insert({
+          user_id: currentUser.id,
+          job_id: jobId,
+          status: 'applied',
+          current_role: applicationData.currentRole,
+          current_ctc: applicationData.currentCTC ? parseFloat(applicationData.currentCTC) * 100000 : null,
+          expected_ctc: applicationData.expectedCTC ? parseFloat(applicationData.expectedCTC) * 100000 : null,
+          notice_period: applicationData.noticePeriod,
+          preferred_location: applicationData.location,
+          resume_url: applicationData.resumeUrl,
+          additional_files: [],
+          application_data: {
+            fullName: applicationData.fullName,
+            email: applicationData.email,
+            phoneNumber: applicationData.phoneNumber,
+            yearsOfExperience: applicationData.yearsOfExperience,
+            readyToRelocate: applicationData.readyToRelocate,
+            coverLetter: applicationData.coverLetter,
+            linkedinProfile: applicationData.linkedinProfile,
+            portfolioWebsite: applicationData.portfolioWebsite,
+            appliedAt: applicationData.appliedAt
+          }
+        });
+
+      if (error) throw error;
+
+      // Award TXC coins for the application
+      await supabase.rpc('update_user_txc_coins', {
+        user_uuid: currentUser.id,
+        coin_change: 10,
+        reason: 'job_application'
+      });
+
+      toast.success('Application submitted successfully! +10 TXC coins earned');
+      setSwipeIndex(prev => prev + 1); // Move to next job in swipe mode
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      toast.error('Failed to submit application. Please try again.');
+    }
+  };
+
 
 
   return (
@@ -681,8 +732,6 @@ const Jobs = () => {
                           onSwipe={(direction, job) => {
                             if (direction === 'right') {
                               handleSaveJob(job.id);
-                            } else if (direction === 'up') {
-                              handleQuickApply(job.id);
                             } else if (direction === 'left') {
                               console.log('Rejected job:', job.id);
                               // You can add rejected jobs tracking here
@@ -690,6 +739,7 @@ const Jobs = () => {
                             setSwipeIndex(prev => prev + 1);
                           }}
                           onSave={handleSaveJob}
+                          onApply={handleJobApplication}
                           savedJobs={savedJobs}
                         />
                         

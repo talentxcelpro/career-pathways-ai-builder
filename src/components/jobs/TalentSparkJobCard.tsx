@@ -234,98 +234,180 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
     );
   }
 
-  // Enhanced swipe mode card (mobile-optimized)
+  // Enhanced swipe mode card (mobile-optimized with detailed information)
   if (viewMode === 'swipe') {
     return (
       <Card className="group relative overflow-hidden bg-gradient-to-br from-white to-primary/5 hover:shadow-xl transition-all duration-300 h-full">
         {/* AI Match Score Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
         
-        <div className="p-4 h-full flex flex-col" onClick={handleViewJob}>
+        <div className="p-5 h-full flex flex-col" onClick={handleViewJob}>
           {/* Header with Company Logo */}
-          <div className="flex items-start gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
               {job.companies?.logo_url ? (
                 <img 
                   src={job.companies.logo_url} 
                   alt={job.companies.name}
-                  className="w-8 h-8 object-contain rounded"
+                  className="w-10 h-10 object-contain rounded-lg"
                 />
               ) : (
-                <Building2 className="h-6 w-6 text-primary" />
+                <Building2 className="h-8 w-8 text-primary" />
               )}
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold text-gray-900 line-clamp-2 mb-1">
+              <h3 className="text-lg font-bold text-gray-900 line-clamp-2 mb-2">
                 {job.title}
               </h3>
-              <p className="text-sm text-primary font-medium mb-2">
+              <p className="text-base text-primary font-semibold mb-3">
                 {job.companies?.name || job.company_name}
               </p>
               
-              {/* Location and Salary */}
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                <MapPin className="h-3 w-3" />
-                <span className="truncate">{job.location}</span>
+              {/* Location and Posted Time */}
+              <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />
+                  <span>{job.location}</span>
+                </div>
                 <span>•</span>
-                <DollarSign className="h-3 w-3" />
-                <span className="truncate">{formatSalary(job.salary_min, job.salary_max)}</span>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  <span>{getTimeAgo(job.posted_at || job.created_at)}</span>
+                </div>
               </div>
             </div>
             
-            {/* AI Match Score */}
-            <div className="text-right">
+            {/* AI Match Score - Enhanced */}
+            <div className="text-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl p-3 min-w-[70px]">
               <div className="text-xs text-muted-foreground mb-1">AI Match</div>
-              <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
+              <div className="text-lg font-bold text-primary">{aiMatchScore}%</div>
+              <Progress value={aiMatchScore} className="h-1.5 mt-1" />
             </div>
           </div>
-          
+
+          {/* Salary & Benefits - Prominent */}
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 mb-4 border border-green-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-green-600" />
+                <span className="text-lg font-bold text-green-700">
+                  {formatSalary(job.salary_min, job.salary_max)}
+                </span>
+              </div>
+              <Badge variant="outline" className="text-sm border-green-300 text-green-700">
+                {job.employment_type}
+              </Badge>
+            </div>
+            <div className="text-sm text-green-600">
+              + Health Insurance, PF, Bonus, Remote Flexibility
+            </div>
+          </div>
+
+          {/* Job Details Grid */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-blue-600" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Experience</div>
+                  <div className="text-sm font-medium">{job.experience_level}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4 text-purple-600" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Views</div>
+                  <div className="text-sm font-medium">{job.views_count || 0}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-orange-600" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Applied</div>
+                  <div className="text-sm font-medium">{job.applications_count || 0}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-indigo-600" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Verified</div>
+                  <div className="text-sm font-medium text-green-600">✓ Company</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Job Description Preview */}
-          <div className="flex-1 mb-4">
-            <p className="text-xs text-gray-600 line-clamp-3">
-              {job.description || "Exciting opportunity to join our growing team. We offer competitive salary, great benefits, and a collaborative work environment."}
+          <div className="mb-4">
+            <div className="text-sm font-medium mb-2 text-gray-800">About this role</div>
+            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+              {job.description || "Exciting opportunity to join our growing team. We offer competitive salary, great benefits, and a collaborative work environment. Looking for passionate individuals to make an impact."}
             </p>
           </div>
           
           {/* Skills */}
           {job.skills_required && job.skills_required.length > 0 && (
             <div className="mb-4">
-              <div className="text-xs font-medium mb-2 text-gray-700">Required Skills</div>
-              <div className="flex flex-wrap gap-1">
-                {job.skills_required.slice(0, 3).map((skill: string) => (
-                  <Badge key={skill} variant="secondary" className="text-xs px-2 py-1">
+              <div className="text-sm font-medium mb-2 text-gray-800">Required Skills</div>
+              <div className="flex flex-wrap gap-2">
+                {job.skills_required.slice(0, 6).map((skill: string) => (
+                  <Badge key={skill} variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20">
                     {skill}
                   </Badge>
                 ))}
-                {job.skills_required.length > 3 && (
-                  <Badge variant="outline" className="text-xs px-2 py-1">
-                    +{job.skills_required.length - 3}
+                {job.skills_required.length > 6 && (
+                  <Badge variant="outline" className="text-xs px-3 py-1">
+                    +{job.skills_required.length - 6} more
                   </Badge>
                 )}
               </div>
             </div>
           )}
-          
-          {/* Employment Type and Experience */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-            <span className="bg-gray-100 px-2 py-1 rounded">{job.employment_type}</span>
-            <span>{job.experience_level}</span>
-            <span>{getTimeAgo(job.posted_at || job.created_at)}</span>
+
+          {/* Quick Apply Benefits */}
+          <div className="bg-blue-50 rounded-lg p-3 mb-4 border border-blue-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">Quick Apply Benefits</span>
+            </div>
+            <div className="text-xs text-blue-800 space-y-1">
+              <div>✓ Instant application with one swipe</div>
+              <div>✓ Priority processing by recruiter</div>
+              <div>✓ +{txcReward} TXC coins reward</div>
+            </div>
           </div>
           
-          {/* Action Button */}
-          <Button 
-            size="sm" 
-            className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowApplicationDialog(true);
-            }}
-          >
-            <Send className="h-3 w-3 mr-2" />
-            Quick Apply (+{txcReward} TXC)
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex gap-3 mt-auto">
+            <Button 
+              variant="outline"
+              size="sm"
+              className="flex-1 h-12"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSave(job.id);
+              }}
+            >
+              <Heart className={`h-4 w-4 mr-2 ${isSaved ? 'fill-current text-red-500' : ''}`} />
+              {isSaved ? 'Saved' : 'Save'}
+            </Button>
+            
+            <Button 
+              size="sm" 
+              className="flex-[2] h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-sm font-semibold"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowApplicationDialog(true);
+              }}
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Apply Now (+{txcReward} TXC)
+            </Button>
+          </div>
         </div>
       </Card>
     );
