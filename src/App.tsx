@@ -119,6 +119,10 @@ import CoursePlayer from "./pages/learning/CoursePlayer";
 import Communication from "./pages/Communication";
 import NetworkingHub from "./pages/NetworkingHub";
 import { communicationRoutes } from "./navigation/communicationRoutes";
+import { ChatPage } from "./pages/ChatPage";
+import { NotificationsPage } from "./pages/NotificationsPage";
+import { AnalyticsPage } from "./pages/AnalyticsPage";
+import { AdminPage } from "./pages/AdminPage";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));

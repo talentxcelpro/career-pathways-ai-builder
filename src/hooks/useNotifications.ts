@@ -1,308 +1,178 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-export interface Notification {
+export interface AppNotification {
   id: string;
   user_id: string;
-  module: 'network' | 'jobs' | 'resume' | 'tools' | 'companies' | 'learning' | 'career_map' | 'employer';
-  type: string;
   title: string;
   message: string;
-  link: string;
-  icon?: string;
+  type: 'info' | 'success' | 'warning' | 'error' | 'connection' | 'job' | 'premium';
   is_read: boolean;
-  priority: 'low' | 'medium' | 'high';
-  sound: boolean;
   created_at: string;
-  expires_at?: string;
+  action_url?: string;
+  metadata?: Record<string, any>;
 }
 
-export interface NotificationFilters {
-  module?: string;
-  is_read?: boolean;
-  priority?: string;
-  search?: string;
-}
+export const useNotifications = () => {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-export const useNotifications = (filters: NotificationFilters = {}) => {
-  const queryClient = useQueryClient();
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    return localStorage.getItem('notifications-sound') !== 'false';
-  });
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
 
-  // Fetch notifications with filters
-  const { data: notifications = [], isLoading, error } = useQuery({
-    queryKey: ['notifications', filters],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      let query = supabase
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      // Apply filters
-      if (filters.module) {
-        query = query.eq('module', filters.module);
-      }
-      if (filters.is_read !== undefined) {
-        query = query.eq('is_read', filters.is_read);
-      }
-      if (filters.priority) {
-        query = query.eq('priority', filters.priority);
-      }
-
-      const { data, error } = await query.limit(100);
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       if (error) throw error;
 
-      let filteredData = data || [];
+      setNotifications(data || []);
+      setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+      console.log('✅ Notifications loaded:', data?.length);
 
-      // Apply search filter client-side
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        filteredData = filteredData.filter(
-          notification =>
-            notification.title.toLowerCase().includes(searchLower) ||
-            notification.message?.toLowerCase().includes(searchLower)
-        );
-      }
+    } catch (err: any) {
+      console.error('❌ Failed to fetch notifications:', err);
+      toast.error('Failed to load notifications');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
 
-      return filteredData as Notification[];
-    },
-    retry: 1
-  });
-
-  // Real-time subscription
-  useEffect(() => {
-    const setupRealtimeSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const channel = supabase
-      .channel('user_notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          console.log('Notification change:', payload);
-          
-          if (payload.eventType === 'INSERT') {
-            const newNotification = payload.new as Notification;
-            
-            // Play sound if enabled
-            if (soundEnabled && newNotification.sound) {
-              playNotificationSound(newNotification.priority);
-            }
-            
-            // Show toast notification
-            showToastNotification(newNotification);
-          }
-          
-          // Invalidate queries to refetch data
-          queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        }
-      )
-      .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    };
-
-    setupRealtimeSubscription();
-  }, [queryClient, soundEnabled]);
-
-  // Mark as read mutation
-  const markAsReadMutation = useMutation({
-    mutationFn: async (notificationId: string) => {
+  const markAsRead = useCallback(async (notificationId: string) => {
+    try {
       const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('id', notificationId);
 
       if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-    },
-    onError: (error) => {
-      console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
+
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+
+    } catch (err: any) {
+      console.error('Failed to mark notification as read:', err);
     }
-  });
+  }, []);
 
-  // Mark all as read mutation
-  const markAllAsReadMutation = useMutation({
-    mutationFn: async (module?: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+  const markAllAsRead = useCallback(async () => {
+    if (!user) return;
 
-      let query = supabase
+    try {
+      const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('user_id', user.id)
         .eq('is_read', false);
 
-      if (module) {
-        query = query.eq('module', module);
-      }
-
-      const { error } = await query;
       if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('Notifications marked as read');
-    },
-    onError: (error) => {
-      console.error('Error marking notifications as read:', error);
-      toast.error('Failed to mark notifications as read');
-    }
-  });
 
-  // Delete notification mutation
-  const deleteNotificationMutation = useMutation({
-    mutationFn: async (notificationId: string) => {
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+      toast.success('All notifications marked as read');
+
+    } catch (err: any) {
+      console.error('Failed to mark all notifications as read:', err);
+      toast.error('Failed to update notifications');
+    }
+  }, [user]);
+
+  const deleteNotification = useCallback(async (notificationId: string) => {
+    try {
       const { error } = await supabase
         .from('notifications')
         .delete()
         .eq('id', notificationId);
 
       if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('Notification deleted');
-    },
-    onError: (error) => {
-      console.error('Error deleting notification:', error);
+
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      
+      const deletedNotification = notifications.find(n => n.id === notificationId);
+      if (deletedNotification && !deletedNotification.is_read) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+
+    } catch (err: any) {
+      console.error('Failed to delete notification:', err);
       toast.error('Failed to delete notification');
     }
-  });
+  }, [notifications]);
 
-  // Sound functions
-  const playNotificationSound = useCallback((priority: string) => {
-    if (!soundEnabled) return;
+  const createNotification = useCallback(async (notification: Omit<AppNotification, 'id' | 'user_id' | 'created_at' | 'is_read'>) => {
+    if (!user) return;
 
     try {
-      // Create a simple notification sound using Web Audio API
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const { error } = await supabase.from('notifications').insert({
+        user_id: user.id,
+        ...notification,
+        is_read: false,
+        created_at: new Date().toISOString()
+      });
+
+      if (error) throw error;
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Different frequencies for different priorities
-      switch (priority) {
-        case 'high':
-          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-          break;
-        case 'medium':
-          oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-          break;
-        case 'low':
-          oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-          break;
-        default:
-          oscillator.frequency.setValueAtTime(500, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-      }
-      
-      oscillator.type = 'sine';
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.2);
-      
-      // Cleanup
-      setTimeout(() => {
-        oscillator.disconnect();
-        gainNode.disconnect();
-      }, 300);
-    } catch (error) {
-      console.error('Error playing notification sound:', error);
+      // Refresh notifications to include the new one
+      fetchNotifications();
+
+    } catch (err: any) {
+      console.error('Failed to create notification:', err);
     }
-  }, [soundEnabled]);
+  }, [user, fetchNotifications]);
 
-  const toggleSound = useCallback((enabled: boolean) => {
-    setSoundEnabled(enabled);
-    localStorage.setItem('notifications-sound', enabled.toString());
-  }, []);
+  // Subscribe to real-time notification updates
+  useEffect(() => {
+    if (!user) return;
 
-  // Toast notification display
-  const showToastNotification = useCallback((notification: Notification) => {
-    const priority = notification.priority;
-    const toastOptions = {
-      duration: priority === 'high' ? 8000 : priority === 'medium' ? 5000 : 3000,
-      action: {
-        label: 'View',
-        onClick: () => {
-          window.location.href = notification.link;
-        }
-      }
+    const channel = supabase
+      .channel('notifications')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${user.id}`
+      }, (payload) => {
+        console.log('🔔 New notification received:', payload);
+        const newNotification = payload.new as AppNotification;
+        
+        setNotifications(prev => [newNotification, ...prev]);
+        setUnreadCount(prev => prev + 1);
+        
+        // Show toast notification
+        toast.info(newNotification.title, {
+          description: newNotification.message
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
+  }, [user]);
 
-    if (priority === 'high') {
-      toast.error(notification.title, {
-        description: notification.message,
-        ...toastOptions
-      });
-    } else if (priority === 'medium') {
-      toast.info(notification.title, {
-        description: notification.message,
-        ...toastOptions
-      });
-    } else {
-      toast(notification.title, {
-        description: notification.message,
-        ...toastOptions
-      });
-    }
-  }, []);
-
-  // Statistics
-  const stats = {
-    total: notifications.length,
-    unread: notifications.filter(n => !n.is_read).length,
-    byModule: notifications.reduce((acc, notification) => {
-      acc[notification.module] = (acc[notification.module] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>),
-    byPriority: notifications.reduce((acc, notification) => {
-      acc[notification.priority] = (acc[notification.priority] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>),
-    thisWeek: notifications.filter(n => {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return new Date(n.created_at) > weekAgo;
-    }).length
-  };
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   return {
     notifications,
+    unreadCount,
     isLoading,
-    error,
-    stats,
-    soundEnabled,
-    markAsRead: markAsReadMutation.mutate,
-    markAllAsRead: markAllAsReadMutation.mutate,
-    deleteNotification: deleteNotificationMutation.mutate,
-    toggleSound,
-    isMarkingAsRead: markAsReadMutation.isPending,
-    isMarkingAllAsRead: markAllAsReadMutation.isPending,
-    isDeletingNotification: deleteNotificationMutation.isPending
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    createNotification
   };
 };
