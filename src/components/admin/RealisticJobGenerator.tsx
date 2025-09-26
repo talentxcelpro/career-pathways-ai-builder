@@ -134,9 +134,16 @@ export const RealisticJobGenerator: React.FC = () => {
 // Fallback job generation when edge function is not available
 const generateFallbackJobs = (count: number) => {
   const companies = [
-    "Tata Consultancy Services", "Infosys", "Wipro", "HCL Technologies", "Tech Mahindra",
-    "Microsoft India", "Google India", "Amazon India", "Flipkart", "Zomato", 
-    "Swiggy", "Paytm", "BYJU'S", "Ola", "Uber India"
+    { name: "Tata Consultancy Services", domain: "jobs.tcs.com" },
+    { name: "Infosys", domain: "careers.infosys.com" },
+    { name: "Wipro", domain: "careers.wipro.com" },
+    { name: "HCL Technologies", domain: "hcltech.com" },
+    { name: "Tech Mahindra", domain: "careers.techmahindra.com" },
+    { name: "Microsoft India", domain: "careers.microsoft.com" },
+    { name: "Google India", domain: "careers.google.com" },
+    { name: "IBM India", domain: "jobs.ibm.com" },
+    { name: "Accenture", domain: "careers.accenture.com" },
+    { name: "Cognizant", domain: "careers.cognizant.com" }
   ];
   
   const jobTitles = [
@@ -171,7 +178,7 @@ const generateFallbackJobs = (count: number) => {
     jobs.push({
       title,
       description: `We are looking for a talented ${title} to join our dynamic team. You will work on exciting projects using modern technologies and contribute to innovative solutions.`,
-      company_name: company,
+      company_name: company.name,
       location,
       salary_min: salaryMin,
       salary_max: salaryMax,
@@ -185,13 +192,13 @@ const generateFallbackJobs = (count: number) => {
       is_active: true,
       posted_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
       expires_at: new Date(Date.now() + (30 + Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
-      seo_slug: `${title.toLowerCase().replace(/\s+/g, '-')}-${company.toLowerCase().replace(/\s+/g, '-')}-${location.toLowerCase().replace(/\s+/g, '-')}`.substring(0, 100),
+      seo_slug: `${title.toLowerCase().replace(/\s+/g, '-')}-${company.name.toLowerCase().replace(/\s+/g, '-')}-${location.toLowerCase().replace(/\s+/g, '-')}`.substring(0, 100),
       views_count: Math.floor(Math.random() * 100),
       applications_count: Math.floor(Math.random() * 20),
       industry: "Technology",
       department: "engineering",
       job_type: 'external',
-      external_url: `https://careers.${company.toLowerCase().replace(/\s+/g, '')}.com/jobs/${Math.random().toString(36).substring(7)}`,
+      external_url: `https://${company.domain}/jobs/${Math.random().toString(36).substring(7)}`,
       posted_by: '00000000-0000-0000-0000-000000000000'
     });
   }
