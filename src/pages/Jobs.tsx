@@ -33,6 +33,7 @@ import { TXCCoinBalance } from '@/components/jobs/TXCCoinBalance';
 import { QuickApplyWidget } from '@/components/jobs/QuickApplyWidget';
 import { SalaryTransparencyWidget } from '@/components/jobs/SalaryTransparencyWidget';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
+import { TopCompaniesSalaries } from '@/components/jobs/TopCompaniesSalaries';
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -549,6 +550,11 @@ const Jobs = () => {
                 />
                 
                 <JobCategoriesGrid />
+                
+                {/* Top Companies Salaries */}
+                <div className="mt-8">
+                  <TopCompaniesSalaries />
+                </div>
               </div>
             </div>
 
