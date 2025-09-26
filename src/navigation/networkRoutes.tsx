@@ -30,6 +30,10 @@ import Discover from "../pages/network/Discover";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
 import { MobileNetwork } from "../pages/mobile/MobileNetwork";
+import SkillSwap from "../pages/network/SkillSwap";
+import VideoIntros from "../pages/network/VideoIntros";
+import Verified from "../pages/network/Verified";
+import Communities from "../pages/network/Communities";
 
 export const networkRoutes = [
   {
@@ -177,5 +181,25 @@ export const networkRoutes = [
     title: "Mobile Network Analysis",
     to: "/network/mobile-analysis",
     page: <ComprehensiveMobileNetworkAnalysis />,
+  },
+  {
+    title: "Skill Swap",
+    to: "/network/skill-swap",
+    page: <SkillSwap />,
+  },
+  {
+    title: "Video Introductions",
+    to: "/network/video-intros",
+    page: <VideoIntros />,
+  },
+  {
+    title: "Verified Professionals",
+    to: "/network/verified",
+    page: <Verified />,
+  },
+  {
+    title: "Communities",
+    to: "/network/communities",
+    page: <Communities />,
   },
 ];
