@@ -29,8 +29,11 @@ const CommunicationResponses = () => {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <MessageSquare className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600">Communication tracking feature coming soon</p>
+            <MessageSquare className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground mb-4">Enhanced communication system is now available</p>
+            <Button onClick={() => navigate('/communication')} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              Go to Communication Hub
+            </Button>
           </div>
         </CardContent>
       </Card>

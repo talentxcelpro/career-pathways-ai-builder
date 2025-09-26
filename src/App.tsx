@@ -116,6 +116,8 @@ import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
 import CoursePlayer from "./pages/learning/CoursePlayer";
+import Communication from "./pages/Communication";
+import { communicationRoutes } from "./navigation/communicationRoutes";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -300,6 +302,12 @@ const App = () => {
                                 <Route path="/news" element={<NewsPage />} />
                                 <Route path="/news/:slug" element={<NewsPage />} />
                                 <Route path="/employer/cv-database" element={<CVDatabase />} />
+
+                                {/* Communication Routes */}
+                                <Route path="/communication" element={<Communication />} />
+                                {communicationRoutes.map((route) => (
+                                  <Route key={route.path} path={route.path} element={route.element} />
+                                ))}
 
                                 {/* Enhanced SEO Demo Route */}
                                 <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />
