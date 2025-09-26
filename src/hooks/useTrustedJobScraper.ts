@@ -104,7 +104,8 @@ export const TRUSTED_DOMAINS = [
   'jobs.tcs.com', 'hcltech.com', 'careers.cognizant.com', 'jobs.sap.com',
   'jobs.ibm.com', 'jobs.wipro.com', 'careers.infosys.com', 'careers.wipro.com',
   'careers.hcltech.com', 'careers.techmahindra.com', 'unstop.com', 'hireclap.com',
-  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com'
+  'talent500.co', 'relevel.com', 'remoteok.io', 'weworkremotely.com', 'simplyhired.com',
+  'wipro.com', 'hcltech.com', 'accenture.com', 'infosys.com', 'techmahindra.com'
 ];
 
 export const isTrustedDomain = (url: string): boolean => {
