@@ -481,26 +481,7 @@ const Jobs = () => {
         {/* Main Content - Simplified */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-widget-id="job-search">
           
-          {/* Career Dashboard CTA */}
-          <div className="mb-8 text-center" data-widget-id="career-dashboard-cta">
-            <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 rounded-2xl p-8 border border-primary/20">
-              <div className="max-w-2xl mx-auto">
-                <Brain className="h-12 w-12 mx-auto text-primary mb-4" />
-                <h2 className="text-2xl font-apple-bold mb-3">AI Career Intelligence Hub</h2>
-                <p className="text-muted-foreground font-apple-medium mb-6">
-                  Get personalized job recommendations, salary insights, career progress tracking, and AI-powered application assistance.
-                </p>
-                <Button 
-                  onClick={() => navigate('/career-dashboard')}
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white font-apple-bold px-8 py-4 shadow-lg"
-                >
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Open Career Dashboard
-                </Button>
-              </div>
-            </div>
-          </div>
+          
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             
