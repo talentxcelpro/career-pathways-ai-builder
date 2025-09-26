@@ -198,8 +198,41 @@ export class JobDataValidator {
 
   private static isValidLocation(location: string): boolean {
     const validLocations = [
+      // Major Metro Cities
       'mumbai', 'delhi', 'bangalore', 'chennai', 'kolkata', 'pune', 'hyderabad',
       'ahmedabad', 'surat', 'jaipur', 'lucknow', 'kanpur', 'nagpur', 'indore',
+      'gurgaon', 'noida', 'faridabad', 'ghaziabad', 'kochi', 'thiruvananthapuram',
+      'bhubaneswar', 'chandigarh', 'coimbatore', 'mysore', 'mangalore', 'vizag',
+      'patna', 'bhopal', 'aurangabad', 'rajkot', 'madurai', 'agra', 'varanasi',
+      'meerut', 'ludhiana', 'amritsar', 'jalandhar', 'patiala', 'bathinda',
+      'mohali', 'pathankot', 'hoshiarpur', 'batala', 'abohar', 'malerkotla',
+      'khanna', 'phagwara', 'muktsar', 'barnala', 'dehradun', 'shimla', 'jammu',
+      'srinagar', 'gangtok', 'shillong', 'imphal', 'agartala', 'aizawl', 'kohima',
+      'itanagar', 'dispur', 'panaji', 'daman', 'kolhapur', 'sangli', 'satara',
+      'solapur', 'latur', 'nanded', 'akola', 'amravati', 'chandrapur', 'dhule',
+      'gandhinagar', 'anand', 'bharuch', 'vapi', 'navsari', 'morbi', 'junagadh',
+      'bhavnagar', 'jamnagar', 'porbandar', 'hubli', 'dharwad', 'belgaum',
+      'gulbarga', 'davangere', 'bellary', 'bijapur', 'shimoga', 'tumkur', 'hassan',
+      'salem', 'tirupur', 'erode', 'vellore', 'tirunelveli', 'thanjavur', 'dindigul',
+      'cuddalore', 'karur', 'kanchipuram', 'vijayawada', 'guntur', 'nellore',
+      'kurnool', 'rajahmundry', 'tirupati', 'warangal', 'nizamabad', 'khammam',
+      'karimnagar', 'mahbubnagar', 'nalgonda', 'calicut', 'thrissur', 'kollam',
+      'palakkad', 'kannur', 'kottayam', 'alappuzha', 'malappuram', 'kasaragod',
+      'idukki', 'siliguri', 'durgapur', 'asansol', 'howrah', 'burdwan', 'malda',
+      'jalpaiguri', 'kharagpur', 'jodhpur', 'kota', 'bikaner', 'udaipur', 'ajmer',
+      'bhilwara', 'alwar', 'bharatpur', 'sikar', 'pali', 'bareilly', 'moradabad',
+      'saharanpur', 'gorakhpur', 'firozabad', 'jhansi', 'muzaffarnagar', 'mathura',
+      'rampur', 'shahjahanpur', 'farrukhabad', 'hapur', 'gwalior', 'jabalpur',
+      'ujjain', 'sagar', 'dewas', 'satna', 'ratlam', 'rewa', 'panipat', 'ambala',
+      'yamunanagar', 'rohtak', 'hisar', 'karnal', 'sonipat', 'sirsa', 'thanesar',
+      'kaithal', 'gaya', 'bhagalpur', 'muzaffarpur', 'purnia', 'darbhanga', 'arrah',
+      'begusarai', 'katihar', 'munger', 'chhapra', 'cuttack', 'rourkela', 'brahmapur',
+      'sambalpur', 'puri', 'balasore', 'bhadrak', 'baripada', 'jharsuguda', 'jeypore',
+      'ranchi', 'jamshedpur', 'dhanbad', 'bokaro', 'deoghar', 'phusro', 'hazaribagh',
+      'giridih', 'ramgarh', 'medininagar', 'raipur', 'bilaspur', 'korba', 'durg',
+      'rajnandgaon', 'jagdalpur', 'raigarh', 'ambikapur', 'mahasamund', 'dhamtari',
+      'haridwar', 'rishikesh', 'roorkee', 'haldwani', 'rudrapur', 'kashipur',
+      'pithoragarh', 'almora', 'mussoorie', 'nainital',
       'remote', 'work from home', 'wfh', 'hybrid'
     ];
     
