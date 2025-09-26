@@ -136,20 +136,21 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-base text-primary font-semibold">
+              <p className="text-sm sm:text-base text-primary font-semibold">
                 {job.companies?.name || job.company_name}
               </p>
-              <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  {job.location}
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="truncate max-w-24 sm:max-w-none">{job.location}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {getTimeAgo(job.posted_at || job.created_at)}
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{getTimeAgo(job.posted_at || job.created_at)}</span>
+                  <span className="sm:hidden">{getTimeAgo(job.posted_at || job.created_at).replace(' ago', '')}</span>
                 </div>
               </div>
             </div>
@@ -255,18 +256,18 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold text-gray-900 line-clamp-2">
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-sm text-primary font-medium">
+              <p className="text-xs text-primary font-medium">
                 {job.companies?.name || job.company_name}
               </p>
-              <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3" />
-                {job.location}
+                <span className="truncate max-w-16">{job.location}</span>
                 <span>•</span>
                 <DollarSign className="h-3 w-3" />
-                {formatSalary(job.salary_min, job.salary_max)}
+                <span className="truncate">{formatSalary(job.salary_min, job.salary_max)}</span>
               </div>
             </div>
             
@@ -337,27 +338,27 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
                 </div>
                 
                 {/* AI Match Score */}
-                <div className="flex items-center gap-2 ml-4">
-                  <div className="text-xs text-muted-foreground">AI Match</div>
+                <div className="flex items-center gap-1 ml-2">
+                  <div className="text-xs text-muted-foreground hidden sm:block">AI Match</div>
                   <div className="text-xs font-bold text-primary">{aiMatchScore}%</div>
                 </div>
               </div>
               
               {/* Details Row */}
-              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 sm:gap-4 mt-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <MapPin className="h-3 w-3" />
-                  {job.location}
+                  <span className="truncate max-w-16 sm:max-w-none">{job.location}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <DollarSign className="h-3 w-3" />
-                  {formatSalary(job.salary_min, job.salary_max)}
+                  <span className="truncate">{formatSalary(job.salary_min, job.salary_max)}</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="hidden sm:flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {getTimeAgo(job.posted_at || job.created_at)}
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="hidden sm:flex items-center gap-1">
                   <Users className="h-3 w-3" />
                   {job.employment_type}
                 </div>
@@ -365,7 +366,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             {/* Actions */}
-            <div className="flex items-center gap-2 ml-4">
+            <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-4">
               <Button
                 variant="outline"
                 size="sm"
@@ -373,20 +374,21 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
                   e.stopPropagation();
                   onSave(job.id);
                 }}
-                className={`h-8 w-8 p-0 ${isSaved ? 'text-red-500 border-red-200' : ''}`}
+                className={`h-6 w-6 sm:h-8 sm:w-8 p-0 ${isSaved ? 'text-red-500 border-red-200' : ''}`}
               >
-                <Heart className={`h-3 w-3 ${isSaved ? 'fill-red-500' : ''}`} />
+                <Heart className={`h-2 w-2 sm:h-3 sm:w-3 ${isSaved ? 'fill-red-500' : ''}`} />
               </Button>
               
               <Button 
                 size="sm"
-                className="h-8 px-3 text-xs"
+                className="h-6 sm:h-8 px-2 sm:px-3 text-xs"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowApplicationDialog(true);
                 }}
               >
-                Apply
+                <span className="hidden sm:inline">Apply</span>
+                <span className="sm:hidden">🚀</span>
               </Button>
             </div>
           </div>

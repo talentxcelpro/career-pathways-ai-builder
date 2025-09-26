@@ -377,7 +377,7 @@ const Jobs = () => {
                   className="h-8 w-8 rounded-lg"
                 />
                 <div>
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <h1 className="text-base sm:text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     TalentSpark Job Discovery
                   </h1>
                   <p className="text-xs text-muted-foreground">AI-Powered • TXC Rewards</p>
@@ -388,10 +388,11 @@ const Jobs = () => {
                 onClick={() => navigate('/career-dashboard')}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-primary/10 hover:to-purple-600/10 border-primary/20"
+                className="flex items-center gap-1 sm:gap-2 hover:bg-gradient-to-r hover:from-primary/10 hover:to-purple-600/10 border-primary/20 text-xs sm:text-sm px-2 sm:px-3"
               >
-                <Brain className="h-4 w-4" />
-                AI Career Intelligence Hub
+                <Brain className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">AI Career Intelligence Hub</span>
+                <span className="sm:hidden">AI Hub</span>
               </Button>
             </div>
 
@@ -424,25 +425,25 @@ const Jobs = () => {
                 { label: '🏢 Fortune 500', filter: { search: 'Google Microsoft Amazon Apple Meta' } },
                 { label: '⚡ Quick Apply', filter: { search: 'quick apply' } }
               ].map((tag) => (
-                <Button
-                  key={tag.label}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setFilters(prev => ({ ...prev, ...tag.filter }));
-                    refetch();
-                  }}
-                  className="rounded-full bg-white/70 backdrop-blur-sm hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-white transition-all text-xs border-primary/20 hover:border-primary/50 shadow-sm hover:shadow-md transform hover:scale-105"
-                >
-                  {tag.label}
-                </Button>
+                  <Button
+                    key={tag.label}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setFilters(prev => ({ ...prev, ...tag.filter }));
+                      refetch();
+                    }}
+                    className="rounded-full bg-white/70 backdrop-blur-sm hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-white transition-all text-xs border-primary/20 hover:border-primary/50 shadow-sm hover:shadow-md transform hover:scale-105 px-2 py-1"
+                  >
+                    <span className="text-xs">{tag.label}</span>
+                  </Button>
               ))}
             </div>
 
             {/* View Mode Selector */}
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-              <div className="text-center mb-3">
-                <h3 className="font-bold text-xs text-gray-900">Choose Your View</h3>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20">
+              <div className="text-center mb-2 sm:mb-3">
+                <h3 className="font-bold text-xs sm:text-sm text-gray-900">Choose Your View</h3>
                 <p className="text-xs text-muted-foreground">Customize how you browse jobs</p>
               </div>
               

@@ -304,9 +304,9 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   return (
     <div className={`relative ${className}`} ref={suggestionsRef}>
       {/* Main Search Bar */}
-      <div className="relative flex gap-2">
+      <div className="relative flex gap-1 sm:gap-2">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             ref={inputRef}
             placeholder={placeholder}
@@ -314,16 +314,16 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowSuggestions(true)}
-            className="pl-10 pr-10 h-10 text-sm border-2 border-primary/20 focus:border-primary/50 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm"
+            className="pl-8 sm:pl-10 pr-8 sm:pr-10 h-8 sm:h-10 text-xs sm:text-sm border-2 border-primary/20 focus:border-primary/50 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm"
           />
           {value && (
             <Button
               variant="ghost"
               size="sm"
               onClick={clearSearch}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
+              className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 p-0 hover:bg-gray-100"
             >
-              <X className="h-3 w-3" />
+              <X className="h-2 w-2 sm:h-3 sm:w-3" />
             </Button>
           )}
         </div>
@@ -333,18 +333,18 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           onClick={handleVoiceSearch}
           disabled={isVoiceSearching}
           variant="outline"
-          className="h-10 px-3 border-2 border-primary/20 hover:border-primary/50"
+          className="h-8 sm:h-10 px-2 sm:px-3 border-2 border-primary/20 hover:border-primary/50"
         >
-          <Mic className={`h-4 w-4 ${isVoiceSearching ? 'animate-pulse text-red-500' : ''}`} />
+          <Mic className={`h-3 w-3 sm:h-4 sm:w-4 ${isVoiceSearching ? 'animate-pulse text-red-500' : ''}`} />
         </Button>
         
         <Button
           size="sm"
           onClick={onSearch}
-          className="h-10 px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+          className="h-8 sm:h-10 px-2 sm:px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-xs sm:text-sm"
         >
-          <Search className="h-4 w-4 mr-2" />
-          Search
+          <Search className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Search</span>
         </Button>
       </div>
 
