@@ -117,6 +117,7 @@ import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
 import CoursePlayer from "./pages/learning/CoursePlayer";
 import Communication from "./pages/Communication";
+import NetworkingHub from "./pages/NetworkingHub";
 import { communicationRoutes } from "./navigation/communicationRoutes";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
@@ -308,6 +309,9 @@ const App = () => {
                                 {communicationRoutes.map((route) => (
                                   <Route key={route.path} path={route.path} element={route.element} />
                                 ))}
+
+                                {/* Networking Hub Routes */}
+                                <Route path="/networking" element={<NetworkingHub />} />
 
                                 {/* Enhanced SEO Demo Route */}
                                 <Route path="/seo-demo/:type" element={<EnhancedSEODemoWrapper />} />
