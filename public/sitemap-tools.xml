@@ -1,8 +1,207 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main Tools Pages -->
   <url>
     <loc>https://talentxcel.in/tools</loc>
-    <lastmod>2025-08-26</lastmod>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/categories</loc>
+    <lastmod>2025-09-26</lastmod>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/favorites</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Resume & CV Tools -->
+  <url>
+    <loc>https://talentxcel.in/tools/resume-builder</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/cv-generator</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/resume-parser</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/resume-optimizer</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/ats-checker</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/resume-templates</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Cover Letter Tools -->
+  <url>
+    <loc>https://talentxcel.in/tools/cover-letter-generator</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/cover-letter-templates</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/cover-letter-analyzer</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Interview Preparation -->
+  <url>
+    <loc>https://talentxcel.in/tools/interview-prep</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/mock-interview</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/interview-questions</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/interview-scheduler</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Skill Assessment Tools -->
+  <url>
+    <loc>https://talentxcel.in/tools/skill-assessment</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/coding-tests</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/aptitude-tests</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/personality-test</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Salary & Career Tools -->
+  <url>
+    <loc>https://talentxcel.in/tools/salary-calculator</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/salary-negotiator</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/career-path-finder</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/job-match-analyzer</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- LinkedIn & Networking -->
+  <url>
+    <loc>https://talentxcel.in/tools/linkedin-optimizer</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/networking-tracker</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/connection-manager</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Application Tracking -->
+  <url>
+    <loc>https://talentxcel.in/tools/job-tracker</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/application-manager</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/follow-up-scheduler</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- AI-Powered Tools -->
+  <url>
+    <loc>https://talentxcel.in/tools/ai-career-advisor</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/ai-job-matcher</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/ai-interview-coach</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Industry-Specific Tools -->
+  <url>
+    <loc>https://talentxcel.in/tools/tech-jobs</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/finance-jobs</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/healthcare-jobs</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/tools/marketing-jobs</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
   </url>
 </urlset>
