@@ -32,6 +32,12 @@ interface JobCardProps {
       logo_url?: string;
       industry?: string;
     };
+    company_name?: string;
+    companies?: {
+      name: string;
+      logo_url?: string;
+      industry?: string;
+    };
   };
   onSave?: (jobId: string) => void;
   isSaved?: boolean;
@@ -82,21 +88,34 @@ export const JobCard: React.FC<JobCardProps> = ({
             <CardTitle className="text-apple-body font-apple-semibold hover:text-primary transition-apple leading-tight truncate">
               {job.title}
             </CardTitle>
-            {showCompany && job.company && (
+            {showCompany && (job.company || job.companies || job.company_name) && (
               <div className="flex items-center gap-2 mt-1">
                 <Avatar className="h-6 w-6">
                   <AvatarImage 
-                    src={job.company.logo_url || getCompanyLogoWithFallback(job.company.name)} 
-                    alt={job.company.name} 
+                    src={
+                      job.company?.logo_url || 
+                      job.companies?.logo_url || 
+                      getCompanyLogoWithFallback(
+                        job.company?.name || 
+                        job.companies?.name || 
+                        job.company_name || 
+                        "Company"
+                      )
+                    } 
+                    alt={job.company?.name || job.companies?.name || job.company_name || "Company"} 
                   />
                   <AvatarFallback className="text-apple-small bg-muted">
-                    {job.company.name.slice(0, 2).toUpperCase()}
+                    {(job.company?.name || job.companies?.name || job.company_name || "Company").slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                  <p className="text-apple-caption font-apple-medium text-foreground truncate">{job.company.name}</p>
-                  {job.company.industry && (
-                    <p className="text-apple-small text-muted-foreground truncate">{job.company.industry}</p>
+                  <p className="text-apple-caption font-apple-medium text-foreground truncate">
+                    {job.company?.name || job.companies?.name || job.company_name}
+                  </p>
+                  {(job.company?.industry || job.companies?.industry) && (
+                    <p className="text-apple-small text-muted-foreground truncate">
+                      {job.company?.industry || job.companies?.industry}
+                    </p>
                   )}
                 </div>
               </div>

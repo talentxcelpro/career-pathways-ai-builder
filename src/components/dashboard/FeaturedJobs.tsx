@@ -22,6 +22,7 @@ interface Job {
     name: string;
     logo_url?: string;
   };
+  company_name?: string;
 }
 
 interface FeaturedJobsProps {
@@ -68,11 +69,14 @@ export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
                     <div className="flex items-center gap-2 mb-1">
                       <Avatar className="h-6 w-6">
                         <AvatarImage 
-                          src={job.companies?.logo_url || getCompanyLogoWithFallback(job.companies?.name || "Company")} 
-                          alt={job.companies?.name || "Company"} 
+                          src={
+                            job.companies?.logo_url || 
+                            getCompanyLogoWithFallback(job.companies?.name || job.company_name || "Company")
+                          } 
+                          alt={job.companies?.name || job.company_name || "Company"} 
                         />
                         <AvatarFallback className="text-xs bg-muted">
-                          {(job.companies?.name || "Company").slice(0, 2).toUpperCase()}
+                          {(job.companies?.name || job.company_name || "Company").slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <h3 className="font-semibold text-lg">{job.title}</h3>
@@ -80,7 +84,7 @@ export const FeaturedJobs = ({ jobs }: FeaturedJobsProps) => {
                     <div className="flex items-center space-x-4 text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
                         <Building className="h-4 w-4" />
-                        <span>{job.companies?.name || "Company"}</span>
+                        <span>{job.companies?.name || job.company_name || "Company"}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <MapPin className="h-4 w-4" />
