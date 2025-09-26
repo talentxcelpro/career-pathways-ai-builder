@@ -41,7 +41,7 @@ import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
-import { GlobalSearch } from '@/components/ui/global-search';
+
 
 
 export const Navbar = () => {
@@ -187,10 +187,6 @@ export const Navbar = () => {
                   );
                 })}
                 
-                {/* Global Search */}
-                <div className="w-80 mx-4">
-                  <GlobalSearch placeholder="Search jobs, people, companies..." />
-                </div>
                 
                 {visibleNavItems.slice(4).map((item) => {
                   const isActive = isCurrentPath(item.to);
