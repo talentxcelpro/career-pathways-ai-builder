@@ -136,9 +136,9 @@ const generateFallbackJobs = (count: number) => {
   const companies = [
     { name: "Tata Consultancy Services", domain: "jobs.tcs.com" },
     { name: "Infosys", domain: "naukri.com" },
-    { name: "Wipro", domain: "jobs.wipro.com" },
-    { name: "HCL Technologies", domain: "hcltech.com" },
-    { name: "Tech Mahindra", domain: "indeed.com" },
+    { name: "Wipro", domain: "indeed.com" },
+    { name: "HCL Technologies", domain: "linkedin.com" },
+    { name: "Tech Mahindra", domain: "glassdoor.com" },
     { name: "Microsoft India", domain: "careers.microsoft.com" },
     { name: "Google India", domain: "careers.google.com" },
     { name: "IBM India", domain: "jobs.ibm.com" },
