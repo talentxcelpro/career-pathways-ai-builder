@@ -278,11 +278,100 @@ const cities = [
   "Shirdi, Maharashtra", "Pandharpur, Maharashtra", "Daund, Maharashtra", "Junnar, Maharashtra", "Kopargaon, Maharashtra",
   "Nandurbar, Maharashtra", "Washim, Maharashtra", "Osmanabad, Maharashtra", "Bhadravati, Maharashtra", "Udgir, Maharashtra",
 
-  // Other states continue with similar comprehensive coverage...
-  "Bangalore, Karnataka", "Mumbai, Maharashtra", "Delhi, Delhi", "Hyderabad, Telangana", 
-  "Pune, Maharashtra", "Chennai, Tamil Nadu", "Kolkata, West Bengal", "Ahmedabad, Gujarat",
-  "Jaipur, Rajasthan", "Kochi, Kerala", "Indore, Madhya Pradesh", "Noida, Uttar Pradesh",
-  "Gurgaon, Haryana", "Chandigarh, Punjab", "Bhubaneswar, Odisha", "Coimbatore, Tamil Nadu",
+  // Manipur
+  "Imphal, Manipur", "Thoubal, Manipur", "Churachandpur, Manipur", "Moreh, Manipur", "Mayang Imphal, Manipur",
+  "Ukhrul, Manipur", "Bishnupur, Manipur",
+
+  // Meghalaya
+  "Shillong, Meghalaya", "Tura, Meghalaya", "Nongpoh, Meghalaya", "Nongstoin, Meghalaya", "Williamnagar, Meghalaya",
+  "Baghmara, Meghalaya",
+
+  // Mizoram
+  "Aizawl, Mizoram", "Lunglei, Mizoram", "Siaha, Mizoram", "Kolasib, Mizoram", "Champhai, Mizoram", "Lawngtlai, Mizoram",
+
+  // Nagaland
+  "Kohima, Nagaland", "Dimapur, Nagaland", "Tuensang, Nagaland", "Mokokchung, Nagaland", "Wokha, Nagaland",
+  "Mon, Nagaland", "Zunheboto, Nagaland",
+
+  // Odisha
+  "Bhubaneswar, Odisha", "Cuttack, Odisha", "Rourkela, Odisha", "Berhampur, Odisha", "Puri, Odisha", "Balasore, Odisha",
+  "Sambalpur, Odisha", "Koraput, Odisha", "Sundargarh, Odisha", "Jharsuguda, Odisha", "Baripada, Odisha", "Anugul, Odisha",
+  "Baleshwar, Odisha", "Kendrapara, Odisha", "Dhenkanal, Odisha", "Bhadrak, Odisha", "Paradip, Odisha",
+  "Jagatsinghpur, Odisha", "Bolangir, Odisha",
+
+  // Punjab
+  "Amritsar, Punjab", "Ludhiana, Punjab", "Jalandhar, Punjab", "Patiala, Punjab", "Bathinda, Punjab", "Mohali, Punjab",
+  "Hoshiarpur, Punjab", "Faridkot, Punjab", "Fazilka, Punjab", "Pathankot, Punjab", "Moga, Punjab", "Kapurthala, Punjab",
+  "Sangrur, Punjab", "Barnala, Punjab", "Phillaur, Punjab",
+
+  // Rajasthan
+  "Jaipur, Rajasthan", "Jodhpur, Rajasthan", "Udaipur, Rajasthan", "Kota, Rajasthan", "Bikaner, Rajasthan",
+  "Ajmer, Rajasthan", "Alwar, Rajasthan", "Sikar, Rajasthan", "Bharatpur, Rajasthan", "Bhilwara, Rajasthan",
+  "Pali, Rajasthan", "Sawai Madhopur, Rajasthan", "Chittorgarh, Rajasthan", "Jalore, Rajasthan", "Jaisalmer, Rajasthan",
+  "Barmer, Rajasthan", "Dausa, Rajasthan", "Dungarpur, Rajasthan", "Hanumangarh, Rajasthan", "Karauli, Rajasthan",
+  "Nagaur, Rajasthan", "Pratapgarh, Rajasthan", "Rajsamand, Rajasthan", "Sirohi, Rajasthan", "Tonk, Rajasthan",
+  "Kotputli, Rajasthan", "Beawar, Rajasthan",
+
+  // Sikkim
+  "Gangtok, Sikkim", "Namchi, Sikkim", "Gyalshing, Sikkim", "Mangan, Sikkim", "Rangpo, Sikkim", "Melli, Sikkim",
+
+  // Tamil Nadu
+  "Chennai, Tamil Nadu", "Coimbatore, Tamil Nadu", "Madurai, Tamil Nadu", "Tiruchirappalli, Tamil Nadu", "Salem, Tamil Nadu",
+  "Tirunelveli, Tamil Nadu", "Erode, Tamil Nadu", "Vellore, Tamil Nadu", "Thoothukudi, Tamil Nadu", "Dindigul, Tamil Nadu",
+  "Ramanathapuram, Tamil Nadu", "Tiruppur, Tamil Nadu", "Kanchipuram, Tamil Nadu", "Kumbakonam, Tamil Nadu",
+  "Nagapattinam, Tamil Nadu", "Cuddalore, Tamil Nadu", "Karaikudi, Tamil Nadu", "Sivakasi, Tamil Nadu", "Nagercoil, Tamil Nadu",
+  "Tindivanam, Tamil Nadu", "Villupuram, Tamil Nadu", "Mayiladuthurai, Tamil Nadu", "Arakkonam, Tamil Nadu",
+  "Ponneri, Tamil Nadu", "Thiruvallur, Tamil Nadu", "Perambalur, Tamil Nadu", "Tiruvarur, Tamil Nadu", "Tenkasi, Tamil Nadu",
+  "Tiruvannamalai, Tamil Nadu",
+
+  // Telangana
+  "Hyderabad, Telangana", "Warangal, Telangana", "Nizamabad, Telangana", "Karimnagar, Telangana", "Khammam, Telangana",
+  "Mahbubnagar, Telangana", "Adilabad, Telangana", "Ramagundam, Telangana", "Suryapet, Telangana", "Nalgonda, Telangana",
+  "Medak, Telangana", "Bhongir, Telangana", "Kothagudem, Telangana", "Mancherial, Telangana", "Godavarikhani, Telangana",
+  "Jagtial, Telangana", "Bhupalpally, Telangana",
+
+  // Tripura
+  "Agartala, Tripura", "Udaipur (Tripura), Tripura", "Dharmanagar, Tripura", "Kailashahar, Tripura", "Khowai, Tripura",
+  "Belonia, Tripura",
+
+  // Uttar Pradesh
+  "Lucknow, Uttar Pradesh", "Kanpur, Uttar Pradesh", "Ghaziabad, Uttar Pradesh", "Agra, Uttar Pradesh", "Meerut, Uttar Pradesh",
+  "Varanasi, Uttar Pradesh", "Prayagraj, Uttar Pradesh", "Aligarh, Uttar Pradesh", "Moradabad, Uttar Pradesh",
+  "Bareilly, Uttar Pradesh", "Saharanpur, Uttar Pradesh", "Gorakhpur, Uttar Pradesh", "Jhansi, Uttar Pradesh",
+  "Mathura, Uttar Pradesh", "Firozabad, Uttar Pradesh", "Noida, Uttar Pradesh", "Greater Noida, Uttar Pradesh",
+  "Satna, Uttar Pradesh", "Azamgarh, Uttar Pradesh", "Ballia, Uttar Pradesh", "Budaun, Uttar Pradesh",
+  "Bulandshahr, Uttar Pradesh", "Bijnor, Uttar Pradesh", "Etawah, Uttar Pradesh", "Farrukhabad, Uttar Pradesh",
+  "Gonda, Uttar Pradesh", "Hardoi, Uttar Pradesh", "Hapur, Uttar Pradesh", "Hamirpur, Uttar Pradesh",
+  "Kaushambi, Uttar Pradesh", "Kushinagar, Uttar Pradesh", "Lakhimpur Kheri, Uttar Pradesh", "Mahoba, Uttar Pradesh",
+  "Mainpuri, Uttar Pradesh", "Mau, Uttar Pradesh", "Mirzapur, Uttar Pradesh", "Muzaffarnagar, Uttar Pradesh",
+  "Pilibhit, Uttar Pradesh", "Raebareli, Uttar Pradesh", "Rampur, Uttar Pradesh", "Sambhal, Uttar Pradesh",
+  "Shahjahanpur, Uttar Pradesh", "Shamli, Uttar Pradesh", "Sitapur, Uttar Pradesh", "Sonbhadra, Uttar Pradesh",
+  "Sultanpur, Uttar Pradesh", "Unnao, Uttar Pradesh", "Bara Banki, Uttar Pradesh",
+
+  // Uttarakhand
+  "Dehradun, Uttarakhand", "Haridwar, Uttarakhand", "Roorkee, Uttarakhand", "Haldwani, Uttarakhand", "Nainital, Uttarakhand",
+  "Rishikesh, Uttarakhand", "Almora, Uttarakhand", "Udham Singh Nagar, Uttarakhand", "Pithoragarh, Uttarakhand",
+  "Kashipur, Uttarakhand", "Rudrapur, Uttarakhand", "Bageshwar, Uttarakhand", "Tehri, Uttarakhand", "Chamoli, Uttarakhand",
+
+  // West Bengal
+  "Kolkata, West Bengal", "Howrah, West Bengal", "Asansol, West Bengal", "Durgapur, West Bengal", "Siliguri, West Bengal",
+  "Bardhaman, West Bengal", "Berhampore, West Bengal", "Haldia, West Bengal", "Kharagpur, West Bengal",
+  "Krishnanagar, West Bengal", "Malda, West Bengal", "Midnapore, West Bengal", "Baranagar, West Bengal",
+  "North 24 Parganas, West Bengal", "South 24 Parganas, West Bengal", "Barasat, West Bengal", "Srirampur, West Bengal",
+  "Raiganj, West Bengal", "Cooch Behar, West Bengal", "Alipurduar, West Bengal", "Jalpaiguri, West Bengal",
+  "Diamond Harbour, West Bengal", "Sankrail, West Bengal", "Tamluk, West Bengal", "Bankura, West Bengal",
+  "Purulia, West Bengal", "Konnagar, West Bengal",
+
+  // Union Territories
+  "Port Blair, Andaman and Nicobar Islands", "Car Nicobar, Andaman and Nicobar Islands", "Diglipur, Andaman and Nicobar Islands",
+  "Chandigarh, Chandigarh",
+  "Dadra, Dadra and Nagar Haveli and Daman and Diu", "Silvassa, Dadra and Nagar Haveli and Daman and Diu",
+  "Daman, Dadra and Nagar Haveli and Daman and Diu", "Diu, Dadra and Nagar Haveli and Daman and Diu",
+  "Karanja, Dadra and Nagar Haveli and Daman and Diu",
+  "Kavaratti, Lakshadweep", "Agatti, Lakshadweep", "Amini, Lakshadweep", "Minicoy, Lakshadweep",
+  "New Delhi, Delhi", "Delhi, Delhi", "Central Delhi, Delhi", "North Delhi, Delhi", "East Delhi, Delhi",
+  "South Delhi, Delhi", "West Delhi, Delhi", "North East Delhi, Delhi", "North West Delhi, Delhi", "Shahdara, Delhi",
+  "Puducherry, Puducherry", "Karaikal, Puducherry", "Mahe, Puducherry", "Yanam, Puducherry",
   
   // Work arrangements
   "Remote", "Work from Home", "Hybrid"
