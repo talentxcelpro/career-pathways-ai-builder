@@ -170,42 +170,54 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons - Always Visible at Bottom */}
+      {/* Action Buttons - Enhanced with TXC Rewards */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center gap-4 z-50">
         <Button
           variant="outline"
           size="lg"
-          className="w-12 h-12 md:w-16 md:h-16 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110 shadow-lg bg-white"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full border-red-200 hover:bg-red-50 hover:border-red-300 transition-all hover:scale-110 shadow-lg bg-white group animate-fade-in"
           onClick={() => handleSwipeAction('left')}
           disabled={isAnimating}
         >
-          <X className="h-5 w-5 md:h-8 md:w-8 text-red-500" />
+          <X className="h-5 w-5 md:h-8 md:w-8 text-red-500 group-hover:animate-pulse" />
         </Button>
         
         <Button
           size="lg"
-          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110 shadow-lg"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all hover:scale-110 shadow-lg group animate-scale-in relative overflow-hidden"
           onClick={() => handleSwipeAction('up')}
           disabled={isAnimating}
         >
-          <Star className="h-5 w-5 md:h-8 md:w-8 text-white" />
+          <Star className="h-5 w-5 md:h-8 md:w-8 text-white group-hover:animate-pulse" />
+          <div className="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs rounded-full px-1 font-bold shadow-sm">
+            20
+          </div>
         </Button>
         
         <Button
           size="lg"
-          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 transition-all hover:scale-110 shadow-lg"
+          className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all hover:scale-110 shadow-lg group animate-fade-in"
           onClick={() => handleSwipeAction('right')}
           disabled={isAnimating}
         >
-          <Heart className="h-5 w-5 md:h-8 md:w-8 text-white" />
+          <Heart className="h-5 w-5 md:h-8 md:w-8 text-white group-hover:animate-pulse" />
         </Button>
       </div>
 
       {/* Action Labels - Mobile Optimized */}
       <div className="absolute bottom-16 md:bottom-20 left-1/2 transform -translate-x-1/2 flex justify-center gap-8 md:gap-12 z-40">
-        <span className="text-xs text-red-600 font-medium">Reject</span>
-        <span className="text-xs text-blue-600 font-medium">Super Apply</span>
-        <span className="text-xs text-green-600 font-medium">Save</span>
+        <div className="text-center">
+          <span className="text-xs text-red-600 font-medium">Reject</span>
+          <div className="text-xs text-gray-500 mt-1">+2 TXC</div>
+        </div>
+        <div className="text-center">
+          <span className="text-xs text-blue-600 font-medium">Super Apply</span>
+          <div className="text-xs text-gray-500 mt-1">+20 TXC</div>
+        </div>
+        <div className="text-center">
+          <span className="text-xs text-green-600 font-medium">Save</span>
+          <div className="text-xs text-gray-500 mt-1">+5 TXC</div>
+        </div>
       </div>
 
       {/* Progress Indicator */}

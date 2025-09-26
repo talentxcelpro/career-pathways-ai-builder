@@ -701,12 +701,36 @@ const Jobs = () => {
                         <SwipeableJobCard
                           jobs={sortedJobs}
                           currentIndex={swipeIndex}
-                          onSwipe={(direction, job) => {
-                            if (direction === 'right') {
+                          onSwipe={async (direction, job) => {
+                            if (direction === 'left') {
+                              // Reject - Award 2 TXC coins for engagement
+                              if (currentUser) {
+                                await supabase.rpc('update_user_txc_coins', {
+                                  user_uuid: currentUser.id,
+                                  coin_change: 2,
+                                  reason: 'job_rejected'
+                                });
+                                toast.success('Job rejected! +2 TXC coins for engagement', {
+                                  icon: '❌',
+                                  className: 'animate-fade-in'
+                                });
+                              }
+                            } else if (direction === 'right') {
+                              // Save job - Award 5 TXC coins
                               handleSaveJob(job.id);
-                            } else if (direction === 'left') {
-                              console.log('Rejected job:', job.id);
-                              // You can add rejected jobs tracking here
+                            } else if (direction === 'up') {
+                              // Super Apply - Award 20 TXC coins
+                              if (currentUser) {
+                                await supabase.rpc('update_user_txc_coins', {
+                                  user_uuid: currentUser.id,
+                                  coin_change: 20,
+                                  reason: 'super_apply'
+                                });
+                                toast.success('Super Apply submitted! +20 TXC coins earned', {
+                                  icon: '⭐',
+                                  className: 'animate-scale-in'
+                                });
+                              }
                             }
                             setSwipeIndex(prev => prev + 1);
                           }}
