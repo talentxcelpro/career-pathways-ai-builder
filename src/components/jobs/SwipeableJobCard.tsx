@@ -44,12 +44,6 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
   }
 
   const handleSwipeAction = (direction: 'left' | 'right' | 'up') => {
-    if (direction === 'up') {
-      // Super Apply - show application dialog
-      setShowApplicationDialog(true);
-      return;
-    }
-    
     setSwipeDirection(direction);
     setIsAnimating(true);
     
@@ -59,9 +53,16 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
       animationTransform = 'translateX(-100%) rotate(-30deg)';
     } else if (direction === 'right') {
       animationTransform = 'translateX(100%) rotate(30deg)';
+    } else if (direction === 'up') {
+      animationTransform = 'translateY(-50%) scale(1.1)';
     }
     
     setTransform(animationTransform);
+
+    // For Super Apply, show dialog immediately then proceed
+    if (direction === 'up') {
+      setShowApplicationDialog(true);
+    }
 
     // Execute action after animation
     setTimeout(() => {
@@ -77,6 +78,7 @@ export const SwipeableJobCard: React.FC<SwipeableJobCardProps> = ({
       onApply(currentJob.id, applicationData);
     }
     setShowApplicationDialog(false);
+    // Note: The card will already have moved to the next one due to the swipe action
   };
 
   const handlers = useSwipeable({
