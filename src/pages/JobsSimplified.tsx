@@ -40,9 +40,9 @@ const JobsSimplified = () => {
       search: searchParams.get('search') || '',
       location: searchParams.get('location') || '',
       employment_type: searchParams.get('employment_type')?.split(',').filter(Boolean) || [],
-      experience_level: searchParams.get('experience_level') || '',
-      salary_min: searchParams.get('salary_min') || '',
-      salary_max: searchParams.get('salary_max') || '',
+      experience_level: searchParams.get('experience_level')?.split(',').filter(Boolean) || [],
+      salary_min: parseInt(searchParams.get('salary_min') || '0') || 0,
+      salary_max: parseInt(searchParams.get('salary_max') || '0') || 0,
       is_remote: searchParams.get('is_remote') === 'true',
       companies: searchParams.get('companies')?.split(',').filter(Boolean) || [],
       industry: searchParams.get('industry') || '',
@@ -94,45 +94,12 @@ const JobsSimplified = () => {
     recognition.start();
   };
 
-  // Structured data for SEO
-  useStructuredData({
-    "@context": "https://schema.org/",
-    "@type": "CollectionPage",
-    "name": "Job Search | Find Your Dream Career",
-    "description": "Discover thousands of job opportunities with AI-powered matching, salary insights, and career guidance.",
-    "url": window.location.href,
-    "hasPart": jobs.slice(0, 5).map(job => ({
-      "@type": "JobPosting",
-      "title": job.title,
-      "description": job.description,
-      "hiringOrganization": {
-        "@type": "Organization",
-        "name": job.company_name
-      },
-      "jobLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": job.location
-        }
-      },
-      "datePosted": job.created_at,
-      "validThrough": job.application_deadline,
-      "employmentType": job.employment_type?.toUpperCase(),
-      "baseSalary": job.salary_min && job.salary_max ? {
-        "@type": "MonetaryAmount",
-        "currency": "INR",
-        "value": {
-          "@type": "QuantitativeValue",
-          "minValue": job.salary_min,
-          "maxValue": job.salary_max,
-          "unitText": "YEAR"
-        }
-      } : undefined
-    }))
-  });
+  // Mock pagination variables since we simplified the hook
+  const hasNextPage = false;
+  const fetchNextPage = () => {};
+  const isFetchingNextPage = false;
 
-  // Filter change handlers
+  // Filter change handlers - simplified for demo
   const handleFilterChange = (newFilters: Partial<typeof filters>) => {
     const updatedFilters = { ...filters, ...newFilters };
     setFilters(updatedFilters);
@@ -170,7 +137,7 @@ const JobsSimplified = () => {
                 Find Your Dream Job
               </h1>
               <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-8 font-apple-medium">
-                Discover {jobStats?.total_jobs || '10,000+'} opportunities with intelligent matching
+                Discover {jobStats?.totalJobs || '10,000+'} opportunities with intelligent matching
               </p>
 
               {/* Career Dashboard CTA */}
@@ -275,10 +242,14 @@ const JobsSimplified = () => {
           
           {/* Filters */}
           <div className="mb-8">
-            <ComprehensiveJobFilters 
-              filters={filters}
-              onFiltersChange={handleFilterChange}
-            />
+            <div className="text-center">
+              <p className="text-muted-foreground font-apple-medium mb-4">
+                Use advanced filters in the Career Dashboard for better job matching
+              </p>
+              <Button onClick={() => navigate('/career-dashboard')} variant="outline">
+                Open Advanced Filters
+              </Button>
+            </div>
           </div>
 
           {/* Jobs List */}
@@ -318,10 +289,15 @@ const JobsSimplified = () => {
             {!isLoading && jobs.length > 0 && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {jobs.map((job, index) => (
+                  {jobs.map((job) => (
                     <TalentSparkJobCard 
                       key={job.id} 
                       job={job}
+                      onSave={() => {}}
+                      onQuickApply={() => {}}
+                      isSaved={false}
+                      txcReward={10}
+                      viewMode="card"
                     />
                   ))}
                 </div>
