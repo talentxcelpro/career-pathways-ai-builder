@@ -34172,6 +34172,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      regenerate_sitemaps_automatically: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       reject_company_access_request: {
         Args: { reason?: string; request_id: string }
         Returns: undefined

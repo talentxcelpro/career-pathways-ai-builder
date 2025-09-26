@@ -1,18 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core Network Pages -->
   <url>
     <loc>https://talentxcel.in/network</loc>
-    <lastmod>2025-08-26</lastmod>
+    <lastmod>2025-09-26</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://talentxcel.in/network/discover</loc>
-    <lastmod>2025-08-26</lastmod>
+    <lastmod>2025-09-26</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://talentxcel.in/network/feed</loc>
-    <lastmod>2025-08-26</lastmod>
+    <lastmod>2025-09-26</lastmod>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://talentxcel.in/network/connections</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/people</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/events</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/groups</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/mentorship</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/recommendations</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Professional Network Categories -->
+  <url>
+    <loc>https://talentxcel.in/network/professionals/software-engineers</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/professionals/data-scientists</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/professionals/product-managers</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/professionals/designers</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/professionals/marketing-managers</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Location-based Network Pages -->
+  <url>
+    <loc>https://talentxcel.in/network/bangalore</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/mumbai</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/delhi</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/hyderabad</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/pune</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Industry-based Network Pages -->
+  <url>
+    <loc>https://talentxcel.in/network/industry/technology</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/industry/finance</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/industry/healthcare</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/network/industry/education</loc>
+    <lastmod>2025-09-26</lastmod>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Note: User-specific profile pages are dynamically generated via the enhanced-sitemap function -->
+  <!-- This includes: /network/profile/{user_id}, /professionals/{name}, /users/{id} -->
 </urlset>
