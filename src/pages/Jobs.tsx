@@ -156,6 +156,11 @@ const Jobs = () => {
     refetch 
   } = useJobsOptimized(filters, sortBy);
 
+  // Debug swipe index changes
+  React.useEffect(() => {
+    console.log('📊 Swipe index changed to:', swipeIndex, 'Total jobs:', allJobs?.length);
+  }, [swipeIndex, allJobs?.length]);
+
   // Real-time job statistics
   const { stats: jobStats } = useRealtimeJobStats();
 
