@@ -117,7 +117,7 @@ const jobTemplates: JobTemplate[] = [
     company: "SalesForce India",
     location: "Mumbai, Maharashtra",
     employment_type: "Full-time",
-    experience_level: "junior",
+    experience_level: "fresher",
     salary_min: 400000,
     salary_max: 800000,
     skills: ["Sales", "CRM", "Communication", "Lead Generation"],
