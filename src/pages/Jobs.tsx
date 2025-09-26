@@ -658,59 +658,37 @@ const Jobs = () => {
                           <div className="flex items-center justify-center gap-4 text-xs">
                             <div className="flex items-center gap-1">
                               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                              <span>Pass</span>
+                              <span>Reject</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                              <span>Super Apply</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                               <span>Save</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                              <span>Apply</span>
-                            </div>
                           </div>
                         </div>
                         
-                        {/* Swipe Stack */}
-                        <div className="relative">
-                          {regularJobs.slice(swipeIndex, swipeIndex + 3).map((job, index) => (
-                            <div
-                              key={job.id}
-                              className={`${
-                                index === 0 ? 'z-30' : index === 1 ? 'z-20' : 'z-10'
-                              } ${index > 0 ? 'absolute inset-0' : ''}`}
-                              style={{
-                                transform: index > 0 ? `scale(${1 - index * 0.05}) translateY(${index * 10}px)` : 'none',
-                                opacity: index === 0 ? 1 : 0.7
-                              }}
-                            >
-                              {index === 0 ? (
-                                <SwipeableJobCard
-                                  job={job}
-                                  onSave={handleSaveJob}
-                                  onQuickApply={handleQuickApply}
-                                  onPass={(jobId) => {
-                                    console.log('Passed on job:', jobId);
-                                  }}
-                                  isSaved={savedJobs.includes(job.id)}
-                                  txcReward={10}
-                                  onSwipeComplete={() => {
-                                    setSwipeIndex(prev => prev + 1);
-                                  }}
-                                />
-                              ) : (
-                                <TalentSparkJobCard
-                                  job={job}
-                                  onSave={handleSaveJob}
-                                  onQuickApply={handleQuickApply}
-                                  isSaved={savedJobs.includes(job.id)}
-                                  txcReward={10}
-                                  viewMode="swipe"
-                                />
-                              )}
-                            </div>
-                          ))}
-                        </div>
+                        {/* Enhanced Swipe Interface */}
+                        <SwipeableJobCard
+                          jobs={sortedJobs}
+                          currentIndex={swipeIndex}
+                          onSwipe={(direction, job) => {
+                            if (direction === 'right') {
+                              handleSaveJob(job.id);
+                            } else if (direction === 'up') {
+                              handleQuickApply(job.id);
+                            } else if (direction === 'left') {
+                              console.log('Rejected job:', job.id);
+                              // You can add rejected jobs tracking here
+                            }
+                            setSwipeIndex(prev => prev + 1);
+                          }}
+                          onSave={handleSaveJob}
+                          savedJobs={savedJobs}
+                        />
                         
                         {swipeIndex >= regularJobs.length && (
                           <div className="text-center py-8">

@@ -30,16 +30,6 @@ export const BrandedFooter: React.FC = () => {
             <p className="text-primary-foreground/80 mb-4">
               Empowering careers with AI-powered insights and professional tools.
             </p>
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span>support@talentxcel.com</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>1-800-TALENT</span>
-              </div>
-            </div>
           </div>
 
           {/* Modules */}
@@ -78,7 +68,7 @@ export const BrandedFooter: React.FC = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>&copy; 2024 TalentXcel. All rights reserved. Powered by AI.</p>
+          <p>2025 © 2024 TalentXcel. All rights reserved. Powered by AI.</p>
         </div>
       </div>
     </footer>

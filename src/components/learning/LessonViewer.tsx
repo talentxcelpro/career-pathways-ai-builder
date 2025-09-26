@@ -77,7 +77,7 @@ This comprehensive guide covers everything you need to know about ${lesson.title
 - Additional reading materials
 
 ---
-© 2024 TalentXcel Learning Platform
+2025 © 2024 TalentXcel Learning Platform
 For more resources, visit: learning.talentxcel.com
 `;
     
