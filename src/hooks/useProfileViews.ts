@@ -56,7 +56,7 @@ export const useProfileViews = (profileId?: string): UseProfileViewsReturn => {
         .eq('viewer_id', user?.id || null)
         .gte('viewed_at', oneHourAgo)
         .limit(1)
-        .single();
+        .maybeSingle();
 
       // Only increment if no recent view found
       if (!recentView) {
