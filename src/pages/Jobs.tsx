@@ -378,10 +378,10 @@ const Jobs = () => {
                   className="h-8 w-8 rounded-lg"
                 />
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     TalentSpark Job Discovery
                   </h1>
-                  <p className="text-sm text-muted-foreground">AI-Powered • TXC Rewards</p>
+                  <p className="text-xs text-muted-foreground">AI-Powered • TXC Rewards</p>
                 </div>
               </div>
               
@@ -443,7 +443,7 @@ const Jobs = () => {
             {/* View Mode Selector */}
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-white/20">
               <div className="text-center mb-3">
-                <h3 className="font-bold text-sm text-gray-900">Choose Your View</h3>
+                <h3 className="font-bold text-xs text-gray-900">Choose Your View</h3>
                 <p className="text-xs text-muted-foreground">Customize how you browse jobs</p>
               </div>
               

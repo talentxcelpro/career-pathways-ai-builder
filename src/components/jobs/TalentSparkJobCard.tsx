@@ -117,10 +117,10 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+              <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-lg text-primary font-semibold">
+              <p className="text-base text-primary font-semibold">
                 {job.companies?.name || job.company_name}
               </p>
               <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
@@ -140,8 +140,8 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           <div className="bg-white/50 rounded-lg p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-green-600" />
-                <span className="text-lg font-bold text-green-700">
+                <DollarSign className="h-4 w-4 text-green-600" />
+                <span className="text-base font-bold text-green-700">
                   {formatSalary(job.salary_min, job.salary_max)}
                 </span>
               </div>
@@ -157,7 +157,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           {/* Skills */}
           {job.skills_required && job.skills_required.length > 0 && (
             <div className="mb-4">
-              <div className="text-sm font-medium mb-2">Required Skills</div>
+              <div className="text-xs font-medium mb-2">Required Skills</div>
               <div className="flex flex-wrap gap-2">
                 {job.skills_required.slice(0, 4).map((skill: string) => (
                   <Badge key={skill} variant="secondary" className="text-xs">
@@ -236,10 +236,10 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-gray-900 line-clamp-2">
+              <h3 className="text-sm font-bold text-gray-900 line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-primary font-medium">
+              <p className="text-sm text-primary font-medium">
                 {job.companies?.name || job.company_name}
               </p>
               <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
@@ -253,7 +253,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             
             <div className="text-right">
               <div className="text-xs text-muted-foreground mb-1">AI Match</div>
-              <div className="text-lg font-bold text-primary">{aiMatchScore}%</div>
+              <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
             </div>
           </div>
           
@@ -309,10 +309,10 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors text-sm line-clamp-1">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors text-xs line-clamp-1">
                     {job.title}
                   </h3>
-                  <p className="text-sm text-primary font-medium">
+                  <p className="text-xs text-primary font-medium">
                     {job.companies?.name || job.company_name}
                   </p>
                 </div>
@@ -320,7 +320,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
                 {/* AI Match Score */}
                 <div className="flex items-center gap-2 ml-4">
                   <div className="text-xs text-muted-foreground">AI Match</div>
-                  <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
+                  <div className="text-xs font-bold text-primary">{aiMatchScore}%</div>
                 </div>
               </div>
               
@@ -410,10 +410,10 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+              <h3 className="text-base font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-primary font-semibold">
+              <p className="text-sm text-primary font-semibold">
                 {job.companies?.name || job.company_name}
               </p>
               <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
@@ -433,7 +433,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           <div className="text-right">
             <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-2 min-w-[80px]">
               <div className="text-xs text-muted-foreground mb-1">AI Match</div>
-              <div className="text-lg font-bold text-primary">{aiMatchScore}%</div>
+              <div className="text-sm font-bold text-primary">{aiMatchScore}%</div>
               <Progress value={aiMatchScore} className="h-1 mt-1" />
             </div>
           </div>

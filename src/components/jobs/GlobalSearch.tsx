@@ -312,7 +312,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowSuggestions(true)}
-            className="pl-10 pr-10 h-12 text-base border-2 border-primary/20 focus:border-primary/50 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm"
+            className="pl-10 pr-10 h-10 text-sm border-2 border-primary/20 focus:border-primary/50 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm"
           />
           {value && (
             <Button
@@ -331,7 +331,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           onClick={handleVoiceSearch}
           disabled={isVoiceSearching}
           variant="outline"
-          className="h-12 px-4 border-2 border-primary/20 hover:border-primary/50"
+          className="h-10 px-3 border-2 border-primary/20 hover:border-primary/50"
         >
           <Mic className={`h-4 w-4 ${isVoiceSearching ? 'animate-pulse text-red-500' : ''}`} />
         </Button>
@@ -339,7 +339,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         <Button
           size="sm"
           onClick={onSearch}
-          className="h-12 px-6 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+          className="h-10 px-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
         >
           <Search className="h-4 w-4 mr-2" />
           Search
