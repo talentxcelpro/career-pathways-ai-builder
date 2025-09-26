@@ -41,6 +41,7 @@ import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
+import { GlobalSearch } from '@/components/ui/global-search';
 
 
 export const Navbar = () => {
@@ -167,9 +168,31 @@ export const Navbar = () => {
 
           {user ? (
             <>
-              {/* Apple-style compact navigation */}
+              {/* Apple-style compact navigation with global search */}
               <div className="hidden md:flex items-center gap-1">
-                {visibleNavItems.map((item) => {
+                {visibleNavItems.slice(0, 4).map((item) => {
+                  const isActive = isCurrentPath(item.to);
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.to}
+                      className={`px-3 py-1.5 rounded-lg text-apple-caption font-apple-medium transition-apple
+                        ${isActive 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+                
+                {/* Global Search */}
+                <div className="w-80 mx-4">
+                  <GlobalSearch placeholder="Search jobs, people, companies..." />
+                </div>
+                
+                {visibleNavItems.slice(4).map((item) => {
                   const isActive = isCurrentPath(item.to);
                   return (
                     <Link
