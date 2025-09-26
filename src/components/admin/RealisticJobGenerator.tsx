@@ -281,17 +281,98 @@ const generateFallbackJobs = (count: number) => {
   ];
   
   const locations = [
+    // Major Metro Cities
     "Bangalore, Karnataka", "Mumbai, Maharashtra", "Pune, Maharashtra", "Hyderabad, Telangana",
     "Chennai, Tamil Nadu", "Delhi, NCR", "Gurgaon, Haryana", "Noida, Uttar Pradesh",
     "Kolkata, West Bengal", "Ahmedabad, Gujarat", "Surat, Gujarat", "Jaipur, Rajasthan",
+    
+    // Tier 2 Cities
     "Kochi, Kerala", "Thiruvananthapuram, Kerala", "Bhubaneswar, Odisha", "Chandigarh, Punjab",
     "Indore, Madhya Pradesh", "Nashik, Maharashtra", "Vadodara, Gujarat", "Coimbatore, Tamil Nadu",
     "Mysore, Karnataka", "Mangalore, Karnataka", "Vizag, Andhra Pradesh", "Lucknow, Uttar Pradesh",
     "Patna, Bihar", "Bhopal, Madhya Pradesh", "Nagpur, Maharashtra", "Aurangabad, Maharashtra",
     "Rajkot, Gujarat", "Madurai, Tamil Nadu", "Kanpur, Uttar Pradesh", "Agra, Uttar Pradesh",
     "Varanasi, Uttar Pradesh", "Meerut, Uttar Pradesh", "Faridabad, Haryana", "Ghaziabad, Uttar Pradesh",
-    "Ludhiana, Punjab", "Amritsar, Punjab", "Jalandhar, Punjab", "Dehradun, Uttarakhand",
-    "Remote", "Work from Home", "Hybrid - Bangalore", "Hybrid - Mumbai", "Hybrid - Delhi"
+    
+    // Punjab Cities
+    "Ludhiana, Punjab", "Amritsar, Punjab", "Jalandhar, Punjab", "Patiala, Punjab", "Bathinda, Punjab",
+    "Mohali, Punjab", "Pathankot, Punjab", "Hoshiarpur, Punjab", "Batala, Punjab", "Abohar, Punjab",
+    "Malerkotla, Punjab", "Khanna, Punjab", "Phagwara, Punjab", "Muktsar, Punjab", "Barnala, Punjab",
+    
+    // Additional Major Cities
+    "Dehradun, Uttarakhand", "Shimla, Himachal Pradesh", "Jammu, Jammu and Kashmir", "Srinagar, Jammu and Kashmir",
+    "Gangtok, Sikkim", "Shillong, Meghalaya", "Imphal, Manipur", "Agartala, Tripura", "Aizawl, Mizoram",
+    "Kohima, Nagaland", "Itanagar, Arunachal Pradesh", "Dispur, Assam", "Panaji, Goa", "Daman, Daman and Diu",
+    
+    // Maharashtra Cities
+    "Kolhapur, Maharashtra", "Sangli, Maharashtra", "Satara, Maharashtra", "Solapur, Maharashtra", "Latur, Maharashtra",
+    "Nanded, Maharashtra", "Akola, Maharashtra", "Amravati, Maharashtra", "Chandrapur, Maharashtra", "Dhule, Maharashtra",
+    
+    // Gujarat Cities
+    "Gandhinagar, Gujarat", "Anand, Gujarat", "Bharuch, Gujarat", "Vapi, Gujarat", "Navsari, Gujarat",
+    "Morbi, Gujarat", "Junagadh, Gujarat", "Bhavnagar, Gujarat", "Jamnagar, Gujarat", "Porbandar, Gujarat",
+    
+    // Karnataka Cities
+    "Hubli, Karnataka", "Dharwad, Karnataka", "Belgaum, Karnataka", "Gulbarga, Karnataka", "Davangere, Karnataka",
+    "Bellary, Karnataka", "Bijapur, Karnataka", "Shimoga, Karnataka", "Tumkur, Karnataka", "Hassan, Karnataka",
+    
+    // Tamil Nadu Cities
+    "Salem, Tamil Nadu", "Tirupur, Tamil Nadu", "Erode, Tamil Nadu", "Vellore, Tamil Nadu", "Tirunelveli, Tamil Nadu",
+    "Thanjavur, Tamil Nadu", "Dindigul, Tamil Nadu", "Cuddalore, Tamil Nadu", "Karur, Tamil Nadu", "Kanchipuram, Tamil Nadu",
+    
+    // Andhra Pradesh & Telangana
+    "Vijayawada, Andhra Pradesh", "Guntur, Andhra Pradesh", "Nellore, Andhra Pradesh", "Kurnool, Andhra Pradesh",
+    "Rajahmundry, Andhra Pradesh", "Tirupati, Andhra Pradesh", "Warangal, Telangana", "Nizamabad, Telangana",
+    "Khammam, Telangana", "Karimnagar, Telangana", "Mahbubnagar, Telangana", "Nalgonda, Telangana",
+    
+    // Kerala Cities
+    "Calicut, Kerala", "Thrissur, Kerala", "Kollam, Kerala", "Palakkad, Kerala", "Kannur, Kerala",
+    "Kottayam, Kerala", "Alappuzha, Kerala", "Malappuram, Kerala", "Kasaragod, Kerala", "Idukki, Kerala",
+    
+    // West Bengal Cities
+    "Siliguri, West Bengal", "Durgapur, West Bengal", "Asansol, West Bengal", "Howrah, West Bengal",
+    "Burdwan, West Bengal", "Malda, West Bengal", "Jalpaiguri, West Bengal", "Kharagpur, West Bengal",
+    
+    // Rajasthan Cities
+    "Jodhpur, Rajasthan", "Kota, Rajasthan", "Bikaner, Rajasthan", "Udaipur, Rajasthan", "Ajmer, Rajasthan",
+    "Bhilwara, Rajasthan", "Alwar, Rajasthan", "Bharatpur, Rajasthan", "Sikar, Rajasthan", "Pali, Rajasthan",
+    
+    // Uttar Pradesh Cities
+    "Bareilly, Uttar Pradesh", "Moradabad, Uttar Pradesh", "Saharanpur, Uttar Pradesh", "Gorakhpur, Uttar Pradesh",
+    "Firozabad, Uttar Pradesh", "Jhansi, Uttar Pradesh", "Muzaffarnagar, Uttar Pradesh", "Mathura, Uttar Pradesh",
+    "Rampur, Uttar Pradesh", "Shahjahanpur, Uttar Pradesh", "Farrukhabad, Uttar Pradesh", "Hapur, Uttar Pradesh",
+    
+    // Madhya Pradesh Cities
+    "Gwalior, Madhya Pradesh", "Jabalpur, Madhya Pradesh", "Ujjain, Madhya Pradesh", "Sagar, Madhya Pradesh",
+    "Dewas, Madhya Pradesh", "Satna, Madhya Pradesh", "Ratlam, Madhya Pradesh", "Rewa, Madhya Pradesh",
+    
+    // Haryana Cities
+    "Panipat, Haryana", "Ambala, Haryana", "Yamunanagar, Haryana", "Rohtak, Haryana", "Hisar, Haryana",
+    "Karnal, Haryana", "Sonipat, Haryana", "Sirsa, Haryana", "Thanesar, Haryana", "Kaithal, Haryana",
+    
+    // Bihar Cities
+    "Gaya, Bihar", "Bhagalpur, Bihar", "Muzaffarpur, Bihar", "Purnia, Bihar", "Darbhanga, Bihar",
+    "Arrah, Bihar", "Begusarai, Bihar", "Katihar, Bihar", "Munger, Bihar", "Chhapra, Bihar",
+    
+    // Odisha Cities
+    "Cuttack, Odisha", "Rourkela, Odisha", "Brahmapur, Odisha", "Sambalpur, Odisha", "Puri, Odisha",
+    "Balasore, Odisha", "Bhadrak, Odisha", "Baripada, Odisha", "Jharsuguda, Odisha", "Jeypore, Odisha",
+    
+    // Jharkhand Cities
+    "Ranchi, Jharkhand", "Jamshedpur, Jharkhand", "Dhanbad, Jharkhand", "Bokaro, Jharkhand", "Deoghar, Jharkhand",
+    "Phusro, Jharkhand", "Hazaribagh, Jharkhand", "Giridih, Jharkhand", "Ramgarh, Jharkhand", "Medininagar, Jharkhand",
+    
+    // Chhattisgarh Cities  
+    "Raipur, Chhattisgarh", "Bilaspur, Chhattisgarh", "Korba, Chhattisgarh", "Durg, Chhattisgarh", "Rajnandgaon, Chhattisgarh",
+    "Jagdalpur, Chhattisgarh", "Raigarh, Chhattisgarh", "Ambikapur, Chhattisgarh", "Mahasamund, Chhattisgarh", "Dhamtari, Chhattisgarh",
+    
+    // Uttarakhand Cities
+    "Haridwar, Uttarakhand", "Rishikesh, Uttarakhand", "Roorkee, Uttarakhand", "Haldwani, Uttarakhand", "Rudrapur, Uttarakhand",
+    "Kashipur, Uttarakhand", "Pithoragarh, Uttarakhand", "Almora, Uttarakhand", "Mussoorie, Uttarakhand", "Nainital, Uttarakhand",
+    
+    // Work Options
+    "Remote", "Work from Home", "Hybrid - Bangalore", "Hybrid - Mumbai", "Hybrid - Delhi", "Hybrid - Pune", "Hybrid - Chennai",
+    "Remote - India", "Remote - Global", "Flexible Location", "Multi-City", "Travel Required"
   ];
 
   const experienceLevels = [
