@@ -376,6 +376,15 @@ const Jobs = () => {
                 </div>
               </div>
               
+              <Button 
+                onClick={() => navigate('/career-dashboard')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-primary/10 hover:to-purple-600/10 border-primary/20"
+              >
+                <Brain className="h-4 w-4" />
+                AI Career Intelligence Hub
+              </Button>
             </div>
 
             {/* Compact Search Bar */}
