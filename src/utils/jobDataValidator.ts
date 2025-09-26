@@ -198,42 +198,101 @@ export class JobDataValidator {
 
   private static isValidLocation(location: string): boolean {
     const validLocations = [
-      // Major Metro Cities
-      'mumbai', 'delhi', 'bangalore', 'chennai', 'kolkata', 'pune', 'hyderabad',
-      'ahmedabad', 'surat', 'jaipur', 'lucknow', 'kanpur', 'nagpur', 'indore',
-      'gurgaon', 'noida', 'faridabad', 'ghaziabad', 'kochi', 'thiruvananthapuram',
-      'bhubaneswar', 'chandigarh', 'coimbatore', 'mysore', 'mangalore', 'vizag',
-      'patna', 'bhopal', 'aurangabad', 'rajkot', 'madurai', 'agra', 'varanasi',
-      'meerut', 'ludhiana', 'amritsar', 'jalandhar', 'patiala', 'bathinda',
-      'mohali', 'pathankot', 'hoshiarpur', 'batala', 'abohar', 'malerkotla',
-      'khanna', 'phagwara', 'muktsar', 'barnala', 'dehradun', 'shimla', 'jammu',
-      'srinagar', 'gangtok', 'shillong', 'imphal', 'agartala', 'aizawl', 'kohima',
-      'itanagar', 'dispur', 'panaji', 'daman', 'kolhapur', 'sangli', 'satara',
-      'solapur', 'latur', 'nanded', 'akola', 'amravati', 'chandrapur', 'dhule',
-      'gandhinagar', 'anand', 'bharuch', 'vapi', 'navsari', 'morbi', 'junagadh',
-      'bhavnagar', 'jamnagar', 'porbandar', 'hubli', 'dharwad', 'belgaum',
-      'gulbarga', 'davangere', 'bellary', 'bijapur', 'shimoga', 'tumkur', 'hassan',
-      'salem', 'tirupur', 'erode', 'vellore', 'tirunelveli', 'thanjavur', 'dindigul',
-      'cuddalore', 'karur', 'kanchipuram', 'vijayawada', 'guntur', 'nellore',
-      'kurnool', 'rajahmundry', 'tirupati', 'warangal', 'nizamabad', 'khammam',
-      'karimnagar', 'mahbubnagar', 'nalgonda', 'calicut', 'thrissur', 'kollam',
-      'palakkad', 'kannur', 'kottayam', 'alappuzha', 'malappuram', 'kasaragod',
-      'idukki', 'siliguri', 'durgapur', 'asansol', 'howrah', 'burdwan', 'malda',
-      'jalpaiguri', 'kharagpur', 'jodhpur', 'kota', 'bikaner', 'udaipur', 'ajmer',
-      'bhilwara', 'alwar', 'bharatpur', 'sikar', 'pali', 'bareilly', 'moradabad',
-      'saharanpur', 'gorakhpur', 'firozabad', 'jhansi', 'muzaffarnagar', 'mathura',
-      'rampur', 'shahjahanpur', 'farrukhabad', 'hapur', 'gwalior', 'jabalpur',
-      'ujjain', 'sagar', 'dewas', 'satna', 'ratlam', 'rewa', 'panipat', 'ambala',
-      'yamunanagar', 'rohtak', 'hisar', 'karnal', 'sonipat', 'sirsa', 'thanesar',
-      'kaithal', 'gaya', 'bhagalpur', 'muzaffarpur', 'purnia', 'darbhanga', 'arrah',
-      'begusarai', 'katihar', 'munger', 'chhapra', 'cuttack', 'rourkela', 'brahmapur',
-      'sambalpur', 'puri', 'balasore', 'bhadrak', 'baripada', 'jharsuguda', 'jeypore',
-      'ranchi', 'jamshedpur', 'dhanbad', 'bokaro', 'deoghar', 'phusro', 'hazaribagh',
-      'giridih', 'ramgarh', 'medininagar', 'raipur', 'bilaspur', 'korba', 'durg',
-      'rajnandgaon', 'jagdalpur', 'raigarh', 'ambikapur', 'mahasamund', 'dhamtari',
-      'haridwar', 'rishikesh', 'roorkee', 'haldwani', 'rudrapur', 'kashipur',
-      'pithoragarh', 'almora', 'mussoorie', 'nainital',
-      'remote', 'work from home', 'wfh', 'hybrid'
+      // Andhra Pradesh
+      'adoni', 'amaravati', 'anantapur', 'chandragiri', 'chittoor', 'dowlaiswaram', 'eluru', 'guntur', 'kadapa', 'kakinada', 'kurnool', 'machilipatnam', 'nellore', 'ongole', 'rajahmundry', 'srikakulam', 'tirupati', 'visakhapatnam', 'vijayawada', 'vizianagaram',
+      
+      // Arunachal Pradesh
+      'itanagar', 'naharlagun', 'tawang',
+      
+      // Assam
+      'dibrugarh', 'guwahati', 'jorhat', 'nagaon', 'silchar', 'tezpur', 'tinsukia',
+      
+      // Bihar
+      'ara', 'bhagalpur', 'bihar sharif', 'chapra', 'darbhanga', 'gaya', 'hajipur', 'madhubani', 'munger', 'muzaffarpur', 'patna', 'purnia', 'saharsa', 'samastipur', 'sasaram', 'siwan',
+      
+      // Chhattisgarh
+      'ambikapur', 'bhilai', 'bilaspur', 'dhamtari', 'durg', 'korba', 'raigarh', 'raipur', 'rajnandgaon', 'ratanpur',
+      
+      // Goa
+      'mapusa', 'margao', 'panaji', 'vasco da gama',
+      
+      // Gujarat
+      'ahmedabad', 'anand', 'bharuch', 'bhavnagar', 'bhuj', 'gandhinagar', 'godhra', 'jamnagar', 'junagadh', 'kadi', 'kalol', 'mehsana', 'morbi', 'nadiad', 'navsari', 'porbandar', 'rajkot', 'surat', 'vadodara', 'valsad',
+      
+      // Haryana
+      'ambala', 'bhiwani', 'faridabad', 'gurugram', 'gurgaon', 'hisar', 'karnal', 'kurukshetra', 'mahendragarh', 'narnaul', 'panipat', 'panchkula', 'rewari', 'rohtak', 'sirsa', 'sonipat', 'yamunanagar',
+      
+      // Himachal Pradesh
+      'bilaspur', 'chamba', 'hamirpur', 'kangra', 'kullu', 'mandi', 'nahan', 'solan', 'una', 'shimla',
+      
+      // Jammu and Kashmir
+      'anantnag', 'baramulla', 'jammu', 'kathua', 'kishtwar', 'kulgam', 'kupwara', 'poonch', 'rajouri', 'samba', 'shopian', 'srinagar', 'udhampur',
+      
+      // Jharkhand
+      'bokaro steel city', 'bokaro', 'chaibasa', 'dhanbad', 'deoghar', 'dumka', 'giridih', 'hazaribagh', 'jamshedpur', 'jhumri telaiya', 'khunti', 'lohardaga', 'madhupur', 'pakur', 'ramgarh', 'ranchi', 'sahibganj', 'simdega', 'tata',
+      
+      // Karnataka
+      'bagalkot', 'ballari', 'bengaluru', 'bangalore', 'bidar', 'chamarajanagar', 'chikkamagaluru', 'chitradurga', 'davanagere', 'dharwad', 'gadag', 'hassan', 'hubballi', 'hubli', 'kalaburagi', 'gulbarga', 'kodagu', 'kolar', 'koppal', 'mandya', 'mysuru', 'mysore', 'raichur', 'ramanagara', 'shivamogga', 'shimoga', 'tumakuru', 'tumkur', 'udupi', 'yadgir', 'mangalore', 'belgaum',
+      
+      // Kerala
+      'alappuzha', 'alleppey', 'ernakulam', 'kochi', 'idukki', 'kannur', 'kasaragod', 'kottayam', 'kozhikode', 'calicut', 'malappuram', 'palakkad', 'palghat', 'pathanamthitta', 'thiruvananthapuram', 'trivandrum', 'thrissur', 'trichur', 'wayanad', 'kollam', 'quilon',
+      
+      // Madhya Pradesh
+      'agar malwa', 'alirajpur', 'anuppur', 'ashok nagar', 'balaghat', 'barwani', 'betul', 'bhind', 'bhopal', 'burhanpur', 'chhatarpur', 'chhindwara', 'damoh', 'datia', 'dewas', 'dhar', 'dindori', 'guna', 'gwalior', 'hoshangabad', 'indore', 'jabalpur', 'jhabua', 'katni', 'khandwa', 'khargone', 'mandla', 'mandsaur', 'morena', 'narsinghpur', 'neemuch', 'panna', 'raisen', 'rajgarh', 'ratlam', 'rewa', 'sagar', 'satna', 'sehore', 'seoni', 'shahdol', 'shajapur', 'sheopur', 'shivpuri', 'sidhi', 'singrauli', 'tikamgarh', 'ujjain', 'umaria', 'vidisha',
+      
+      // Maharashtra
+      'ahmednagar', 'akola', 'amravati', 'aurangabad', 'bhiwandi', 'chandrapur', 'dhule', 'gondia', 'jalgaon', 'jalna', 'kolhapur', 'latur', 'mumbai', 'nagpur', 'nashik', 'nanded', 'nandurbar', 'navi mumbai', 'osmanabad', 'parbhani', 'pimpri-chinchwad', 'pune', 'raigad', 'ratnagiri', 'sangli', 'satara', 'solapur', 'thane', 'ulhasnagar', 'wardha', 'washim', 'yavatmal',
+      
+      // Manipur
+      'imphal',
+      
+      // Meghalaya
+      'shillong',
+      
+      // Mizoram
+      'aizawl',
+      
+      // Nagaland
+      'kohima',
+      
+      // Odisha
+      'berhampur', 'bhubaneswar', 'cuttack', 'dhenkanal', 'jeypore', 'rourkela', 'sambalpur', 'balasore', 'bhadrak', 'baripada', 'jharsuguda',
+      
+      // Punjab
+      'amritsar', 'bhatinda', 'bathinda', 'fatehgarh sahib', 'firozpur', 'hoshiarpur', 'jalandhar', 'kapurthala', 'ludhiana', 'mansa', 'moga', 'mohali', 'pathankot', 'patiala', 'rupnagar', 'sangrur', 'sri muktsar sahib', 'muktsar', 'tarn taran', 'phagwara', 'batala', 'abohar', 'malerkotla', 'khanna',
+      
+      // Rajasthan
+      'ajmer', 'alwar', 'baran', 'barmer', 'bharatpur', 'bhilwara', 'bikaner', 'bundi', 'chittorgarh', 'churu', 'dausa', 'dholpur', 'hanumangarh', 'jaipur', 'jaisalmer', 'jalore', 'jhalawar', 'jhunjhunu', 'jodhpur', 'karauli', 'kota', 'nagaur', 'pali', 'rajsamand', 'sawai madhopur', 'sikar', 'sirohi', 'sri ganganagar', 'tonk', 'udaipur',
+      
+      // Sikkim
+      'gangtok',
+      
+      // Tamil Nadu
+      'chennai', 'madras', 'coimbatore', 'dindigul', 'erode', 'madurai', 'salem', 'thanjavur', 'tanjore', 'thoothukudi', 'tuticorin', 'tiruchirappalli', 'trichy', 'tirunelveli', 'tiruppur', 'vellore', 'kanchipuram', 'cuddalore', 'karur',
+      
+      // Telangana
+      'hyderabad', 'karimnagar', 'khammam', 'mahabubnagar', 'mahbubnagar', 'nalgonda', 'nizamabad', 'warangal',
+      
+      // Tripura
+      'agartala',
+      
+      // Uttar Pradesh
+      'agra', 'aligarh', 'allahabad', 'prayagraj', 'ambedkar nagar', 'amroha', 'auraiya', 'azamgarh', 'badaun', 'bagpat', 'bahraich', 'ballia', 'banda', 'barabanki', 'bareilly', 'basti', 'bhadohi', 'bijnor', 'budaun', 'bulandshahar', 'chandausi', 'chitrakoot', 'deoria', 'etah', 'etawah', 'farrukhabad', 'fatehpur', 'firozabad', 'gautam buddh nagar', 'noida', 'ghaziabad', 'gonda', 'gorakhpur', 'hamirpur', 'hapur', 'hardoi', 'hathras', 'jalaun', 'jaunpur', 'jhansi', 'kannauj', 'kanpur', 'kasganj', 'kaushambi', 'kushinagar', 'lakhimpur kheri', 'lalitpur', 'lucknow', 'maharajganj', 'mahoba', 'mainpuri', 'mathura', 'mau', 'meerut', 'mirzapur', 'moradabad', 'muzaffarnagar', 'pilibhit', 'raebareli', 'rampur', 'saharanpur', 'sambhal', 'sant kabir nagar', 'shahjahanpur', 'shamli', 'shravasti', 'siddharthnagar', 'sitapur', 'sonbhadra', 'sultanpur', 'unnao', 'varanasi',
+      
+      // Uttarakhand
+      'almora', 'dehradun', 'haridwar', 'haldwani', 'kashipur', 'nainital', 'rishikesh', 'roorkee', 'rudrapur', 'udhamsingh nagar', 'pithoragarh', 'mussoorie',
+      
+      // West Bengal
+      'asansol', 'baharampur', 'bally', 'bardhaman', 'burdwan', 'baruipur', 'berhampore', 'bidhannagar', 'salt lake', 'bishnupur', 'chandannagar', 'chinsurah', 'durgapur', 'haldia', 'howrah', 'jalpaiguri', 'kolkata', 'calcutta', 'krishnanagar', 'malda', 'medinipur', 'murarai', 'nabadwip', 'naihati', 'purulia', 'raiganj', 'siliguri', 'srirampur', 'tamluk', 'uluberia', 'uttarpara', 'kharagpur',
+      
+      // Union Territories
+      'port blair', 'chandigarh', 'daman', 'diu', 'kavaratti', 'delhi', 'new delhi', 'puducherry', 'pondicherry',
+      
+      // Common location formats
+      'remote', 'work from home', 'wfh', 'hybrid', 'remote - india', 'remote - global', 'flexible location', 'multi-city', 'travel required',
+      
+      // Major cities with state names (common format)
+      'mumbai, maharashtra', 'delhi, delhi', 'bangalore, karnataka', 'bengaluru, karnataka', 'chennai, tamil nadu', 'kolkata, west bengal', 'pune, maharashtra', 'hyderabad, telangana', 'ahmedabad, gujarat', 'surat, gujarat', 'jaipur, rajasthan', 'lucknow, uttar pradesh', 'kanpur, uttar pradesh', 'nagpur, maharashtra', 'indore, madhya pradesh', 'kochi, kerala', 'thiruvananthapuram, kerala', 'bhubaneswar, odisha', 'chandigarh, punjab', 'coimbatore, tamil nadu', 'mysore, karnataka', 'mangalore, karnataka', 'vizag, andhra pradesh', 'patna, bihar', 'bhopal, madhya pradesh', 'aurangabad, maharashtra', 'rajkot, gujarat', 'madurai, tamil nadu', 'agra, uttar pradesh', 'varanasi, uttar pradesh', 'meerut, uttar pradesh', 'faridabad, haryana', 'ghaziabad, uttar pradesh', 'ludhiana, punjab', 'amritsar, punjab', 'jalandhar, punjab', 'dehradun, uttarakhand', 'udaipur, rajasthan', 'pathankot, punjab', 'munger, bihar', 'malappuram, kerala'
     ];
     
     return validLocations.some(valid => 
