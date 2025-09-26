@@ -3,8 +3,7 @@
  * Minimal overhead, maximum impact
  */
 
-// Import polyfills for better browser compatibility
-import './polyfills';
+// Removed polyfills import to prevent React conflicts
 
 class TurboCore {
   private static instance: TurboCore;
@@ -135,20 +134,14 @@ class TurboCore {
 // Export singleton instance
 export const turboCore = TurboCore.getInstance();
 
-// Auto-initialize on load (but prevent double initialization)
-if (typeof document !== 'undefined') {
-  // Only auto-initialize if not being called from React
-  const autoInit = () => {
+// Delayed auto-initialization to prevent React conflicts
+if (typeof document !== 'undefined' && typeof window !== 'undefined') {
+  // Defer initialization until after React has mounted
+  setTimeout(() => {
     if (!turboCore.initialized) {
       turboCore.init();
     }
-  };
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoInit);
-  } else {
-    autoInit();
-  }
+  }, 100);
 }
 
 // Cleanup on unload
