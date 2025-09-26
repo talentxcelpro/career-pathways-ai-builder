@@ -223,6 +223,24 @@ export const ServiceMarketplace: React.FC<ServiceMarketplaceProps> = ({ classNam
                 <span>1000+ Completed Projects</span>
               </div>
             </div>
+            
+            <div className="flex flex-wrap justify-center gap-4 pt-6">
+              <Button 
+                onClick={() => window.location.href = '/business-models'}
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Business Models
+              </Button>
+              <Button 
+                onClick={() => window.location.href = '/marketplace/post-service'}
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Offer Your Services
+              </Button>
+            </div>
           </div>
         </div>
       </div>
