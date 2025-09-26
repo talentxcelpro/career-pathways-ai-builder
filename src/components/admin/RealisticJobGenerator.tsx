@@ -378,7 +378,7 @@ const generateFallbackJobs = (count: number) => {
   ];
 
   const experienceLevels = [
-    "fresher", "entry-level", "junior", "mid-level", "senior-level", "lead", "principal", "director", "executive"
+    "fresher", "mid-level", "senior-level", "executive"
   ];
 
   const employmentTypes = [
@@ -428,13 +428,8 @@ const generateFallbackJobs = (count: number) => {
     let baseMinSalary, baseMaxSalary;
     switch (experienceLevel) {
       case 'fresher':
-      case 'entry-level':
         baseMinSalary = 200000 + Math.random() * 300000; // 2-5 LPA
         baseMaxSalary = baseMinSalary + 200000 + Math.random() * 300000;
-        break;
-      case 'junior':
-        baseMinSalary = 400000 + Math.random() * 400000; // 4-8 LPA
-        baseMaxSalary = baseMinSalary + 300000 + Math.random() * 500000;
         break;
       case 'mid-level':
         baseMinSalary = 600000 + Math.random() * 600000; // 6-12 LPA
@@ -443,18 +438,6 @@ const generateFallbackJobs = (count: number) => {
       case 'senior-level':
         baseMinSalary = 1000000 + Math.random() * 800000; // 10-18 LPA
         baseMaxSalary = baseMinSalary + 600000 + Math.random() * 1200000;
-        break;
-      case 'lead':
-        baseMinSalary = 1500000 + Math.random() * 1000000; // 15-25 LPA
-        baseMaxSalary = baseMinSalary + 800000 + Math.random() * 1500000;
-        break;
-      case 'principal':
-        baseMinSalary = 2000000 + Math.random() * 1500000; // 20-35 LPA
-        baseMaxSalary = baseMinSalary + 1000000 + Math.random() * 2000000;
-        break;
-      case 'director':
-        baseMinSalary = 3000000 + Math.random() * 2000000; // 30-50 LPA
-        baseMaxSalary = baseMinSalary + 1500000 + Math.random() * 2500000;
         break;
       case 'executive':
         baseMinSalary = 4000000 + Math.random() * 3000000; // 40-70 LPA
