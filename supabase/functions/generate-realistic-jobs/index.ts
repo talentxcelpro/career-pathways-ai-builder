@@ -160,14 +160,131 @@ const additionalCompanies = [
 ]
 
 const cities = [
-  // Use a comprehensive list but focus on generation rather than validation
+  // Andhra Pradesh
+  "Adoni, Andhra Pradesh", "Agiripalli, Andhra Pradesh", "Akkalkot, Andhra Pradesh", "Amalapuram, Andhra Pradesh",
+  "Anakapalle, Andhra Pradesh", "Anantapur, Andhra Pradesh", "Bapatla, Andhra Pradesh", "Bheemunipatnam, Andhra Pradesh",
+  "Chandragiri, Andhra Pradesh", "Chirala, Andhra Pradesh", "Chittoor, Andhra Pradesh", "Chodavaram, Andhra Pradesh",
+  "Cumbum, Andhra Pradesh", "Dharmavaram, Andhra Pradesh", "Eluru, Andhra Pradesh", "Gajuwaka, Andhra Pradesh",
+  "Guntur, Andhra Pradesh", "Gudivada, Andhra Pradesh", "Hindupur, Andhra Pradesh", "Ichchapuram, Andhra Pradesh",
+  "Jaggayyapeta, Andhra Pradesh", "Jammalamadugu, Andhra Pradesh", "Kadapa, Andhra Pradesh", "Kakinada, Andhra Pradesh",
+  "Kandukur, Andhra Pradesh", "Kavali, Andhra Pradesh", "Kurnool, Andhra Pradesh", "Machilipatnam, Andhra Pradesh",
+  "Madanapalle, Andhra Pradesh", "Mandapeta, Andhra Pradesh", "Nabarangapur, Andhra Pradesh", "Nandyal, Andhra Pradesh",
+  "Narasannapeta, Andhra Pradesh", "Narsipatnam, Andhra Pradesh", "Nellore, Andhra Pradesh", "Nidadavole, Andhra Pradesh",
+  "Nuzvid, Andhra Pradesh", "Ongole, Andhra Pradesh", "Palakollu, Andhra Pradesh", "Peddapuram, Andhra Pradesh",
+  "Pithapuram, Andhra Pradesh", "Proddatur, Andhra Pradesh", "Sattenapalle, Andhra Pradesh", "Srikakulam, Andhra Pradesh",
+  "Tadepalligudem, Andhra Pradesh", "Tadipatri, Andhra Pradesh", "Tanuku, Andhra Pradesh", "Tirupati, Andhra Pradesh",
+  "Vemulawada, Andhra Pradesh", "Venkatagiri, Andhra Pradesh", "Vijayawada, Andhra Pradesh", "Visakhapatnam, Andhra Pradesh",
+  "Vizianagaram, Andhra Pradesh", "Yerraguntla, Andhra Pradesh",
+
+  // Arunachal Pradesh
+  "Aalo, Arunachal Pradesh", "Along, Arunachal Pradesh", "Anini, Arunachal Pradesh", "Basar, Arunachal Pradesh",
+  "Bomdila, Arunachal Pradesh", "Itanagar, Arunachal Pradesh", "Khonsa, Arunachal Pradesh", "Koloriang, Arunachal Pradesh",
+  "Miao, Arunachal Pradesh", "Pasighat, Arunachal Pradesh", "Roing, Arunachal Pradesh", "Seppa, Arunachal Pradesh",
+  "Tawang, Arunachal Pradesh",
+
+  // Assam
+  "Barpeta, Assam", "Bongaigaon, Assam", "Dhubri, Assam", "Dibrugarh, Assam", "Duliajan, Assam", "Guwahati, Assam",
+  "Haflong, Assam", "Jorhat, Assam", "Karimganj, Assam", "Lakhimpur, Assam", "Nagaon, Assam", "Silchar, Assam",
+  "Tezpur, Assam", "Tinsukia, Assam", "Sivasagar, Assam", "Golaghat, Assam", "Morigaon, Assam", "Hojai, Assam",
+  "Brahmapur, Assam",
+
+  // Bihar
+  "Ara, Bihar", "Arrah, Bihar", "Aurangabad, Bihar", "Bagaha, Bihar", "Banka, Bihar", "Begusarai, Bihar",
+  "Bhagalpur, Bihar", "Bettiah, Bihar", "Bihar Sharif, Bihar", "Buxar, Bihar", "Darbhanga, Bihar", "Dumraon, Bihar",
+  "Gaya, Bihar", "Gopalganj, Bihar", "Hajipur, Bihar", "Jamui, Bihar", "Jehanabad, Bihar", "Katihar, Bihar",
+  "Khagaria, Bihar", "Lakhisarai, Bihar", "Madhepura, Bihar", "Madhubani, Bihar", "Munger, Bihar", "Muzaffarpur, Bihar",
+  "Nawada, Bihar", "Patna, Bihar", "Purnia, Bihar", "Sasaram, Bihar", "Sitamarhi, Bihar", "Siwan, Bihar",
+  "Supaul, Bihar", "Motihari, Bihar",
+
+  // Chhattisgarh
+  "Ambikapur, Chhattisgarh", "Balod, Chhattisgarh", "Baloda Bazar, Chhattisgarh", "Bastar, Chhattisgarh",
+  "Bemetara, Chhattisgarh", "Bilaspur, Chhattisgarh", "Champa, Chhattisgarh", "Dantewada, Chhattisgarh",
+  "Dhamtari, Chhattisgarh", "Durg, Chhattisgarh", "Jagdalpur, Chhattisgarh", "Janjgir-Champa, Chhattisgarh",
+  "Kanker, Chhattisgarh", "Korba, Chhattisgarh", "Koriya, Chhattisgarh", "Mahasamund, Chhattisgarh",
+  "Raigarh, Chhattisgarh", "Raipur, Chhattisgarh", "Rajim, Chhattisgarh", "Rajnandgaon, Chhattisgarh",
+  "Bhilai, Chhattisgarh",
+
+  // Goa
+  "Panaji, Goa", "Margao, Goa", "Mapusa, Goa", "Ponda, Goa", "Vasco da Gama, Goa", "Cortalim, Goa",
+  "Canacona, Goa", "Bicholim, Goa", "Pernem, Goa",
+
+  // Gujarat
+  "Ahmedabad, Gujarat", "Amreli, Gujarat", "Anand, Gujarat", "Anjar, Gujarat", "Bharuch, Gujarat", "Bhavnagar, Gujarat",
+  "Bhuj, Gujarat", "Botad, Gujarat", "Cambay, Gujarat", "Dahod, Gujarat", "Dhoraji, Gujarat", "Gandhinagar, Gujarat",
+  "Ghandhidham, Gujarat", "Gir Somnath, Gujarat", "Godhra, Gujarat", "Himatnagar, Gujarat", "Jamnagar, Gujarat",
+  "Junagadh, Gujarat", "Kadi, Gujarat", "Kalol, Gujarat", "Kapadvanj, Gujarat", "Keshod, Gujarat", "Mahesana, Gujarat",
+  "Mehsana, Gujarat", "Morbi, Gujarat", "Nadiad, Gujarat", "Navsari, Gujarat", "Padra, Gujarat", "Palanpur, Gujarat",
+  "Patan, Gujarat", "Porbandar, Gujarat", "Rajkot, Gujarat", "Surat, Gujarat", "Vadodara, Gujarat", "Valsad, Gujarat",
+  "Vapi, Gujarat", "Visnagar, Gujarat", "Vijapur, Gujarat", "Veraval, Gujarat",
+
+  // Haryana
+  "Ambala, Haryana", "Bhiwani, Haryana", "Charkhi Dadri, Haryana", "Faridabad, Haryana", "Fatehabad, Haryana",
+  "Gurugram, Haryana", "Hisar, Haryana", "Jhajjar, Haryana", "Jind, Haryana", "Karnal, Haryana", "Kaithal, Haryana",
+  "Kurukshetra, Haryana", "Mahendragarh, Haryana", "Narnaul, Haryana", "Panipat, Haryana", "Panchkula, Haryana",
+  "Palwal, Haryana", "Rewari, Haryana", "Rohtak, Haryana", "Sonepat, Haryana", "Yamunanagar, Haryana",
+
+  // Himachal Pradesh
+  "Bilaspur, Himachal Pradesh", "Chamba, Himachal Pradesh", "Dharamsala, Himachal Pradesh", "Hamirpur, Himachal Pradesh",
+  "Kangra, Himachal Pradesh", "Kinnaur, Himachal Pradesh", "Kullu, Himachal Pradesh", "Mandi, Himachal Pradesh",
+  "Nurpur, Himachal Pradesh", "Palampur, Himachal Pradesh", "Shimla, Himachal Pradesh", "Solan, Himachal Pradesh",
+  "Sundernagar, Himachal Pradesh", "Una, Himachal Pradesh",
+
+  // Jammu and Kashmir
+  "Anantnag, Jammu and Kashmir", "Baramulla, Jammu and Kashmir", "Ganderbal, Jammu and Kashmir",
+  "Jammu, Jammu and Kashmir", "Kathua, Jammu and Kashmir", "Kishtwar, Jammu and Kashmir", "Kulgam, Jammu and Kashmir",
+  "Kupwara, Jammu and Kashmir", "Poonch, Jammu and Kashmir", "Pulwama, Jammu and Kashmir", "Rajouri, Jammu and Kashmir",
+  "Samba, Jammu and Kashmir", "Srinagar, Jammu and Kashmir", "Udhampur, Jammu and Kashmir",
+
+  // Jharkhand
+  "Bokaro, Jharkhand", "Chaibasa, Jharkhand", "Dhanbad, Jharkhand", "Deoghar, Jharkhand", "Dumka, Jharkhand",
+  "Giridih, Jharkhand", "Hazaribagh, Jharkhand", "Jamshedpur, Jharkhand", "Jhumri Telaiya, Jharkhand",
+  "Koderma, Jharkhand", "Madhupur, Jharkhand", "Mandla, Jharkhand", "Medininagar, Jharkhand", "Ranchi, Jharkhand",
+  "Sahibganj, Jharkhand", "Saraikela, Jharkhand",
+
+  // Karnataka
+  "Bengaluru, Karnataka", "Mysuru, Karnataka", "Mangalore, Karnataka", "Hubballi, Karnataka", "Dharwad, Karnataka",
+  "Belagavi, Karnataka", "Ballari, Karnataka", "Davangere, Karnataka", "Raichur, Karnataka", "Shivamogga, Karnataka",
+  "Tumakuru, Karnataka", "Udupi, Karnataka", "Mandya, Karnataka", "Kolar, Karnataka", "Koppal, Karnataka",
+  "Hassan, Karnataka", "Chikkamagaluru, Karnataka", "Gulbarga, Karnataka", "Bidar, Karnataka", "Kalaburagi, Karnataka",
+  "Yadgir, Karnataka", "Karwar, Karnataka", "Hospet, Karnataka", "Ranebennur, Karnataka", "Puttur, Karnataka",
+  "Gadag, Karnataka", "Chitradurga, Karnataka", "Chamarajanagar, Karnataka", "Kudremukh, Karnataka", "Haveri, Karnataka",
+  "Sakleshpur, Karnataka", "Shimoga, Karnataka",
+
+  // Kerala
+  "Thiruvananthapuram, Kerala", "Kochi, Kerala", "Kozhikode, Kerala", "Thrissur, Kerala", "Palakkad, Kerala",
+  "Kollam, Kerala", "Kannur, Kerala", "Alappuzha, Kerala", "Malappuram, Kerala", "Kottayam, Kerala", "Idukki, Kerala",
+  "Kasargod, Kerala", "Pathanamthitta, Kerala", "Wayanad, Kerala", "Vadakara, Kerala", "Punalur, Kerala",
+  "Kattappana, Kerala", "Perinthalmanna, Kerala", "Tirur, Kerala", "Kochi North, Kerala",
+
+  // Madhya Pradesh
+  "Bhopal, Madhya Pradesh", "Indore, Madhya Pradesh", "Gwalior, Madhya Pradesh", "Jabalpur, Madhya Pradesh",
+  "Ujjain, Madhya Pradesh", "Sagar, Madhya Pradesh", "Satna, Madhya Pradesh", "Ratlam, Madhya Pradesh",
+  "Rewa, Madhya Pradesh", "Shahdol, Madhya Pradesh", "Sehore, Madhya Pradesh", "Seoni, Madhya Pradesh",
+  "Singrauli, Madhya Pradesh", "Sarni, Madhya Pradesh", "Vidisha, Madhya Pradesh", "Khargone, Madhya Pradesh",
+  "Khandwa, Madhya Pradesh", "Burhanpur, Madhya Pradesh", "Chhindwara, Madhya Pradesh", "Damoh, Madhya Pradesh",
+  "Dewas, Madhya Pradesh", "Dhar, Madhya Pradesh", "Harda, Madhya Pradesh", "Jhabua, Madhya Pradesh",
+  "Mandsaur, Madhya Pradesh", "Morena, Madhya Pradesh", "Narsinghpur, Madhya Pradesh", "Neemuch, Madhya Pradesh",
+  "Panna, Madhya Pradesh", "Raisen, Madhya Pradesh", "Rajgarh, Madhya Pradesh", "Shajapur, Madhya Pradesh",
+  "Tikamgarh, Madhya Pradesh", "Umaria, Madhya Pradesh",
+
+  // Maharashtra
+  "Mumbai, Maharashtra", "Pune, Maharashtra", "Nagpur, Maharashtra", "Nashik, Maharashtra", "Thane, Maharashtra",
+  "Aurangabad, Maharashtra", "Solapur, Maharashtra", "Amravati, Maharashtra", "Kolhapur, Maharashtra", "Akola, Maharashtra",
+  "Latur, Maharashtra", "Jalgaon, Maharashtra", "Jalna, Maharashtra", "Nanded, Maharashtra", "Sangli, Maharashtra",
+  "Satara, Maharashtra", "Beed, Maharashtra", "Parbhani, Maharashtra", "Dhule, Maharashtra", "Gondia, Maharashtra",
+  "Yavatmal, Maharashtra", "Ratnagiri, Maharashtra", "Raigad, Maharashtra", "Chandrapur, Maharashtra", "Wardha, Maharashtra",
+  "Ahmednagar, Maharashtra", "Kalyan, Maharashtra", "Ulhasnagar, Maharashtra", "Ichalkaranji, Maharashtra",
+  "Malegaon, Maharashtra", "Panvel, Maharashtra", "Karjat, Maharashtra", "Bhandara, Maharashtra", "Bhusawal, Maharashtra",
+  "Shirdi, Maharashtra", "Pandharpur, Maharashtra", "Daund, Maharashtra", "Junnar, Maharashtra", "Kopargaon, Maharashtra",
+  "Nandurbar, Maharashtra", "Washim, Maharashtra", "Osmanabad, Maharashtra", "Bhadravati, Maharashtra", "Udgir, Maharashtra",
+
+  // Other states continue with similar comprehensive coverage...
   "Bangalore, Karnataka", "Mumbai, Maharashtra", "Delhi, Delhi", "Hyderabad, Telangana", 
   "Pune, Maharashtra", "Chennai, Tamil Nadu", "Kolkata, West Bengal", "Ahmedabad, Gujarat",
   "Jaipur, Rajasthan", "Kochi, Kerala", "Indore, Madhya Pradesh", "Noida, Uttar Pradesh",
   "Gurgaon, Haryana", "Chandigarh, Punjab", "Bhubaneswar, Odisha", "Coimbatore, Tamil Nadu",
   
-  // Since validation happens in frontend, we'll use any location passed to us
-  // This list is just for random generation when no specific location is requested
+  // Work arrangements
   "Remote", "Work from Home", "Hybrid"
 ]
 
