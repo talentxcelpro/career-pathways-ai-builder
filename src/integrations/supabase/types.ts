@@ -15792,6 +15792,7 @@ export type Database = {
           job_status: string | null
           job_summary: string | null
           job_title: string
+          job_type: string | null
           key_responsibilities: string[] | null
           keywords: string[] | null
           location: string | null
@@ -15829,6 +15830,7 @@ export type Database = {
           qualifications: string | null
           relevant_industry_experience: string[] | null
           requirements: string | null
+          role_category: string | null
           salary_currency: string | null
           salary_frequency: string | null
           salary_max: number | null
@@ -15929,6 +15931,7 @@ export type Database = {
           job_status?: string | null
           job_summary?: string | null
           job_title?: string
+          job_type?: string | null
           key_responsibilities?: string[] | null
           keywords?: string[] | null
           location?: string | null
@@ -15966,6 +15969,7 @@ export type Database = {
           qualifications?: string | null
           relevant_industry_experience?: string[] | null
           requirements?: string | null
+          role_category?: string | null
           salary_currency?: string | null
           salary_frequency?: string | null
           salary_max?: number | null
@@ -16066,6 +16070,7 @@ export type Database = {
           job_status?: string | null
           job_summary?: string | null
           job_title?: string
+          job_type?: string | null
           key_responsibilities?: string[] | null
           keywords?: string[] | null
           location?: string | null
@@ -16103,6 +16108,7 @@ export type Database = {
           qualifications?: string | null
           relevant_industry_experience?: string[] | null
           requirements?: string | null
+          role_category?: string | null
           salary_currency?: string | null
           salary_frequency?: string | null
           salary_max?: number | null
