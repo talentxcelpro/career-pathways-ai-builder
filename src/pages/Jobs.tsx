@@ -754,30 +754,120 @@ const Jobs = () => {
                               Start Over
                             </Button>
                           </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className={
-                        viewMode === 'card' ? 'grid grid-cols-1 xl:grid-cols-2 gap-6' :
-                        viewMode === 'list' ? 'space-y-2' :
-                        'space-y-4'
-                      }>
-                        {regularJobs.map((job) => (
-                          <TalentSparkJobCard
-                            key={job.id}
-                            job={job}
-                            onSave={handleSaveJob}
-                            onQuickApply={handleQuickApply}
-                            isSaved={savedJobs.includes(job.id)}
-                            txcReward={10}
-                            viewMode={viewMode}
-                          />
-                        ))}
-                      </div>
-                    )}
+                         )}
+                         
+                         {/* Quick Job Categories for Mobile - After Swipe Jobs */}
+                         <div className="md:hidden mt-8 space-y-4">
+                           <h3 className="text-lg font-semibold text-center">Quick Job Categories</h3>
+                           <div className="grid grid-cols-2 gap-3 px-4">
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ is_remote: true })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               🏠 Remote Jobs
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ skills: ['react'] })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               ⚛️ React Developer
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ search: 'data scientist' })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               📊 Data Scientist
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ search: 'product manager' })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               🚀 Product Manager
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ search: 'ui ux designer' })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               🎨 UI/UX Designer
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ search: 'devops engineer' })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               🔧 DevOps Engineer
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ salary_min: 1500000 })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               💰 High Salary
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ experience_level: ['entry-level'] })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               🌟 Fresher Jobs
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => updateFilters({ company_type: ['fortune-500'] })}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               🏢 Fortune 500
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => {
+                                 // Navigate to quick apply flow
+                                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                               }}
+                               className="flex items-center gap-2 justify-start text-sm"
+                             >
+                               ⚡ Quick Apply
+                             </Button>
+                           </div>
+                         </div>
+                       </div>
+                     ) : (
+                       <div className={
+                         viewMode === 'card' ? 'grid grid-cols-1 xl:grid-cols-2 gap-6' :
+                         viewMode === 'list' ? 'space-y-2' :
+                         'space-y-4'
+                       }>
+                         {regularJobs.map((job) => (
+                           <TalentSparkJobCard
+                             key={job.id}
+                             job={job}
+                             onSave={handleSaveJob}
+                             onQuickApply={handleQuickApply}
+                             isSaved={savedJobs.includes(job.id)}
+                             txcReward={10}
+                             viewMode={viewMode}
+                           />
+                         ))}
+                       </div>
+                     )}
 
-                    {/* Real-time job loading - no pagination needed */}
-                  </div>
+                     {/* Real-time job loading - no pagination needed */}
+                   </div>
                 )}
               </div>
             </div>
