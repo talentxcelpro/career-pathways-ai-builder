@@ -702,6 +702,8 @@ const Jobs = () => {
                           jobs={sortedJobs}
                           currentIndex={swipeIndex}
                           onSwipe={async (direction, job) => {
+                            console.log('🔄 Swipe action:', direction, 'Job ID:', job.id, 'Current index:', swipeIndex);
+                            
                             if (direction === 'left') {
                               // Reject - Award 2 TXC coins for engagement
                               if (currentUser) {
@@ -717,7 +719,7 @@ const Jobs = () => {
                               }
                             } else if (direction === 'right') {
                               // Save job - Award 5 TXC coins
-                              handleSaveJob(job.id);
+                              await handleSaveJob(job.id);
                             } else if (direction === 'up') {
                               // Super Apply - Award 20 TXC coins
                               if (currentUser) {
@@ -732,7 +734,11 @@ const Jobs = () => {
                                 });
                               }
                             }
-                            setSwipeIndex(prev => prev + 1);
+                            
+                            // Always advance to next card
+                            const newIndex = swipeIndex + 1;
+                            console.log('📈 Advancing from index', swipeIndex, 'to', newIndex);
+                            setSwipeIndex(newIndex);
                           }}
                           onSave={handleSaveJob}
                           onApply={handleJobApplication}

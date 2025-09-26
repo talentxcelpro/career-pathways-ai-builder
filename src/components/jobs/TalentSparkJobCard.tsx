@@ -327,7 +327,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-orange-600" />
                 <div>
-                  <div className="text-xs text-muted-foreground">Applied</div>
+                  <div className="text-xs text-muted-foreground">Applications</div>
                   <div className="text-sm font-medium">{job.applications_count || 0}</div>
                 </div>
               </div>
@@ -594,7 +594,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-orange-600" />
               <span className="text-sm text-muted-foreground">
-                {job.applications_count || 0} applied
+                {job.applications_count || 0} applications
               </span>
             </div>
           </div>
