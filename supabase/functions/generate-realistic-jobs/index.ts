@@ -65,7 +65,7 @@ const jobTemplates: JobTemplate[] = [
     company: "StartupXYZ",
     location: "Hyderabad, Telangana",
     employment_type: "Full-time",
-    experience_level: "junior",
+    experience_level: "fresher",
     salary_min: 500000,
     salary_max: 900000,
     skills: ["Node.js", "Express", "MongoDB", "AWS"],
