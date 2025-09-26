@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,11 +9,10 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, Loader2, Gift, Check, X, Shield, Zap } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
-import { useEmailAutomation } from '@/hooks/useEmailAutomation';
+import { useOptimizedRegistration } from '@/hooks/useOptimizedRegistration';
+import { useTurbo, useInView } from '@/hooks/useTurbo';
 
 export const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +25,6 @@ export const RegisterForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [subscribeUpdates, setSubscribeUpdates] = useState(true);
   const [passwordStrength, setPasswordStrength] = useState(0);
@@ -37,90 +35,66 @@ export const RegisterForm = () => {
   const [searchParams] = useSearchParams();
   const referralCode = searchParams.get('ref');
   const navigate = useNavigate();
-  const { triggerWelcomeEmail } = useEmailAutomation();
+  
+  // Optimized hooks
+  const { 
+    loading, 
+    progress, 
+    register, 
+    checkEmailAvailability, 
+    calculatePasswordStrength, 
+    getPasswordStrengthDetails 
+  } = useOptimizedRegistration();
+  const { ref: formRef, isInView } = useInView();
 
-  // Email availability checker with debounce
+  // Optimized email availability checker with debounce
   useEffect(() => {
-    const checkEmailAvailability = async (email: string) => {
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setEmailAvailable(null);
-        return;
-      }
-
-      setCheckingEmail(true);
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', email)
-          .single();
-        
-        setEmailAvailable(!data);
-      } catch (error) {
-        setEmailAvailable(true); // Assume available on error
-      } finally {
+    const timeoutId = setTimeout(async () => {
+      if (formData.email) {
+        setCheckingEmail(true);
+        const available = await checkEmailAvailability(formData.email);
+        setEmailAvailable(available);
         setCheckingEmail(false);
       }
-    };
-
-    const timeoutId = setTimeout(() => {
-      if (formData.email) {
-        checkEmailAvailability(formData.email);
-      }
-    }, 500);
+    }, 300); // Reduced debounce time for faster response
 
     return () => clearTimeout(timeoutId);
-  }, [formData.email]);
+  }, [formData.email, checkEmailAvailability]);
 
-  // Password strength calculator
-  const calculatePasswordStrength = (password: string) => {
-    let strength = 0;
-    if (password.length >= 8) strength += 25;
-    if (/[a-z]/.test(password)) strength += 25;
-    if (/[A-Z]/.test(password)) strength += 25;
-    if (/\d/.test(password)) strength += 15;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 10;
-    return Math.min(strength, 100);
-  };
+  // Memoized password strength details
+  const passwordStrengthDetails = useMemo(() => 
+    getPasswordStrengthDetails(passwordStrength), 
+    [passwordStrength, getPasswordStrengthDetails]
+  );
 
-  const getPasswordStrengthColor = (strength: number) => {
-    if (strength < 30) return 'bg-red-500';
-    if (strength < 60) return 'bg-yellow-500';
-    if (strength < 80) return 'bg-blue-500';
-    return 'bg-green-500';
-  };
-
-  const getPasswordStrengthText = (strength: number) => {
-    if (strength < 30) return 'Weak';
-    if (strength < 60) return 'Fair';
-    if (strength < 80) return 'Good';
-    return 'Strong';
-  };
-
-  // Handle profile picture upload
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Optimized profile picture handler
+  const handleProfilePictureChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast.error('Profile picture must be less than 5MB');
-        return;
-      }
-      
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select a valid image file');
-        return;
-      }
+    if (!file) return;
 
-      setProfilePicture(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfilePicturePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    // Instant validation
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Profile picture must be less than 5MB');
+      return;
     }
-  };
+    
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file');
+      return;
+    }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProfilePicture(file);
+    
+    // Use createObjectURL for instant preview (faster than FileReader)
+    const previewUrl = URL.createObjectURL(file);
+    setProfilePicturePreview(previewUrl);
+    
+    // Cleanup previous object URL
+    return () => URL.revokeObjectURL(previewUrl);
+  }, []);
+
+  // Optimized form handler
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -131,139 +105,36 @@ export const RegisterForm = () => {
     if (name === 'password') {
       setPasswordStrength(calculatePasswordStrength(value));
     }
-  };
+  }, [calculatePasswordStrength]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Optimized form submission
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Enhanced input validation and sanitization
-    const sanitizedEmail = formData.email.trim().toLowerCase();
-    const sanitizedFullName = formData.fullName.trim();
-    
-    // Email validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
-    // Name validation
-    if (sanitizedFullName.length < 2 || sanitizedFullName.length > 100) {
-      toast.error("Full name must be between 2 and 100 characters");
-      return;
-    }
-
-    // XSS prevention for name
-    if (/<[^>]*>/g.test(sanitizedFullName)) {
-      toast.error("Full name contains invalid characters");
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
-    // Enhanced password validation
-    if (formData.password.length < 8) {
-      toast.error('Password must be at least 8 characters long');
-      return;
-    }
-
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      toast.error('Password must contain at least one uppercase letter, one lowercase letter, and one number');
-      return;
-    }
-
-    if (!agreeToTerms) {
-      toast.error('Please agree to the Terms of Service and Privacy Policy');
-      return;
-    }
-
     if (emailAvailable === false) {
       toast.error('This email is already registered. Please use a different email or try signing in.');
       return;
     }
 
-    setLoading(true);
+    const result = await register({
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      jobTitle: formData.jobTitle,
+      company: formData.company,
+      profilePicture,
+      agreeToTerms,
+      subscribeUpdates
+    }, referralCode);
 
-    try {
-      // Upload profile picture if provided
-      let profilePictureUrl = null;
-      if (profilePicture) {
-        const fileExt = profilePicture.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('profile-pictures')
-          .upload(fileName, profilePicture);
-
-        if (uploadError) {
-          console.error('Profile picture upload failed:', uploadError);
-          toast.error('Failed to upload profile picture, but account will still be created');
-        } else {
-          const { data: { publicUrl } } = supabase.storage
-            .from('profile-pictures')
-            .getPublicUrl(fileName);
-          profilePictureUrl = publicUrl;
-        }
-      }
-
-      const { data, error } = await supabase.auth.signUp({
-        email: sanitizedEmail,
-        password: formData.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            full_name: sanitizedFullName,
-            job_title: formData.jobTitle,
-            company: formData.company,
-            profile_picture_url: profilePictureUrl,
-            subscribe_to_updates: subscribeUpdates
-          }
-        }
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      if (data.user) {
-        // Process referral if referral code exists
-        if (referralCode) {
-          try {
-            await supabase.rpc('process_successful_referral', {
-              p_referee_id: data.user.id,
-              p_referral_code: referralCode
-            });
-            console.log('Referral processed successfully');
-          } catch (referralError) {
-            console.error('Failed to process referral:', referralError);
-            // Don't show error to user as registration was successful
-          }
-        }
-
-        toast.success('Account created successfully! Please check your email to verify your account.');
-        
-        // Trigger welcome email
-        try {
-          await triggerWelcomeEmail(formData.email, formData.fullName);
-        } catch (emailError) {
-          console.error('Failed to send welcome email:', emailError);
-          // Don't show error to user as registration was successful
-        }
-        
-        navigate('/auth/login');
-      }
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-    } finally {
-      setLoading(false);
+    if (result.success) {
+      navigate('/auth/login');
     }
-  };
+  }, [formData, profilePicture, agreeToTerms, subscribeUpdates, emailAvailable, referralCode, register, navigate]);
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-xl">
+    <Card ref={formRef} className="w-full max-w-md mx-auto shadow-xl">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
         <CardDescription>
@@ -326,6 +197,17 @@ export const RegisterForm = () => {
             </div>
           </div>
         </div>
+
+        {/* Progress indicator for registration */}
+        {loading && progress > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Creating account...</span>
+              <span className="text-primary font-medium">{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-1.5" />
+          </div>
+        )}
 
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -468,12 +350,8 @@ export const RegisterForm = () => {
               <div className="mt-2 space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Password strength:</span>
-                  <span className={`font-medium ${
-                    passwordStrength < 30 ? 'text-red-600' :
-                    passwordStrength < 60 ? 'text-yellow-600' :
-                    passwordStrength < 80 ? 'text-blue-600' : 'text-green-600'
-                  }`}>
-                    {getPasswordStrengthText(passwordStrength)}
+                  <span className={`font-medium ${passwordStrengthDetails.textColor}`}>
+                    {passwordStrengthDetails.text}
                   </span>
                 </div>
                 <Progress 
