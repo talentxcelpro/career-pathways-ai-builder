@@ -8,6 +8,7 @@ import {
   ChevronRight, Play, Mic, Shield, Rocket, Bell, Grid3X3,
   List, RotateCcw
 } from 'lucide-react';
+import { z } from 'zod';
 
 // Components
 import { Button } from '@/components/ui/button';
@@ -27,11 +28,25 @@ import { COMPREHENSIVE_INDUSTRIES, INDUSTRY_CATEGORIES, TRENDING_INDUSTRIES, HIG
 // New Components for TalentSpark Experience
 import { TalentSparkJobCard } from '@/components/jobs/TalentSparkJobCard';
 import { SwipeableJobCard } from '@/components/jobs/SwipeableJobCard';
+import { GlobalSearch } from '@/components/jobs/GlobalSearch';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
 
 // Core job search components only
+
+// Input validation schema for security
+const filtersSchema = z.object({
+  search: z.string().trim().max(200, "Search query must be less than 200 characters").optional(),
+  location: z.string().trim().max(100, "Location must be less than 100 characters").optional(),
+  company_name: z.string().trim().max(100, "Company name must be less than 100 characters").optional(),
+  employment_type: z.array(z.string()).optional(),
+  experience_level: z.array(z.string()).optional(),
+  salary_min: z.number().min(0).max(10000000).optional(),
+  salary_max: z.number().min(0).max(10000000).optional(),
+  is_remote: z.boolean().optional(),
+  skills: z.array(z.string()).optional(),
+});
 
 const Jobs = () => {
   const navigate = useNavigate();
@@ -68,6 +83,22 @@ const Jobs = () => {
   const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>('card');
   const [swipeIndex, setSwipeIndex] = useState(0);
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
+
+  // Safe filter update function with validation
+  const updateFilters = (newFilters: any) => {
+    try {
+      // Validate the filters before updating
+      const validatedFilters = filtersSchema.parse(newFilters);
+      setFilters(prev => ({ ...prev, ...validatedFilters }));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.warn('Invalid filter input:', error.errors);
+        toast.error('Invalid search input. Please check your search terms.');
+        return;
+      }
+      setFilters(prev => ({ ...prev, ...newFilters }));
+    }
+  };
 
 
   // Get current user
@@ -309,31 +340,6 @@ const Jobs = () => {
     toast.success('Quick Apply submitted! +10 TXC coins earned');
   };
 
-  const handleVoiceSearch = () => {
-    if ('webkitSpeechRecognition' in window) {
-      const recognition = new (window as any).webkitSpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-
-      setIsVoiceSearching(true);
-      recognition.start();
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setFilters(prev => ({ ...prev, search: transcript }));
-        setIsVoiceSearching(false);
-        refetch();
-      };
-
-      recognition.onerror = () => {
-        setIsVoiceSearching(false);
-        toast.error('Voice search failed');
-      };
-    } else {
-      toast.error('Voice search not supported');
-    }
-  };
 
 
   return (
@@ -390,48 +396,34 @@ const Jobs = () => {
               </Button>
             </div>
 
-            {/* Compact Search Bar */}
-            <div className="max-w-3xl mx-auto mb-4">
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search jobs, skills, companies..."
-                    value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    onKeyDown={(e) => e.key === 'Enter' && refetch()}
-                    className="pl-10 pr-4 h-10 border border-primary/20 focus:border-primary/50 rounded-lg bg-white/80"
-                  />
-                </div>
-                <Button
-                  size="sm"
-                  onClick={handleVoiceSearch}
-                  disabled={isVoiceSearching}
-                  variant="outline"
-                  className="h-10 px-3"
-                >
-                  <Mic className={`h-4 w-4 ${isVoiceSearching ? 'animate-pulse text-red-400' : ''}`} />
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => refetch()}
-                  className="h-10 px-6"
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Search
-                </Button>
-              </div>
+            {/* Enhanced Global Search Bar */}
+            <div className="max-w-4xl mx-auto mb-6">
+              <GlobalSearch
+                value={filters.search}
+                onChange={(value) => updateFilters({ search: value })}
+                onSearch={() => refetch()}
+                onFiltersChange={(newFilters) => {
+                  updateFilters(newFilters);
+                  refetch();
+                }}
+                placeholder="Search jobs, skills, companies, locations..."
+                recentJobs={regularJobs.slice(0, 5)}
+              />
             </div>
 
-            {/* Quick Search Tags - All Clickable */}
+            {/* Smart Quick Search Tags */}
             <div className="flex flex-wrap gap-2 justify-center">
               {[
-                { label: 'Remote Jobs', filter: { is_remote: true } },
-                { label: 'React Developer', filter: { search: 'React Developer' } },
-                { label: 'Data Scientist', filter: { search: 'Data Scientist' } },
-                { label: 'Product Manager', filter: { search: 'Product Manager' } },
-                { label: 'UI/UX Designer', filter: { search: 'UI/UX Designer' } },
-                { label: 'DevOps Engineer', filter: { search: 'DevOps Engineer' } }
+                { label: '🏠 Remote Jobs', filter: { is_remote: true, search: '' } },
+                { label: '⚛️ React Developer', filter: { search: 'React Developer' } },
+                { label: '📊 Data Scientist', filter: { search: 'Data Scientist' } },
+                { label: '🚀 Product Manager', filter: { search: 'Product Manager' } },
+                { label: '🎨 UI/UX Designer', filter: { search: 'UI/UX Designer' } },
+                { label: '🔧 DevOps Engineer', filter: { search: 'DevOps Engineer' } },
+                { label: '💰 High Salary', filter: { salary_min: 100000, search: '' } },
+                { label: '🌟 Fresher Jobs', filter: { experience_level: ['Entry Level'], search: '' } },
+                { label: '🏢 Fortune 500', filter: { search: 'Google Microsoft Amazon Apple Meta' } },
+                { label: '⚡ Quick Apply', filter: { search: 'quick apply' } }
               ].map((tag) => (
                 <Button
                   key={tag.label}
@@ -441,7 +433,7 @@ const Jobs = () => {
                     setFilters(prev => ({ ...prev, ...tag.filter }));
                     refetch();
                   }}
-                  className="rounded-full bg-white/60 backdrop-blur-sm hover:bg-primary hover:text-white transition-all text-xs"
+                  className="rounded-full bg-white/70 backdrop-blur-sm hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-white transition-all text-xs border-primary/20 hover:border-primary/50 shadow-sm hover:shadow-md transform hover:scale-105"
                 >
                   {tag.label}
                 </Button>
