@@ -36,7 +36,19 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-  const [aiMatchScore] = useState(Math.floor(Math.random() * 30) + 70); // 70-100%
+  // Calculate AI match score based on job attributes
+  const [aiMatchScore] = useState(() => {
+    let score = 70; // Base score
+    
+    // Boost score for matching skills, location, salary, etc.
+    if (job.is_remote) score += 5;
+    if (job.is_featured) score += 10;
+    if (job.applications_count < 10) score += 5; // Less competition
+    if (job.views_count > 100) score += 5; // Popular job
+    if (job.salary_max && job.salary_max > 1000000) score += 5; // High salary
+    
+    return Math.min(score + Math.floor(Math.random() * 10), 100);
+  });
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   
   const formatSalary = (min?: number, max?: number) => {
@@ -66,13 +78,20 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   const handleShare = async () => {
     const url = `${window.location.origin}${getJobDetailUrl(job)}`;
     if (navigator.share) {
-      await navigator.share({
-        title: job.title,
-        text: `Check out this job at ${job.companies?.name || job.company_name}`,
-        url: url
-      });
+      try {
+        await navigator.share({
+          title: job.title,
+          text: `Check out this job at ${job.companies?.name || job.company_name}`,
+          url: url
+        });
+      } catch (error) {
+        // Fallback to clipboard if sharing fails
+        await navigator.clipboard.writeText(url);
+        alert('Job link copied to clipboard!');
+      }
     } else {
       await navigator.clipboard.writeText(url);
+      alert('Job link copied to clipboard!');
     }
   };
 
@@ -560,10 +579,8 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
       <JobApplicationDialog
         isOpen={showApplicationDialog}
         onClose={() => setShowApplicationDialog(false)}
-        jobId={job.id}
-        jobTitle={job.title}
-        companyName={job.company?.name || 'Company Name'}
-        onApplicationSubmit={() => {
+        job={job}
+        onApply={() => {
           onQuickApply(job.id);
           setShowApplicationDialog(false);
         }}

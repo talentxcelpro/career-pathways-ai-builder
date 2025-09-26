@@ -144,15 +144,14 @@ const Jobs = () => {
     getCurrentUser();
   }, []);
 
-  // Real-time job data with live updates
+  // Real-time job data with optimized caching
   const { 
     jobs: allJobs, 
-    totalCount, 
+    totalCount,
     hasMore,
     isLoading, 
-    isConnected,
     refetch 
-  } = useRealtimeJobs(filters, sortBy);
+  } = useJobsOptimized(filters, sortBy);
 
   // Real-time job statistics
   const { stats: jobStats } = useRealtimeJobStats();

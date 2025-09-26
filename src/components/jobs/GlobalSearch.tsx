@@ -214,11 +214,13 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
     setRecentSearches(newRecentSearches);
     localStorage.setItem('talentxcel-recent-searches', JSON.stringify(newRecentSearches));
     
-    // Apply specific filters based on suggestion type
+    // Apply specific filters based on suggestion type with proper mapping
     if (suggestion.type === 'location') {
-      onFiltersChange({ location: sanitizedText });
+      onFiltersChange({ location: sanitizedText, search: '' });
     } else if (suggestion.type === 'company') {
-      onFiltersChange({ company_name: sanitizedText });
+      onFiltersChange({ search: sanitizedText }); // Company names are searched in general search
+    } else if (suggestion.type === 'skill') {
+      onFiltersChange({ search: sanitizedText, skills: [sanitizedText] });
     } else {
       onFiltersChange({ search: sanitizedText });
     }
