@@ -44,12 +44,12 @@ export const SearchHub: React.FC<SearchHubProps> = ({
   };
 
   const searchSuggestions = useMemo(() => [
-    'React developers in Mumbai',
-    'Senior UI/UX designers',
-    'Product managers with 3+ years experience',
-    'Marketing professionals in Bangalore',
-    'Data scientists with Python skills',
-    'Frontend developers remote'
+    'React developers in Mumbai with 3+ years experience',
+    'Senior UI/UX designers for fintech startups',
+    'Entry level data scientist positions',
+    'Remote Python developers with machine learning skills',
+    'Full-time marketing managers in Bangalore',
+    'Frontend engineers proficient in Vue.js'
   ], []);
 
   return (
@@ -109,7 +109,7 @@ export const SearchHub: React.FC<SearchHubProps> = ({
             <CardContent className="space-y-4">
               <div className="relative">
                 <Input
-                  placeholder="Ask naturally: 'Find React developers in Mumbai with 3+ years experience'"
+                  placeholder="Ask naturally: 'Find React developers in Mumbai with 3+ years experience' or 'Remote data scientist jobs with Python'"
                   value={naturalQuery}
                   onChange={(e) => handleNaturalSearch(e.target.value)}
                   className="pr-10"
@@ -201,18 +201,32 @@ export const SearchHub: React.FC<SearchHubProps> = ({
               {naturalResults.length > 0 && (
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium text-muted-foreground">
-                    Found {naturalResults.length} people
+                    Found {naturalResults.length} results
                   </h4>
                   <div className="grid gap-2">
-                    {naturalResults.slice(0, 5).map((person) => (
-                      <div key={person.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                            {person.full_name?.[0] || 'U'}
+                    {naturalResults.slice(0, 5).map((result: any) => (
+                      <div key={result.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            💼
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{person.full_name}</p>
-                            <p className="text-sm text-muted-foreground truncate">{person.title || person.headline}</p>
+                            <p className="font-medium truncate">{result.title}</p>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {result.company_name} • {result.location}
+                              {result.is_remote && ' • Remote'}
+                            </p>
+                            {result.relevance_score && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <div className="h-1 w-12 bg-muted rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-primary transition-all"
+                                    style={{ width: `${Math.min(result.relevance_score * 5, 100)}%` }}
+                                  />
+                                </div>
+                                <span className="text-xs text-muted-foreground">Match</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

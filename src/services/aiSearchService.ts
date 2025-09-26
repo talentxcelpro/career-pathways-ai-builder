@@ -45,61 +45,69 @@ export class AISearchService {
   }
 
   static async searchJobs(query: string) {
-    const filters = await this.parseQuery(query, 'jobs');
-    
-    let dbQuery = supabase
-      .from('jobs')
-      .select(`
-        *,
-        companies (
-          id,
-          name,
-          logo_url,
-          industry
-        )
-      `)
-      .eq('is_active', true)
-      .eq('job_status', 'open');
+    try {
+      console.log('🔍 Using AI-powered job search for:', query);
+      
+      // Use the new AI job search edge function
+      const { data, error } = await supabase.functions.invoke('ai-job-search', {
+        body: { query, page: 1, limit: 50 }
+      });
 
-    // Apply parsed filters
-    if (filters.query) {
-      dbQuery = dbQuery.or(`title.ilike.%${filters.query}%,description.ilike.%${filters.query}%`);
-    }
-    
-    if (filters.location) {
-      dbQuery = dbQuery.ilike('location', `%${filters.location}%`);
-    }
-    
-    if (filters.remote !== undefined) {
-      dbQuery = dbQuery.eq('is_remote', filters.remote);
-    }
-    
-    if (filters.employment_type && filters.employment_type.length > 0) {
-      dbQuery = dbQuery.in('employment_type', filters.employment_type);
-    }
-    
-    if (filters.experience_level && filters.experience_level.length > 0) {
-      dbQuery = dbQuery.in('experience_level', filters.experience_level);
-    }
-    
-    if (filters.min_salary && filters.min_salary > 0) {
-      dbQuery = dbQuery.gte('salary_min', filters.min_salary);
-    }
-    
-    if (filters.max_salary && filters.max_salary > 0) {
-      dbQuery = dbQuery.lte('salary_max', filters.max_salary);
-    }
-    
-    if (filters.skills && filters.skills.length > 0) {
-      const skillFilters = filters.skills.map(skill => `skills_required.cs.{"${skill}"}`);
-      dbQuery = dbQuery.or(skillFilters.join(','));
-    }
+      if (error) {
+        console.error('AI job search error:', error);
+        throw new Error(error.message || 'AI job search failed');
+      }
 
-    const { data, error } = await dbQuery
-      .order('posted_at', { ascending: false })
-      .limit(50);
+      if (!data.success) {
+        throw new Error(data.error || 'Search request failed');
+      }
 
-    return { data: data || [], error, filters };
+      console.log('✅ AI job search completed:', {
+        resultsCount: data.data?.length || 0,
+        parsedFilters: data.filters
+      });
+
+      return { 
+        data: data.data || [], 
+        error: null, 
+        filters: data.filters 
+      };
+
+    } catch (err: any) {
+      console.error('❌ AI job search failed:', err);
+      
+      // Fallback to basic search
+      console.log('🔄 Falling back to basic job search...');
+      
+      let dbQuery = supabase
+        .from('jobs')
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo_url,
+            industry
+          )
+        `)
+        .eq('is_active', true)
+        .eq('job_status', 'open');
+
+      // Apply basic text search
+      if (query.trim()) {
+        dbQuery = dbQuery.or(`title.ilike.%${query}%,description.ilike.%${query}%,company_name.ilike.%${query}%`);
+      }
+
+      const { data, error } = await dbQuery
+        .order('posted_at', { ascending: false })
+        .limit(50);
+
+      return { 
+        data: data || [], 
+        error, 
+        filters: { query: query.toLowerCase() } 
+      };
+    }
   }
 
   static async searchCompanies(query: string) {
