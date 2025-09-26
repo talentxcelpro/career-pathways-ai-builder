@@ -135,10 +135,10 @@ export const RealisticJobGenerator: React.FC = () => {
 const generateFallbackJobs = (count: number) => {
   const companies = [
     { name: "Tata Consultancy Services", domain: "jobs.tcs.com" },
-    { name: "Infosys", domain: "careers.infosys.com" },
-    { name: "Wipro", domain: "careers.wipro.com" },
+    { name: "Infosys", domain: "naukri.com" },
+    { name: "Wipro", domain: "jobs.wipro.com" },
     { name: "HCL Technologies", domain: "hcltech.com" },
-    { name: "Tech Mahindra", domain: "careers.techmahindra.com" },
+    { name: "Tech Mahindra", domain: "indeed.com" },
     { name: "Microsoft India", domain: "careers.microsoft.com" },
     { name: "Google India", domain: "careers.google.com" },
     { name: "IBM India", domain: "jobs.ibm.com" },
