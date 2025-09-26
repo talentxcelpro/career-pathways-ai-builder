@@ -123,7 +123,7 @@ serve(async (req) => {
             token_hash: tokenHash,
             expires_at: expiresAt.toISOString(),
             is_active: true
-          });
+          } as any);
 
         if (sessionError) {
           console.error('Session creation error:', sessionError);
@@ -170,10 +170,10 @@ serve(async (req) => {
         }
 
         // Update last accessed
-        await supabaseClient
+        await (supabaseClient as any)
           .from('secure_sessions')
           .update({ last_accessed: new Date().toISOString() })
-          .eq('id', sessionData.id);
+          .eq('id', (sessionData as any).id);
 
         return new Response(
           JSON.stringify({ valid: true }),
@@ -206,7 +206,7 @@ serve(async (req) => {
         }
 
         // Check if session is close to expiry (within 5 minutes)
-        const expiresAt = new Date(sessionData.expires_at);
+        const expiresAt = new Date((sessionData as any).expires_at);
         const now = new Date();
         const minutesUntilExpiry = (expiresAt.getTime() - now.getTime()) / (1000 * 60);
 
@@ -215,7 +215,7 @@ serve(async (req) => {
             JSON.stringify({
               success: true,
               token: token,
-              expires_at: sessionData.expires_at
+              expires_at: (sessionData as any).expires_at
             }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
@@ -226,14 +226,14 @@ serve(async (req) => {
         const newTokenHash = await hashToken(newToken);
         const newExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-        await supabaseClient
+        await (supabaseClient as any)
           .from('secure_sessions')
           .update({
             token_hash: newTokenHash,
             expires_at: newExpiresAt.toISOString(),
             last_accessed: new Date().toISOString()
           })
-          .eq('id', sessionData.id);
+          .eq('id', (sessionData as any).id);
 
         return new Response(
           JSON.stringify({
@@ -255,7 +255,7 @@ serve(async (req) => {
 
         const tokenHash = await hashToken(token);
         
-        await supabaseClient
+        await (supabaseClient as any)
           .from('secure_sessions')
           .update({ is_active: false })
           .eq('token_hash', tokenHash);
