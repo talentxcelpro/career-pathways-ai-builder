@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Zap, Send } from "lucide-react";
+import { Zap, Send, CheckCircle } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { useCreateJobApplication } from '@/hooks/useJobApplications';
+import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { toast } from 'sonner';
 import { incrementJobApplications } from '@/utils/supabaseHelpers';
 
@@ -26,6 +27,7 @@ export default function QuickApplyButton({ job, onApplicationSuccess, className 
   const [hasApplied, setHasApplied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const createApplication = useCreateJobApplication();
+  const { triggerJobApplied } = useTXCIntegration();
 
   useEffect(() => {
     checkUserDataAndApplication();
@@ -115,8 +117,15 @@ export default function QuickApplyButton({ job, onApplicationSuccess, className 
       // Update application count
       incrementJobApplications(job.id).catch(console.error);
 
+      // Award TXC for job application
+      try {
+        await triggerJobApplied();
+        toast.success('Application submitted! You earned TXC rewards! 🎉', { id: 'quick-apply' });
+      } catch (error) {
+        toast.success('Application submitted successfully!', { id: 'quick-apply' });
+      }
+
       setHasApplied(true);
-      toast.dismiss('quick-apply');
       
       if (onApplicationSuccess) {
         onApplicationSuccess();
@@ -152,9 +161,9 @@ export default function QuickApplyButton({ job, onApplicationSuccess, className 
 
   if (hasApplied) {
     return (
-      <Button disabled variant="outline" className={className}>
-        <Send className="h-4 w-4 mr-2" />
-        Applied
+      <Button disabled variant="outline" className={`${className} bg-success/10 border-success/20 text-success`}>
+        <CheckCircle className="h-4 w-4 mr-2" />
+        Applied ✓
       </Button>
     );
   }

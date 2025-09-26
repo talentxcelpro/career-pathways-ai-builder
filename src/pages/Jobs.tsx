@@ -6,7 +6,7 @@ import {
   Search, Brain, Filter, TrendingUp, Building, MapPin, Zap, 
   Star, Heart, Clock, Users, Award, Sparkles, Target, 
   ChevronRight, Play, Mic, Shield, Rocket, Bell, Grid3X3,
-  List, RotateCcw, Briefcase
+  List, RotateCcw, Briefcase, Coins
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -19,6 +19,8 @@ import { Progress } from '@/components/ui/progress';
 import { useJobsOptimized } from '@/hooks/useJobsOptimized';
 import { useRealtimeJobs, useRealtimeJobStats } from '@/hooks/useRealtimeJobs';
 import { useStructuredData } from '@/hooks/useStructuredData';
+import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { useTXCBalance } from '@/hooks/useTXCBalance';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -77,12 +79,15 @@ const Jobs = () => {
   const [sortBy, setSortBy] = useState('posted_at');
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [txcCoins, setTxcCoins] = useState(0);
   const [viewMode, setViewMode] = useState<'card' | 'swipe' | 'list'>(() => {
     return window.innerWidth < 768 ? 'swipe' : 'card';
   });
   const [swipeIndex, setSwipeIndex] = useState(0);
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
+
+  // Real TXC Integration
+  const { balance: txcBalance, loading: txcLoading } = useTXCBalance();
+  const { earnTXC } = useTXCIntegration();
 
   // Safe filter update function with validation
   const updateFilters = (newFilters: any) => {
