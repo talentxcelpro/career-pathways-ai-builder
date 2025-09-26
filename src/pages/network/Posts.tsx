@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings, Search, Video } from "lucide-react";
+import { MoreHorizontal, MessageCircle, Sparkles, Users, Calendar, Bell, Eye, MapPin, Briefcase, ExternalLink, Camera, FileText, Share2, Settings, Search, Video, Shield, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -194,10 +194,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
             <Card className="bg-white/95 backdrop-blur-md border border-gray-200/60 shadow-xl rounded-2xl overflow-hidden">
               <div className="p-4 space-y-1">
                 <h3 className="font-bold text-gray-900 text-sm mb-3 px-2 tracking-tight">Navigation</h3>
-                <Link to="/network" className="block">
+                <Link to="/network/verified" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                    <MessageCircle className="h-3.5 w-3.5 mr-3" />
-                    Feed
+                    <Shield className="h-3.5 w-3.5 mr-3" />
+                    Verified
                   </Button>
                 </Link>
                 <Link to="/dashboard" className="block">
@@ -212,10 +212,10 @@ const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trend
                     My Network
                   </Button>
                 </Link>
-                <Link to="/jobs" className="block">
+                <Link to="/network/skill-swap" className="block">
                   <Button variant="ghost" size="sm" className="w-full justify-start h-9 text-xs text-gray-800 hover:text-gray-900 hover:bg-gray-100/80 font-medium rounded-xl transition-all duration-200">
-                    <Briefcase className="h-3.5 w-3.5 mr-3" />
-                    Jobs
+                    <ArrowUpDown className="h-3.5 w-3.5 mr-3" />
+                    Skill Swap
                   </Button>
                 </Link>
                 <Button 
