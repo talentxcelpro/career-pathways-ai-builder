@@ -86,7 +86,6 @@ const Jobs = () => {
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
 
   // Real TXC Integration
-  const { balance: txcBalance, loading: txcLoading } = useTXCBalance();
   const { earnTXC } = useTXCIntegration();
 
   // Safe filter update function with validation
@@ -104,43 +103,13 @@ const Jobs = () => {
     }
   };
 
-  // Get current user
+  // Get current user and TXC balance
+  const { txcBalance } = useTXCBalance();
+  
   useEffect(() => {
     const getCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('txc_coins')
-          .eq('id', user.id)
-          .single();
-        
-        setTxcCoins(data?.txc_coins || 0);
-        
-        const coinChannel = supabase
-          .channel(`user-coins-${user.id}`)
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'profiles',
-              filter: `id=eq.${user.id}`
-            },
-            (payload) => {
-              const newCoins = payload.new?.txc_coins;
-              if (newCoins !== undefined) {
-                setTxcCoins(newCoins);
-              }
-            }
-          )
-          .subscribe();
-          
-        return () => {
-          supabase.removeChannel(coinChannel);
-        };
-      }
     };
     getCurrentUser();
   }, []);

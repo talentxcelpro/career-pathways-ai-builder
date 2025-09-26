@@ -244,7 +244,7 @@ export const CVDatabase: React.FC = () => {
                 {recentApplications.slice(0, 3).map((application) => (
                   <div key={application.id} className="flex items-center justify-between text-sm">
                     <span className="text-foreground font-medium">
-                      {application.profiles?.full_name || 'Unknown'} applied to {application.jobs?.title || 'Unknown Job'}
+                      {(application.profiles as any)?.full_name || 'Unknown'} applied to {(application.jobs as any)?.title || 'Unknown Job'}
                     </span>
                     <span className="text-muted-foreground text-xs">
                       {new Date(application.applied_at).toLocaleTimeString()}
