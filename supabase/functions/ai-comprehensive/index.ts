@@ -96,23 +96,30 @@ serve(async (req) => {
   }
 });
 
-async function callOpenAI(messages: any[], maxTokens = 1000, temperature = 0.7) {
+async function callOpenAI(messages: any[], maxTokens = 1000) {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  if (!openAIApiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+      'Authorization': `Bearer ${openAIApiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: 'gpt-4.1-2025-04-14',
       messages,
-      temperature,
-      max_tokens: maxTokens,
+      max_completion_tokens: maxTokens, // Updated parameter name for newer models
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status}`);
+    const errorText = await response.text();
+    console.error('OpenAI API error:', response.status, errorText);
+    throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
