@@ -136,6 +136,7 @@ serve(async (req) => {
           source: batchName,
           views_count: 0,
           applications_count: 0,
+          organization_logo_url: (row['company_name'] || '').toLowerCase() === 'talentxcel' ? '/src/assets/talentxcel-logo.png' : null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
