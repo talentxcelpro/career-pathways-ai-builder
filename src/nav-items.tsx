@@ -34,6 +34,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import TalentXcelServices from "./pages/TalentXcelServices";
 import FeedEmbeds from "./pages/FeedEmbeds";
 import LinkedInToolsHub from "./pages/admin/LinkedInToolsHub";
+import { TestingDashboard } from "./pages/TestingDashboard";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -119,6 +120,18 @@ export const linkedInToolsRoutes = [
   }
 ];
 
+// Testing Dashboard route
+export const testingRoutes = [
+  {
+    title: "Testing Dashboard",
+    to: "/testing",
+    icon: "flask",
+    page: <TestingDashboard />,
+    description: "Test all notification and automation features",
+    isPublic: true
+  }
+];
+
 export const navItems = [
   ...publicRoutes,
   ...coreRoutes,
@@ -152,6 +165,7 @@ export const navItems = [
   ...campaignRoutes,
   ...embedRoutes,
   ...linkedInToolsRoutes,
+  ...testingRoutes,
   ...seoRoutes,
   ...adminRoutes,
   ...enterpriseRoutes,
