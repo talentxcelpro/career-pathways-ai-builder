@@ -11,7 +11,7 @@ import {
   Award
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { filterNavigationByPermissions } from '@/utils/navigationFilter';
 
@@ -77,7 +77,7 @@ export const SimpleNavigation: React.FC<SimpleNavigationProps> = ({
   variant = 'horizontal' 
 }) => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
   const { isAdmin, isLoading } = useAdminAccess();
 
   // Filter navigation items based on user permissions

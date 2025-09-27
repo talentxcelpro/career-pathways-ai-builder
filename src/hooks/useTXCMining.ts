@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTokenBalance } from './useTokenBalance';
@@ -22,7 +22,7 @@ export type { TXCReward } from '@/config/txcPolicy';
 export const TXC_MINING_REWARDS = OFFICIAL_TXC_MINING_POLICY;
 
 export const useTXCMining = () => {
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
   const { refreshBalance } = useTokenBalance();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);

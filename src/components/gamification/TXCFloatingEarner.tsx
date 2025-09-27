@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 interface FloatingReward {
@@ -27,7 +27,7 @@ interface FloatingReward {
 }
 
 export const TXCFloatingEarner: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
   const { toast } = useToast();
   const { availableBalance, refreshBalance } = useTokenBalance();
   const txcIntegration = useTXCIntegration();

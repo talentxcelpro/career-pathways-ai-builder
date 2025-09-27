@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { toast } from 'sonner';
 
 export const AuthErrorRecovery: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { session, refreshSession } = useAuth();
+  const { session, refreshSession } = useOptimizedAuth();
   const [isRecovering, setIsRecovering] = useState(false);
   const [lastSessionCheck, setLastSessionCheck] = useState(Date.now());
 

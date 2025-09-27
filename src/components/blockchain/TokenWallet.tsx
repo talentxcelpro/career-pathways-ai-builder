@@ -16,7 +16,7 @@ import {
   Zap
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 
 interface TokenTransaction {
   id: string;
@@ -34,7 +34,7 @@ interface TokenBalance {
 }
 
 export const TokenWallet = () => {
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
   const [balance, setBalance] = useState<TokenBalance | null>(null);
   const [transactions, setTransactions] = useState<TokenTransaction[]>([]);
   const [loading, setLoading] = useState(true);

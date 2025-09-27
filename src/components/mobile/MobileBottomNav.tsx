@@ -11,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 interface NavItem {
@@ -23,7 +23,7 @@ interface NavItem {
 
 export const MobileBottomNav = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
 
   // Get unread messages count
   const { data: unreadMessages = 0 } = useQuery({
