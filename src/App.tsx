@@ -128,6 +128,7 @@ import { JobsByRoleSkillCityLevel } from "@/pages/seo/jobs/JobsByRoleSkillCityLe
 import { JobsByRoleSalaryCity } from "@/pages/seo/jobs/JobsByRoleSalaryCity";
 import { JobsByRemoteRoleCity } from "@/pages/seo/jobs/JobsByRemoteRoleCity";
 import { JobsByCompanyRoleCity } from "@/pages/seo/jobs/JobsByCompanyRoleCity";
+import { JobsPage } from "@/components/performance/LazyRoutes";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -218,7 +219,7 @@ const App = () => {
                 <Route path="/tools" element={<Tools />} />
                 
                 {/* Jobs Sitemap Routes - SEO Optimized */}
-                <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsLandingPage /></React.Suspense>} />
+                <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsPage /></React.Suspense>} />
                 <Route path="/jobs/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></React.Suspense>} />
                 <Route path="/jobs/:role/:industry/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></React.Suspense>} />
                 <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></React.Suspense>} />
