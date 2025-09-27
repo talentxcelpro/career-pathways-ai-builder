@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-  <url>
-    <loc>https://talentxcel.in/jobs</loc>
-    <lastmod>2025-08-26</lastmod>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/jobs/software-developer</loc>
-    <lastmod>2025-08-26</lastmod>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/jobs/data-analyst</loc>
-    <lastmod>2025-08-26</lastmod>
-    <priority>0.9</priority>
-  </url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-1.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-2.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-3.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-4.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-jobs-5.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+</sitemapindex>

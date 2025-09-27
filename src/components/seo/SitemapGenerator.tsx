@@ -55,6 +55,30 @@ export const SitemapGenerator: React.FC = () => {
     }
   };
 
+  const generateJobsSitemap = async () => {
+    setIsGenerating(true);
+    try {
+      // Generate jobs sitemap index
+      const { data, error } = await supabase.functions.invoke('jobs-sitemap', {
+        body: { type: 'index' }
+      });
+      
+      if (error) throw error;
+      
+      // Create a blob with the jobs sitemap XML
+      const blob = new Blob([data], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      setSitemapUrl(url);
+      
+      toast.success('Jobs sitemap index generated successfully!');
+    } catch (error) {
+      console.error('Error generating jobs sitemap:', error);
+      toast.error('Failed to generate jobs sitemap');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const downloadSitemap = () => {
     if (sitemapUrl) {
       const link = document.createElement('a');
@@ -144,6 +168,22 @@ Crawl-delay: 1
             )}
           </Button>
           
+          <Button 
+            onClick={generateJobsSitemap} 
+            disabled={isGenerating}
+            variant="outline"
+            className="w-fit"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating Jobs Sitemap...
+              </>
+            ) : (
+              'Generate Jobs Sitemap Index'
+            )}
+          </Button>
+          
           {sitemapUrl && (
             <Button 
               onClick={downloadSitemap}
@@ -168,11 +208,13 @@ Crawl-delay: 1
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <h4 className="font-semibold mb-2">SEO Recommendations:</h4>
           <ul className="text-sm space-y-1 text-muted-foreground">
-            <li>• Submit sitemap to Google Search Console</li>
+            <li>• Submit all sitemaps to Google Search Console</li>
             <li>• Upload robots.txt to your domain root</li>
-            <li>• Update sitemap weekly for fresh content</li>
+            <li>• Update job sitemaps daily for fresh content</li>
+            <li>• Update network sitemaps weekly</li>
             <li>• Monitor indexing status in search console</li>
             <li>• Test job pages with Google's Rich Results Test</li>
+            <li>• Jobs sitemap can scale to millions of postings</li>
           </ul>
         </div>
 
