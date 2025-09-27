@@ -112,6 +112,7 @@ const JobDetails = () => {
           throw result.error;
         }
         
+        console.log('🔍 Partial ID search result:', result.data);
         if (result.data && result.data.length > 0) {
           console.log('✅ Found job with partial ID match:', result.data[0].title);
           // Fetch full job details using the found ID
@@ -132,9 +133,13 @@ const JobDetails = () => {
             .eq('is_active', true)
             .maybeSingle();
           
+          console.log('🔍 Full job result:', fullJobResult);
           if (fullJobResult.data) {
+            console.log('✅ Returning full job data');
             return fullJobResult.data;
           }
+        } else {
+          console.log('❌ No data returned from partial ID search');
         }
       }
 
@@ -181,10 +186,11 @@ const JobDetails = () => {
         return;
       }
 
-      // If current URL doesn't match the proper SEO slug, redirect
+      // Log SEO slug mismatch but don't redirect for now
       if (job.seo_slug && job.seo_slug !== slugOrId) {
-        console.log('🔄 Redirecting to proper SEO URL:', job.seo_slug);
-        navigate(`/jobs/${job.seo_slug}`, { replace: true });
+        console.log('🔄 SEO slug mismatch - current:', slugOrId, 'expected:', job.seo_slug);
+        // Commenting out redirect to fix the issue
+        // navigate(`/jobs/${job.seo_slug}`, { replace: true });
       }
     }
   }, [job, slugOrId, navigate]);
