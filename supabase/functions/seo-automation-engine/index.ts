@@ -30,6 +30,23 @@ interface SEOContent {
 
 console.log('🚀 SEO Automation Engine starting...');
 
+// Validate environment variables immediately
+function validateEnvironment() {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  
+  if (!supabaseUrl) {
+    throw new Error('SUPABASE_URL environment variable is missing');
+  }
+  
+  if (!serviceRoleKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is missing');
+  }
+  
+  console.log('✅ Environment variables validated');
+  return { supabaseUrl, serviceRoleKey };
+}
+
 // Add shutdown event listener
 globalThis.addEventListener?.('beforeunload', (event) => {
   console.log('🔄 Function shutdown requested');
@@ -47,12 +64,28 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Only handle POST requests
+  // Health check endpoint - doesn't require database
+  if (req.method === 'GET') {
+    const url = new URL(req.url);
+    if (url.pathname.includes('health')) {
+      return new Response(JSON.stringify({
+        success: true,
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        message: 'SEO Automation Engine is running'
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  // Only handle POST requests for main functionality
   if (req.method !== 'POST') {
     console.log(`❌ Method ${req.method} not allowed`);
     return new Response(JSON.stringify({
       success: false,
-      error: 'Only POST requests are supported'
+      error: 'Only POST requests are supported for main functionality. Use GET /health for health check.'
     }), {
       status: 405,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -60,11 +93,25 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Validate environment first
+    console.log('🔍 Validating environment...');
+    const { supabaseUrl, serviceRoleKey } = validateEnvironment();
+    
     console.log('🔧 Creating Supabase client...');
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    
+    // Test database connection
+    console.log('🔌 Testing database connection...');
+    const { error: connectionError } = await supabase
+      .from('seo_generated_content')
+      .select('count')
+      .limit(1);
+    
+    if (connectionError) {
+      console.error('❌ Database connection failed:', connectionError);
+      throw new Error(`Database connection failed: ${connectionError.message}`);
+    }
+    console.log('✅ Database connection successful');
 
     // Parse request body
     let requestBody: any;
