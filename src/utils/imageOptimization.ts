@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getCustomStorageUrl } from '@/utils/storage';
+import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface ImageConfig {
   width?: number;
@@ -155,13 +156,13 @@ export class ImageOptimizer {
           const fullFile = new File([fullBlob!], `full_${timestamp}.jpg`, { type: 'image/jpeg' });
           
           const [thumbnailUpload, fullUpload] = await Promise.all([
-            supabase.storage.from(this.BUCKET).upload(`${baseName}_thumb.jpg`, thumbnailFile, {
-              cacheControl: '3600',
-              upsert: false
+            optimizedStorage.uploadFile(this.BUCKET, `${baseName}_thumb.jpg`, thumbnailFile, {
+              cacheControl: '31536000',
+              upsert: true
             }),
-            supabase.storage.from(this.BUCKET).upload(`${baseName}_full.jpg`, fullFile, {
-              cacheControl: '3600', 
-              upsert: false
+            optimizedStorage.uploadFile(this.BUCKET, `${baseName}_full.jpg`, fullFile, {
+              cacheControl: '31536000', 
+              upsert: true
             })
           ]);
           

@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { getCustomStorageUrl } from '@/utils/storage';
 import { supabase } from '@/integrations/supabase/client';
+import { optimizedStorage } from '@/utils/optimizedStorage';
 import { ImageOptimizer } from '@/utils/imageOptimization';
 import { FastImage } from '@/components/common/FastImage';
 import { Upload, X, Image as ImageIcon, Video } from 'lucide-react';
@@ -69,17 +70,20 @@ export const EnhancedMediaUpload: React.FC<EnhancedMediaUploadProps> = ({
 
         try {
           if (isVideo) {
-            // Simple video upload
-            const { data, error } = await supabase.storage
-              .from('post-media')
-              .upload(`${user.id}/videos/${Date.now()}_${file.name}`, file, {
-                cacheControl: '3600',
-                upsert: false
-              });
+            // Optimized video upload
+            const result = await optimizedStorage.uploadFile(
+              'post-media',
+              `${user.id}/videos/${Date.now()}_${file.name}`,
+              file,
+              {
+                cacheControl: '31536000',
+                upsert: true
+              }
+            );
 
-            if (error) throw error;
+            if (result.error) throw result.error;
 
-            const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
+            const publicUrl = await optimizedStorage.getPublicUrl('post-media', result.data.path);
             const videoUrl = getCustomStorageUrl(publicUrl);
             
             const finalItem: MediaItem = {

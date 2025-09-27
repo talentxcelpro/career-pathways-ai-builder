@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, X, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { optimizedStorage } from '@/utils/optimizedStorage';
 import { useAuth } from "@/contexts/AuthContext";
 
 interface CompanyImageUploadProps {
@@ -56,15 +57,14 @@ export const CompanyImageUpload: React.FC<CompanyImageUploadProps> = ({
       const fileExt = file.name.split('.').pop();
       const fileName = `${folder}/${user.id}/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(fileName, file);
+      const result = await optimizedStorage.uploadFile(bucket, fileName, file, {
+        cacheControl: '31536000',
+        upsert: true
+      });
 
-      if (uploadError) throw uploadError;
+      if (result.error) throw result.error;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(fileName);
+      const publicUrl = await optimizedStorage.getPublicUrl(bucket, result.data.path);
 
       onSuccess(publicUrl);
       toast.success(`${folder === 'logos' ? 'Logo' : 'Banner'} uploaded successfully!`);

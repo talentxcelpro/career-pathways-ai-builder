@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { optimizedStorage } from '@/utils/optimizedStorage';
 import ResumeSelectionStep from './application-form/ResumeSelectionStep';
 import JobRoleStep from './application-form/JobRoleStep';
 import PersonalDetailsStep from './application-form/PersonalDetailsStep';
@@ -246,17 +247,14 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       let resumeUrl = '';
       if (formData.resumeSource === 'upload' && formData.uploadedResume) {
         const fileName = `${user.id}/${job.id}/${Date.now()}_${formData.uploadedResume.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('resumes')
-          .upload(fileName, formData.uploadedResume);
+        const uploadResult = await optimizedStorage.uploadFile('resumes', fileName, formData.uploadedResume, {
+          cacheControl: '31536000',
+          upsert: true
+        });
 
-        if (uploadError) throw uploadError;
+        if (uploadResult.error) throw uploadResult.error;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('resumes')
-          .getPublicUrl(fileName);
-        
-        resumeUrl = publicUrl;
+        resumeUrl = await optimizedStorage.getPublicUrl('resumes', uploadResult.data.path);
 
         // Also save to user's resume library for future use
         try {
@@ -265,7 +263,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
             .insert({
               user_id: user.id,
               title: `Resume for ${job.title}`,
-              file_url: publicUrl,
+              file_url: resumeUrl,
               file_name: formData.uploadedResume.name,
               file_size: formData.uploadedResume.size,
               file_type: formData.uploadedResume.type,

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface UseFileUploadOptions {
   bucket: string;
@@ -98,20 +99,17 @@ export function useFileUpload(options?: UseFileUploadOptions) {
 
       console.log(`Uploading file to bucket: ${bucket}, path: ${fileName}`);
 
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(fileName, file, {
-          upsert: true
-        });
+      const result = await optimizedStorage.uploadFile(bucket, fileName, file, {
+        cacheControl: '31536000',
+        upsert: true
+      });
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
+      if (result.error) {
+        console.error('Upload error:', result.error);
+        throw result.error;
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(fileName);
+      const publicUrl = await optimizedStorage.getPublicUrl(bucket, result.data.path);
 
       setProgress(100);
       toast.success('File uploaded successfully');
@@ -143,11 +141,9 @@ export function useFileUpload(options?: UseFileUploadOptions) {
 
       console.log(`Deleting file from bucket: ${bucket}, path: ${filePath}`);
 
-      const { error } = await supabase.storage
-        .from(bucket)
-        .remove([filePath]);
-
-      if (error) throw error;
+      const result = await optimizedStorage.deleteFile(bucket, filePath);
+      
+      if (result.error) throw result.error;
       toast.success('File deleted successfully');
     } catch (error: any) {
       console.error('Delete failed:', error);
