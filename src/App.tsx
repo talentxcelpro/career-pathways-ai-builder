@@ -26,7 +26,7 @@ import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
-import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
+
 import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
@@ -190,8 +190,7 @@ const App = () => {
           <BrowserRouter>
             <AuthProvider>
               <NotificationProvider>
-                <RealtimeProvider showToasts={false}>
-                  <CopilotProvider>
+                <CopilotProvider>
                     <TooltipProvider>
                       <Toaster
                         duration={10000}
@@ -362,7 +361,6 @@ const App = () => {
                       <MobileAppInitializer />
                     </TooltipProvider>
                   </CopilotProvider>
-                </RealtimeProvider>
               </NotificationProvider>
             </AuthProvider>
           </BrowserRouter>
