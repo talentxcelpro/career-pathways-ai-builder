@@ -38,12 +38,25 @@ globalThis.addEventListener?.('beforeunload', (event) => {
 Deno.serve(async (req) => {
   console.log(`📡 Request received: ${req.method} ${req.url}`);
   
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     console.log('⚡ CORS preflight request');
-    return new Response('ok', { 
+    return new Response(null, { 
       status: 200,
       headers: corsHeaders 
-    })
+    });
+  }
+
+  // Only handle POST requests
+  if (req.method !== 'POST') {
+    console.log(`❌ Method ${req.method} not allowed`);
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Only POST requests are supported'
+    }), {
+      status: 405,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 
   try {
@@ -51,70 +64,78 @@ Deno.serve(async (req) => {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    );
 
-    const url = new URL(req.url)
-    const action = url.searchParams.get('action')
+    // Parse request body
+    let requestBody: any;
+    try {
+      requestBody = await req.json();
+      console.log('📦 Request body parsed successfully');
+    } catch (e) {
+      console.error('❌ Failed to parse request body:', e);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Invalid JSON in request body'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    const url = new URL(req.url);
+    const action = url.searchParams.get('action') || requestBody.action;
     console.log(`🎯 Action: ${action || 'bulk-generate (default)'}`);
 
-    // Check if request has a body for bulk operations
-    let hasBody = false;
-    try {
-      const contentType = req.headers.get('content-type');
-      hasBody = contentType?.includes('application/json') || false;
-    } catch (e) {
-      console.log('📝 No request body detected');
-    }
-
-    // Default to bulk-generate if no action specified and has JSON body
-    if (!action && hasBody) {
-      console.log('📚 Bulk generation requested (default)');
-      return await bulkGenerateSEOPages(req, supabase);
-    }
-
+    // Route to appropriate handler
     switch (action) {
       case 'generate':
         console.log('📄 Single page generation requested');
-        return await generateSEOPages(req, supabase)
-      case 'bulk-generate':
-        console.log('📚 Bulk generation requested');
-        return await bulkGenerateSEOPages(req, supabase)
+        return await generateSEOPages(supabase, requestBody);
       case 'sitemap':
         console.log('🗺️ Sitemap generation requested');
-        return await generateDynamicSitemap(req, supabase)
+        return await generateDynamicSitemap(req, supabase);
       case 'performance':
         console.log('📊 Performance metrics requested');
-        return await getSEOPerformance(req, supabase)
+        return await getSEOPerformance(req, supabase);
       case 'status':
         console.log('🔍 Status check requested');
-        return await getSEOStatus(req, supabase)
+        return await getSEOStatus(req, supabase);
       default:
-        // If no valid action and no body, return usage info
-        return new Response(JSON.stringify({
-          success: true,
-          message: 'SEO Automation Engine is running',
-          usage: 'Send POST request with JSON body for bulk generation, or use ?action=generate for single page',
-          availableActions: ['generate', 'bulk-generate', 'sitemap', 'performance', 'status']
-        }), {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
+        // Default to bulk generation if requests array is present
+        if (requestBody.requests && Array.isArray(requestBody.requests)) {
+          console.log('📚 Bulk generation requested (default)');
+          return await bulkGenerateSEOPages(supabase, requestBody);
+        } else {
+          // Return usage info if no valid request
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'SEO Automation Engine is running',
+            usage: 'Send POST request with requests array for bulk generation',
+            example: {
+              requests: [{ pageType: 'job', primarySlug: 'software-engineer', secondarySlug: 'bangalore' }],
+              batchSize: 10
+            }
+          }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
     }
 
   } catch (error) {
     console.error('💥 SEO Automation Engine error:', error);
     return new Response(JSON.stringify({
       success: false,
-      error: (error as Error).message || 'Unknown error occurred'
+      error: (error as Error).message || 'Unknown error occurred',
+      timestamp: new Date().toISOString()
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    });
   }
 })
 
-async function generateSEOPages(req: Request, supabase: any) {
-  const requestBody = await req.json()
+async function generateSEOPages(supabase: any, requestBody: any) {
   const { pageType, primarySlug, secondarySlug, tertiarySlug }: SEOPageRequest = requestBody
   
   // Validate required fields
@@ -174,11 +195,11 @@ async function generateSEOPages(req: Request, supabase: any) {
   })
 }
 
-async function bulkGenerateSEOPages(req: Request, supabase: any) {
+async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
   console.log('💥 Starting bulk generation...');
   
   try {
-    const { requests, batchSize = 10 }: { requests: SEOPageRequest[], batchSize?: number } = await req.json()
+    const { requests, batchSize = 10 }: { requests: SEOPageRequest[], batchSize?: number } = requestBody
     console.log(`📊 Received ${requests.length} requests for background processing`);
 
     // Validate requests first
