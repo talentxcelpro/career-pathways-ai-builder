@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('SEO Automation Engine Error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: (error as Error).message || 'Unknown error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
@@ -212,7 +212,7 @@ async function generateDynamicSitemap(req: Request, supabase: any) {
 
   if (error) throw error
 
-  const urls = seoPages?.map(page => {
+  const urls = seoPages?.map((page: any) => {
     const urlPath = buildSEOUrl(page.page_type, page.primary_slug, page.secondary_slug, page.tertiary_slug)
     const priority = calculateUrlPriority(page.page_type, page.quality_score)
     const changefreq = getChangeFrequency(page.page_type)
@@ -244,7 +244,12 @@ async function getSEOPerformance(req: Request, supabase: any) {
     .select('page_type, quality_score, last_generated_at')
     .eq('is_active', true)
 
-  const performance = {
+  const performance: {
+    totalPages: number;
+    byPageType: Record<string, { count: number; avgQuality: number }>;
+    averageQuality: number;
+    recentlyUpdated: number;
+  } = {
     totalPages: stats?.length || 0,
     byPageType: {},
     averageQuality: 0,
@@ -253,7 +258,7 @@ async function getSEOPerformance(req: Request, supabase: any) {
 
   if (stats) {
     // Group by page type
-    stats.forEach(page => {
+    stats.forEach((page: any) => {
       if (!performance.byPageType[page.page_type]) {
         performance.byPageType[page.page_type] = { count: 0, avgQuality: 0 }
       }
@@ -261,11 +266,11 @@ async function getSEOPerformance(req: Request, supabase: any) {
     })
 
     // Calculate average quality
-    performance.averageQuality = stats.reduce((sum, page) => sum + (page.quality_score || 0), 0) / stats.length
+    performance.averageQuality = stats.reduce((sum: number, page: any) => sum + (page.quality_score || 0), 0) / stats.length
 
     // Count recently updated (last 24 hours)
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    performance.recentlyUpdated = stats.filter(page => page.last_generated_at > yesterday).length
+    performance.recentlyUpdated = stats.filter((page: any) => page.last_generated_at > yesterday).length
   }
 
   return new Response(JSON.stringify({
@@ -307,7 +312,7 @@ async function generateSEOContent(
   // This would integrate with AI content generation
   // For now, returning structured template-based content
 
-  const templates = {
+  const templates: Record<string, { metaTitle: string; h1Title: string; introContent: string }> = {
     job: {
       metaTitle: `${formatSlug(primarySlug)} Jobs${secondarySlug ? ` in ${formatSlug(secondarySlug)}` : ''} | TalentXcel`,
       h1Title: `${formatSlug(primarySlug)} Jobs${secondarySlug ? ` in ${formatSlug(secondarySlug)}` : ''}`,
