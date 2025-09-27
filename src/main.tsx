@@ -2,18 +2,21 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { HelmetProvider } from 'react-helmet-async'
+import { SafeReactComponent } from './components/SafeReactComponent'
 
 import './index.css'
 
-// Simplified and safer React initialization
+// Ensure React dispatcher is properly initialized
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
 
 const root = createRoot(container);
 
-// Direct render without complex wrappers that might interfere with React's internal dispatcher
+// Wrap in SafeReactComponent to ensure dispatcher is available
 root.render(
-  <HelmetProvider>
-    <App />
-  </HelmetProvider>
+  <SafeReactComponent fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Initializing...</div>}>
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+  </SafeReactComponent>
 );

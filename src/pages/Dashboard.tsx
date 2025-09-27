@@ -48,12 +48,12 @@ const Dashboard = () => {
     gcTime: 30 * 60 * 1000,
   });
 
-  // Auto-refresh dashboard data
-  useSmartAutoRefresh(() => {
-    refetchStats();
-    refetchJobs();
-    refetchCourses();
-  }, REFRESH_INTERVALS.NETWORK);
+  // Auto-refresh dashboard data - temporarily disabled to fix dispatcher error
+  // useSmartAutoRefresh(() => {
+  //   refetchStats();
+  //   refetchJobs();
+  //   refetchCourses();
+  // }, REFRESH_INTERVALS.NETWORK);
 
   // Set up realtime for jobs updates
   useJobsRealtime(

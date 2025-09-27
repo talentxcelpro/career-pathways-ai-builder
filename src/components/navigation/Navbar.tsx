@@ -70,8 +70,9 @@ export const Navbar = () => {
     enabled: !!user?.id
   });
 
-  // Get unread notifications count using enhanced hook
-  const { unreadCount } = useUnreadNotificationCount();
+  // Get unread notifications count using enhanced hook - temporarily disabled
+  // const { unreadCount } = useUnreadNotificationCount();
+  const unreadCount = 0;
 
   // Check if user has company access
   const { data: hasCompanyAccess = false } = useQuery({
