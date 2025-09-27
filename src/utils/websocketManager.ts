@@ -22,34 +22,43 @@ export class WebSocketManager {
   }
 
   createChannel(channelName: string): RealtimeChannel {
-    // Clean up existing channel if it exists
+    // Reuse existing channel if still active
+    const existing = this.channels.get(channelName);
+    if (existing && existing.state !== 'closed') {
+      return existing;
+    }
+
+    // Clean up any closed channel
     this.removeChannel(channelName);
 
     const channel = supabase.channel(channelName);
     this.channels.set(channelName, channel);
     this.retryAttempts.set(channelName, 0);
 
-    // Add error handling with better logging and prevent retry loops
+    // Optimized error handling with exponential backoff
     channel.subscribe((status, err) => {
-      console.log(`Channel ${channelName} status:`, status);
-      
-      if (status === 'CHANNEL_ERROR') {
-        console.warn(`Channel ${channelName} error:`, err);
-        // Don't retry on connection errors, just log
-        if (err && typeof err === 'object' && ((err as any)._type === 'undefined' || (err as any).message?.includes('WebSocket'))) {
-          console.warn(`WebSocket connection error for ${channelName}, ignoring retry...`);
-          return;
-        }
-        // Only handle non-connection errors
-        if (err && !(err as any).message?.includes('WebSocket') && !(err as any).message?.includes('post_likes')) {
+      switch (status) {
+        case 'SUBSCRIBED':
+          this.retryAttempts.set(channelName, 0);
+          this.config.onReconnect?.();
+          break;
+          
+        case 'CHANNEL_ERROR':
+          // Ignore common transient errors
+          if (err && (
+            (err as any).message?.includes('WebSocket') ||
+            (err as any).message?.includes('post_likes') ||
+            (err as any)._type === 'undefined'
+          )) {
+            return; // Don't retry for these errors
+          }
           this.handleChannelError(channelName, err);
-        }
-      } else if (status === 'SUBSCRIBED') {
-        console.log(`✅ Channel ${channelName} subscribed successfully`);
-        this.retryAttempts.set(channelName, 0);
-        this.config.onReconnect?.();
-      } else if (status === 'CLOSED') {
-        console.log(`Channel ${channelName} closed`);
+          break;
+          
+        case 'CLOSED':
+          this.channels.delete(channelName);
+          this.retryAttempts.delete(channelName);
+          break;
       }
     });
 
@@ -59,14 +68,18 @@ export class WebSocketManager {
   private handleChannelError(channelName: string, error?: any) {
     const attempts = this.retryAttempts.get(channelName) || 0;
     
-    // Don't retry if it's a connection error - just log it
-    if (error && (error.message?.includes('WebSocket') || error.code)) {
-      console.warn(`WebSocket connection issue for channel ${channelName}:`, error);
+    // Enhanced error filtering - don't retry common transient errors
+    if (error && (
+      error.message?.includes('WebSocket') ||
+      error.message?.includes('Connection failed') ||
+      error.code ||
+      (error as any)._type === 'undefined'
+    )) {
       return;
     }
     
-    if (attempts < (this.config.maxRetries || 3)) {
-      console.log(`Retrying channel ${channelName} in ${this.config.retryDelay}ms (attempt ${attempts + 1})`);
+    if (attempts < (this.config.maxRetries || 2)) { // Reduced max retries
+      const delay = Math.min(this.config.retryDelay! * Math.pow(2, attempts), 10000); // Exponential backoff
       
       setTimeout(() => {
         this.retryAttempts.set(channelName, attempts + 1);
@@ -77,10 +90,9 @@ export class WebSocketManager {
         // Create a new channel with the same name
         const newChannel = this.createChannel(channelName);
         this.channels.set(channelName, newChannel);
-      }, this.config.retryDelay);
+      }, delay);
     } else {
-      console.error(`❌ Max retries reached for channel ${channelName}`);
-      this.removeChannel(channelName); // Clean up failed channel
+      this.removeChannel(channelName);
       this.config.onError?.(error || new Error(`Channel ${channelName} failed after ${attempts} attempts`));
     }
   }

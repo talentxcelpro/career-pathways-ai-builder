@@ -71,6 +71,14 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Validate request format early
+    if (!req.headers.get('Authorization')) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Missing authorization' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      )
+    }
+
     const supabaseClient = createClient<Database>(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -89,7 +97,18 @@ Deno.serve(async (req) => {
       )
     }
 
-    const { action, metadata } = await req.json()
+    // Validate request body
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
+    const { action, metadata } = body;
     
     if (!action || !TXC_REWARDS[action]) {
       return new Response(

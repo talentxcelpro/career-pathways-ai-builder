@@ -74,17 +74,20 @@ export const useTXCRealtime = () => {
   }, [channel]);
 
   useEffect(() => {
+    let cleanup: (() => void) | null = null;
+    
     const initializeRealtime = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      const txcChannel = supabase.channel('txc_global', {
-        config: {
-          presence: {
-            key: user.id
+        const txcChannel = supabase.channel('txc_global', {
+          config: {
+            presence: {
+              key: user.id
+            }
           }
-        }
-      });
+        });
 
       // Handle presence changes
       txcChannel
@@ -132,26 +135,37 @@ export const useTXCRealtime = () => {
           }
         );
 
-      txcChannel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          setIsConnected(true);
-          setChannel(txcChannel);
-          
-          // Set initial presence
-          await updateUserPresence('idle', 0);
-        } else if (status === 'CHANNEL_ERROR') {
-          setIsConnected(false);
-          toast.error('Failed to connect to TXC real-time updates');
-        }
-      });
+        txcChannel.subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            setIsConnected(true);
+            setChannel(txcChannel);
+            
+            // Set initial presence
+            await updateUserPresence('idle', 0);
+          } else if (status === 'CHANNEL_ERROR') {
+            setIsConnected(false);
+            // Don't show error toast for every connection issue
+            console.warn('TXC realtime connection issue');
+          }
+        });
 
-      return () => {
-        txcChannel.unsubscribe();
-      };
+        cleanup = () => {
+          setIsConnected(false);
+          setChannel(null);
+          supabase.removeChannel(txcChannel);
+        };
+      } catch (error) {
+        console.warn('Error initializing TXC realtime:', error);
+        setIsConnected(false);
+      }
     };
 
     initializeRealtime();
-  }, []);
+    
+    return () => {
+      cleanup?.();
+    };
+  }, [updateUserPresence]);
 
   return {
     onlineUsers,
