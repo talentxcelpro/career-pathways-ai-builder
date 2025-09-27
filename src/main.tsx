@@ -1,7 +1,6 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-import { SimpleReactInitializer } from './components/recovery/SimpleReactInitializer'
 
 import './index.css'
 
@@ -13,7 +12,7 @@ console.log('🚀 Starting React application...');
 const root = createRoot(container);
 
 root.render(
-  <SimpleReactInitializer>
+  <React.StrictMode>
     <App />
-  </SimpleReactInitializer>
+  </React.StrictMode>
 );
