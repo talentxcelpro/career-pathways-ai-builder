@@ -48,11 +48,7 @@ export const jobRoutes = [
     isPublic: false,
     requiresAuth: true,
   },
-  {
-    title: "Job Details",
-    to: "/jobs/:slugOrId",
-    page: <JobDetails />,
-  },
+  // Job Details route is handled manually in App.tsx to ensure proper precedence
   {
     title: "Legacy Job Redirect",
     to: "/job/:slugOrId",
