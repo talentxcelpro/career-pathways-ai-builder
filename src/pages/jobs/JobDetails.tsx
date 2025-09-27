@@ -103,16 +103,33 @@ const JobDetails = () => {
         console.log('🔍 Trying ID extraction method');
         const extractedId = extractJobId(slugOrId);
         if (extractedId && extractedId !== slugOrId) {
-          const { data: extractedData, error: extractedError } = await supabase
-            .from('jobs')
-            .select(baseQuery)
-            .eq('id', extractedId)
-            .eq('is_active', true)
-            .eq('job_status', 'open')
-            .maybeSingle();
-          
-          if (extractedError && extractedError.code !== 'PGRST116') throw extractedError;
-          jobData = extractedData;
+          // Check if it's a partial UUID (8 characters)
+          if (extractedId.length === 8 && /^[a-f0-9]{8}$/i.test(extractedId)) {
+            console.log('🔍 Searching by partial UUID:', extractedId);
+            const { data: partialUuidData, error: partialUuidError } = await supabase
+              .from('jobs')
+              .select(baseQuery)
+              .ilike('id', `${extractedId}%`)
+              .eq('is_active', true)
+              .eq('job_status', 'open')
+              .limit(1)
+              .maybeSingle();
+            
+            if (partialUuidError && partialUuidError.code !== 'PGRST116') throw partialUuidError;
+            jobData = partialUuidData;
+          } else {
+            // Try full UUID match
+            const { data: extractedData, error: extractedError } = await supabase
+              .from('jobs')
+              .select(baseQuery)
+              .eq('id', extractedId)
+              .eq('is_active', true)
+              .eq('job_status', 'open')
+              .maybeSingle();
+            
+            if (extractedError && extractedError.code !== 'PGRST116') throw extractedError;
+            jobData = extractedData;
+          }
         }
       }
 

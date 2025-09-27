@@ -110,6 +110,12 @@ export const extractJobId = (slugOrId: string): string => {
     return slugOrId;
   }
   
+  // Try to find UUID pattern in the string first
+  const uuidMatch = slugOrId.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
+  if (uuidMatch) {
+    return uuidMatch[0];
+  }
+  
   // If it's a slug, extract the ID part
   const parsed = parseJobSlug(slugOrId);
   if (parsed.id) {
@@ -117,13 +123,14 @@ export const extractJobId = (slugOrId: string): string => {
     if (/^\d+$/.test(parsed.id)) {
       return slugOrId; // Return the full slug for lookup
     }
+    
+    // Check if it's an 8-character hex ID that can be expanded to full UUID
+    if (parsed.id.length === 8 && /^[a-f0-9]{8}$/i.test(parsed.id)) {
+      // This is likely a truncated UUID - we'll need to search by partial match
+      return parsed.id;
+    }
+    
     return parsed.id;
-  }
-  
-  // Try to find UUID pattern in the string
-  const uuidMatch = slugOrId.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
-  if (uuidMatch) {
-    return uuidMatch[0];
   }
   
   // Return as-is if no UUID found
