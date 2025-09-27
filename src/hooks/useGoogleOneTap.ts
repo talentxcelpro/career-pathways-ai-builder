@@ -66,8 +66,9 @@ export const useGoogleOneTap = ({
     const hostname = window.location.hostname;
     const isProduction = hostname === 'talentxcel.in' || hostname === 'www.talentxcel.in';
     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    const isLovableDomain = hostname.includes('lovableproject.com');
     
-    if (!isProduction && !isLocalhost) {
+    if (!isProduction && !isLocalhost && !isLovableDomain) {
       if (process.env.NODE_ENV === 'development') {
         console.warn('Google One Tap disabled on origin:', hostname);
       }

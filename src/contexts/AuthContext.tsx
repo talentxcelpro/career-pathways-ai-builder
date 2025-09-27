@@ -33,6 +33,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const authStateRef = useRef<any>(null);
+  const profileCreatedRef = useRef<Set<string>>(new Set());
+
+  // Optimized profile creation with deduplication
+  const createUserProfileIfNeeded = useCallback(async (user: User) => {
+    if (!user?.id || profileCreatedRef.current.has(user.id)) return;
+    
+    try {
+      profileCreatedRef.current.add(user.id);
+      
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (!existingProfile) {
+        await supabase.from('profiles').insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+          profile_picture_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+          updated_at: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.warn('Profile creation skipped:', error);
+      profileCreatedRef.current.delete(user.id);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -45,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         // Set up auth state listener FIRST
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
+          (event, session) => {
             if (!mounted) return;
             
             console.log('🔐 Auth state changed:', event, !!session);
@@ -55,10 +84,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(session?.user ?? null);
             setLoading(false);
             
-            // Handle auth events
+            // Handle auth events with deferred processing
             if (event === 'SIGNED_IN' && session?.user) {
               console.log('✅ User signed in successfully');
               localStorage.removeItem('auth_redirect');
+              
+              // Defer profile creation to prevent auth loop
+              setTimeout(() => {
+                createUserProfileIfNeeded(session.user);
+              }, 100);
             } else if (event === 'SIGNED_OUT') {
               console.log('👋 User signed out');
               setUser(null);

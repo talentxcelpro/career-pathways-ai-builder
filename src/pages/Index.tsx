@@ -5,13 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from 'react-error-boundary';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { GoogleOneTapLogin } from '@/components/auth/GoogleOneTapLogin';
+import { GoogleOneTapIndicator } from '@/components/auth/GoogleOneTapIndicator';
 import { FinalLaunchRunner } from '@/components/deployment/FinalLaunchRunner';
 import { LaunchStatusSummary } from '@/components/admin/LaunchStatusSummary';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const [disableOneTap, setDisableOneTap] = useState(false);
+  const { user, loading } = useAuth();
   
   const showFinalLaunch = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('final_launch') === '1';
   const showLaunchStatus = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('launch_status') === '1';
@@ -27,46 +28,14 @@ const Index = () => {
       setDisableOneTap(false);
     }
   }, []);
-  // Fast auth check - optimized for instant loading
-  useEffect(() => {
-    console.log('🔍 Starting auth check...');
-    
-    // Set up auth listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔐 Auth state changed:', event, !!session);
-      setIsLoggedIn(!!session);
-      setAuthChecked(true);
-    });
-
-    // Then check existing session
-    const checkUser = async () => {
-      try {
-        console.log('👤 Checking existing user session...');
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) {
-          console.warn('⚠️ Auth check error:', error);
-        }
-        console.log('✅ Auth check complete:', !!user);
-        setIsLoggedIn(!!user);
-        setAuthChecked(true);
-      } catch (err) {
-        console.error('❌ Auth check failed:', err);
-        setAuthChecked(true); // Still mark as checked to prevent infinite loading
-      }
-    };
-    checkUser();
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Redirect logged-in users after auth check completes
-  if (authChecked && isLoggedIn) {
+  // Redirect logged-in users immediately
+  if (user) {
     console.log('🚀 Redirecting logged-in user to /network');
     return <Navigate to="/network" replace />;
   }
 
   // Show loading state while checking auth
-  if (!authChecked) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -85,12 +54,12 @@ const Index = () => {
         </div>
       )}
     >
-      {!disableOneTap && !authChecked && (
-        <div className="fixed top-4 right-4 z-50 bg-background/80 backdrop-blur-sm border rounded-lg px-3 py-2 text-sm text-muted-foreground">
-          Looking for your Google account...
-        </div>
+      {!disableOneTap && !user && (
+        <>
+          <GoogleOneTapLogin autoSelect />
+          <GoogleOneTapIndicator isActive={!user} />
+        </>
       )}
-      {!disableOneTap && <GoogleOneTapLogin autoSelect />}
       {showFinalLaunch ? <FinalLaunchRunner /> : showLaunchStatus ? <LaunchStatusSummary /> : <LandingPage />}
     </ErrorBoundary>
   );

@@ -48,6 +48,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
 import { GoogleOneTapLogin } from "./components/auth/GoogleOneTapLogin";
+import { useOptimizedAuth } from "./hooks/useOptimizedAuth";
 import { SilentAuthHandler } from "./components/auth/SilentAuthHandler";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
