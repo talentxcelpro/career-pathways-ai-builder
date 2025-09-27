@@ -127,6 +127,7 @@ import { NotificationsPage } from "./pages/NotificationsPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { AdminPage } from "./pages/AdminPage";
 import { EdgeFunctionTester } from "./components/testing/EdgeFunctionTester";
+import AuthTestPage from "./pages/AuthTestPage";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -226,6 +227,13 @@ const App = () => {
                                   <div className="p-6">
                                     <EdgeFunctionTester />
                                   </div>
+                                } />
+                                
+                                {/* Authentication & RLS Integration Test Route */}
+                                <Route path="/test-auth-rls" element={
+                                  <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+                                    <AuthTestPage />
+                                  </React.Suspense>
                                 } />
                                 
                                 {/* Final Launch Checklist Route */}
