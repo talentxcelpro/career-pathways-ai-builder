@@ -14,9 +14,13 @@ export const uploadProfileAsset = async (file: File, userId: string, type: 'avat
   
   const bucketName = bucketMap[type];
   
+  // Optimized upload with proper caching
   const { data, error } = await supabase.storage
     .from(bucketName)
-    .upload(fileName, file);
+    .upload(fileName, file, {
+      cacheControl: '31536000', // 1 year cache
+      upsert: true
+    });
 
   if (error) throw error;
   

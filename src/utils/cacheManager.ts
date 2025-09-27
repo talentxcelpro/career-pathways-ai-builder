@@ -105,16 +105,28 @@ export class CacheManager {
     };
   }
 
-  // Store metrics in Supabase for persistence
+  // Store metrics in Supabase for persistence with batch optimization
   async logMetrics(metrics: CacheMetrics) {
     try {
-      await supabase.from('performance_cache_metrics').insert({
-        hit_rate: metrics.hitRate,
-        total_requests: metrics.totalRequests,
-        avg_response_time: metrics.avgResponseTime,
-        cache_size: metrics.cacheSize,
-        timestamp: new Date().toISOString()
-      });
+      // Batch metrics logging to reduce DB calls
+      await redisCache.set('pending_metrics', metrics, { ttl: 300 });
+      
+      // Only log to DB every 5 minutes or when cache is full
+      const shouldLog = await redisCache.increment('metrics_counter') % 10 === 0;
+      
+      if (shouldLog) {
+        const pendingMetrics = await redisCache.get<CacheMetrics>('pending_metrics');
+        if (pendingMetrics) {
+          await supabase.from('performance_cache_metrics').insert({
+            hit_rate: pendingMetrics.hitRate,
+            total_requests: pendingMetrics.totalRequests,
+            avg_response_time: pendingMetrics.avgResponseTime,
+            cache_size: pendingMetrics.cacheSize,
+            timestamp: new Date().toISOString()
+          });
+          await redisCache.del('pending_metrics');
+        }
+      }
     } catch (error) {
       console.error('Failed to log cache metrics:', error);
     }

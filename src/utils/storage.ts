@@ -33,7 +33,7 @@ export const getPublicUrlWithCustomDomain = (bucket: string, path: string): stri
 };
 
 /**
- * Upload file and return custom domain URL
+ * Upload file and return custom domain URL with optimizations
  */
 export const uploadFileWithCustomUrl = async (
   bucket: string, 
@@ -41,7 +41,14 @@ export const uploadFileWithCustomUrl = async (
   file: File | Blob,
   options?: any
 ): Promise<{ data: any; error: any; customUrl?: string }> => {
-  const result = await supabase.storage.from(bucket).upload(path, file, options);
+  // Add optimized upload options
+  const optimizedOptions = {
+    cacheControl: '31536000', // 1 year cache
+    upsert: true,
+    ...options
+  };
+
+  const result = await supabase.storage.from(bucket).upload(path, file, optimizedOptions);
   
   if (result.data && !result.error) {
     const customUrl = getPublicUrlWithCustomDomain(bucket, result.data.path);
