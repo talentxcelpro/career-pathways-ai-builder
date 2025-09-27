@@ -270,8 +270,19 @@ export const CleanJobCard: React.FC<CleanJobCardProps> = ({
             <Button variant="outline" size="sm" className="text-xs">
               View Details
             </Button>
-            <Button size="sm" className="text-xs">
-              Apply Now
+            <Button 
+              size="sm" 
+              className="text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                if ((job as any).external_url) {
+                  window.open((job as any).external_url, '_blank');
+                } else {
+                  window.location.href = `/jobs/${job.id}/apply`;
+                }
+              }}
+            >
+              {(job as any).external_url ? 'Apply on Site' : 'Apply Now'}
             </Button>
           </div>
         </div>

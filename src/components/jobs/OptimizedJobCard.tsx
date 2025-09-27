@@ -3,7 +3,7 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { MapPin, Clock, Coins, Heart, Eye, Users, Star } from 'lucide-react';
+import { MapPin, Clock, Coins, Heart, Eye, Users, Star, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -23,6 +23,7 @@ interface OptimizedJobCardProps {
     skills_required?: string[];
     views_count?: number;
     applications_count?: number;
+    external_url?: string;
     companies?: {
       name: string;
       logo_url?: string;
@@ -47,8 +48,14 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
   }, [onSave, job.id]);
 
   const handleApply = useCallback(() => {
+    if (job.external_url) {
+      window.open(job.external_url, '_blank');
+    } else {
+      // Navigate to internal apply page
+      window.location.href = `/jobs/${job.id}/apply`;
+    }
     onApply?.(job.id);
-  }, [onApply, job.id]);
+  }, [onApply, job.id, job.external_url]);
 
   const formatSalary = useCallback((min?: number, max?: number) => {
     if (!min && !max) return 'Not disclosed';
@@ -189,8 +196,16 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
           onClick={handleApply}
           className="w-full"
           size="sm"
+          disabled={!job.id}
         >
-          Apply Now
+          {job.external_url ? (
+            <>
+              <ExternalLink className="h-4 w-4 mr-1" />
+              Apply on Site
+            </>
+          ) : (
+            'Apply Now'
+          )}
         </Button>
       </CardContent>
     </Card>

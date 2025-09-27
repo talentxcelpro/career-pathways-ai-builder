@@ -20,11 +20,14 @@ import JobVisibilityForm from "@/components/jobs/JobVisibilityForm";
 import SupportingDocumentsForm from "@/components/jobs/SupportingDocumentsForm";
 import AIJobGenerator from "@/components/jobs/AIJobGenerator";
 import AITestButton from "@/components/jobs/AITestButton";
+import { IndustryJobPostForm } from "@/components/jobs/IndustryJobPostForm";
+import { validateJobData } from "@/utils/jobCategories";
 
 function JobPostContent() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [useIndustryForm, setUseIndustryForm] = useState(false);
   const [formData, setFormData] = useState({
     // Company Information
     company_id: '',
@@ -307,34 +310,10 @@ function JobPostContent() {
     };
     
     if (!isDraft) {
-      // Enhanced validation for publishing
-      if (!formData.job_title?.trim()) {
-        toast.error('Job title is required');
-        return;
-      }
-
-      if (!formData.job_summary?.trim()) {
-        toast.error('Job summary is required');
-        return;
-      }
-
-      if (!formData.employment_type) {
-        toast.error('Please select an employment type');
-        return;
-      }
-
-      if (!formData.experience_level) {
-        toast.error('Please select an experience level');
-        return;
-      }
-
-      if (!formData.location_city?.trim()) {
-        toast.error('City location is required');
-        return;
-      }
-
-      if (!formData.work_mode) {
-        toast.error('Please select a work mode');
+      // Enhanced validation for publishing using utility
+      const validation = validateJobData(submitData);
+      if (!validation.isValid) {
+        toast.error(validation.errors[0]);
         return;
       }
 
@@ -410,7 +389,52 @@ function JobPostContent() {
           <p className="text-muted-foreground">Fill in the job details below to find top candidates via AI-powered TalentXcel.</p>
         </div>
 
-        <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
+        {/* Toggle between forms */}
+        <div className="flex gap-4 mb-6">
+          <Button
+            type="button"
+            variant={!useIndustryForm ? "default" : "outline"}
+            onClick={() => setUseIndustryForm(false)}
+          >
+            Standard Form
+          </Button>
+          <Button
+            type="button"
+            variant={useIndustryForm ? "default" : "outline"}
+            onClick={() => setUseIndustryForm(true)}
+          >
+            Industry-Specific Form
+          </Button>
+        </div>
+
+        {useIndustryForm ? (
+          <IndustryJobPostForm 
+            onSubmit={(data) => {
+              const mappedData = {
+                ...data,
+                job_title: data.job_title,
+                company_name: data.company_name,
+                location_city: data.location,
+                employment_type: data.employment_type,
+                experience_level: data.experience_level,
+                work_mode: data.work_mode,
+                job_summary: data.job_summary,
+                job_description: data.job_description,
+                key_responsibilities: data.key_responsibilities,
+                required_skills: data.skills_required,
+                min_salary: data.salary_min ? parseInt(data.salary_min) : null,
+                max_salary: data.salary_max ? parseInt(data.salary_max) : null,
+                benefits: data.benefits,
+                contact_email: data.contact_email,
+                contact_phone: data.contact_phone,
+                visibility_status: 'active'
+              };
+              postJobMutation.mutate(mappedData);
+            }}
+            initialData={formData}
+          />
+        ) : (
+          <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
           {/* Company Information */}
           <CompanyInformationForm
             formData={formData}
@@ -507,6 +531,7 @@ function JobPostContent() {
             </CardContent>
           </Card>
         </form>
+        )}
 
         {/* AI Job Generator Modal */}
         {showAIGenerator && (

@@ -36,6 +36,7 @@ import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilte
 import { JobCategoriesGrid } from '@/components/jobs/JobCategoriesGrid';
 import { HundredsOfIndustriesSection } from '@/components/jobs/HundredsOfIndustriesSection';
 import { OptimizedJobCard } from '@/components/jobs/OptimizedJobCard';
+import { CompactJobCard } from '@/components/jobs/CompactJobCard';
 
 // Input validation schema for security
 const filtersSchema = z.object({
@@ -723,13 +724,23 @@ const Jobs = () => {
                         'space-y-4'
                       }>
                         {regularJobs.map((job) => (
-                          <OptimizedJobCard
-                            key={job.id}
-                            job={job}
-                            onSave={handleSaveJob}
+                          viewMode === 'list' ? (
+                            <CompactJobCard
+                              key={job.id}
+                              job={job}
+                              onSave={handleSaveJob}
+                              onApply={handleQuickApply}
+                              isSaved={savedJobs.includes(job.id)}
+                            />
+                          ) : (
+                            <OptimizedJobCard
+                              key={job.id}
+                              job={job}
+                              onSave={handleSaveJob}
                             onApply={handleQuickApply}
                             isSaved={savedJobs.includes(job.id)}
                           />
+                          )
                         ))}
                       </div>
                     )}
