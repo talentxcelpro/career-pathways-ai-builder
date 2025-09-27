@@ -32,6 +32,8 @@ const JobDetails = () => {
   const navigate = useNavigate();
 
   console.log('🚀 JobDetails component mounted with slugOrId:', slugOrId);
+  console.log('🔥 Current pathname:', window.location.pathname);
+  console.log('🔥 Current route params:', useParams());
 
   // Fetch job details with enhanced logic
   const { data: job, isLoading, error } = useQuery({
