@@ -21,11 +21,16 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
   children, 
   showToasts = false 
 }) => {
+  // Guard against React dispatcher being null
+  if (!React || typeof React.useState !== 'function') {
+    console.warn('React hooks not available, rendering children directly');
+    return <>{children}</>;
+  }
+
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<{ table: WatchedTable; payload: RealtimePayload } | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<Record<string, string>>({});
   const [usePollingFallback, setUsePollingFallback] = useState(false);
-  // No longer using useToast hook since we switched to direct toast import
 
   useEffect(() => {
     console.log('🎯 TalentXcel Realtime Provider initializing...');

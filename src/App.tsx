@@ -27,6 +27,7 @@ import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
+import { ReactSafeInitializer } from "@/components/recovery/ReactSafeInitializer";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
@@ -180,12 +181,14 @@ const App = () => {
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <ReactContextErrorBoundary>
-        <QueryClientProvider client={queryClient}>
+        <ReactSafeInitializer>
+          <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <AuthProvider>
               <NotificationProvider>
-                <RealtimeProvider showToasts={false}>
-                  <CopilotProvider>
+                <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+                  <RealtimeProvider showToasts={false}>
+                    <CopilotProvider>
                     <div className="min-h-screen flex flex-col">
                       <Navbar />
                       <main className="flex-1">
@@ -310,10 +313,12 @@ const App = () => {
                         </div>
                     </CopilotProvider>
                   </RealtimeProvider>
+                </React.Suspense>
                 </NotificationProvider>
               </AuthProvider>
             </BrowserRouter>
-        </QueryClientProvider>
+          </QueryClientProvider>
+        </ReactSafeInitializer>
       </ReactContextErrorBoundary>
     </ErrorBoundary>
   );
