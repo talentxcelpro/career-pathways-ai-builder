@@ -298,7 +298,7 @@ const App = () => {
                                 <Route path="/admin/security" element={<AdminLayout><SecurityCenter /></AdminLayout>} />
                                 <Route path="/admin/prd" element={<AdminLayout><ProductRequirementDocument /></AdminLayout>} />
                                 <Route path="/seo-suite" element={<SEOSuite />} />
-                                <Route path="/seo-dashboard" element={<SEODashboard />} />
+                                <Route path="/admin/seo-dashboard" element={<AdminLayout><SEODashboard /></AdminLayout>} />
                                 <Route path="/admin/scraped-applications" element={<AdminLayout><AdminScrapedJobApplications /></AdminLayout>} />
                                 <Route path="/admin/edge-functions-monitor" element={<AdminLayout><EdgeFunctionsMonitor /></AdminLayout>} />
                                 <Route path="/admin/news-management" element={<AdminLayout><NewsManagement /></AdminLayout>} />

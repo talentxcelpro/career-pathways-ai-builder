@@ -500,6 +500,14 @@ export const adminRoutes = [
     isPublic: true,
   },
   {
+    title: "SEO Automation Dashboard",
+    to: "/admin/seo-dashboard",
+    icon: <Rocket className="h-4 w-4" />,
+    page: lazy(() => import('../pages/SEODashboard').then(m => ({ default: m.default }))),
+    requiresAdminAccess: true,
+    isPublic: true,
+  },
+  {
     title: "Talent Database",
     to: "/admin/talent-database",
     icon: <Database className="h-4 w-4" />,
