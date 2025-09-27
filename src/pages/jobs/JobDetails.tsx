@@ -112,9 +112,49 @@ const JobDetails = () => {
         }
       }
 
-      // Step 3: Try partial SEO slug match by checking if current slug is contained in any SEO slug
-      console.log('📝 Step 3: Trying partial SEO slug match');
-      const slugWithoutId = uuidMatch ? slugOrId.replace(uuidMatch[0], '').replace(/-$/, '') : slugOrId;
+      // Step 3: Try partial job ID match (last 8 characters)
+      const partialIdPattern = /[a-f0-9]{8}$/i;
+      const partialIdMatch = slugOrId.match(partialIdPattern);
+      
+      if (partialIdMatch) {
+        const partialId = partialIdMatch[0];
+        console.log('📝 Step 3: Trying partial ID match with:', partialId);
+        
+        ({ data, error } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry,
+              description,
+              website,
+              founded_year,
+              is_verified
+            )
+          `)
+          .ilike('id', `${partialId}%`)
+          .eq('is_active', true)
+          .eq('job_status', 'open')
+          .limit(1)
+          .maybeSingle());
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('❌ Error in partial ID match:', error);
+          throw error;
+        }
+        
+        if (data) {
+          console.log('✅ Found job with partial ID match:', data.title);
+          return data;
+        }
+      }
+
+      // Step 4: Try partial SEO slug match by checking if current slug is contained in any SEO slug
+      console.log('📝 Step 4: Trying partial SEO slug match');
+      const slugWithoutId = partialIdMatch ? slugOrId.replace(partialIdMatch[0], '').replace(/-$/, '') : slugOrId;
       console.log('🔍 Searching for partial match with:', slugWithoutId);
       
       ({ data, error } = await supabase
