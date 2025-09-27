@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcase';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
-import { useRealtimeContext } from '@/contexts/RealtimeContext';
+import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
 import { InteractiveCareerPath } from '@/components/career-map/InteractiveCareerPath';
 import { CareerInputModal } from '@/components/career-map/CareerInputModal';
 

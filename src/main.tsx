@@ -1,19 +1,27 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-import { HelmetProvider } from 'react-helmet-async'
+import { ReactDispatcherRecovery } from './components/recovery/ReactDispatcherRecovery'
+import { ReactInitializer } from './components/recovery/ReactInitializer'
 
 import './index.css'
 
-// Simplified and safer React initialization
+// Enhanced React initialization with dispatcher recovery
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
 
+// Ensure React is properly initialized
+console.log('🚀 Starting React application with dispatcher recovery...');
+
 const root = createRoot(container);
 
-// Direct render without complex wrappers that might interfere with React's internal dispatcher
+// Wrap App with recovery components to handle dispatcher issues
 root.render(
-  <HelmetProvider>
-    <App />
-  </HelmetProvider>
+  <ReactDispatcherRecovery maxRetries={3}>
+    <ReactInitializer
+      onInitialized={() => console.log('✅ React context initialized successfully')}
+    >
+      <App />
+    </ReactInitializer>
+  </ReactDispatcherRecovery>
 );

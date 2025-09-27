@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
 import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface Attachment {
   id: string;
@@ -90,20 +91,23 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       const filePath = `${user?.id}/${filename}`;
 
       try {
-        const { data, error } = await supabase.storage
-          .from('post-media')
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
+        const result = await optimizedStorage.uploadFile(
+          'post-media',
+          filePath,
+          file,
+          {
+            cacheControl: '31536000',
+            upsert: true
+          }
+        );
 
-        if (error) {
-          console.error('Error uploading file:', error);
+        if (result.error) {
+          console.error('Error uploading file:', result.error);
           toast.error(`Failed to upload ${file.name}`);
           continue;
         }
 
-        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
+        const publicUrl = await optimizedStorage.getPublicUrl('post-media', result.data.path);
         const url = getCustomStorageUrl(publicUrl);
         newAttachments.push({
           id: randomId,

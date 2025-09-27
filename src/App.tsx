@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { NotificationProvider } from "@/contexts/NotificationContext";
@@ -26,8 +25,9 @@ import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
-import { RealtimeProvider } from "@/contexts/RealtimeContext";
+import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
 import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
+import { ReactSafeInitializer } from "@/components/recovery/ReactSafeInitializer";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
@@ -120,6 +120,15 @@ import CoursePlayer from "./pages/learning/CoursePlayer";
 import Communication from "./pages/Communication";
 import { communicationRoutes } from "./navigation/communicationRoutes";
 
+// Import Jobs Sitemap Components
+import { JobsLandingPage } from "@/pages/seo/jobs/JobsLandingPage";
+import { JobsByRoleCity } from "@/pages/seo/jobs/JobsByRoleCity";
+import { JobsByRoleIndustryCity } from "@/pages/seo/jobs/JobsByRoleIndustryCity";
+import { JobsByRoleSkillCityLevel } from "@/pages/seo/jobs/JobsByRoleSkillCityLevel";
+import { JobsByRoleSalaryCity } from "@/pages/seo/jobs/JobsByRoleSalaryCity";
+import { JobsByRemoteRoleCity } from "@/pages/seo/jobs/JobsByRemoteRoleCity";
+import { JobsByCompanyRoleCity } from "@/pages/seo/jobs/JobsByCompanyRoleCity";
+
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
 
@@ -181,30 +190,18 @@ const App = () => {
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <ReactContextErrorBoundary>
-        <QueryClientProvider client={queryClient}>
+        <ReactSafeInitializer>
+          <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <AuthProvider>
               <NotificationProvider>
-                <RealtimeProvider>
-                  <CopilotProvider>
-                    <TooltipProvider>
-                      <Toaster
-                        duration={10000}
-                        position="top-right"
-                        toastOptions={{
-                          style: {
-                            background: 'hsl(var(--background))',
-                            color: 'hsl(var(--foreground))',
-                            border: '1px solid hsl(var(--border))',
-                            marginTop: '80px',
-                          },
-                        }}
-                      />
-                      <MobileAppWrapper>
-                        <div className="min-h-screen flex flex-col">
-                          <Navbar />
-                          <main className="flex-1">
-                            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+                <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+                  <RealtimeProvider showToasts={false}>
+                    <CopilotProvider>
+                      <div className="min-h-screen flex flex-col">
+                        <Navbar />
+                        <main className="flex-1">
+                          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
                                 <Route path="/launch/final" element={
@@ -217,8 +214,17 @@ const App = () => {
                                   </ProtectedRoute>
                                 } />
                                 
-                                {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
-                                <Route path="/tools" element={<Tools />} />
+                {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/tools" element={<Tools />} />
+                
+                {/* Jobs Sitemap Routes - SEO Optimized */}
+                <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsLandingPage /></React.Suspense>} />
+                <Route path="/jobs/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></React.Suspense>} />
+                <Route path="/jobs/:role/:industry/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></React.Suspense>} />
+                <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></React.Suspense>} />
+                <Route path="/jobs/:role/:salaryRange/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSalaryCity /></React.Suspense>} />
+                <Route path="/jobs/remote/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRemoteRoleCity /></React.Suspense>} />
+                <Route path="/jobs/top-companies/:company/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByCompanyRoleCity /></React.Suspense>} />
                                 
                                 {navItems.map((item: NavItem) => (
                                   <Route 
@@ -322,29 +328,15 @@ const App = () => {
                             </React.Suspense>
                           </main>
                           
-                          <InstallPrompt />
-                          <InstallButton />
-                          <IOSInstallPrompt />
                         </div>
-                      </MobileAppWrapper>
-
-                      <TXCAutoMiner />
-                      <HealthMonitor />
-                      <MetaTags />
-                      <GoogleAnalytics />
-                      <SearchConsoleVerification />
-                      <SilentAuthHandler>
-                        <div />
-                      </SilentAuthHandler>
-                      <GoogleOneTapLogin />
-                      <MobileAppInitializer />
-                    </TooltipProvider>
-                  </CopilotProvider>
-                </RealtimeProvider>
-              </NotificationProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
+                    </CopilotProvider>
+                  </RealtimeProvider>
+                </React.Suspense>
+                </NotificationProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ReactSafeInitializer>
       </ReactContextErrorBoundary>
     </ErrorBoundary>
   );
