@@ -186,22 +186,10 @@ const App = () => {
               <NotificationProvider>
                 <RealtimeProvider showToasts={false}>
                   <CopilotProvider>
-                    <Toaster
-                      duration={10000}
-                      position="top-right"
-                      toastOptions={{
-                        style: {
-                          background: 'hsl(var(--background))',
-                          color: 'hsl(var(--foreground))',
-                          border: '1px solid hsl(var(--border))',
-                          marginTop: '80px',
-                        },
-                      }}
-                    />
-                      <MobileAppWrapper>
-                        <div className="min-h-screen flex flex-col">
-                          <Navbar />
-                          <main className="flex-1">
+                    <MobileAppWrapper>
+                      <div className="min-h-screen flex flex-col">
+                        <Navbar />
+                        <main className="flex-1">
                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
@@ -326,16 +314,6 @@ const App = () => {
                         </div>
                       </MobileAppWrapper>
 
-                      <TXCAutoMiner />
-                      <HealthMonitor />
-                      <MetaTags />
-                      <GoogleAnalytics />
-                      <SearchConsoleVerification />
-                      <SilentAuthHandler>
-                        <div />
-                      </SilentAuthHandler>
-                      <GoogleOneTapLogin />
-                      <MobileAppInitializer />
                     </CopilotProvider>
                   </RealtimeProvider>
                 </NotificationProvider>
