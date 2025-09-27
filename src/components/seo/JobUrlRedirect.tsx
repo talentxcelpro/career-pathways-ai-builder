@@ -37,15 +37,13 @@ export const JobUrlRedirect: React.FC = () => {
         }
       }
 
-      // If we can extract an ID from the slug, try to find the job
+      // If we can extract an ID from the slug, try to find the job using the new database function
       const extractedId = extractJobId(slugOrId);
       if (extractedId && extractedId !== slugOrId) {
         try {
           const { data: job } = await supabase
-            .from('jobs')
-            .select('id, title, location, seo_slug')
-            .ilike('id', `${extractedId}%`)
-            .single();
+            .rpc('find_job_by_partial_id', { partial_id: extractedId })
+            .maybeSingle();
 
           if (job) {
             const seoUrl = getJobDetailUrl(job);

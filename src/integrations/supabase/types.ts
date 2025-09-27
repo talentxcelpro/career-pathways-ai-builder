@@ -30893,6 +30893,36 @@ export type Database = {
           },
         ]
       }
+      user_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          total_earned: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_department_assignments: {
         Row: {
           assignment_type: string | null
@@ -33716,6 +33746,15 @@ export type Database = {
       extract_domain: {
         Args: { url: string }
         Returns: string
+      }
+      find_job_by_partial_id: {
+        Args: { partial_id: string }
+        Returns: {
+          company_name: string
+          id: string
+          seo_slug: string
+          title: string
+        }[]
       }
       find_or_create_company: {
         Args: { company_name_param: string }
