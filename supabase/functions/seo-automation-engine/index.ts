@@ -30,25 +30,35 @@ interface SEOContent {
 
 console.log('🚀 SEO Automation Engine starting...');
 
-// Global keepalive mechanism
-let isKeepAlive = true;
-let keepAliveTimer: number;
+// Use a more robust approach to prevent function shutdown
+const FUNCTION_TIMEOUT = 300000; // 5 minutes
+let activeRequests = 0;
+let lastActivity = Date.now();
 
-// Function to maintain keepalive
-const maintainKeepalive = () => {
-  if (keepAliveTimer) {
-    clearTimeout(keepAliveTimer);
+// Keep function alive with a persistent interval
+const keepAliveInterval = setInterval(() => {
+  const now = Date.now();
+  if (now - lastActivity < FUNCTION_TIMEOUT) {
+    console.log(`💚 Function keepalive - Active requests: ${activeRequests}, Last activity: ${new Date(lastActivity).toISOString()}`);
   }
-  keepAliveTimer = setTimeout(() => {
-    console.log('⏰ Keepalive check - function still active');
-    if (isKeepAlive) {
-      maintainKeepalive();
-    }
-  }, 30000); // 30 second keepalive
+}, 30000);
+
+// Function to mark activity
+const markActivity = () => {
+  lastActivity = Date.now();
 };
 
-// Start keepalive immediately
-maintainKeepalive();
+// Function to track request lifecycle
+const trackRequest = (type: 'start' | 'end') => {
+  if (type === 'start') {
+    activeRequests++;
+    markActivity();
+  } else {
+    activeRequests = Math.max(0, activeRequests - 1);
+    markActivity();
+  }
+  console.log(`📊 Request tracking: ${type} - Active: ${activeRequests}`);
+};
 
 // Validate environment variables immediately
 function validateEnvironment() {
@@ -67,67 +77,61 @@ function validateEnvironment() {
   return { supabaseUrl, serviceRoleKey };
 }
 
-// Add shutdown event listener
-globalThis.addEventListener?.('beforeunload', (event) => {
-  console.log('🔄 Function shutdown requested');
-  isKeepAlive = false;
-  if (keepAliveTimer) {
-    clearTimeout(keepAliveTimer);
-  }
-});
-
 Deno.serve(async (req) => {
-  console.log(`📡 Request received: ${req.method} ${req.url}`);
-  console.log(`📊 Headers: ${JSON.stringify(Object.fromEntries(req.headers.entries()))}`);
+  trackRequest('start');
+  console.log(`📡 Request received: ${req.method} ${req.url} at ${new Date().toISOString()}`);
   
-  // Reset keepalive on any request
-  maintainKeepalive();
-  
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    console.log('⚡ CORS preflight request - keeping function alive');
-    // Don't let function shut down immediately after OPTIONS
-    setTimeout(() => {
-      console.log('⏳ Post-OPTIONS keepalive delay complete');
-    }, 1000);
-    
-    return new Response(null, { 
-      status: 200,
-      headers: corsHeaders 
-    });
-  }
-
-  // Health check endpoint - doesn't require database
-  if (req.method === 'GET') {
-    const url = new URL(req.url);
-    if (url.pathname.includes('health')) {
-      console.log('💚 Health check request');
-      return new Response(JSON.stringify({
-        success: true,
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        message: 'SEO Automation Engine is running',
-        keepalive: isKeepAlive
-      }), {
+  try {
+    // Handle CORS preflight
+    if (req.method === 'OPTIONS') {
+      console.log('⚡ CORS preflight request - maintaining function lifecycle');
+      
+      // Create a short delay to prevent immediate shutdown
+      setTimeout(() => {
+        console.log('⏳ Post-CORS delay completed, function ready for POST requests');
+      }, 500);
+      
+      trackRequest('end');
+      return new Response(null, { 
         status: 200,
+        headers: corsHeaders 
+      });
+    }
+
+    // Health check endpoint - doesn't require database
+    if (req.method === 'GET') {
+      const url = new URL(req.url);
+      if (url.pathname.includes('health')) {
+        console.log('💚 Health check request');
+        trackRequest('end');
+        return new Response(JSON.stringify({
+          success: true,
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          message: 'SEO Automation Engine is running',
+          activeRequests,
+          lastActivity: new Date(lastActivity).toISOString()
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // Only handle POST requests for main functionality
+    if (req.method !== 'POST') {
+      console.log(`❌ Method ${req.method} not allowed`);
+      trackRequest('end');
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Only POST requests are supported for main functionality. Use GET /health for health check.'
+      }), {
+        status: 405,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
-  }
 
-  // Only handle POST requests for main functionality
-  if (req.method !== 'POST') {
-    console.log(`❌ Method ${req.method} not allowed`);
-    return new Response(JSON.stringify({
-      success: false,
-      error: 'Only POST requests are supported for main functionality. Use GET /health for health check.'
-    }), {
-      status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
-  }
-
-  try {
+    // Main POST request handling
     console.log('🔍 Validating environment...');
     const { supabaseUrl, serviceRoleKey } = validateEnvironment();
     
@@ -161,6 +165,7 @@ Deno.serve(async (req) => {
       console.log('📦 Request body parsed successfully');
     } catch (e) {
       console.error('❌ Failed to parse request body:', e);
+      trackRequest('end');
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid JSON in request body'
@@ -175,27 +180,32 @@ Deno.serve(async (req) => {
     console.log(`🎯 Action: ${action || 'bulk-generate (default)'}`);
 
     // Route to appropriate handler
+    let response;
     switch (action) {
       case 'generate':
         console.log('📄 Single page generation requested');
-        return await generateSEOPages(supabase, requestBody);
+        response = await generateSEOPages(supabase, requestBody);
+        break;
       case 'sitemap':
         console.log('🗺️ Sitemap generation requested');
-        return await generateDynamicSitemap(req, supabase);
+        response = await generateDynamicSitemap(req, supabase);
+        break;
       case 'performance':
         console.log('📊 Performance metrics requested');
-        return await getSEOPerformance(req, supabase);
+        response = await getSEOPerformance(req, supabase);
+        break;
       case 'status':
         console.log('🔍 Status check requested');
-        return await getSEOStatus(req, supabase);
+        response = await getSEOStatus(req, supabase);
+        break;
       default:
         // Default to bulk generation if requests array is present
         if (requestBody.requests && Array.isArray(requestBody.requests)) {
           console.log('📚 Bulk generation requested (default)');
-          return await bulkGenerateSEOPages(supabase, requestBody);
+          response = await bulkGenerateSEOPages(supabase, requestBody);
         } else {
           // Return usage info if no valid request
-          return new Response(JSON.stringify({
+          response = new Response(JSON.stringify({
             success: true,
             message: 'SEO Automation Engine is running',
             usage: 'Send POST request with requests array for bulk generation',
@@ -210,8 +220,12 @@ Deno.serve(async (req) => {
         }
     }
 
+    trackRequest('end');
+    return response;
+
   } catch (error) {
     console.error('💥 SEO Automation Engine error:', error);
+    trackRequest('end');
     return new Response(JSON.stringify({
       success: false,
       error: (error as Error).message || 'Unknown error occurred',
@@ -314,19 +328,13 @@ async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
     const backgroundProcess = async () => {
       try {
         // Small delay to ensure response is sent first
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         console.log(`🔄 Background: Processing ${validRequests.length} SEO pages...`);
         let processed = 0;
         let failed = 0;
 
         for (const request of validRequests) {
           try {
-            // Check if we should continue processing
-            if (!isKeepAlive) {
-              console.log('🛑 Background: Function shutdown detected, stopping processing');
-              break;
-            }
-
             console.log(`📝 Background: Processing ${request.pageType}/${request.primarySlug}/${request.secondarySlug || ''}`);
             
             await processSingleSEOPage(request, supabase);
@@ -334,11 +342,11 @@ async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
             
             console.log(`✅ Background: Completed ${request.primarySlug} (${processed}/${validRequests.length})`);
             
-            // Maintain keepalive during processing
-            maintainKeepalive();
+            // Mark activity to prevent shutdown
+            markActivity();
             
             // Small delay between requests to avoid overwhelming the database
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
           } catch (error) {
             failed++;
@@ -352,13 +360,10 @@ async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
       }
     };
 
-    // Start background processing and don't await it
+    // Start background processing without awaiting
     backgroundProcess().catch(error => {
       console.error('Background process error:', error);
     });
-    
-    // Extend keepalive for background processing
-    maintainKeepalive();
     
     // Return immediate response so client doesn't timeout
     return new Response(JSON.stringify({
