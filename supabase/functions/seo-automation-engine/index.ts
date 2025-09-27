@@ -30,6 +30,26 @@ interface SEOContent {
 
 console.log('🚀 SEO Automation Engine starting...');
 
+// Global keepalive mechanism
+let isKeepAlive = true;
+let keepAliveTimer: number;
+
+// Function to maintain keepalive
+const maintainKeepalive = () => {
+  if (keepAliveTimer) {
+    clearTimeout(keepAliveTimer);
+  }
+  keepAliveTimer = setTimeout(() => {
+    console.log('⏰ Keepalive check - function still active');
+    if (isKeepAlive) {
+      maintainKeepalive();
+    }
+  }, 30000); // 30 second keepalive
+};
+
+// Start keepalive immediately
+maintainKeepalive();
+
 // Validate environment variables immediately
 function validateEnvironment() {
   const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -50,14 +70,27 @@ function validateEnvironment() {
 // Add shutdown event listener
 globalThis.addEventListener?.('beforeunload', (event) => {
   console.log('🔄 Function shutdown requested');
+  isKeepAlive = false;
+  if (keepAliveTimer) {
+    clearTimeout(keepAliveTimer);
+  }
 });
 
 Deno.serve(async (req) => {
   console.log(`📡 Request received: ${req.method} ${req.url}`);
+  console.log(`📊 Headers: ${JSON.stringify(Object.fromEntries(req.headers.entries()))}`);
+  
+  // Reset keepalive on any request
+  maintainKeepalive();
   
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    console.log('⚡ CORS preflight request');
+    console.log('⚡ CORS preflight request - keeping function alive');
+    // Don't let function shut down immediately after OPTIONS
+    setTimeout(() => {
+      console.log('⏳ Post-OPTIONS keepalive delay complete');
+    }, 1000);
+    
     return new Response(null, { 
       status: 200,
       headers: corsHeaders 
@@ -68,11 +101,13 @@ Deno.serve(async (req) => {
   if (req.method === 'GET') {
     const url = new URL(req.url);
     if (url.pathname.includes('health')) {
+      console.log('💚 Health check request');
       return new Response(JSON.stringify({
         success: true,
         status: 'healthy',
         timestamp: new Date().toISOString(),
-        message: 'SEO Automation Engine is running'
+        message: 'SEO Automation Engine is running',
+        keepalive: isKeepAlive
       }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -93,19 +128,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Validate environment first
     console.log('🔍 Validating environment...');
     const { supabaseUrl, serviceRoleKey } = validateEnvironment();
     
     console.log('🔧 Creating Supabase client...');
     const supabase = createClient(supabaseUrl, serviceRoleKey);
     
-    // Test database connection
+    // Test database connection with timeout
     console.log('🔌 Testing database connection...');
-    const { error: connectionError } = await supabase
-      .from('seo_generated_content')
-      .select('count')
-      .limit(1);
+    const connectionTest = Promise.race([
+      supabase
+        .from('seo_generated_content')
+        .select('count')
+        .limit(1),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database connection timeout')), 10000)
+      )
+    ]);
+    
+    const { error: connectionError } = await connectionTest as any;
     
     if (connectionError) {
       console.error('❌ Database connection failed:', connectionError);
@@ -269,17 +310,23 @@ async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
       });
     }
 
-    // Background processing function with proper error handling
+    // Background processing function with proper error handling and keepalive
     const backgroundProcess = async () => {
-      // Small delay to ensure response is sent first
-      await new Promise(resolve => setTimeout(resolve, 100));
-      console.log(`🔄 Background: Processing ${validRequests.length} SEO pages...`);
-      let processed = 0;
-      let failed = 0;
-
       try {
+        // Small delay to ensure response is sent first
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log(`🔄 Background: Processing ${validRequests.length} SEO pages...`);
+        let processed = 0;
+        let failed = 0;
+
         for (const request of validRequests) {
           try {
+            // Check if we should continue processing
+            if (!isKeepAlive) {
+              console.log('🛑 Background: Function shutdown detected, stopping processing');
+              break;
+            }
+
             console.log(`📝 Background: Processing ${request.pageType}/${request.primarySlug}/${request.secondarySlug || ''}`);
             
             await processSingleSEOPage(request, supabase);
@@ -287,8 +334,11 @@ async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
             
             console.log(`✅ Background: Completed ${request.primarySlug} (${processed}/${validRequests.length})`);
             
+            // Maintain keepalive during processing
+            maintainKeepalive();
+            
             // Small delay between requests to avoid overwhelming the database
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 100));
             
           } catch (error) {
             failed++;
@@ -302,16 +352,13 @@ async function bulkGenerateSEOPages(supabase: any, requestBody: any) {
       }
     };
 
-    // Use background processing with proper shutdown handling
-    const backgroundPromise = backgroundProcess();
-    
-    // Add shutdown event listener to handle graceful shutdown
-    globalThis.addEventListener?.('beforeunload', (event) => {
-      console.log('🔄 Function shutdown detected, background tasks may be interrupted');
+    // Start background processing and don't await it
+    backgroundProcess().catch(error => {
+      console.error('Background process error:', error);
     });
     
-    // Keep the promise running without awaiting to prevent function shutdown
-    backgroundPromise.catch(error => console.error('Background process error:', error));
+    // Extend keepalive for background processing
+    maintainKeepalive();
     
     // Return immediate response so client doesn't timeout
     return new Response(JSON.stringify({
