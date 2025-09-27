@@ -13,7 +13,6 @@ import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
 import { supabase } from '@/integrations/supabase/client';
-import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface MobileCreatePostProps {
   onPostCreate?: () => void;
@@ -91,26 +90,23 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
           const filename = `${randomId}.${fileExtension}`;
           const filePath = `${user.id}/${filename}`;
 
-        try {
-          const result = await optimizedStorage.uploadFile(
-            'post-media',
-            filePath,
-            file,
-            {
-              cacheControl: '31536000',
-              upsert: true
+          try {
+            const { data, error } = await supabase.storage
+              .from('post-media')
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+              });
+
+            if (error) {
+              console.error('Error uploading file:', error);
+              toast.error(`Failed to upload ${file.name}`);
+              continue;
             }
-          );
 
-          if (result.error) {
-            console.error('Error uploading file:', result.error);
-            toast.error(`Failed to upload ${file.name}`);
-            continue;
-          }
-
-          const publicUrl = await optimizedStorage.getPublicUrl('post-media', result.data.path);
-          const customUrl = getCustomStorageUrl(publicUrl);
-          mediaUrls.push(customUrl);
+            const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
+            const customUrl = getCustomStorageUrl(publicUrl);
+            mediaUrls.push(customUrl);
           } catch (uploadError) {
             console.error('Upload error:', uploadError);
             toast.error(`Failed to upload ${file.name}`);

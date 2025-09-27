@@ -12,7 +12,6 @@ import { Upload, FileText, Star, Sparkles, AlertCircle, CheckCircle } from "luci
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { optimizedStorage } from '@/utils/optimizedStorage';
 import { incrementJobApplications } from "@/utils/supabaseHelpers";
 
 interface JobApplicationModalProps {
@@ -189,14 +188,17 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
       // Upload new resume if provided
       if (uploadedFile && activeTab === 'upload') {
         const fileName = `${user.id}/${job.id}/${Date.now()}_${uploadedFile.name}`;
-        const uploadResult = await optimizedStorage.uploadFile('resumes', fileName, uploadedFile, {
-          cacheControl: '31536000',
-          upsert: true
-        });
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('resumes')
+          .upload(fileName, uploadedFile);
 
-        if (uploadResult.error) throw uploadResult.error;
+        if (uploadError) throw uploadError;
 
-        resumeUrl = await optimizedStorage.getPublicUrl('resumes', uploadResult.data.path);
+        const { data: { publicUrl } } = supabase.storage
+          .from('resumes')
+          .getPublicUrl(fileName);
+        
+        resumeUrl = publicUrl;
 
         // Save the uploaded resume to user's resume collection
         const { error: resumeError } = await supabase
@@ -204,7 +206,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
           .insert({
             user_id: user.id,
             title: `Resume for ${job.title}`,
-            file_url: resumeUrl,
+            file_url: publicUrl,
             content: { fileName: uploadedFile.name }, // Add required content field
             is_primary: resumes.length === 0, // Make primary if it's the first resume
             is_active: true

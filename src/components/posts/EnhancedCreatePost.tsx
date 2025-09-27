@@ -24,7 +24,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
-import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface MediaFile {
   id: string;
@@ -156,23 +155,20 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       const filePath = `${user?.id}/${filename}`;
 
       try {
-        const result = await optimizedStorage.uploadFile(
-          'post-media',
-          filePath,
-          file,
-          {
-            cacheControl: '31536000',
-            upsert: true
-          }
-        );
+        const { data, error } = await supabase.storage
+          .from('post-media')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (result.error) {
-          console.error('Error uploading file:', result.error);
+        if (error) {
+          console.error('Error uploading file:', error);
           toast.error(`Failed to upload ${file.name}`);
           continue;
         }
 
-        const publicUrl = await optimizedStorage.getPublicUrl('post-media', result.data.path);
+        const { data: { publicUrl } } = supabase.storage.from('post-media').getPublicUrl(data.path);
         const url = getCustomStorageUrl(publicUrl);
         newFiles.push({
           id: randomId,
