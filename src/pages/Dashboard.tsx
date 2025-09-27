@@ -6,7 +6,7 @@ import { FeaturedJobs } from '@/components/dashboard/FeaturedJobs';
 import { TrendingCourses } from '@/components/dashboard/TrendingCourses';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { CareerInsights } from '@/components/dashboard/CareerInsights';
-// import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
+import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { useJobsRealtime } from '@/hooks/useRealtimeData';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
@@ -48,12 +48,12 @@ const Dashboard = () => {
     gcTime: 30 * 60 * 1000,
   });
 
-  // Auto-refresh dashboard data (temporarily disabled)
-  // useSmartAutoRefresh(() => {
-  //   refetchStats();
-  //   refetchJobs();
-  //   refetchCourses();
-  // }, REFRESH_INTERVALS.NETWORK);
+  // Auto-refresh dashboard data
+  useSmartAutoRefresh(() => {
+    refetchStats();
+    refetchJobs();
+    refetchCourses();
+  }, REFRESH_INTERVALS.NETWORK);
 
   // Set up realtime for jobs updates
   useJobsRealtime(

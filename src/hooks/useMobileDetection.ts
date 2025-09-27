@@ -1,30 +1,78 @@
-// Temporary minimal implementation to bypass React dispatcher issues
+import { useState, useEffect } from 'react';
+
 export const useDeviceDetection = () => {
-  // Return static values for now
-  return {
-    isMobile: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
-    isTablet: typeof window !== 'undefined' ? window.innerWidth >= 768 && window.innerWidth < 1024 : false,
-    isDesktop: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
-    isIOS: typeof window !== 'undefined' ? /iPad|iPhone|iPod/.test(navigator.userAgent) : false,
-    isAndroid: typeof window !== 'undefined' ? /Android/.test(navigator.userAgent) : false,
-    isSafari: typeof window !== 'undefined' ? /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) : false,
-    isChrome: typeof window !== 'undefined' ? /Chrome/.test(navigator.userAgent) : false,
-    screenWidth: typeof window !== 'undefined' ? window.innerWidth : 1920,
-    screenHeight: typeof window !== 'undefined' ? window.innerHeight : 1080,
-    devicePixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
-    orientation: typeof window !== 'undefined' ? (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait') : 'landscape' as 'portrait' | 'landscape',
-    touchSupport: typeof window !== 'undefined' ? 'ontouchstart' in window : false
-  };
+  const [device, setDevice] = useState({
+    isMobile: false,
+    isTablet: false,
+    isDesktop: true,
+    isIOS: false,
+    isAndroid: false,
+    isSafari: false,
+    isChrome: false,
+    screenWidth: 1920,
+    screenHeight: 1080,
+    devicePixelRatio: 1,
+    orientation: 'landscape' as 'portrait' | 'landscape',
+    touchSupport: false
+  });
+
+  useEffect(() => {
+    const updateDevice = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const userAgent = navigator.userAgent;
+      
+      setDevice({
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024,
+        isIOS: /iPad|iPhone|iPod/.test(userAgent),
+        isAndroid: /Android/.test(userAgent),
+        isSafari: /Safari/.test(userAgent) && !/Chrome/.test(userAgent),
+        isChrome: /Chrome/.test(userAgent),
+        screenWidth: width,
+        screenHeight: height,
+        devicePixelRatio: window.devicePixelRatio || 1,
+        orientation: width > height ? 'landscape' : 'portrait',
+        touchSupport: 'ontouchstart' in window
+      });
+    };
+
+    updateDevice();
+    window.addEventListener('resize', updateDevice);
+    return () => window.removeEventListener('resize', updateDevice);
+  }, []);
+
+  return device;
 };
 
 export const useMobilePerformance = () => {
-  // Return static values for now
-  return {
+  const [metrics, setMetrics] = useState({
     loadTime: 0,
     renderTime: 0,
     imageLoadCount: 0,
     totalImageSize: 0
-  };
+  });
+
+  useEffect(() => {
+    const observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        if (entry.entryType === 'navigation') {
+          const navEntry = entry as PerformanceNavigationTiming;
+          setMetrics(prev => ({
+            ...prev,
+            loadTime: navEntry.loadEventEnd - navEntry.fetchStart,
+            renderTime: navEntry.domContentLoadedEventEnd - navEntry.fetchStart
+          }));
+        }
+      });
+    });
+
+    observer.observe({ entryTypes: ['navigation'] });
+    return () => observer.disconnect();
+  }, []);
+
+  return metrics;
 };
 
 // Legacy compatibility wrapper
