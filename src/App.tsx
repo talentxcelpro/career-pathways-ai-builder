@@ -186,10 +186,9 @@ const App = () => {
               <NotificationProvider>
                 <RealtimeProvider showToasts={false}>
                   <CopilotProvider>
-                    <MobileAppWrapper>
-                      <div className="min-h-screen flex flex-col">
-                        <Navbar />
-                        <main className="flex-1">
+                    <div className="min-h-screen flex flex-col">
+                      <Navbar />
+                      <main className="flex-1">
                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
@@ -312,8 +311,6 @@ const App = () => {
                           <InstallButton />
                           <IOSInstallPrompt />
                         </div>
-                      </MobileAppWrapper>
-
                     </CopilotProvider>
                   </RealtimeProvider>
                 </NotificationProvider>
