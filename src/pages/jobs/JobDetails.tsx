@@ -31,22 +31,25 @@ const JobDetails = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
 
-  console.log('🚀 JobDetails component mounted with slugOrId:', slugOrId);
-  console.log('🔥 Current pathname:', window.location.pathname);
-  console.log('🔥 Current route params:', useParams());
+  console.log('🚀🚀🚀 JobDetails component MOUNTED');
+  console.log('🚀🚀🚀 slugOrId:', slugOrId);
+  console.log('🚀🚀🚀 pathname:', window.location.pathname);
 
-  // Fetch job details with enhanced logic
+  // Fetch job details with simplified logic
   const { data: job, isLoading, error } = useQuery({
     queryKey: ['job', slugOrId],
     queryFn: async () => {
-      if (!slugOrId) return null;
+      console.log('🔍🔍🔍 QUERY FUNCTION EXECUTING');
+      if (!slugOrId) {
+        console.log('❌ No slugOrId provided');
+        return null;
+      }
       
       console.log('🔍 Fetching job with slugOrId:', slugOrId);
-      console.log('🔍 Looking for exact SEO slug match first...');
-      
-      // Step 1: Try exact SEO slug match
+
+      // Strategy 1: Try exact SEO slug match
       console.log('📝 Step 1: Trying exact SEO slug match');
-      let { data, error } = await supabase
+      let result = await supabase
         .from('jobs')
         .select('*')
         .eq('seo_slug', slugOrId)
@@ -54,17 +57,17 @@ const JobDetails = () => {
         .eq('job_status', 'open')
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ Error in exact match:', error);
-        throw error;
+      if (result.error && result.error.code !== 'PGRST116') {
+        console.error('❌ Error in exact match:', result.error);
+        throw result.error;
       }
       
-      if (data) {
-        console.log('✅ Found job with exact SEO slug match:', data.title);
-        return data;
+      if (result.data) {
+        console.log('✅ Found job with exact SEO slug match:', result.data.title);
+        return result.data;
       }
 
-      // Step 2: Extract potential job ID from the slug (last UUID-like segment)
+      // Strategy 2: Extract UUID and try exact UUID match
       const uuidPattern = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
       const uuidMatch = slugOrId.match(uuidPattern);
       
@@ -72,26 +75,26 @@ const JobDetails = () => {
         const jobId = uuidMatch[0];
         console.log('📝 Step 2: Trying UUID match with extracted ID:', jobId);
         
-        ({ data, error } = await supabase
+        result = await supabase
           .from('jobs')
           .select('*')
           .eq('id', jobId)
           .eq('is_active', true)
           .eq('job_status', 'open')
-          .maybeSingle());
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('❌ Error in UUID match:', error);
-          throw error;
+        if (result.error && result.error.code !== 'PGRST116') {
+          console.error('❌ Error in UUID match:', result.error);
+          throw result.error;
         }
         
-        if (data) {
-          console.log('✅ Found job with UUID match:', data.title);
-          return data;
+        if (result.data) {
+          console.log('✅ Found job with UUID match:', result.data.title);
+          return result.data;
         }
       }
 
-      // Step 3: Try partial job ID match (last 8 characters)
+      // Strategy 3: Try partial UUID match (last 8 characters)
       const partialIdPattern = /[a-f0-9]{8}$/i;
       const partialIdMatch = slugOrId.match(partialIdPattern);
       
@@ -99,72 +102,51 @@ const JobDetails = () => {
         const partialId = partialIdMatch[0];
         console.log('📝 Step 3: Trying partial ID match with:', partialId);
         
-        ({ data, error } = await supabase
+        result = await supabase
           .from('jobs')
           .select('*')
           .ilike('id::text', `${partialId}%`)
           .eq('is_active', true)
           .eq('job_status', 'open')
           .limit(1)
-          .maybeSingle());
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('❌ Error in partial ID match:', error);
-          throw error;
+        if (result.error && result.error.code !== 'PGRST116') {
+          console.error('❌ Error in partial ID match:', result.error);
+          throw result.error;
         }
         
-        if (data) {
-          console.log('✅ Found job with partial ID match:', data.title);
-          return data;
+        if (result.data) {
+          console.log('✅ Found job with partial ID match:', result.data.title);
+          return result.data;
         }
       }
 
-      // Step 4: Try partial SEO slug match by checking if current slug is contained in any SEO slug
-      console.log('📝 Step 4: Trying partial SEO slug match');
-      const slugWithoutId = partialIdMatch ? slugOrId.replace(partialIdMatch[0], '').replace(/-$/, '') : slugOrId;
-      console.log('🔍 Searching for partial match with:', slugWithoutId);
-      
-      ({ data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .ilike('seo_slug', `%${slugWithoutId}%`)
-        .eq('is_active', true)
-        .eq('job_status', 'open')
-        .limit(1)
-        .maybeSingle());
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ Error in partial match:', error);
-        throw error;
-      }
-      
-      if (data) {
-        console.log('✅ Found job with partial SEO slug match:', data.title);
-        return data;
-      }
-
-      // Step 5: Try title-based search as last resort
-      console.log('📝 Step 5: Trying title-based search');
-      const titleSearchTerms = slugOrId.replace(/-/g, ' ').replace(/\b\d+\b/g, '').trim();
+      // Strategy 4: Try title-based search (convert slug to title format)
+      console.log('📝 Step 4: Trying title-based search');
+      const titleSearchTerms = slugOrId
+        .replace(/-/g, ' ')
+        .replace(/\b[a-f0-9]{8}\b/g, '')
+        .trim();
       console.log('🔍 Searching for title match with:', titleSearchTerms);
       
-      ({ data, error } = await supabase
+      result = await supabase
         .from('jobs')
         .select('*')
         .ilike('title', `%${titleSearchTerms}%`)
         .eq('is_active', true)
         .eq('job_status', 'open')
         .limit(1)
-        .maybeSingle());
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ Error in title search:', error);
-        throw error;
+      if (result.error && result.error.code !== 'PGRST116') {
+        console.error('❌ Error in title search:', result.error);
+        throw result.error;
       }
       
-      if (data) {
-        console.log('✅ Found job with title match:', data.title);
-        return data;
+      if (result.data) {
+        console.log('✅ Found job with title match:', result.data.title);
+        return result.data;
       }
 
       console.log('❌ No job found with any matching strategy');
@@ -473,7 +455,7 @@ const JobDetails = () => {
               </Card>
             )}
 
-            {/* Skills Required */}
+            {/* Skills */}
             {job.skills_required && job.skills_required.length > 0 && (
               <Card>
                 <CardHeader>
@@ -495,37 +477,31 @@ const JobDetails = () => {
             {job.benefits && job.benefits.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Benefits & Perks</CardTitle>
+                  <CardTitle>Benefits</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <ul className="list-disc list-inside space-y-2">
                     {job.benefits.map((benefit, index) => (
-                      <div key={index} className="flex items-center">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                        <span className="text-gray-700">{benefit}</span>
-                      </div>
+                      <li key={index} className="text-gray-700">
+                        {benefit}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </CardContent>
               </Card>
             )}
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="space-y-6">
             {/* Quick Apply */}
-            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
-              <CardContent className="p-6 text-center">
-                <div className="mb-4">
-                  <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Users className="h-6 w-6 text-blue-600" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Ready to Apply?</h3>
-                <p className="text-gray-600 mb-4">
-                  Take the next step in your career journey
-                </p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Apply</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <PublicJobApplyButton jobId={job.id} job={job} className="w-full" />
+                <PublicJobSaveButton jobId={job.id} className="w-full mt-2" />
               </CardContent>
             </Card>
 
@@ -535,71 +511,73 @@ const JobDetails = () => {
                 <CardTitle>Job Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {job.employment_type && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Employment Type:</span>
-                    <Badge variant="outline">{job.employment_type}</Badge>
-                  </div>
-                )}
-                {job.experience_level && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Experience Level:</span>
-                    <Badge variant="outline">{job.experience_level}</Badge>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Applications:</span>
-                  <span className="font-medium">{job.applications_count || 0}</span>
+                <div>
+                  <h4 className="font-medium text-gray-900">Employment Type</h4>
+                  <p className="text-gray-600">{job.employment_type || 'Full-time'}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Posted:</span>
-                  <span className="font-medium">
+                
+                <Separator />
+                
+                <div>
+                  <h4 className="font-medium text-gray-900">Experience Level</h4>
+                  <p className="text-gray-600">{job.experience_level || 'Mid-level'}</p>
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <h4 className="font-medium text-gray-900">Location</h4>
+                  <p className="text-gray-600">{job.location}</p>
+                  {job.is_remote && (
+                    <Badge className="mt-1 bg-green-100 text-green-800">
+                      Remote work available
+                    </Badge>
+                  )}
+                </div>
+                
+                <Separator />
+                
+                <div>
+                  <h4 className="font-medium text-gray-900">Posted</h4>
+                  <p className="text-gray-600">
                     {formatDistanceToNow(new Date(job.posted_at || job.created_at))} ago
-                  </span>
+                  </p>
                 </div>
+                
+                {job.expires_at && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="font-medium text-gray-900">Application Deadline</h4>
+                      <p className="text-gray-600">
+                        {formatDistanceToNow(new Date(job.expires_at))} from now
+                      </p>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
-            {/* Company Info */}
-            {job.companies && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>About {job.companies.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {job.companies.description && (
-                    <p className="text-gray-700">{job.companies.description}</p>
-                  )}
-                  
-                  <div className="space-y-2">
-                    {job.companies.industry && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Industry:</span>
-                        <span className="font-medium">{job.companies.industry}</span>
-                      </div>
-                    )}
-                    {job.companies.founded_year && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Founded:</span>
-                        <span className="font-medium">{job.companies.founded_year}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {job.companies.website && (
-                    <Button variant="outline" className="w-full" asChild>
-                      <a href={job.companies.website} target="_blank" rel="noopener noreferrer">
-                        Visit Company Website
-                      </a>
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            {/* Share */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Share this job</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  variant="outline" 
+                  onClick={handleShare}
+                  className="w-full"
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share Job
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
-        </div>
       </div>
+    </div>
     </>
   );
 };
