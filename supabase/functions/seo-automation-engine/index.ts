@@ -151,92 +151,129 @@ async function bulkGenerateSEOPages(req: Request, supabase: any) {
   console.log('💥 Starting bulk generation...');
   
   try {
-    const { requests, batchSize = 10 }: { requests: SEOPageRequest[], batchSize?: number } = await req.json()
+    const { requests, batchSize = 1 }: { requests: SEOPageRequest[], batchSize?: number } = await req.json()
     console.log(`📊 Received ${requests.length} requests, batch size: ${batchSize}`);
 
-    // Process only a small subset to avoid timeouts
-    const maxProcessPerCall = 3; // Very small to avoid timeouts
-    const requestsToProcess = requests.slice(0, maxProcessPerCall);
-    console.log(`🔥 Processing ${requestsToProcess.length} requests this call`);
-
-    const results = []
-    
-    for (const request of requestsToProcess) {
-      try {
-        console.log(`🎯 Processing: ${request.pageType} - ${request.primarySlug}`);
-        
-        // Validate request data
-        if (!request.pageType || !request.primarySlug) {
-          console.error('❌ Invalid request data:', request);
-          continue;
-        }
-
-        const content = await generateSEOContent(
-          request.pageType,
-          request.primarySlug,
-          request.secondarySlug,
-          request.tertiarySlug,
-          supabase
-        )
-        
-        const seoPage = {
-          page_type: request.pageType,
-          primary_slug: request.primarySlug,
-          secondary_slug: request.secondarySlug || null,
-          tertiary_slug: request.tertiarySlug || null,
-          meta_title: content.metaTitle,
-          meta_description: content.metaDescription,
-          h1_title: content.h1Title,
-          intro_content: content.introContent,
-          content_blocks: { main: content.mainContent },
-          faqs: content.faqs,
-          structured_data: content.structuredData,
-          keywords: content.keywords,
-          canonical_url: content.canonicalUrl,
-          breadcrumbs: content.breadcrumbs,
-          quality_score: calculateQualityScore(content),
-          last_generated_at: new Date().toISOString(),
-          is_active: true
-        }
-        
-        // Save immediately to database
-        const { data, error } = await supabase
-          .from('seo_generated_content')
-          .upsert([seoPage])
-          .select()
-
-        if (error) {
-          console.error('❌ Database error:', error);
-        } else {
-          console.log(`✅ Saved: ${request.primarySlug}`);
-          results.push(data[0]);
-        }
-      } catch (error) {
-        console.error(`❌ Error processing ${request.primarySlug}:`, error)
+    // Validate requests first
+    const validRequests = requests.filter(request => {
+      if (!request.pageType || !request.primarySlug) {
+        console.error('❌ Invalid request data:', request);
+        return false;
       }
+      return true;
+    });
+
+    if (validRequests.length === 0) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'No valid requests found',
+        totalGenerated: 0
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
-    console.log(`🎉 Completed processing ${results.length} pages`);
-    
-    return new Response(JSON.stringify({
-      success: true,
-      totalGenerated: results.length,
-      totalRequested: requestsToProcess.length,
-      message: `Generated ${results.length} SEO pages successfully`
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    // Process only 1 item at a time to avoid timeouts
+    const requestToProcess = validRequests[0];
+    console.log(`🎯 Processing: ${requestToProcess.pageType} - ${requestToProcess.primarySlug}`);
+
+    try {
+      // Process with timeout to prevent hanging
+      const result = await Promise.race([
+        processSingleSEOPage(requestToProcess, supabase),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Processing timeout after 25 seconds')), 25000)
+        )
+      ]);
+      
+      return new Response(JSON.stringify({
+        success: true,
+        totalGenerated: 1,
+        totalRequested: validRequests.length,
+        message: `Successfully processed ${requestToProcess.primarySlug}`,
+        processed: {
+          pageType: requestToProcess.pageType,
+          primarySlug: requestToProcess.primarySlug,
+          secondarySlug: requestToProcess.secondarySlug,
+          id: result.id
+        }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+      
+    } catch (error) {
+      console.error(`❌ Failed to process ${requestToProcess.primarySlug}:`, error);
+      return new Response(JSON.stringify({
+        success: false,
+        error: `Failed to process ${requestToProcess.primarySlug}: ${(error as Error).message}`,
+        totalGenerated: 0,
+        failed: {
+          pageType: requestToProcess.pageType,
+          primarySlug: requestToProcess.primarySlug,
+          secondarySlug: requestToProcess.secondarySlug
+        }
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
     
   } catch (error) {
     console.error('💥 Bulk generation error:', error);
     return new Response(JSON.stringify({
       success: false,
-      error: (error as Error).message || 'Bulk generation failed'
+      error: (error as Error).message || 'Bulk generation failed',
+      totalGenerated: 0
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    });
   }
+}
+
+async function processSingleSEOPage(request: SEOPageRequest, supabase: any) {
+  const content = await generateSEOContent(
+    request.pageType,
+    request.primarySlug,
+    request.secondarySlug,
+    request.tertiarySlug,
+    supabase
+  );
+  
+  const seoPage = {
+    page_type: request.pageType,
+    primary_slug: request.primarySlug,
+    secondary_slug: request.secondarySlug || null,
+    tertiary_slug: request.tertiarySlug || null,
+    meta_title: content.metaTitle,
+    meta_description: content.metaDescription,
+    h1_title: content.h1Title,
+    intro_content: content.introContent,
+    content_blocks: { main: content.mainContent },
+    faqs: content.faqs,
+    structured_data: content.structuredData,
+    keywords: content.keywords,
+    canonical_url: content.canonicalUrl,
+    breadcrumbs: content.breadcrumbs,
+    quality_score: calculateQualityScore(content),
+    last_generated_at: new Date().toISOString(),
+    is_active: true
+  };
+  
+  const { data, error } = await supabase
+    .from('seo_generated_content')
+    .upsert([seoPage])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('❌ Database error:', error);
+    throw error;
+  }
+  
+  console.log(`✅ Saved: ${request.primarySlug}`);
+  return data;
 }
 
 async function generateDynamicSitemap(req: Request, supabase: any) {
