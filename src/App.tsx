@@ -112,6 +112,9 @@ import ServicesMarketplacePage from "./pages/ServicesMarketplacePage";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { turboCore } from "@/utils/turboCore";
+import { hyperPerformanceCore } from "@/utils/hyperPerformanceCore";
+import { appleStyleLoader } from "@/utils/appleStyleLoader";
+import { UltraFastLoader } from "@/components/performance/UltraFastLoader";
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
@@ -146,7 +149,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  // Initialize turbo optimizations
+  // Initialize ultra-performance optimizations
   useEffect(() => {
     try {
       // Apply color scheme
@@ -154,6 +157,12 @@ const App = () => {
       if (savedColorScheme) {
         document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
       }
+      
+      // Initialize hyper performance core
+      hyperPerformanceCore.init();
+      
+      // Initialize Apple-style loader
+      appleStyleLoader.init();
       
       // Initialize turbo core only if not already initialized
       if (turboCore && typeof turboCore.init === 'function') {
@@ -163,7 +172,7 @@ const App = () => {
       // Initialize performance optimizations
       initializePerformanceOptimizations();
       
-      // Initialize jobs-specific optimizations
+      // Initialize jobs-specific optimizations with error handling
       initializeJobsOptimizations(queryClient).catch(console.error);
     } catch (error) {
       console.warn('App initialization error:', error);
@@ -193,22 +202,23 @@ const App = () => {
                 <RealtimeProvider showToasts={false}>
                   <CopilotProvider>
                     <TooltipProvider>
-                      <Toaster
-                        duration={10000}
-                        position="top-right"
-                        toastOptions={{
-                          style: {
-                            background: 'hsl(var(--background))',
-                            color: 'hsl(var(--foreground))',
-                            border: '1px solid hsl(var(--border))',
-                            marginTop: '80px',
-                          },
-                        }}
-                      />
-                      <MobileAppWrapper>
-                        <div className="min-h-screen flex flex-col">
-                          <Navbar />
-                          <main className="flex-1">
+                      <UltraFastLoader>
+                        <Toaster
+                          duration={10000}
+                          position="top-right"
+                          toastOptions={{
+                            style: {
+                              background: 'hsl(var(--background))',
+                              color: 'hsl(var(--foreground))',
+                              border: '1px solid hsl(var(--border))',
+                              marginTop: '80px',
+                            },
+                          }}
+                        />
+                        <MobileAppWrapper>
+                          <div className="min-h-screen flex flex-col">
+                            <Navbar />
+                            <main className="flex-1">
                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Edge Function Testing Route */}
@@ -360,6 +370,7 @@ const App = () => {
                       </SilentAuthHandler>
                       <GoogleOneTapLogin />
                       <MobileAppInitializer />
+                      </UltraFastLoader>
                     </TooltipProvider>
                   </CopilotProvider>
                 </RealtimeProvider>
