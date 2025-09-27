@@ -1,3 +1,4 @@
+import React from "react";
 import { NavItem } from "./types/nav-item";
 import { coreRoutes } from "./navigation/coreRoutes";
 import { authRoutes } from "./navigation/authRoutes";
@@ -137,7 +138,7 @@ export const navItems = [
   ...coreRoutes,
   ...authRoutes,
   ...profileRoutes,
-  ...jobRoutes,
+  // jobRoutes commented out to prevent route conflicts with JobDetails
   ...learningRoutes,
   ...toolsRoutes,
   ...resumeRoutes,
