@@ -278,13 +278,12 @@ const App = () => {
                                 
                                 <Route path="/dashboard" element={<UnifiedDashboard />} />
                                 <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
-                                <Route path="/mobile/passport" element={<MobilePassport />} />
-                                <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
-                                <Route path="/resume/new" element={<ResumeNew />} />
-                                <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
-                                <Route path="/resume/templates" element={<ResumeTemplates />} />
-                                <Route path="/resume/edit/:id" element={<ResumeEdit />} />
-                                <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
+                                 <Route path="/mobile/passport" element={<MobilePassport />} />
+                                 <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
+                                 <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
+                                 <Route path="/resume/templates" element={<ResumeTemplates />} />
+                                 <Route path="/resume/edit/:id" element={<ResumeEdit />} />
+                                 <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
                                 <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
                                 <Route path="/talent-database" element={<AdminLayout><TalentDatabase /></AdminLayout>} />
                                 <Route path="/admin/security" element={<AdminLayout><SecurityCenter /></AdminLayout>} />
