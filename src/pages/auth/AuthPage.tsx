@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -237,18 +237,28 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
             <Card className="w-full max-w-md mx-auto">
               <CardHeader className="space-y-4">
                 <div className="flex justify-center">
-                  <Tabs value={userType} onValueChange={(v) => setUserType(v as 'candidate' | 'employer')} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="candidate" className="flex items-center gap-2">
+                  <div className="w-full">
+                    <div className="grid w-full grid-cols-2 border rounded-lg p-1 bg-muted">
+                      <Button
+                        variant={userType === 'candidate' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setUserType('candidate')}
+                        className="flex items-center gap-2"
+                      >
                         <User className="h-4 w-4" />
                         Job Seeker
-                      </TabsTrigger>
-                      <TabsTrigger value="employer" className="flex items-center gap-2">
+                      </Button>
+                      <Button
+                        variant={userType === 'employer' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setUserType('employer')}
+                        className="flex items-center gap-2"
+                      >
                         <Building className="h-4 w-4" />
                         Employer
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="text-center">
