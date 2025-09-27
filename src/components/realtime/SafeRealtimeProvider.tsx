@@ -24,17 +24,6 @@ export const SafeRealtimeProvider: React.FC<SafeRealtimeProviderProps> = ({
   children, 
   showToasts = false 
 }) => {
-  // Early return with children if React hooks are not ready
-  try {
-    const ReactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-    if (!ReactInternals || !ReactInternals.ReactCurrentDispatcher || !ReactInternals.ReactCurrentDispatcher.current) {
-      console.warn('React dispatcher not ready, rendering children without realtime');
-      return <>{children}</>;
-    }
-  } catch (error) {
-    console.warn('React internals check failed, rendering children without realtime:', error);
-    return <>{children}</>;
-  }
 
   // Safe state initialization with error handling
   const [state, setState] = useState(() => {
