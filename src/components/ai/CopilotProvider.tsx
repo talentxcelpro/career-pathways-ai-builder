@@ -13,22 +13,56 @@ interface CopilotContextType {
 const CopilotContext = createContext<CopilotContextType | undefined>(undefined);
 
 export const useCopilotContext = () => {
-  const context = useContext(CopilotContext);
-  if (!context) {
-    throw new Error('useCopilotContext must be used within CopilotProvider');
+  try {
+    const context = useContext(CopilotContext);
+    if (!context) {
+      console.warn('useCopilotContext called outside provider, returning fallback');
+      // Return safe fallback instead of throwing
+      return {
+        copilotState: {
+          isOpen: false,
+          isMinimized: false,
+          context: 'dashboard'
+        },
+        openCopilot: () => {},
+        closeCopilot: () => {},
+        toggleMinimize: () => {},
+        setContext: () => {}
+      };
+    }
+    return context;
+  } catch (error) {
+    console.error('useCopilotContext error:', error);
+    // Return safe fallback
+    return {
+      copilotState: {
+        isOpen: false,
+        isMinimized: false,
+        context: 'dashboard'
+      },
+      openCopilot: () => {},
+      closeCopilot: () => {},
+      toggleMinimize: () => {},
+      setContext: () => {}
+    };
   }
-  return context;
 };
 
 export function CopilotProvider({ children }: { children: React.ReactNode }) {
-  const copilotHook = useAICopilot();
+  try {
+    const copilotHook = useAICopilot();
 
-  return (
-    <CopilotContext.Provider value={copilotHook}>
-      {children}
-      {copilotHook.copilotState.isOpen && (
-        <AICareerCopilot />
-      )}
-    </CopilotContext.Provider>
-  );
+    return (
+      <CopilotContext.Provider value={copilotHook}>
+        {children}
+        {copilotHook.copilotState.isOpen && (
+          <AICareerCopilot />
+        )}
+      </CopilotContext.Provider>
+    );
+  } catch (error) {
+    console.error('CopilotProvider error:', error);
+    // Return children without copilot functionality
+    return <>{children}</>;
+  }
 }
