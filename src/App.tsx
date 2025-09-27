@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { NotificationProvider } from "@/contexts/NotificationContext";
@@ -182,24 +181,23 @@ const App = () => {
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <ReactContextErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <BrowserRouter>
-              <AuthProvider>
-                <NotificationProvider>
-                  <RealtimeProvider showToasts={false}>
-                    <CopilotProvider>
-                      <Toaster
-                        duration={10000}
-                        position="top-right"
-                        toastOptions={{
-                          style: {
-                            background: 'hsl(var(--background))',
-                            color: 'hsl(var(--foreground))',
-                            border: '1px solid hsl(var(--border))',
-                            marginTop: '80px',
-                          },
-                        }}
-                      />
+          <BrowserRouter>
+            <AuthProvider>
+              <NotificationProvider>
+                <RealtimeProvider showToasts={false}>
+                  <CopilotProvider>
+                    <Toaster
+                      duration={10000}
+                      position="top-right"
+                      toastOptions={{
+                        style: {
+                          background: 'hsl(var(--background))',
+                          color: 'hsl(var(--foreground))',
+                          border: '1px solid hsl(var(--border))',
+                          marginTop: '80px',
+                        },
+                      }}
+                    />
                       <MobileAppWrapper>
                         <div className="min-h-screen flex flex-col">
                           <Navbar />
@@ -343,7 +341,6 @@ const App = () => {
                 </NotificationProvider>
               </AuthProvider>
             </BrowserRouter>
-          </TooltipProvider>
         </QueryClientProvider>
       </ReactContextErrorBoundary>
     </ErrorBoundary>
