@@ -51,7 +51,7 @@ export const jobRoutes = [
   {
     title: "Job Details",
     to: "/jobs/:slugOrId",
-    page: <JobDetail />,
+    page: <JobDetails />,
   },
   {
     title: "Legacy Job Redirect",

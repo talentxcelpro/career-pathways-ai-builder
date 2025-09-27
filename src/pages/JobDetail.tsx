@@ -53,80 +53,131 @@ const JobDetail = () => {
     getCurrentUser();
   }, []);
 
-  // Fetch job details
+  // Fetch job details with improved logic
   const { data: job, isLoading, error } = useQuery({
     queryKey: ['job-detail', slugOrId],
     queryFn: async () => {
       if (!slugOrId) throw new Error('No job slug provided');
       
-      // Avoid embedding relations to prevent ambiguous relationship errors
-      const { data, error } = await supabase
+      console.log('🔍 JobDetail fetching for:', slugOrId);
+      
+      // First, try exact SEO slug match
+      let { data: jobData, error: jobError } = await supabase
         .from('jobs')
-        .select('*')
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo_url,
+            industry,
+            is_verified,
+            website_url
+          )
+        `)
         .eq('seo_slug', slugOrId)
         .eq('is_active', true)
         .maybeSingle();
 
-      if (error && (error as any).code !== 'PGRST116') throw error;
+      if (jobError && jobError.code !== 'PGRST116') throw jobError;
 
-      let record = data;
-
-      // Fallback: try loose match by slug/title
-      if (!record) {
-        const { data: found, error: e2 } = await supabase
+      // If not found by SEO slug, try UUID match
+      if (!jobData && slugOrId.length === 36 && slugOrId.includes('-')) {
+        console.log('🔍 Trying UUID lookup');
+        const { data: uuidData, error: uuidError } = await supabase
           .from('jobs')
-          .select('*')
-          .or(`seo_slug.ilike.%${slugOrId}%,title.ilike.%${slugOrId}%`)
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry,
+              is_verified,
+              website_url
+            )
+          `)
+          .eq('id', slugOrId)
+          .eq('is_active', true)
+          .maybeSingle();
+        
+        if (uuidError && uuidError.code !== 'PGRST116') throw uuidError;
+        jobData = uuidData;
+      }
+
+      // If still not found, try partial SEO slug match
+      if (!jobData) {
+        console.log('🔍 Trying partial SEO slug match');
+        const { data: partialData, error: partialError } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry,
+              is_verified,
+              website_url
+            )
+          `)
+          .ilike('seo_slug', `${slugOrId.substring(0, 30)}%`)
           .eq('is_active', true)
           .limit(1)
           .maybeSingle();
-        if (e2 && (e2 as any).code !== 'PGRST116') throw e2;
-        record = found || null;
+        
+        if (partialError && partialError.code !== 'PGRST116') throw partialError;
+        jobData = partialData;
       }
 
-      return record;
+      // If still not found, try title/company name search
+      if (!jobData) {
+        console.log('🔍 Trying title/company search');
+        const searchTerms = slugOrId.replace(/-/g, ' ');
+        const { data: searchData, error: searchError } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry,
+              is_verified,
+              website_url
+            )
+          `)
+          .or(`title.ilike.%${searchTerms}%,company_name.ilike.%${searchTerms}%`)
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle();
+        
+        if (searchError && searchError.code !== 'PGRST116') throw searchError;
+        jobData = searchData;
+      }
+
+      return jobData;
     },
     enabled: !!slugOrId,
   });
 
-  // Fallback: attempt to resolve similar job slug and redirect
+  // Handle SEO redirects and external jobs
   useEffect(() => {
-    const tryResolveSlug = async () => {
-      if (isLoading || job || triedRedirect || !slugOrId) return;
-      setTriedRedirect(true);
-      const term = decodeURIComponent(slugOrId);
-      try {
-        // Try prefix match first
-        let { data: found } = await supabase
-          .from('jobs')
-          .select('seo_slug')
-          .ilike('seo_slug', `${term}%`)
-          .eq('is_active', true)
-          .limit(1)
-          .maybeSingle();
-
-        if (!found) {
-          // Try broader match by slug or title
-          const { data: found2 } = await supabase
-            .from('jobs')
-            .select('seo_slug')
-            .or(`seo_slug.ilike.%${term}%,title.ilike.%${term}%`)
-            .eq('is_active', true)
-            .limit(1)
-            .maybeSingle();
-          found = found2 as any;
-        }
-
-        if (found?.seo_slug) {
-          navigate(`/jobs/${found.seo_slug}`, { replace: true });
-        }
-      } catch (e) {
-        console.error('Fallback job slug resolve failed:', e);
+    if (job) {
+      // If job has external URL, redirect to it
+      if (job.external_url) {
+        console.log('🔗 Redirecting to external URL:', job.external_url);
+        window.location.href = job.external_url;
+        return;
       }
-    };
 
-    tryResolveSlug();
-  }, [isLoading, job, slugOrId, triedRedirect, navigate]);
+      // If current URL doesn't match the proper SEO slug, redirect
+      if (job.seo_slug && job.seo_slug !== slugOrId) {
+        console.log('🔄 Redirecting to proper SEO URL:', job.seo_slug);
+        navigate(`/jobs/${job.seo_slug}`, { replace: true });
+      }
+    }
+  }, [job, slugOrId, navigate]);
 
   // Track job view
   useEffect(() => {
