@@ -5,13 +5,13 @@ import { HelmetProvider } from 'react-helmet-async'
 
 import './index.css'
 
-// Import ultra-performance optimizations
-import { hyperPerformanceCore } from './utils/hyperPerformanceCore'
-import { appleStyleLoader } from './utils/appleStyleLoader'
+// Commented out ultra-performance optimizations that interfere with React
+// import { hyperPerformanceCore } from './utils/hyperPerformanceCore'
+// import { appleStyleLoader } from './utils/appleStyleLoader'
 
-// Initialize performance optimizations immediately
-hyperPerformanceCore.init();
-appleStyleLoader.init();
+// These were causing React dispatcher errors by overriding window.fetch
+// hyperPerformanceCore.init();
+// appleStyleLoader.init();
 
 // Simplified and safer React initialization
 const container = document.getElementById("root");
