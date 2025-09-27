@@ -3,7 +3,7 @@ import { AutomatedSEODashboard } from '@/components/seo/AutomatedSEODashboard';
 import { SEOScalabilityEngine } from '@/components/seo/SEOScalabilityEngine';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const SEODashboardPage = () => {
+const SEODashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
@@ -31,4 +31,4 @@ const SEODashboardPage = () => {
   );
 };
 
-export default SEODashboardPage;
+export default SEODashboard;
