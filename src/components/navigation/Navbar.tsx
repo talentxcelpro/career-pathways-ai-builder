@@ -37,7 +37,7 @@ import {
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useEmployerAccess } from '@/hooks/useEmployerAccess';
 import { AuthDialog } from '@/components/auth/AuthDialog';
-// import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
+import { useUnreadNotificationCount } from '@/hooks/useEnhancedNotifications';
 import { NotificationBadge } from '@/components/ui/NotificationBadge';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
@@ -71,8 +71,7 @@ export const Navbar = () => {
   });
 
   // Get unread notifications count using enhanced hook
-  // const { unreadCount } = useUnreadNotificationCount();
-  const unreadCount = 0; // Temporary static value
+  const { unreadCount } = useUnreadNotificationCount();
 
   // Check if user has company access
   const { data: hasCompanyAccess = false } = useQuery({
