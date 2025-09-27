@@ -88,7 +88,7 @@ export const getFeaturedJobs = async (limit: number = 6): Promise<Job[]> => {
       .from('jobs')
       .select(`
         *,
-        companies (
+        companies!left (
           id,
           name,
           logo_url,
