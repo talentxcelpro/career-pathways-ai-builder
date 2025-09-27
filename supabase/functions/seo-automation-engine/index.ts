@@ -127,6 +127,12 @@ async function bulkGenerateSEOPages(req: Request, supabase: any) {
   for (const batch of batches) {
     const batchPromises = batch.map(async (request) => {
       try {
+        // Validate request data
+        if (!request.pageType || !request.primarySlug) {
+          console.error('Invalid request data:', request);
+          return null;
+        }
+
         const content = await generateSEOContent(
           request.pageType,
           request.primarySlug,
@@ -138,8 +144,8 @@ async function bulkGenerateSEOPages(req: Request, supabase: any) {
         return {
           page_type: request.pageType,
           primary_slug: request.primarySlug,
-          secondary_slug: request.secondarySlug,
-          tertiary_slug: request.tertiarySlug,
+          secondary_slug: request.secondarySlug || null,
+          tertiary_slug: request.tertiarySlug || null,
           meta_title: content.metaTitle,
           meta_description: content.metaDescription,
           h1_title: content.h1Title,
@@ -347,14 +353,17 @@ async function generateSEOContent(
 }
 
 function formatSlug(slug: string): string {
+  if (!slug || typeof slug !== 'string') {
+    return 'Unknown';
+  }
   return slug.split('-').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ')
 }
 
 function buildSEOUrl(pageType: string, primary: string, secondary?: string, tertiary?: string): string {
-  const parts = [pageType, primary, secondary, tertiary].filter(Boolean)
-  return '/' + parts.join('/')
+  const safeParts = [pageType, primary, secondary, tertiary].filter(part => part && typeof part === 'string' && part.trim() !== '')
+  return '/' + safeParts.join('/')
 }
 
 function calculateQualityScore(content: SEOContent): number {
@@ -404,57 +413,67 @@ function getChangeFrequency(pageType: string): string {
 }
 
 function generateMainContent(pageType: string, primary: string, secondary?: string, tertiary?: string): string {
-  // Template-based content generation
-  return `Comprehensive content about ${formatSlug(primary)}${secondary ? ` in ${formatSlug(secondary)}` : ''}.`
+  const safePrimary = primary || 'opportunities';
+  const safeSecondary = secondary || '';
+  return `Comprehensive content about ${formatSlug(safePrimary)}${safeSecondary ? ` in ${formatSlug(safeSecondary)}` : ''}.`;
 }
 
 function generateFAQs(pageType: string, primary: string): Array<{ question: string; answer: string }> {
+  const safePrimary = primary || 'job';
   return [
     {
-      question: `What are the best ${formatSlug(primary)} opportunities?`,
-      answer: `Top ${formatSlug(primary)} opportunities include roles at leading companies with competitive salaries and growth potential.`
+      question: `What are the best ${formatSlug(safePrimary)} opportunities?`,
+      answer: `Top ${formatSlug(safePrimary)} opportunities include roles at leading companies with competitive salaries and growth potential.`
     },
     {
-      question: `How do I find ${formatSlug(primary)} jobs?`,
-      answer: `Use TalentXcel's advanced search filters to find ${formatSlug(primary)} positions that match your skills and preferences.`
+      question: `How do I find ${formatSlug(safePrimary)} jobs?`,
+      answer: `Use TalentXcel's advanced search filters to find ${formatSlug(safePrimary)} positions that match your skills and preferences.`
     },
     {
-      question: `What skills are needed for ${formatSlug(primary)}?`,
-      answer: `Key skills for ${formatSlug(primary)} include both technical expertise and soft skills like communication and problem-solving.`
+      question: `What skills are needed for ${formatSlug(safePrimary)}?`,
+      answer: `Key skills for ${formatSlug(safePrimary)} include both technical expertise and soft skills like communication and problem-solving.`
     }
   ]
 }
 
 function generateStructuredData(pageType: string, primary: string, secondary?: string): any {
+  const safePrimary = primary || 'jobs';
+  const safeSecondary = secondary || '';
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": `${formatSlug(primary)}${secondary ? ` in ${formatSlug(secondary)}` : ''} | TalentXcel`,
-    "description": `Find ${formatSlug(primary)} opportunities${secondary ? ` in ${formatSlug(secondary)}` : ''} on TalentXcel`,
-    "url": `https://talentxcel.in${buildSEOUrl(pageType, primary, secondary)}`
+    "name": `${formatSlug(safePrimary)}${safeSecondary ? ` in ${formatSlug(safeSecondary)}` : ''} | TalentXcel`,
+    "description": `Find ${formatSlug(safePrimary)} opportunities${safeSecondary ? ` in ${formatSlug(safeSecondary)}` : ''} on TalentXcel`,
+    "url": `https://talentxcel.in${buildSEOUrl(pageType, safePrimary, safeSecondary)}`
   }
 }
 
 function generateKeywords(pageType: string, primary: string, secondary?: string): string[] {
-  const base = [primary, `${primary} jobs`, `${primary} careers`]
-  if (secondary) {
-    base.push(`${primary} ${secondary}`, `${primary} jobs ${secondary}`)
+  const safePrimary = primary || 'jobs';
+  const safeSecondary = secondary || '';
+  const base = [safePrimary, `${safePrimary} jobs`, `${safePrimary} careers`]
+  if (safeSecondary) {
+    base.push(`${safePrimary} ${safeSecondary}`, `${safePrimary} jobs ${safeSecondary}`)
   }
   return base
 }
 
 function generateBreadcrumbs(pageType: string, primary: string, secondary?: string, tertiary?: string): Array<{ name: string; url: string }> {
+  const safePrimary = primary || 'jobs';
+  const safeSecondary = secondary || '';
+  const safeTertiary = tertiary || '';
+  
   const breadcrumbs = [
     { name: 'Home', url: '/' },
     { name: formatSlug(pageType), url: `/${pageType}` }
   ]
   
-  if (primary) {
-    breadcrumbs.push({ name: formatSlug(primary), url: `/${pageType}/${primary}` })
+  if (safePrimary) {
+    breadcrumbs.push({ name: formatSlug(safePrimary), url: `/${pageType}/${safePrimary}` })
   }
   
-  if (secondary) {
-    breadcrumbs.push({ name: formatSlug(secondary), url: `/${pageType}/${primary}/${secondary}` })
+  if (safeSecondary) {
+    breadcrumbs.push({ name: formatSlug(safeSecondary), url: `/${pageType}/${safePrimary}/${safeSecondary}` })
   }
   
   return breadcrumbs
