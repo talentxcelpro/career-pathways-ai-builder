@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://talentxcel.in/network</loc>
-    <lastmod>2025-08-26</lastmod>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/network/discover</loc>
-    <lastmod>2025-08-26</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/network/feed</loc>
-    <lastmod>2025-08-26</lastmod>
-    <priority>0.8</priority>
-  </url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network-posts-1.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network-posts-2.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network-profiles-1.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network-profiles-2.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network-communities-1.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-network-events-1.xml</loc>
+    <lastmod>2025-09-27</lastmod>
+  </sitemap>
+</sitemapindex>

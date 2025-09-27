@@ -31,6 +31,30 @@ export const SitemapGenerator: React.FC = () => {
     }
   };
 
+  const generateNetworkSitemap = async () => {
+    setIsGenerating(true);
+    try {
+      // Generate network sitemap index
+      const { data, error } = await supabase.functions.invoke('network-sitemap', {
+        body: { type: 'index' }
+      });
+      
+      if (error) throw error;
+      
+      // Create a blob with the network sitemap XML
+      const blob = new Blob([data], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      setSitemapUrl(url);
+      
+      toast.success('Network sitemap index generated successfully!');
+    } catch (error) {
+      console.error('Error generating network sitemap:', error);
+      toast.error('Failed to generate network sitemap');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const downloadSitemap = () => {
     if (sitemapUrl) {
       const link = document.createElement('a');
@@ -49,6 +73,7 @@ Allow: /
 # Sitemaps
 Sitemap: https://talentxcel.in/sitemap.xml
 Sitemap: https://talentxcel.in/sitemap-jobs.xml
+Sitemap: https://talentxcel.in/sitemap-network.xml
 
 # Disallow admin and API routes
 Disallow: /admin/
@@ -100,6 +125,22 @@ Crawl-delay: 1
               </>
             ) : (
               'Generate XML Sitemap'
+            )}
+          </Button>
+          
+          <Button 
+            onClick={generateNetworkSitemap} 
+            disabled={isGenerating}
+            variant="outline"
+            className="w-fit"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating Network Sitemap...
+              </>
+            ) : (
+              'Generate Network Sitemap Index'
             )}
           </Button>
           
