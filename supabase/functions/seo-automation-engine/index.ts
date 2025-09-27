@@ -151,8 +151,8 @@ async function bulkGenerateSEOPages(req: Request, supabase: any) {
   console.log('💥 Starting bulk generation...');
   
   try {
-    const { requests, batchSize = 1 }: { requests: SEOPageRequest[], batchSize?: number } = await req.json()
-    console.log(`📊 Received ${requests.length} requests, batch size: ${batchSize}`);
+    const { requests, batchSize = 10 }: { requests: SEOPageRequest[], batchSize?: number } = await req.json()
+    console.log(`📊 Received ${requests.length} requests for background processing`);
 
     // Validate requests first
     const validRequests = requests.filter(request => {
@@ -167,64 +167,60 @@ async function bulkGenerateSEOPages(req: Request, supabase: any) {
       return new Response(JSON.stringify({
         success: false,
         error: 'No valid requests found',
-        totalGenerated: 0
+        totalAccepted: 0
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    // Process only 1 item at a time to avoid timeouts
-    const requestToProcess = validRequests[0];
-    console.log(`🎯 Processing: ${requestToProcess.pageType} - ${requestToProcess.primarySlug}`);
+    // Start background processing immediately
+    const backgroundProcess = async () => {
+      console.log(`🔄 Background: Processing ${validRequests.length} SEO pages...`);
+      let processed = 0;
+      let failed = 0;
 
-    try {
-      // Process with timeout to prevent hanging
-      const result = await Promise.race([
-        processSingleSEOPage(requestToProcess, supabase),
-        new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Processing timeout after 25 seconds')), 25000)
-        )
-      ]);
-      
-      return new Response(JSON.stringify({
-        success: true,
-        totalGenerated: 1,
-        totalRequested: validRequests.length,
-        message: `Successfully processed ${requestToProcess.primarySlug}`,
-        processed: {
-          pageType: requestToProcess.pageType,
-          primarySlug: requestToProcess.primarySlug,
-          secondarySlug: requestToProcess.secondarySlug,
-          id: result.id
+      for (const request of validRequests) {
+        try {
+          console.log(`📝 Background: Processing ${request.pageType}/${request.primarySlug}/${request.secondarySlug || ''}`);
+          
+          await processSingleSEOPage(request, supabase);
+          processed++;
+          
+          console.log(`✅ Background: Completed ${request.primarySlug} (${processed}/${validRequests.length})`);
+          
+          // Small delay between requests to avoid overwhelming the database
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+        } catch (error) {
+          failed++;
+          console.error(`❌ Background: Failed ${request.primarySlug}:`, error);
         }
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      }
       
-    } catch (error) {
-      console.error(`❌ Failed to process ${requestToProcess.primarySlug}:`, error);
-      return new Response(JSON.stringify({
-        success: false,
-        error: `Failed to process ${requestToProcess.primarySlug}: ${(error as Error).message}`,
-        totalGenerated: 0,
-        failed: {
-          pageType: requestToProcess.pageType,
-          primarySlug: requestToProcess.primarySlug,
-          secondarySlug: requestToProcess.secondarySlug
-        }
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+      console.log(`🎉 Background: Batch complete - ${processed} processed, ${failed} failed`);
+    };
+
+    // Start background processing without awaiting
+    backgroundProcess().catch(error => console.error('Background process error:', error));
+    
+    // Return immediate response so client doesn't timeout
+    return new Response(JSON.stringify({
+      success: true,
+      totalAccepted: validRequests.length,
+      status: 'processing',
+      message: `Accepted ${validRequests.length} pages for background processing`
+    }), {
+      status: 202, // 202 Accepted - indicates async processing
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
     
   } catch (error) {
     console.error('💥 Bulk generation error:', error);
     return new Response(JSON.stringify({
       success: false,
-      error: (error as Error).message || 'Bulk generation failed',
-      totalGenerated: 0
+      error: (error as Error).message || 'Failed to initiate bulk generation',
+      totalAccepted: 0
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
