@@ -29,11 +29,11 @@ const Index = () => {
   }, []);
   // Fast auth check - optimized for instant loading
   useEffect(() => {
-    console.log('🔍 Starting auth check...');
+    console.log('🔍 INDEX: Starting auth check...');
     
     // Set up auth listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔐 Auth state changed:', event, !!session);
+      console.log('🔐 INDEX: Auth state changed:', event, !!session);
       setIsLoggedIn(!!session);
       setAuthChecked(true);
     });
@@ -41,16 +41,16 @@ const Index = () => {
     // Then check existing session
     const checkUser = async () => {
       try {
-        console.log('👤 Checking existing user session...');
+        console.log('👤 INDEX: Checking existing user session...');
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error) {
-          console.warn('⚠️ Auth check error:', error);
+          console.warn('⚠️ INDEX: Auth check error:', error);
         }
-        console.log('✅ Auth check complete:', !!user);
+        console.log('✅ INDEX: Auth check complete:', !!user);
         setIsLoggedIn(!!user);
         setAuthChecked(true);
       } catch (err) {
-        console.error('❌ Auth check failed:', err);
+        console.error('❌ INDEX: Auth check failed:', err);
         setAuthChecked(true); // Still mark as checked to prevent infinite loading
       }
     };
@@ -58,6 +58,9 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Debug logging for render states
+  console.log('🎯 INDEX: Render state - authChecked:', authChecked, 'isLoggedIn:', isLoggedIn);
 
   // Redirect logged-in users after auth check completes
   if (authChecked && isLoggedIn) {
