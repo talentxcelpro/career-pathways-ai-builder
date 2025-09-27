@@ -198,6 +198,10 @@ verify_jwt = false
 [functions.activity-reward-engine]
 verify_jwt = false
 
+# SEO System
+[functions.seo-automation-engine]
+verify_jwt = false
+
 # Monitoring & Cleanup
 [functions.database-cleanup]
 verify_jwt = false
