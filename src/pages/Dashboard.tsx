@@ -36,7 +36,12 @@ const Dashboard = () => {
 
   const { data: featuredJobs = [], isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
     queryKey: ['featured_jobs'],
-    queryFn: realDataService.getFeaturedJobs,
+    queryFn: async () => {
+      console.log('🏆 Dashboard: Fetching featured jobs...');
+      const result = await realDataService.getFeaturedJobs();
+      console.log('🏆 Dashboard: Featured jobs result:', result?.length, result);
+      return result;
+    },
     staleTime: 10 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
   });

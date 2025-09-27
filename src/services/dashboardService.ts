@@ -122,6 +122,7 @@ export const getDashboardStats = async (userId?: string): Promise<DashboardStats
 // Real-time featured jobs
 export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
   return fetchProductionData(async () => {
+    console.log('🔍 DashboardService: Fetching featured jobs...');
     const { data, error } = await supabase
       .from('jobs')
       .select(`
@@ -135,12 +136,7 @@ export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
         employment_type,
         is_remote,
         posted_at,
-        companies (
-          name,
-          logo_url,
-          location,
-          is_verified
-        )
+        seo_slug
       `)
       .eq('is_active', true)
       .eq('is_featured', true)
@@ -149,12 +145,12 @@ export const getFeaturedJobs = async (): Promise<FeaturedJob[]> => {
       .order('created_at', { ascending: false })
       .limit(6);
 
+    console.log('🔍 DashboardService: Featured jobs result:', { data, error, count: data?.length });
     if (error) throw error;
     return (data || []).map(job => ({
       ...job,
-      companies: job.companies && Array.isArray(job.companies) && job.companies.length > 0 
-        ? job.companies[0] 
-        : undefined
+      // Use company_name from the job record directly
+      companies: undefined
     }));
   }, []);
 };

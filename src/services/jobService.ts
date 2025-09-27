@@ -84,6 +84,7 @@ export const getJobs = async (
 
 export const getFeaturedJobs = async (limit: number = 6): Promise<Job[]> => {
   return fetchProductionData(async () => {
+    console.log('🔍 Fetching featured jobs...');
     const { data, error } = await supabase
       .from('jobs')
       .select('*')
@@ -94,6 +95,7 @@ export const getFeaturedJobs = async (limit: number = 6): Promise<Job[]> => {
       .order('created_at', { ascending: false })
       .limit(limit);
 
+    console.log('🔍 Featured jobs query result:', { data, error, count: data?.length });
     if (error) throw error;
     return data || [];
   }, []);
