@@ -40,6 +40,7 @@ const JobDetails = () => {
     queryKey: ['job', slugOrId],
     queryFn: async () => {
       console.log('🔍🔍🔍 QUERY FUNCTION EXECUTING');
+      console.log('🔍🔍🔍 slugOrId provided:', slugOrId);
       if (!slugOrId) {
         console.log('❌ No slugOrId provided');
         return null;
@@ -118,17 +119,7 @@ const JobDetails = () => {
           // Fetch full job details using the found ID
           const fullJobResult = await supabase
             .from('jobs')
-            .select(`
-              *,
-              companies (
-                id,
-                name,
-                logo_url,
-                industry,
-                is_verified,
-                location
-              )
-            `)
+            .select('*')
             .eq('id', result.data[0].id)
             .eq('is_active', true)
             .maybeSingle();
