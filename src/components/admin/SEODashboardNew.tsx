@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SEOPerformanceDashboard } from '@/components/seo/SEOPerformanceDashboard';
+import { ClientSideGenerator } from '@/components/seo/ClientSideGenerator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -513,6 +514,10 @@ export const SEODashboardNew = () => {
           </TabsContent>
 
           <TabsContent value="automation" className="space-y-6">
+            <ClientSideGenerator />
+          </TabsContent>
+
+          <TabsContent value="generation" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
