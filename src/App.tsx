@@ -38,6 +38,7 @@ import { JobUrlRedirect } from "@/components/seo/JobUrlRedirect";
 import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
 import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
+import JobDetails from "@/pages/jobs/JobDetails";
 import Blog from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
 import NotFound from "@/pages/NotFound";
@@ -218,6 +219,9 @@ const App = () => {
                                 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/tools" element={<Tools />} />
+                
+                {/* Job Detail Route - MUST come before sitemap routes */}
+                <Route path="/jobs/:slugOrId" element={<React.Suspense fallback={<div>Loading...</div>}><JobDetails /></React.Suspense>} />
                 
                 {/* Jobs Sitemap Routes - SEO Optimized */}
                 <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsPage /></React.Suspense>} />

@@ -31,6 +31,7 @@ const JobDetails = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
 
+  console.log('🚀 JobDetails component mounted with slugOrId:', slugOrId);
   console.log('🔍 JobDetails rendered for slugOrId:', slugOrId);
 
   // Fetch job details with unified logic
