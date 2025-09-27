@@ -3,7 +3,7 @@
 // ============================================
 // React hook for unified AI operations with enhanced features
 
-import { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { aiServiceManager, AIServiceRequest, AIServiceResponse, AIFeedback } from '@/services/ai-service-manager';
 import { CoreResumeData } from '@/types/resume-core';
 import { toast } from 'sonner';
