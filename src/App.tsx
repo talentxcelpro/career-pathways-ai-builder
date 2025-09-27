@@ -112,9 +112,6 @@ import ServicesMarketplacePage from "./pages/ServicesMarketplacePage";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { turboCore } from "@/utils/turboCore";
-import { hyperPerformanceCore } from "@/utils/hyperPerformanceCore";
-import { appleStyleLoader } from "@/utils/appleStyleLoader";
-import { UltraFastLoader } from "@/components/performance/UltraFastLoader";
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
@@ -127,10 +124,6 @@ import { NotificationsPage } from "./pages/NotificationsPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { AdminPage } from "./pages/AdminPage";
 import { EdgeFunctionTester } from "./components/testing/EdgeFunctionTester";
-import AuthTestPage from "./pages/AuthTestPage";
-import { Phase3SecurityDashboard } from "./pages/Phase3SecurityDashboard";
-import Phase4SecurityDashboard from "./pages/Phase4SecurityDashboard";
-import Phase5SecurityIntegration from "./pages/Phase5SecurityIntegration";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -153,7 +146,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  // Initialize ultra-performance optimizations
+  // Initialize turbo optimizations
   useEffect(() => {
     try {
       // Apply color scheme
@@ -161,12 +154,6 @@ const App = () => {
       if (savedColorScheme) {
         document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
       }
-      
-      // Initialize hyper performance core
-      hyperPerformanceCore.init();
-      
-      // Initialize Apple-style loader
-      appleStyleLoader.init();
       
       // Initialize turbo core only if not already initialized
       if (turboCore && typeof turboCore.init === 'function') {
@@ -176,7 +163,7 @@ const App = () => {
       // Initialize performance optimizations
       initializePerformanceOptimizations();
       
-      // Initialize jobs-specific optimizations with error handling
+      // Initialize jobs-specific optimizations
       initializeJobsOptimizations(queryClient).catch(console.error);
     } catch (error) {
       console.warn('App initialization error:', error);
@@ -206,23 +193,22 @@ const App = () => {
                 <RealtimeProvider showToasts={false}>
                   <CopilotProvider>
                     <TooltipProvider>
-                      <UltraFastLoader>
-                        <Toaster
-                          duration={10000}
-                          position="top-right"
-                          toastOptions={{
-                            style: {
-                              background: 'hsl(var(--background))',
-                              color: 'hsl(var(--foreground))',
-                              border: '1px solid hsl(var(--border))',
-                              marginTop: '80px',
-                            },
-                          }}
-                        />
-                        <MobileAppWrapper>
-                          <div className="min-h-screen flex flex-col">
-                            <Navbar />
-                            <main className="flex-1">
+                      <Toaster
+                        duration={10000}
+                        position="top-right"
+                        toastOptions={{
+                          style: {
+                            background: 'hsl(var(--background))',
+                            color: 'hsl(var(--foreground))',
+                            border: '1px solid hsl(var(--border))',
+                            marginTop: '80px',
+                          },
+                        }}
+                      />
+                      <MobileAppWrapper>
+                        <div className="min-h-screen flex flex-col">
+                          <Navbar />
+                          <main className="flex-1">
                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Edge Function Testing Route */}
@@ -230,34 +216,6 @@ const App = () => {
                                   <div className="p-6">
                                     <EdgeFunctionTester />
                                   </div>
-                                } />
-                                
-                                {/* Authentication & RLS Integration Test Route */}
-                                <Route path="/test-auth-rls" element={
-                                  <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
-                                    <AuthTestPage />
-                                  </React.Suspense>
-                                } />
-                                
-                                {/* Phase 3: Security Administration Dashboard */}
-                                <Route path="/admin/security-dashboard" element={
-                                  <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
-                                    <Phase3SecurityDashboard />
-                                  </React.Suspense>
-                                } />
-                                
-                                {/* Phase 4: Advanced Security Monitoring Dashboard */}
-                                <Route path="/admin/phase4-security" element={
-                                  <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
-                                    <Phase4SecurityDashboard />
-                                  </React.Suspense>
-                                } />
-                                
-                                {/* Phase 5: Complete Security Integration Dashboard */}
-                                <Route path="/admin/phase5-security" element={
-                                  <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
-                                    <Phase5SecurityIntegration />
-                                  </React.Suspense>
                                 } />
                                 
                                 {/* Final Launch Checklist Route */}
@@ -402,7 +360,6 @@ const App = () => {
                       </SilentAuthHandler>
                       <GoogleOneTapLogin />
                       <MobileAppInitializer />
-                      </UltraFastLoader>
                     </TooltipProvider>
                   </CopilotProvider>
                 </RealtimeProvider>

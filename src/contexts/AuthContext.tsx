@@ -59,8 +59,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (event === 'SIGNED_IN' && session?.user) {
               console.log('✅ User signed in successfully');
               localStorage.removeItem('auth_redirect');
-              // Ensure user profile exists for RLS compatibility
-              ensureUserProfile(session.user).catch(console.error);
             } else if (event === 'SIGNED_OUT') {
               console.log('👋 User signed out');
               setUser(null);
@@ -90,11 +88,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(session?.user ?? null);
           setLoading(false);
           console.log('✅ Auth check complete:', !!session);
-          
-          // Ensure user profile exists for RLS compatibility
-          if (session?.user) {
-            ensureUserProfile(session.user).catch(console.error);
-          }
         }
 
         authStateRef.current = subscription;
@@ -121,61 +114,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         authStateRef.current.unsubscribe();
       }
     };
-  }, []);
-
-  // Ensure user profile exists for RLS policies
-  const ensureUserProfile = useCallback(async (user: User) => {
-    try {
-      // Check if profile exists
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', user.id)
-        .single();
-
-      if (!existingProfile) {
-        // Create profile if it doesn't exist
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: user.id,
-            full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
-            email: user.email,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          });
-
-        if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
-          console.error('Error creating user profile:', profileError);
-        }
-      }
-
-      // Ensure user role exists
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .single();
-
-      if (!existingRole) {
-        // Create default user role
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: user.id,
-            role: 'user',
-            is_active: true,
-            created_at: new Date().toISOString(),
-          });
-
-        if (roleError && roleError.code !== '23505') { // Ignore duplicate key errors
-          console.error('Error creating user role:', roleError);
-        }
-      }
-    } catch (error) {
-      console.error('Error ensuring user profile:', error);
-    }
   }, []);
 
   const signOut = useCallback(async () => {
