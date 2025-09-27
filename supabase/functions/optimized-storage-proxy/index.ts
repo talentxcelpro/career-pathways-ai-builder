@@ -117,7 +117,7 @@ serve(async (req) => {
       }
 
       console.log(`Cache HIT for: ${storagePath}`);
-      return new Response(cachedEntry.data, {
+      return new Response(new Uint8Array(cachedEntry.data), {
         status: 200,
         headers: {
           ...corsHeaders,
@@ -235,7 +235,7 @@ serve(async (req) => {
         }
       });
 
-    } catch (abortError) {
+    } catch (abortError: any) {
       clearTimeout(timeoutId);
       if (abortError.name === 'AbortError') {
         return new Response('Request timeout', { 

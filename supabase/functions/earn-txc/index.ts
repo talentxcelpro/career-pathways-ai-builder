@@ -71,20 +71,26 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Validate request format early
-    if (!req.headers.get('Authorization')) {
+    // Validate request early to prevent unnecessary processing
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
       return new Response(
         JSON.stringify({ success: false, error: 'Missing authorization' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       )
     }
 
+    // Use optimized client configuration
     const supabaseClient = createClient<Database>(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false
+        },
         global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
+          headers: { Authorization: authHeader },
         },
       }
     )

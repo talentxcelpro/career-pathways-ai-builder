@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Image, Video, FileText, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useOptimizedStorage } from "@/hooks/useOptimizedStorage";
 import { toast } from "sonner";
 
 interface MediaUploadProps {
@@ -11,73 +11,44 @@ interface MediaUploadProps {
 }
 
 export const MediaUpload: React.FC<MediaUploadProps> = ({ onMediaUploaded, existingMedia }) => {
-  const [uploading, setUploading] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>(existingMedia);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { uploadBatch, uploading, progress } = useOptimizedStorage({
+    bucket: 'post-media',
+    maxFileSize: 50 * 1024 * 1024, // 50MB for videos
+    allowedTypes: ['image/*', 'video/*'],
+    onProgress: (progress) => console.log(`Upload progress: ${progress}%`)
+  });
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error('Please log in to upload media');
-      return;
-    }
-
-    setUploading(true);
-    const uploadedUrls: string[] = [];
-
     try {
-      for (const file of Array.from(files)) {
-        // Validate file type
-        const fileType = file.type.split('/')[0];
-        if (!['image', 'video'].includes(fileType)) {
-          toast.error(`File type ${file.type} is not supported`);
-          continue;
-        }
-
-        // Validate file size (50MB limit for videos, 10MB for others)
-        const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-          const maxSizeMB = file.type.startsWith('video/') ? 50 : 10;
-          toast.error(`File ${file.name} is too large. Maximum size is ${maxSizeMB}MB.`);
-          continue;
-        }
-
+      // Prepare files for batch upload
+      const filesToUpload = Array.from(files).map(file => {
         const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
         const timestamp = Date.now();
-        const fileName = `${user.id}/talentxcel_media_${user.id}_${timestamp}_${sanitizedFileName}`;
+        const fileName = `talentxcel_media_${timestamp}_${sanitizedFileName}`;
         
-        const { error: uploadError } = await supabase.storage
-          .from('post-media')
-          .upload(fileName, file);
+        return { file, path: fileName };
+      });
 
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
-          toast.error(`Failed to upload ${file.name}`);
-          continue;
-        }
+      const result = await uploadBatch(filesToUpload);
 
-        const { data } = supabase.storage
-          .from('post-media')
-          .getPublicUrl(fileName);
-
-        console.log('Media uploaded to:', data.publicUrl);
-        uploadedUrls.push(data.publicUrl);
+      if (result.successful.length > 0) {
+        const uploadedUrls = result.successful.map(item => item.url);
+        const newMediaUrls = [...mediaUrls, ...uploadedUrls];
+        setMediaUrls(newMediaUrls);
+        onMediaUploaded(newMediaUrls);
       }
 
-      const newMediaUrls = [...mediaUrls, ...uploadedUrls];
-      setMediaUrls(newMediaUrls);
-      onMediaUploaded(newMediaUrls);
-      
-      if (uploadedUrls.length > 0) {
-        toast.success(`${uploadedUrls.length} file(s) uploaded successfully`);
+      if (result.failed.length > 0) {
+        console.error('Some uploads failed:', result.failed);
       }
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload media');
-    } finally {
-      setUploading(false);
     }
   };
 
