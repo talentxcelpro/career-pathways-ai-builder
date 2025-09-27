@@ -182,12 +182,12 @@ const App = () => {
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <ReactContextErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <AuthProvider>
-              <NotificationProvider>
-                <RealtimeProvider showToasts={false}>
-                  <CopilotProvider>
-                    <TooltipProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <NotificationProvider>
+                  <RealtimeProvider showToasts={false}>
+                    <CopilotProvider>
                       <Toaster
                         duration={10000}
                         position="top-right"
@@ -338,12 +338,12 @@ const App = () => {
                       </SilentAuthHandler>
                       <GoogleOneTapLogin />
                       <MobileAppInitializer />
-                    </TooltipProvider>
-                  </CopilotProvider>
-                </RealtimeProvider>
-              </NotificationProvider>
-            </AuthProvider>
-          </BrowserRouter>
+                    </CopilotProvider>
+                  </RealtimeProvider>
+                </NotificationProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          </TooltipProvider>
         </QueryClientProvider>
       </ReactContextErrorBoundary>
     </ErrorBoundary>
