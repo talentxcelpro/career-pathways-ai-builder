@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { navItems } from "./nav-items";
@@ -188,9 +190,11 @@ const App = () => {
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <OptimizedAuthProvider>
-              <NotificationProvider>
+        <HelmetProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <OptimizedAuthProvider>
+                <NotificationProvider>
                 <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <SafeRealtimeProvider showToasts={false}>
                     <CopilotProvider>
@@ -329,9 +333,11 @@ const App = () => {
                   </SafeRealtimeProvider>
                  </React.Suspense>
                    </NotificationProvider>
-                </OptimizedAuthProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
+                 </OptimizedAuthProvider>
+              </BrowserRouter>
+            </TooltipProvider>
+          </HelmetProvider>
+        </QueryClientProvider>
     </ErrorBoundary>
   );
 };
