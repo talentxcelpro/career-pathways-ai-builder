@@ -30,6 +30,11 @@ interface SEOContent {
 
 console.log('🚀 SEO Automation Engine starting...');
 
+// Add shutdown event listener
+globalThis.addEventListener?.('beforeunload', (event) => {
+  console.log('🔄 Function shutdown requested');
+});
+
 Deno.serve(async (req) => {
   console.log(`📡 Request received: ${req.method} ${req.url}`);
   
@@ -196,42 +201,57 @@ async function bulkGenerateSEOPages(req: Request, supabase: any) {
       });
     }
 
-    // Start background processing immediately
+    // Background processing function with proper error handling
     const backgroundProcess = async () => {
+      // Small delay to ensure response is sent first
+      await new Promise(resolve => setTimeout(resolve, 100));
       console.log(`🔄 Background: Processing ${validRequests.length} SEO pages...`);
       let processed = 0;
       let failed = 0;
 
-      for (const request of validRequests) {
-        try {
-          console.log(`📝 Background: Processing ${request.pageType}/${request.primarySlug}/${request.secondarySlug || ''}`);
-          
-          await processSingleSEOPage(request, supabase);
-          processed++;
-          
-          console.log(`✅ Background: Completed ${request.primarySlug} (${processed}/${validRequests.length})`);
-          
-          // Small delay between requests to avoid overwhelming the database
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-        } catch (error) {
-          failed++;
-          console.error(`❌ Background: Failed ${request.primarySlug}:`, error);
+      try {
+        for (const request of validRequests) {
+          try {
+            console.log(`📝 Background: Processing ${request.pageType}/${request.primarySlug}/${request.secondarySlug || ''}`);
+            
+            await processSingleSEOPage(request, supabase);
+            processed++;
+            
+            console.log(`✅ Background: Completed ${request.primarySlug} (${processed}/${validRequests.length})`);
+            
+            // Small delay between requests to avoid overwhelming the database
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+          } catch (error) {
+            failed++;
+            console.error(`❌ Background: Failed ${request.primarySlug}:`, error);
+          }
         }
+        
+        console.log(`🎉 Background: Batch complete - ${processed} processed, ${failed} failed`);
+      } catch (error) {
+        console.error('💥 Background process critical error:', error);
       }
-      
-      console.log(`🎉 Background: Batch complete - ${processed} processed, ${failed} failed`);
     };
 
-    // Start background processing without awaiting
-    backgroundProcess().catch(error => console.error('Background process error:', error));
+    // Use background processing with proper shutdown handling
+    const backgroundPromise = backgroundProcess();
+    
+    // Add shutdown event listener to handle graceful shutdown
+    globalThis.addEventListener?.('beforeunload', (event) => {
+      console.log('🔄 Function shutdown detected, background tasks may be interrupted');
+    });
+    
+    // Keep the promise running without awaiting to prevent function shutdown
+    backgroundPromise.catch(error => console.error('Background process error:', error));
     
     // Return immediate response so client doesn't timeout
     return new Response(JSON.stringify({
       success: true,
       totalAccepted: validRequests.length,
       status: 'processing',
-      message: `Accepted ${validRequests.length} pages for background processing`
+      message: `Accepted ${validRequests.length} pages for background processing`,
+      timestamp: new Date().toISOString()
     }), {
       status: 202, // 202 Accepted - indicates async processing
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
