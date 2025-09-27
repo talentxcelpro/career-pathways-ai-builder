@@ -5,6 +5,7 @@ import { ThreePaneResumeBuilder } from '@/components/resume/enhanced/ThreePaneRe
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const TalentXcelResumeBuilder: React.FC = () => {
+  console.log('🎯 TalentXcelResumeBuilder component is rendering!');
   const { id } = useParams();
   const [resumeData, setResumeData] = useState<any>(null);
   

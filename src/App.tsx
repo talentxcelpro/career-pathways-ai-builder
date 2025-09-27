@@ -260,13 +260,16 @@ const App = () => {
                 <Route path="/jobs/remote/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRemoteRoleCity /></React.Suspense>} />
                 <Route path="/jobs/top-companies/:company/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByCompanyRoleCity /></React.Suspense>} />
                                 
-                                {navItems.map((item: NavItem) => (
-                                  <Route 
-                                    key={item.to} 
-                                    path={item.to} 
-                                    element={item.page}
-                                  />
-                                ))}
+                                {navItems.map((item: NavItem) => {
+                                  console.log('🔍 Registering route:', item.to, 'Title:', item.title);
+                                  return (
+                                    <Route 
+                                      key={item.to} 
+                                      path={item.to} 
+                                      element={item.page}
+                                    />
+                                  );
+                                })}
 
                                 {/* Legacy UUID-based profile redirects */}
                                 <Route path="/profile/:id" element={<ProfileUrlRedirect />} />
