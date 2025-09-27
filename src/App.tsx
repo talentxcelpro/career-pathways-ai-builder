@@ -26,8 +26,6 @@ import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 import { SafeRealtimeProvider } from "@/components/realtime/SafeRealtimeProvider";
-import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
-import { ReactSafeInitializer } from "@/components/recovery/ReactSafeInitializer";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
 import { SEOJobsLocation } from "@/components/seo/SEOJobsLocation";
 import { SEOJobsRole } from "@/components/seo/SEOJobsRole";
