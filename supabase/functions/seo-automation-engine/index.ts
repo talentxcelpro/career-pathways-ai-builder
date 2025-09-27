@@ -49,8 +49,23 @@ Deno.serve(async (req) => {
     )
 
     const url = new URL(req.url)
-    const action = url.searchParams.get('action') || 'generate'
-    console.log(`🎯 Action: ${action}`);
+    const action = url.searchParams.get('action')
+    console.log(`🎯 Action: ${action || 'bulk-generate (default)'}`);
+
+    // Check if request has a body for bulk operations
+    let hasBody = false;
+    try {
+      const contentType = req.headers.get('content-type');
+      hasBody = contentType?.includes('application/json') || false;
+    } catch (e) {
+      console.log('📝 No request body detected');
+    }
+
+    // Default to bulk-generate if no action specified and has JSON body
+    if (!action && hasBody) {
+      console.log('📚 Bulk generation requested (default)');
+      return await bulkGenerateSEOPages(req, supabase);
+    }
 
     switch (action) {
       case 'generate':
@@ -69,11 +84,14 @@ Deno.serve(async (req) => {
         console.log('🔍 Status check requested');
         return await getSEOStatus(req, supabase)
       default:
+        // If no valid action and no body, return usage info
         return new Response(JSON.stringify({
-          success: false,
-          error: 'Invalid action'
+          success: true,
+          message: 'SEO Automation Engine is running',
+          usage: 'Send POST request with JSON body for bulk generation, or use ?action=generate for single page',
+          availableActions: ['generate', 'bulk-generate', 'sitemap', 'performance', 'status']
         }), {
-          status: 400,
+          status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
     }
