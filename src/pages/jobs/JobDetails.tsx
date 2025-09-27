@@ -137,7 +137,7 @@ const JobDetails = () => {
               is_verified
             )
           `)
-          .ilike('id', `${partialId}%`)
+          .ilike('id::text', `${partialId}%`)
           .eq('is_active', true)
           .eq('job_status', 'open')
           .limit(1)
