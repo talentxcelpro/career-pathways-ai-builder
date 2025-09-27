@@ -193,14 +193,14 @@ const App = () => {
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <HelmetProvider>
-          <TooltipProvider>
-            <BrowserRouter>
-              <OptimizedAuthProvider>
-                <NotificationProvider>
-                <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+          <BrowserRouter>
+            <OptimizedAuthProvider>
+              <NotificationProvider>
+              <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <SafeRealtimeProvider showToasts={false}>
                     <CopilotProvider>
-                      <div className="min-h-screen flex flex-col">
+                      <TooltipProvider>
+                        <div className="min-h-screen flex flex-col">
                         <Navbar />
                         <main className="flex-1">
                           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
@@ -331,17 +331,17 @@ const App = () => {
                             </React.Suspense>
                           </main>
                           
-                        </div>
+                         </div>
+                      </TooltipProvider>
                     </CopilotProvider>
                   </SafeRealtimeProvider>
                  </React.Suspense>
                    </NotificationProvider>
                  </OptimizedAuthProvider>
               </BrowserRouter>
-            </TooltipProvider>
-          </HelmetProvider>
-        </QueryClientProvider>
-    </ErrorBoundary>
+           </HelmetProvider>
+         </QueryClientProvider>
+     </ErrorBoundary>
   );
 };
 
