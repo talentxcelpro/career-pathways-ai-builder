@@ -33,7 +33,9 @@ export const parseJobSlug = (slug: string): { titleSlug: string; locationSlug: s
       'mumbai', 'delhi', 'bangalore', 'hyderabad', 'chennai', 'kolkata', 
       'pune', 'ahmedabad', 'jaipur', 'surat', 'lucknow', 'kanpur',
       'nagpur', 'indore', 'thane', 'bhopal', 'visakhapatnam', 'patna',
-      'vadodara', 'ghaziabad', 'remote', 'india'
+      'vadodara', 'ghaziabad', 'remote', 'india', 'gujarat', 'bhavnagar',
+      'kerala', 'kannur', 'maharashtra', 'rajasthan', 'karnataka', 'west',
+      'bengal', 'tamil', 'nadu', 'andhra', 'pradesh', 'telangana'
     ];
     
     let locationIndex = -1;

@@ -100,23 +100,24 @@ const JobDetails = () => {
 
       // Strategy 4: Try extracting ID and searching
       if (!jobData) {
-        console.log('🔍 Trying ID extraction method');
         const extractedId = extractJobId(slugOrId);
+        console.log('🔍 Trying ID extraction method, extractedId:', extractedId);
         if (extractedId && extractedId !== slugOrId) {
           // Check if it's a partial UUID (8 characters)
           if (extractedId.length === 8 && /^[a-f0-9]{8}$/i.test(extractedId)) {
             console.log('🔍 Searching by partial UUID:', extractedId);
-            const { data: partialUuidData, error: partialUuidError } = await supabase
+            // Use direct filtering approach since UUID search is complex
+            const { data: allActiveJobs, error: allJobsError } = await supabase
               .from('jobs')
               .select(baseQuery)
-              .ilike('id', `${extractedId}%`)
               .eq('is_active', true)
-              .eq('job_status', 'open')
-              .limit(1)
-              .maybeSingle();
+              .eq('job_status', 'open');
             
-            if (partialUuidError && partialUuidError.code !== 'PGRST116') throw partialUuidError;
-            jobData = partialUuidData;
+            if (allJobsError) throw allJobsError;
+            
+            // Find job with ID starting with the extracted partial ID
+            jobData = allActiveJobs?.find(job => job.id.startsWith(extractedId)) || null;
+            console.log('🔍 Found job by partial ID search:', jobData ? `${jobData.title} (${jobData.id})` : 'No match');
           } else {
             // Try full UUID match
             const { data: extractedData, error: extractedError } = await supabase
