@@ -25595,6 +25595,7 @@ export type Database = {
       }
       seo_generated_content: {
         Row: {
+          breadcrumbs: Json | null
           content_blocks: Json | null
           created_at: string | null
           faqs: Json | null
@@ -25615,6 +25616,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          breadcrumbs?: Json | null
           content_blocks?: Json | null
           created_at?: string | null
           faqs?: Json | null
@@ -25635,6 +25637,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          breadcrumbs?: Json | null
           content_blocks?: Json | null
           created_at?: string | null
           faqs?: Json | null
@@ -25653,6 +25656,48 @@ export type Database = {
           structured_data?: Json | null
           tertiary_slug?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_generation_log: {
+        Row: {
+          batch_size: number | null
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          operation_type: string
+          started_at: string
+          status: string | null
+          total_failed: number | null
+          total_generated: number | null
+          total_requested: number | null
+        }
+        Insert: {
+          batch_size?: number | null
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operation_type: string
+          started_at?: string
+          status?: string | null
+          total_failed?: number | null
+          total_generated?: number | null
+          total_requested?: number | null
+        }
+        Update: {
+          batch_size?: number | null
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operation_type?: string
+          started_at?: string
+          status?: string | null
+          total_failed?: number | null
+          total_generated?: number | null
+          total_requested?: number | null
         }
         Relationships: []
       }
