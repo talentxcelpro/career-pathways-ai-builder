@@ -1,22 +1,27 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-import { HelmetProvider } from 'react-helmet-async'
-import { SafeReactComponent } from './components/SafeReactComponent'
+import { ReactDispatcherRecovery } from './components/recovery/ReactDispatcherRecovery'
+import { ReactInitializer } from './components/recovery/ReactInitializer'
 
 import './index.css'
 
-// Ensure React dispatcher is properly initialized
+// Enhanced React initialization with dispatcher recovery
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
 
+// Ensure React is properly initialized
+console.log('🚀 Starting React application with dispatcher recovery...');
+
 const root = createRoot(container);
 
-// Wrap in SafeReactComponent to ensure dispatcher is available
+// Wrap App with recovery components to handle dispatcher issues
 root.render(
-  <SafeReactComponent fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Initializing...</div>}>
-    <HelmetProvider>
+  <ReactDispatcherRecovery maxRetries={3}>
+    <ReactInitializer
+      onInitialized={() => console.log('✅ React context initialized successfully')}
+    >
       <App />
-    </HelmetProvider>
-  </SafeReactComponent>
+    </ReactInitializer>
+  </ReactDispatcherRecovery>
 );

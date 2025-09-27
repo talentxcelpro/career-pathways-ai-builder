@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AuthLayout } from '@/components/auth/AuthLayout';
-import { RegisterForm } from '@/components/auth/RegisterForm';
+import { MinimalRegisterForm } from '@/components/auth/MinimalRegisterForm';
 
 const Register = () => {
   return (
@@ -9,7 +9,7 @@ const Register = () => {
       title="Join TalentXcel"
       description="Create your account to get started"
     >
-      <RegisterForm />
+      <MinimalRegisterForm />
     </AuthLayout>
   );
 };
