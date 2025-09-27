@@ -128,6 +128,7 @@ import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { AdminPage } from "./pages/AdminPage";
 import { EdgeFunctionTester } from "./components/testing/EdgeFunctionTester";
 import AuthTestPage from "./pages/AuthTestPage";
+import { Phase3SecurityDashboard } from "./pages/Phase3SecurityDashboard";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -233,6 +234,13 @@ const App = () => {
                                 <Route path="/test-auth-rls" element={
                                   <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                                     <AuthTestPage />
+                                  </React.Suspense>
+                                } />
+                                
+                                {/* Phase 3: Security Administration Dashboard */}
+                                <Route path="/admin/security-dashboard" element={
+                                  <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+                                    <Phase3SecurityDashboard />
                                   </React.Suspense>
                                 } />
                                 
