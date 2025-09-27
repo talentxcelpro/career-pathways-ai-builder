@@ -51,7 +51,7 @@ export const SEODashboardNew = () => {
     generatedCount: 0,
     log: []
   });
-  const [batchSize, setBatchSize] = useState('500');
+  const [batchSize, setBatchSize] = useState('10');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
