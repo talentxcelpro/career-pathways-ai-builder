@@ -33717,6 +33717,10 @@ export type Database = {
         Args: { url: string }
         Returns: string
       }
+      find_or_create_company: {
+        Args: { company_name_param: string }
+        Returns: string
+      }
       generate_ai_match_insight: {
         Args: {
           current_user_id: string
