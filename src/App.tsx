@@ -123,6 +123,7 @@ import { ChatPage } from "./pages/ChatPage";
 import { NotificationsPage } from "./pages/NotificationsPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { AdminPage } from "./pages/AdminPage";
+import { EdgeFunctionTester } from "./components/testing/EdgeFunctionTester";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -210,6 +211,13 @@ const App = () => {
                           <main className="flex-1">
                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
+                                {/* Edge Function Testing Route */}
+                                <Route path="/test-functions" element={
+                                  <div className="p-6">
+                                    <EdgeFunctionTester />
+                                  </div>
+                                } />
+                                
                                 {/* Final Launch Checklist Route */}
                                 <Route path="/launch/final" element={
                                   <ProtectedRoute>
