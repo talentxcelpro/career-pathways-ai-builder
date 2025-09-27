@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { useRealtimeContext } from '@/contexts/RealtimeContext';
+import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
 import { useGlobalRealtimeStatus } from '@/hooks/useEnhancedRealtime';
 import { Wifi, WifiOff, Activity } from 'lucide-react';
 
