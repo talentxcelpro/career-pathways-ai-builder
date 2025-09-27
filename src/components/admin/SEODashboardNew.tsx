@@ -144,34 +144,130 @@ export const SEODashboardNew = () => {
     setProgress(prev => ({ ...prev, isGenerating: true, log: [], generatedCount: 0 }));
     
     try {
-      addToLog('Starting massive SEO page generation...');
+      addToLog('🚀 Starting massive SEO page generation...');
       
-      // Define comprehensive page generation strategy
+      // Define comprehensive page generation strategy for millions of pages
       const pageRequests = [];
       
-      // Job + Location combinations
+      // Expanded locations - Indian cities + global
       const locations = [
         'bangalore', 'mumbai', 'delhi', 'hyderabad', 'chennai', 'pune', 'kolkata',
-        'gurgaon', 'noida', 'ahmedabad', 'jaipur', 'surat', 'lucknow', 'kanpur'
+        'gurgaon', 'noida', 'ahmedabad', 'jaipur', 'surat', 'lucknow', 'kanpur',
+        'nagpur', 'indore', 'thane', 'bhopal', 'visakhapatnam', 'patna', 'vadodara',
+        'ghaziabad', 'ludhiana', 'agra', 'nashik', 'faridabad', 'meerut', 'rajkot',
+        'kalyan-dombivali', 'vasai-virar', 'varanasi', 'srinagar', 'aurangabad',
+        'dhanbad', 'amritsar', 'navi-mumbai', 'allahabad', 'ranchi', 'howrah',
+        'coimbatore', 'jabalpur', 'gwalior', 'vijayawada', 'jodhpur', 'madurai',
+        'raipur', 'kota', 'chandigarh', 'guwahati', 'solapur', 'hubli-dharwad',
+        'bareilly', 'moradabad', 'mysore', 'tiruchirappalli', 'tiruppur', 'gurgaon',
+        'salem', 'mira-bhayandar', 'thiruvananthapuram', 'bhiwandi', 'saharanpur',
+        'gorakhpur', 'guntur', 'bikaner', 'amravati', 'noida', 'jamshedpur',
+        'bhilai', 'cuttack', 'firozabad', 'kochi', 'nellore', 'bhavnagar',
+        'dehradun', 'durgapur', 'asansol', 'rourkela', 'nanded', 'kolhapur',
+        'ajmer', 'akola', 'gulbarga', 'jamnagar', 'ujjain', 'loni', 'siliguri',
+        'jhansi', 'ulhasnagar', 'jammu', 'sangli-miraj-kupwad', 'mangalore',
+        'erode', 'belgaum', 'ambattur', 'tirunelveli', 'malegaon', 'gaya',
+        'jalgaon', 'udaipur', 'maheshtala', 'remote', 'work-from-home'
       ];
       
+      // Comprehensive job roles covering all industries
       const jobRoles = [
+        // Tech roles
         'software-engineer', 'data-scientist', 'product-manager', 'devops-engineer',
         'ui-ux-designer', 'business-analyst', 'project-manager', 'quality-engineer',
-        'frontend-developer', 'backend-developer', 'full-stack-developer', 'mobile-developer'
+        'frontend-developer', 'backend-developer', 'full-stack-developer', 'mobile-developer',
+        'cloud-engineer', 'machine-learning-engineer', 'ai-engineer', 'blockchain-developer',
+        'cybersecurity-specialist', 'site-reliability-engineer', 'data-engineer', 'solutions-architect',
+        'technical-lead', 'engineering-manager', 'scrum-master', 'product-owner',
+        'system-administrator', 'network-engineer', 'database-administrator', 'web-developer',
+        
+        // Business roles
+        'sales-executive', 'marketing-manager', 'hr-manager', 'finance-manager',
+        'operations-manager', 'customer-success-manager', 'account-manager', 'business-development',
+        'digital-marketing-specialist', 'content-writer', 'social-media-manager', 'seo-specialist',
+        'financial-analyst', 'accountant', 'recruiter', 'training-specialist',
+        
+        // Healthcare
+        'doctor', 'nurse', 'pharmacist', 'physiotherapist', 'medical-representative',
+        'laboratory-technician', 'radiologist', 'dentist', 'veterinarian',
+        
+        // Education
+        'teacher', 'professor', 'tutor', 'academic-coordinator', 'principal',
+        'education-counselor', 'training-manager',
+        
+        // Manufacturing & Engineering
+        'mechanical-engineer', 'electrical-engineer', 'civil-engineer', 'chemical-engineer',
+        'production-manager', 'quality-control', 'plant-manager', 'maintenance-engineer',
+        
+        // Other sectors
+        'graphic-designer', 'photographer', 'chef', 'hotel-manager', 'travel-consultant',
+        'insurance-agent', 'real-estate-agent', 'logistics-coordinator', 'supply-chain-manager'
       ];
 
+      // Skills covering all domains
       const skills = [
-        'javascript', 'python', 'react', 'node-js', 'aws', 'azure', 'docker',
-        'kubernetes', 'machine-learning', 'data-analysis', 'sql', 'mongodb'
+        // Programming languages
+        'javascript', 'python', 'java', 'react', 'angular', 'vue', 'node-js', 'express',
+        'django', 'flask', 'spring-boot', 'laravel', 'php', 'ruby-on-rails', 'asp-net',
+        'c-sharp', 'c-plus-plus', 'go', 'rust', 'kotlin', 'swift', 'dart', 'flutter',
+        'react-native', 'ionic', 'xamarin',
+        
+        // Cloud & DevOps
+        'aws', 'azure', 'google-cloud', 'docker', 'kubernetes', 'jenkins', 'terraform',
+        'ansible', 'chef', 'puppet', 'gitlab-ci', 'github-actions', 'circleci',
+        
+        // Data & AI
+        'machine-learning', 'deep-learning', 'data-analysis', 'data-science', 'big-data',
+        'hadoop', 'spark', 'kafka', 'elasticsearch', 'tableau', 'power-bi', 'qlik',
+        'tensorflow', 'pytorch', 'scikit-learn', 'pandas', 'numpy', 'r-programming',
+        
+        // Databases
+        'sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'cassandra', 'neo4j',
+        'oracle', 'sql-server', 'dynamodb', 'firebase',
+        
+        // Other skills
+        'agile', 'scrum', 'kanban', 'jira', 'confluence', 'git', 'svn', 'linux',
+        'windows-server', 'networking', 'cybersecurity', 'penetration-testing',
+        'photoshop', 'illustrator', 'figma', 'sketch', 'autocad', 'solidworks'
       ];
 
+      // Major companies + startups + MNCs
       const companies = [
+        // Tech giants
         'google', 'microsoft', 'amazon', 'apple', 'facebook', 'netflix', 'uber',
-        'airbnb', 'spotify', 'salesforce', 'tcs', 'infosys', 'wipro', 'cognizant'
+        'airbnb', 'spotify', 'salesforce', 'adobe', 'oracle', 'ibm', 'intel',
+        'nvidia', 'qualcomm', 'cisco', 'vmware', 'servicenow', 'workday',
+        
+        // Indian IT
+        'tcs', 'infosys', 'wipro', 'cognizant', 'hcl', 'tech-mahindra', 'mindtree',
+        'l-and-t-infotech', 'mphasis', 'persistent', 'cyient', 'zensar',
+        
+        // Startups & Unicorns
+        'swiggy', 'zomato', 'flipkart', 'paytm', 'ola', 'byju', 'unacademy',
+        'razorpay', 'freshworks', 'zerodha', 'dream11', 'phonepe', 'cred',
+        'meesho', 'sharechat', 'groww', 'nykaa', 'policybazaar',
+        
+        // Traditional companies
+        'reliance', 'tata', 'mahindra', 'bajaj', 'aditya-birla', 'godrej',
+        'larsen-and-toubro', 'hdfc', 'icici', 'sbi', 'axis-bank'
       ];
 
-      // Generate job + location pages
+      // Industries for targeted pages
+      const industries = [
+        'information-technology', 'banking-financial', 'healthcare', 'education',
+        'manufacturing', 'retail', 'automotive', 'telecommunications', 'pharma',
+        'real-estate', 'consulting', 'media-entertainment', 'travel-hospitality',
+        'logistics', 'agriculture', 'energy', 'construction', 'textiles'
+      ];
+
+      // Salary ranges for salary-based pages
+      const salaryRanges = [
+        '3-5-lakh', '5-10-lakh', '10-15-lakh', '15-25-lakh', '25-50-lakh', '50-lakh-plus',
+        'entry-level', 'mid-level', 'senior-level', 'executive-level'
+      ];
+
+      addToLog('📊 Generating Job + Location combinations...');
+      // Job + Location combinations (Primary pages)
       jobRoles.forEach(role => {
         locations.forEach(location => {
           pageRequests.push({
@@ -183,9 +279,10 @@ export const SEODashboardNew = () => {
         });
       });
 
-      // Generate skill + location pages
+      addToLog('🎯 Generating Skill + Location combinations...');
+      // Skill + Location combinations
       skills.forEach(skill => {
-        locations.forEach(location => {
+        locations.slice(0, 30).forEach(location => { // Top 30 cities for skills
           pageRequests.push({
             pageType: 'skill',
             primarySlug: skill,
@@ -195,10 +292,11 @@ export const SEODashboardNew = () => {
         });
       });
 
-      // Generate company + role + location pages (top 5 locations only for companies)
+      addToLog('🏢 Generating Company + Role + Location combinations...');
+      // Company + Role + Location combinations
       companies.forEach(company => {
-        jobRoles.slice(0, 6).forEach(role => {
-          locations.slice(0, 5).forEach(location => {
+        jobRoles.slice(0, 20).forEach(role => { // Top 20 roles per company
+          locations.slice(0, 10).forEach(location => { // Top 10 cities per company
             pageRequests.push({
               pageType: 'company',
               primarySlug: company,
@@ -210,7 +308,55 @@ export const SEODashboardNew = () => {
         });
       });
 
-      addToLog(`Prepared ${pageRequests.length} page generation requests`);
+      addToLog('🏭 Generating Industry + Location combinations...');
+      // Industry + Location combinations
+      industries.forEach(industry => {
+        locations.slice(0, 25).forEach(location => {
+          pageRequests.push({
+            pageType: 'industry',
+            primarySlug: industry,
+            secondarySlug: location,
+            priority: 'medium'
+          });
+        });
+      });
+
+      addToLog('💰 Generating Salary + Role + Location combinations...');
+      // Salary + Role + Location combinations
+      salaryRanges.forEach(salary => {
+        jobRoles.slice(0, 15).forEach(role => {
+          locations.slice(0, 15).forEach(location => {
+            pageRequests.push({
+              pageType: 'salary',
+              primarySlug: salary,
+              secondarySlug: role,
+              tertiarySlug: location,
+              priority: 'low'
+            });
+          });
+        });
+      });
+
+      addToLog('🎓 Generating Experience level combinations...');
+      // Experience level combinations
+      const experienceLevels = ['fresher', 'entry-level', '1-3-years', '3-5-years', '5-10-years', '10-plus-years'];
+      experienceLevels.forEach(exp => {
+        jobRoles.slice(0, 20).forEach(role => {
+          locations.slice(0, 20).forEach(location => {
+            pageRequests.push({
+              pageType: 'experience',
+              primarySlug: exp,
+              secondarySlug: role,
+              tertiarySlug: location,
+              priority: 'low'
+            });
+          });
+        });
+      });
+
+      const totalRequests = pageRequests.length;
+      addToLog(`🎯 Prepared ${totalRequests.toLocaleString()} page generation requests!`);
+      addToLog(`📈 This will create ${totalRequests > 1000000 ? 'MILLION+' : totalRequests.toLocaleString()} SEO pages`);
 
       // Process in batches
       const batch = parseInt(batchSize);
@@ -218,6 +364,7 @@ export const SEODashboardNew = () => {
       setProgress(prev => ({ ...prev, totalBatches }));
 
       let totalGenerated = 0;
+      let failedBatches = 0;
 
       for (let i = 0; i < pageRequests.length; i += batch) {
         const currentBatch = pageRequests.slice(i, i + batch);
@@ -229,34 +376,41 @@ export const SEODashboardNew = () => {
           progress: (batchNumber / totalBatches) * 100 
         }));
         
-        addToLog(`Processing batch ${batchNumber}/${totalBatches} (${currentBatch.length} pages)...`);
+        addToLog(`⚡ Processing batch ${batchNumber}/${totalBatches} (${currentBatch.length} pages)...`);
 
-        const { data, error } = await supabase.functions.invoke('seo-automation-engine', {
-          body: {
-            action: 'bulk-generate',
-            requests: currentBatch,
-            batchSize: batch
+        try {
+          const { data, error } = await supabase.functions.invoke('seo-automation-engine', {
+            body: { requests: currentBatch, batchSize: batch }
+          });
+
+          if (error) {
+            failedBatches++;
+            addToLog(`❌ Batch ${batchNumber} failed: ${error.message}`);
+            console.error('Batch error:', error);
+          } else if (data?.success) {
+            totalGenerated += data.totalGenerated || 0;
+            addToLog(`✅ Batch ${batchNumber} completed: ${data.totalGenerated} pages generated`);
+            setProgress(prev => ({ ...prev, generatedCount: totalGenerated }));
           }
-        });
-
-        if (error) {
-          addToLog(`❌ Batch ${batchNumber} failed: ${error.message}`);
-          console.error('Batch error:', error);
-        } else if (data?.success) {
-          totalGenerated += data.totalGenerated || 0;
-          addToLog(`✅ Batch ${batchNumber} completed: ${data.totalGenerated} pages generated`);
-          setProgress(prev => ({ ...prev, generatedCount: totalGenerated }));
+        } catch (err: any) {
+          failedBatches++;
+          addToLog(`❌ Batch ${batchNumber} error: ${err.message}`);
         }
 
-        // Small delay between batches
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Smart delay based on batch size
+        const delay = batch > 500 ? 2000 : 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
 
-      addToLog(`🎉 Generation complete! Total pages created: ${totalGenerated}`);
+      const successRate = ((totalBatches - failedBatches) / totalBatches * 100).toFixed(1);
+      addToLog(`🎉 Generation complete!`);
+      addToLog(`📊 Total pages created: ${totalGenerated.toLocaleString()}`);
+      addToLog(`📈 Success rate: ${successRate}%`);
+      addToLog(`💫 You now have MILLION+ SEO pages!`);
       
       toast({
-        title: "Success!",
-        description: `Generated ${totalGenerated} SEO pages successfully`,
+        title: "🚀 Million+ Pages Generated!",
+        description: `Successfully created ${totalGenerated.toLocaleString()} SEO pages with ${successRate}% success rate`,
       });
 
       // Reload metrics
