@@ -33533,6 +33533,7 @@ export type Database = {
         Returns: {
           company_name: string
           id: string
+          location: string
           seo_slug: string
           title: string
         }[]
