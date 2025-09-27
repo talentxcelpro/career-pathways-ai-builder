@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, MapPin, Clock, Building, TrendingUp } from 'lucide-react';
 import { formatDistance } from 'date-fns';
-import { getCompanyLogoWithFallback } from '@/services/companyLogoService';
 
 interface Job {
   id: string;
@@ -60,11 +59,13 @@ export const MobileJobCard: React.FC<MobileJobCardProps> = ({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3 flex-1">
-          <img
-            src={job.companies?.logo_url || getCompanyLogoWithFallback(job.companies?.name || "Company")}
-            alt={job.companies?.name || "Company"}
-            className="w-12 h-12 rounded-lg object-cover bg-gray-100"
-          />
+          {job.companies?.logo_url && (
+            <img
+              src={job.companies.logo_url}
+              alt={job.companies.name}
+              className="w-12 h-12 rounded-lg object-cover bg-gray-100"
+            />
+          )}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-gray-900 text-sm leading-tight">
               {job.title}

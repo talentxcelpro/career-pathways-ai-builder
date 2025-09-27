@@ -111,7 +111,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ classNam
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => markAllAsRead()}
+                  onClick={() => markAllAsRead(undefined)}
                   className="h-6 px-2 text-xs"
                 >
                   <CheckCheck className="h-3 w-3 mr-1" />

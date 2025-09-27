@@ -1,219 +1,59 @@
-# TalentXcel Robots.txt - Comprehensive Job Portal Configuration
-# Last Updated: 2024 - Optimized for AI Era & Indian Job Market
-
-# ===========================================
-# UNIVERSAL ACCESS POLICY
-# ===========================================
+# TalentXcel Robots.txt - Advanced Configuration
 User-agent: *
 Allow: /
 
-# ===========================================
-# MAJOR SEARCH ENGINES - OPTIMIZED CRAWLING
-# ===========================================
-
-# Google Search Ecosystem
+# Enhanced crawling rules for major search engines
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 1
 Request-rate: 10/60s
 
-User-agent: Googlebot-Mobile
-Allow: /
-Crawl-delay: 1
-
-User-agent: Googlebot-Image
-Allow: /images/
-Allow: /assets/
-Allow: /uploads/
-Crawl-delay: 2
-
-User-agent: Googlebot-Video
-Allow: /videos/
-Allow: /media/
-Crawl-delay: 3
-
-User-agent: Googlebot-News
-Allow: /news/
-Allow: /articles/
-Allow: /career-advice/
-Allow: /blog/
-Crawl-delay: 2
-
-User-agent: Google-Extended
-Allow: /
-
-# Microsoft Bing
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 2
 Request-rate: 5/60s
 
-User-agent: BingPreview
-Allow: /
-
-# Yahoo Search
 User-agent: Slurp
 Allow: /
 Crawl-delay: 3
 
-# ===========================================
-# INTERNATIONAL SEARCH ENGINES
-# ===========================================
-
-User-agent: YandexBot
-Allow: /
-Crawl-delay: 3
-
-User-agent: BaiduSpider
-Allow: /
-Crawl-delay: 5
-
-User-agent: DuckDuckBot
-Allow: /
-Crawl-delay: 2
-
-User-agent: NaverBot
-Allow: /
-Crawl-delay: 3
-
-# ===========================================
-# INDIAN JOB PORTAL AGGREGATORS - CRITICAL
-# ===========================================
-
-User-agent: NaukriBot
-Allow: /
-Crawl-delay: 2
-
-User-agent: MonsterBot
-Allow: /
-Crawl-delay: 2
-
-User-agent: ShineBot
-Allow: /
-Crawl-delay: 2
-
-User-agent: TimesJobsBot
-Allow: /
-Crawl-delay: 2
-
-User-agent: FreshersWorldBot
-Allow: /
-Crawl-delay: 3
-
-User-agent: PlacementIndiaBot
-Allow: /
-Crawl-delay: 3
-
-User-agent: JobBoardBot
-Allow: /
-
-User-agent: CareerBuilder
-Allow: /
-
-User-agent: Indeed
-Allow: /
-
-User-agent: IndeedBot
-Allow: /
-
-User-agent: JobsiteBot
-Allow: /
-
-# ===========================================
-# SOCIAL MEDIA CRAWLERS - RICH PREVIEWS
-# ===========================================
-
+# Social media crawlers for rich previews
 User-agent: Twitterbot
 Allow: /
-
 User-agent: facebookexternalhit
 Allow: /
-
 User-agent: LinkedInBot
 Allow: /
-
 User-agent: WhatsApp
 Allow: /
-
 User-agent: TelegramBot
 Allow: /
 
-User-agent: SkypeUriPreview
-Allow: /
-
-User-agent: SlackBot
-Allow: /
-
-User-agent: DiscordBot
-Allow: /
-
-# ===========================================
-# AI & ML TRAINING BOTS - 2024 UPDATE
-# ===========================================
-
+# AI and ML crawlers
 User-agent: ChatGPT-User
 Allow: /
-
 User-agent: GPTBot
 Allow: /
-
-User-agent: Claude-Web
+User-agent: Google-Extended
 Allow: /
 
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: CCBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: OpenAI-SearchBot
-Allow: /
-
-User-agent: AI2Bot
-Allow: /
-
-# ===========================================
-# SEO & ANALYSIS TOOLS - CONTROLLED ACCESS
-# ===========================================
-
+# SEO and analysis tools
 User-agent: AhrefsBot
 Allow: /
-Crawl-delay: 10
-Request-rate: 1/30s
-
 User-agent: SemrushBot
 Allow: /
-Crawl-delay: 5
-
 User-agent: MJ12bot
 Allow: /
-Crawl-delay: 30
-Request-rate: 1/60s
 
-User-agent: DotBot
+# Job aggregators and career sites
+User-agent: JobBoardBot
 Allow: /
-Crawl-delay: 10
-
-User-agent: SplitSignalBot
+User-agent: CareerBuilder
+Allow: /
+User-agent: Indeed
 Allow: /
 
-User-agent: BLEXBot
-Allow: /
-Crawl-delay: 10
-
-# ===========================================
-# COMPREHENSIVE SITEMAP DECLARATIONS
-# ===========================================
-
+# Comprehensive sitemap declarations
 Sitemap: https://talentxcel.in/sitemap.xml
 Sitemap: https://talentxcel.in/sitemap-index.xml
 Sitemap: https://talentxcel.in/jobs-sitemap.xml
@@ -221,248 +61,64 @@ Sitemap: https://talentxcel.in/companies-sitemap.xml
 Sitemap: https://talentxcel.in/courses-sitemap.xml
 Sitemap: https://talentxcel.in/seo-pages-sitemap.xml
 Sitemap: https://talentxcel.in/news-sitemap.xml
-Sitemap: https://talentxcel.in/mobile-sitemap.xml
-Sitemap: https://talentxcel.in/image-sitemap.xml
-Sitemap: https://talentxcel.in/video-sitemap.xml
-Sitemap: https://talentxcel.in/career-advice-sitemap.xml
-Sitemap: https://talentxcel.in/salary-insights-sitemap.xml
 Sitemap: https://talentxcel.in/rss-feed.xml
 
-# ===========================================
-# HIGH-PRIORITY JOB PORTAL PAGES
-# ===========================================
-
+# High-priority pages for enhanced crawling
 Allow: /jobs/
-Allow: /jobs/search/
+Allow: /companies/
+Allow: /learning/
+Allow: /network/
+Allow: /salary/
+
+# SEO landing pages with priority
 Allow: /jobs/location/
 Allow: /jobs/role/
 Allow: /jobs/skill/
-Allow: /jobs/companies/
-Allow: /jobs/salary/
-Allow: /jobs/remote/
-Allow: /jobs/internship/
-Allow: /jobs/freshers/
-Allow: /jobs/experienced/
-
-Allow: /companies/
 Allow: /companies/location/
-Allow: /companies/industry/
-Allow: /companies/size/
-
-Allow: /learning/
-Allow: /courses/
 Allow: /courses/category/
-Allow: /courses/skill/
 
-Allow: /network/
-Allow: /salary/
-Allow: /salary/insights/
-Allow: /career-advice/
-Allow: /interview-questions/
-Allow: /resume-builder/
-
-# ===========================================
-# SECURITY RESTRICTIONS - CRITICAL
-# ===========================================
-
-# System & Configuration Files
-Disallow: /.env*
-Disallow: /config/
-Disallow: /logs/
-Disallow: /tmp/
-Disallow: /cache/
-Disallow: /backup/
-Disallow: /database/
-Disallow: /storage/
-
-# Administrative Areas
+# Restricted areas for security and performance
 Disallow: /admin/
-Disallow: /admin/*
-Disallow: /administrator/
-Disallow: /wp-admin/
-Disallow: /phpmyadmin/
-
-# API Security
-Disallow: /api/auth/
-Disallow: /api/user/
-Disallow: /api/payment/
 Disallow: /api/private/
-Disallow: /api/internal/
-Disallow: /api/admin/
-Disallow: /api/config/
-
-# User Privacy Protection
-Disallow: /profile/edit/
-Disallow: /profile/resume/
-Disallow: /profile/settings/
-Disallow: /profile/documents/
-Disallow: /user/dashboard/
-Disallow: /user/applications/
-Disallow: /user/saved-jobs/
-Disallow: /user/messages/
-Disallow: /user/notifications/
-
-# Employer Sensitive Data
-Disallow: /employer/candidates/
-Disallow: /employer/applications/
-Disallow: /employer/analytics/
-Disallow: /employer/billing/
-Disallow: /employer/messages/
+Disallow: /auth/callback
 Disallow: /employer/settings/
-Disallow: /employer/dashboard/
-
-# Authentication & Sessions
+Disallow: /profile/settings/
+Disallow: /profile/edit/
 Disallow: /*?*sessionid=*
 Disallow: /*?*csrf=*
 Disallow: /*?*token=*
-Disallow: /*?*password=*
-Disallow: /*?*login=*
-Disallow: /*?*auth=*
-Disallow: /auth/callback
-Disallow: /login/callback
-Disallow: /oauth/
 
-# File Types - Security
-Disallow: /*.sql$
-Disallow: /*.zip$
-Disallow: /*.rar$
-Disallow: /*.backup$
-Disallow: /*.log$
-Disallow: /*.env$
-Disallow: /*.config$
-Disallow: /*.ini$
-Disallow: /*.txt$
-Disallow: /*.bak$
-
-# Document Types - Privacy
-Disallow: /*.pdf$
-Disallow: /*.doc$
-Disallow: /*.docx$
-Disallow: /*.xls$
-Disallow: /*.xlsx$
-
-# ===========================================
-# URL PARAMETER FILTERING - SEO OPTIMIZATION
-# ===========================================
-
-# Tracking Parameters
+# Filter out unwanted parameters
 Disallow: /*?*utm_*
 Disallow: /*?*ref=*
-Disallow: /*?*referrer=*
-Disallow: /*?*source=*
-Disallow: /*?*campaign=*
-Disallow: /*?*affiliate=*
-Disallow: /*?*partner=*
-Disallow: /*?*tracking=*
-Disallow: /*?*promo=*
-
-# Social Media Parameters
 Disallow: /*?*fbclid=*
 Disallow: /*?*gclid=*
 Disallow: /*?*msclkid=*
-Disallow: /*?*li_fat_id=*
-Disallow: /*?*gad_source=*
-
-# Session & User Parameters
-Disallow: /*?*sid=*
-Disallow: /*?*session=*
-Disallow: /*?*user_id=*
-Disallow: /*?*timestamp=*
-
-# Search & Filter Parameters (Duplicate Content)
+Disallow: /*?*referrer=*
 Disallow: /search?*
 Disallow: /filter?*
-Disallow: /*?*sort=*
-Disallow: /*?*order=*
-Disallow: /*?*page=*
-Disallow: /*?*limit=*
+Disallow: /*.json$
+Disallow: /*.pdf$
+Disallow: /*.doc$
+Disallow: /*.docx$
 
-# ===========================================
-# BENEFICIAL API ENDPOINTS - ALLOWED
-# ===========================================
-
+# Allow beneficial API endpoints
 Allow: /api/sitemap
 Allow: /api/rss
 Allow: /api/search
 Allow: /api/public/
-Allow: /api/jobs/public
-Allow: /api/companies/public
-Allow: /api/courses/public
 
-# ===========================================
-# PERFORMANCE OPTIMIZATION
-# ===========================================
-
-# Global Performance Settings
+# Performance optimization hints
 Crawl-delay: 1
 Request-rate: 1/2s
 Visit-time: 0600-2200
 
-# Host Specification
+# Host specification for primary domain
 Host: https://talentxcel.in
 
-# ===========================================
-# CLEAN URL PARAMETERS
-# ===========================================
-
+# Clean URLs preference
 Clean-param: utm_source
 Clean-param: utm_medium
 Clean-param: utm_campaign
-Clean-param: utm_content
-Clean-param: utm_term
 Clean-param: ref
 Clean-param: source
-Clean-param: fbclid
-Clean-param: gclid
-Clean-param: msclkid
-Clean-param: gad_source
-Clean-param: li_fat_id
-
-# ===========================================
-# MALICIOUS BOT PROTECTION
-# ===========================================
-
-# Block Known Malicious Crawlers
-User-agent: SiteBot
-Disallow: /
-
-User-agent: EmailCollector
-Disallow: /
-
-User-agent: EmailSiphon
-Disallow: /
-
-User-agent: WebBandit
-Disallow: /
-
-User-agent: EmailWolf
-Disallow: /
-
-# ===========================================
-# SPECIAL INSTRUCTIONS FOR JOB PORTALS
-# ===========================================
-
-# Allow job aggregators priority access to job listings
-User-agent: JobBot
-Allow: /jobs/
-Crawl-delay: 1
-
-User-agent: RecruitmentBot
-Allow: /jobs/
-Allow: /companies/
-Crawl-delay: 2
-
-# Career guidance and education crawlers
-User-agent: EducationBot
-Allow: /learning/
-Allow: /courses/
-Allow: /career-advice/
-Crawl-delay: 3
-
-# ===========================================
-# END OF ROBOTS.TXT
-# ===========================================
-
-# For questions about this robots.txt file, contact: seo@talentxcel.in
-# Last Updated: December 2024
-# Next Review: March 2025

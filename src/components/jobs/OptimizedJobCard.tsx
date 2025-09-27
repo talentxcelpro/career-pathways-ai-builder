@@ -7,8 +7,6 @@ import { MapPin, Clock, Coins, Heart, Eye, Users, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { getCompanyLogoWithFallback } from '@/services/companyLogoService';
 
 interface OptimizedJobCardProps {
   job: {
@@ -112,15 +110,6 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
             </h3>
             
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-              <Avatar className="h-5 w-5">
-                <AvatarImage 
-                  src={job.companies?.logo_url || getCompanyLogoWithFallback(job.companies?.name || job.company_name)} 
-                  alt={job.companies?.name || job.company_name} 
-                />
-                <AvatarFallback className="text-xs bg-muted">
-                  {(job.companies?.name || job.company_name).slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
               <span className="truncate">
                 {job.companies?.name || job.company_name}
               </span>

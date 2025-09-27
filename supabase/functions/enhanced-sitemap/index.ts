@@ -97,98 +97,6 @@ serve(async (req) => {
       console.error('Error fetching companies:', error);
     }
 
-    // Dynamic user profiles and career passports
-    try {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, updated_at, created_at, visibility_settings')
-        .neq('full_name', null)
-        .neq('full_name', '')
-        .limit(10000);
-
-      if (profiles) {
-        profiles.forEach(profile => {
-          const slug = profile.full_name ? profile.full_name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').trim('-') : `user-${profile.id}`;
-          
-          // User profile pages
-          sitemapEntries.push({
-            loc: `${baseUrl}/users/${profile.id}`,
-            lastmod: profile.updated_at ? new Date(profile.updated_at).toISOString().split('T')[0] : new Date(profile.created_at).toISOString().split('T')[0],
-            changefreq: 'weekly',
-            priority: 0.6
-          });
-
-          // Professional profile pages
-          sitemapEntries.push({
-            loc: `${baseUrl}/professionals/${slug}`,
-            lastmod: profile.updated_at ? new Date(profile.updated_at).toISOString().split('T')[0] : new Date(profile.created_at).toISOString().split('T')[0],
-            changefreq: 'weekly',
-            priority: 0.6
-          });
-
-          // Career passport pages
-          sitemapEntries.push({
-            loc: `${baseUrl}/career-passport/${profile.id}`,
-            lastmod: profile.updated_at ? new Date(profile.updated_at).toISOString().split('T')[0] : new Date(profile.created_at).toISOString().split('T')[0],
-            changefreq: 'weekly',
-            priority: 0.7
-          });
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-    }
-
-    // Dynamic network pages from connections
-    try {
-      const { data: connections } = await supabase
-        .from('connections')
-        .select('requester_id, recipient_id, updated_at, created_at')
-        .eq('status', 'accepted')
-        .limit(5000);
-
-      if (connections) {
-        const uniqueUsers = new Set();
-        connections.forEach(connection => {
-          uniqueUsers.add(connection.requester_id);
-          uniqueUsers.add(connection.recipient_id);
-        });
-
-        uniqueUsers.forEach(userId => {
-          sitemapEntries.push({
-            loc: `${baseUrl}/network/profile/${userId}`,
-            lastmod: new Date().toISOString().split('T')[0],
-            changefreq: 'weekly',
-            priority: 0.5
-          });
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching connections:', error);
-    }
-
-    // Dynamic posts content
-    try {
-      const { data: posts } = await supabase
-        .from('posts')
-        .select('id, updated_at, created_at, visibility')
-        .eq('visibility', 'public')
-        .limit(3000);
-
-      if (posts) {
-        posts.forEach(post => {
-          sitemapEntries.push({
-            loc: `${baseUrl}/posts/${post.id}`,
-            lastmod: post.updated_at ? new Date(post.updated_at).toISOString().split('T')[0] : new Date(post.created_at).toISOString().split('T')[0],
-            changefreq: 'weekly',
-            priority: 0.4
-          });
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    }
-
     // Learning content
     try {
       const { data: courses } = await supabase
@@ -274,9 +182,6 @@ serve(async (req) => {
       static_pages: staticPages.length,
       job_pages: sitemapEntries.filter(e => e.loc.includes('/jobs/')).length,
       company_pages: sitemapEntries.filter(e => e.loc.includes('/companies/')).length,
-      user_pages: sitemapEntries.filter(e => e.loc.includes('/users/') || e.loc.includes('/professionals/') || e.loc.includes('/career-passport/')).length,
-      network_pages: sitemapEntries.filter(e => e.loc.includes('/network/')).length,
-      post_pages: sitemapEntries.filter(e => e.loc.includes('/posts/')).length,
       location_pages: locations.length,
       role_pages: roles.length,
       generated_at: new Date().toISOString()

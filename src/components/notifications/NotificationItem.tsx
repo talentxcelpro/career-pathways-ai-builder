@@ -23,10 +23,10 @@ import {
   Clock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AppNotification } from '@/hooks/useNotifications';
+import { Notification } from '@/hooks/useNotifications';
 
 interface NotificationItemProps {
-  notification: AppNotification;
+  notification: Notification;
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
   showActions?: boolean;

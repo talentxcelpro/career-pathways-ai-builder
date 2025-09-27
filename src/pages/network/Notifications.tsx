@@ -161,7 +161,7 @@ const Notifications = () => {
                   size="sm"
                   onClick={() => {
                     setSoundEnabled(!soundEnabled);
-                    toggleSound();
+                    toggleSound(!soundEnabled);
                   }}
                   className="gap-2"
                 >
@@ -180,7 +180,7 @@ const Notifications = () => {
                 </Button>
                 
                 <Button 
-                  onClick={() => markAllAsRead()}
+                  onClick={() => markAllAsRead(undefined)}
                   disabled={isMarkingAllAsRead || stats.unread === 0}
                   size="sm"
                   className="gap-2"

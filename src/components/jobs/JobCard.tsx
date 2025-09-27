@@ -8,7 +8,6 @@ import { MapPin, IndianRupee, Clock, Users, Heart, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
-import { getCompanyLogoWithFallback } from "@/services/companyLogoService";
 
 interface JobCardProps {
   job: {
@@ -28,12 +27,6 @@ interface JobCardProps {
     posted_at?: string;
     company?: {
       id: string;
-      name: string;
-      logo_url?: string;
-      industry?: string;
-    };
-    company_name?: string;
-    companies?: {
       name: string;
       logo_url?: string;
       industry?: string;
@@ -88,34 +81,18 @@ export const JobCard: React.FC<JobCardProps> = ({
             <CardTitle className="text-apple-body font-apple-semibold hover:text-primary transition-apple leading-tight truncate">
               {job.title}
             </CardTitle>
-            {showCompany && (job.company || job.companies || job.company_name) && (
+            {showCompany && job.company && (
               <div className="flex items-center gap-2 mt-1">
                 <Avatar className="h-6 w-6">
-                  <AvatarImage 
-                    src={
-                      job.company?.logo_url || 
-                      job.companies?.logo_url || 
-                      getCompanyLogoWithFallback(
-                        job.company?.name || 
-                        job.companies?.name || 
-                        job.company_name || 
-                        "Company"
-                      )
-                    } 
-                    alt={job.company?.name || job.companies?.name || job.company_name || "Company"} 
-                  />
+                  <AvatarImage src={job.company.logo_url} alt={job.company.name} />
                   <AvatarFallback className="text-apple-small bg-muted">
-                    {(job.company?.name || job.companies?.name || job.company_name || "Company").slice(0, 2).toUpperCase()}
+                    {job.company.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                  <p className="text-apple-caption font-apple-medium text-foreground truncate">
-                    {job.company?.name || job.companies?.name || job.company_name}
-                  </p>
-                  {(job.company?.industry || job.companies?.industry) && (
-                    <p className="text-apple-small text-muted-foreground truncate">
-                      {job.company?.industry || job.companies?.industry}
-                    </p>
+                  <p className="text-apple-caption font-apple-medium text-foreground truncate">{job.company.name}</p>
+                  {job.company.industry && (
+                    <p className="text-apple-small text-muted-foreground truncate">{job.company.industry}</p>
                   )}
                 </div>
               </div>
