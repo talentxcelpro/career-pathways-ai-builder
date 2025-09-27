@@ -25596,6 +25596,7 @@ export type Database = {
       seo_generated_content: {
         Row: {
           breadcrumbs: Json | null
+          canonical_url: string | null
           content_blocks: Json | null
           created_at: string | null
           faqs: Json | null
@@ -25617,6 +25618,7 @@ export type Database = {
         }
         Insert: {
           breadcrumbs?: Json | null
+          canonical_url?: string | null
           content_blocks?: Json | null
           created_at?: string | null
           faqs?: Json | null
@@ -25638,6 +25640,7 @@ export type Database = {
         }
         Update: {
           breadcrumbs?: Json | null
+          canonical_url?: string | null
           content_blocks?: Json | null
           created_at?: string | null
           faqs?: Json | null
