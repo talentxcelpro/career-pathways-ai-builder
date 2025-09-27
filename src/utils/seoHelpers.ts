@@ -23,42 +23,35 @@ export interface JobSEOData {
 }
 
 /**
- * Generate SEO-optimized meta title
+ * Generate SEO-optimized meta title following TalentXcel blueprint
  */
 export const generateSEOTitle = (job: JobSEOData): string => {
-  const baseTitle = `${job.title} at ${job.company} in ${job.location}`;
-  const fullTitle = `${baseTitle} | TalentXcel Jobs`;
+  // TalentXcel blueprint format: <Job Title> | TalentXcel
+  const title = `${job.title} | TalentXcel`;
   
   // Keep under 60 characters for optimal SEO
-  if (fullTitle.length <= 60) {
-    return fullTitle;
+  if (title.length <= 60) {
+    return title;
   }
   
-  // Fallback: shorter version
-  return `${job.title} | TalentXcel Jobs`;
+  // Fallback: shorter version without location
+  return `${job.title.substring(0, 40)}... | TalentXcel`;
 };
 
 /**
- * Generate comprehensive meta description
+ * Generate comprehensive meta description following TalentXcel blueprint
  */
 export const generateSEODescription = (job: JobSEOData): string => {
-  const salaryText = job.salaryMin && job.salaryMax 
-    ? `Salary: ${job.salaryMin}-${job.salaryMax} ${job.salaryCurrency || 'INR'}`
-    : job.salaryMin 
-    ? `Salary: ${job.salaryMin}+ ${job.salaryCurrency || 'INR'}`
-    : 'Competitive salary';
-
-  const remoteText = job.isRemote ? 'Remote work available. ' : '';
+  // TalentXcel blueprint format: Apply for <Job Title> at TalentXcel. Great learning opportunities, growth, and skill development. Apply now!
+  const baseDescription = `Apply for ${job.title} at TalentXcel. Great learning opportunities, growth, and skill development. Apply now!`;
   
-  const baseDescription = `Apply for ${job.title} position at ${job.company} in ${job.location}. ${salaryText}. ${remoteText}Apply now on TalentXcel!`;
-  
-  // Keep under 160 characters
+  // Keep under 160 characters for optimal SEO
   if (baseDescription.length <= 160) {
     return baseDescription;
   }
   
   // Fallback: shorter version
-  return `${job.title} job at ${job.company} in ${job.location}. ${remoteText}Apply now!`;
+  return `Apply for ${job.title} at TalentXcel. Excellent learning and career growth opportunities. Apply today!`;
 };
 
 /**
@@ -131,16 +124,16 @@ export const generateJobStructuredData = (job: JobSEOData & { id: string; extern
       "value": `TXL-${job.id.substring(0, 8)}`
     },
     "datePosted": job.postedDate,
-    "validThrough": job.expiryDate,
+    "validThrough": `${job.expiryDate}T23:59`,
     "employmentType": job.employmentType?.toLowerCase().includes('full') ? 'FULL_TIME' :
                      job.employmentType?.toLowerCase().includes('part') ? 'PART_TIME' :
                      job.employmentType?.toLowerCase().includes('contract') ? 'CONTRACTOR' :
                      job.employmentType?.toLowerCase().includes('intern') ? 'INTERN' : 'FULL_TIME',
     "hiringOrganization": {
       "@type": "Organization",
-      "name": job.company,
-      "sameAs": job.organizationWebsite || job.externalUrl || "https://talentxcel.in",
-      "logo": job.organizationLogo || "https://talentxcel.in/logo.png"
+      "name": "TalentXcel Services",
+      "sameAs": "https://talentxcel.in",
+      "logo": "https://talentxcel.in/logo.png"
     },
     "jobLocation": {
       "@type": "Place",

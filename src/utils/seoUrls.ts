@@ -10,12 +10,15 @@ export const slugify = (text: string): string => {
     .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
 };
 
-export const generateJobSlug = (title: string, location?: string, id?: string): string => {
-  const titleSlug = slugify(title);
+// Generate job slug following TalentXcel blueprint: /jobs/<role>-<experience>-<location>
+export const generateJobSlug = (title: string, location?: string, id?: string, experienceLevel?: string): string => {
+  const roleSlug = slugify(title);
+  const experience = experienceLevel ? slugify(experienceLevel) : 'fresher';
   const locationSlug = location ? slugify(location) : 'india';
   const shortId = id ? id.substring(0, 8) : '';
   
-  return `${titleSlug}-${locationSlug}${shortId ? `-${shortId}` : ''}`;
+  // TalentXcel blueprint format: role-experience-location
+  return `${roleSlug}-${experience}-${locationSlug}${shortId ? `-${shortId}` : ''}`;
 };
 
 export const parseJobSlug = (slug: string): { titleSlug: string; locationSlug: string; id: string } => {

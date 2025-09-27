@@ -131,6 +131,8 @@ import { JobsByRoleSalaryCity } from "@/pages/seo/jobs/JobsByRoleSalaryCity";
 import { JobsByRemoteRoleCity } from "@/pages/seo/jobs/JobsByRemoteRoleCity";
 import { JobsByCompanyRoleCity } from "@/pages/seo/jobs/JobsByCompanyRoleCity";
 import { JobsPage } from "@/components/performance/LazyRoutes";
+import JobCategoryPage from "@/pages/seo/JobCategoryPage";
+import JobLocationPage from "@/pages/seo/JobLocationPage";
 
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
@@ -234,8 +236,23 @@ const App = () => {
                   </React.Suspense>
                 } />
                 
-                {/* Jobs Sitemap Routes - These patterns will match role/city combinations */}
+                {/* TalentXcel SEO Blueprint Routes */}
                 <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsPage /></React.Suspense>} />
+                
+                {/* Category Pages */}
+                <Route path="/jobs/it-jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></React.Suspense>} />
+                <Route path="/jobs/engineering-jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></React.Suspense>} />
+                <Route path="/jobs/marketing-jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></React.Suspense>} />
+                
+                {/* Location Pages */}
+                <Route path="/jobs/bangalore" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                <Route path="/jobs/mumbai" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                <Route path="/jobs/delhi" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                <Route path="/jobs/hyderabad" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                <Route path="/jobs/chennai" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                <Route path="/jobs/pune" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                
+                {/* Jobs Sitemap Routes - These patterns will match role/city combinations */}
                 <Route path="/jobs/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></React.Suspense>} />
                 <Route path="/jobs/:role/:industry/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></React.Suspense>} />
                 <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></React.Suspense>} />
