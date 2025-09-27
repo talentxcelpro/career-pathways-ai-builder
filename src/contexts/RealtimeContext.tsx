@@ -8,6 +8,7 @@ interface RealtimeContextType {
   connectionStatus: 'connecting' | 'connected' | 'disconnected' | 'error';
   enableNotifications: boolean;
   setEnableNotifications: (enabled: boolean) => void;
+  lastUpdate: { table: string; payload: any } | null;
 }
 
 const RealtimeContext = createContext<RealtimeContextType | null>(null);
@@ -35,11 +36,13 @@ export function RealtimeProvider({
 }: RealtimeProviderProps) {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   const [enableNotifications, setEnableNotifications] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState<{ table: string; payload: any } | null>(null);
   const { toast } = useToast();
   const { soundEnabled } = useNotificationStore();
 
   // Global realtime handlers
   const handleNetworkUpdate = (payload: any) => {
+    setLastUpdate({ table: 'posts', payload });
     if (!enableNotifications || !soundEnabled) return;
     
     if (payload.eventType === 'INSERT' && payload.table === 'posts') {
@@ -48,6 +51,7 @@ export function RealtimeProvider({
   };
 
   const handleJobUpdate = (payload: any) => {
+    setLastUpdate({ table: 'jobs', payload });
     if (!enableNotifications || !soundEnabled) return;
     
     if (payload.eventType === 'INSERT' && payload.table === 'jobs') {
@@ -125,7 +129,8 @@ export function RealtimeProvider({
     isConnected: connectionStatus === 'connected',
     connectionStatus,
     enableNotifications,
-    setEnableNotifications
+    setEnableNotifications,
+    lastUpdate
   };
 
   return (

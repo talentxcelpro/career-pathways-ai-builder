@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
+import { useRealtimeContext } from '@/contexts/RealtimeContext';
 import { Wifi, WifiOff, Activity } from 'lucide-react';
 
 export const RealtimeIndicator: React.FC = () => {
