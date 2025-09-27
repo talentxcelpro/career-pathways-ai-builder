@@ -36,19 +36,19 @@ export const EnhancedReactInitializer: React.FC<EnhancedReactInitializerProps> =
 
   const verifyReactReadiness = React.useCallback(() => {
     try {
-      // Multiple checks for React readiness
+      // Simplified React readiness check without calling hooks
       
       // 1. Check React object existence
       if (!React || typeof React !== 'object') {
         throw new Error('React object not available');
       }
 
-      // 2. Check basic hooks
+      // 2. Check basic hooks functions exist
       if (typeof React.useState !== 'function' || typeof React.useEffect !== 'function') {
         throw new Error('React hooks not available');
       }
 
-      // 3. Check React internals and dispatcher
+      // 3. Check React internals (without testing dispatcher)
       const ReactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
       if (!ReactInternals) {
         throw new Error('React internals not available');
@@ -58,26 +58,7 @@ export const EnhancedReactInitializer: React.FC<EnhancedReactInitializerProps> =
         throw new Error('React dispatcher context not available');
       }
 
-      const dispatcher = ReactInternals.ReactCurrentDispatcher.current;
-      if (!dispatcher) {
-        throw new Error('React dispatcher not set');
-      }
-
-      // 4. Check essential dispatcher methods
-      const requiredMethods = ['useState', 'useEffect', 'useContext', 'useRef'];
-      for (const method of requiredMethods) {
-        if (typeof dispatcher[method] !== 'function') {
-          throw new Error(`React dispatcher method ${method} not available`);
-        }
-      }
-
-      // 5. Test actual hook execution
-      try {
-        React.useState(false);
-      } catch (hookError) {
-        throw new Error(`Hook execution test failed: ${hookError}`);
-      }
-
+      // Don't test dispatcher methods directly to avoid hook call errors
       return true;
     } catch (error) {
       console.warn('React readiness check failed:', error);

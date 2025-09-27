@@ -7,7 +7,7 @@ import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
 import { Navbar } from "./components/navigation/Navbar";
 import { FooterWrapper } from "./components/layout/FooterWrapper";
-import { AuthProvider } from "./contexts/AuthContext";
+import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
 import { TXCAutoMiner } from '@/components/txc/TXCAutoMiner';
 import { FinalLaunchChecklist } from '@/components/deployment/FinalLaunchChecklist';
 import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
@@ -193,7 +193,7 @@ const App = () => {
         <ReactSafeInitializer>
           <QueryClientProvider client={queryClient}>
           <BrowserRouter>
-            <AuthProvider>
+            <OptimizedAuthProvider>
               <NotificationProvider>
                 <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <SafeRealtimeProvider showToasts={false}>
@@ -332,8 +332,8 @@ const App = () => {
                     </CopilotProvider>
                   </SafeRealtimeProvider>
                 </React.Suspense>
-                </NotificationProvider>
-              </AuthProvider>
+                   </NotificationProvider>
+                </OptimizedAuthProvider>
             </BrowserRouter>
           </QueryClientProvider>
         </ReactSafeInitializer>
