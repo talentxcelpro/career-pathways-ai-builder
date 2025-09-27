@@ -724,13 +724,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "ai_bots_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       ai_career_insights: {
@@ -1559,13 +1552,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ai_match_scores_target_user_id_fkey"
-            columns: ["target_user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "ai_match_scores_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1578,13 +1564,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ai_match_scores_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2047,13 +2026,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "ai_recommendations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       ai_request_logs: {
@@ -2326,13 +2298,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ai_service_matches_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "ai_service_matches_service_id_fkey"
@@ -3920,13 +3885,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "blog_posts_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       blogs: {
@@ -4941,13 +4899,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_candidate_notes_author_id"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "fk_candidate_notes_candidate_id"
             columns: ["candidate_id"]
             isOneToOne: false
@@ -4960,13 +4911,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_candidate_notes_candidate_id"
-            columns: ["candidate_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "fk_candidate_notes_job_id"
@@ -5128,13 +5072,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "candidates_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       career_achievements: {
@@ -5188,13 +5125,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "career_achievements_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5465,13 +5395,6 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "career_passport_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5790,13 +5713,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "chat_messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       chrome_extension_sessions: {
@@ -5966,13 +5882,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "collaboration_applications_applicant_id_fkey"
-            columns: ["applicant_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "collaboration_applications_opportunity_id_fkey"
             columns: ["opportunity_id"]
             isOneToOne: false
@@ -6053,13 +5962,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "collaboration_opportunities_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -10191,13 +10093,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cv_files_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -15344,13 +15239,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_job_applications_user_id"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "job_applications_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
@@ -15805,13 +15693,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_preferences_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -19014,13 +18895,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "outreach_recipients_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       outreach_usage: {
@@ -20147,13 +20021,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "posts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       posts_ai_scores: {
@@ -20404,13 +20271,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pro_client_feedback_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "pro_client_feedback_contract_id_fkey"
@@ -21140,13 +21000,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_pro_service_profiles_user_id"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "pro_service_profiles_subscription_tier_fkey"
             columns: ["subscription_tier"]
             isOneToOne: false
@@ -21459,13 +21312,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "profile_views_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -21966,13 +21812,6 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "public_profiles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -29170,13 +29009,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "token_balances_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       token_services: {
@@ -29283,13 +29115,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "token_transactions_from_user_id_fkey"
-            columns: ["from_user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "token_transactions_to_user_id_fkey"
             columns: ["to_user_id"]
             isOneToOne: false
@@ -29302,13 +29127,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "token_transactions_to_user_id_fkey"
-            columns: ["to_user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -30388,13 +30206,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_activity_summary_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       user_analytics: {
@@ -31311,13 +31122,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_journey_tracking_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -32338,39 +32142,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_txc_balances: {
-        Row: {
-          balance: number
-          created_at: string
-          id: string
-          last_activity_at: string | null
-          total_earned: number
-          total_spent: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          balance?: number
-          created_at?: string
-          id?: string
-          last_activity_at?: string | null
-          total_earned?: number
-          total_spent?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          balance?: number
-          created_at?: string
-          id?: string
-          last_activity_at?: string | null
-          total_earned?: number
-          total_spent?: number
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_verification_requests: {
         Row: {
           admin_notes: string | null
@@ -32464,13 +32235,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_wallets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "txc_leaderboard"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -33297,16 +33061,33 @@ export type Database = {
           },
         ]
       }
-      txc_leaderboard: {
+      user_txc_balances: {
         Row: {
-          current_txc: number | null
-          full_name: string | null
-          job_title: string | null
-          lifetime_txc: number | null
-          location: string | null
-          profile_picture_url: string | null
-          rank: number | null
+          created_at: string | null
+          id: string | null
+          total_earned: number | null
+          total_spent: number | null
+          txc_balance: number | null
+          updated_at: string | null
           user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          total_earned?: number | null
+          total_spent?: number | null
+          txc_balance?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          total_earned?: number | null
+          total_spent?: number | null
+          txc_balance?: number | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
