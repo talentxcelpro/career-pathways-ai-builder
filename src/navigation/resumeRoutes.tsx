@@ -128,7 +128,7 @@ export const resumeRoutes = [
   },
   {
     title: "TalentXcel Resume Builder",
-    to: "/resume-builder/enhanced/:id",
+    to: "/resume/new",
     icon: <Sparkles className="h-4 w-4" />,
     page: <TalentXcelResumeBuilder />,
     isPublic: true,
