@@ -189,9 +189,7 @@ const App = () => {
 
   return (
     <ErrorBoundary FallbackComponent={BundleErrorFallback}>
-      <ReactContextErrorBoundary>
-        <ReactSafeInitializer>
-          <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <OptimizedAuthProvider>
               <NotificationProvider>
@@ -331,13 +329,11 @@ const App = () => {
                         </div>
                     </CopilotProvider>
                   </SafeRealtimeProvider>
-                </React.Suspense>
+                 </React.Suspense>
                    </NotificationProvider>
                 </OptimizedAuthProvider>
             </BrowserRouter>
           </QueryClientProvider>
-        </ReactSafeInitializer>
-      </ReactContextErrorBoundary>
     </ErrorBoundary>
   );
 };
