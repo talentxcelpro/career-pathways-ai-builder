@@ -28,16 +28,11 @@ export const useRealDataService = () => {
     queryFn: async () => {
       const { data: jobs } = await supabase
         .from('jobs')
-        .select(`
-          *,
-          companies (
-            name,
-            logo_url,
-            location
-          )
-        `)
+        .select('*')
         .eq('is_active', true)
         .eq('is_featured', true)
+        .eq('job_status', 'open')
+        .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
         .limit(6);
 

@@ -86,16 +86,7 @@ export const getFeaturedJobs = async (limit: number = 6): Promise<Job[]> => {
   return fetchProductionData(async () => {
     const { data, error } = await supabase
       .from('jobs')
-      .select(`
-        *,
-        companies!left (
-          id,
-          name,
-          logo_url,
-          industry,
-          is_verified
-        )
-      `)
+      .select('*')
       .eq('is_active', true)
       .eq('is_featured', true)
       .eq('job_status', 'open')
@@ -112,17 +103,7 @@ export const getJobById = async (id: string): Promise<Job | null> => {
   return fetchProductionData(async () => {
     const { data, error } = await supabase
       .from('jobs')
-      .select(`
-        *,
-        companies (
-          id,
-          name,
-          logo_url,
-          industry,
-          is_verified,
-          location
-        )
-      `)
+      .select('*')
       .eq('id', id)
       .eq('is_active', true)
       .single();
@@ -140,16 +121,7 @@ export const getJobsByCompany = async (companyId: string): Promise<Job[]> => {
   return fetchProductionData(async () => {
     const { data, error } = await supabase
       .from('jobs')
-      .select(`
-        *,
-        companies (
-          id,
-          name,
-          logo_url,
-          industry,
-          is_verified
-        )
-      `)
+      .select('*')
       .eq('company_id', companyId)
       .eq('is_active', true)
       .eq('job_status', 'open')
@@ -208,16 +180,7 @@ export const getRelatedJobs = async (jobId: string, skills: string[] = []): Prom
   return fetchProductionData(async () => {
     const { data, error } = await supabase
       .from('jobs')
-      .select(`
-        *,
-        companies (
-          id,
-          name,
-          logo_url,
-          industry,
-          is_verified
-        )
-      `)
+      .select('*')
       .neq('id', jobId)
       .eq('is_active', true)
       .eq('job_status', 'open')
