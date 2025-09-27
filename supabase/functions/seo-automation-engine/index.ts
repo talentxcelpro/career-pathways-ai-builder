@@ -87,7 +87,26 @@ Deno.serve(async (req) => {
 })
 
 async function generateSEOPages(req: Request, supabase: any) {
-  const { pageType, primarySlug, secondarySlug, tertiarySlug }: SEOPageRequest = await req.json()
+  const requestBody = await req.json()
+  const { pageType, primarySlug, secondarySlug, tertiarySlug }: SEOPageRequest = requestBody
+  
+  // Validate required fields
+  if (!pageType || !primarySlug) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Missing required fields: pageType and primarySlug are required',
+      expected: {
+        pageType: 'job | profile | company | location | skill | industry | salary | category',
+        primarySlug: 'string',
+        secondarySlug: 'string (optional)',
+        tertiarySlug: 'string (optional)'
+      },
+      received: requestBody
+    }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
   
   const seoContent = await generateSEOContent(pageType, primarySlug, secondarySlug, tertiarySlug, supabase)
   
