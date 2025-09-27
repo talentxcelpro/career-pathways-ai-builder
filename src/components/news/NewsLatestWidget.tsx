@@ -47,7 +47,19 @@ export const NewsLatestWidget: React.FC = () => {
   }
 
   if (!latestNews?.length) {
-    return null;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Newspaper className="h-5 w-5" />
+            Latest News
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">No news articles available at the moment.</p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
