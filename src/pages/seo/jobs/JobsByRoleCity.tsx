@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { JobCard } from '@/components/jobs/JobCard';
@@ -34,10 +34,28 @@ interface Job {
  */
 export const JobsByRoleCity: React.FC = () => {
   const { role, city } = useParams<{ role: string; city: string }>();
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
+
+  // Check if this is actually a job detail URL that was misrouted
+  useEffect(() => {
+    if (role && city) {
+      // Check if this looks like a job slug pattern (contains UUID or is a long combined slug)
+      const combinedSlug = `${role}-${city}`;
+      const hasUuidPattern = /[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}/i.test(combinedSlug);
+      const isLongSlug = combinedSlug.length > 50; // Job slugs are typically much longer
+      const hasUuidSuffix = /[a-f0-9]{8}$/i.test(city || '');
+      
+      if (hasUuidPattern || isLongSlug || hasUuidSuffix) {
+        console.log('🔄 Redirecting from JobsByRoleCity to JobDetails for:', combinedSlug);
+        navigate(`/job/${combinedSlug}`, { replace: true });
+        return;
+      }
+    }
+  }, [role, city, navigate]);
 
   // Transform URL parameters to display format
   const roleDisplay = role?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '';

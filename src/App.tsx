@@ -220,10 +220,21 @@ const App = () => {
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/tools" element={<Tools />} />
                 
-                {/* Job Detail Route - MUST come before sitemap routes */}
-                <Route path="/jobs/:slugOrId" element={<React.Suspense fallback={<div>Loading...</div>}><JobDetails /></React.Suspense>} />
+                {/* Specific Job Detail Routes - UUID patterns */}
+                <Route path="/jobs/:slugOrId" element={
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <JobDetails />
+                  </React.Suspense>
+                } />
                 
-                {/* Jobs Sitemap Routes - SEO Optimized */}
+                {/* Job Detail Route fallback for complex slugs */}
+                <Route path="/job/:slugOrId" element={
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <JobDetails />
+                  </React.Suspense>
+                } />
+                
+                {/* Jobs Sitemap Routes - These patterns will match role/city combinations */}
                 <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsPage /></React.Suspense>} />
                 <Route path="/jobs/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></React.Suspense>} />
                 <Route path="/jobs/:role/:industry/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></React.Suspense>} />
