@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { initTalentXcelRealtime, cleanupRealtime, realtimeManager, WatchedTable, RealtimePayload } from '@/lib/realtimeManager';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface RealtimeContextType {
@@ -25,7 +25,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
   const [lastUpdate, setLastUpdate] = useState<{ table: WatchedTable; payload: RealtimePayload } | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<Record<string, string>>({});
   const [usePollingFallback, setUsePollingFallback] = useState(false);
-  // No longer using useToast hook since we switched to direct toast import
+  const { toast } = useToast();
 
   useEffect(() => {
     console.log('🎯 TalentXcel Realtime Provider initializing...');
@@ -49,7 +49,8 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
       if (showToasts) {
         const message = getUpdateMessage(table, payload);
         if (message) {
-          toast.success("Real-time Update", {
+          toast({
+            title: "Real-time Update",
             description: message,
             duration: 3000,
           });
@@ -90,7 +91,8 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
             console.log('🔄 Realtime not working, enabling polling fallback...');
             setUsePollingFallback(true);
             if (showToasts) {
-              toast.info("Connection Status", {
+              toast({
+                title: "Connection Status",
                 description: "Using polling for updates while realtime reconnects...",
                 duration: 3000,
               });
@@ -109,7 +111,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
       cleanupRealtime();
       setIsConnected(false);
     };
-  }, [showToasts]); // Removed toast dependency since we're using direct import
+  }, [showToasts, toast]);
 
   const contextValue: RealtimeContextType = {
     isConnected,

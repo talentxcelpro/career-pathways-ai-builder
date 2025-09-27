@@ -1,14 +1,19 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
+import { HelmetProvider } from 'react-helmet-async'
 
 import './index.css'
 
-// Minimal React initialization to fix dispatcher issues
+// Simplified and safer React initialization
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
 
 const root = createRoot(container);
 
-// Direct render without any wrappers that might interfere with React's dispatcher
-root.render(<App />);
+// Direct render without complex wrappers that might interfere with React's internal dispatcher
+root.render(
+  <HelmetProvider>
+    <App />
+  </HelmetProvider>
+);

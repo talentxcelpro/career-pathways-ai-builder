@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { NotificationProvider } from "@/contexts/NotificationContext";
@@ -186,9 +187,23 @@ const App = () => {
               <NotificationProvider>
                 <RealtimeProvider showToasts={false}>
                   <CopilotProvider>
-                    <div className="min-h-screen flex flex-col">
-                      <Navbar />
-                      <main className="flex-1">
+                    <TooltipProvider>
+                      <Toaster
+                        duration={10000}
+                        position="top-right"
+                        toastOptions={{
+                          style: {
+                            background: 'hsl(var(--background))',
+                            color: 'hsl(var(--foreground))',
+                            border: '1px solid hsl(var(--border))',
+                            marginTop: '80px',
+                          },
+                        }}
+                      />
+                      <MobileAppWrapper>
+                        <div className="min-h-screen flex flex-col">
+                          <Navbar />
+                          <main className="flex-1">
                             <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
@@ -311,11 +326,24 @@ const App = () => {
                           <InstallButton />
                           <IOSInstallPrompt />
                         </div>
-                    </CopilotProvider>
-                  </RealtimeProvider>
-                </NotificationProvider>
-              </AuthProvider>
-            </BrowserRouter>
+                      </MobileAppWrapper>
+
+                      <TXCAutoMiner />
+                      <HealthMonitor />
+                      <MetaTags />
+                      <GoogleAnalytics />
+                      <SearchConsoleVerification />
+                      <SilentAuthHandler>
+                        <div />
+                      </SilentAuthHandler>
+                      <GoogleOneTapLogin />
+                      <MobileAppInitializer />
+                    </TooltipProvider>
+                  </CopilotProvider>
+                </RealtimeProvider>
+              </NotificationProvider>
+            </AuthProvider>
+          </BrowserRouter>
         </QueryClientProvider>
       </ReactContextErrorBoundary>
     </ErrorBoundary>
