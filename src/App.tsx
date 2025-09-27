@@ -120,6 +120,15 @@ import CoursePlayer from "./pages/learning/CoursePlayer";
 import Communication from "./pages/Communication";
 import { communicationRoutes } from "./navigation/communicationRoutes";
 
+// Import Jobs Sitemap Components
+import { JobsLandingPage } from "@/pages/seo/jobs/JobsLandingPage";
+import { JobsByRoleCity } from "@/pages/seo/jobs/JobsByRoleCity";
+import { JobsByRoleIndustryCity } from "@/pages/seo/jobs/JobsByRoleIndustryCity";
+import { JobsByRoleSkillCityLevel } from "@/pages/seo/jobs/JobsByRoleSkillCityLevel";
+import { JobsByRoleSalaryCity } from "@/pages/seo/jobs/JobsByRoleSalaryCity";
+import { JobsByRemoteRoleCity } from "@/pages/seo/jobs/JobsByRemoteRoleCity";
+import { JobsByCompanyRoleCity } from "@/pages/seo/jobs/JobsByCompanyRoleCity";
+
 const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
 const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
 
@@ -189,10 +198,10 @@ const App = () => {
                 <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <RealtimeProvider showToasts={false}>
                     <CopilotProvider>
-                    <div className="min-h-screen flex flex-col">
-                      <Navbar />
-                      <main className="flex-1">
-                            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+                      <div className="min-h-screen flex flex-col">
+                        <Navbar />
+                        <main className="flex-1">
+                          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
                                 <Route path="/launch/final" element={
@@ -205,8 +214,17 @@ const App = () => {
                                   </ProtectedRoute>
                                 } />
                                 
-                                {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
-                                <Route path="/tools" element={<Tools />} />
+                {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/tools" element={<Tools />} />
+                
+                {/* Jobs Sitemap Routes - SEO Optimized */}
+                <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsLandingPage /></React.Suspense>} />
+                <Route path="/jobs/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></React.Suspense>} />
+                <Route path="/jobs/:role/:industry/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></React.Suspense>} />
+                <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></React.Suspense>} />
+                <Route path="/jobs/:role/:salaryRange/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSalaryCity /></React.Suspense>} />
+                <Route path="/jobs/remote/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRemoteRoleCity /></React.Suspense>} />
+                <Route path="/jobs/top-companies/:company/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByCompanyRoleCity /></React.Suspense>} />
                                 
                                 {navItems.map((item: NavItem) => (
                                   <Route 
