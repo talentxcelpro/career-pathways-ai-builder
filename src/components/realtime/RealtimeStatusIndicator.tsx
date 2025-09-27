@@ -1,11 +1,11 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
+import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { useGlobalRealtimeStatus } from '@/hooks/useEnhancedRealtime';
 import { Wifi, WifiOff, Activity } from 'lucide-react';
 
 export function RealtimeStatusIndicator() {
-  const { isConnected, connectionStatus } = useRealtimeContext();
+  const { isConnected, connectionStatus } = useSafeRealtimeContext();
   const globalStatus = useGlobalRealtimeStatus();
 
   const getStatusIcon = () => {

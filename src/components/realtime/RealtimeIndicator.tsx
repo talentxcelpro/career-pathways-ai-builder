@@ -1,11 +1,11 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
+import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { Wifi, WifiOff, Activity } from 'lucide-react';
 
 export const RealtimeIndicator: React.FC = () => {
-  const { isConnected, lastUpdate, connectionStatus } = useRealtimeContext();
+  const { isConnected, lastUpdate, connectionStatus } = useSafeRealtimeContext();
 
   const getStatusColor = () => {
     if (!isConnected) return 'destructive';

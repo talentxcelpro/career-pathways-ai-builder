@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { VisualRoadmapShowcase } from '@/components/roadmap/VisualRoadmapShowcase';
 import { useRealCareerData } from '@/hooks/useRealCareerData';
 import { useOptimizedCareerData } from '@/hooks/useOptimizedCareerData';
-import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
+import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { InteractiveCareerPath } from '@/components/career-map/InteractiveCareerPath';
 import { CareerInputModal } from '@/components/career-map/CareerInputModal';
 
@@ -23,14 +23,8 @@ const CareerMap = () => {
   const [showPathBuilder, setShowPathBuilder] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
   
-  // Optional realtime context - gracefully handle if provider not available
-  let realtimeData = { isConnected: false, lastUpdate: null };
-  try {
-    realtimeData = useRealtimeContext();
-  } catch (error) {
-    console.log('RealtimeProvider not available, using offline mode');
-  }
-  const { isConnected, lastUpdate } = realtimeData;
+  // Safe realtime context
+  const { isConnected, lastUpdate } = useSafeRealtimeContext();
 
   // Use optimized data when available, fallback to real career data
   const currentMetrics = optimizedMetrics || metrics;

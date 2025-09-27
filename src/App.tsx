@@ -25,7 +25,7 @@ import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
-import { RealtimeProvider } from "@/components/realtime/RealtimeProvider";
+import { SafeRealtimeProvider } from "@/components/realtime/SafeRealtimeProvider";
 import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
 import { ReactSafeInitializer } from "@/components/recovery/ReactSafeInitializer";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
@@ -196,7 +196,7 @@ const App = () => {
             <AuthProvider>
               <NotificationProvider>
                 <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
-                  <RealtimeProvider showToasts={false}>
+                  <SafeRealtimeProvider showToasts={false}>
                     <CopilotProvider>
                       <div className="min-h-screen flex flex-col">
                         <Navbar />
@@ -330,7 +330,7 @@ const App = () => {
                           
                         </div>
                     </CopilotProvider>
-                  </RealtimeProvider>
+                  </SafeRealtimeProvider>
                 </React.Suspense>
                 </NotificationProvider>
               </AuthProvider>
