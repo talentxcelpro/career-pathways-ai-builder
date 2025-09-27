@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Download, ExternalLink } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Download, ExternalLink, Zap, ArrowUpRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -204,6 +204,34 @@ Crawl-delay: 1
             Download robots.txt
           </Button>
         </div>
+
+        {/* SEO Automation Dashboard Link */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5" />
+              Automated SEO Engine
+            </CardTitle>
+            <CardDescription>
+              Access the automated SEO dashboard to generate millions of pages
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Generate and manage millions of SEO-optimized pages automatically with AI-powered content generation and intelligent sitemap management.
+              </p>
+              <Button 
+                onClick={() => window.open('/seo-dashboard', '_blank')}
+                className="w-full"
+                variant="default"
+              >
+                <ArrowUpRight className="mr-2 h-4 w-4" />
+                Open SEO Automation Dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <h4 className="font-semibold mb-2">SEO Recommendations:</h4>
