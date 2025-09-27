@@ -49,13 +49,14 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
 
   const handleApply = useCallback(() => {
     if (job.external_url) {
-      window.open(job.external_url, '_blank');
+      console.log('🔗 External job detected, redirecting to:', job.external_url);
+      window.open(job.external_url, '_blank', 'noopener,noreferrer');
     } else {
       // Navigate to internal apply page
-      window.location.href = `/jobs/${job.id}/apply`;
+      window.location.href = `/jobs/${(job as any).seo_slug || job.id}/apply`;
     }
     onApply?.(job.id);
-  }, [onApply, job.id, job.external_url]);
+  }, [onApply, job.id, job.external_url, (job as any).seo_slug]);
 
   const formatSalary = useCallback((min?: number, max?: number) => {
     if (!min && !max) return 'Not disclosed';

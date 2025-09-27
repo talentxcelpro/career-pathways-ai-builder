@@ -32,6 +32,13 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
   }, []);
 
   const handleApplyClick = () => {
+    // Check if this is an external job first
+    if (job?.external_url) {
+      console.log('🔗 External job detected, redirecting to:', job.external_url);
+      window.open(job.external_url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     if (!currentUser) {
       // Store the return URL and redirect to login
       const returnUrl = `/jobs/${jobId}`;
@@ -39,7 +46,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
       return;
     }
     
-    // User is authenticated, show application form
+    // User is authenticated and it's an internal job, show application form
     setShowApplicationForm(true);
   };
 
@@ -61,12 +68,12 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
         {currentUser ? (
           <>
             <Briefcase className="h-4 w-4 mr-2" />
-            Apply Now
+            {job?.external_url ? 'Apply on Company Site' : 'Apply Now'}
           </>
         ) : (
           <>
             <User className="h-4 w-4 mr-2" />
-            Login to Apply
+            {job?.external_url ? 'Login to Apply' : 'Login to Apply'}
             <ArrowRight className="h-4 w-4 ml-2" />
           </>
         )}

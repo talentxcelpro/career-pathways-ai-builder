@@ -57,7 +57,16 @@ export const ModernJobCard: React.FC<ModernJobCardProps> = ({
   const handleCardClick = () => {
     console.log('🔗 Navigating to job detail:', job.id);
     trackJobView(job.id);
-    navigate(`/jobs/${job.id}`);
+    
+    // Check if this is an external job
+    if ((job as any).external_url) {
+      console.log('🔗 External job detected, redirecting to:', (job as any).external_url);
+      window.open((job as any).external_url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    
+    // Internal job - navigate to detail page
+    navigate(`/jobs/${(job as any).seo_slug || job.id}`);
   };
 
   const handleSaveClick = async (e: React.MouseEvent) => {

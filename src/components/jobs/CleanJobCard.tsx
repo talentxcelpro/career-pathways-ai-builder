@@ -88,7 +88,15 @@ export const CleanJobCard: React.FC<CleanJobCardProps> = ({
   };
 
   const handleCardClick = () => {
-    navigate(`/jobs/${job.id}`);
+    // Check if this is an external job
+    if ((job as any).external_url) {
+      console.log('🔗 External job detected, redirecting to:', (job as any).external_url);
+      window.open((job as any).external_url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    
+    // Internal job - navigate to detail page
+    navigate(`/jobs/${(job as any).seo_slug || job.id}`);
   };
 
   const getCompanyName = () => {
@@ -276,9 +284,10 @@ export const CleanJobCard: React.FC<CleanJobCardProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
                 if ((job as any).external_url) {
-                  window.open((job as any).external_url, '_blank');
+                  console.log('🔗 External job detected, redirecting to:', (job as any).external_url);
+                  window.open((job as any).external_url, '_blank', 'noopener,noreferrer');
                 } else {
-                  window.location.href = `/jobs/${job.id}/apply`;
+                  navigate(`/jobs/${(job as any).seo_slug || job.id}/apply`);
                 }
               }}
             >

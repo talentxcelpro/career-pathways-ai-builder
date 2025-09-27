@@ -67,8 +67,15 @@ export const getJobs = async (
 
     if (error) throw error;
     
+    // Filter jobs to ensure we only show valid, non-expired jobs
+    const validJobs = (data?.jobs || []).filter((job: Job) => {
+      const isNotExpired = new Date(job.expires_at) > new Date();
+      const hasValidData = job.id && job.title && job.company_name;
+      return isNotExpired && hasValidData;
+    });
+    
     return {
-      jobs: data?.jobs || [],
+      jobs: validJobs,
       total: data?.total_count || 0,
       hasMore: data?.has_more || false
     };
