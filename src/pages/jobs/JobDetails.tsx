@@ -42,6 +42,7 @@ const JobDetails = () => {
       if (!slugOrId) return null;
       
       console.log('🔍 Fetching job with slugOrId:', slugOrId);
+      console.log('🔍 Looking for exact SEO slug match first...');
       
       // Step 1: Try exact SEO slug match
       console.log('📝 Step 1: Trying exact SEO slug match');
@@ -139,6 +140,30 @@ const JobDetails = () => {
       
       if (data) {
         console.log('✅ Found job with partial SEO slug match:', data.title);
+        return data;
+      }
+
+      // Step 5: Try title-based search as last resort
+      console.log('📝 Step 5: Trying title-based search');
+      const titleSearchTerms = slugOrId.replace(/-/g, ' ').replace(/\b\d+\b/g, '').trim();
+      console.log('🔍 Searching for title match with:', titleSearchTerms);
+      
+      ({ data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .ilike('title', `%${titleSearchTerms}%`)
+        .eq('is_active', true)
+        .eq('job_status', 'open')
+        .limit(1)
+        .maybeSingle());
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('❌ Error in title search:', error);
+        throw error;
+      }
+      
+      if (data) {
+        console.log('✅ Found job with title match:', data.title);
         return data;
       }
 
