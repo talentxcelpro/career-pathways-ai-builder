@@ -32,18 +32,18 @@ const JobDetails = () => {
   const navigate = useNavigate();
 
   console.log('🚀 JobDetails component mounted with slugOrId:', slugOrId);
-  console.log('🔍 JobDetails rendered for slugOrId:', slugOrId);
 
-  // Fetch job details with unified logic
+  // Fetch job details with enhanced logic
   const { data: job, isLoading, error } = useQuery({
     queryKey: ['job', slugOrId],
     queryFn: async () => {
-      if (!slugOrId) throw new Error('Job slug or ID is required');
+      if (!slugOrId) return null;
       
-      console.log('🔍 JobDetails processing slugOrId:', slugOrId);
+      console.log('🔍 Fetching job with slugOrId:', slugOrId);
       
-      // Simple strategy: Try the exact slug in database first
-      const { data: allJobs, error: allJobsError } = await supabase
+      // Step 1: Try exact SEO slug match
+      console.log('📝 Step 1: Trying exact SEO slug match');
+      let { data, error } = await supabase
         .from('jobs')
         .select(`
           *,
@@ -58,59 +58,100 @@ const JobDetails = () => {
             is_verified
           )
         `)
+        .eq('seo_slug', slugOrId)
         .eq('is_active', true)
-        .eq('job_status', 'open');
+        .eq('job_status', 'open')
+        .maybeSingle();
 
-      if (allJobsError) throw allJobsError;
-      
-      console.log('🔍 Total active jobs found:', allJobs?.length || 0);
-      
-      // Try multiple matching strategies
-      let jobData = null;
-      
-      // 1. Exact SEO slug match
-      jobData = allJobs?.find(job => job.seo_slug === slugOrId);
-      if (jobData) {
-        console.log('🔍 Found by exact SEO slug match');
-        return jobData;
+      if (error && error.code !== 'PGRST116') {
+        console.error('❌ Error in exact match:', error);
+        throw error;
       }
       
-      // 2. UUID match
-      if (slugOrId.length === 36 && slugOrId.includes('-')) {
-        jobData = allJobs?.find(job => job.id === slugOrId);
-        if (jobData) {
-          console.log('🔍 Found by UUID match');
-          return jobData;
-        }
-      }
-      
-      // 3. Partial UUID match (8 characters)
-      const extractedId = extractJobId(slugOrId);
-      console.log('🔍 Extracted ID:', extractedId);
-      
-      if (extractedId && extractedId.length === 8 && /^[a-f0-9]{8}$/i.test(extractedId)) {
-        jobData = allJobs?.find(job => job.id.startsWith(extractedId));
-        if (jobData) {
-          console.log('🔍 Found by partial UUID match:', jobData.title);
-          return jobData;
-        }
-      }
-      
-      // 4. Partial SEO slug match
-      jobData = allJobs?.find(job => 
-        job.seo_slug && (
-          job.seo_slug.includes(slugOrId.substring(0, 20)) ||
-          slugOrId.includes(job.seo_slug.substring(0, 20))
-        )
-      );
-      if (jobData) {
-        console.log('🔍 Found by partial SEO slug match');
-        return jobData;
+      if (data) {
+        console.log('✅ Found job with exact SEO slug match:', data.title);
+        return data;
       }
 
-      console.log('🔍 No job found for:', slugOrId);
+      // Step 2: Extract potential job ID from the slug (last UUID-like segment)
+      const uuidPattern = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
+      const uuidMatch = slugOrId.match(uuidPattern);
+      
+      if (uuidMatch) {
+        const jobId = uuidMatch[0];
+        console.log('📝 Step 2: Trying UUID match with extracted ID:', jobId);
+        
+        ({ data, error } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            companies (
+              id,
+              name,
+              logo_url,
+              industry,
+              description,
+              website,
+              founded_year,
+              is_verified
+            )
+          `)
+          .eq('id', jobId)
+          .eq('is_active', true)
+          .eq('job_status', 'open')
+          .maybeSingle());
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('❌ Error in UUID match:', error);
+          throw error;
+        }
+        
+        if (data) {
+          console.log('✅ Found job with UUID match:', data.title);
+          return data;
+        }
+      }
+
+      // Step 3: Try partial SEO slug match by checking if current slug is contained in any SEO slug
+      console.log('📝 Step 3: Trying partial SEO slug match');
+      const slugWithoutId = uuidMatch ? slugOrId.replace(uuidMatch[0], '').replace(/-$/, '') : slugOrId;
+      console.log('🔍 Searching for partial match with:', slugWithoutId);
+      
+      ({ data, error } = await supabase
+        .from('jobs')
+        .select(`
+          *,
+          companies (
+            id,
+            name,
+            logo_url,
+            industry,
+            description,
+            website,
+            founded_year,
+            is_verified
+          )
+        `)
+        .ilike('seo_slug', `%${slugWithoutId}%`)
+        .eq('is_active', true)
+        .eq('job_status', 'open')
+        .limit(1)
+        .maybeSingle());
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('❌ Error in partial match:', error);
+        throw error;
+      }
+      
+      if (data) {
+        console.log('✅ Found job with partial SEO slug match:', data.title);
+        return data;
+      }
+
+      console.log('❌ No job found with any matching strategy');
       return null;
     },
+    enabled: !!slugOrId,
   });
 
   // Handle redirects and external jobs
