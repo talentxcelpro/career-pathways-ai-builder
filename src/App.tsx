@@ -307,9 +307,6 @@ const App = () => {
                             </React.Suspense>
                           </main>
                           
-                          <InstallPrompt />
-                          <InstallButton />
-                          <IOSInstallPrompt />
                         </div>
                     </CopilotProvider>
                   </RealtimeProvider>
