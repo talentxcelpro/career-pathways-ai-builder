@@ -47,19 +47,7 @@ const JobDetails = () => {
       console.log('📝 Step 1: Trying exact SEO slug match');
       let { data, error } = await supabase
         .from('jobs')
-        .select(`
-          *,
-          companies (
-            id,
-            name,
-            logo_url,
-            industry,
-            description,
-            website,
-            founded_year,
-            is_verified
-          )
-        `)
+        .select('*')
         .eq('seo_slug', slugOrId)
         .eq('is_active', true)
         .eq('job_status', 'open')
@@ -85,19 +73,7 @@ const JobDetails = () => {
         
         ({ data, error } = await supabase
           .from('jobs')
-          .select(`
-            *,
-            companies (
-              id,
-              name,
-              logo_url,
-              industry,
-              description,
-              website,
-              founded_year,
-              is_verified
-            )
-          `)
+          .select('*')
           .eq('id', jobId)
           .eq('is_active', true)
           .eq('job_status', 'open')
@@ -124,19 +100,7 @@ const JobDetails = () => {
         
         ({ data, error } = await supabase
           .from('jobs')
-          .select(`
-            *,
-            companies (
-              id,
-              name,
-              logo_url,
-              industry,
-              description,
-              website,
-              founded_year,
-              is_verified
-            )
-          `)
+          .select('*')
           .ilike('id::text', `${partialId}%`)
           .eq('is_active', true)
           .eq('job_status', 'open')
@@ -161,19 +125,7 @@ const JobDetails = () => {
       
       ({ data, error } = await supabase
         .from('jobs')
-        .select(`
-          *,
-          companies (
-            id,
-            name,
-            logo_url,
-            industry,
-            description,
-            website,
-            founded_year,
-            is_verified
-          )
-        `)
+        .select('*')
         .ilike('seo_slug', `%${slugWithoutId}%`)
         .eq('is_active', true)
         .eq('job_status', 'open')
@@ -218,7 +170,7 @@ const JobDetails = () => {
   useEffect(() => {
     if (job) {
       // Use existing meta data if available, otherwise generate
-      const metaTitle = job.meta_title || `${job.title} at ${job.companies?.name || 'Company'} | TalentXcel Jobs`
+      const metaTitle = job.meta_title || `${job.title} | TalentXcel Jobs`
       const metaDescription = job.meta_description || (job.description.substring(0, 157) + '...')
       
       updateMetaTags({
@@ -232,7 +184,7 @@ const JobDetails = () => {
           'career opportunities'
         ],
         type: 'article',
-        image: job.companies?.logo_url || '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
+        image: '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'
       });
 
       // Inject JobPosting structured data
@@ -243,7 +195,7 @@ const JobDetails = () => {
         "description": job.description,
         "identifier": {
           "@type": "PropertyValue",
-          "name": job.companies?.name || "Company",
+          "name": "TalentXcel",
           "value": job.id
         },
         "datePosted": job.created_at,
@@ -251,8 +203,8 @@ const JobDetails = () => {
         "employmentType": job.employment_type?.toUpperCase() || "FULL_TIME",
         "hiringOrganization": {
           "@type": "Organization",
-          "name": job.companies?.name || "Company",
-          "url": job.companies?.website || "https://talentxcel.in"
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
         },
         "jobLocation": {
           "@type": "Place",
@@ -278,7 +230,7 @@ const JobDetails = () => {
           "url": `${window.location.origin}/jobs/${job.seo_slug || slugOrId}/apply`,
           "contactType": "Application Portal"
         },
-        "industry": job.companies?.industry,
+        "industry": job.industry_domain,
         "workHours": "40 hours per week",
         "benefits": job.benefits || ["Competitive salary", "Health insurance", "Professional development"]
       }
@@ -322,7 +274,7 @@ const JobDetails = () => {
       try {
         await navigator.share({
           title: job?.title,
-          text: `Check out this job at ${job?.companies?.name}: ${job?.title}`,
+          text: `Check out this job at TalentXcel: ${job?.title}`,
           url,
         });
       } catch (error) {
@@ -383,14 +335,12 @@ const JobDetails = () => {
 
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-4 flex-1">
-              {job.companies?.logo_url && (
-                <Avatar className="h-16 w-16 flex-shrink-0">
-                  <AvatarImage src={job.companies.logo_url} alt={job.companies.name} />
-                  <AvatarFallback className="text-lg">
-                    {job.companies.name?.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              )}
+              <Avatar className="h-16 w-16 flex-shrink-0">
+                <AvatarImage src="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" alt="TalentXcel" />
+                <AvatarFallback className="text-lg">
+                  TX
+                </AvatarFallback>
+              </Avatar>
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
@@ -414,18 +364,16 @@ const JobDetails = () => {
                 
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
                 
-                {job.companies && (
-                  <div className="flex items-center text-lg text-gray-600 mb-4">
-                    <Building2 className="h-5 w-5 mr-2" />
-                    <span className="font-medium">{job.companies.name}</span>
-                    {job.companies.industry && (
-                      <>
-                        <span className="mx-2">•</span>
-                        <span>{job.companies.industry}</span>
-                      </>
-                    )}
-                  </div>
-                )}
+                <div className="flex items-center text-lg text-gray-600 mb-4">
+                  <Building2 className="h-5 w-5 mr-2" />
+                  <span className="font-medium">TalentXcel</span>
+                  {job.industry_domain && (
+                    <>
+                      <span className="mx-2">•</span>
+                      <span>{job.industry_domain}</span>
+                    </>
+                  )}
+                </div>
                 
                 <div className="flex flex-wrap items-center gap-6 text-gray-600">
                   <div className="flex items-center">
