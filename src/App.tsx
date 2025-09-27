@@ -25,7 +25,7 @@ import { GoogleOneTap } from '@/components/auth/GoogleOneTap';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
-import { CopilotProvider } from "@/components/ai/CopilotProvider";
+
 
 import { ReactContextErrorBoundary } from "@/components/auth/ReactContextErrorBoundary";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
@@ -190,8 +190,7 @@ const App = () => {
           <BrowserRouter>
             <AuthProvider>
               <NotificationProvider>
-                <CopilotProvider>
-                    <TooltipProvider>
+                  <TooltipProvider>
                       <Toaster
                         duration={10000}
                         position="top-right"
@@ -359,8 +358,7 @@ const App = () => {
                       </SilentAuthHandler>
                       <GoogleOneTapLogin />
                       <MobileAppInitializer />
-                    </TooltipProvider>
-                  </CopilotProvider>
+                  </TooltipProvider>
               </NotificationProvider>
             </AuthProvider>
           </BrowserRouter>
