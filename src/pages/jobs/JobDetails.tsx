@@ -102,23 +102,39 @@ const JobDetails = () => {
         const partialId = partialIdMatch[0];
         console.log('📝 Step 3: Trying partial ID match with:', partialId);
         
-        result = await supabase
-          .from('jobs')
-          .select('*')
-          .ilike('id::text', `${partialId}%`)
-          .eq('is_active', true)
-          .eq('job_status', 'open')
-          .limit(1)
-          .maybeSingle();
+        // Use the fixed function for partial ID matching
+        result = await supabase.rpc('find_job_by_partial_id', {
+          partial_id: partialId
+        });
 
         if (result.error && result.error.code !== 'PGRST116') {
           console.error('❌ Error in partial ID match:', result.error);
           throw result.error;
         }
         
-        if (result.data) {
-          console.log('✅ Found job with partial ID match:', result.data.title);
-          return result.data;
+        if (result.data && result.data.length > 0) {
+          console.log('✅ Found job with partial ID match:', result.data[0].title);
+          // Fetch full job details using the found ID
+          const fullJobResult = await supabase
+            .from('jobs')
+            .select(`
+              *,
+              companies (
+                id,
+                name,
+                logo_url,
+                industry,
+                is_verified,
+                location
+              )
+            `)
+            .eq('id', result.data[0].id)
+            .eq('is_active', true)
+            .maybeSingle();
+          
+          if (fullJobResult.data) {
+            return fullJobResult.data;
+          }
         }
       }
 
