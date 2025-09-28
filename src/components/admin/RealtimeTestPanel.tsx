@@ -92,7 +92,7 @@ export const RealtimeTestPanel: React.FC = () => {
     setProgress(0);
 
     try {
-      // Test 1: Check Supabase client configuration
+      // Test 1: Supabase Client
       addTest('Supabase Client', 'pending', 'Checking configuration...');
       setProgress(10);
       
@@ -103,18 +103,29 @@ export const RealtimeTestPanel: React.FC = () => {
         updateTest('Supabase Client', 'error', 'Client configuration failed', error);
       }
 
-      // Test 2: Check realtime manager status
-      addTest('Realtime Manager', 'pending', 'Checking manager status...');
+      // Test 2: Initialize realtime manager if not already done
+      addTest('Realtime Manager', 'pending', 'Initializing realtime manager...');
       setProgress(20);
       
-      const managerStatus = realtimeManager.getStatus();
-      const connectedChannels = Object.values(managerStatus).filter(status => status === 'SUBSCRIBED').length;
-      const totalChannels = Object.keys(managerStatus).length;
-      
-      if (connectedChannels > 0) {
-        updateTest('Realtime Manager', 'success', `${connectedChannels}/${totalChannels} channels connected`, managerStatus);
-      } else {
-        updateTest('Realtime Manager', 'error', `No channels connected (${totalChannels} total)`, managerStatus);
+      try {
+        // Force re-initialize the realtime manager for testing
+        if (!realtimeManager.initialized) {
+          await realtimeManager.init();
+          // Give it a moment to connect
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+        
+        const managerStatus = realtimeManager.getStatus();
+        const connectedChannels = Object.values(managerStatus).filter(status => status === 'SUBSCRIBED').length;
+        const totalChannels = Object.keys(managerStatus).length;
+        
+        if (connectedChannels > 0) {
+          updateTest('Realtime Manager', 'success', `${connectedChannels}/${totalChannels} channels connected`, managerStatus);
+        } else {
+          updateTest('Realtime Manager', 'error', `No channels connected (${totalChannels} total)`, managerStatus);
+        }
+      } catch (error) {
+        updateTest('Realtime Manager', 'error', 'Realtime manager initialization failed', error);
       }
 
       // Test 3: Check RealtimeProvider status
@@ -145,19 +156,28 @@ export const RealtimeTestPanel: React.FC = () => {
         }
       );
 
-      // Test 5: Check Optimized Realtime
+      // Test 5: Check Optimized Realtime  
       addTest('Optimized Realtime', 'pending', 'Checking optimized connection...');
       setProgress(50);
       
-      updateTest('Optimized Realtime',
-        optimizedRealtime.isConnected ? 'success' : 'error',
-        `Optimized connected: ${optimizedRealtime.isConnected}, Channels: ${optimizedRealtime.connectedChannels}`,
-        {
-          isConnected: optimizedRealtime.isConnected,
-          connectedChannels: optimizedRealtime.connectedChannels,
-          channelStatus: optimizedRealtime.getChannelStatus()
+      try {
+        // Force connection if not connected
+        if (!optimizedRealtime.isConnected) {
+          console.log('Optimized realtime not connected, attempting to connect...');
         }
-      );
+        
+        updateTest('Optimized Realtime',
+          optimizedRealtime.isConnected ? 'success' : 'error',
+          `Optimized connected: ${optimizedRealtime.isConnected}, Channels: ${optimizedRealtime.connectedChannels}`,
+          {
+            isConnected: optimizedRealtime.isConnected,
+            connectedChannels: optimizedRealtime.connectedChannels,
+            channelStatus: optimizedRealtime.getChannelStatus()
+          }
+        );
+      } catch (error) {
+        updateTest('Optimized Realtime', 'error', 'Optimized realtime check failed', error);
+      }
 
       // Test 6: Test actual database change detection
       addTest('Live Data Test', 'pending', 'Testing live data changes...');

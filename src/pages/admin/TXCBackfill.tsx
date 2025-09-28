@@ -186,7 +186,7 @@ const TXCBackfill = () => {
   };
 
   return (
-    <SafeRealtimeProvider>
+    <SafeRealtimeProvider showToasts={true}>
       <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">TXC System Management</h1>
