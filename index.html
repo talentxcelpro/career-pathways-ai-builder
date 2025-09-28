@@ -131,6 +131,9 @@
 
   <body>
     <div id="root"></div>
+    
+    <!-- Chunk Error Handler - Must load before main script -->
+    <script src="/chunk-error-handler.js"></script>
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- Service Worker completely disabled to prevent version conflicts -->

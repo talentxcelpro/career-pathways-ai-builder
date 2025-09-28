@@ -36,4 +36,31 @@ export default defineConfig(({ mode }) => ({
     exclude: [],
     force: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Reduce chunk size and improve loading
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-tooltip', '@radix-ui/react-popover', '@radix-ui/react-dialog'],
+        },
+        // Add hash to chunks for better caching
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+    // Improve build stability
+    sourcemap: false,
+    // Reduce bundle size
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: true,
+      },
+    },
+  },
 }));
