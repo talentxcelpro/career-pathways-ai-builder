@@ -100,6 +100,7 @@ import CompanyDetail from "./pages/companies/CompanyDetail";
 import AIAgentDashboard from "./pages/ai/AIAgentDashboard";
 import AICareerIntelligence from "./pages/AICareerIntelligence";
 import AICareerHub from "./pages/AICareerHub";
+import CareerDashboard from "./pages/CareerDashboard";
 import SkillsGap from "./pages/career-map/SkillsGap";
 import CareerRoadmapGenerator from "./components/career/CareerRoadmapGenerator";
 import CareerGoals from "./pages/CareerGoals";
@@ -295,6 +296,13 @@ const App = () => {
                                 } />
 
                 {/* All other routes */}
+                <Route path="/career-dashboard" element={
+                  <ProtectedRoute>
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                      <CareerDashboard />
+                    </React.Suspense>
+                  </ProtectedRoute>
+                } />
                 <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
                 <Route path="/ai-career-hub" element={<AICareerHub />} />
                 <Route path="/career-intelligence" element={<AICareerIntelligence />} />
