@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { realtimeManager } from '@/lib/realtimeManager';
+import { consolidatedRealtimeManager } from '@/lib/consolidatedRealtimeManager';
 import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { useTXCRealtime } from '@/hooks/useTXCRealtime';
 import { useOptimizedRealtime } from '@/hooks/useOptimizedRealtime';
@@ -32,6 +32,9 @@ export const RealtimeTestPanel: React.FC = () => {
   const txcRealtime = useTXCRealtime();
   const optimizedRealtime = useOptimizedRealtime();
 
+  // Consolidated realtime manager status
+  const [consolidatedStatus, setConsolidatedStatus] = useState(() => consolidatedRealtimeManager.getStatus());
+
   // Check current user on component mount
   useEffect(() => {
     const checkUser = async () => {
@@ -45,6 +48,16 @@ export const RealtimeTestPanel: React.FC = () => {
     });
     
     return () => subscription.unsubscribe();
+  }, []);
+
+  // Update consolidated status
+  useEffect(() => {
+    const updateStatus = () => {
+      setConsolidatedStatus(consolidatedRealtimeManager.getStatus());
+    };
+
+    const interval = setInterval(updateStatus, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   // Demo authentication for testing
@@ -87,6 +100,18 @@ export const RealtimeTestPanel: React.FC = () => {
     ));
   };
 
+  const testConsolidatedRealtime = async () => {
+    const tables = ['jobs', 'posts', 'profiles', 'companies', 'colleges', 'connections', 'job_applications', 'user_activities', 'ai_career_recommendations', 'ai_job_matches', 'messages', 'post_comments', 'post_likes', 'txc_transactions'];
+    
+    // Subscribe to all tables using the consolidated manager
+    const cleanup = await consolidatedRealtimeManager.subscribeToTables(tables, (table, payload) => {
+      console.log(`[Consolidated] ${table} update:`, payload);
+    });
+
+    // Store cleanup function for later use
+    setTimeout(cleanup, 10000); // Auto cleanup after 10 seconds
+  };
+
   const runRealtimeTests = async () => {
     setIsRunning(true);
     resetTests();
@@ -104,37 +129,31 @@ export const RealtimeTestPanel: React.FC = () => {
         updateTest('Supabase Client', 'error', 'Client configuration failed', error);
       }
 
-      // Test 2: Initialize and test realtime manager
-      addTest('Realtime Manager', 'pending', 'Testing realtime manager...');
+      // Test 2: Test consolidated realtime manager
+      addTest('Consolidated Realtime', 'pending', 'Testing consolidated realtime manager...');
       setProgress(20);
       
       try {
-        // Force re-initialize the realtime manager for testing
-        await realtimeManager.init(undefined, true);
+        await testConsolidatedRealtime();
         
         // Give channels time to connect
         await new Promise(resolve => setTimeout(resolve, 3000));
         
-        const managerStatus = realtimeManager.getStatus();
-        const connectedChannels = Object.values(managerStatus).filter(status => status === 'SUBSCRIBED').length;
-        const totalChannels = Object.keys(managerStatus).length;
+        const status = consolidatedRealtimeManager.getStatus();
         
-        console.log('Manager status:', managerStatus);
-        console.log(`Connected: ${connectedChannels}/${totalChannels}`);
-        
-        if (connectedChannels > 0) {
-          updateTest('Realtime Manager', 'success', `${connectedChannels}/${totalChannels} channels connected`, managerStatus);
+        if (status.totalSubscriptions > 0) {
+          updateTest('Consolidated Realtime', 'success', `${status.totalSubscriptions} subscriptions active`, status);
         } else {
-          updateTest('Realtime Manager', 'error', `No channels connected (${totalChannels} total)`, managerStatus);
+          updateTest('Consolidated Realtime', 'error', 'No active subscriptions', status);
         }
       } catch (error) {
-        console.error('Realtime manager test error:', error);
-        updateTest('Realtime Manager', 'error', 'Realtime manager initialization failed', error);
+        console.error('Consolidated realtime test error:', error);
+        updateTest('Consolidated Realtime', 'error', 'Consolidated realtime test failed', error);
       }
 
       // Test 3: Check RealtimeProvider status
       addTest('Realtime Provider', 'pending', 'Checking provider status...');
-      setProgress(30);
+      setProgress(40);
       
       updateTest('Realtime Provider', 
         realtimeContext.isConnected ? 'success' : 'error',
@@ -148,7 +167,7 @@ export const RealtimeTestPanel: React.FC = () => {
 
       // Test 4: Check TXC Realtime
       addTest('TXC Realtime', 'pending', 'Checking TXC connection...');
-      setProgress(40);
+      setProgress(50);
       
       updateTest('TXC Realtime',
         txcRealtime.isConnected ? 'success' : 'error',
@@ -162,14 +181,9 @@ export const RealtimeTestPanel: React.FC = () => {
 
       // Test 5: Check Optimized Realtime  
       addTest('Optimized Realtime', 'pending', 'Checking optimized connection...');
-      setProgress(50);
+      setProgress(60);
       
       try {
-        // Force connection if not connected
-        if (!optimizedRealtime.isConnected) {
-          console.log('Optimized realtime not connected, attempting to connect...');
-        }
-        
         updateTest('Optimized Realtime',
           optimizedRealtime.isConnected ? 'success' : 'error',
           `Optimized connected: ${optimizedRealtime.isConnected}, Channels: ${optimizedRealtime.connectedChannels}`,
@@ -185,7 +199,7 @@ export const RealtimeTestPanel: React.FC = () => {
 
       // Test 6: Test actual database change detection
       addTest('Live Data Test', 'pending', 'Testing live data changes...');
-      setProgress(60);
+      setProgress(70);
 
       try {
         const { data: user } = await supabase.auth.getUser();
@@ -215,7 +229,7 @@ export const RealtimeTestPanel: React.FC = () => {
 
       // Test 7: Check publication status
       addTest('Publication Check', 'pending', 'Checking table publications...');
-      setProgress(80);
+      setProgress(90);
 
       try {
         // Check if tables are in the realtime publication
@@ -338,14 +352,14 @@ export const RealtimeTestPanel: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="p-4">
             <div className="flex items-center gap-2">
-              {realtimeContext.isConnected ? 
+              {consolidatedStatus.authInitialized ? 
                 <Wifi className="h-4 w-4 text-green-500" /> : 
                 <WifiOff className="h-4 w-4 text-red-500" />
               }
-              <span className="font-medium">Provider Status</span>
+              <span className="font-medium">Consolidated Manager</span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              {realtimeContext.isConnected ? 'Connected' : 'Disconnected'}
+              {consolidatedStatus.totalSubscriptions} subscriptions
             </p>
           </Card>
 
