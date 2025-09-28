@@ -8,6 +8,52 @@
 /* Import mobile-first optimizations */
 @import url('./styles/mobile-first-global.css');
 
+/* Native app-like styles */
+.native-app-style {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* iOS-style smooth scrolling */
+.ios-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Native app status bar safe area */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Native app touch feedback */
+.touch-feedback:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-out;
+}
+
+/* Native app card shadows */
+.native-card {
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+/* Dark mode for native app */
+@media (prefers-color-scheme: dark) {
+  .native-card {
+    background: rgba(28, 28, 30, 0.95);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
 /* Shimmer animation for skeleton loaders */
 @keyframes shimmer {
   0% {

@@ -103,9 +103,9 @@ const ReferAndEarn: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen gradient-subtle">
+    <div className="min-h-screen gradient-subtle native-app-style ios-scroll">
       {/* Mobile-Optimized Hero Section */}
-      <section className="pt-6 pb-4 px-4">
+      <section className="pt-6 pb-4 px-4 safe-area-top">
         <div className="max-w-4xl mx-auto text-center">
           {/* Compact Header */}
           <div className="mb-6">
@@ -143,7 +143,7 @@ const ReferAndEarn: React.FC = () => {
           {/* Compact Stats Overview */}
           {referralData && (
             <div className="max-w-sm mx-auto mb-6">
-              <Card className="bg-white border border-gray-200 shadow-sm">
+              <Card className="native-card">
                 <CardContent className="p-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
@@ -176,7 +176,7 @@ const ReferAndEarn: React.FC = () => {
                   document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-sm font-medium w-full max-w-xs"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-sm font-medium w-full max-w-xs touch-feedback"
             >
               <Share2 className="w-4 h-4 mr-2" />
               {referralData?.referral_code ? 'Copy Referral Link' : 'Start Referring'}
@@ -190,7 +190,7 @@ const ReferAndEarn: React.FC = () => {
                   triggerHaptic('light');
                   document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-xs font-medium flex-1"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 text-xs font-medium flex-1 touch-feedback"
               >
                 <Trophy className="w-3 h-3 mr-1" />
                 Rewards
@@ -199,7 +199,7 @@ const ReferAndEarn: React.FC = () => {
               <Button 
                 size="sm" 
                 variant="ghost"
-                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-4 py-2 text-xs font-medium flex-1"
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-4 py-2 text-xs font-medium flex-1 touch-feedback"
                 asChild
               >
                 <Link to="/pro/subscription">
@@ -234,7 +234,7 @@ const ReferAndEarn: React.FC = () => {
                 const isUnlocked = referralData && referralData.successful_referrals >= tier.friends;
                 
                 return (
-                  <Card key={index} className={`min-w-[140px] md:min-w-0 relative transition-smooth hover:scale-105 ${
+                  <Card key={index} className={`min-w-[140px] md:min-w-0 relative transition-smooth hover:scale-105 touch-feedback ${
                     isUnlocked 
                       ? 'gradient-card shadow-glow ring-2 ring-primary/50' 
                       : 'bg-card/50 opacity-75 hover:opacity-90'
@@ -299,7 +299,7 @@ const ReferAndEarn: React.FC = () => {
       )}
 
       {/* Compact CTA Section */}
-      <section className="py-8 px-4">
+      <section className="py-8 px-4 safe-area-bottom">
         <div className="max-w-3xl mx-auto text-center">
           <Card className="gradient-primary shadow-glow border-0 text-white">
             <CardContent className="p-6 md:p-8">
@@ -318,7 +318,7 @@ const ReferAndEarn: React.FC = () => {
                 <Button 
                   size="sm" 
                   variant="secondary" 
-                  className="bg-white text-primary hover:bg-white/90 font-semibold text-sm px-6 py-3 w-full max-w-xs"
+                  className="bg-white text-primary hover:bg-white/90 font-semibold text-sm px-6 py-3 w-full max-w-xs touch-feedback"
                   onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Share2 className="w-4 h-4 mr-2" />
@@ -329,7 +329,7 @@ const ReferAndEarn: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="ghost" 
-                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1"
+                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1 touch-feedback"
                     onClick={() => document.getElementById('rewards')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     View Rewards
@@ -337,7 +337,7 @@ const ReferAndEarn: React.FC = () => {
                   <Button 
                     size="sm" 
                     variant="outline" 
-                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1"
+                    className="text-white border-white/30 hover:bg-white/10 text-xs px-4 py-2 flex-1 touch-feedback"
                     asChild
                   >
                     <Link to="/pro/subscription">
