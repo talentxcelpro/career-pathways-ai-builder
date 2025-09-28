@@ -468,13 +468,21 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
     <>
       {/* Transparent More Button for Default Navigation */}
       {isDefaultNav && (
-        <div 
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setShowModulesLauncher(true)}
-          className="fixed top-4 right-4 z-50 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-black/30 transition-all duration-300 cursor-pointer"
+          className="fixed top-4 right-4 z-50 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-black/30 transition-all duration-300"
         >
           <Grid3X3 className="h-5 w-5" />
-        </div>
+        </Button>
       )}
+
+      {/* Modules Launcher Modal */}
+      <ModulesLauncher 
+        isOpen={showModulesLauncher} 
+        onClose={() => setShowModulesLauncher(false)} 
+      />
 
       <div className={cn(
         "fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
