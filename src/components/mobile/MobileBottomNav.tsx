@@ -65,7 +65,7 @@ export const MobileBottomNav = () => {
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center justify-around px-1 py-3">
+        <div className="flex items-center justify-between px-1 py-3 gap-1">{/* Changed from justify-around to justify-between with gap */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
             const Icon = item.icon;
@@ -123,11 +123,11 @@ export const MobileBottomNav = () => {
             style={{ animationDelay: `${navItems.length * 0.1}s` }}
           >
             <div className="relative">
-              <div className="p-2 rounded-2xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card">
-                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform" />
+              <div className="p-2 rounded-2xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/10 border border-primary/20">
+                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform text-primary" />
               </div>
             </div>
-            <span className="text-[9px] font-medium truncate w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold">
+            <span className="text-[9px] font-medium truncate w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold text-primary">
               More
             </span>
           </button>
