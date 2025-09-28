@@ -88,12 +88,10 @@ const TXCBackfill = () => {
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
             <h4 className="font-semibold text-amber-800 mb-2">What this process does:</h4>
             <ul className="text-sm text-amber-700 space-y-1">
-              <li>• Awards 150 TXC for each post created</li>
-              <li>• Awards 75 TXC for each connection made</li>
               <li>• Awards 500 TXC joining bonus</li>
-              <li>• Awards 300 TXC profile completion bonus</li>
-              <li>• Awards daily login bonuses (75 TXC per day)</li>
-              <li>• Awards weekly social activity bonuses (300 TXC per week)</li>
+              <li>• Awards 150 TXC for each post created (up to 10 posts)</li>
+              <li>• Awards 75 TXC for each connection made (up to 10 connections)</li>
+              <li>• Awards 300 TXC for completed profiles (name, title, about, photo)</li>
             </ul>
           </div>
 
