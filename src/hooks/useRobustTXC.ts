@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { TXCSecurityValidator, logTXCSecurityEvent } from '@/utils/txcSecurity';
 
 interface TXCTransferParams {
   toUserId: string;
@@ -24,24 +25,58 @@ export const useRobustTXC = () => {
       return { success: false, error: 'Not authenticated' };
     }
 
-    if (amount <= 0) {
+    // Enhanced validation using security validator
+    const validation = TXCSecurityValidator.validateTransaction({
+      fromUserId: user.id,
+      toUserId,
+      amount,
+      description
+    });
+
+    if (!validation.isValid) {
+      const errorMessage = validation.errors.join(', ');
+      logTXCSecurityEvent({
+        userId: user.id,
+        action: 'transfer_validation_failed',
+        details: { errors: validation.errors, toUserId, amount },
+        severity: 'medium'
+      });
+      
       toast({
-        title: "Invalid Amount",
-        description: "Transfer amount must be greater than 0",
+        title: "Invalid Transfer Data",
+        description: errorMessage,
         variant: "destructive"
       });
-      return { success: false, error: 'Invalid amount' };
+      return { success: false, error: errorMessage };
+    }
+
+    // Client-side rate limiting
+    if (!TXCSecurityValidator.checkClientRateLimit(user.id, 'transfer')) {
+      logTXCSecurityEvent({
+        userId: user.id,
+        action: 'transfer_rate_limited',
+        details: { toUserId, amount },
+        severity: 'high'
+      });
+      
+      toast({
+        title: "Too Many Requests",
+        description: "Please wait before making another transfer",
+        variant: "destructive"
+      });
+      return { success: false, error: 'Rate limit exceeded' };
     }
 
     setIsProcessing(true);
     
     try {
-      // Use the secure atomic transfer function
+      // Use the secure atomic transfer function with validated data
+      const sanitizedData = validation.sanitizedValue!;
       const { data, error } = await supabase.rpc('transfer_txc_secure', {
-        p_from_user_id: user.id,
-        p_to_user_id: toUserId,
-        p_amount: amount,
-        p_description: description
+        p_from_user_id: sanitizedData.fromUserId,
+        p_to_user_id: sanitizedData.toUserId,
+        p_amount: sanitizedData.amount,
+        p_description: sanitizedData.description
       });
 
       if (error) {
@@ -119,6 +154,35 @@ export const useRobustTXC = () => {
   const earnTXCSecure = async (amount: number, activityType: string, description: string) => {
     if (!user?.id) return { success: false, error: 'Not authenticated' };
 
+    // Enhanced validation
+    const validation = TXCSecurityValidator.validateTransaction({
+      amount,
+      description,
+      activityType
+    });
+
+    if (!validation.isValid) {
+      const errorMessage = validation.errors.join(', ');
+      logTXCSecurityEvent({
+        userId: user.id,
+        action: 'earn_validation_failed',
+        details: { errors: validation.errors, amount, activityType },
+        severity: 'medium'
+      });
+      return { success: false, error: errorMessage };
+    }
+
+    // Client-side rate limiting
+    if (!TXCSecurityValidator.checkClientRateLimit(user.id, `earn_${activityType}`)) {
+      logTXCSecurityEvent({
+        userId: user.id,
+        action: 'earn_rate_limited',
+        details: { amount, activityType },
+        severity: 'high'
+      });
+      return { success: false, error: 'Rate limit exceeded' };
+    }
+
     // Check rate limits for earning actions
     const canProceed = await checkRateLimit(`earn_${activityType}`);
     if (!canProceed) {
@@ -128,13 +192,14 @@ export const useRobustTXC = () => {
     setIsProcessing(true);
 
     try {
-      // Use edge function for secure TXC earning with validation
-      const { data, error } = await supabase.functions.invoke('earn-txc', {
+      // Use edge function for secure TXC earning with validated data
+      const sanitizedData = validation.sanitizedValue!;
+      const { data, error } = await supabase.functions.invoke('earn-txc-secure', {
         body: {
           userId: user.id,
-          amount,
-          activityType,
-          description,
+          amount: sanitizedData.amount,
+          activityType: sanitizedData.activityType,
+          description: sanitizedData.description,
           timestamp: new Date().toISOString()
         }
       });
