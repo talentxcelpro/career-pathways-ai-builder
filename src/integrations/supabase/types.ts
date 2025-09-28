@@ -33061,6 +33061,20 @@ export type Database = {
           },
         ]
       }
+      txc_leaderboard: {
+        Row: {
+          current_txc: number | null
+          full_name: string | null
+          job_title: string | null
+          last_activity: string | null
+          lifetime_txc: number | null
+          location: string | null
+          profile_picture_url: string | null
+          rank: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       user_txc_balances: {
         Row: {
           created_at: string | null
