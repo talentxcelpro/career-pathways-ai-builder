@@ -11,7 +11,13 @@ export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({
   resetErrorBoundary 
 }) => {
   const handleRefresh = () => {
-    // Clear all caches and force reload
+    // Comprehensive cleanup to prevent version conflicts
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => registration.unregister());
+      });
+    }
+    
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => caches.delete(name));
@@ -22,8 +28,8 @@ export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({
     localStorage.clear();
     sessionStorage.clear();
     
-    // Force hard reload
-    window.location.reload();
+    // Navigate to clean URL instead of reload
+    window.location.href = window.location.origin + window.location.pathname;
   };
 
   return (

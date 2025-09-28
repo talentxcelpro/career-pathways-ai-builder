@@ -133,29 +133,17 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Service Worker Registration (disabled in Lovable preview to avoid stale cache) -->
+    <!-- Service Worker completely disabled to prevent version conflicts -->
     <script>
-      (function(){
-        if (!('serviceWorker' in navigator)) return;
-        const host = location.hostname;
-        const isPreview = host.includes('lovable.app') || host.includes('sandbox.lovable.dev') || host.includes('id-preview');
-        if (isPreview) {
-          // Ensure any existing SW is unregistered to prevent stale assets
-          navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
-          if ('caches' in window) caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-          console.log('SW disabled in preview');
-          return;
-        }
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError);
-            });
+      // Aggressively disable all service workers to prevent "App Update Required" errors
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => registration.unregister());
         });
-      })();
+        if ('caches' in window) {
+          caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+        }
+      }
     </script>
   </body>
 </html>
