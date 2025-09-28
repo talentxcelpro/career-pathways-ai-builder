@@ -136,13 +136,13 @@ const SkillSwap: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('user_txc_balances')
-        .select('balance')
+        .select('txc_balance')
         .eq('user_id', user.id)
         .single();
       
       if (error && error.code !== 'PGRST116') throw error;
       
-      setUserCredits(data?.balance || 250);
+      setUserCredits(data?.txc_balance || 250);
     } catch (error) {
       console.error('Error fetching user credits:', error);
     }
