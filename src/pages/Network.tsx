@@ -28,6 +28,8 @@ import { UserPresence } from "@/components/realtime/UserPresence";
 import { VideoCallButton } from "@/components/network/VideoCallButton";
 import { LiveEventCard } from "@/components/network/LiveEventCard";
 import { GoogleOneTapStatus } from "@/components/auth/GoogleOneTapStatus";
+import { FollowingFollowersList } from "@/components/social/FollowingFollowersList";
+import { SubscriptionsManager } from "@/components/social/SubscriptionsManager";
 
 
 const Network = () => {
@@ -199,13 +201,22 @@ const Network = () => {
 
 
           <TabsContent value="connections" className="mt-0">
-            <React.Suspense fallback={
-              <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              </div>
-            }>
-              <EnhancedConnections />
-            </React.Suspense>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <FollowingFollowersList />
+              </React.Suspense>
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <SubscriptionsManager />
+              </React.Suspense>
+            </div>
           </TabsContent>
 
           <TabsContent value="discover" className="mt-0">

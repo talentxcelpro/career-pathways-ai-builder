@@ -36,6 +36,7 @@ import TalentXcelServices from "./pages/TalentXcelServices";
 import FeedEmbeds from "./pages/FeedEmbeds";
 import LinkedInToolsHub from "./pages/admin/LinkedInToolsHub";
 import { TestingDashboard } from "./pages/TestingDashboard";
+import { SavedJobsPage } from "./pages/SavedJobs";
 
 // AI Agent routes
 export const aiAgentRoutes = [
@@ -133,6 +134,18 @@ export const testingRoutes = [
   }
 ];
 
+// Saved Jobs route
+export const savedJobsRoutes = [
+  {
+    title: "Saved Jobs",
+    to: "/saved-jobs",
+    icon: "heart",
+    page: <SavedJobsPage />,
+    description: "View your liked and bookmarked jobs",
+    isPublic: false
+  }
+];
+
 export const navItems = [
   ...publicRoutes,
   ...coreRoutes,
@@ -165,6 +178,7 @@ export const navItems = [
   ...aiAgentRoutes,
   ...campaignRoutes,
   ...embedRoutes,
+  ...savedJobsRoutes,
   ...linkedInToolsRoutes,
   ...testingRoutes,
   ...seoRoutes,
