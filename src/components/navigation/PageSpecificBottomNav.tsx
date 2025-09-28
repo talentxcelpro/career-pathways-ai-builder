@@ -106,13 +106,13 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Gift,
           label: 'Rewards',
-          action: () => navigate('/rewards'),
+          action: () => navigate('/gamification'),
           isActive: false
         },
         {
           icon: Send,
           label: 'Refer',
-          action: () => navigate('/referrals'),
+          action: () => navigate('/refer-and-earn'),
           isActive: false
         }
       ];
