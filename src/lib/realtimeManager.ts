@@ -74,10 +74,13 @@ class RealtimeManager {
     console.log('🚀 Initializing TalentXcel Production Realtime System...');
     console.log('🔍 Tables to watch:', TABLES_TO_WATCH);
 
-    // Check authentication status first
+    // Wait for authentication to stabilize before creating channels
+    await this.waitForAuthStability();
+
+    // Check authentication status
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error || !session) {
-      console.warn('🔐 No authenticated session - using public tables only');
+      console.warn('🔐 No authenticated session - will try with unauthenticated access');
     } else {
       console.log('🔐 Authenticated user detected');
     }
@@ -89,103 +92,138 @@ class RealtimeManager {
 
     this._setupRealtimeConnections(!!session);
   }
+
+  /**
+   * Wait for authentication to stabilize
+   */
+  private async waitForAuthStability(): Promise<void> {
+    return new Promise((resolve) => {
+      // Give auth system time to stabilize
+      setTimeout(() => {
+        console.log('🔐 Auth stability wait completed');
+        resolve();
+      }, 2000);
+    });
+  }
   
   /**
-   * Setup realtime connections with authentication awareness
+   * Setup realtime connections with improved error handling
    */
   private _setupRealtimeConnections(isAuthenticated: boolean) {
-    // Filter tables based on authentication status
-    const tablesToWatch = TABLES_TO_WATCH.filter(table => {
-      // Public tables that don't require authentication
-      const publicTables = ['jobs', 'posts', 'companies', 'colleges', 'post_comments', 'post_likes'];
-      
-      if (publicTables.includes(table)) {
-        return true;
-      }
-      
-      // User-specific tables require authentication
-      if (!isAuthenticated) {
-        console.log(`⚠️ Skipping ${table} - requires authentication`);
-        return false;
-      }
-      
-      return true;
-    });
+    // Try all tables regardless of authentication - let RLS handle permissions
+    const tablesToWatch = [...TABLES_TO_WATCH];
 
     console.log('🎯 Watching tables:', tablesToWatch);
+    console.log(`🔐 Authentication status: ${isAuthenticated ? 'authenticated' : 'unauthenticated'}`);
 
-    tablesToWatch.forEach((table) => {
-      // Use simple channel names that don't include "realtime" as it's reserved
-      const channelName = `db-changes-${table}`;
-      console.log(`🔗 Creating channel: ${channelName}`);
-
-      const channel = supabase.channel(channelName);
-
-      // Attach listener for this specific table
-      channel.on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table,
-        },
-        (payload) => {
-          const realtimePayload: RealtimePayload = {
-            eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
-            new: payload.new || {},
-            old: payload.old || {},
-            table,
-            schema: payload.schema,
-          };
-          this._handleIncomingEvent(table, realtimePayload, false);
-        }
-      );
-
-      // Subscribe and track status for this table only
-      channel.subscribe((status, err) => {
-        console.log(`📡 Realtime status [${table}]:`, status);
-        if (err) console.error(`📡 Realtime error details [${table}]:`, err);
-
-        this.channelStatuses.set(table, status);
-
-        if (status === 'SUBSCRIBED') {
-          console.log(`✅ Channel subscribed for table: ${table}`);
-          // Mark initialized when first channel subscribes successfully
-          if (!this.isInitialized) this.isInitialized = true;
-        } else if (status === 'CHANNEL_ERROR') {
-          console.warn(`⚠️ Channel error for table: ${table}`);
-          if (err) console.warn('   - Error details:', err);
-          
-          // Don't immediately disable channels on errors - they might be transient
-          this.recordFailure(table);
-          
-          // Only remove channel after multiple failures
-          const attempts = this.connectionAttempts.get(table) || 0;
-          this.connectionAttempts.set(table, attempts + 1);
-          
-          if (attempts >= this.maxRetries) {
-            console.log(`🛑 Disabling ${table} after ${attempts} failed attempts`);
-            this.disabledChannels.add(table);
-            const channelName = `db-changes-${table}`;
-            this.channels.delete(channelName);
-            this.channelStatuses.delete(table);
-          } else {
-            console.log(`🔄 Will retry ${table} (attempt ${attempts + 1}/${this.maxRetries})`);
-          }
-        } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
-          console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table}`);
-          this.recordFailure(table);
-          const channelName = `db-changes-${table}`;
-          // Ensure we drop the stale channel
-          this.channels.delete(channelName);
-          this.channelStatuses.delete(table);
-        }
-      });
-
-      this.channels.set(channelName, channel);
+    // Use a staggered approach to avoid overwhelming the system
+    tablesToWatch.forEach((table, index) => {
+      setTimeout(() => {
+        this.setupTableChannel(table);
+      }, index * 1000); // 1 second delay between each table
     });
 
-    console.log('✅ Production realtime system initialized with per-table channels, batching and cross-tab sync');
+    console.log('✅ Production realtime system initialized with improved error handling');
+  }
+
+  /**
+   * Setup a channel for a specific table with enhanced error handling
+   */
+  private setupTableChannel(table: WatchedTable) {
+    if (this.disabledChannels.has(table)) {
+      console.log(`⏭️ Skipping disabled table: ${table}`);
+      return;
+    }
+
+    // Use simple, unique channel names
+    const channelName = `simple-${table}`;
+    console.log(`🔗 Creating channel: ${channelName} for table: ${table}`);
+
+    const channel = supabase.channel(channelName);
+
+    // Attach listener for this specific table
+    channel.on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table,
+      },
+      (payload) => {
+        const realtimePayload: RealtimePayload = {
+          eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+          new: payload.new || {},
+          old: payload.old || {},
+          table,
+          schema: payload.schema,
+        };
+        this._handleIncomingEvent(table, realtimePayload, false);
+      }
+    );
+
+    // Subscribe and track status for this table only
+    channel.subscribe((status, err) => {
+      console.log(`📡 Realtime status [${table}]:`, status);
+      
+      this.channelStatuses.set(table, status);
+
+      if (status === 'SUBSCRIBED') {
+        console.log(`✅ Channel subscribed for table: ${table}`);
+        // Reset connection attempts on success
+        this.connectionAttempts.delete(table);
+        // Mark initialized when first channel subscribes successfully
+        if (!this.isInitialized) this.isInitialized = true;
+      } else if (status === 'CHANNEL_ERROR') {
+        console.warn(`⚠️ Channel error for table: ${table}`);
+        if (err) {
+          console.warn('   - Error details:', err);
+          
+          // Check for specific errors that indicate permanent failures
+          if (err.message?.includes('permission denied') || 
+              err.message?.includes('not in supabase_realtime publication') ||
+              err.message?.includes('not found')) {
+            console.log(`🚫 Permanent error for ${table}, disabling`);
+            this.disabledChannels.add(table);
+            this.channels.delete(channelName);
+            this.channelStatuses.delete(table);
+            return;
+          }
+        }
+        
+        // Handle retryable errors
+        const attempts = this.connectionAttempts.get(table) || 0;
+        this.connectionAttempts.set(table, attempts + 1);
+        
+        if (attempts >= this.maxRetries) {
+          console.log(`🛑 Disabling ${table} after ${attempts} failed attempts`);
+          this.disabledChannels.add(table);
+          this.channels.delete(channelName);
+          this.channelStatuses.delete(table);
+        } else {
+          console.log(`🔄 Will retry ${table} (attempt ${attempts + 1}/${this.maxRetries})`);
+          // Schedule a retry with exponential backoff
+          const delay = Math.min(1000 * Math.pow(2, attempts), 10000);
+          setTimeout(() => {
+            if (!this.disabledChannels.has(table)) {
+              this.setupTableChannel(table);
+            }
+          }, delay);
+        }
+      } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
+        console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table}`);
+        this.channels.delete(channelName);
+        this.channelStatuses.delete(table);
+        
+        // Schedule reconnection for closed/timed out channels
+        setTimeout(() => {
+          if (!this.disabledChannels.has(table)) {
+            this.setupTableChannel(table);
+          }
+        }, 5000);
+      }
+    });
+
+    this.channels.set(channelName, channel);
   }
 
   /**
