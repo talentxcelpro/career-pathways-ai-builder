@@ -33875,6 +33875,13 @@ export type Database = {
           views_count: number
         }[]
       }
+      get_realtime_publications: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          in_publication: boolean
+          table_name: string
+        }[]
+      }
       get_recent_posts: {
         Args: { limit_count?: number }
         Returns: {
