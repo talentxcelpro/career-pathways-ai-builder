@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useTXCMining } from '@/hooks/useTXCMining';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import txcMascot from '@/assets/txc-mascot.jpg';
 import { 
   Zap, 
   Clock, 
@@ -122,8 +123,8 @@ export const TXCMiningCenter: React.FC = () => {
       <Card className="bg-gradient-to-r from-green-500/20 to-green-600/20 border-green-400/30">
         <CardContent className="p-8">
           <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Zap className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-4">
+              <img src={txcMascot} alt="TXC Mascot" className="w-full h-full object-cover" />
             </div>
             <h2 className="text-3xl font-bold text-green-700 mb-2">TXC Mining Center</h2>
             <p className="text-green-600 mb-6">Complete activities to mine TXC tokens and grow your blockchain portfolio</p>

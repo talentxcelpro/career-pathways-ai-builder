@@ -59,7 +59,7 @@ serve(async (req) => {
           .from('user_txc_balances')
           .select('id, txc_balance, total_earned')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (existingBalance) {
           // Update existing balance
@@ -138,7 +138,7 @@ serve(async (req) => {
             .from('user_txc_balances')
             .select('txc_balance, total_earned')
             .eq('user_id', user.id)
-            .single();
+            .maybeSingle();
 
           if (!currentBalance) continue;
 
@@ -313,7 +313,7 @@ serve(async (req) => {
             .from('user_txc_balances')
             .select('txc_balance, total_earned')
             .eq('user_id', user.id)
-            .single();
+            .maybeSingle();
 
           if (!currentBalance) continue;
 

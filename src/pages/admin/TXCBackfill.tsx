@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Calculator, Users, Coins } from 'lucide-react';
+import txcMascot from '@/assets/txc-mascot.jpg';
 
 interface BackfillResult {
   total_users: number;
@@ -77,7 +78,7 @@ const TXCBackfill = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
+            <img src={txcMascot} alt="TXC Mascot" className="w-5 h-5 rounded-full object-cover" />
             TXC Historical Backfill
           </CardTitle>
           <CardDescription>
