@@ -469,7 +469,7 @@ const Jobs = () => {
               
               {/* Additional AI Hub CTA */}
               <Button
-                onClick={() => navigate('/ai/advanced-hub')}
+                onClick={() => navigate('/career-dashboard')}
                 variant="default"
                 size="sm"
                 className="whitespace-nowrap flex items-center gap-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md"
