@@ -61,31 +61,49 @@ export function usePWA() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Cleanup any existing service workers to prevent cache conflicts
-    const cleanupServiceWorkers = async () => {
+    // Force complete cache cleanup and reload for fresh content
+    const forceAppRefresh = async () => {
       if ('serviceWorker' in navigator) {
         try {
+          // Unregister all service workers
           const registrations = await navigator.serviceWorker.getRegistrations();
           for (const registration of registrations) {
             await registration.unregister();
-            console.log('🧹 PWA: Cleaned up service worker');
+            console.log('🧹 PWA: Unregistered service worker');
           }
           
-          // Clear all caches
+          // Clear all caches including HTTP cache
           if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(
               cacheNames.map(cacheName => caches.delete(cacheName))
             );
-            console.log('🧹 PWA: Cleared all caches');
+            console.log('🧹 PWA: Cleared all application caches');
           }
+          
+          // Clear storage to ensure fresh data
+          try {
+            localStorage.clear();
+            sessionStorage.clear();
+            console.log('🧹 PWA: Cleared local storage');
+          } catch (e) {
+            console.warn('Could not clear storage:', e);
+          }
+          
+          // Force reload with cache bypass
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+          
         } catch (error) {
           console.warn('PWA cleanup error:', error);
+          // Force reload anyway
+          window.location.reload();
         }
       }
     };
     
-    cleanupServiceWorkers();
+    forceAppRefresh();
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
