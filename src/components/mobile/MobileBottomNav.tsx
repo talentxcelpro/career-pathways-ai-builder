@@ -61,8 +61,13 @@ export const MobileBottomNav = () => {
   const isNetworkRoute = location.pathname === '/network';
   if (!user && !isNetworkRoute) return null;
 
-  console.log('MobileBottomNav: Rendering with', navItems.length, 'nav items, user:', !!user);
-  console.log('Rendering ModulesLauncher with isOpen:', showModulesLauncher);
+  console.log('=== MobileBottomNav Debug ===');
+  console.log('- Current path:', location.pathname);
+  console.log('- User exists:', !!user);
+  console.log('- Nav items count:', navItems.length);
+  console.log('- showModulesLauncher:', showModulesLauncher);
+  console.log('- Should render nav:', true);
+  console.log('================');
 
   return (
     <>
@@ -117,27 +122,24 @@ export const MobileBottomNav = () => {
             );
           })}
           
-          {/* More Button - 6th button */}
-          <button
+          {/* MORE BUTTON - 6TH BUTTON - DEBUG VERSION */}
+          <div 
             onClick={() => {
-              console.log('More button clicked, opening ModulesLauncher');
+              console.log('🚀 MORE BUTTON CLICKED!');
               setShowModulesLauncher(true);
             }}
-            className={cn(
-              "flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px]",
-              "animate-fade-in text-muted-foreground hover:text-primary hover:scale-105 transform"
-            )}
+            className="flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px] bg-red-500 text-white border-2 border-yellow-400"
             style={{ animationDelay: `${navItems.length * 0.1}s` }}
           >
             <div className="relative">
-              <div className="p-2 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card">
-                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform" />
+              <div className="p-2 rounded-xl transition-all duration-500 transform">
+                <Grid3X3 className="h-4 w-4" />
               </div>
             </div>
-            <span className="text-[8px] font-medium truncate w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold">
-              More
+            <span className="text-[8px] font-bold text-center mt-1">
+              MORE
             </span>
-          </button>
+          </div>
         </div>
       </nav>
 
