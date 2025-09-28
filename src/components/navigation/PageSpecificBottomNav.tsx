@@ -463,11 +463,12 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
 
   const navigationItems = getPageNavigation(location.pathname, navigate);
   const isDefaultNav = location.pathname === '/';
+  const isNetworkPage = location.pathname === '/network' || location.pathname.startsWith('/network/');
 
   return (
     <>
-      {/* Transparent More Button for Default Navigation */}
-      {isDefaultNav && (
+      {/* Transparent More Button for Default Navigation and Network Page */}
+      {(isDefaultNav || isNetworkPage) && (
         <Button
           variant="ghost"
           size="icon"
