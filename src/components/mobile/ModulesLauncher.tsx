@@ -35,7 +35,7 @@ import {
   Layers
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 
 interface ModuleItem {
   id: string;
@@ -241,7 +241,7 @@ export const ModulesLauncher: React.FC<ModulesLauncherProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
 
   // Filter modules based on search and auth
   const filteredModules = modules.filter(module => {

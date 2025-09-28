@@ -61,11 +61,14 @@ export const MobileBottomNav = () => {
   const isNetworkRoute = location.pathname === '/network';
   if (!user && !isNetworkRoute) return null;
 
+  console.log('MobileBottomNav: Rendering with', navItems.length, 'nav items, user:', !!user);
+  console.log('Rendering ModulesLauncher with isOpen:', showModulesLauncher);
+
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center px-1 py-2 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center px-1 py-2 overflow-x-auto scrollbar-hide min-w-full" style={{ width: 'max-content' }}>
           {/* Main Nav Items */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
@@ -116,7 +119,10 @@ export const MobileBottomNav = () => {
           
           {/* More Button - 6th button */}
           <button
-            onClick={() => setShowModulesLauncher(true)}
+            onClick={() => {
+              console.log('More button clicked, opening ModulesLauncher');
+              setShowModulesLauncher(true);
+            }}
             className={cn(
               "flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px]",
               "animate-fade-in text-muted-foreground hover:text-primary hover:scale-105 transform"
