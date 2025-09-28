@@ -13,9 +13,13 @@ import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
 import { UniversalSearchBar } from '@/components/search/UniversalSearchBar';
 import { SearchFilters } from '@/services/aiSearchService';
 import { updateMetaTags } from '@/utils/metaTags';
+import { MobileViabilityWrapper, MobileModuleHeader, MobileSection, MobileGrid } from '@/components/mobile/MobileViabilityWrapper';
+import { MobileButton, MobileInput, MobileCard, MobileTypography } from '@/components/mobile/MobileOptimizedComponents';
+import { useMobileOptimizations } from '@/hooks/useMobileOptimizations';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const { isMobile } = useMobileOptimizations();
 
   const { data: companies, isLoading, refetch } = useQuery({
     queryKey: ['companies', searchTerm],
