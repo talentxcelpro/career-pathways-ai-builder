@@ -115,7 +115,8 @@ class RealtimeManager {
     console.log('🎯 Watching tables:', tablesToWatch);
 
     tablesToWatch.forEach((table) => {
-      const channelName = `realtime:public:${table}`;
+      // Use simpler channel names that Supabase expects
+      const channelName = `table-${table}`;
       console.log(`🔗 Creating channel: ${channelName}`);
 
       const channel = supabase.channel(channelName);
@@ -152,31 +153,29 @@ class RealtimeManager {
           // Mark initialized when first channel subscribes successfully
           if (!this.isInitialized) this.isInitialized = true;
         } else if (status === 'CHANNEL_ERROR') {
-          console.error(`❌ Channel error for table: ${table}. Possible causes:`);
-          console.error('   - Table not in supabase_realtime publication');
-          console.error('   - Table does not exist');
-          console.error('   - Authentication required but user not logged in');
-          console.error('   - Network/connectivity issues');
-          console.error('   - Project realtime disabled');
-          if (err) console.error('   - Error details:', err);
+          console.warn(`⚠️ Channel error for table: ${table}`);
+          if (err) console.warn('   - Error details:', err);
           
+          // Don't immediately disable channels on errors - they might be transient
           this.recordFailure(table);
           
-          // Remove faulty channel to prevent repeated errors
-          const channelName = `realtime:public:${table}`;
-          this.channels.delete(channelName);
-          this.channelStatuses.delete(table);
-          
-          // Check if we should disable this table
+          // Only remove channel after multiple failures
           const attempts = this.connectionAttempts.get(table) || 0;
+          this.connectionAttempts.set(table, attempts + 1);
+          
           if (attempts >= this.maxRetries) {
             console.log(`🛑 Disabling ${table} after ${attempts} failed attempts`);
             this.disabledChannels.add(table);
+            const channelName = `table-${table}`;
+            this.channels.delete(channelName);
+            this.channelStatuses.delete(table);
+          } else {
+            console.log(`🔄 Will retry ${table} (attempt ${attempts + 1}/${this.maxRetries})`);
           }
         } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
           console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table}`);
           this.recordFailure(table);
-          const channelName = `realtime:public:${table}`;
+          const channelName = `table-${table}`;
           // Ensure we drop the stale channel
           this.channels.delete(channelName);
           this.channelStatuses.delete(table);
@@ -193,7 +192,7 @@ class RealtimeManager {
    * Setup a single connection (used for reconnecting)
    */
   private _setupSingleConnection(table: WatchedTable) {
-    const channelName = `realtime:public:${table}`;
+    const channelName = `table-${table}`;
     const channel = supabase.channel(channelName);
 
     channel.on(
@@ -220,7 +219,7 @@ class RealtimeManager {
       if (err) console.error(`📡 Reconnect error details [${table}]:`, err);
       this.channelStatuses.set(table, status);
       if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
-        const channelName = `realtime:public:${table}`;
+        const channelName = `table-${table}`;
         try { supabase.removeChannel(channel); } catch (_) {}
         this.channels.delete(channelName);
         this.channelStatuses.delete(table);
