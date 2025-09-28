@@ -21,7 +21,10 @@ import {
   Zap,
   Target,
   FileText,
-  PenTool
+  PenTool,
+  Play,
+  Gift,
+  Send
 } from 'lucide-react';
 
 export interface BottomNavItem {
@@ -336,6 +339,41 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
           icon: User,
           label: 'Profile',
           action: () => navigate('/profile'),
+          isActive: false
+        }
+      ];
+
+    // Profile Network Page Navigation
+    case basePath === '/profile/network' || basePath.startsWith('/profile/network/'):
+      return [
+        {
+          icon: Home,
+          label: 'Home',
+          action: () => navigate('/'),
+          isActive: false
+        },
+        {
+          icon: Briefcase,
+          label: 'Jobs',
+          action: () => navigate('/jobs'),
+          isActive: false
+        },
+        {
+          icon: Play,
+          label: 'Reels',
+          action: () => navigate('/mobile/reels'),
+          isPrimary: true
+        },
+        {
+          icon: Gift,
+          label: 'Reward',
+          action: () => navigate('/rewards'),
+          isActive: false
+        },
+        {
+          icon: Send,
+          label: 'Refer',
+          action: () => navigate('/referrals'),
           isActive: false
         }
       ];
