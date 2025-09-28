@@ -61,8 +61,31 @@ export function usePWA() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Skip service worker registration to prevent stale bundles
-    console.log('SW registration skipped to avoid cache issues');
+    // Cleanup any existing service workers to prevent cache conflicts
+    const cleanupServiceWorkers = async () => {
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+            console.log('🧹 PWA: Cleaned up service worker');
+          }
+          
+          // Clear all caches
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(
+              cacheNames.map(cacheName => caches.delete(cacheName))
+            );
+            console.log('🧹 PWA: Cleared all caches');
+          }
+        } catch (error) {
+          console.warn('PWA cleanup error:', error);
+        }
+      }
+    };
+    
+    cleanupServiceWorkers();
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);

@@ -18,15 +18,23 @@ export const useServiceWorker = () => {
   useEffect(() => {
     if (!state.isSupported) return;
 
-    const registerSW = async () => {
-      try {
-        // Disabled SW registration to avoid caching old bundles
-        console.log('Service Worker registration disabled');
-        setState(prev => ({ ...prev, isRegistered: false }));
-      } catch (error) {
-        console.error('Service Worker check failed:', error);
+  const registerSW = async () => {
+    try {
+      // Unregister any existing service workers to prevent cache issues
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+          console.log('🧹 Unregistered service worker:', registration.scope);
+        }
       }
-    };
+      
+      console.log('✅ Service Worker cleanup completed');
+      setState(prev => ({ ...prev, isRegistered: false }));
+    } catch (error) {
+      console.error('Service Worker cleanup failed:', error);
+    }
+  };
 
     registerSW();
 
