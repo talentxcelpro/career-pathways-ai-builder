@@ -10,7 +10,7 @@ import { LeaderboardsWidget } from '@/components/gamification/LeaderboardsWidget
 
 const GamificationCenter: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('achievements');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-blue-50/30 to-purple-50/30 p-4">
