@@ -10,7 +10,7 @@ export const uploadNewJobs = async () => {
     const { data, error } = await supabase.functions.invoke('bulk-job-upload-v2', {
       body: {
         csvData: newJobsData,
-        batchName: 'TalentXcel Jobs Batch 2 - Fresher Positions'
+        batchName: 'TalentXcel IT Support Jobs - Multi-City Batch'
       }
     });
 
