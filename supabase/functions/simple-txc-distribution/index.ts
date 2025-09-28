@@ -236,24 +236,34 @@ Deno.serve(async (req) => {
       console.log(`📊 Found ${contributingUsers?.length || 0} users for retroactive rewards`)
 
       for (const user of contributingUsers || []) {
-        // Calculate contribution score based on activity
-        const { count: postCount } = await supabaseClient
-          .from('posts')
-          .select('id', { count: 'exact' })
-          .or(`user_id.eq.${user.id},author_id.eq.${user.id}`)
-
-        const { count: connectionCount } = await supabaseClient
-          .from('connections')
-          .select('id', { count: 'exact' })
-          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted')
-
-        const contributionScore = (postCount || 0) + (connectionCount || 0) * 2
         try {
-          const rewardAmount = calculateRetroactiveReward(contributionScore)
+          // Calculate contribution score based on activity
+          console.log(`🔍 Processing retroactive rewards for user: ${user.email}`)
           
-          if (!dryRun && rewardAmount > 0) {
-            // Check if user already has TXC balance to prevent duplicates
+          const { count: postCount } = await supabaseClient
+            .from('posts')
+            .select('id', { count: 'exact' })
+            .or(`user_id.eq.${user.id},author_id.eq.${user.id}`)
+
+          const { count: connectionCount } = await supabaseClient
+            .from('connections')
+            .select('id', { count: 'exact' })
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+            .eq('status', 'accepted')
+
+          // Enhanced reward calculation based on actual activity
+          const posts = Math.min(postCount || 0, 10) // Cap at 10 posts
+          const connections = Math.min(connectionCount || 0, 10) // Cap at 10 connections
+          const postReward = posts * 150 // 150 TXC per post
+          const connectionReward = connections * 75 // 75 TXC per connection
+          const profileReward = 300 // Profile completion bonus
+          
+          const totalReward = postReward + connectionReward + profileReward
+          
+          console.log(`📊 User ${user.email} activity: ${posts} posts (${postReward} TXC), ${connections} connections (${connectionReward} TXC), profile bonus (${profileReward} TXC) = ${totalReward} TXC total`)
+          
+          if (!dryRun && totalReward > 0) {
+            // Check if user already has TXC balance
             const { data: existingBalance } = await supabaseClient
               .from('user_txc_balances')
               .select('txc_balance, total_earned')
@@ -261,56 +271,114 @@ Deno.serve(async (req) => {
               .maybeSingle()
 
             if (existingBalance) {
-              // Update existing balance
-              const newBalance = existingBalance.txc_balance + rewardAmount
-              const newTotalEarned = existingBalance.total_earned + rewardAmount
+              // Calculate the difference to avoid double rewarding
+              const currentEarned = existingBalance.total_earned || 0
+              // Only award if they haven't already received retroactive rewards
+              if (currentEarned < totalReward + 500) { // 500 is welcome bonus
+                const additionalReward = Math.max(0, totalReward + 500 - currentEarned)
+                
+                if (additionalReward > 0) {
+                  const newBalance = existingBalance.txc_balance + additionalReward
+                  const newTotalEarned = existingBalance.total_earned + additionalReward
 
-              const { error: balanceError } = await supabaseClient
-                .from('user_txc_balances')
-                .update({
-                  txc_balance: newBalance,
-                  total_earned: newTotalEarned
-                })
-                .eq('user_id', user.id)
+                  const { error: balanceError } = await supabaseClient
+                    .from('user_txc_balances')
+                    .update({
+                      txc_balance: newBalance,
+                      total_earned: newTotalEarned,
+                      updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.id)
 
-              if (balanceError) throw balanceError
+                  if (balanceError) {
+                    console.error(`Balance update error for ${user.email}:`, balanceError)
+                    throw balanceError
+                  }
+
+                  // Create transaction record
+                  const { error: txError } = await supabaseClient
+                    .from('txc_transactions')
+                    .insert({
+                      user_id: user.id,
+                      amount: additionalReward,
+                      transaction_type: 'mining',
+                      activity_type: 'retroactive_reward',
+                      description: `Retroactive reward: ${posts} posts (${postReward}), ${connections} connections (${connectionReward}), profile bonus (${profileReward}) 🏆`
+                    })
+
+                  if (txError) {
+                    console.error(`Transaction error for ${user.email}:`, txError)
+                    // Don't throw, just log
+                  }
+                  
+                  console.log(`✅ Awarded ${additionalReward} additional TXC to ${user.email}`)
+                } else {
+                  console.log(`ℹ️ User ${user.email} already has sufficient rewards`)
+                }
+              } else {
+                console.log(`ℹ️ User ${user.email} already received full retroactive rewards`)
+              }
             } else {
-              // Create new balance record
+              // Create new balance record with welcome bonus + retroactive rewards
+              const initialBalance = 500 + totalReward // Welcome bonus + activity rewards
+              
               const { error: balanceError } = await supabaseClient
                 .from('user_txc_balances')
                 .insert({
                   user_id: user.id,
-                  txc_balance: rewardAmount,
-                  total_earned: rewardAmount
+                  txc_balance: initialBalance,
+                  total_earned: initialBalance,
+                  total_spent: 0,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
                 })
 
-              if (balanceError) throw balanceError
+              if (balanceError) {
+                console.error(`Balance creation error for ${user.email}:`, balanceError)
+                throw balanceError
+              }
+
+              // Create transaction records
+              const transactions = [
+                {
+                  user_id: user.id,
+                  amount: 500,
+                  transaction_type: 'bonus',
+                  activity_type: 'welcome_bonus',
+                  description: 'Welcome to TalentXcel! 🎉'
+                },
+                {
+                  user_id: user.id,
+                  amount: totalReward,
+                  transaction_type: 'mining',
+                  activity_type: 'retroactive_reward',
+                  description: `Retroactive reward: ${posts} posts (${postReward}), ${connections} connections (${connectionReward}), profile bonus (${profileReward}) 🏆`
+                }
+              ]
+
+              const { error: txError } = await supabaseClient
+                .from('txc_transactions')
+                .insert(transactions)
+
+              if (txError) {
+                console.error(`Transaction creation error for ${user.email}:`, txError)
+                // Don't throw, just log
+              }
+              
+              console.log(`✅ Created new balance with ${initialBalance} TXC for ${user.email}`)
             }
-
-            // Create transaction record
-            const { error: txError } = await supabaseClient
-              .from('txc_transactions')
-              .insert({
-                user_id: user.id,
-                amount: rewardAmount,
-                transaction_type: 'mining',
-                activity_type: 'retroactive_reward',
-                description: `Retroactive reward for your contributions! Score: ${contributionScore} 🏆`
-              })
-
-            if (txError) throw txError
           }
 
           results.push({
             user_id: user.id,
             name: user.full_name,
             email: user.email,
-            awarded: rewardAmount,
+            awarded: totalReward,
             phase: 'retroactive',
             success: true
           })
 
-          totalAwarded += rewardAmount
+          totalAwarded += totalReward
           processedCount++
 
         } catch (error) {
