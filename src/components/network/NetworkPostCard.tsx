@@ -15,8 +15,7 @@ import { linkifyText } from "@/utils/textUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { getCustomStorageUrl } from "@/utils/storage";
 import { ReshareButton } from './ReshareButton';
-import { useProfileViews } from '@/hooks/useProfileViews';
-import { Eye } from 'lucide-react';
+import { useViewportProfileTracking } from '@/hooks/useViewportProfileTracking';
 import { ContentEmbed } from '@/components/embeds/ContentEmbed';
 
 interface NetworkPost {
@@ -54,14 +53,23 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   openComments,
   onCommentClick
 }) => {
-  const { viewCount, incrementView } = useProfileViews(post.profiles?.id);
-  
-  // Track profile view when card is viewed
-  useEffect(() => {
-    if (post.profiles?.id) {
-      incrementView(post.profiles.id, 'network_card');
+  const { trackElementRef } = useViewportProfileTracking(
+    post.profiles?.id || '',
+    'network_card',
+    {
+      threshold: 0.6, // 60% visible
+      minViewTime: 3000 // 3 seconds minimum view time
     }
-  }, [post.profiles?.id, incrementView]);
+  );
+  
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
+  // Set up viewport tracking for this card
+  React.useEffect(() => {
+    if (cardRef.current && post.profiles?.id) {
+      trackElementRef(cardRef.current);
+    }
+  }, [trackElementRef, post.profiles?.id]);
 
   // Check if this post contains video content
   const hasVideo = post.media_urls?.some(url => 
@@ -122,7 +130,10 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow border-border/60 bg-card/95 backdrop-blur-sm">
+    <Card 
+      ref={cardRef}
+      className="hover:shadow-md transition-shadow border-border/60 bg-card/95 backdrop-blur-sm"
+    >
       <CardContent className="p-6">
         {/* Post Header */}
         <div className="flex items-start justify-between mb-4">

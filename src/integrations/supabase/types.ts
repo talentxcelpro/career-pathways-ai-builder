@@ -6991,6 +6991,38 @@ export type Database = {
           },
         ]
       }
+      comment_reactions: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_reactions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_activities: {
         Row: {
           activity_type: string
@@ -8983,6 +9015,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      content_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          subscription_type: string
+          subscription_value: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          subscription_type: string
+          subscription_value: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          subscription_type?: string
+          subscription_value?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       content_templates: {
         Row: {
@@ -15450,6 +15512,38 @@ export type Database = {
           },
         ]
       }
+      job_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          job_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type: string
+          job_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          job_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_interactions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_locations_india: {
         Row: {
           city: string
@@ -16632,6 +16726,33 @@ export type Database = {
           post_count?: number | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      learning_interactions: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          interaction_type: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          interaction_type: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -21314,6 +21435,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profile_views_v2: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_signals: Json | null
+          ip_address: unknown | null
+          profile_id: string
+          session_id: string | null
+          user_agent: string | null
+          view_duration_seconds: number | null
+          view_type: string
+          viewed_at: string
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_signals?: Json | null
+          ip_address?: unknown | null
+          profile_id: string
+          session_id?: string | null
+          user_agent?: string | null
+          view_duration_seconds?: number | null
+          view_type?: string
+          viewed_at?: string
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_signals?: Json | null
+          ip_address?: unknown | null
+          profile_id?: string
+          session_id?: string | null
+          user_agent?: string | null
+          view_duration_seconds?: number | null
+          view_type?: string
+          viewed_at?: string
+          viewer_id?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -30906,6 +31069,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_gamification_stats: {
         Row: {
           achievements_unlocked: number
@@ -33857,6 +34044,10 @@ export type Database = {
           users_needing_reminders: number
         }[]
       }
+      get_profile_view_stats: {
+        Args: { p_profile_id: string }
+        Returns: Json
+      }
       get_ranked_content: {
         Args: {
           p_content_type?: string
@@ -34456,6 +34647,19 @@ export type Database = {
           p_view_source?: string
         }
         Returns: string
+      }
+      track_profile_view_v2: {
+        Args: {
+          p_interaction_signals?: Json
+          p_ip_address?: unknown
+          p_profile_id: string
+          p_session_id?: string
+          p_user_agent?: string
+          p_view_duration_seconds?: number
+          p_view_type?: string
+          p_viewer_id?: string
+        }
+        Returns: boolean
       }
       track_public_post_view: {
         Args: {
