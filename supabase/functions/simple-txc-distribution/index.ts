@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
               .from('user_txc_balances')
               .upsert({
                 user_id: user.id,
-                balance: 500,
+                txc_balance: 500,
                 total_earned: 500
               })
 
@@ -149,18 +149,18 @@ Deno.serve(async (req) => {
             // Update or create TXC balance
             const { data: existingBalance } = await supabaseClient
               .from('user_txc_balances')
-              .select('balance, total_earned')
+              .select('txc_balance, total_earned')
               .eq('user_id', user.id)
               .single()
 
-            const newBalance = (existingBalance?.balance || 0) + 150
+            const newBalance = (existingBalance?.txc_balance || 0) + 150
             const newTotalEarned = (existingBalance?.total_earned || 0) + 150
 
             const { error: balanceError } = await supabaseClient
               .from('user_txc_balances')
               .upsert({
                 user_id: user.id,
-                balance: newBalance,
+                txc_balance: newBalance,
                 total_earned: newTotalEarned
               })
 
@@ -241,18 +241,18 @@ Deno.serve(async (req) => {
             // Update or create TXC balance
             const { data: existingBalance } = await supabaseClient
               .from('user_txc_balances')
-              .select('balance, total_earned')
+              .select('txc_balance, total_earned')
               .eq('user_id', user.id)
               .single()
 
-            const newBalance = (existingBalance?.balance || 0) + rewardAmount
+            const newBalance = (existingBalance?.txc_balance || 0) + rewardAmount
             const newTotalEarned = (existingBalance?.total_earned || 0) + rewardAmount
 
             const { error: balanceError } = await supabaseClient
               .from('user_txc_balances')
               .upsert({
                 user_id: user.id,
-                balance: newBalance,
+                txc_balance: newBalance,
                 total_earned: newTotalEarned
               })
 

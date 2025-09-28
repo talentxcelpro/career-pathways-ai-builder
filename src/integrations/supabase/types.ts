@@ -33651,6 +33651,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_active_user_ids: {
+        Args: { days_back?: number }
+        Returns: string[]
+      }
       get_agent_by_role: {
         Args: { p_role: string }
         Returns: {
