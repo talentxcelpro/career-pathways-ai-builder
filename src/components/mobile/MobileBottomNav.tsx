@@ -65,7 +65,7 @@ export const MobileBottomNav = () => {
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center px-1 py-2 overflow-x-auto">
+        <div className="flex items-center px-1 py-2 overflow-x-auto scrollbar-hide">
           {/* Main Nav Items */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
@@ -114,8 +114,24 @@ export const MobileBottomNav = () => {
             );
           })}
           
-          {/* SIMPLE 6TH BUTTON TEST */}
-          <div className="bg-red-500 p-2 text-white text-center text-xs font-bold">6TH BUTTON</div>
+          {/* More Button - 6th button */}
+          <button
+            onClick={() => setShowModulesLauncher(true)}
+            className={cn(
+              "flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px]",
+              "animate-fade-in text-muted-foreground hover:text-primary hover:scale-105 transform"
+            )}
+            style={{ animationDelay: `${navItems.length * 0.1}s` }}
+          >
+            <div className="relative">
+              <div className="p-2 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card">
+                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform" />
+              </div>
+            </div>
+            <span className="text-[8px] font-medium truncate w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold">
+              More
+            </span>
+          </button>
         </div>
       </nav>
 
