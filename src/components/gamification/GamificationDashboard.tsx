@@ -91,20 +91,20 @@ export const GamificationDashboard: React.FC = () => {
     return () => clearInterval(interval);
   }, [user, txcIntegration]);
 
-  // Enhanced stats with real-time TXC balance and unified gamification
+  // Enhanced stats with real-time TXC balance and real data only
   const stats = {
     level: Math.floor((unifiedUserRanking?.total_points || userScores?.total_points || 0) / 1000) + 1,
     currentXP: (unifiedUserRanking?.total_points || userScores?.total_points || 0) % 1000,
     nextLevelXP: 1000,
-    streak: unifiedUserRanking?.current_streak || 1,
-    longestStreak: unifiedUserRanking?.current_streak || 1,
+    streak: unifiedUserRanking?.current_streak || 0,
+    longestStreak: unifiedUserRanking?.current_streak || 0,
     weeklyGoal: 5000,
     weeklyProgress: Math.min((unifiedUserRanking?.total_points || userScores?.total_points || 0), 5000),
     rank: unifiedUserRanking?.rank || userRanking?.rank || '--',
-    totalUsers: userRanking?.total_users || 463,
+    totalUsers: userRanking?.total_users || 1,
     percentile: userRanking?.percentile || '--',
     txcBalance: unifiedUserRanking?.txc_balance || availableBalance || 0,
-    achievementsEarned: unifiedUserRanking?.achievements_count || userAchievements?.filter(a => a.is_completed).length || 0
+    achievementsEarned: unifiedUserRanking?.achievements_count || 0
   };
 
   const quickStats = [

@@ -70,6 +70,21 @@ export const AchievementsSection: React.FC = () => {
   const [showEarnedOnly, setShowEarnedOnly] = useState(false);
   const [celebratingAchievement, setCelebratingAchievement] = useState<string | null>(null);
 
+  // Debug logging to see what's causing duplicates
+  useEffect(() => {
+    console.log('🎯 Real User Achievements:', realUserAchievements.length);
+    console.log('📊 Achievement Types:', allAchievementTypes?.length);
+    console.log('📈 Summary:', summary);
+    
+    // Check for duplicates
+    const duplicates = realUserAchievements.filter((ach, index, self) => 
+      self.findIndex(a => a.achievement_type === ach.achievement_type) !== index
+    );
+    if (duplicates.length > 0) {
+      console.warn('🚨 Found duplicate achievements:', duplicates);
+    }
+  }, [realUserAchievements, allAchievementTypes, summary]);
+
   // Helper functions - moved to top
   const getIconForType = (type: string): React.ElementType => {
     if (type.includes('social') || type.includes('connection')) return Users;
@@ -93,7 +108,7 @@ export const AchievementsSection: React.FC = () => {
     return 'engagement';
   };
 
-  // Combine real achievements with available achievement types
+  // Use only real achievements data
   const earnedAchievements: Achievement[] = realUserAchievements.map(ach => ({
     id: ach.id,
     name: ach.achievement_title,
@@ -108,9 +123,10 @@ export const AchievementsSection: React.FC = () => {
     earnedAt: ach.earned_at
   }));
 
-  // Add available achievement types that haven't been earned
+  // Add only unique available achievement types that haven't been earned
+  const earnedTypes = new Set(realUserAchievements.map(ach => ach.achievement_type));
   const availableAchievements: Achievement[] = (allAchievementTypes || [])
-    .filter(type => !realUserAchievements.some(earned => earned.achievement_type === type.type))
+    .filter(type => !earnedTypes.has(type.type))
     .map(type => ({
       id: type.type,
       name: type.title,
@@ -125,7 +141,7 @@ export const AchievementsSection: React.FC = () => {
       earnedAt: undefined
     }));
 
-  // Combine earned and available achievements
+  // Combine earned and available achievements (no duplicates)
   const achievements: Achievement[] = [...earnedAchievements, ...availableAchievements];
 
   // Helper functions
@@ -183,11 +199,21 @@ export const AchievementsSection: React.FC = () => {
     }
   };
 
-  const filteredAchievements = achievements.filter(achievement => {
-    if (selectedCategory !== 'all' && achievement.category !== selectedCategory) return false;
-    if (showEarnedOnly && !achievement.earned) return false;
-    return true;
-  });
+  // Filter achievements and remove duplicates
+  const filteredAchievements = achievements
+    .filter((achievement, index, self) => {
+      // Remove duplicates by ID
+      const isFirstOccurrence = self.findIndex(a => a.id === achievement.id) === index;
+      if (!isFirstOccurrence) return false;
+      
+      // Filter by category
+      if (selectedCategory !== 'all' && achievement.category !== selectedCategory) return false;
+      
+      // Filter by earned status
+      if (showEarnedOnly && !achievement.earned) return false;
+      
+      return true;
+    });
 
   // Auto-check achievements and award TXC
   useEffect(() => {
@@ -206,9 +232,10 @@ export const AchievementsSection: React.FC = () => {
     });
   }, [achievements, txcIntegration, toast]);
 
-  const earnedCount = realUserAchievements.length > 0 ? summary.totalEarned : achievements.filter(a => a.earned).length;
-  const totalPoints = realUserAchievements.length > 0 ? summary.totalPoints : achievements.filter(a => a.earned).reduce((sum, a) => sum + a.points, 0);
-  const completionRate = realUserAchievements.length > 0 ? summary.completionRate : (achievements.length > 0 ? Math.round((earnedCount / achievements.length) * 100) : 0);
+  // Use real data for stats calculations
+  const earnedCount = summary.totalEarned || 0;
+  const totalPoints = summary.totalPoints || 0;
+  const completionRate = summary.completionRate || 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
