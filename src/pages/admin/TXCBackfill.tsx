@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Calculator, Users, Coins } from 'lucide-react';
 import txcMascot from '@/assets/txc-mascot.jpg';
+import { SimpleTXCDistribution } from '@/components/admin/SimpleTXCDistribution';
 
 interface BackfillResult {
   total_users: number;
@@ -182,6 +183,22 @@ const TXCBackfill = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Simple TXC Distribution */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <img src={txcMascot} alt="TXC Mascot" className="w-5 h-5 rounded-full object-cover" />
+            Simple TXC Distribution (Recommended)
+          </CardTitle>
+          <CardDescription>
+            Reliable phase-by-phase TXC distribution with batch processing and error handling
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SimpleTXCDistribution />
+        </CardContent>
+      </Card>
+
       {/* Connection Test */}
       <Card>
         <CardHeader>
