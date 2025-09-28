@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessageCircle, Share2, TrendingUp, Briefcase, Users, Camera, Link as LinkIcon, MoreHorizontal, Video } from "lucide-react";
 import { UserFollowButton } from "@/components/social/UserFollowButton";
 import { CommentReactions } from "@/components/social/CommentReactions";
+import { ClickableProfile } from "@/components/social/ClickableProfile";
+import { EnhancedEngagementActions } from "@/components/social/EnhancedEngagementActions";
+import { RichUrlPreview, useUrlDetection } from "@/components/social/RichUrlPreview";
+import { EnhancedPostContent } from "@/components/social/EnhancedPostContent";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoThumbnail } from "@/components/media/VideoThumbnail";
@@ -26,9 +29,11 @@ interface Post {
   author?: {
     id?: string;
     full_name: string;
-    avatar_url?: string;
+    profile_picture_url?: string;
     title?: string;
     user_role: string;
+    username?: string;
+    slug?: string;
   };
   liked_by_user?: boolean;
 }
@@ -82,11 +87,11 @@ export function ProfessionalFeed() {
         return;
       }
 
-      // Get author profiles
+      // Get author profiles with username and slug for clickable profiles
       const authorIds = [...new Set(postsData.map(post => post.author_id))];
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, profile_picture_url, title')
+        .select('id, full_name, profile_picture_url, title, username, slug')
         .in('id', authorIds);
 
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
@@ -108,8 +113,10 @@ export function ProfessionalFeed() {
         author: {
           id: post.author_id,
           full_name: profilesMap.get(post.author_id)?.full_name || 'Professional User',
-          avatar_url: profilesMap.get(post.author_id)?.profile_picture_url,
+          profile_picture_url: profilesMap.get(post.author_id)?.profile_picture_url,
           title: profilesMap.get(post.author_id)?.title || 'Professional',
+          username: profilesMap.get(post.author_id)?.username,
+          slug: profilesMap.get(post.author_id)?.slug,
           user_role: 'candidate'
         },
         liked_by_user: false // We'll implement this with proper post_reactions query later
@@ -176,27 +183,64 @@ export function ProfessionalFeed() {
   const likePost = async (postId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('post_reactions')
-        .upsert({
-          post_id: postId,
-          user_id: user.id,
-          reaction_type: 'like'
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to like posts",
+          variant: "destructive",
         });
+        return;
+      }
 
-      if (error) throw error;
+      // Check if already liked
+      const { data: existingLike } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .single();
 
-      setPosts(prevPosts =>
-        prevPosts.map(post =>
-          post.id === postId
-            ? { ...post, likes_count: post.likes_count + 1, liked_by_user: true }
-            : post
-        )
-      );
+      if (existingLike) {
+        // Unlike
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+
+        setPosts(prevPosts =>
+          prevPosts.map(post =>
+            post.id === postId
+              ? { ...post, likes_count: Math.max(0, post.likes_count - 1), liked_by_user: false }
+              : post
+          )
+        );
+      } else {
+        // Like
+        await supabase
+          .from('post_likes')
+          .insert({ post_id: postId, user_id: user.id });
+
+        setPosts(prevPosts =>
+          prevPosts.map(post =>
+            post.id === postId
+              ? { ...post, likes_count: post.likes_count + 1, liked_by_user: true }
+              : post
+          )
+        );
+      }
+
+      // Add haptic feedback for mobile
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
     } catch (error) {
       console.error('Error liking post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update like. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -321,17 +365,25 @@ export function ProfessionalFeed() {
           <Card key={post.id}>
             <CardContent className="p-6">
               <div className="flex space-x-4">
-                <Avatar>
-                  <AvatarImage src={post.author?.avatar_url} />
-                  <AvatarFallback>
-                    {post.author?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+                {post.author && (
+                  <ClickableProfile 
+                    profile={{
+                      id: post.author.id || post.author_id,
+                      full_name: post.author.full_name,
+                      profile_picture_url: post.author.profile_picture_url,
+                      headline: post.author.title,
+                      username: post.author.username,
+                      slug: post.author.slug
+                    }}
+                    size="md"
+                    showBadge={false}
+                    showCompany={false}
+                  />
+                )}
                 
                 <div className="flex-1 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold">{post.author?.full_name}</h3>
                       <p className="text-sm text-muted-foreground">
                         {post.author?.title} • {new Date(post.created_at).toLocaleDateString()}
                       </p>
@@ -353,9 +405,8 @@ export function ProfessionalFeed() {
                     </div>
                   </div>
                   
-                  <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-                    {post.content}
-                  </p>
+                  {/* Enhanced Post Content with URL Detection */}
+                  <EnhancedPostContent content={post.content} />
                   
                   {post.media_url && (
                     <img 
@@ -375,31 +426,15 @@ export function ProfessionalFeed() {
                     </div>
                   )}
                   
-                  <div className="flex items-center justify-between pt-3 border-t">
-                    <div className="flex items-center space-x-6">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => likePost(post.id)}
-                        className={post.liked_by_user ? "text-red-500" : ""}
-                      >
-                        <Heart className={`w-4 h-4 mr-2 ${post.liked_by_user ? 'fill-current' : ''}`} />
-                        {post.likes_count}
-                      </Button>
-                      
-                      <Button variant="ghost" size="sm">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        {post.comments_count}
-                      </Button>
-                      
-                      <ReshareButton
-                        postId={post.id}
-                        postContent={post.content}
-                        postAuthor={post.author?.full_name || 'Unknown'}
-                        postUrl={`${window.location.origin}/posts/${post.id}`}
-                        size="sm"
-                      />
-                    </div>
+                  {/* Enhanced Engagement Actions */}
+                  <div className="pt-3 border-t">
+                    <EnhancedEngagementActions
+                      postId={post.id}
+                      postType="post"
+                      postUrl={`${window.location.origin}/posts/${post.id}`}
+                      postTitle={post.content.substring(0, 100)}
+                      authorId={post.author_id}
+                    />
                   </div>
                 </div>
               </div>
