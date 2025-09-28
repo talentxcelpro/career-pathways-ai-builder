@@ -72,14 +72,19 @@ export class WebSocketManager {
     if (error && (
       error.message?.includes('WebSocket') ||
       error.message?.includes('Connection failed') ||
+      error.message?.includes('not in supabase_realtime publication') ||
       error.code ||
       (error as any)._type === 'undefined'
     )) {
+      // Log the error but don't retry these types
+      console.warn(`WebSocket channel error for ${channelName}:`, error.message || error);
       return;
     }
     
     if (attempts < (this.config.maxRetries || 2)) { // Reduced max retries
       const delay = Math.min(this.config.retryDelay! * Math.pow(2, attempts), 10000); // Exponential backoff
+      
+      console.log(`Retrying channel ${channelName} in ${delay}ms (attempt ${attempts + 1}/${this.config.maxRetries})`);
       
       setTimeout(() => {
         this.retryAttempts.set(channelName, attempts + 1);
@@ -92,6 +97,7 @@ export class WebSocketManager {
         this.channels.set(channelName, newChannel);
       }, delay);
     } else {
+      console.error(`Channel ${channelName} failed after ${attempts} attempts, giving up`);
       this.removeChannel(channelName);
       this.config.onError?.(error || new Error(`Channel ${channelName} failed after ${attempts} attempts`));
     }

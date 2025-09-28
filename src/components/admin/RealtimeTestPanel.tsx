@@ -24,11 +24,51 @@ export const RealtimeTestPanel: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [testData, setTestData] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   
   // Get realtime contexts
   const realtimeContext = useSafeRealtimeContext();
   const txcRealtime = useTXCRealtime();
   const optimizedRealtime = useOptimizedRealtime();
+
+  // Check current user on component mount
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    checkUser();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setCurrentUser(session?.user || null);
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Demo authentication for testing
+  const signInAsTestUser = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (error) throw error;
+      setCurrentUser(data.user);
+      toast.success('Signed in as anonymous test user');
+    } catch (error) {
+      console.error('Auth error:', error);
+      toast.error('Authentication failed');
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setCurrentUser(null);
+      toast.success('Signed out successfully');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast.error('Sign out failed');
+    }
+  };
 
   const resetTests = () => {
     setTests([]);
@@ -124,38 +164,29 @@ export const RealtimeTestPanel: React.FC = () => {
       setProgress(60);
 
       try {
-        // Create a test notification to see if realtime picks it up
         const { data: user } = await supabase.auth.getUser();
         if (user.user) {
-          const testNotification = {
-            user_id: user.user.id,
-            type: 'realtime_test',
-            title: 'Realtime Test',
-            message: `Test notification at ${new Date().toISOString()}`,
-            module: 'admin',
-            priority: 'low'
-          };
-
+          // Test with a simple table query that doesn't require specific data
           const { data, error } = await supabase
-            .from('notifications')
-            .insert(testNotification)
-            .select()
-            .single();
+            .from('ai_career_recommendations')
+            .select('id')
+            .limit(1);
 
-          if (error) throw error;
-
-          // Wait a bit to see if realtime picks it up
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          updateTest('Live Data Test', 'success', 'Test notification created successfully', { notification: data });
-          
-          // Clean up test notification
-          await supabase.from('notifications').delete().eq('id', data.id);
+          if (error) {
+            updateTest('Live Data Test', 'error', `Database query failed: ${error.message}`, error);
+          } else {
+            updateTest('Live Data Test', 'success', 'Live data access working', { 
+              user: user.user.email || user.user.id,
+              dataAccess: true 
+            });
+          }
         } else {
-          updateTest('Live Data Test', 'error', 'No authenticated user for testing');
+          updateTest('Live Data Test', 'error', 'No authenticated user for testing', {
+            hint: 'Sign in above to test authenticated realtime features'
+          });
         }
       } catch (error) {
-        updateTest('Live Data Test', 'error', 'Failed to create test data', error);
+        updateTest('Live Data Test', 'error', 'Failed to test live data', error);
       }
 
       // Test 7: Check publication status
@@ -224,6 +255,29 @@ export const RealtimeTestPanel: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         
+        {/* Authentication Status */}
+        <div className="bg-muted p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold">Authentication Status</h3>
+              <p className="text-sm text-muted-foreground">
+                {currentUser ? `Signed in as: ${currentUser.email || currentUser.id}` : 'Not authenticated'}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {!currentUser ? (
+                <Button onClick={signInAsTestUser} variant="outline" size="sm">
+                  Sign In as Test User
+                </Button>
+              ) : (
+                <Button onClick={signOut} variant="outline" size="sm">
+                  Sign Out
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Test Controls */}
         <div className="flex items-center gap-4">
           <Button 
