@@ -18,7 +18,10 @@ import {
   ExternalLink,
   Calendar,
   Building,
-  Users
+  Users,
+  Edit,
+  UserPlus,
+  Heart
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MobileNavWrapper } from '@/components/layout/MobileNavWrapper';
