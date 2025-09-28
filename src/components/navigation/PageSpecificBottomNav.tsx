@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -24,8 +24,10 @@ import {
   PenTool,
   Play,
   Gift,
-  Send
+  Send,
+  Grid3X3
 } from 'lucide-react';
+import { ModulesLauncher } from '@/components/mobile/ModulesLauncher';
 
 export interface BottomNavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -417,10 +419,16 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
     default:
       return [
         {
-          icon: Home,
-          label: 'Home',
-          action: () => navigate('/'),
-          isActive: basePath === '/'
+          icon: Users,
+          label: 'Network',
+          action: () => navigate('/network'),
+          isActive: false
+        },
+        {
+          icon: Play,
+          label: 'Reels',
+          action: () => navigate('/mobile/reels'),
+          isActive: false
         },
         {
           icon: Briefcase,
@@ -429,21 +437,15 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
           isActive: false
         },
         {
-          icon: Plus,
-          label: 'Create',
-          action: () => navigate('/tools/resume-builder'),
-          isPrimary: true
-        },
-        {
-          icon: Users,
-          label: 'Network',
-          action: () => navigate('/network'),
+          icon: Gift,
+          label: 'Rewards',
+          action: () => navigate('/gamification'),
           isActive: false
         },
         {
-          icon: User,
-          label: 'Profile',
-          action: () => navigate('/profile'),
+          icon: Send,
+          label: 'Refer',
+          action: () => navigate('/refer-and-earn'),
           isActive: false
         }
       ];
@@ -454,46 +456,66 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const [showModulesLauncher, setShowModulesLauncher] = useState(false);
 
   // Don't render on desktop or in certain contexts
   if (!isMobile) return null;
 
   const navigationItems = getPageNavigation(location.pathname, navigate);
+  const isDefaultNav = location.pathname === '/';
 
   return (
-    <div className={cn(
-      "fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
-      "border-t border-white/10",
-      className
-    )}>
-      <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
-        {navigationItems.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <Button
-              key={index}
-              variant="ghost"
-              size="icon"
-              onClick={item.action}
-              className={cn(
-                "flex flex-col items-center gap-1 transition-all duration-200 min-h-[44px] touch-target",
-                item.isPrimary 
-                  ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105" 
-                  : item.isActive
-                    ? "text-white bg-white/20 rounded-xl h-12 w-12"
-                    : "text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12"
-              )}
-            >
-              <Icon className={cn(
-                item.isPrimary ? "h-6 w-6" : "h-5 w-5"
-              )} />
-              {!item.isPrimary && (
-                <span className="text-xs font-medium">{item.label}</span>
-              )}
-            </Button>
-          );
-        })}
+    <>
+      {/* Transparent More Button for Default Navigation */}
+      {isDefaultNav && (
+        <div 
+          onClick={() => setShowModulesLauncher(true)}
+          className="fixed top-4 right-4 z-50 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-black/30 transition-all duration-300 cursor-pointer"
+        >
+          <Grid3X3 className="h-5 w-5" />
+        </div>
+      )}
+
+      <div className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
+        "border-t border-white/10",
+        className
+      )}>
+        <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
+          {navigationItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={index}
+                variant="ghost"
+                size="icon"
+                onClick={item.action}
+                className={cn(
+                  "flex flex-col items-center gap-1 transition-all duration-200 min-h-[44px] touch-target",
+                  item.isPrimary 
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105" 
+                    : item.isActive
+                      ? "text-white bg-white/20 rounded-xl h-12 w-12"
+                      : "text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12"
+                )}
+              >
+                <Icon className={cn(
+                  item.isPrimary ? "h-6 w-6" : "h-5 w-5"
+                )} />
+                {!item.isPrimary && (
+                  <span className="text-xs font-medium">{item.label}</span>
+                )}
+              </Button>
+            );
+          })}
+        </div>
       </div>
-    </div>
+
+      {/* Modules Launcher Modal */}
+      <ModulesLauncher 
+        isOpen={showModulesLauncher}
+        onClose={() => setShowModulesLauncher(false)}
+      />
+    </>
   );
 };
