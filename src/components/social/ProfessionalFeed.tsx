@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MessageCircle, Share2, TrendingUp, Briefcase, Users, Camera, Link as LinkIcon, MoreHorizontal, Video } from "lucide-react";
+import { UserFollowButton } from "@/components/social/UserFollowButton";
+import { CommentReactions } from "@/components/social/CommentReactions";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoThumbnail } from "@/components/media/VideoThumbnail";
@@ -22,6 +24,7 @@ interface Post {
   shares_count: number;
   created_at: string;
   author?: {
+    id?: string;
     full_name: string;
     avatar_url?: string;
     title?: string;
@@ -103,6 +106,7 @@ export function ProfessionalFeed() {
         shares_count: post.shares_count || 0,
         created_at: post.created_at,
         author: {
+          id: post.author_id,
           full_name: profilesMap.get(post.author_id)?.full_name || 'Professional User',
           avatar_url: profilesMap.get(post.author_id)?.profile_picture_url,
           title: profilesMap.get(post.author_id)?.title || 'Professional',
@@ -339,6 +343,9 @@ export function ProfessionalFeed() {
                           {getPostTypeIcon(post.post_type)}
                           <span className="ml-1 capitalize">{post.post_type.replace('_', ' ')}</span>
                         </Badge>
+                      )}
+                      {post.author?.id && (
+                        <UserFollowButton userId={post.author.id} size="sm" showText={false} />
                       )}
                       <Button variant="ghost" size="sm">
                         <MoreHorizontal className="w-4 h-4" />

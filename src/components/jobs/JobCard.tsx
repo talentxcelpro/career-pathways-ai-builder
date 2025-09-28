@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, IndianRupee, Clock, Users, Heart, Eye } from "lucide-react";
+import { JobInteractionButtons } from "@/components/social/JobInteractionButtons";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
@@ -182,6 +183,14 @@ export const JobCard: React.FC<JobCardProps> = ({
                 <span>{job.applications_count}</span>
               </div>
             )}
+            <JobInteractionButtons
+              jobId={job.id}
+              jobTitle={job.title}
+              companyName={job.company?.name}
+              size="sm"
+              showCounts={false}
+              className="ml-auto"
+            />
           </div>
           {job.posted_at && (
             <div className="flex items-center gap-1">
