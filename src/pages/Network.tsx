@@ -264,6 +264,9 @@ const Network = () => {
       
       {/* Floating Messaging Sidebar */}
       <NetworkMessagingSidebar />
+      
+      {/* Mobile Bottom Navigation */}
+      <div className="h-20 lg:h-0" /> {/* Spacer for mobile nav */}
     </div>
   );
 };

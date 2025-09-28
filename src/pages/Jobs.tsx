@@ -766,6 +766,9 @@ const Jobs = () => {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Bottom Navigation Spacer */}
+      <div className="h-20 lg:h-0" />
     </>
   );
 };

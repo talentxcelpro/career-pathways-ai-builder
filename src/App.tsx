@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { PageSpecificBottomNav } from '@/components/navigation/PageSpecificBottomNav';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -378,8 +379,11 @@ const App = () => {
                           
                          </div>
                       </TooltipProvider>
-                    </CopilotProvider>
-                  </SafeRealtimeProvider>
+                     </CopilotProvider>
+                   </SafeRealtimeProvider>
+                   
+                   {/* Global Mobile Bottom Navigation */}
+                   <PageSpecificBottomNav />
                  </React.Suspense>
                    </NotificationProvider>
                  </OptimizedAuthProvider>
