@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useSocialActivityTracker } from './useSocialActivityTracker';
 
 export function useUserFollow(targetUserId: string) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
+  const { trackUserFollow } = useSocialActivityTracker();
 
   useEffect(() => {
     if (!targetUserId) return;
@@ -96,6 +98,9 @@ export function useUserFollow(targetUserId: string) {
           title: "Following",
           description: "You are now following this user",
         });
+
+        // Track the activity
+        trackUserFollow(targetUserId);
       }
     } catch (error: any) {
       console.error('Error toggling follow:', error);

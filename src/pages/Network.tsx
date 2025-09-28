@@ -30,12 +30,17 @@ import { LiveEventCard } from "@/components/network/LiveEventCard";
 import { GoogleOneTapStatus } from "@/components/auth/GoogleOneTapStatus";
 import { FollowingFollowersList } from "@/components/social/FollowingFollowersList";
 import { SubscriptionsManager } from "@/components/social/SubscriptionsManager";
+import { SocialNotifications } from "@/components/social/SocialNotifications";
+import { useRealtimeSocialUpdates } from "@/hooks/useRealtimeSocialUpdates";
 
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
   const navigate = useNavigate();
   const { user } = useAuth();
+  
+  // Enable real-time social updates
+  useRealtimeSocialUpdates();
   
   const {
     posts,
@@ -201,7 +206,7 @@ const Network = () => {
 
 
           <TabsContent value="connections" className="mt-0">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               <React.Suspense fallback={
                 <div className="flex items-center justify-center p-8">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
@@ -215,6 +220,13 @@ const Network = () => {
                 </div>
               }>
                 <SubscriptionsManager />
+              </React.Suspense>
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <SocialNotifications />
               </React.Suspense>
             </div>
           </TabsContent>

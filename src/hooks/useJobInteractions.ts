@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useSocialActivityTracker } from './useSocialActivityTracker';
 
 type InteractionType = 'like' | 'save' | 'share';
 
@@ -15,6 +16,7 @@ export function useJobInteractions(jobId: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
+  const { trackJobInteraction } = useSocialActivityTracker();
 
   useEffect(() => {
     if (!jobId) return;
@@ -124,6 +126,9 @@ export function useJobInteractions(jobId: string) {
           title: `${type === 'like' ? 'Liked' : 'Saved'}`,
           description: `Job ${type === 'like' ? 'liked' : 'saved for later'}`,
         });
+
+        // Track the activity
+        trackJobInteraction(jobId, type);
       }
     } catch (error: any) {
       console.error(`Error toggling ${type}:`, error);
@@ -154,6 +159,9 @@ export function useJobInteractions(jobId: string) {
           ...prev,
           sharesCount: prev.sharesCount + 1,
         }));
+
+        // Track the activity
+        trackJobInteraction(jobId, 'share');
       }
     } catch (error) {
       console.error('Error recording share:', error);
