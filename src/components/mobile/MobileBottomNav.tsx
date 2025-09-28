@@ -65,7 +65,7 @@ export const MobileBottomNav = () => {
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center justify-between px-1 py-3 gap-1">{/* Changed from justify-around to justify-between with gap */}
+        <div className="flex items-center justify-around px-0.5 py-3">{/* Adjusted for 6 buttons */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
             const Icon = item.icon;
