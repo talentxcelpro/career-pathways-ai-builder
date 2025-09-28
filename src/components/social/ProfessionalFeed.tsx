@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, TrendingUp, Briefcase, Users, Camera, Link as LinkIcon, MoreHorizontal, Video } from "lucide-react";
-import { UserFollowButton } from "@/components/social/UserFollowButton";
-import { CommentReactions } from "@/components/social/CommentReactions";
-import { ClickableProfile } from "@/components/social/ClickableProfile";
-import { EnhancedEngagementActions } from "@/components/social/EnhancedEngagementActions";
-import { RichUrlPreview, useUrlDetection } from "@/components/social/RichUrlPreview";
-import { EnhancedPostContent } from "@/components/social/EnhancedPostContent";
+import { PlusCircle, TrendingUp, Users, Camera, Link as LinkIcon, Video, MessageCircle, Briefcase } from "lucide-react";
+import { PostCard } from "./PostCard";
+import { StoriesCarousel } from "./StoriesCarousel";
+import { StoryViewer } from "./StoryViewer";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoThumbnail } from "@/components/media/VideoThumbnail";
-import { ReshareButton } from "@/components/network/ReshareButton";
 
 interface Post {
   id: string;
@@ -52,6 +47,10 @@ export function ProfessionalFeed() {
   const [postType, setPostType] = useState<CreatePostData['post_type']>('text');
   const [isLoading, setIsLoading] = useState(true);
   const [isPosting, setIsPosting] = useState(false);
+  const [showCreateStory, setShowCreateStory] = useState(false);
+  const [storyViewer, setStoryViewer] = useState<{isOpen: boolean; userId?: string; storyIndex?: number}>({
+    isOpen: false
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -286,10 +285,31 @@ export function ProfessionalFeed() {
 
   return (
     <div className="space-y-6">
+      {/* Stories Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Stories
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <StoriesCarousel 
+            onCreateStory={() => setShowCreateStory(true)}
+            onStoryClick={(userId, storyIndex) => {
+              setStoryViewer({ isOpen: true, userId, storyIndex });
+            }}
+          />
+        </CardContent>
+      </Card>
+
       {/* Create Post */}
       <Card>
         <CardHeader>
-          <h2 className="text-lg font-semibold">Share an update</h2>
+          <CardTitle className="flex items-center gap-2">
+            <PlusCircle className="w-5 h-5" />
+            Share Your Professional Journey
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2 mb-4">
@@ -362,86 +382,22 @@ export function ProfessionalFeed() {
       {/* Posts Feed */}
       <div className="space-y-4">
         {posts.map((post) => (
-          <Card key={post.id}>
-            <CardContent className="p-6">
-              <div className="flex space-x-4">
-                {post.author && (
-                  <ClickableProfile 
-                    profile={{
-                      id: post.author.id || post.author_id,
-                      full_name: post.author.full_name,
-                      profile_picture_url: post.author.profile_picture_url,
-                      headline: post.author.title,
-                      username: post.author.username,
-                      slug: post.author.slug
-                    }}
-                    size="md"
-                    showBadge={false}
-                    showCompany={false}
-                  />
-                )}
-                
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        {post.author?.title} • {new Date(post.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      {post.post_type !== 'text' && (
-                        <Badge variant="secondary" className={getPostTypeColor(post.post_type)}>
-                          {getPostTypeIcon(post.post_type)}
-                          <span className="ml-1 capitalize">{post.post_type.replace('_', ' ')}</span>
-                        </Badge>
-                      )}
-                      {post.author?.id && (
-                        <UserFollowButton userId={post.author.id} size="sm" showText={false} />
-                      )}
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Enhanced Post Content with URL Detection */}
-                  <EnhancedPostContent content={post.content} />
-                  
-                  {post.media_url && (
-                    <img 
-                      src={post.media_url} 
-                      alt="Post media" 
-                      className="rounded-lg max-w-full h-auto"
-                    />
-                  )}
-                  
-                  {post.video_url && (
-                    <div className="mt-3">
-                      <VideoThumbnail 
-                        url={post.video_url} 
-                        className="max-w-full"
-                        onClick={() => window.open(post.video_url, '_blank')}
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Enhanced Engagement Actions */}
-                  <div className="pt-3 border-t">
-                    <EnhancedEngagementActions
-                      postId={post.id}
-                      postType="post"
-                      postUrl={`${window.location.origin}/posts/${post.id}`}
-                      postTitle={post.content.substring(0, 100)}
-                      authorId={post.author_id}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <PostCard 
+            key={post.id} 
+            post={post}
+            onComment={(postId) => console.log('Comment on post:', postId)}
+            onShare={(postId) => console.log('Share post:', postId)}
+          />
         ))}
       </div>
+
+      {/* Story Viewer Modal */}
+      <StoryViewer
+        isOpen={storyViewer.isOpen}
+        onClose={() => setStoryViewer({ isOpen: false })}
+        userId={storyViewer.userId}
+        storyIndex={storyViewer.storyIndex}
+      />
     </div>
   );
 }
