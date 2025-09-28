@@ -64,27 +64,31 @@ serve(async (req) => {
           .maybeSingle();
 
         if (existingBalance) {
-          // Update existing balance
+          // Update existing balance - use UPSERT to prevent duplicate key errors
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
-            .update({
+            .upsert({
+              user_id: user.id,
               txc_balance: existingBalance.txc_balance + 500,
               total_earned: (existingBalance.total_earned || 0) + 500,
               last_activity_at: now.toISOString()
-            })
-            .eq('user_id', user.id);
+            }, {
+              onConflict: 'user_id'
+            });
 
           if (updateError) throw updateError;
         } else {
-          // Create new balance record
+          // Create new balance record - use UPSERT to prevent duplicate key errors
           const { error: insertError } = await supabaseClient
             .from('user_txc_balances')
-            .insert({
+            .upsert({
               user_id: user.id,
               txc_balance: 500,
               total_earned: 500,
               total_spent: 0,
               last_activity_at: now.toISOString()
+            }, {
+              onConflict: 'user_id'
             });
 
           if (insertError) throw insertError;
@@ -144,15 +148,17 @@ serve(async (req) => {
 
           if (!currentBalance) continue;
 
-          // Update balance
+          // Update balance - use UPSERT to prevent conflicts
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
-            .update({
+            .upsert({
+              user_id: user.id,
               txc_balance: currentBalance.txc_balance + 150,
               total_earned: (currentBalance.total_earned || 0) + 150,
               last_activity_at: now.toISOString()
-            })
-            .eq('user_id', user.id);
+            }, {
+              onConflict: 'user_id'
+            });
 
         if (updateError) throw updateError;
 
@@ -201,7 +207,7 @@ serve(async (req) => {
         const { data: posts } = await supabaseClient
           .from('posts')
           .select('id, created_at')
-          .eq('user_id', user.id)
+          .or(`user_id.eq.${user.id},author_id.eq.${user.id}`)
           .gte('created_at', startDate.toISOString())
           .order('created_at', { ascending: true })
           .limit(10);
@@ -319,15 +325,17 @@ serve(async (req) => {
 
           if (!currentBalance) continue;
 
-          // Update balance
+          // Update balance - use UPSERT to prevent conflicts
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
-            .update({
+            .upsert({
+              user_id: user.id,
               txc_balance: currentBalance.txc_balance + retroactiveRewards,
               total_earned: (currentBalance.total_earned || 0) + retroactiveRewards,
               last_activity_at: now.toISOString()
-            })
-            .eq('user_id', user.id);
+            }, {
+              onConflict: 'user_id'
+            });
 
           if (updateError) throw updateError;
 
