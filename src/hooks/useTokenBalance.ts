@@ -24,7 +24,7 @@ export const useTokenBalance = () => {
         // Get TXC balance from user_txc_balances table
         const { data: balanceData, error: balanceError } = await supabase
           .from('user_txc_balances')
-          .select('balance, total_earned, total_spent, last_activity_at')
+          .select('txc_balance, total_earned, total_spent, created_at')
           .eq('user_id', user.id)
           .single();
         
@@ -41,12 +41,11 @@ export const useTokenBalance = () => {
             .from('user_txc_balances')
             .insert({
               user_id: user.id,
-              balance: 500, // Welcome bonus
+              txc_balance: 500, // Welcome bonus
               total_earned: 500,
-              total_spent: 0,
-              last_activity_at: new Date().toISOString()
+              total_spent: 0
             })
-            .select('balance, total_earned, total_spent, last_activity_at')
+            .select('txc_balance, total_earned, total_spent, created_at')
             .single();
 
           if (createError) {
@@ -55,16 +54,16 @@ export const useTokenBalance = () => {
           }
 
           return {
-            total: newBalance.balance,
-            available: newBalance.balance,
+            total: newBalance.txc_balance,
+            available: newBalance.txc_balance,
             locked: 0,
             lifetime_earned: newBalance.total_earned
           };
         }
 
         return {
-          total: balanceData.balance,
-          available: balanceData.balance,
+          total: balanceData.txc_balance,
+          available: balanceData.txc_balance,
           locked: 0,
           lifetime_earned: balanceData.total_earned
         };
