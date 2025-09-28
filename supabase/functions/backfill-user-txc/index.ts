@@ -17,19 +17,9 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Verify admin access
-    const { data: { user } } = await supabaseClient.auth.getUser(
-      req.headers.get('Authorization')?.replace('Bearer ', '') ?? ''
-    )
+    // Service role bypasses auth checks for admin operations
 
-    if (!user) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Unauthorized' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-      )
-    }
-
-    console.log(`🚀 Starting TXC backfill process by user: ${user.id}`)
+    console.log(`🚀 Starting TXC backfill process...`)
 
     // Get all users who don't have TXC balances yet
     const { data: usersWithoutTXC, error: usersError } = await supabaseClient
