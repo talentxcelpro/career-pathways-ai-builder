@@ -15,8 +15,8 @@ const TABLES_TO_WATCH = [
   'messages',
   'post_comments',
   'post_likes',
-  'txc_transactions',
-  'txc_balances'
+  'txc_transactions'
+  // Note: txc_balances table doesn't exist, so removed from watch list
 ] as const;
 
 export type WatchedTable = typeof TABLES_TO_WATCH[number];
@@ -115,8 +115,8 @@ class RealtimeManager {
     console.log('🎯 Watching tables:', tablesToWatch);
 
     tablesToWatch.forEach((table) => {
-      // Use simpler channel names that Supabase expects
-      const channelName = `table-${table}`;
+      // Use simple channel names that don't include "realtime" as it's reserved
+      const channelName = `db-changes-${table}`;
       console.log(`🔗 Creating channel: ${channelName}`);
 
       const channel = supabase.channel(channelName);
@@ -166,7 +166,7 @@ class RealtimeManager {
           if (attempts >= this.maxRetries) {
             console.log(`🛑 Disabling ${table} after ${attempts} failed attempts`);
             this.disabledChannels.add(table);
-            const channelName = `table-${table}`;
+            const channelName = `db-changes-${table}`;
             this.channels.delete(channelName);
             this.channelStatuses.delete(table);
           } else {
@@ -175,7 +175,7 @@ class RealtimeManager {
         } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
           console.warn(`🔒 Realtime channel ${status.toLowerCase()} for table: ${table}`);
           this.recordFailure(table);
-          const channelName = `table-${table}`;
+          const channelName = `db-changes-${table}`;
           // Ensure we drop the stale channel
           this.channels.delete(channelName);
           this.channelStatuses.delete(table);
@@ -192,7 +192,7 @@ class RealtimeManager {
    * Setup a single connection (used for reconnecting)
    */
   private _setupSingleConnection(table: WatchedTable) {
-    const channelName = `table-${table}`;
+    const channelName = `db-changes-${table}`;
     const channel = supabase.channel(channelName);
 
     channel.on(
@@ -219,7 +219,7 @@ class RealtimeManager {
       if (err) console.error(`📡 Reconnect error details [${table}]:`, err);
       this.channelStatuses.set(table, status);
       if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
-        const channelName = `table-${table}`;
+        const channelName = `db-changes-${table}`;
         try { supabase.removeChannel(channel); } catch (_) {}
         this.channels.delete(channelName);
         this.channelStatuses.delete(table);
