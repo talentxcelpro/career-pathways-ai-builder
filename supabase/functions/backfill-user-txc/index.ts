@@ -43,9 +43,7 @@ Deno.serve(async (req) => {
         profile_picture_url,
         created_at
       `)
-      .not('id', 'in', `(
-        SELECT user_id FROM user_txc_balances
-      )`)
+      .not('id', 'in', `(SELECT user_id FROM user_txc_balances)`)
 
     if (usersError) {
       console.error('Error fetching users:', usersError)
