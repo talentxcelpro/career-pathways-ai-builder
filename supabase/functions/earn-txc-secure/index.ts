@@ -165,7 +165,7 @@ Deno.serve(async (req) => {
       const { error: updateError } = await supabaseClient
         .from('user_txc_balances')
         .update({
-          balance: balance.balance + amount,
+          txc_balance: balance.txc_balance + amount,
           total_earned: balance.total_earned + amount,
           updated_at: new Date().toISOString()
         })
@@ -197,7 +197,7 @@ Deno.serve(async (req) => {
       // Don't fail the operation since balance was updated
     }
 
-    const newBalance = (balance?.balance || 0) + amount
+    const newBalance = (balance?.txc_balance || 0) + amount
 
     console.log(`✅ TXC earned successfully: ${amount} TXC for ${activityType}`)
 

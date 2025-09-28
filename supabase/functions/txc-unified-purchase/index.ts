@@ -134,26 +134,26 @@ Deno.serve(async (req) => {
       )
     }
 
-    if (!balance || balance.balance < cost) {
+    if (!balance || balance.txc_balance < cost) {
       return new Response(
         JSON.stringify({ 
           success: false, 
           error: 'Insufficient TXC balance',
           required: cost,
-          available: balance?.balance || 0
+          available: balance?.txc_balance || 0
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
 
     // Start transaction
-    const newBalance = balance.balance - cost
+    const newBalance = balance.txc_balance - cost
 
     // Update balance
     const { error: updateError } = await supabaseClient
       .from('user_txc_balances')
       .update({
-        balance: newBalance,
+        txc_balance: newBalance,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', user.id)

@@ -116,10 +116,10 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         balance: {
-          total: finalBalance.balance,
-          available: finalBalance.balance,
+          total: finalBalance.txc_balance,
+          available: finalBalance.txc_balance,
           locked: 0,
-          lifetime_earned: finalBalance.total_earned || finalBalance.balance
+          lifetime_earned: finalBalance.total_earned || finalBalance.txc_balance
         },
         transactions: transactions || []
       }),
