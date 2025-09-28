@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import txcMascot from '@/assets/txc-mascot.jpg';
 import { SimpleTXCDistribution } from '@/components/admin/SimpleTXCDistribution';
 import { RealtimeTestPanel } from '@/components/admin/RealtimeTestPanel';
+import { TXCResetPanel } from '@/components/admin/TXCResetPanel';
 
 interface BackfillResult {
   total_users: number;
@@ -191,9 +192,10 @@ const TXCBackfill = () => {
       </div>
 
       <Tabs defaultValue="distribution" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="distribution">Distribution</TabsTrigger>
           <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
+          <TabsTrigger value="reset">Reset TXC</TabsTrigger>
           <TabsTrigger value="legacy">Legacy Tools</TabsTrigger>
           <TabsTrigger value="realtime">Realtime Test</TabsTrigger>
         </TabsList>
@@ -232,6 +234,10 @@ const TXCBackfill = () => {
           </Button>
         </CardContent>
       </Card>
+      </TabsContent>
+
+      <TabsContent value="reset">
+        <TXCResetPanel />
       </TabsContent>
 
       <TabsContent value="comprehensive" className="space-y-6">
