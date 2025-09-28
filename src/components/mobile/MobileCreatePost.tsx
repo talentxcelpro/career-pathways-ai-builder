@@ -4,6 +4,7 @@ import { Camera, Image, MapPin, Send, X, Smile, Link2, FileText, Video } from 'l
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { getUserAvatarProps } from '@/utils/avatarUtils';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -150,8 +151,7 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
         {/* Header */}
         <div className="flex items-center space-x-3 mb-4">
           <UserAvatar 
-            src={user?.user_metadata?.avatar_url}
-            userName={user?.user_metadata?.full_name || user?.email}
+            {...getUserAvatarProps(user)}
             size="md"
             className="ring-2 ring-white shadow-md"
           />

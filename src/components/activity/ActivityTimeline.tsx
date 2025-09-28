@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { getAvatarProps } from '@/utils/avatarUtils';
 import { Badge } from '@/components/ui/badge';
 import { useUserActivities, useActivityIcon, type UserActivity } from '@/hooks/useUserActivities';
 
@@ -105,8 +106,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, isLast }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
                   <UserAvatar 
-                    src={activity.profiles?.profile_photo_url}
-                    userName={activity.profiles?.full_name}
+                    {...getAvatarProps(activity.profiles)}
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">

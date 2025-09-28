@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { getAvatarProps } from '@/utils/avatarUtils';
 import { Badge } from '@/components/ui/badge';
 import { 
   MessageSquare, 
@@ -316,8 +317,7 @@ export const CourseDiscussions: React.FC<CourseDiscussionsProps> = ({
             <CardHeader className="pb-3">
               <div className="flex items-start gap-3">
                 <UserAvatar 
-                  src={discussion.user?.avatar_url}
-                  userName={discussion.user?.full_name}
+                  {...getAvatarProps(discussion.user)}
                   size="md"
                 />
                 
@@ -426,8 +426,7 @@ export const CourseDiscussions: React.FC<CourseDiscussionsProps> = ({
                     <div key={reply.id} className="space-y-2">
                       <div className="flex items-center gap-2">
                         <UserAvatar 
-                          src={reply.user?.avatar_url}
-                          userName={reply.user?.full_name}
+                          {...getAvatarProps(reply.user)}
                           size="xs"
                         />
                         <span className="font-medium text-sm">

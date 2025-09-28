@@ -73,9 +73,9 @@ export function PassportCard({ userProfile, metrics, insights, userId }: Passpor
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-4 sm:mb-6">
           <div className="flex items-center space-x-3 flex-1">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative flex-shrink-0">
-              {userProfile?.profile_picture_url || userProfile?.profile_photo_url ? (
+              {userProfile?.profile_picture_url ? (
                 <img 
-                  src={userProfile.profile_picture_url || userProfile.profile_photo_url} 
+                  src={userProfile.profile_picture_url}
                   alt={`${userProfile?.full_name || 'User'} profile photo`}
                   className="w-full h-full object-cover rounded-lg"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}

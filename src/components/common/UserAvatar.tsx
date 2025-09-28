@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { getStandardAvatarUrl, getStandardUsername, type ProfileLike } from "@/utils/avatarUtils";
 
 interface UserAvatarProps {
   src?: string | null;
@@ -10,6 +11,8 @@ interface UserAvatarProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   className?: string;
   hasUnread?: boolean;
+  // Alternative: pass profile object directly for automatic standardization
+  profile?: ProfileLike;
 }
 
 const sizeClasses = {
@@ -30,15 +33,20 @@ const fallbackSizeClasses = {
   '2xl': 'text-2xl'
 };
 
-export const UserAvatar: React.FC<UserAvatarProps> = ({
+export const UserAvatar: React.FC<UserAvatarProps> = memo(({
   src,
   alt,
   fallback,
   userName,
   size = 'md',
   className,
-  hasUnread = false
+  hasUnread = false,
+  profile
 }) => {
+  // Use profile object for auto-standardization if provided
+  const avatarSrc = profile ? getStandardAvatarUrl(profile) : src;
+  const displayName = profile ? getStandardUsername(profile) : userName;
+
   const generateInitials = (name?: string) => {
     if (fallback) return fallback;
     if (!name || name === 'Professional User') return 'U';
@@ -51,20 +59,20 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   };
 
   // Use valid src only if it's a non-empty string
-  const validSrc = src && typeof src === 'string' && src.trim().length > 0 ? src : undefined;
+  const validSrc = avatarSrc && typeof avatarSrc === 'string' && avatarSrc.trim().length > 0 ? avatarSrc : undefined;
 
   return (
     <div className="relative">
       <Avatar className={cn(sizeClasses[size], className)}>
         <AvatarImage 
           src={validSrc} 
-          alt={alt || `${userName || 'User'}'s profile picture`} 
+          alt={alt || `${displayName || 'User'}'s profile picture`}
         />
         <AvatarFallback className={cn(
           "bg-gradient-to-br from-primary/80 to-primary text-primary-foreground font-medium",
           fallbackSizeClasses[size]
         )}>
-          {generateInitials(userName)}
+          {generateInitials(displayName)}
         </AvatarFallback>
       </Avatar>
       {hasUnread && (
@@ -72,4 +80,4 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       )}
     </div>
   );
-};
+});
