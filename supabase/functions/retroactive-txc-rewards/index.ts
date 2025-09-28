@@ -51,12 +51,7 @@ Deno.serve(async (req) => {
   try {
     const supabaseClient = createClient<Database>(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
     const { data: { user } } = await supabaseClient.auth.getUser()
@@ -86,7 +81,9 @@ Deno.serve(async (req) => {
       .from('profiles')
       .select('id')
       .not('full_name', 'is', null)
-      .not('bio', 'is', null);
+      .not('about', 'is', null)
+      .not('title', 'is', null)
+      .not('profile_picture_url', 'is', null);
 
     // Get all unique user IDs from posts
     const userPostCounts = new Map<string, number>();
@@ -125,12 +122,25 @@ Deno.serve(async (req) => {
     // Process each user
     for (const userId of allUserIds) {
       try {
+        // Check if user already has retroactive rewards
+        const { data: existingRewards } = await supabaseClient
+          .from('txc_transactions')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('activity_type', 'joining_bonus')
+          .limit(1);
+
+        if (existingRewards && existingRewards.length > 0) {
+          console.log(`User ${userId} already has retroactive rewards, skipping...`);
+          continue;
+        }
+
         // Get or create user balance
         let { data: balance } = await supabaseClient
           .from('user_txc_balances')
           .select('*')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
         if (!balance) {
           const { data: newBalance, error: createError } = await supabaseClient
