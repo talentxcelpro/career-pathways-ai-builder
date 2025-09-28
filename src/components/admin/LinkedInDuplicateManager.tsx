@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Merge, X, Eye, TrendingUp } from 'lucide-react';
@@ -214,12 +214,11 @@ export default function LinkedInDuplicateManager() {
                         <div className="flex items-center space-x-4">
                           {group.profiles.slice(0, 3).map((profile, index) => (
                             <div key={profile.id} className="flex items-center space-x-2">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage src={profile.profile_picture_url} />
-                                <AvatarFallback>
-                                  {profile.full_name?.split(' ').map(n => n[0]).join('')}
-                                </AvatarFallback>
-                              </Avatar>
+                              <UserAvatar 
+                                src={profile.profile_picture_url}
+                                userName={profile.full_name}
+                                size="sm"
+                              />
                               <div className="text-sm">
                                 <div className="font-medium">{profile.full_name}</div>
                                 <div className="text-muted-foreground">{profile.email}</div>
@@ -298,12 +297,11 @@ export default function LinkedInDuplicateManager() {
               {selectedGroup.profiles.map((profile) => (
                 <Card key={profile.id} className={profile.is_primary ? 'border-primary' : ''}>
                   <CardHeader className="flex flex-row items-center space-x-4">
-                    <Avatar>
-                      <AvatarImage src={profile.profile_picture_url} />
-                      <AvatarFallback>
-                        {profile.full_name?.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={profile.profile_picture_url}
+                      userName={profile.full_name}
+                      size="md"
+                    />
                     <div className="flex-1">
                       <CardTitle className="text-lg">{profile.full_name}</CardTitle>
                       <CardDescription>{profile.email}</CardDescription>

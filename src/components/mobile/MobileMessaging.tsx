@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Input } from '@/components/ui/input';
 import { Send, Phone, Video, MoreVertical, ArrowLeft, Smile, Mic, Camera, Plus } from 'lucide-react';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
@@ -120,12 +120,11 @@ export const MobileMessaging: React.FC<MobileMessagingProps> = ({ className = ''
               className="w-full p-4 flex items-center space-x-3 hover:bg-muted/50 transition-colors text-left"
             >
               <div className="relative">
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src={chat.participant.avatar} alt={chat.participant.name} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {chat.participant.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  src={chat.participant.avatar}
+                  userName={chat.participant.name}
+                  size="lg"
+                />
                 {chat.participant.isOnline && (
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full" />
                 )}
@@ -179,12 +178,11 @@ export const MobileMessaging: React.FC<MobileMessagingProps> = ({ className = ''
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={activeChat.participant.avatar} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                  {activeChat.participant.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar 
+                src={activeChat.participant.avatar}
+                userName={activeChat.participant.name}
+                size="sm"
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
                   {activeChat.participant.name}

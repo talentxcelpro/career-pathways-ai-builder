@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { 
   Table,
   TableBody,
@@ -133,12 +133,11 @@ export const UsersList: React.FC<UsersListProps> = ({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3 cursor-pointer hover:bg-muted/30 p-2 rounded-md transition-colors" onClick={() => window.open(`/user/${user.username || user.id}`, '_blank')}>
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.profile_picture_url} />
-                      <AvatarFallback>
-                        {user.full_name?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={user.profile_picture_url}
+                      userName={user.full_name}
+                      size="md"
+                    />
                     <div>
                       <p className="font-medium">{user.full_name || 'Unknown User'}</p>
                       <p className="text-sm text-gray-600 flex items-center gap-1">

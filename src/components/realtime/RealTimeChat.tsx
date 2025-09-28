@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { 
   Send, 
@@ -254,12 +254,11 @@ export const RealTimeChat: React.FC = () => {
             }`}
           >
             {message.user_id !== user?.id && (
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={message.user_avatar} />
-                <AvatarFallback>
-                  {message.user_name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar 
+                src={message.user_avatar}
+                userName={message.user_name}
+                size="sm"
+              />
             )}
             
             <div className={`max-w-[70%] ${message.user_id === user?.id ? 'text-right' : ''}`}>
@@ -285,12 +284,11 @@ export const RealTimeChat: React.FC = () => {
             </div>
 
             {message.user_id === user?.id && (
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={message.user_avatar} />
-                <AvatarFallback>
-                  {message.user_name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar 
+                src={message.user_avatar}
+                userName={message.user_name}
+                size="sm"
+              />
             )}
           </div>
         ))}
@@ -298,9 +296,10 @@ export const RealTimeChat: React.FC = () => {
         {/* Typing Indicator */}
         {typingUsers.length > 0 && (
           <div className="flex gap-3 justify-start">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback>...</AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              userName="..."
+              size="sm"
+            />
             <div className="bg-muted rounded-lg px-3 py-2">
               <div className="flex gap-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />

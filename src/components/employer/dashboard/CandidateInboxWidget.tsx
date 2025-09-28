@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { MessageSquare, Clock, Reply, MoreHorizontal } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
@@ -103,10 +103,11 @@ export const CandidateInboxWidget = () => {
             className={`flex items-start gap-3 p-3 rounded-lg hover:bg-slate-100/50 transition-colors cursor-pointer ${!message.isRead ? 'bg-blue-50/50 border border-blue-100' : 'bg-slate-50/50'}`}
             onClick={() => navigate(`/employer/crm/candidates/${message.id}`)}
           >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={message.candidateAvatar} />
-              <AvatarFallback className="text-xs">{message.candidateName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              src={message.candidateAvatar}
+              userName={message.candidateName}
+              size="sm"
+            />
             
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-1">

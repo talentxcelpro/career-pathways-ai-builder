@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { 
   MessageSquare, 
@@ -315,12 +315,11 @@ export const CourseDiscussions: React.FC<CourseDiscussionsProps> = ({
             
             <CardHeader className="pb-3">
               <div className="flex items-start gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={discussion.user?.avatar_url} />
-                  <AvatarFallback>
-                    {discussion.user?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  src={discussion.user?.avatar_url}
+                  userName={discussion.user?.full_name}
+                  size="md"
+                />
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -426,12 +425,11 @@ export const CourseDiscussions: React.FC<CourseDiscussionsProps> = ({
                   {discussion.replies.map((reply) => (
                     <div key={reply.id} className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={reply.user?.avatar_url} />
-                          <AvatarFallback className="text-xs">
-                            {reply.user?.full_name?.charAt(0) || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
+                        <UserAvatar 
+                          src={reply.user?.avatar_url}
+                          userName={reply.user?.full_name}
+                          size="xs"
+                        />
                         <span className="font-medium text-sm">
                           {reply.user?.full_name || 'Anonymous'}
                         </span>

@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Star, MapPin, Clock, CheckCircle, User } from "lucide-react";
 import { formatCompactCurrency } from "@/utils/currencyUtils";
 
@@ -49,12 +49,11 @@ export default function ServiceCard({ service, onServiceClick }: ServiceCardProp
       <CardHeader className="pb-3" onClick={handleViewService}>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3 flex-1">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={service.provider_avatar} />
-              <AvatarFallback>
-                {service.provider_name?.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              src={service.provider_avatar}
+              userName={service.provider_name}
+              size="lg"
+            />
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-sm group-hover:text-primary transition-colors line-clamp-1">

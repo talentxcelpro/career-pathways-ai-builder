@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { 
   Table,
   TableBody,
@@ -65,12 +65,11 @@ export const PostsList: React.FC<PostsListProps> = ({
               <TableRow key={post.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={post.profiles?.profile_picture_url} />
-                      <AvatarFallback>
-                        {post.profiles?.full_name?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={post.profiles?.profile_picture_url}
+                      userName={post.profiles?.full_name}
+                      size="sm"
+                    />
                     <div>
                       <p className="font-medium">{post.profiles?.full_name || 'Unknown User'}</p>
                       <p className="text-xs text-gray-500">

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { 
   MoreHorizontal,
   Heart,
@@ -163,12 +163,11 @@ export const EnhancedPostsList: React.FC<EnhancedPostsListProps> = ({
                   />
                   
                   {/* Author Avatar */}
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={post.profiles.profile_picture_url} />
-                    <AvatarFallback>
-                      {post.profiles.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    src={post.profiles.profile_picture_url}
+                    userName={post.profiles.full_name}
+                    size="md"
+                  />
                   
                   {/* Post Content */}
                   <div className="flex-1 min-w-0">

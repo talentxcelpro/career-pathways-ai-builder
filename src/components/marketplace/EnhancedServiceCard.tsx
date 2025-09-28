@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -135,12 +135,11 @@ export default function EnhancedServiceCard({ service, onFavorite, isFavorited }
             </div>
             <CardTitle className="text-lg leading-tight">{service.title}</CardTitle>
             <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={service.provider_avatar} />
-                <AvatarFallback>
-                  <User className="h-3 w-3" />
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar 
+                src={service.provider_avatar}
+                userName={service.provider_name}
+                size="xs"
+              />
               <span className="text-sm text-muted-foreground">{service.provider_name}</span>
             </div>
           </div>

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { 
   Users, 
   MessageSquare, 
@@ -334,12 +334,12 @@ export const LiveEvent: React.FC = () => {
                     key={participant.user_id}
                     className="flex-shrink-0 w-20 h-20 bg-gray-700 rounded-lg overflow-hidden relative"
                   >
-                    <Avatar className="w-full h-full">
-                      <AvatarImage src={participant.user_avatar} />
-                      <AvatarFallback className="text-xs">
-                        {participant.user_name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={participant.user_avatar}
+                      userName={participant.user_name}
+                      size="2xl"
+                      className="w-full h-full"
+                    />
                     
                     {participant.hand_raised && (
                       <div className="absolute top-1 right-1">
@@ -424,12 +424,11 @@ export const LiveEvent: React.FC = () => {
                 <div className="space-y-3">
                   {messages.map((message) => (
                     <div key={message.id} className="flex gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={message.user_avatar} />
-                        <AvatarFallback className="text-xs">
-                          {message.user_name.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar 
+                        src={message.user_avatar}
+                        userName={message.user_name}
+                        size="xs"
+                      />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-muted-foreground">
                           {message.user_name}
