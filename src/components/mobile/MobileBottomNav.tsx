@@ -114,21 +114,23 @@ export const MobileBottomNav = () => {
             );
           })}
           
-          {/* MORE Button - 6th button */}
-          <button
-            onClick={() => setShowModulesLauncher(true)}
-            className="flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px] animate-fade-in text-primary hover:scale-105 transform"
-            style={{ animationDelay: `${navItems.length * 0.1}s` }}
-          >
-            <div className="relative">
-              <div className="p-2 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/20 border border-primary/30">
-                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform text-primary" />
+          {/* MORE Button - 6th button - TESTING WITH RED BACKGROUND */}
+          <div className="bg-red-500 border-4 border-yellow-400 p-4 m-2">
+            <button
+              onClick={() => setShowModulesLauncher(true)}
+              className="flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px] animate-fade-in text-white hover:scale-105 transform bg-blue-600"
+              style={{ animationDelay: `${navItems.length * 0.1}s` }}
+            >
+              <div className="relative">
+                <div className="p-2 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/20 border border-primary/30">
+                  <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform text-white" />
+                </div>
               </div>
-            </div>
-            <span className="text-[8px] font-bold w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold text-primary">
-              More
-            </span>
-          </button>
+              <span className="text-[8px] font-bold w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold text-white">
+                MORE TEST
+              </span>
+            </button>
+          </div>
         </div>
       </nav>
 
