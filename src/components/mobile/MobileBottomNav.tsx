@@ -65,7 +65,7 @@ export const MobileBottomNav = () => {
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center justify-around px-0.5 py-3">{/* Adjusted for 6 buttons */}
+        <div className="grid grid-cols-6 gap-0.5 px-1 py-2">{/* Fixed grid layout for 6 buttons */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
             const Icon = item.icon;
@@ -75,36 +75,36 @@ export const MobileBottomNav = () => {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
+                  "flex flex-col items-center justify-center px-1 py-1 rounded-xl transition-all duration-500 relative group",
                   "animate-fade-in",
                   isActive 
-                    ? "text-primary scale-110 transform" 
+                    ? "text-primary scale-105 transform" 
                     : "text-muted-foreground hover:text-primary hover:scale-105 transform"
                 )}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="relative">
                   <div className={cn(
-                    "p-2 rounded-2xl transition-all duration-500 transform",
+                    "p-1.5 rounded-xl transition-all duration-500 transform",
                     isActive 
                       ? "bg-gradient-brand shadow-brand animate-glow-pulse" 
                       : "hover:bg-gradient-brand-soft group-hover:shadow-card"
                   )}>
                     <Icon className={cn(
                       "transition-all duration-500 transform",
-                      isActive ? "h-5 w-5 text-white animate-bounce-in" : "h-4 w-4 group-hover:scale-110"
+                      isActive ? "h-4 w-4 text-white animate-bounce-in" : "h-3.5 w-3.5 group-hover:scale-110"
                     )} />
                   </div>
                   {item.badge && (item.to === '/network' ? unreadMessages > 0 : false) && (
-                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-gradient-to-r from-red-500 to-pink-500 text-white border-2 border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
-                      <span className="text-[10px] font-bold min-w-[20px] text-center">
-                        {(item.to === '/network' ? unreadMessages : 0) > 99 ? '99+' : (item.to === '/network' ? unreadMessages : 0)}
+                    <div className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-gradient-to-r from-red-500 to-pink-500 text-white border border-white rounded-full shadow-lg animate-bounce-in flex items-center justify-center">
+                      <span className="text-[8px] font-bold">
+                        {(item.to === '/network' ? unreadMessages : 0) > 9 ? '9+' : (item.to === '/network' ? unreadMessages : 0)}
                       </span>
                     </div>
                   )}
                 </div>
                 <span className={cn(
-                  "text-[9px] font-medium truncate w-full text-center mt-1 transition-all duration-500",
+                  "text-[8px] font-medium truncate w-full text-center mt-0.5 transition-all duration-500",
                   isActive ? "font-bold text-primary" : "group-hover:font-semibold"
                 )}>
                   {item.label}
@@ -117,17 +117,17 @@ export const MobileBottomNav = () => {
           <button
             onClick={() => setShowModulesLauncher(true)}
             className={cn(
-              "flex flex-col items-center justify-center px-2 py-1 rounded-2xl transition-all duration-500 relative min-w-0 flex-1 group",
-              "animate-fade-in text-muted-foreground hover:text-primary hover:scale-105 transform"
+              "flex flex-col items-center justify-center px-1 py-1 rounded-xl transition-all duration-500 relative group",
+              "animate-fade-in text-primary hover:scale-105 transform"
             )}
             style={{ animationDelay: `${navItems.length * 0.1}s` }}
           >
             <div className="relative">
-              <div className="p-2 rounded-2xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/10 border border-primary/20">
-                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform text-primary" />
+              <div className="p-1.5 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/10 border border-primary/20">
+                <Grid3X3 className="h-3.5 w-3.5 group-hover:scale-110 transition-all duration-500 transform text-primary" />
               </div>
             </div>
-            <span className="text-[9px] font-medium truncate w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold text-primary">
+            <span className="text-[8px] font-medium truncate w-full text-center mt-0.5 transition-all duration-500 group-hover:font-semibold text-primary">
               More
             </span>
           </button>
