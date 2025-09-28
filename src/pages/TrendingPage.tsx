@@ -40,7 +40,7 @@ interface TrendingItem {
   trending: boolean;
 }
 
-};
+export const TrendingPage = () => {
   const navigate = useNavigate();
 
   const trendingItems: TrendingItem[] = [
