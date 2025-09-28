@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { TXCSecurityValidator, logTXCSecurityEvent } from '@/utils/txcSecurity';
+import { useTXCPerformanceOptimizer } from './useTXCPerformanceOptimizer';
 
 interface TXCTransferParams {
   toUserId: string;
@@ -14,6 +15,7 @@ export const useRobustTXC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { optimizedBalanceQuery, optimizedTransactionQuery, measureOperation, batchOperations } = useTXCPerformanceOptimizer();
 
   const transferTXC = async ({ toUserId, amount, description = 'TXC Transfer' }: TXCTransferParams) => {
     if (!user?.id) {
@@ -70,14 +72,22 @@ export const useRobustTXC = () => {
     setIsProcessing(true);
     
     try {
-      // Use the secure atomic transfer function with validated data
+      // Use optimized operation with the secure atomic transfer function
       const sanitizedData = validation.sanitizedValue!;
-      const { data, error } = await supabase.rpc('transfer_txc_secure', {
-        p_from_user_id: sanitizedData.fromUserId,
-        p_to_user_id: sanitizedData.toUserId,
-        p_amount: sanitizedData.amount,
-        p_description: sanitizedData.description
-      });
+      const result = await measureOperation(
+        async () => {
+          const { data, error } = await supabase.rpc('transfer_txc_secure', {
+            p_from_user_id: sanitizedData.fromUserId,
+            p_to_user_id: sanitizedData.toUserId,
+            p_amount: sanitizedData.amount,
+            p_description: sanitizedData.description
+          });
+          return { data, error };
+        },
+        `transfer_${sanitizedData.fromUserId}_${sanitizedData.toUserId}_${sanitizedData.amount}`
+      );
+      
+      const { data, error } = result;
 
       if (error) {
         console.error('Transfer error:', error);
@@ -192,17 +202,25 @@ export const useRobustTXC = () => {
     setIsProcessing(true);
 
     try {
-      // Use edge function for secure TXC earning with validated data
+      // Use optimized operation with edge function for secure TXC earning
       const sanitizedData = validation.sanitizedValue!;
-      const { data, error } = await supabase.functions.invoke('earn-txc-secure', {
-        body: {
-          userId: user.id,
-          amount: sanitizedData.amount,
-          activityType: sanitizedData.activityType,
-          description: sanitizedData.description,
-          timestamp: new Date().toISOString()
-        }
-      });
+      const result = await measureOperation(
+        async () => {
+          const { data, error } = await supabase.functions.invoke('earn-txc-secure', {
+            body: {
+              userId: user.id,
+              amount: sanitizedData.amount,
+              activityType: sanitizedData.activityType,
+              description: sanitizedData.description,
+              timestamp: new Date().toISOString()
+            }
+          });
+          return { data, error };
+        },
+        `earn_${user.id}_${sanitizedData.activityType}_${sanitizedData.amount}`
+      );
+      
+      const { data, error } = result;
 
       if (error) {
         console.error('Earn TXC error:', error);
@@ -303,11 +321,29 @@ export const useRobustTXC = () => {
     }
   };
 
+  // Optimized data fetching methods
+  const getOptimizedBalance = async () => {
+    if (!user?.id) return 0;
+    return optimizedBalanceQuery(user.id);
+  };
+
+  const getOptimizedTransactions = async (limit: number = 10) => {
+    if (!user?.id) return [];
+    return optimizedTransactionQuery(user.id, limit);
+  };
+
+  const batchTXCOperations = async (operations: (() => Promise<any>)[]) => {
+    return batchOperations(operations);
+  };
+
   return {
     transferTXC,
     earnTXCSecure,
     purchaseWithTXC,
     checkRateLimit,
+    getOptimizedBalance,
+    getOptimizedTransactions,
+    batchTXCOperations,
     isProcessing
   };
 };
