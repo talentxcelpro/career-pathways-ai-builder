@@ -86,33 +86,33 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
     case basePath === '/network' || basePath.startsWith('/network/'):
       return [
         {
-          icon: Home,
-          label: 'Home',
-          action: () => navigate('/'),
+          icon: Users,
+          label: 'Network',
+          action: () => navigate('/network'),
+          isActive: true
+        },
+        {
+          icon: Play,
+          label: 'Reels',
+          action: () => navigate('/mobile/reels'),
           isActive: false
         },
         {
-          icon: Heart,
-          label: 'Activity',
-          action: () => navigate('/network?tab=feed'),
-          isActive: basePath === '/network'
+          icon: Briefcase,
+          label: 'Jobs',
+          action: () => navigate('/jobs'),
+          isActive: false
         },
         {
-          icon: UserPlus,
-          label: 'Connect',
-          action: () => navigate('/network?tab=discover'),
-          isPrimary: true
+          icon: Gift,
+          label: 'Rewards',
+          action: () => navigate('/rewards'),
+          isActive: false
         },
         {
-          icon: MessageCircle,
-          label: 'Messages',
-          action: () => navigate('/network/messages'),
-          isActive: basePath.includes('/messages')
-        },
-        {
-          icon: User,
-          label: 'Profile',
-          action: () => navigate('/profile'),
+          icon: Send,
+          label: 'Refer',
+          action: () => navigate('/referrals'),
           isActive: false
         }
       ];
