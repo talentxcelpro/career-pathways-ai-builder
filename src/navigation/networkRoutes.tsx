@@ -34,6 +34,7 @@ import SkillSwap from "../pages/network/SkillSwap";
 import VideoIntros from "../pages/network/VideoIntros";
 import Verified from "../pages/network/Verified";
 import Communities from "../pages/network/Communities";
+import Leaderboards from "../pages/network/Leaderboards";
 
 export const networkRoutes = [
   {
@@ -201,5 +202,10 @@ export const networkRoutes = [
     title: "Communities",
     to: "/network/communities",
     page: <Communities />,
+  },
+  {
+    title: "Leaderboards",
+    to: "/network/leaderboards",
+    page: <Leaderboards />,
   },
 ];
