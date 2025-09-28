@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Star, Users, ArrowLeft, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 import { AchievementsSection } from '@/components/gamification/AchievementsSection';
 import { LeaderboardsWidget } from '@/components/gamification/LeaderboardsWidget';
@@ -61,15 +62,21 @@ const GamificationCenter: React.FC = () => {
           </TabsList>
 
           <TabsContent value="dashboard" className="mt-4">
-            <GamificationDashboard />
+            <ErrorBoundary>
+              <GamificationDashboard />
+            </ErrorBoundary>
           </TabsContent>
 
           <TabsContent value="achievements" className="mt-4">
-            <AchievementsSection />
+            <ErrorBoundary>
+              <AchievementsSection />
+            </ErrorBoundary>
           </TabsContent>
 
           <TabsContent value="leaderboard" className="mt-4">
-            <LeaderboardsWidget />
+            <ErrorBoundary>
+              <LeaderboardsWidget />
+            </ErrorBoundary>
           </TabsContent>
         </Tabs>
       </div>

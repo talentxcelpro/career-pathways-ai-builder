@@ -61,7 +61,7 @@ export function usePWA() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Simple cleanup without forcing reload
+    // Enhanced cleanup with version invalidation
     const cleanupServiceWorkers = async () => {
       if ('serviceWorker' in navigator) {
         try {
@@ -74,9 +74,23 @@ export function usePWA() {
           if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(
-              cacheNames.map(cacheName => caches.delete(cacheName))
+              cacheNames.map(cacheName => {
+                console.log('🧹 PWA: Deleting cache:', cacheName);
+                return caches.delete(cacheName);
+              })
             );
             console.log('🧹 PWA: Cleared all caches');
+          }
+
+          // Clear storage data that might cause version conflicts
+          if ('localStorage' in window) {
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+              if (key.includes('cache') || key.includes('version') || key.includes('sw')) {
+                localStorage.removeItem(key);
+                console.log('🧹 PWA: Cleared localStorage key:', key);
+              }
+            });
           }
         } catch (error) {
           console.warn('PWA cleanup error:', error);

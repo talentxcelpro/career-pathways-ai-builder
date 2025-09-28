@@ -70,6 +70,29 @@ export const AchievementsSection: React.FC = () => {
   const [showEarnedOnly, setShowEarnedOnly] = useState(false);
   const [celebratingAchievement, setCelebratingAchievement] = useState<string | null>(null);
 
+  // Helper functions - moved to top
+  const getIconForType = (type: string): React.ElementType => {
+    if (type.includes('social') || type.includes('connection')) return Users;
+    if (type.includes('career') || type.includes('job')) return Briefcase;
+    if (type.includes('skill')) return Target;
+    if (type.includes('streak')) return Flame;
+    return Star;
+  };
+
+  const getRarityByPoints = (points: number): 'common' | 'rare' | 'epic' | 'legendary' => {
+    if (points >= 1000) return 'legendary';
+    if (points >= 500) return 'epic';
+    if (points >= 200) return 'rare';
+    return 'common';
+  };
+
+  const getCategoryForType = (type: string): string => {
+    if (type.includes('social') || type.includes('connection')) return 'social';
+    if (type.includes('career') || type.includes('job')) return 'career';
+    if (type.includes('skill')) return 'career';
+    return 'engagement';
+  };
+
   // Combine real achievements with available achievement types
   const earnedAchievements: Achievement[] = realUserAchievements.map(ach => ({
     id: ach.id,
@@ -118,28 +141,6 @@ export const AchievementsSection: React.FC = () => {
       'target': Target
     };
     return iconMap[iconName] || Star;
-  };
-
-  const getIconForType = (type: string): React.ElementType => {
-    if (type.includes('social') || type.includes('connection')) return Users;
-    if (type.includes('career') || type.includes('job')) return Briefcase;
-    if (type.includes('skill')) return Target;
-    if (type.includes('streak')) return Flame;
-    return Star;
-  };
-
-  const getRarityByPoints = (points: number): 'common' | 'rare' | 'epic' | 'legendary' => {
-    if (points >= 1000) return 'legendary';
-    if (points >= 500) return 'epic';
-    if (points >= 200) return 'rare';
-    return 'common';
-  };
-
-  const getCategoryForType = (type: string): string => {
-    if (type.includes('social') || type.includes('connection')) return 'social';
-    if (type.includes('career') || type.includes('job')) return 'career';
-    if (type.includes('skill')) return 'career';
-    return 'engagement';
   };
 
   const getRarityConfig = (rarity: string) => {

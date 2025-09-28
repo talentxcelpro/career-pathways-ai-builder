@@ -20,7 +20,7 @@ export const useServiceWorker = () => {
 
   const registerSW = async () => {
     try {
-      // Unregister any existing service workers to prevent cache issues
+      // Clear all caches and service workers for fresh start
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (const registration of registrations) {
@@ -28,8 +28,19 @@ export const useServiceWorker = () => {
           console.log('🧹 Unregistered service worker:', registration.scope);
         }
       }
+
+      // Clear all browser caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map(cacheName => {
+            console.log('🧹 Deleting cache:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+      }
       
-      console.log('✅ Service Worker cleanup completed');
+      console.log('✅ Service Worker and cache cleanup completed');
       setState(prev => ({ ...prev, isRegistered: false }));
     } catch (error) {
       console.error('Service Worker cleanup failed:', error);

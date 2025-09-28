@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -10,47 +10,39 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  error: Error | null;
-  errorInfo: ErrorInfo | null;
+  error?: Error;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-    error: null,
-    errorInfo: null
-  };
-
-  public static getDerivedStateFromError(error: Error): State {
-    return {
-      hasError: true,
-      error,
-      errorInfo: null
-    };
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
-    this.setState({
-      error,
-      errorInfo
-    });
   }
 
-  private handleRetry = () => {
-    this.setState({
-      hasError: false,
-      error: null,
-      errorInfo: null
-    });
+  handleRefresh = () => {
+    // Clear caches and reload
+    if ('caches' in window) {
+      caches.keys().then(cacheNames => {
+        Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        ).then(() => {
+          location.reload();
+        });
+      });
+    } else {
+      location.reload();
+    }
   };
 
-  private handleReload = () => {
-    window.location.reload();
-  };
-
-  public render() {
+  render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
@@ -58,58 +50,46 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen flex items-center justify-center p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              </div>
-              <CardTitle className="text-red-900">Something went wrong</CardTitle>
+          <Card className="max-w-md w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="h-5 w-5" />
+                Something went wrong
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-gray-600 text-center">
-                An unexpected error occurred while processing your resume. This might be due to:
+              <p className="text-sm text-muted-foreground">
+                The page encountered an error and couldn't load properly. This might be due to a version mismatch or cache issue.
               </p>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Corrupted or unsupported file format</li>
-                <li>• Network connectivity issues</li>
-                <li>• Browser compatibility problems</li>
-              </ul>
-
-              {this.state.error?.message && (
-                <div className="bg-red-50 border border-red-200 rounded p-3 text-xs text-red-800">
-                  <div className="font-medium mb-1">Error message</div>
-                  <div className="break-words">{this.state.error.message}</div>
-                </div>
-              )}
               
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="mt-4">
-                  <summary className="text-sm font-medium cursor-pointer text-gray-700">
-                    Error Details (Development)
-                  </summary>
-                  <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32">
-                    {this.state.error.toString()}
-                    {this.state.errorInfo?.componentStack}
+              {this.state.error && (
+                <details className="text-xs bg-gray-50 p-2 rounded">
+                  <summary className="cursor-pointer font-medium">Technical Details</summary>
+                  <pre className="mt-2 overflow-auto">
+                    {this.state.error.message}
                   </pre>
                 </details>
               )}
 
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  onClick={this.handleRetry} 
-                  variant="outline" 
-                  className="flex-1"
+              <div className="flex gap-2">
+                <Button
+                  onClick={this.handleRefresh}
+                  className="flex items-center gap-2"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh App
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => this.setState({ hasError: false })}
+                >
                   Try Again
                 </Button>
-                <Button 
-                  onClick={this.handleReload} 
-                  className="flex-1"
-                >
-                  Reload Page
-                </Button>
               </div>
+              
+              <p className="text-xs text-gray-500">
+                If this problem persists, please clear your browser cache and try again.
+              </p>
             </CardContent>
           </Card>
         </div>
