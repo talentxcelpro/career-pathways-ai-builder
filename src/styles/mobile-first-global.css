@@ -1,0 +1,75 @@
+/* Global CSS file to import mobile-first utilities */
+@import url('./mobile-optimizations.css');
+@import url('./mobile-first-utilities.css');
+
+/* Add automatic mobile-first optimizations for existing components */
+.mobile-optimized {
+  /* Ensure all buttons are touch-friendly */
+  button:not(.touch-target) {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Optimize form inputs for mobile */
+  input, textarea, select {
+    min-height: 44px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Improve tap targets for links */
+  a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    touch-action: manipulation;
+  }
+  
+  /* Add momentum scrolling for iOS */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  .mobile-optimized .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .mobile-optimized h1 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  
+  .mobile-optimized h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  .mobile-optimized .grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .mobile-optimized .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .mobile-optimized .grid {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-optimized .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  
+  .mobile-optimized .grid {
+    gap: 1.5rem;
+  }
+}

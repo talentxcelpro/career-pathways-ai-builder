@@ -183,21 +183,21 @@ const CareerDashboard = () => {
         <meta property="og:url" content="https://talentxcel.in/career-dashboard" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-        {/* Compact Header */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 mobile-optimized">
+        {/* Mobile-First Header */}
         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-xl">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm flex-shrink-0">
                   <img 
                     src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                     alt="TalentXcel" 
-                    className="h-7 w-7"
+                    className="h-6 w-6 sm:h-7 sm:w-7"
                   />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">
                     TalentXcel Career Intelligence Hub
                   </h1>
                   <p className="text-sm text-white/80 font-medium">
@@ -209,7 +209,7 @@ const CareerDashboard = () => {
                 onClick={() => navigate('/jobs')}
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/20 font-medium"
+                className="text-white hover:bg-white/20 font-medium min-h-[44px] touch-target"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Jobs

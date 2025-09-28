@@ -5,6 +5,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import mobile-first optimizations */
+@import url('./styles/mobile-first-global.css');
+
 /* Shimmer animation for skeleton loaders */
 @keyframes shimmer {
   0% {
