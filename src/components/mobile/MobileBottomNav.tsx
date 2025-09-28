@@ -71,9 +71,20 @@ export const MobileBottomNav = () => {
 
   return (
     <>
+      {/* Transparent More Button at Top */}
+      <div 
+        onClick={() => {
+          console.log('🚀 MORE BUTTON CLICKED!');
+          setShowModulesLauncher(true);
+        }}
+        className="fixed top-4 right-4 z-50 md:hidden bg-black/20 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-black/30 transition-all duration-300"
+      >
+        <Grid3X3 className="h-5 w-5" />
+      </div>
+
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center justify-start flex-nowrap px-2 py-2 overflow-x-auto scrollbar-hide gap-1" style={{ width: 'max-content', minWidth: '100%' }}>
+        <div className="flex items-center justify-center px-2 py-2 gap-1">
           {/* Main Nav Items */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
@@ -121,25 +132,6 @@ export const MobileBottomNav = () => {
               </Link>
             );
           })}
-          
-          {/* MORE BUTTON - 6TH BUTTON - DEBUG VERSION */}
-          <div 
-            onClick={() => {
-              console.log('🚀 MORE BUTTON CLICKED!');
-              setShowModulesLauncher(true);
-            }}
-            className="flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px] bg-red-500 text-white border-2 border-yellow-400"
-            style={{ animationDelay: `${navItems.length * 0.1}s` }}
-          >
-            <div className="relative">
-              <div className="p-2 rounded-xl transition-all duration-500 transform">
-                <Grid3X3 className="h-4 w-4" />
-              </div>
-            </div>
-            <span className="text-[8px] font-bold text-center mt-1">
-              MORE
-            </span>
-          </div>
         </div>
       </nav>
 
