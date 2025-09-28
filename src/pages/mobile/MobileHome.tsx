@@ -187,9 +187,14 @@ export const MobileHome = () => {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold text-gray-900">Explore Modules</h2>
-              <Badge variant="outline" className="text-xs">
-                All Features
-              </Badge>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/modules')}
+                className="text-xs"
+              >
+                View All
+              </Button>
             </div>
             
             <div className="grid grid-cols-2 gap-3">

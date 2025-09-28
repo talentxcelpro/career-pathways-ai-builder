@@ -16,6 +16,7 @@ import { MobileHub } from "../pages/mobile/MobileHub";
 import { MobileHome } from "../pages/mobile/MobileHome";
 import { MobileNearby } from "../pages/mobile/MobileNearby";
 import { TrendingPage } from "../pages/TrendingPage";
+import { ModulesShowcase } from "../pages/ModulesShowcase";
 
 export const mobileRoutes: NavItem[] = [
   { title: "Mobile Home", to: "/mobile", page: <MobileHome /> },
@@ -37,4 +38,5 @@ export const mobileRoutes: NavItem[] = [
   { title: "Mobile Hub Detail", to: "/mobile/hubs/:slug", page: <MobileHub /> },
   { title: "Mobile Nearby", to: "/mobile/nearby", page: <MobileNearby /> },
   { title: "Trending", to: "/trending", page: <TrendingPage /> },
+  { title: "Modules Showcase", to: "/modules", page: <ModulesShowcase /> },
 ];
