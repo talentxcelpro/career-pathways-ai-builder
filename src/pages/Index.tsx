@@ -37,8 +37,8 @@ const Index = () => {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
+      <div className="min-h-screen flex items-center justify-center bg-background mobile-optimized">
+        <div className="text-center space-y-4 px-4">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-sm text-muted-foreground">Loading TalentXcel...</p>
         </div>
@@ -49,7 +49,7 @@ const Index = () => {
   return (
     <ErrorBoundary
       FallbackComponent={() => (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-background mobile-optimized">
           <div className="text-sm text-muted-foreground">Loading home...</div>
         </div>
       )}

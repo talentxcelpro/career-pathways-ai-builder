@@ -117,19 +117,19 @@ const Network = () => {
 
   // Desktop interface
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 mobile-optimized">
       {/* One Tap Sign In Status - Show at top for guest users */}
       {!user && (
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 pt-4">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4">
           <GoogleOneTapStatus />
         </div>
       )}
       
-      {/* Main Content with Tabs */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-1">
+      {/* Main Content with Mobile-First Tabs */}
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-1">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="flex w-full bg-card/90 backdrop-blur-md border-0 shadow-apple rounded-apple p-0.5 mb-1 h-7 overflow-x-auto">
-            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
+          <TabsList className="flex w-full bg-card/90 backdrop-blur-md border-0 shadow-apple rounded-apple p-0.5 mb-1 h-8 sm:h-7 overflow-x-auto touch-pan-x">
+            <TabsTrigger value="feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1.5 px-2 sm:py-1 whitespace-nowrap font-apple-medium min-h-[44px] sm:min-h-auto touch-target">
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline text-xs">Feed</span>
             </TabsTrigger>

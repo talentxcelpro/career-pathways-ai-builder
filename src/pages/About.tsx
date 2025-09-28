@@ -33,10 +33,10 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-20">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 mobile-optimized">
+      {/* Mobile-First Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-12 sm:py-20">
+        <div className="max-w-4xl mx-auto text-center px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-3 mb-6">
             <img 
               src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
@@ -44,8 +44,8 @@ const About = () => {
               className="h-12 w-12 rounded-lg"
             />
           </div>
-          <h1 className="text-5xl font-bold mb-6">Empowering Talent. Elevating Careers.</h1>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6">Empowering Talent. Elevating Careers.</h1>
+          <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto">
             Transforming the way professionals connect, learn, and grow with AI-powered career solutions.
           </p>
           <p className="text-sm text-blue-200 mt-4">
@@ -54,12 +54,12 @@ const About = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-16">
         {/* Who We Are */}
-        <Card className="mb-12">
-          <CardContent className="p-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">Who We Are</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
+        <Card className="mb-8 sm:mb-12">
+          <CardContent className="p-4 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">Who We Are</h2>
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
               TalentXcel is an all-in-one AI-powered platform built to transform the way professionals connect, learn, and grow. 
               From job discovery and resume building to networking, mentorship, and career planning — we're here for your entire journey.
             </p>
@@ -78,9 +78,9 @@ const About = () => {
         </Card>
 
         {/* What We Offer */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">What We Offer</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">What We Offer</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {features.map((feature, index) => (
               <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6 text-center">

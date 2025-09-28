@@ -380,18 +380,18 @@ const Jobs = () => {
         <meta name="twitter:image" content="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 mobile-optimized">
         
-        {/* Top Navigation with Quick Filters */}
+        {/* Mobile-First Navigation with Quick Filters */}
         <div className="border-b border-border/10 bg-background/95 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            {/* Quick Filter Categories */}
-            <div className="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+            {/* Mobile-First Quick Filter Categories */}
+            <div className="flex items-center gap-2 mb-3 sm:mb-4 overflow-x-auto scrollbar-hide touch-pan-x">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateFilters({ is_remote: true })}
-                className="whitespace-nowrap flex items-center gap-1"
+                className="whitespace-nowrap flex items-center gap-1 min-h-[44px] touch-target"
               >
                 🏠 Remote Jobs
               </Button>
@@ -479,8 +479,8 @@ const Jobs = () => {
               </Button>
             </div>
 
-            {/* Enhanced Global Search Bar */}
-            <div className="max-w-4xl mx-auto mb-4">
+            {/* Mobile-First Global Search Bar */}
+            <div className="max-w-4xl mx-auto mb-3 sm:mb-4">
               <GlobalSearch
                 value={filters.search}
                 onChange={(value) => updateFilters({ search: value })}
@@ -506,10 +506,11 @@ const Jobs = () => {
                   variant={viewMode === 'card' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setViewMode('card')}
-                  className="rounded-full px-4 py-2 text-xs transition-all hover:scale-105"
+                  className="rounded-full px-3 sm:px-4 py-2 text-xs transition-all hover:scale-105 min-h-[44px] touch-target"
                 >
                   <Grid3X3 className="h-3 w-3 mr-1" />
-                  Card View
+                  <span className="hidden sm:inline">Card View</span>
+                  <span className="sm:hidden">Cards</span>
                 </Button>
                 <Button
                   variant={viewMode === 'swipe' ? 'default' : 'outline'}

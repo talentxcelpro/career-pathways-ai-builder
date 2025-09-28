@@ -142,8 +142,8 @@ const Dashboard = () => {
 
   if (statsLoading && jobsLoading && coursesLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center mobile-optimized">
+        <div className="text-center px-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
           <p className="text-sm text-slate-600 font-medium">Loading your dashboard...</p>
         </div>
@@ -207,26 +207,26 @@ const Dashboard = () => {
   const smartRecommendations = getSmartRecommendations();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 mobile-optimized">
       <OfflineIndicator />
       
-      {/* Compact Header */}
+      {/* Mobile-First Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <img 
                 src="/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png" 
                 alt="TalentXcel" 
-                className="h-12 w-12 rounded-lg"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg flex-shrink-0"
               />
-              <div>
-                <h1 className="text-lg font-bold text-slate-900">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                   {getCurrentGreeting()}{userProfile?.full_name ? `, ${userProfile.full_name.split(' ')[0]}` : ''}! 👋
                 </h1>
-                <p className="text-xs text-slate-600">Ready to advance your career today?</p>
+                <p className="text-xs text-slate-600 hidden sm:block">Ready to advance your career today?</p>
               </div>
-              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 hidden sm:flex">
                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></div>
                 Active
               </Badge>
@@ -240,8 +240,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="space-y-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Compact Stats Grid */}
           <StatsCards userStats={userStats} />
           
@@ -271,18 +271,18 @@ const Dashboard = () => {
             </Card>
           )}
 
-          {/* Main Content - Compact Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Main Content - Mobile-First Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Left Column - Jobs & Courses */}
-            <div className="lg:col-span-3 space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="lg:col-span-3 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 <FeaturedJobs jobs={featuredJobs} />
                 <TrendingCourses courses={popularCourses} />
               </div>
             </div>
 
             {/* Right Column - Sidebar */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <QuickActions />
               <CareerInsights />
               
