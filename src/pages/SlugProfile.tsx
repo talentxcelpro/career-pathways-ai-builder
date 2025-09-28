@@ -2,8 +2,8 @@ import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useSlugProfile } from '@/hooks/useSlugProfile';
 import { useSEO } from '@/hooks/useSEO';
-import { useProfileViews } from '@/hooks/useProfileViews';
-import { useProfileStats } from '@/hooks/useProfileStats';
+import { useViewportProfileTracking } from '@/hooks/useViewportProfileTracking';
+import { useAccurateProfileStats } from '@/hooks/useAccurateProfileStats';
 import { Loader2, MapPin, ExternalLink, Calendar, Users, Eye, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -14,15 +14,24 @@ import { Separator } from '@/components/ui/separator';
 const SlugProfile = () => {
   const { username } = useParams<{ username: string }>();
   const { data: profile, isLoading, error } = useSlugProfile(username);
-  const { data: stats } = useProfileStats(profile?.id);
-  const { trackProfileView } = useProfileViews();
-
-  // Track profile view when profile loads
-  React.useEffect(() => {
-    if (profile?.id) {
-      trackProfileView(profile.id);
+  const { data: stats } = useAccurateProfileStats(profile?.id);
+  const { trackElementRef } = useViewportProfileTracking(
+    profile?.id || '',
+    'profile_page',
+    {
+      threshold: 0.5, // 50% visible
+      minViewTime: 2000 // 2 seconds minimum view time
     }
-  }, [profile?.id, trackProfileView]);
+  );
+  
+  const profileRef = React.useRef<HTMLDivElement>(null);
+  
+  // Set up viewport tracking for profile view
+  React.useEffect(() => {
+    if (profileRef.current && profile?.id) {
+      trackElementRef(profileRef.current);
+    }
+  }, [trackElementRef, profile?.id]);
 
   // Set up SEO
   useSEO({
@@ -79,7 +88,7 @@ const SlugProfile = () => {
       />
       
       <main className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <div ref={profileRef} className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           {/* Cover Image Section */}
           {profile.cover_image_url && (
             <div className="relative h-48 md:h-64 rounded-xl overflow-hidden">
@@ -152,7 +161,7 @@ const SlugProfile = () => {
                           <Eye className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">Profile Views</span>
                         </div>
-                        <span className="font-semibold">{stats?.profileViews || 0}</span>
+                        <span className="font-semibold">{stats?.profileViews || 0} ({stats?.uniqueViewers || 0} unique)</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
