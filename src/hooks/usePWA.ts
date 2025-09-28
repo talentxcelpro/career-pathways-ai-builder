@@ -61,49 +61,30 @@ export function usePWA() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Force complete cache cleanup and reload for fresh content
-    const forceAppRefresh = async () => {
+    // Simple cleanup without forcing reload
+    const cleanupServiceWorkers = async () => {
       if ('serviceWorker' in navigator) {
         try {
-          // Unregister all service workers
           const registrations = await navigator.serviceWorker.getRegistrations();
           for (const registration of registrations) {
             await registration.unregister();
             console.log('🧹 PWA: Unregistered service worker');
           }
           
-          // Clear all caches including HTTP cache
           if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(
               cacheNames.map(cacheName => caches.delete(cacheName))
             );
-            console.log('🧹 PWA: Cleared all application caches');
+            console.log('🧹 PWA: Cleared all caches');
           }
-          
-          // Clear storage to ensure fresh data
-          try {
-            localStorage.clear();
-            sessionStorage.clear();
-            console.log('🧹 PWA: Cleared local storage');
-          } catch (e) {
-            console.warn('Could not clear storage:', e);
-          }
-          
-          // Force reload with cache bypass
-          setTimeout(() => {
-            window.location.reload();
-          }, 100);
-          
         } catch (error) {
           console.warn('PWA cleanup error:', error);
-          // Force reload anyway
-          window.location.reload();
         }
       }
     };
     
-    forceAppRefresh();
+    cleanupServiceWorkers();
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
