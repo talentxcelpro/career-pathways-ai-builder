@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bot, Calendar, Heart, MessageCircle, Share } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { useBotIdentity } from '@/hooks/useBotIdentity';
 
 interface BotPostCardProps {
@@ -34,17 +35,11 @@ export const BotPostCard: React.FC<BotPostCardProps> = ({ post, showActions = tr
         <div className="flex items-center gap-3 mb-4">
           {/* Bot Avatar */}
           <div className="relative">
-            {botInfo?.profile_picture_url ? (
-              <img 
-                src={botInfo.profile_picture_url} 
-                alt={botInfo.display_name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bot className="h-6 w-6 text-primary" />
-              </div>
-            )}
+            <UserAvatar 
+              src={botInfo?.profile_picture_url}
+              userName={botInfo?.display_name || 'AI Bot'}
+              size="lg"
+            />
             {/* AI Bot indicator */}
             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
               <Bot className="h-3 w-3 text-white" />

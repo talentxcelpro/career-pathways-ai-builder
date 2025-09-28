@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -213,12 +213,11 @@ export const BotManagerDashboard: React.FC = () => {
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <Avatar>
-                    <AvatarImage src={bot.profile_picture_url} />
-                    <AvatarFallback>
-                      {bot.name.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    src={bot.profile_picture_url}
+                    userName={bot.name}
+                    size="md"
+                  />
                   <div>
                     <CardTitle className="text-lg">{bot.name}</CardTitle>
                     <p className="text-sm text-muted-foreground">{bot.role}</p>

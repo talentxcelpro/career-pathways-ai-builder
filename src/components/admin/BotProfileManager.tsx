@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useDropzone } from 'react-dropzone';
@@ -118,12 +118,12 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
         {currentImage && (
           <div className="relative">
             {type === 'profile' ? (
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={currentImage} />
-                <AvatarFallback>
-                  {bot?.name?.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar 
+                src={currentImage}
+                userName={bot?.name}
+                size="2xl"
+                className="w-24 h-24"
+              />
             ) : (
               <div className="w-full h-32 bg-muted rounded-lg overflow-hidden">
                 <img 
@@ -170,12 +170,11 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={bot.profile_picture_url} />
-              <AvatarFallback>
-                {bot.name?.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              src={bot.profile_picture_url}
+              userName={bot.name}
+              size="sm"
+            />
             <span>Manage {bot.name}</span>
           </DialogTitle>
         </DialogHeader>
@@ -583,12 +582,12 @@ export const BotProfileManager: React.FC<BotProfileManagerProps> = ({
                   <div>
                     <Label>Profile Picture</Label>
                     <div className="mt-2 text-center">
-                      <Avatar className="h-20 w-20 mx-auto">
-                        <AvatarImage src={bot.profile_picture_url} />
-                        <AvatarFallback className="text-lg">
-                          {bot.name?.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar 
+                        src={bot.profile_picture_url}
+                        userName={bot.name}
+                        size="2xl"
+                        className="mx-auto"
+                      />
                       <p className="text-sm text-muted-foreground mt-2">
                         {bot.profile_picture_url ? 'Current profile picture' : 'No profile picture set'}
                       </p>

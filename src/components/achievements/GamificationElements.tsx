@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTXCLeaderboard } from '@/hooks/useTXCLeaderboard';
 import {
@@ -479,12 +479,11 @@ export const GamificationElements: React.FC = () => {
                       )}
                     </div>
                     
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.profile_picture_url || undefined} />
-                      <AvatarFallback>
-                        {user.isCurrentUser ? 'You' : (user.full_name?.split(' ').map(n => n[0]).join('') || '?')}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={user.profile_picture_url}
+                      userName={user.isCurrentUser ? 'You' : user.full_name}
+                      size="md"
+                    />
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-2">

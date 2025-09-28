@@ -4,7 +4,7 @@ import {
   User, FileText, Calendar, MapPin, ExternalLink, TrendingUp, BarChart3, Eye
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -391,12 +391,11 @@ const ActivityItemComponent: React.FC<ActivityItemComponentProps> = ({
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={profile?.profile_picture_url || undefined} />
-                    <AvatarFallback className="text-xs">
-                      {profile?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    src={profile?.profile_picture_url}
+                    userName={profile?.full_name}
+                    size="sm"
+                  />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm text-foreground">
                       {activity.title}

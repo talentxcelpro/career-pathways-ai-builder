@@ -3,7 +3,7 @@ import { getCustomStorageUrl } from '@/utils/storage';
 import { Camera, Image, MapPin, Send, X, Smile, Link2, FileText, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -149,12 +149,12 @@ export const MobileCreatePost: React.FC<MobileCreatePostProps> = ({
       <div className="p-5">
         {/* Header */}
         <div className="flex items-center space-x-3 mb-4">
-          <Avatar className="w-10 h-10 ring-2 ring-white shadow-md">
-            <AvatarImage src={user?.user_metadata?.avatar_url} alt="Your avatar" />
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-semibold">
-              {user?.email?.charAt(0).toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar 
+            src={user?.user_metadata?.avatar_url}
+            userName={user?.user_metadata?.full_name || user?.email}
+            size="md"
+            className="ring-2 ring-white shadow-md"
+          />
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-900">Create Enhanced Post</p>
             <p className="text-xs text-gray-500">Share your professional insights</p>
