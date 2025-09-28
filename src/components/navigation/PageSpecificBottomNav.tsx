@@ -129,16 +129,15 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: BookOpen,
           label: 'Courses',
-          action: () => navigate('/learning?tab=courses'),
+          action: () => navigate('/learning'),
           isActive: basePath === '/learning'
         },
         {
           icon: Plus,
           label: 'Enroll',
           action: () => {
-            // Trigger course enrollment modal
-            const event = new CustomEvent('openCourseEnroll');
-            window.dispatchEvent(event);
+            // Trigger course enrollment modal or navigate to learning
+            navigate('/learning');
           },
           isPrimary: true
         },
@@ -168,16 +167,15 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Search,
           label: 'Search',
-          action: () => navigate('/companies?focus=search'),
+          action: () => navigate('/companies'),
           isActive: false
         },
         {
           icon: Heart,
           label: 'Follow',
           action: () => {
-            // Trigger company follow action
-            const event = new CustomEvent('followCompany');
-            window.dispatchEvent(event);
+            // Navigate to companies page to explore and follow
+            navigate('/companies');
           },
           isPrimary: true
         },
@@ -207,16 +205,15 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Search,
           label: 'Search',
-          action: () => navigate('/colleges?focus=search'),
+          action: () => navigate('/colleges'),
           isActive: false
         },
         {
           icon: GraduationCap,
           label: 'Apply',
           action: () => {
-            // Trigger college application
-            const event = new CustomEvent('applyToCollege');
-            window.dispatchEvent(event);
+            // Navigate to colleges page to explore opportunities
+            navigate('/colleges');
           },
           isPrimary: true
         },
@@ -316,16 +313,15 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: FileText,
           label: 'Templates',
-          action: () => navigate('/tools/resume-builder?tab=templates'),
+          action: () => navigate('/resume/templates'),
           isActive: false
         },
         {
           icon: Zap,
           label: 'AI Build',
           action: () => {
-            // Trigger AI resume builder
-            const event = new CustomEvent('openAIBuilder');
-            window.dispatchEvent(event);
+            // Navigate to resume builder
+            navigate('/tools/resume-builder');
           },
           isPrimary: true
         },
@@ -367,13 +363,13 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Gift,
           label: 'Reward',
-          action: () => navigate('/rewards'),
+          action: () => navigate('/gamification'),
           isActive: false
         },
         {
           icon: Send,
           label: 'Refer',
-          action: () => navigate('/referrals'),
+          action: () => navigate('/refer-and-earn'),
           isActive: false
         }
       ];
