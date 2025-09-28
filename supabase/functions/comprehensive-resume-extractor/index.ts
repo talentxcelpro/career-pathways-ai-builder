@@ -1,11 +1,10 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, cache-control',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
+}
 
 interface ComprehensiveExtractionRequest {
   text: string;
@@ -17,7 +16,7 @@ interface ComprehensiveExtractionRequest {
   extractionLevel?: 'basic' | 'enhanced' | 'comprehensive';
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   console.log('🚀 Comprehensive Resume Extractor Starting...');
 
   if (req.method === 'OPTIONS') {
@@ -33,7 +32,7 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     const { 
@@ -437,7 +436,7 @@ Return ONLY the JSON object with no additional text or explanations.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -566,7 +565,7 @@ Return ONLY the JSON object with no additional text or explanations.`;
       metadata: {
         extractionLevel: extractionLevel,
         industryType: industryType,
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o',
         version: 'v3.0',
         timestamp: new Date().toISOString()
       }
