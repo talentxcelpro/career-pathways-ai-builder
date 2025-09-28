@@ -11,6 +11,7 @@ import { useTXCRealtime } from '@/hooks/useTXCRealtime';
 import { useOptimizedRealtime } from '@/hooks/useOptimizedRealtime';
 import { Activity, Wifi, WifiOff, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { RealtimeDiagnostics } from './RealtimeDiagnostics';
 
 interface ConnectionTest {
   name: string;
@@ -103,21 +104,23 @@ export const RealtimeTestPanel: React.FC = () => {
         updateTest('Supabase Client', 'error', 'Client configuration failed', error);
       }
 
-      // Test 2: Initialize realtime manager if not already done
-      addTest('Realtime Manager', 'pending', 'Initializing realtime manager...');
+      // Test 2: Initialize and test realtime manager
+      addTest('Realtime Manager', 'pending', 'Testing realtime manager...');
       setProgress(20);
       
       try {
         // Force re-initialize the realtime manager for testing
-        if (!realtimeManager.initialized) {
-          await realtimeManager.init();
-          // Give it a moment to connect
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
+        await realtimeManager.init(undefined, true);
+        
+        // Give channels time to connect
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         const managerStatus = realtimeManager.getStatus();
         const connectedChannels = Object.values(managerStatus).filter(status => status === 'SUBSCRIBED').length;
         const totalChannels = Object.keys(managerStatus).length;
+        
+        console.log('Manager status:', managerStatus);
+        console.log(`Connected: ${connectedChannels}/${totalChannels}`);
         
         if (connectedChannels > 0) {
           updateTest('Realtime Manager', 'success', `${connectedChannels}/${totalChannels} channels connected`, managerStatus);
@@ -125,6 +128,7 @@ export const RealtimeTestPanel: React.FC = () => {
           updateTest('Realtime Manager', 'error', `No channels connected (${totalChannels} total)`, managerStatus);
         }
       } catch (error) {
+        console.error('Realtime manager test error:', error);
         updateTest('Realtime Manager', 'error', 'Realtime manager initialization failed', error);
       }
 
@@ -263,6 +267,7 @@ export const RealtimeTestPanel: React.FC = () => {
   const pendingCount = tests.filter(t => t.status === 'pending').length;
 
   return (
+    <div className="space-y-6">
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -412,5 +417,9 @@ export const RealtimeTestPanel: React.FC = () => {
 
       </CardContent>
     </Card>
+
+    {/* Advanced Diagnostics */}
+    <RealtimeDiagnostics />
+    </div>
   );
 };

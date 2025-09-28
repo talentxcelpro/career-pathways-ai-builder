@@ -106,12 +106,29 @@ export const SafeRealtimeProvider: React.FC<SafeRealtimeProviderProps> = ({
       }
     };
 
-    // Initialize realtime safely
-    try {
-      initTalentXcelRealtime(onUpdateCallback);
-    } catch (initError) {
-      console.error('Realtime initialization failed:', initError);
-    }
+    // Initialize realtime safely with retry logic
+    const initWithRetry = async (attempt = 1) => {
+      try {
+        await initTalentXcelRealtime(onUpdateCallback);
+        console.log('🎯 Realtime initialized successfully');
+      } catch (initError) {
+        console.error(`Realtime initialization failed (attempt ${attempt}):`, initError);
+        
+        // Retry up to 3 times with exponential backoff
+        if (attempt < 3) {
+          const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+          console.log(`🔄 Retrying realtime init in ${delay}ms...`);
+          setTimeout(() => {
+            if (mounted) initWithRetry(attempt + 1);
+          }, delay);
+        } else {
+          console.error('🚫 Realtime initialization failed after 3 attempts');
+          setState(prev => ({ ...prev, usePollingFallback: true }));
+        }
+      }
+    };
+
+    initWithRetry();
 
     // Safe auth listener
     let authListener: any = null;

@@ -79,7 +79,11 @@ export const useTXCRealtime = () => {
     const initializeRealtime = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          console.warn('TXC Realtime: No authenticated user');
+          setIsConnected(false);
+          return;
+        }
 
         const txcChannel = supabase.channel('txc_global', {
           config: {
@@ -165,7 +169,7 @@ export const useTXCRealtime = () => {
     return () => {
       cleanup?.();
     };
-  }, [updateUserPresence]);
+  }, []); // Removed updateUserPresence dependency to prevent re-initialization loops
 
   return {
     onlineUsers,

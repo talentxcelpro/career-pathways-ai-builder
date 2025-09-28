@@ -14,7 +14,9 @@ const TABLES_TO_WATCH = [
   'ai_job_matches',
   'messages',
   'post_comments',
-  'post_likes'
+  'post_likes',
+  'txc_transactions',
+  'txc_balances'
 ] as const;
 
 export type WatchedTable = typeof TABLES_TO_WATCH[number];
@@ -58,10 +60,15 @@ class RealtimeManager {
   /**
    * Initialize the realtime system with authentication checks and auto-reconnect
    */
-  async init(callback?: RealtimeCallback) {
-    if (this.isInitialized) {
+  async init(callback?: RealtimeCallback, forceReinit = false) {
+    if (this.isInitialized && !forceReinit) {
       console.warn('Realtime manager already initialized');
       return;
+    }
+
+    if (forceReinit) {
+      console.log('🔄 Force reinitializing realtime manager...');
+      this.cleanup();
     }
 
     console.log('🚀 Initializing TalentXcel Production Realtime System...');
