@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Calculator, Users, Coins } from 'lucide-react';
+import { Loader2, Calculator, Users, Coins, Activity } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import txcMascot from '@/assets/txc-mascot.jpg';
 import { SimpleTXCDistribution } from '@/components/admin/SimpleTXCDistribution';
+import { RealtimeTestPanel } from '@/components/admin/RealtimeTestPanel';
 
 interface BackfillResult {
   total_users: number;
@@ -182,9 +184,23 @@ const TXCBackfill = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Simple TXC Distribution */}
-      <Card>
+    <div className="container mx-auto p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">TXC System Management</h1>
+        <p className="text-muted-foreground">Manage TXC distribution, testing, and realtime monitoring</p>
+      </div>
+
+      <Tabs defaultValue="distribution" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="distribution">Distribution</TabsTrigger>
+          <TabsTrigger value="comprehensive">Comprehensive</TabsTrigger>
+          <TabsTrigger value="legacy">Legacy Tools</TabsTrigger>
+          <TabsTrigger value="realtime">Realtime Test</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="distribution" className="space-y-6">
+          {/* Simple TXC Distribution */}
+          <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <img src={txcMascot} alt="TXC Mascot" className="w-5 h-5 rounded-full object-cover" />
@@ -216,9 +232,11 @@ const TXCBackfill = () => {
           </Button>
         </CardContent>
       </Card>
+      </TabsContent>
 
-      {/* Comprehensive TXC Distribution */}
-      <Card>
+      <TabsContent value="comprehensive" className="space-y-6">
+        {/* Comprehensive TXC Distribution */}
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <img src={txcMascot} alt="TXC Mascot" className="w-5 h-5 rounded-full object-cover" />
@@ -289,9 +307,11 @@ const TXCBackfill = () => {
           )}
         </CardContent>
       </Card>
+      </TabsContent>
 
-      {/* Retroactive TXC Rewards */}
-      <Card>
+      <TabsContent value="legacy" className="space-y-6">
+        {/* Retroactive TXC Rewards */}
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <img src={txcMascot} alt="TXC Mascot" className="w-5 h-5 rounded-full object-cover" />
@@ -442,6 +462,13 @@ const TXCBackfill = () => {
           )}
         </CardContent>
       </Card>
+      </TabsContent>
+
+      <TabsContent value="realtime">
+        <RealtimeTestPanel />
+      </TabsContent>
+
+      </Tabs>
     </div>
   );
 };
