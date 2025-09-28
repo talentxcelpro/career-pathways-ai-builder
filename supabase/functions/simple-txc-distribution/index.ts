@@ -146,25 +146,39 @@ Deno.serve(async (req) => {
       for (const user of activeUsers || []) {
         try {
           if (!dryRun) {
-            // Update or create TXC balance
+            // Check if user already has TXC balance
             const { data: existingBalance } = await supabaseClient
               .from('user_txc_balances')
               .select('txc_balance, total_earned')
               .eq('user_id', user.id)
-              .single()
+              .maybeSingle()
 
-            const newBalance = (existingBalance?.txc_balance || 0) + 150
-            const newTotalEarned = (existingBalance?.total_earned || 0) + 150
+            if (existingBalance) {
+              // Update existing balance
+              const newBalance = existingBalance.txc_balance + 150
+              const newTotalEarned = existingBalance.total_earned + 150
 
-            const { error: balanceError } = await supabaseClient
-              .from('user_txc_balances')
-              .upsert({
-                user_id: user.id,
-                txc_balance: newBalance,
-                total_earned: newTotalEarned
-              })
+              const { error: balanceError } = await supabaseClient
+                .from('user_txc_balances')
+                .update({
+                  txc_balance: newBalance,
+                  total_earned: newTotalEarned
+                })
+                .eq('user_id', user.id)
 
-            if (balanceError) throw balanceError
+              if (balanceError) throw balanceError
+            } else {
+              // Create new balance record
+              const { error: balanceError } = await supabaseClient
+                .from('user_txc_balances')
+                .insert({
+                  user_id: user.id,
+                  txc_balance: 150,
+                  total_earned: 150
+                })
+
+              if (balanceError) throw balanceError
+            }
 
             // Create transaction record
             const { error: txError } = await supabaseClient
@@ -223,40 +237,55 @@ Deno.serve(async (req) => {
 
       for (const user of contributingUsers || []) {
         // Calculate contribution score based on activity
-        const { data: activityCount } = await supabaseClient
+        const { count: postCount } = await supabaseClient
           .from('posts')
           .select('id', { count: 'exact' })
-          .eq('user_id', user.id)
+          .or(`user_id.eq.${user.id},author_id.eq.${user.id}`)
 
-        const { data: connectionCount } = await supabaseClient
+        const { count: connectionCount } = await supabaseClient
           .from('connections')
           .select('id', { count: 'exact' })
           .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+          .eq('status', 'accepted')
 
-        const contributionScore = (activityCount?.length || 0) + (connectionCount?.length || 0) * 2
+        const contributionScore = (postCount || 0) + (connectionCount || 0) * 2
         try {
           const rewardAmount = calculateRetroactiveReward(contributionScore)
           
           if (!dryRun && rewardAmount > 0) {
-            // Update or create TXC balance
+            // Check if user already has TXC balance to prevent duplicates
             const { data: existingBalance } = await supabaseClient
               .from('user_txc_balances')
               .select('txc_balance, total_earned')
               .eq('user_id', user.id)
-              .single()
+              .maybeSingle()
 
-            const newBalance = (existingBalance?.txc_balance || 0) + rewardAmount
-            const newTotalEarned = (existingBalance?.total_earned || 0) + rewardAmount
+            if (existingBalance) {
+              // Update existing balance
+              const newBalance = existingBalance.txc_balance + rewardAmount
+              const newTotalEarned = existingBalance.total_earned + rewardAmount
 
-            const { error: balanceError } = await supabaseClient
-              .from('user_txc_balances')
-              .upsert({
-                user_id: user.id,
-                txc_balance: newBalance,
-                total_earned: newTotalEarned
-              })
+              const { error: balanceError } = await supabaseClient
+                .from('user_txc_balances')
+                .update({
+                  txc_balance: newBalance,
+                  total_earned: newTotalEarned
+                })
+                .eq('user_id', user.id)
 
-            if (balanceError) throw balanceError
+              if (balanceError) throw balanceError
+            } else {
+              // Create new balance record
+              const { error: balanceError } = await supabaseClient
+                .from('user_txc_balances')
+                .insert({
+                  user_id: user.id,
+                  txc_balance: rewardAmount,
+                  total_earned: rewardAmount
+                })
+
+              if (balanceError) throw balanceError
+            }
 
             // Create transaction record
             const { error: txError } = await supabaseClient
