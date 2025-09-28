@@ -23,7 +23,7 @@ import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
-import { MobileLayout } from "@/components/mobile/MobileLayout";
+import { MobileNavWrapper } from "@/components/layout/MobileNavWrapper";
 import { UserPresence } from "@/components/realtime/UserPresence";
 import { VideoCallButton } from "@/components/network/VideoCallButton";
 import { LiveEventCard } from "@/components/network/LiveEventCard";
@@ -98,7 +98,7 @@ const Network = () => {
   // Mobile LinkedIn-style interface
   if (isMobile && user) {
     return (
-      <MobileLayout>
+      <MobileNavWrapper>
         <LinkedInMobileFeed
           posts={posts}
           onLike={handleLike}
@@ -111,7 +111,7 @@ const Network = () => {
           isFetchingNextPage={isFetchingNextPage}
           onLoadMore={fetchNextPage}
         />
-      </MobileLayout>
+      </MobileNavWrapper>
     );
   }
 
