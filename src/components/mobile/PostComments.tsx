@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
+import { getUserAvatarProps } from '@/utils/avatarUtils';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -165,12 +166,11 @@ export const PostComments: React.FC<PostCommentsProps> = ({ postId, onClose }) =
               <Card className="border-0 shadow-none bg-gray-50/50">
                 <CardContent className="p-4">
                   <div className="flex gap-3">
-                    <Avatar className="h-8 w-8 mt-1">
-                      <AvatarImage src={comment.user.avatar} />
-                      <AvatarFallback className="bg-primary text-white text-xs">
-                        {comment.user.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={comment.user.avatar}
+                      userName={comment.user.name}
+                      size="sm"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-semibold text-sm text-gray-900">{comment.user.name}</h4>
@@ -212,12 +212,11 @@ export const PostComments: React.FC<PostCommentsProps> = ({ postId, onClose }) =
                     <Card key={reply.id} className="border-0 shadow-none bg-white">
                       <CardContent className="p-3">
                         <div className="flex gap-2">
-                          <Avatar className="h-6 w-6 mt-1">
-                            <AvatarImage src={reply.user.avatar} />
-                            <AvatarFallback className="bg-primary text-white text-xs">
-                              {reply.user.name[0]}
-                            </AvatarFallback>
-                          </Avatar>
+                          <UserAvatar 
+                            src={reply.user.avatar}
+                            userName={reply.user.name}
+                            size="xs"
+                          />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <h5 className="font-semibold text-xs text-gray-900">{reply.user.name}</h5>
@@ -266,12 +265,10 @@ export const PostComments: React.FC<PostCommentsProps> = ({ postId, onClose }) =
           </div>
         )}
         <div className="flex gap-3 items-end">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.user_metadata?.picture} />
-            <AvatarFallback className="bg-primary text-white text-xs">
-              {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar 
+            {...getUserAvatarProps(user)}
+            size="sm"
+          />
           <div className="flex-1 flex gap-2">
             <Textarea
               placeholder="Write a comment..."

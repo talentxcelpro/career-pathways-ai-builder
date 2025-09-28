@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Search, Plus, MoreVertical } from "lucide-react";
@@ -86,12 +86,11 @@ const DirectMessaging = () => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src="/placeholder-avatar.png" />
-                    <AvatarFallback>
-                      {conversation.participants[0]?.charAt(0)?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    src="/placeholder-avatar.png"
+                    userName={conversation.participants[0]}
+                    size="md"
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-foreground truncate">
@@ -124,10 +123,11 @@ const DirectMessaging = () => {
             {/* Message Header */}
             <div className="p-4 border-b bg-background flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder-avatar.png" />
-                  <AvatarFallback>DM</AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  src="/placeholder-avatar.png"
+                  fallback="DM"
+                  size="sm"
+                />
                 <div>
                   <h4 className="font-medium text-foreground">Direct Message</h4>
                   <p className="text-sm text-muted-foreground">Online</p>

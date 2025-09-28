@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Input } from '@/components/ui/input';
 import { 
   Users, MessageSquare, Linkedin, Calendar, MapPin, 
@@ -308,10 +308,11 @@ const NetworkingIntelligence: React.FC = () => {
               <Card key={contact.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={contact.profileImage} />
-                      <AvatarFallback>{contact.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={contact.profileImage}
+                      userName={contact.name}
+                      size="lg"
+                    />
                     
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
@@ -478,10 +479,11 @@ const NetworkingIntelligence: React.FC = () => {
               <Card key={mentor.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={mentor.profileImage} />
-                      <AvatarFallback>{mentor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      src={mentor.profileImage}
+                      userName={mentor.name}
+                      size="lg"
+                    />
                     
                     <div className="flex-1">
                       <div className="flex items-start justify-between">

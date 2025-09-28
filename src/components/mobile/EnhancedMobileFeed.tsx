@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
+import { getAvatarProps } from '@/utils/avatarUtils';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw, Plus } from 'lucide-react';
 import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
 import { PostActions } from '@/components/posts/PostActions';
@@ -247,12 +248,11 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
         {/* Post Header */}
         <div className="flex items-center justify-between p-4 pb-3">
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.location.href = `/user/${post.author_id}`}>
-            <Avatar className="w-10 h-10 ring-2 ring-primary/20">
-              <AvatarImage src={post.profiles?.profile_picture_url} alt={post.profiles?.full_name} />
-              <AvatarFallback className="bg-primary/10 text-primary">
-                {post.profiles?.full_name?.split(' ').map(n => n[0]).join('') || 'U'}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              {...getAvatarProps(post.profiles)}
+              size="md"
+              className="ring-2 ring-primary/20"
+            />
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-1">
                 <p className="text-sm font-semibold text-foreground truncate hover:text-primary transition-colors">

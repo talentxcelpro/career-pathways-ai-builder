@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Badge } from '@/components/ui/badge';
 import { MessageSquare, Bot, User, Send, Lightbulb, TrendingUp, Target } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -189,11 +189,11 @@ const AICareerCoach: React.FC = () => {
                   className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {message.type === 'ai' && (
-                    <Avatar className="h-8 w-8 mt-1">
-                      <AvatarFallback className="bg-primary/10">
-                        <Bot className="h-4 w-4 text-primary" />
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      fallback="AI"
+                      className="bg-primary/10"
+                      size="sm"
+                    />
                   )}
                   
                   <div className={`max-w-[80%] ${message.type === 'user' ? 'order-1' : ''}`}>
@@ -239,11 +239,11 @@ const AICareerCoach: React.FC = () => {
                   </div>
                   
                   {message.type === 'user' && (
-                    <Avatar className="h-8 w-8 mt-1">
-                      <AvatarFallback className="bg-secondary">
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      fallback="U"
+                      className="bg-secondary"
+                      size="sm"
+                    />
                   )}
                 </div>
               ))}
@@ -251,11 +251,11 @@ const AICareerCoach: React.FC = () => {
               {/* Typing Indicator */}
               {isTyping && (
                 <div className="flex gap-3">
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-primary/10">
-                      <Bot className="h-4 w-4 text-primary" />
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    fallback="AI"
+                    className="bg-primary/10"
+                    size="sm"
+                  />
                   <div className="bg-muted rounded-lg p-3 max-w-[80%]">
                     <div className="flex gap-1">
                       <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { 
   MessageCircle, Send, Bot, User, Lightbulb, Target, 
   TrendingUp, Briefcase, Star, Zap, Minimize2, Maximize2,
@@ -82,11 +82,10 @@ export const AICareerCopilot: React.FC = () => {
     >
       <div className="flex items-center justify-between p-4 border-b bg-primary/5">
         <div className="flex items-center gap-2">
-          <Avatar className="w-8 h-8">
-            <AvatarFallback>
-              <Bot className="w-4 h-4" />
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar 
+            fallback="AI"
+            size="sm"
+          />
           <div>
             <h3 className="font-semibold text-sm">AI Career Copilot</h3>
             {!copilotState.isMinimized && (
@@ -127,11 +126,11 @@ export const AICareerCopilot: React.FC = () => {
                     className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     {message.type === 'ai' && (
-                      <Avatar className="w-6 h-6 mt-1">
-                        <AvatarFallback className="bg-primary/10">
-                          <Bot className="w-3 h-3" />
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar 
+                        fallback="AI"
+                        className="bg-primary/10"
+                        size="xs"
+                      />
                     )}
                     <div className={`max-w-[70%] ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
                       <div className={`p-3 rounded-lg text-sm ${
@@ -167,11 +166,11 @@ export const AICareerCopilot: React.FC = () => {
                   animate={{ opacity: 1 }}
                   className="flex gap-3"
                 >
-                  <Avatar className="w-6 h-6 mt-1">
-                    <AvatarFallback className="bg-primary/10">
-                      <Bot className="w-3 h-3" />
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    fallback="AI"
+                    className="bg-primary/10"
+                    size="xs"
+                  />
                   <div className="bg-muted p-3 rounded-lg">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />

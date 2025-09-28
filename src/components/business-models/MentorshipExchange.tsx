@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
+import { getAvatarProps } from '@/utils/avatarUtils';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
@@ -207,12 +208,10 @@ export const MentorshipExchange: React.FC = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={session.mentor_profile?.profile_picture_url} />
-                      <AvatarFallback>
-                        {session.mentor_profile?.full_name?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      {...getAvatarProps(session.mentor_profile)}
+                      size="lg"
+                    />
                     <div>
                       <p className="font-medium">
                         {session.mentor_profile?.full_name}

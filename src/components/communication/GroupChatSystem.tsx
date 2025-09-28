@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -167,12 +167,11 @@ const GroupChatSystem = () => {
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={group.avatar} />
-                    <AvatarFallback>
-                      <Hash className="h-6 w-6" />
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    src={group.avatar}
+                    fallback="GR"
+                    size="lg"
+                  />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-foreground">{group.name}</h3>
@@ -234,12 +233,11 @@ const GroupChatSystem = () => {
                 {groupChats.map((group) => (
                   <div key={group.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src="/placeholder-group.png" />
-                        <AvatarFallback>
-                          <Hash className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar 
+                        src="/placeholder-group.png"
+                        fallback="GR"
+                        size="sm"
+                      />
                       <div>
                         <h4 className="font-medium text-foreground">{group.name}</h4>
                         <p className="text-sm text-muted-foreground">

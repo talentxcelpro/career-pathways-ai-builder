@@ -10,7 +10,8 @@ import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
 import { Camera, Video, MapPin, Image as ImageIcon, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
+import { getUserAvatarProps } from '@/utils/avatarUtils';
 
 interface MobilePostCreationProps {
   onClose?: () => void;
@@ -136,12 +137,10 @@ export const MobilePostCreation: React.FC<MobilePostCreationProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.user_metadata?.picture} />
-              <AvatarFallback className="bg-primary text-white">
-                {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              {...getUserAvatarProps(user)}
+              size="md"
+            />
             <div>
               <p className="font-semibold text-gray-900">
                 {user?.user_metadata?.full_name || 'User'}

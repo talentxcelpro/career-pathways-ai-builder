@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import { Input } from '@/components/ui/input';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -260,11 +260,10 @@ export const ProUsersPage: React.FC = () => {
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback>
-                      {user.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    userName={user.full_name}
+                    size="md"
+                  />
                   <div>
                     <h3 className="font-semibold">{user.full_name || 'N/A'}</h3>
                     <p className="text-sm text-muted-foreground">ID: {user.id.slice(0, 8)}...</p>

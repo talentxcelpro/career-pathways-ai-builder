@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/common/UserAvatar';
+import { getAvatarProps } from '@/utils/avatarUtils';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
@@ -200,12 +201,10 @@ export const SkillsMarketplace: React.FC = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={skill.profiles?.profile_picture_url} />
-                      <AvatarFallback>
-                        {skill.profiles?.full_name?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      {...getAvatarProps(skill.profiles)}
+                      size="md"
+                    />
                     <div>
                       <p className="font-medium text-sm">
                         {skill.profiles?.full_name}
