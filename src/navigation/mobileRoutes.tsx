@@ -13,8 +13,12 @@ import GamificationCenter from "../pages/GamificationCenter";
 import ReferAndEarn from "../pages/ReferAndEarn";
 import { MobileHubs } from "../pages/mobile/MobileHubs";
 import { MobileHub } from "../pages/mobile/MobileHub";
+import { MobileHome } from "../pages/mobile/MobileHome";
+import { MobileNearby } from "../pages/mobile/MobileNearby";
+import { TrendingPage } from "../pages/TrendingPage";
 
 export const mobileRoutes: NavItem[] = [
+  { title: "Mobile Home", to: "/mobile", page: <MobileHome /> },
   { title: "Mobile Jobs", to: "/mobile/jobs", page: <MobileJobs /> },
   { title: "Mobile Reels", to: "/mobile/reels", page: <React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense> },
   { title: "Mobile Network", to: "/mobile/network", page: <MobileNetwork /> },
@@ -31,4 +35,6 @@ export const mobileRoutes: NavItem[] = [
   { title: "Mobile Referral", to: "/mobile/refer-and-earn", page: <ReferAndEarn /> },
   { title: "Mobile Hubs", to: "/mobile/hubs", page: <MobileHubs /> },
   { title: "Mobile Hub Detail", to: "/mobile/hubs/:slug", page: <MobileHub /> },
+  { title: "Mobile Nearby", to: "/mobile/nearby", page: <MobileNearby /> },
+  { title: "Trending", to: "/trending", page: <TrendingPage /> },
 ];
