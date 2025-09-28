@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { realtimeManager } from '@/lib/realtimeManager';
-import { useRealtimeContext } from '@/components/realtime/RealtimeProvider';
+import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { useTXCRealtime } from '@/hooks/useTXCRealtime';
 import { useOptimizedRealtime } from '@/hooks/useOptimizedRealtime';
 import { Activity, Wifi, WifiOff, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
@@ -26,7 +26,7 @@ export const RealtimeTestPanel: React.FC = () => {
   const [progress, setProgress] = useState(0);
   
   // Get realtime contexts
-  const realtimeContext = useRealtimeContext();
+  const realtimeContext = useSafeRealtimeContext();
   const txcRealtime = useTXCRealtime();
   const optimizedRealtime = useOptimizedRealtime();
 

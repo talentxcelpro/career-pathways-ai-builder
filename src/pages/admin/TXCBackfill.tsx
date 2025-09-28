@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SafeRealtimeProvider } from '@/components/realtime/SafeRealtimeProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -185,7 +186,8 @@ const TXCBackfill = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <SafeRealtimeProvider>
+      <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">TXC System Management</h1>
         <p className="text-muted-foreground">Manage TXC distribution, testing, and realtime monitoring</p>
@@ -475,7 +477,8 @@ const TXCBackfill = () => {
       </TabsContent>
 
       </Tabs>
-    </div>
+      </div>
+    </SafeRealtimeProvider>
   );
 };
 
