@@ -17,8 +17,8 @@ export const useTXCBalance = () => {
     const fetchBalance = async () => {
       try {
         const { data, error } = await supabase
-          .from('user_credits')
-          .select('txc_balance')
+          .from('user_txc_balances')
+          .select('balance')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -26,7 +26,7 @@ export const useTXCBalance = () => {
           console.error('Error fetching TXC balance:', error);
           setTxcBalance(0);
         } else {
-          setTxcBalance(data?.txc_balance || 0);
+          setTxcBalance(data?.balance || 0);
         }
       } catch (error) {
         console.error('Error fetching TXC balance:', error);
@@ -40,17 +40,17 @@ export const useTXCBalance = () => {
 
     // Set up real-time subscription for balance updates
     const channel = supabase
-      .channel(`user-credits-${user.id}`)
+      .channel(`user-txc-balances-${user.id}`)
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'user_credits',
+          table: 'user_txc_balances',
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          const newBalance = payload.new?.txc_balance;
+          const newBalance = payload.new?.balance;
           if (newBalance !== undefined) {
             setTxcBalance(newBalance);
           }

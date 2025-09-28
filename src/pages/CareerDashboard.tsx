@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 
 import { supabase } from '@/integrations/supabase/client';
+import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { updateMetaTags } from '@/utils/metaTags';
 
 interface DashboardStats {
@@ -78,17 +79,8 @@ const CareerDashboard = () => {
     enabled: !!currentUser?.id
   });
 
-  // Fetch TXC balance
-  const { data: txcData } = useQuery({
-    queryKey: ['txcBalance', currentUser?.id],
-    queryFn: async () => {
-      if (!currentUser?.id) return null;
-      const { data } = await supabase
-        .rpc('get_user_txc_balance', { user_uuid: currentUser.id });
-      return data;
-    },
-    enabled: !!currentUser?.id
-  });
+  // Fetch TXC balance using the standard hook
+  const { availableBalance: txcBalance } = useTokenBalance();
 
   // Fetch recent jobs for recommendations
   const { data: recentJobs } = useQuery({
@@ -141,7 +133,7 @@ const CareerDashboard = () => {
     profileViews: 42,
     jobsSaved: 8,
     jobsApplied: 15,
-    txcBalance: txcData?.balance || 5350,
+    txcBalance: txcBalance || 0,
     careerReadiness: 67.5,
     level: 4,
     streak: 7
