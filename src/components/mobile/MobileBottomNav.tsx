@@ -63,9 +63,10 @@ export const MobileBottomNav = () => {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up overflow-x-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center justify-around px-0.5 py-2 w-full">{/* Even spacing for 6 buttons */}
+        <div className="flex items-center px-1 py-2 overflow-x-auto">
+          {/* Main Nav Items */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
             const Icon = item.icon;
@@ -75,7 +76,7 @@ export const MobileBottomNav = () => {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex flex-col items-center justify-center px-0.5 py-1 rounded-xl transition-all duration-500 relative group w-12",
+                  "flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px]",
                   "animate-fade-in",
                   isActive 
                     ? "text-primary scale-105 transform" 
@@ -85,14 +86,14 @@ export const MobileBottomNav = () => {
               >
                 <div className="relative">
                   <div className={cn(
-                    "p-1.5 rounded-xl transition-all duration-500 transform",
+                    "p-2 rounded-xl transition-all duration-500 transform",
                     isActive 
                       ? "bg-gradient-brand shadow-brand animate-glow-pulse" 
                       : "hover:bg-gradient-brand-soft group-hover:shadow-card"
                   )}>
                     <Icon className={cn(
                       "transition-all duration-500 transform",
-                      isActive ? "h-4 w-4 text-white animate-bounce-in" : "h-3.5 w-3.5 group-hover:scale-110"
+                      isActive ? "h-4 w-4 text-white animate-bounce-in" : "h-4 w-4 group-hover:scale-110"
                     )} />
                   </div>
                   {item.badge && (item.to === '/network' ? unreadMessages > 0 : false) && (
@@ -104,7 +105,7 @@ export const MobileBottomNav = () => {
                   )}
                 </div>
                 <span className={cn(
-                  "text-[8px] font-medium truncate w-full text-center mt-0.5 transition-all duration-500",
+                  "text-[8px] font-medium truncate w-full text-center mt-1 transition-all duration-500",
                   isActive ? "font-bold text-primary" : "group-hover:font-semibold"
                 )}>
                   {item.label}
@@ -113,21 +114,18 @@ export const MobileBottomNav = () => {
             );
           })}
           
-          {/* Modules Launcher Button */}
+          {/* MORE Button - 6th button */}
           <button
             onClick={() => setShowModulesLauncher(true)}
-            className={cn(
-              "flex flex-col items-center justify-center px-0.5 py-1 rounded-xl transition-all duration-500 relative group w-12",
-              "animate-fade-in text-primary hover:scale-105 transform"
-            )}
+            className="flex-shrink-0 flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-500 relative group min-w-[52px] animate-fade-in text-primary hover:scale-105 transform"
             style={{ animationDelay: `${navItems.length * 0.1}s` }}
           >
             <div className="relative">
-              <div className="p-1.5 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/10 border border-primary/20">
-                <Grid3X3 className="h-3.5 w-3.5 group-hover:scale-110 transition-all duration-500 transform text-primary" />
+              <div className="p-2 rounded-xl transition-all duration-500 transform hover:bg-gradient-brand-soft group-hover:shadow-card bg-primary/20 border border-primary/30">
+                <Grid3X3 className="h-4 w-4 group-hover:scale-110 transition-all duration-500 transform text-primary" />
               </div>
             </div>
-            <span className="text-[8px] font-medium truncate w-full text-center mt-0.5 transition-all duration-500 group-hover:font-semibold text-primary">
+            <span className="text-[8px] font-bold w-full text-center mt-1 transition-all duration-500 group-hover:font-semibold text-primary">
               More
             </span>
           </button>
