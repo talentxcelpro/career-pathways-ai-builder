@@ -1,4 +1,4 @@
-import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap } from "lucide-react";
+import { Briefcase, FileText, Heart, Bell, BarChart3, Building2, FolderOpen, Zap, Brain } from "lucide-react";
 import { JobsPage } from "../components/performance/LazyRoutes";
 import JobDetails from "../pages/jobs/JobDetails";
 import JobDetail from "../pages/JobDetail";
@@ -45,6 +45,15 @@ export const jobRoutes = [
     icon: <BarChart3 className="h-4 w-4" />,
     page: <CareerDashboard />,
     description: "AI-powered career intelligence and job matching dashboard",
+    isPublic: false,
+    requiresAuth: true,
+  },
+  {
+    title: "AI Career Hub",
+    to: "/jobs/ai-hub",
+    icon: <Brain className="h-4 w-4" />,
+    page: <CareerDashboard />,
+    description: "AI-powered job matching and career insights hub",
     isPublic: false,
     requiresAuth: true,
   },
