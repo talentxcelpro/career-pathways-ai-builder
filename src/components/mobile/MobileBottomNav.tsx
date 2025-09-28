@@ -68,7 +68,7 @@ export const MobileBottomNav = () => {
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
         <div className="safe-area-padding-bottom" />
-        <div className="flex items-center px-1 py-2 overflow-x-auto scrollbar-hide min-w-full" style={{ width: 'max-content' }}>
+        <div className="flex items-center justify-start flex-nowrap px-2 py-2 overflow-x-auto scrollbar-hide gap-1" style={{ width: 'max-content', minWidth: '100%' }}>
           {/* Main Nav Items */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
