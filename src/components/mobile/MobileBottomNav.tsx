@@ -63,9 +63,9 @@ export const MobileBottomNav = () => {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up">
+      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-card/95 backdrop-blur-apple border-t border-border/50 z-50 md:hidden shadow-elegant animate-slide-up overflow-x-auto">
         <div className="safe-area-padding-bottom" />
-        <div className="grid grid-cols-6 gap-0.5 px-1 py-2">{/* Fixed grid layout for 6 buttons */}
+        <div className="flex items-center justify-around px-0.5 py-2 w-full">{/* Even spacing for 6 buttons */}
           {navItems.map((item, index) => {
             const isActive = isCurrentPath(item.to);
             const Icon = item.icon;
@@ -75,7 +75,7 @@ export const MobileBottomNav = () => {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex flex-col items-center justify-center px-1 py-1 rounded-xl transition-all duration-500 relative group",
+                  "flex flex-col items-center justify-center px-0.5 py-1 rounded-xl transition-all duration-500 relative group w-12",
                   "animate-fade-in",
                   isActive 
                     ? "text-primary scale-105 transform" 
@@ -117,7 +117,7 @@ export const MobileBottomNav = () => {
           <button
             onClick={() => setShowModulesLauncher(true)}
             className={cn(
-              "flex flex-col items-center justify-center px-1 py-1 rounded-xl transition-all duration-500 relative group",
+              "flex flex-col items-center justify-center px-0.5 py-1 rounded-xl transition-all duration-500 relative group w-12",
               "animate-fade-in text-primary hover:scale-105 transform"
             )}
             style={{ animationDelay: `${navItems.length * 0.1}s` }}
