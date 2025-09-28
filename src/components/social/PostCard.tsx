@@ -16,6 +16,7 @@ import { ClickableProfile } from '@/components/social/ClickableProfile';
 import { EnhancedPostContent } from '@/components/social/EnhancedPostContent';
 import { ReactionPicker } from '@/components/social/ReactionPicker';
 import { ReactionSummary } from '@/components/social/ReactionSummary';
+import { ContentActionsMenu } from '@/components/social/ContentActionsMenu';
 import { VideoThumbnail } from '@/components/media/VideoThumbnail';
 import { useEnhancedReactions } from '@/hooks/useEnhancedReactions';
 import { useSocialInteractions } from '@/hooks/useSocialInteractions';
@@ -111,9 +112,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onComment, onShare }) 
                 {post.author?.id && (
                   <UserFollowButton userId={post.author.id} size="sm" showText={false} />
                 )}
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
+                <ContentActionsMenu
+                  contentType="post"
+                  contentId={post.id}
+                  contentTitle={post.content}
+                  authorId={post.author_id}
+                  onShare={() => onShare?.(post.id)}
+                  onBookmark={() => console.log('Bookmark post:', post.id)}
+                />
               </div>
             </div>
             

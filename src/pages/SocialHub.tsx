@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { CareerGPTAssistant } from "@/components/social/CareerGPTAssistant";
+import { GroupsHub } from "@/components/social/GroupsHub";
+import { AdvancedSearchHub } from "@/components/social/AdvancedSearchHub";
 import { NewsFeed } from "@/components/news/NewsFeed";
-import { Users, BookOpen, Bot, Sparkles, Newspaper } from "lucide-react";
+import { Users, BookOpen, Bot, Sparkles, Newspaper, Search, UsersIcon } from "lucide-react";
 
 export default function SocialHub() {
   return (
@@ -17,7 +19,7 @@ export default function SocialHub() {
       </div>
 
       <Tabs defaultValue="feed" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="feed" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Professional Feed
@@ -29,6 +31,14 @@ export default function SocialHub() {
           <TabsTrigger value="news" className="flex items-center gap-2">
             <Newspaper className="w-4 h-4" />
             News
+          </TabsTrigger>
+          <TabsTrigger value="groups" className="flex items-center gap-2">
+            <UsersIcon className="w-4 h-4" />
+            Groups
+          </TabsTrigger>
+          <TabsTrigger value="search" className="flex items-center gap-2">
+            <Search className="w-4 h-4" />
+            Search
           </TabsTrigger>
           <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
             <Bot className="w-4 h-4" />
@@ -46,6 +56,14 @@ export default function SocialHub() {
 
         <TabsContent value="news" className="mt-6">
           <NewsFeed />
+        </TabsContent>
+
+        <TabsContent value="groups" className="mt-6">
+          <GroupsHub />
+        </TabsContent>
+
+        <TabsContent value="search" className="mt-6">
+          <AdvancedSearchHub />
         </TabsContent>
 
         <TabsContent value="ai-assistant" className="mt-6">
