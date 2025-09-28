@@ -158,8 +158,48 @@ const TXCBackfill = () => {
     }
   };
 
+  const testConnection = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('test-txc-connection');
+      
+      if (error) throw error;
+      
+      toast({
+        title: data?.success ? "Connection Test Passed ✅" : "Connection Test Failed ❌",
+        description: data?.message || "Unknown result",
+        variant: data?.success ? "default" : "destructive"
+      });
+      
+      console.log('Connection test result:', data);
+    } catch (error) {
+      toast({
+        title: "Connection Test Failed ❌",
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Connection Test */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <img src={txcMascot} alt="TXC Mascot" className="w-5 h-5 rounded-full object-cover" />
+            TXC Connection Test
+          </CardTitle>
+          <CardDescription>
+            Test the connection to TXC functions and database
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={testConnection} variant="outline" size="sm">
+            Test Connection
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Comprehensive TXC Distribution */}
       <Card>
         <CardHeader>
