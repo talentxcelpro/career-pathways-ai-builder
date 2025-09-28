@@ -11,13 +11,13 @@ interface Database {
       user_txc_balances: {
         Row: {
           user_id: string
-          balance: number
+          txc_balance: number
           total_earned: number
           total_spent: number
           last_activity_at: string | null
         }
         Update: {
-          balance?: number
+          txc_balance?: number
           total_earned?: number
           last_activity_at?: string
         }
@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
             .from('user_txc_balances')
             .insert({
               user_id: userId,
-              balance: 0,
+              txc_balance: 0,
               total_earned: 0,
               total_spent: 0,
               last_activity_at: new Date().toISOString()
@@ -217,13 +217,13 @@ Deno.serve(async (req) => {
           }
 
           // Update balance
-          const newBalance = (balance.balance || 0) + userTotalReward;
+          const newBalance = (balance.txc_balance || 0) + userTotalReward;
           const newTotalEarned = (balance.total_earned || 0) + userTotalReward;
 
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
             .update({
-              balance: newBalance,
+              txc_balance: newBalance,
               total_earned: newTotalEarned,
               last_activity_at: new Date().toISOString()
             })

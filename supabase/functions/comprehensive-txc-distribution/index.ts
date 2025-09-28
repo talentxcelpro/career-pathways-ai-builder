@@ -57,7 +57,7 @@ serve(async (req) => {
         // Check if user already has a TXC balance record
         const { data: existingBalance } = await supabaseClient
           .from('user_txc_balances')
-          .select('id, balance')
+          .select('id, txc_balance, total_earned')
           .eq('user_id', user.id)
           .single();
 
@@ -66,8 +66,8 @@ serve(async (req) => {
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
             .update({
-              balance: existingBalance.balance + 500,
-              total_earned: existingBalance.balance + 500,
+              txc_balance: existingBalance.txc_balance + 500,
+              total_earned: (existingBalance.total_earned || 0) + 500,
               last_activity_at: now.toISOString()
             })
             .eq('user_id', user.id);
@@ -79,7 +79,7 @@ serve(async (req) => {
             .from('user_txc_balances')
             .insert({
               user_id: user.id,
-              balance: 500,
+              txc_balance: 500,
               total_earned: 500,
               total_spent: 0,
               last_activity_at: now.toISOString()
@@ -90,14 +90,13 @@ serve(async (req) => {
 
         // Log the transaction
         await supabaseClient
-          .from('token_transactions')
+          .from('txc_transactions')
           .insert({
-            to_user_id: user.id,
+            user_id: user.id,
             amount: 500,
-            transaction_type: 'reward',
+            transaction_type: 'bonus',
             description: 'Platform-wide welcome bonus distribution',
-            token_type: 'TXC',
-            status: 'completed'
+            activity_type: 'joining_bonus'
           });
 
         phase1Results.push({
@@ -137,7 +136,7 @@ serve(async (req) => {
           // Get current balance first
           const { data: currentBalance } = await supabaseClient
             .from('user_txc_balances')
-            .select('balance, total_earned')
+            .select('txc_balance, total_earned')
             .eq('user_id', user.id)
             .single();
 
@@ -147,8 +146,8 @@ serve(async (req) => {
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
             .update({
-              balance: currentBalance.balance + 150,
-              total_earned: currentBalance.total_earned + 150,
+              txc_balance: currentBalance.txc_balance + 150,
+              total_earned: (currentBalance.total_earned || 0) + 150,
               last_activity_at: now.toISOString()
             })
             .eq('user_id', user.id);
@@ -157,14 +156,13 @@ serve(async (req) => {
 
         // Log the transaction
         await supabaseClient
-          .from('token_transactions')
+          .from('txc_transactions')
           .insert({
-            to_user_id: user.id,
+            user_id: user.id,
             amount: 150,
-            transaction_type: 'reward',
+            transaction_type: 'bonus',
             description: 'Active user bonus - platform distribution',
-            token_type: 'TXC',
-            status: 'completed'
+            activity_type: 'social_activity_bonus'
           });
 
         phase2Results.push({
@@ -313,7 +311,7 @@ serve(async (req) => {
           // Get current balance first
           const { data: currentBalance } = await supabaseClient
             .from('user_txc_balances')
-            .select('balance, total_earned')
+            .select('txc_balance, total_earned')
             .eq('user_id', user.id)
             .single();
 
@@ -323,8 +321,8 @@ serve(async (req) => {
           const { error: updateError } = await supabaseClient
             .from('user_txc_balances')
             .update({
-              balance: currentBalance.balance + retroactiveRewards,
-              total_earned: currentBalance.total_earned + retroactiveRewards,
+              txc_balance: currentBalance.txc_balance + retroactiveRewards,
+              total_earned: (currentBalance.total_earned || 0) + retroactiveRewards,
               last_activity_at: now.toISOString()
             })
             .eq('user_id', user.id);
@@ -333,14 +331,13 @@ serve(async (req) => {
 
           // Log the transaction
           await supabaseClient
-            .from('token_transactions')
+            .from('txc_transactions')
             .insert({
-              to_user_id: user.id,
+              user_id: user.id,
               amount: retroactiveRewards,
-              transaction_type: 'reward',
+              transaction_type: 'mining',
               description: `Retroactive rewards from 01-09-2025: ${rewards.join(', ')}`,
-              token_type: 'TXC',
-              status: 'completed'
+              activity_type: 'post_created'
             });
 
           phase3Results.push({
