@@ -86,11 +86,19 @@ export function usePWA() {
           if ('localStorage' in window) {
             const keys = Object.keys(localStorage);
             keys.forEach(key => {
-              if (key.includes('cache') || key.includes('version') || key.includes('sw')) {
+              if (key.includes('cache') || key.includes('version') || key.includes('sw') || 
+                  key.includes('career-dashboard') || key.includes('gamification') || 
+                  key.includes('talentxcel')) {
                 localStorage.removeItem(key);
                 console.log('🧹 PWA: Cleared localStorage key:', key);
               }
             });
+          }
+
+          // Clear sessionStorage as well
+          if ('sessionStorage' in window) {
+            sessionStorage.clear();
+            console.log('🧹 PWA: Cleared sessionStorage');
           }
         } catch (error) {
           console.warn('PWA cleanup error:', error);

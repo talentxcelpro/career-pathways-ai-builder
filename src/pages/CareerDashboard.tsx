@@ -154,7 +154,9 @@ const CareerDashboard = () => {
     location: job.location,
     matchScore: 85 - (index * 10),
     salaryRange: job.salary_range || 'Not disclosed',
-    skills: job.skills_required?.split(',') || ['JavaScript', 'React', 'Node.js']
+    skills: Array.isArray(job.skills_required) 
+      ? job.skills_required 
+      : (typeof job.skills_required === 'string' ? job.skills_required.split(',') : ['JavaScript', 'React', 'Node.js'])
   })) || [];
 
   const careerRecommendations: CareerRecommendation[] = courses?.slice(0, 4).map((course: any) => ({
