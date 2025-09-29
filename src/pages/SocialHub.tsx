@@ -10,7 +10,11 @@ import { LiveStreamingHub } from "@/components/social/LiveStreamingHub";
 import { AnalyticsDashboard } from "@/components/social/AnalyticsDashboard";
 import { CreatorMonetizationHub } from "@/components/social/CreatorMonetizationHub";
 import { VirtualSpacesHub } from "@/components/social/VirtualSpacesHub";
-import { Users, BookOpen, Bot, Sparkles, Newspaper, Search, UsersIcon, Radio, BarChart3, DollarSign, Headphones } from "lucide-react";
+import { EnterpriseHub } from "@/components/enterprise/EnterpriseHub";
+import { AIContentAssistant } from "@/components/ai/AIContentAssistant";
+import { RealtimeCollabWorkspace } from "@/components/collaboration/RealtimeCollabWorkspace";
+import { NetworkingIntelligenceHub } from "@/components/networking/NetworkingIntelligenceHub";
+import { Users, BookOpen, Bot, Sparkles, Newspaper, Search, UsersIcon, Radio, BarChart3, DollarSign, Headphones, Building2, Brain, FileText, Network } from "lucide-react";
 
 export default function SocialHub() {
   return (
@@ -23,7 +27,7 @@ export default function SocialHub() {
       </div>
 
       <Tabs defaultValue="feed" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 text-xs lg:text-sm">
+        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-14 text-xs lg:text-sm overflow-x-auto">
           <TabsTrigger value="feed" className="flex items-center gap-1 lg:gap-2">
             <Users className="w-3 h-3 lg:w-4 lg:h-4" />
             <span className="hidden sm:inline">Feed</span>
@@ -64,6 +68,22 @@ export default function SocialHub() {
             <Bot className="w-3 h-3 lg:w-4 lg:h-4" />
             <span className="hidden sm:inline">AI</span>
           </TabsTrigger>
+          <TabsTrigger value="enterprise" className="flex items-center gap-1 lg:gap-2">
+            <Building2 className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Enterprise</span>
+          </TabsTrigger>
+          <TabsTrigger value="ai-content" className="flex items-center gap-1 lg:gap-2">
+            <Brain className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">AI Content</span>
+          </TabsTrigger>
+          <TabsTrigger value="collaboration" className="flex items-center gap-1 lg:gap-2">
+            <FileText className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Collab</span>
+          </TabsTrigger>
+          <TabsTrigger value="networking-ai" className="flex items-center gap-1 lg:gap-2">
+            <Network className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Smart Network</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="feed" className="mt-6">
@@ -100,6 +120,22 @@ export default function SocialHub() {
 
         <TabsContent value="virtual" className="mt-6">
           <VirtualSpacesHub />
+        </TabsContent>
+
+        <TabsContent value="enterprise" className="mt-6">
+          <EnterpriseHub />
+        </TabsContent>
+
+        <TabsContent value="ai-content" className="mt-6">
+          <AIContentAssistant />
+        </TabsContent>
+
+        <TabsContent value="collaboration" className="mt-6">
+          <RealtimeCollabWorkspace />
+        </TabsContent>
+
+        <TabsContent value="networking-ai" className="mt-6">
+          <NetworkingIntelligenceHub />
         </TabsContent>
 
         <TabsContent value="ai-assistant" className="mt-6">
