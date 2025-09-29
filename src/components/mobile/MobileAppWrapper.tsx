@@ -17,7 +17,7 @@ export const MobileAppWrapper: React.FC<MobileAppWrapperProps> = ({ children }) 
     user = authContext?.user;
   } catch (error) {
     // Not in auth context yet, user remains null
-    console.log('Auth context not available:', error.message);
+    console.log('Auth context not available');
   }
 
   // Check if we're on the network route
@@ -27,7 +27,9 @@ export const MobileAppWrapper: React.FC<MobileAppWrapperProps> = ({ children }) 
   if (isMobile && (user || isNetworkRoute)) {
     return (
       <MobileLayout showBottomNav={true} fullHeight={true}>
-        {children}
+        <div className="safe-area-mobile pb-20">
+          {children}
+        </div>
       </MobileLayout>
     );
   }

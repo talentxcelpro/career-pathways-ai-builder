@@ -34,6 +34,13 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+.safe-area-mobile {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 /* Native app touch feedback */
 .touch-feedback:active {
   transform: scale(0.98);

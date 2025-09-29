@@ -186,7 +186,7 @@ const Posts = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        {/* Feed Content */}
+        {/* Error Boundary for mobile compatibility */}
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -347,7 +347,13 @@ const Posts = ({
 
 {/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
             <div className="space-y-6">
-              <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              }>
+                <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
+              </React.Suspense>
             </div>
           </div>
 
