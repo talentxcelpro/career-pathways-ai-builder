@@ -22,7 +22,6 @@ import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSi
 import { EnhancedMobileFeed } from "@/components/mobile/EnhancedMobileFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
-import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { MobileNavWrapper } from "@/components/layout/MobileNavWrapper";
 import { UserPresence } from "@/components/realtime/UserPresence";
@@ -116,21 +115,7 @@ const Network = () => {
       <GiantAppWrapper preloadRoute="/network">
         <MobileNavWrapper>
           <FastLoadSection priority="high">
-            <LinkedInMobileFeed
-              posts={posts}
-              onLike={handleLike}
-              onBookmark={handleBookmark}
-              onShare={handleShare}
-              onComment={handleComment}
-              onConnect={handleConnect}
-              onApply={handleApply}
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-              onLoadMore={fetchNextPage}
-              optimizedPosts={optimizedPosts}
-              loading={loading}
-              error={error}
-            />
+            <EnhancedMobileFeed className="" />
           </FastLoadSection>
         </MobileNavWrapper>
       </GiantAppWrapper>
