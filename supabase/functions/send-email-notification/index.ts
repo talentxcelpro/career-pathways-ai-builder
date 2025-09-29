@@ -15,10 +15,21 @@ const supabase = createClient(
 
 // SMTP transporter with enhanced error handling and validation
 const createSMTPTransporter = () => {
-  const host = Deno.env.get("SMTP_HOST");
+  let host = Deno.env.get("SMTP_HOST");
   const port = parseInt(Deno.env.get("SMTP_PORT") || "587");
   const user = Deno.env.get("SMTP_USER");
   const pass = Deno.env.get("SMTP_PASS");
+
+  // Clean up hostname - remove any prefixes like "Host: "
+  if (host && host.includes("Host:")) {
+    host = host.replace(/.*Host:\s*/, "").trim();
+  }
+  
+  // Set default Amazon SES endpoint if no host provided
+  if (!host) {
+    host = "email-smtp.us-east-1.amazonaws.com";
+    console.log("Using default Amazon SES host");
+  }
 
   console.log(`SMTP Configuration: host=${host}, port=${port}, user=${user ? 'SET' : 'NOT_SET'}, pass=${pass ? 'SET' : 'NOT_SET'}`);
 
@@ -37,6 +48,9 @@ const createSMTPTransporter = () => {
     connectionTimeout: 60000, // 60 seconds
     greetingTimeout: 30000, // 30 seconds
     socketTimeout: 60000, // 60 seconds
+    // Enable debug for Amazon SES
+    debug: true,
+    logger: true,
   });
 };
 
