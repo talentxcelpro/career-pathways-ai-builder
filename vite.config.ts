@@ -42,15 +42,26 @@ export default defineConfig(({ mode }) => ({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           ui: ['lucide-react'],
-          // Separate heavy libraries into their own chunks
+          // Separate heavy libraries into their own chunks for better memory management
           pdf: ['pdfjs-dist'],
           ocr: ['tesseract.js'], 
-          fabric: ['fabric'],
+          // fabric: ['fabric'], // Temporarily disabled to reduce memory usage
           three: ['three', '@react-three/fiber', '@react-three/drei'],
           supabase: ['@supabase/supabase-js'],
           forms: ['react-hook-form', '@hookform/resolvers'],
           charts: ['recharts'],
           dnd: ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities', '@hello-pangea/dnd'],
+          // Separate query and state management
+          query: ['@tanstack/react-query'],
+          state: ['zustand'],
+          // UI libraries
+          radix: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast'
+          ],
         },
       },
     },
@@ -75,9 +86,12 @@ export default defineConfig(({ mode }) => ({
       // Memory optimization for large projects
       maxWorkers: 1, // Reduce parallel workers to save memory
     },
-    // Enable tree shaking
+    // Enable tree shaking with better optimization
     treeshake: {
-      moduleSideEffects: false,
+      moduleSideEffects: (id: string) => {
+        // Preserve side effects for CSS and some specific modules
+        return id.includes('.css') || id.includes('global-styles');
+      },
     },
   },
   // Performance optimizations
