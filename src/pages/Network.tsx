@@ -19,7 +19,7 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
-import { EnhancedMobileNetwork } from "@/components/mobile/EnhancedMobileNetwork";
+import { EnhancedMobileFeed } from "@/components/mobile/EnhancedMobileFeed";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
@@ -109,16 +109,30 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile LinkedIn-style interface with post creation functionality
+  // Mobile interface - use lightweight component to prevent memory issues
   if (isMobile && user) {
     return (
-      <GiantAppWrapper preloadRoute="/network">
-        <MobileNavWrapper>
-          <FastLoadSection priority="high">
-            <EnhancedMobileNetwork />
-          </FastLoadSection>
-        </MobileNavWrapper>
-      </GiantAppWrapper>
+      <MobileNavWrapper>
+        <div className="h-full flex flex-col bg-background relative">
+          {/* Header */}
+          <div className="bg-background border-b border-border/20 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <h1 className="text-xl font-bold text-foreground">TalentXcel</h1>
+              <div className="flex items-center gap-3">
+                <Users className="h-5 w-5 text-muted-foreground" />
+                <MessageSquare className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </div>
+          </div>
+          
+          {/* Simplified Mobile Feed */}
+          <div className="flex-1 overflow-hidden">
+            <React.Suspense fallback={<div className="p-6">Loading...</div>}>
+              <EnhancedMobileFeed />
+            </React.Suspense>
+          </div>
+        </div>
+      </MobileNavWrapper>
     );
   }
 

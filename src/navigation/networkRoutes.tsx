@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Users, Coins } from "lucide-react";
 import { NetworkPage } from "../components/performance/LazyRoutes";
 import People from "../pages/network/People";
@@ -29,7 +30,7 @@ import MyNetwork from "../pages/network/MyNetwork";
 import Discover from "../pages/network/Discover";
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
 import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
-import { MobileNetwork } from "../pages/mobile/MobileNetwork";
+import { EnhancedMobileNetwork } from "../components/mobile/EnhancedMobileNetwork";
 import SkillSwap from "../pages/network/SkillSwap";
 import VideoIntros from "../pages/network/VideoIntros";
 import Verified from "../pages/network/Verified";
@@ -52,9 +53,13 @@ export const networkRoutes = [
     isPublic: true,
   },
   {
-    title: "Mobile Network",
-    to: "/mobile/network",
-    page: <MobileNetwork />,
+    title: "Mobile Network with Post Creation",
+    to: "/mobile/network-enhanced", 
+    page: (
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <EnhancedMobileNetwork />
+      </React.Suspense>
+    ),
     isPublic: true,
   },
   {
