@@ -6,7 +6,11 @@ import { CareerGPTAssistant } from "@/components/social/CareerGPTAssistant";
 import { GroupsHub } from "@/components/social/GroupsHub";
 import { AdvancedSearchHub } from "@/components/social/AdvancedSearchHub";
 import { NewsFeed } from "@/components/news/NewsFeed";
-import { Users, BookOpen, Bot, Sparkles, Newspaper, Search, UsersIcon } from "lucide-react";
+import { LiveStreamingHub } from "@/components/social/LiveStreamingHub";
+import { AnalyticsDashboard } from "@/components/social/AnalyticsDashboard";
+import { CreatorMonetizationHub } from "@/components/social/CreatorMonetizationHub";
+import { VirtualSpacesHub } from "@/components/social/VirtualSpacesHub";
+import { Users, BookOpen, Bot, Sparkles, Newspaper, Search, UsersIcon, Radio, BarChart3, DollarSign, Headphones } from "lucide-react";
 
 export default function SocialHub() {
   return (
@@ -19,30 +23,46 @@ export default function SocialHub() {
       </div>
 
       <Tabs defaultValue="feed" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="feed" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Professional Feed
+        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 text-xs lg:text-sm">
+          <TabsTrigger value="feed" className="flex items-center gap-1 lg:gap-2">
+            <Users className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Feed</span>
           </TabsTrigger>
-          <TabsTrigger value="content" className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4" />
-            Career Content
+          <TabsTrigger value="content" className="flex items-center gap-1 lg:gap-2">
+            <BookOpen className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Content</span>
           </TabsTrigger>
-          <TabsTrigger value="news" className="flex items-center gap-2">
-            <Newspaper className="w-4 h-4" />
-            News
+          <TabsTrigger value="news" className="flex items-center gap-1 lg:gap-2">
+            <Newspaper className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">News</span>
           </TabsTrigger>
-          <TabsTrigger value="groups" className="flex items-center gap-2">
-            <UsersIcon className="w-4 h-4" />
-            Groups
+          <TabsTrigger value="groups" className="flex items-center gap-1 lg:gap-2">
+            <UsersIcon className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Groups</span>
           </TabsTrigger>
-          <TabsTrigger value="search" className="flex items-center gap-2">
-            <Search className="w-4 h-4" />
-            Search
+          <TabsTrigger value="search" className="flex items-center gap-1 lg:gap-2">
+            <Search className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Search</span>
           </TabsTrigger>
-          <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
-            <Bot className="w-4 h-4" />
-            AI Assistant
+          <TabsTrigger value="streaming" className="flex items-center gap-1 lg:gap-2">
+            <Radio className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Live</span>
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-1 lg:gap-2">
+            <BarChart3 className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Analytics</span>
+          </TabsTrigger>
+          <TabsTrigger value="monetization" className="flex items-center gap-1 lg:gap-2">
+            <DollarSign className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">Creator</span>
+          </TabsTrigger>
+          <TabsTrigger value="virtual" className="flex items-center gap-1 lg:gap-2">
+            <Headphones className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">AR/VR</span>
+          </TabsTrigger>
+          <TabsTrigger value="ai-assistant" className="flex items-center gap-1 lg:gap-2">
+            <Bot className="w-3 h-3 lg:w-4 lg:h-4" />
+            <span className="hidden sm:inline">AI</span>
           </TabsTrigger>
         </TabsList>
 
@@ -64,6 +84,22 @@ export default function SocialHub() {
 
         <TabsContent value="search" className="mt-6">
           <AdvancedSearchHub />
+        </TabsContent>
+
+        <TabsContent value="streaming" className="mt-6">
+          <LiveStreamingHub />
+        </TabsContent>
+
+        <TabsContent value="analytics" className="mt-6">
+          <AnalyticsDashboard />
+        </TabsContent>
+
+        <TabsContent value="monetization" className="mt-6">
+          <CreatorMonetizationHub />
+        </TabsContent>
+
+        <TabsContent value="virtual" className="mt-6">
+          <VirtualSpacesHub />
         </TabsContent>
 
         <TabsContent value="ai-assistant" className="mt-6">
