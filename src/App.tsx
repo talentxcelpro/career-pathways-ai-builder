@@ -158,25 +158,38 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  // Initialize turbo optimizations
+// Optimized initialization with performance priority
   useEffect(() => {
     try {
-      // Apply color scheme
+      // Apply color scheme immediately
       const savedColorScheme = localStorage.getItem('colorScheme');
       if (savedColorScheme) {
         document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
       }
       
-      // Initialize turbo core only if not already initialized
-      if (turboCore && typeof turboCore.init === 'function') {
-        turboCore.init();
-      }
-
-      // Initialize performance optimizations
-      initializePerformanceOptimizations();
+      // Mark app start for performance monitoring
+      performance.mark('app-init-start');
       
-      // Initialize jobs-specific optimizations
-      initializeJobsOptimizations(queryClient).catch(console.error);
+      // Initialize critical performance optimizations first
+      import('@/utils/criticalOptimizations').then(({ initializeCriticalOptimizations }) => {
+        initializeCriticalOptimizations();
+      });
+      
+      // Defer non-critical initializations
+      requestIdleCallback(() => {
+        Promise.all([
+          // Initialize turbo core
+          turboCore && typeof turboCore.init === 'function' ? turboCore.init() : Promise.resolve(),
+          // Initialize performance optimizations
+          initializePerformanceOptimizations(),
+          // Initialize jobs optimizations
+          initializeJobsOptimizations(queryClient).catch(console.error)
+        ]).then(() => {
+          performance.mark('app-init-complete');
+          performance.measure('app-initialization', 'app-init-start', 'app-init-complete');
+        });
+      });
+      
     } catch (error) {
       console.warn('App initialization error:', error);
     }
