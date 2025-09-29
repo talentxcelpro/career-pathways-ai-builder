@@ -67,67 +67,100 @@ export const useLinkedInFeed = () => {
   } = useInfiniteQuery({
     queryKey: ['linkedInMobilePosts'],
     queryFn: async ({ pageParam = 0 }) => {
-      if (!user) return { posts: [], nextPage: undefined };
+      try {
+        const limit = 20; // Posts per page
+        const offset = pageParam * limit;
 
-      const limit = 20; // Posts per page
-      const offset = pageParam * limit;
+        console.log('Fetching posts with pagination:', { pageParam, limit, offset, hasUser: !!user });
 
-      // Fetch posts with related data
-      const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(`
-          *,
-          post_likes!left(id, user_id),
-          post_comments!left(id, content, created_at),
-          post_shares!left(id)
-        `)
-        .eq('visibility', 'public')
-        .eq('is_deleted', false)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
+        // Fetch posts with related data - works for both authenticated and non-authenticated users
+        const { data: postsData, error: postsError } = await supabase
+          .from('posts')
+          .select(`
+            *,
+            post_likes!left(id, user_id),
+            post_comments!left(id, content, created_at),
+            post_shares!left(id)
+          `)
+          .eq('visibility', 'public')
+          .eq('is_deleted', false)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + limit - 1);
 
-      if (postsError) throw postsError;
+        if (postsError) {
+          console.error('Posts query error:', postsError);
+          throw postsError;
+        }
 
-      // Get unique author IDs
-      const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
+        if (!postsData || postsData.length === 0) {
+          console.log('No posts found, returning empty array');
+          return { posts: [], nextPage: undefined, hasMore: false };
+        }
 
-      // Get profiles for all authors
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, profile_picture_url, title, headline, current_company')
-        .in('id', authorIds);
+        console.log(`Found ${postsData.length} posts`);
 
-      if (profilesError) throw profilesError;
+        // Get unique author IDs, filtering out null/undefined values
+        const authorIds = [...new Set(postsData
+          .map(post => post.author_id || post.user_id)
+          .filter(Boolean)
+        )];
 
-      // Get current user's connections
-      const { data: connectionsData } = await supabase
-        .from('connections')
-        .select('requester_id, recipient_id, status')
-        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-        .eq('status', 'accepted');
+        console.log(`Fetching profiles for ${authorIds.length} authors:`, authorIds);
 
-      const connections = new Set();
-      connectionsData?.forEach(conn => {
-        if (conn.requester_id === user.id) connections.add(conn.recipient_id);
-        if (conn.recipient_id === user.id) connections.add(conn.requester_id);
-      });
+        // Get profiles for all authors
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, title, headline, current_company')
+          .in('id', authorIds);
 
-      // Get user's likes
-      const { data: userLikes } = await supabase
-        .from('post_likes')
-        .select('post_id')
-        .eq('user_id', user.id);
+        if (profilesError) {
+          console.error('Profiles query error:', profilesError);
+          // Don't throw here, continue with empty profiles
+        }
 
-      const likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
+        console.log(`Found ${profilesData?.length || 0} profiles`);
 
-      // Create profiles map
-      const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
+        let connections = new Set();
+        let likedPosts = new Set();
 
-      // Transform posts to LinkedInPost format
-      const transformedPosts: LinkedInPost[] = postsData.map(post => {
-        const profile = profilesMap.get(post.author_id);
-        const isConnection = connections.has(post.author_id);
-        const isLiked = likedPosts.has(post.id);
+        // Only fetch user-specific data if authenticated
+        if (user) {
+          // Get current user's connections
+          const { data: connectionsData } = await supabase
+            .from('connections')
+            .select('requester_id, recipient_id, status')
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+            .eq('status', 'accepted');
+
+          connectionsData?.forEach(conn => {
+            if (conn.requester_id === user.id) connections.add(conn.recipient_id);
+            if (conn.recipient_id === user.id) connections.add(conn.requester_id);
+          });
+
+          // Get user's likes
+          const { data: userLikes } = await supabase
+            .from('post_likes')
+            .select('post_id')
+            .eq('user_id', user.id);
+
+          likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
+        }
+
+        // Create profiles map
+        const profilesMap = new Map((profilesData || []).map(profile => [profile.id, profile]));
+
+        // Transform posts to LinkedInPost format with proper error handling
+        const transformedPosts: LinkedInPost[] = postsData.map(post => {
+          try {
+            const authorId = post.author_id || post.user_id;
+            const profile = profilesMap.get(authorId);
+            const isConnection = connections.has(authorId);
+            const isLiked = user ? likedPosts.has(post.id) : false;
+
+            // Ensure we have valid user data
+            if (!authorId) {
+              console.warn('Post missing author_id and user_id:', post.id);
+            }
         
         // Get top comment
         const topComment = post.post_comments && post.post_comments.length > 0 
@@ -150,58 +183,111 @@ export const useLinkedInFeed = () => {
           contentType = 'article';
         }
 
-        return {
-          id: post.id,
-          user: {
-            id: post.author_id,
-            name: profile?.full_name || 'Professional User',
-            avatar: profile?.profile_picture_url,
-            title: profile?.title,
-            company: profile?.current_company,
-            isConnection,
-            isFollowing: isConnection
-          },
-          content: {
-            type: contentType,
-            url: contentUrl,
-            text: post.content
-          },
-          caption: post.content,
-          stats: {
-            likes: post.post_likes?.length || 0,
-            comments: post.post_comments?.length || 0,
-            shares: post.post_shares?.length || 0,
-            isLiked,
-            isBookmarked: false // TODO: Implement bookmarks
-          },
-          isJobPost: post.content_type === 'job' || post.tags?.includes('job'),
-          isPromoted: false, // TODO: Implement promoted posts
-          jobDetails: post.content_type === 'job' ? {
-            company: profile?.current_company || 'Company',
-            position: post.headline || 'Job Position',
-            location: 'Location', // TODO: Add location field
-            applyUrl: post.featured_image_url // Using featured_image_url as placeholder for apply URL
-          } : undefined,
-          timestamp: formatTimeAgo(post.created_at),
-          engagement: {
-            likedBy: [], // TODO: Get liked by users
-            topComment: topComment ? {
-              user: 'User', // TODO: Get commenter name
-              text: topComment.content || 'Comment'
-            } : undefined
+            return {
+              id: post.id || `post-${Date.now()}`,
+              user: {
+                id: authorId || 'unknown',
+                name: profile?.full_name || 'Professional User',
+                avatar: profile?.profile_picture_url,
+                title: profile?.title,
+                company: profile?.current_company,
+                isConnection,
+                isFollowing: isConnection
+              },
+              content: {
+                type: contentType,
+                url: contentUrl,
+                text: post.content || ''
+              },
+              caption: post.content || '',
+              stats: {
+                likes: Array.isArray(post.post_likes) ? post.post_likes.length : (post.likes_count || 0),
+                comments: Array.isArray(post.post_comments) ? post.post_comments.length : (post.comments_count || 0),
+                shares: Array.isArray(post.post_shares) ? post.post_shares.length : (post.shares_count || 0),
+                isLiked,
+                isBookmarked: false
+              },
+              // Add fallback database fields
+              likes_count: Array.isArray(post.post_likes) ? post.post_likes.length : (post.likes_count || 0),
+              comments_count: Array.isArray(post.post_comments) ? post.post_comments.length : (post.comments_count || 0),
+              shares_count: Array.isArray(post.post_shares) ? post.post_shares.length : (post.shares_count || 0),
+              views_count: post.views_count || 0,
+              isJobPost: post.content_type === 'job' || (Array.isArray(post.tags) && post.tags.includes('job')),
+              isPromoted: false,
+              jobDetails: post.content_type === 'job' ? {
+                company: profile?.current_company || 'Company',
+                position: post.headline || 'Job Position',
+                location: 'Location',
+                applyUrl: post.featured_image_url
+              } : undefined,
+              timestamp: formatTimeAgo(post.created_at || new Date().toISOString()),
+              engagement: {
+                likedBy: [],
+                topComment: topComment ? {
+                  user: 'User',
+                  text: topComment.content || 'Comment'
+                } : undefined
+              }
+            };
+          } catch (postError) {
+            console.error('Error transforming post:', post.id, postError);
+            // Return a safe fallback post
+            return {
+              id: post.id || `error-post-${Date.now()}`,
+              user: {
+                id: 'unknown',
+                name: 'Professional User',
+                avatar: undefined,
+                title: undefined,
+                company: undefined,
+                isConnection: false,
+                isFollowing: false
+              },
+              content: {
+                type: 'text' as const,
+                url: undefined,
+                text: post.content || 'Content unavailable'
+              },
+              caption: post.content || 'Content unavailable',
+              stats: {
+                likes: 0,
+                comments: 0,
+                shares: 0,
+                isLiked: false,
+                isBookmarked: false
+              },
+              likes_count: 0,
+              comments_count: 0,
+              shares_count: 0,
+              views_count: 0,
+              isJobPost: false,
+              isPromoted: false,
+              timestamp: formatTimeAgo(post.created_at || new Date().toISOString()),
+              engagement: {
+                likedBy: [],
+                topComment: undefined
+              }
+            };
           }
-        };
-      });
+        });
 
-      return {
-        posts: transformedPosts,
-        nextPage: postsData.length === limit ? pageParam + 1 : undefined,
-        hasMore: postsData.length === limit
-      };
+        console.log(`Successfully transformed ${transformedPosts.length} posts`);
+
+        return {
+          posts: transformedPosts,
+          nextPage: postsData.length === limit ? pageParam + 1 : undefined,
+          hasMore: postsData.length === limit
+        };
+      } catch (error) {
+        console.error('LinkedInFeed query error:', error);
+        throw error;
+      }
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
-    enabled: !!user
+    enabled: true, // Always enabled, will work for both authenticated and non-authenticated users
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
 
   // Flatten all posts from all pages
@@ -219,31 +305,50 @@ export const useLinkedInFeed = () => {
   };
 
   const handleLike = async (postId: string) => {
-    if (!user) return;
+    if (!user) {
+      console.log('User not authenticated, cannot like post');
+      return;
+    }
 
     // Optimistic update to avoid flicker
     const key = ['linkedInMobilePosts'] as const;
-    const previous = queryClient.getQueryData<LinkedInPost[]>(key);
+    const previousData = queryClient.getQueryData(key) as { pages: { posts: LinkedInPost[] }[] } | undefined;
 
     const toggleInCache = (liked: boolean) => {
-      if (!previous) return;
-      const updated = previous.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              stats: {
-                ...p.stats,
-                isLiked: liked,
-                likes: p.stats.likes + (liked ? 1 : -1),
-              },
-            }
-          : p
-      );
-      queryClient.setQueryData(key, updated);
+      if (!previousData?.pages) return;
+      
+      const updatedData = {
+        ...previousData,
+        pages: previousData.pages.map(page => ({
+          ...page,
+          posts: page.posts.map((p: LinkedInPost) =>
+            p.id === postId
+              ? {
+                  ...p,
+                  stats: {
+                    ...p.stats,
+                    isLiked: liked,
+                    likes: (p.stats?.likes || 0) + (liked ? 1 : -1),
+                  },
+                }
+              : p
+          )
+        }))
+      };
+      queryClient.setQueryData(key, updatedData);
     };
 
-    // Determine current like state from cache
-    const isCurrentlyLiked = previous?.find((p) => p.id === postId)?.stats.isLiked ?? false;
+    // Find current like state from cache
+    let isCurrentlyLiked = false;
+    if (previousData?.pages) {
+      for (const page of previousData.pages) {
+        const post = page.posts.find((p: LinkedInPost) => p.id === postId);
+        if (post) {
+          isCurrentlyLiked = post.stats?.isLiked ?? false;
+          break;
+        }
+      }
+    }
     // Apply optimistic toggle
     toggleInCache(!isCurrentlyLiked);
 
@@ -291,7 +396,7 @@ export const useLinkedInFeed = () => {
     } catch (error) {
       console.error('Error toggling like:', error);
       // Revert optimistic update on error
-      if (previous) queryClient.setQueryData(key, previous);
+      if (previousData) queryClient.setQueryData(key, previousData);
     }
   };
 
