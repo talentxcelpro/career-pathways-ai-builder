@@ -118,8 +118,7 @@ export function useProfilePosts(userId: string) {
       
       console.log('✅ User authenticated:', user.id);
 
-      // Temporarily disable any TXC-related operations to fix posting
-      // The database schema issues with user_txc_balances need to be resolved separately
+      // TXC will be automatically awarded via database trigger
       
       const { data, error } = await supabase
         .from('posts')
@@ -145,10 +144,18 @@ export function useProfilePosts(userId: string) {
       console.log('✅ Post created successfully!');
       toast.success('Post created successfully!');
       
+      // Try to award TXC for post creation
+      try {
+        await earnTXC('post_created', { action: 'post_creation' });
+      } catch (error) {
+        console.log('TXC award failed, but post was created successfully:', error);
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
       queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['token-balance'] });
+      refreshBalance();
     },
     onError: (error) => {
       console.error('❌ Create post error:', error);
