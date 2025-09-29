@@ -25,10 +25,25 @@ const createSMTPTransporter = () => {
     host = host.replace(/.*Host:\s*/, "").trim();
   }
   
+  // Validate and fix Amazon SES endpoints with fallback logic
+  const validSESEndpoints = [
+    "email-smtp.us-east-1.amazonaws.com", // Primary fallback (most reliable)
+    "email-smtp.eu-west-1.amazonaws.com", // EU Ireland  
+    "email-smtp.eu-central-1.amazonaws.com", // EU Frankfurt
+    "email-smtp.ap-south-1.amazonaws.com", // Asia Pacific Mumbai
+    "email-smtp.us-west-2.amazonaws.com" // US West Oregon
+  ];
+
+  // If host is provided but seems problematic (like eu-north-1), use fallback
+  if (host && (host.includes("eu-north-1") || !host.includes("amazonaws.com"))) {
+    console.log(`Detected potentially problematic host: ${host}, using reliable fallback`);
+    host = validSESEndpoints[0]; // Use US East as primary fallback
+  }
+  
   // Set default Amazon SES endpoint if no host provided
   if (!host) {
-    host = "email-smtp.us-east-1.amazonaws.com";
-    console.log("Using default Amazon SES host");
+    host = validSESEndpoints[0];
+    console.log("Using default reliable Amazon SES host");
   }
 
   console.log(`SMTP Configuration: host=${host}, port=${port}, user=${user ? 'SET' : 'NOT_SET'}, pass=${pass ? 'SET' : 'NOT_SET'}`);
@@ -48,9 +63,9 @@ const createSMTPTransporter = () => {
     connectionTimeout: 60000, // 60 seconds
     greetingTimeout: 30000, // 30 seconds
     socketTimeout: 60000, // 60 seconds
-    // Enable debug for Amazon SES
-    debug: true,
-    logger: true,
+    // Disable debug to reduce noise, enable if needed for troubleshooting
+    debug: false,
+    logger: false,
   });
 };
 
