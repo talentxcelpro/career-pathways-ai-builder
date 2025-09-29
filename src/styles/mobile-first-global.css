@@ -1,6 +1,7 @@
 /* Global CSS file to import mobile-first utilities */
 @import url('./mobile-optimizations.css');
 @import url('./mobile-first-utilities.css');
+@import url('./mobile-content-standardization.css');
 
 /* Add automatic mobile-first optimizations for existing components */
 .mobile-optimized {
