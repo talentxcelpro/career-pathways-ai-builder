@@ -133,6 +133,15 @@ verify_jwt = false
 [functions.ai-cv-enhancer]
 verify_jwt = false
 
+[functions.enterprise-automation]
+verify_jwt = false
+
+[functions.enterprise-integrations]
+verify_jwt = false
+
+[functions.system-optimizer]
+verify_jwt = false
+
 [functions.bulk-download-cvs]
 verify_jwt = false
 

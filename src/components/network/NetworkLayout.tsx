@@ -5,7 +5,7 @@ import RequestsTab from './RequestsTab';
 import CVUploadTab from './CVUploadTab';
 import CVSearchTab from './CVSearchTab';
 import Phase1Dashboard from './Phase1Dashboard';
-import Phase3Dashboard from './Phase3Dashboard';
+import Phase4Dashboard from './Phase4Dashboard';
 
 interface NetworkLayoutProps {
   currentTab: string;
@@ -16,13 +16,14 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
   return (
     <div className="container mx-auto px-4 py-6">
       <Tabs value={currentTab} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="people">People</TabsTrigger>
           <TabsTrigger value="requests">Requests</TabsTrigger>
           <TabsTrigger value="cv-upload">CV Upload</TabsTrigger>
           <TabsTrigger value="cv-search">CV Search</TabsTrigger>
           <TabsTrigger value="phase1">Phase 1</TabsTrigger>
           <TabsTrigger value="phase3">Phase 3</TabsTrigger>
+          <TabsTrigger value="phase4">Phase 4</TabsTrigger>
         </TabsList>
 
         <TabsContent value="people">
@@ -47,6 +48,10 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
 
         <TabsContent value="phase3">
           <Phase3Dashboard />
+        </TabsContent>
+
+        <TabsContent value="phase4">
+          <Phase4Dashboard />
         </TabsContent>
       </Tabs>
     </div>
