@@ -170,11 +170,6 @@ const App = () => {
       // Mark app start for performance monitoring
       performance.mark('app-init-start');
       
-      // Initialize critical performance optimizations first
-      import('@/utils/criticalOptimizations').then(({ initializeCriticalOptimizations }) => {
-        initializeCriticalOptimizations();
-      });
-      
       // Defer non-critical initializations
       requestIdleCallback(() => {
         Promise.all([
