@@ -108,8 +108,15 @@ export function useProfilePosts(userId: string) {
       location?: string;
       link_previews?: Array<{ url: string }>;
     }) => {
+      console.log('🚀 Creating post with data:', postData);
+      
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Must be logged in to create posts');
+      if (!user) {
+        console.error('❌ No user found, cannot create post');
+        throw new Error('Must be logged in to create posts');
+      }
+      
+      console.log('✅ User authenticated:', user.id);
 
       // Temporarily disable any TXC-related operations to fix posting
       // The database schema issues with user_txc_balances need to be resolved separately
