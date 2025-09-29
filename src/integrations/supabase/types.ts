@@ -34358,7 +34358,7 @@ export type Database = {
         }[]
       }
       get_txc_activity_leaderboard: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never> | { limit_count?: number }
         Returns: {
           balance: number
           full_name: string
@@ -34396,11 +34396,12 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_user_leaderboard_rank: {
-        Args: { target_user_id: string }
+        Args: { user_uuid: string }
         Returns: {
           percentile: number
-          rank: number
           total_users: number
+          user_balance: number
+          user_rank: number
         }[]
       }
       get_user_pro_plan: {
@@ -34987,6 +34988,10 @@ export type Database = {
       update_trending_scores: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      update_txc_balance: {
+        Args: { amount: number; transaction_desc?: string; user_uuid: string }
+        Returns: Json
       }
       update_txc_balance_secure: {
         Args: {

@@ -142,20 +142,17 @@ export function useProfilePosts(userId: string) {
     },
     onSuccess: async () => {
       console.log('✅ Post created successfully!');
-      toast.success('Post created successfully!');
+      toast.success('Post created successfully! +10 TXC earned');
       
-      // Try to award TXC for post creation
-      try {
-        await earnTXC('post_created', { action: 'post_creation' });
-      } catch (error) {
-        console.log('TXC award failed, but post was created successfully:', error);
-      }
+      // Force refresh token balance immediately since realtime is failing
+      setTimeout(() => {
+        refreshBalance();
+        queryClient.invalidateQueries({ queryKey: ['token-balance'] });
+      }, 1000);
       
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
       queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['token-balance'] });
-      refreshBalance();
     },
     onError: (error) => {
       console.error('❌ Create post error:', error);
