@@ -10,6 +10,7 @@ import { useProfilePosts } from '@/hooks/useProfilePosts';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import { useUrlPreview } from '@/hooks/useUrlPreview';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import LinkPreview from '@/components/shared/LinkPreview';
 
@@ -21,13 +22,15 @@ export const PostCreation = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hiddenPreviews, setHiddenPreviews] = useState<Set<string>>(new Set());
   
+  const { user } = useAuth();
+  
   const { uploadFile, uploading } = useFileUpload({
     bucket: 'post-media',
     allowedTypes: ['image/*', 'video/*'],
     maxSize: 50 * 1024 * 1024 // 50MB
   });
   
-  const { createPost } = useProfilePosts('global');
+  const { createPost } = useProfilePosts(user?.id || '');
   const { detectedUrls } = useUrlDetection(content);
   
   // Get preview data for detected URLs that aren't hidden
