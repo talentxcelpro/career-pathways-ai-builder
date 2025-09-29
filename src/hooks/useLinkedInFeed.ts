@@ -22,13 +22,18 @@ interface LinkedInPost {
     duration?: number;
   };
   caption?: string;
-  stats: {
+  stats?: {
     likes: number;
     comments: number;
     shares: number;
     isLiked: boolean;
     isBookmarked: boolean;
   };
+  // Database fields
+  likes_count?: number;
+  comments_count?: number;
+  shares_count?: number;
+  views_count?: number;
   isJobPost?: boolean;
   isPromoted?: boolean;
   jobDetails?: {

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus } from 'lucide-react';
+import { Heart, MessageCircle, Share, Bookmark, MoreHorizontal, User, Briefcase, ThumbsUp, Send, Plus, AlertCircle } from 'lucide-react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { cn } from '@/lib/utils';
 import VideoPlayer from '@/components/posts/VideoPlayer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -33,13 +34,18 @@ interface LinkedInPost {
     duration?: number;
   };
   caption?: string;
-  stats: {
+  stats?: {
     likes: number;
     comments: number;
     shares: number;
     isLiked: boolean;
     isBookmarked: boolean;
   };
+  // Database field fallbacks
+  likes_count?: number;
+  comments_count?: number;
+  shares_count?: number;
+  views_count?: number;
   isJobPost?: boolean;
   isPromoted?: boolean;
   jobDetails?: {
@@ -84,9 +90,19 @@ const LinkedInPostCard: React.FC<{
   onApply?: (jobUrl: string) => void;
 }> = ({ post, onLike, onBookmark, onShare, onComment, onConnect, onApply }) => {
   const navigate = useNavigate();
-  const [isLiked, setIsLiked] = useState(post.stats.isLiked);
-  const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
-  const [likesCount, setLikesCount] = useState(post.stats.likes);
+  
+  // Safe access to stats with fallbacks
+  const postStats = post.stats || {
+    likes: post.likes_count || 0,
+    comments: post.comments_count || 0,
+    shares: post.shares_count || 0,
+    isLiked: false,
+    isBookmarked: false
+  };
+  
+  const [isLiked, setIsLiked] = useState(postStats.isLiked);
+  const [isBookmarked, setIsBookmarked] = useState(postStats.isBookmarked);
+  const [likesCount, setLikesCount] = useState(postStats.likes);
   const [showFullCaption, setShowFullCaption] = useState(false);
   
   // URL detection for link previews
@@ -356,7 +372,8 @@ const LinkedInPostCard: React.FC<{
   );
 };
 
-export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({ 
+// Error boundary wrapper for LinkedInMobileFeed
+const LinkedInMobileFeedCore: React.FC<LinkedInMobileFeedProps> = ({ 
   posts, 
   onLike, 
   onBookmark, 
@@ -401,18 +418,34 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
         }} />
         
         {/* Posts Feed */}
-        {posts.map((post) => (
-          <LinkedInPostCard
-            key={post.id}
-            post={post}
-            onLike={onLike}
-            onBookmark={onBookmark}
-            onShare={onShare}
-            onComment={onComment}
-            onConnect={onConnect}
-            onApply={onApply}
-          />
-        ))}
+        {posts
+          .filter(post => post && typeof post === 'object') // Safety filter
+          .map((post) => {
+            // Ensure stats property exists with fallbacks
+            const safePost = {
+              ...post,
+              stats: post.stats || {
+                likes: post.likes_count || 0,
+                comments: post.comments_count || 0,
+                shares: post.shares_count || 0,
+                isLiked: false,
+                isBookmarked: false
+              }
+            };
+            
+            return (
+              <LinkedInPostCard
+                key={post.id}
+                post={safePost}
+                onLike={onLike}
+                onBookmark={onBookmark}
+                onShare={onShare}
+                onComment={onComment}
+                onConnect={onConnect}
+                onApply={onApply}
+              />
+            );
+          })}
 
         {/* Load More Section */}
         {hasNextPage && (
@@ -462,5 +495,43 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
         )}
       </div>
     </div>
+  );
+};
+
+// Error boundary fallback component
+const LinkedInFeedErrorFallback = ({ error, resetErrorBoundary }: { error: any, resetErrorBoundary: () => void }) => (
+  <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-6">
+    <div className="text-center bg-white rounded-3xl p-8 shadow-2xl max-w-sm border border-gray-100">
+      <div className="w-16 h-16 bg-red-500 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+        <AlertCircle className="w-8 h-8 text-white" />
+      </div>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Something went wrong</h2>
+      <p className="text-gray-600 mb-6">We're having trouble loading your feed.</p>
+      <Button 
+        onClick={resetErrorBoundary}
+        className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-12"
+      >
+        Try Again
+      </Button>
+    </div>
+  </div>
+);
+
+// Main component wrapped with error boundary
+export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = (props) => {
+  return (
+    <ErrorBoundary
+      FallbackComponent={LinkedInFeedErrorFallback}
+      onError={(error, errorInfo) => {
+        console.error('LinkedInMobileFeed error:', error);
+        console.error('Error info:', errorInfo);
+      }}
+      onReset={() => {
+        // Refresh the page or reset state
+        window.location.reload();
+      }}
+    >
+      <LinkedInMobileFeedCore {...props} />
+    </ErrorBoundary>
   );
 };
