@@ -1,212 +1,147 @@
-import { useCallback, useState } from 'react';
-import { validateInput, authRateLimiter, formRateLimiter } from '@/utils/sanitize';
-// import { useSecurityContext } from '@/components/security/SecurityProvider';
-
-interface ValidationOptions {
-  type?: 'email' | 'phone' | 'url' | 'text' | 'password';
-  maxLength?: number;
-  required?: boolean;
-  rateLimitKey?: string;
-  severity?: 'low' | 'medium' | 'high' | 'critical';
-}
+import { useState, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-  sanitizedValue?: string;
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  input_length: number;
+  validated_at: string;
+}
+
+interface SecurityValidationOptions {
+  inputType?: 'general' | 'email' | 'url' | 'phone' | 'alphanumeric';
+  maxLength?: number;
+  allowHtml?: boolean;
+  autoSanitize?: boolean;
 }
 
 export const useSecurityValidation = () => {
-  // const { logSecurityEvent } = useSecurityContext();
-  const logSecurityEvent = async (event: string, desc: string, meta?: any) => {
-    console.log(`Security Event: ${event} - ${desc}`, meta);
-  };
   const [isValidating, setIsValidating] = useState(false);
+  const { toast } = useToast();
 
-  const validateSecurely = useCallback(async (
-    value: string,
-    fieldName: string,
-    options: ValidationOptions = {}
-  ): Promise<ValidationResult> => {
-    setIsValidating(true);
-    
-    try {
-      const {
-        type = 'text',
-        maxLength = 1000,
-        required = false,
-        rateLimitKey,
-        severity = 'medium'
-      } = options;
+  const validateInput = useCallback(async (
+    input: string,
+    options: SecurityValidationOptions = {}
+  ): Promise<ValidationResult | null> => {
+    const {
+      inputType = 'general',
+      maxLength = 1000,
+      allowHtml = false,
+      autoSanitize = true
+    } = options;
 
-      // Check required field validation
-      if (required && (!value || value.trim().length === 0)) {
-        return {
-          isValid: false,
-          error: `${fieldName} is required`
-        };
-      }
-
-      // Skip validation for empty optional fields
-      if (!required && (!value || value.trim().length === 0)) {
-        return {
-          isValid: true,
-          sanitizedValue: ''
-        };
-      }
-
-      // Rate limiting check
-      if (rateLimitKey) {
-        const rateLimitResult = formRateLimiter.checkRateLimit(rateLimitKey);
-        if (!rateLimitResult.allowed) {
-          await logSecurityEvent('rate_limit_exceeded', `Rate limit exceeded for ${fieldName}`, {
-            fieldName,
-            rateLimitKey,
-            severity: 'high'
-          });
-          
-          return {
-            isValid: false,
-            error: `Too many attempts. Please try again later.`
-          };
-        }
-      }
-
-      // Enhanced input validation
-      const validation = validateInput(value, type, maxLength);
-      
-      if (!validation.isValid) {
-        // Log validation failure for security monitoring
-        await logSecurityEvent('input_validation_failed', 
-          `Input validation failed for ${fieldName}: ${validation.error}`, {
-          fieldName,
-          validationType: type,
-          severity,
-          errorType: validation.error
-        });
-
-        return {
-          isValid: false,
-          error: validation.error
-        };
-      }
-
-      // Additional server-side validation for critical fields
-      if (['email', 'password'].includes(type)) {
-        try {
-          // This would call the database validation function we created
-          // For now, we'll implement client-side validation
-          const serverValidation = await validateOnServer(value, type);
-          if (!serverValidation.isValid) {
-            return serverValidation;
-          }
-        } catch (error) {
-          console.error('Server validation error:', error);
-          // Continue with client-side validation if server fails
-        }
-      }
-
+    if (!input) {
       return {
-        isValid: true,
-        sanitizedValue: value.trim()
+        valid: false,
+        errors: ['Input cannot be empty'],
+        warnings: [],
+        input_length: 0,
+        validated_at: new Date().toISOString()
       };
+    }
 
-    } catch (error) {
-      console.error('Security validation error:', error);
-      
-      await logSecurityEvent('validation_system_error', 
-        `Security validation system error for ${fieldName}`, {
-        fieldName,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        severity: 'critical'
+    setIsValidating(true);
+
+    try {
+      // Call enhanced validation function
+      const { data, error } = await supabase.rpc('validate_user_input_enhanced', {
+        input_text: input,
+        input_type: inputType,
+        max_length: maxLength,
+        allow_html: allowHtml
       });
 
-      return {
-        isValid: false,
-        error: 'Validation system error. Please try again.'
-      };
+      if (error) {
+        console.error('Validation error:', error);
+        toast({
+          title: "Validation Error",
+          description: "Failed to validate input. Please try again.",
+          variant: "destructive",
+        });
+        return null;
+      }
+
+      const result = data as ValidationResult;
+
+      // Show warnings to user if any
+      if (result.warnings && result.warnings.length > 0) {
+        toast({
+          title: "Input Warnings",
+          description: result.warnings.join(', '),
+          variant: "default",
+        });
+      }
+
+      // Show errors if validation failed
+      if (!result.valid && result.errors && result.errors.length > 0) {
+        toast({
+          title: "Input Validation Failed",
+          description: result.errors.join(', '),
+          variant: "destructive",
+        });
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Validation error:', error);
+      toast({
+        title: "Validation Error",
+        description: "Failed to validate input. Please try again.",
+        variant: "destructive",
+      });
+      return null;
     } finally {
       setIsValidating(false);
     }
-  }, [logSecurityEvent]);
+  }, [toast]);
 
-  // Batch validation for multiple fields
-  const validateMultiple = useCallback(async (
-    fields: Array<{ value: string; name: string; options?: ValidationOptions }>
-  ): Promise<{ isValid: boolean; errors: Record<string, string>; sanitizedValues: Record<string, string> }> => {
-    const errors: Record<string, string> = {};
-    const sanitizedValues: Record<string, string> = {};
+  const sanitizeHtml = useCallback((html: string): string => {
+    // Basic HTML sanitization - remove dangerous elements and attributes
+    return html
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/vbscript:/gi, '')
+      .replace(/on\w+\s*=/gi, '')
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+      .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+      .replace(/<embed\b[^>]*>/gi, '')
+      .replace(/<link\b[^>]*>/gi, '')
+      .replace(/<meta\b[^>]*>/gi, '');
+  }, []);
 
-    for (const field of fields) {
-      const result = await validateSecurely(field.value, field.name, field.options);
-      
-      if (!result.isValid) {
-        errors[field.name] = result.error || 'Validation failed';
-      } else {
-        sanitizedValues[field.name] = result.sanitizedValue || '';
-      }
-    }
-
-    return {
-      isValid: Object.keys(errors).length === 0,
-      errors,
-      sanitizedValues
-    };
-  }, [validateSecurely]);
-
-  // Authentication-specific validation with enhanced security
-  const validateAuthInput = useCallback(async (
-    email: string,
-    password: string,
-    userIdentifier: string = 'unknown'
-  ): Promise<{ isValid: boolean; errors: Record<string, string> }> => {
-    // Check auth rate limiting
-    const authLimit = authRateLimiter.checkRateLimit(userIdentifier);
-    if (!authLimit.allowed) {
-      await logSecurityEvent('auth_rate_limit_exceeded', 
-        `Authentication rate limit exceeded`, {
-        userIdentifier,
-        severity: 'high'
-      });
-
+  const validateAndSanitize = useCallback(async (
+    input: string,
+    options: SecurityValidationOptions = {}
+  ): Promise<{ valid: boolean; sanitizedInput: string; errors: string[] }> => {
+    const validation = await validateInput(input, options);
+    
+    if (!validation) {
       return {
-        isValid: false,
-        errors: {
-          general: 'Too many authentication attempts. Please try again later.'
-        }
+        valid: false,
+        sanitizedInput: input,
+        errors: ['Validation failed']
       };
     }
 
-    const result = await validateMultiple([
-      {
-        value: email,
-        name: 'email',
-        options: { type: 'email', required: true, severity: 'high' }
-      },
-      {
-        value: password,
-        name: 'password',
-        options: { type: 'password', required: true, severity: 'high' }
-      }
-    ]);
+    let sanitizedInput = input;
+    
+    if (options.autoSanitize !== false && options.allowHtml) {
+      sanitizedInput = sanitizeHtml(input);
+    }
 
     return {
-      isValid: result.isValid,
-      errors: result.errors
+      valid: validation.valid,
+      sanitizedInput,
+      errors: validation.errors || []
     };
-  }, [validateMultiple, logSecurityEvent]);
+  }, [validateInput, sanitizeHtml]);
 
   return {
-    validateSecurely,
-    validateMultiple,
-    validateAuthInput,
+    validateInput,
+    validateAndSanitize,
+    sanitizeHtml,
     isValidating
   };
 };
-
-// Helper function for server-side validation
-async function validateOnServer(value: string, type: string): Promise<ValidationResult> {
-  // This would integrate with the validate_user_input function we created in the database
-  // For now, return a successful validation
-  return { isValid: true };
-}
