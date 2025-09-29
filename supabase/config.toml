@@ -124,6 +124,9 @@ verify_jwt = false
 [functions.cv-parser]
 verify_jwt = false
 
+[functions.cv-activation]
+verify_jwt = false
+
 [functions.bulk-download-cvs]
 verify_jwt = false
 

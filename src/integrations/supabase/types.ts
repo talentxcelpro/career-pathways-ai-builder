@@ -21578,6 +21578,7 @@ export type Database = {
         Row: {
           about: string | null
           achievement_score: number | null
+          activation_status: string | null
           allow_profile_sharing: boolean | null
           banner_picture_url: string | null
           banner_url: string | null
@@ -21601,6 +21602,7 @@ export type Database = {
           custom_profile_url: string | null
           custom_theme: Json | null
           custom_url_slug: string | null
+          cv_file_id: string | null
           data_source: string | null
           departments: string[] | null
           education_history: Json | null
@@ -21659,6 +21661,7 @@ export type Database = {
           skills: string[] | null
           slug: string | null
           social_links: Json | null
+          source: string | null
           talentxcel_id: string | null
           testimonials_count: number | null
           title: string | null
@@ -21679,6 +21682,7 @@ export type Database = {
         Insert: {
           about?: string | null
           achievement_score?: number | null
+          activation_status?: string | null
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
@@ -21702,6 +21706,7 @@ export type Database = {
           custom_profile_url?: string | null
           custom_theme?: Json | null
           custom_url_slug?: string | null
+          cv_file_id?: string | null
           data_source?: string | null
           departments?: string[] | null
           education_history?: Json | null
@@ -21760,6 +21765,7 @@ export type Database = {
           skills?: string[] | null
           slug?: string | null
           social_links?: Json | null
+          source?: string | null
           talentxcel_id?: string | null
           testimonials_count?: number | null
           title?: string | null
@@ -21780,6 +21786,7 @@ export type Database = {
         Update: {
           about?: string | null
           achievement_score?: number | null
+          activation_status?: string | null
           allow_profile_sharing?: boolean | null
           banner_picture_url?: string | null
           banner_url?: string | null
@@ -21803,6 +21810,7 @@ export type Database = {
           custom_profile_url?: string | null
           custom_theme?: Json | null
           custom_url_slug?: string | null
+          cv_file_id?: string | null
           data_source?: string | null
           departments?: string[] | null
           education_history?: Json | null
@@ -21861,6 +21869,7 @@ export type Database = {
           skills?: string[] | null
           slug?: string | null
           social_links?: Json | null
+          source?: string | null
           talentxcel_id?: string | null
           testimonials_count?: number | null
           title?: string | null
