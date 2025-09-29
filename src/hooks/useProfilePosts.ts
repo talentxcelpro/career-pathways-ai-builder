@@ -132,15 +132,8 @@ export function useProfilePosts(userId: string) {
       return data;
     },
     onSuccess: async () => {
-      // Try to earn TXC but don't let it block post creation success
-      try {
-        await earnTXC('post_created');
-        await refreshBalance();
-        console.log('TXC earned for post creation');
-      } catch (error) {
-        console.warn('TXC earning failed for post, but post was created successfully:', error);
-        // Don't throw - post creation should succeed even if TXC fails
-      }
+      // TEMPORARILY DISABLE TXC CALLS FOR POST CREATION - Fix TXC first
+      // This ensures posts work without TXC interference
       
       toast.success('Post created successfully!');
       

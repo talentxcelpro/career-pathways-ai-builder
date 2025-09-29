@@ -10,12 +10,19 @@ interface Database {
     Tables: {
       user_txc_balances: {
         Row: {
+          id?: string
           user_id: string
           txc_balance: number
           total_earned: number
           total_spent: number
           created_at: string
           updated_at: string
+        }
+        Insert: {
+          user_id: string
+          txc_balance?: number
+          total_earned?: number
+          total_spent?: number
         }
         Update: {
           txc_balance?: number
@@ -24,12 +31,25 @@ interface Database {
         }
       }
       txc_transactions: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          transaction_type: string
+          description?: string
+          activity_type?: string
+          reference_id?: string
+          source?: string
+          created_at: string
+          updated_at: string
+        }
         Insert: {
           user_id: string
           amount: number
           transaction_type: string
-          description: string
+          description?: string
           activity_type?: string
+          reference_id?: string
           source?: string
         }
       }
