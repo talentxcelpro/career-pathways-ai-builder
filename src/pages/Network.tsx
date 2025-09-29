@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
-import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
+import { GiantAppWrapper, FastLoadSection } from "@/components/performance/GiantAppWrapper";
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { NewsFeed } from "@/components/news/NewsFeed";
 import { EnhancedNewsFeed } from "@/components/news/EnhancedNewsFeed";
@@ -38,8 +38,9 @@ const Network = () => {
   const { isMobile } = useMobileDetection();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { getPosts } = useOptimizedPosts();
   
-  // Enable real-time social updates
+  // Enable real-time social updates with performance optimization
   useRealtimeSocialUpdates();
   
   const {
@@ -102,29 +103,34 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile LinkedIn-style interface
+  // Mobile LinkedIn-style interface with performance optimization
   if (isMobile && user) {
     return (
-      <MobileNavWrapper>
-        <LinkedInMobileFeed
-          posts={posts}
-          onLike={handleLike}
-          onBookmark={handleBookmark}
-          onShare={handleShare}
-          onComment={handleComment}
-          onConnect={handleConnect}
-          onApply={handleApply}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          onLoadMore={fetchNextPage}
-        />
-      </MobileNavWrapper>
+      <GiantAppWrapper preloadRoute="/network">
+        <MobileNavWrapper>
+          <FastLoadSection priority="high">
+            <LinkedInMobileFeed
+              posts={posts}
+              onLike={handleLike}
+              onBookmark={handleBookmark}
+              onShare={handleShare}
+              onComment={handleComment}
+              onConnect={handleConnect}
+              onApply={handleApply}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              onLoadMore={fetchNextPage}
+            />
+          </FastLoadSection>
+        </MobileNavWrapper>
+      </GiantAppWrapper>
     );
   }
 
-  // Desktop interface
+  // Desktop interface with giant app performance optimization
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 mobile-optimized">
+    <GiantAppWrapper preloadRoute="/network">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 mobile-optimized">
       {/* One Tap Sign In Status - Show at top for guest users */}
       {!user && (
         <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4">
@@ -181,27 +187,31 @@ const Network = () => {
           </TabsList>
 
           <TabsContent value="feed" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <Posts feedType="all" />
-              </React.Suspense>
-            </div>
+            <FastLoadSection priority="high" cacheKey="network-feed">
+              <div className="space-y-6 text-gray-900">
+                <React.Suspense fallback={
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                }>
+                  <Posts feedType="all" />
+                </React.Suspense>
+              </div>
+            </FastLoadSection>
           </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <Posts feedType="connections" />
-              </React.Suspense>
-            </div>
+            <FastLoadSection priority="medium" cacheKey="smart-feed">
+              <div className="space-y-6 text-gray-900">
+                <React.Suspense fallback={
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                }>
+                  <Posts feedType="connections" />
+                </React.Suspense>
+              </div>
+            </FastLoadSection>
           </TabsContent>
 
 
@@ -290,7 +300,8 @@ const Network = () => {
       
       {/* Mobile Bottom Navigation */}
       <div className="h-20 lg:h-0" /> {/* Spacer for mobile nav */}
-    </div>
+      </div>
+    </GiantAppWrapper>
   );
 };
 

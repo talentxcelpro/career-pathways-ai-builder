@@ -1,0 +1,23 @@
+/* Performance System Styles */
+.giant-app-optimized {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.performance-enhanced {
+  contain: layout style paint;
+  content-visibility: auto;
+}
+
+.loading-optimized {
+  will-change: opacity;
+  transition: opacity 0.2s ease-out;
+}
+
+.error-resilient {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

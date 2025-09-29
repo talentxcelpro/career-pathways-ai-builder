@@ -8,6 +8,7 @@
 /* Import mobile-first optimizations */
 @import url('./styles/mobile-first-global.css');
 @import './styles/apple-dark-text.css';
+@import './utils/completePerformanceSystem.css';
 
 /* Native app-like styles */
 .native-app-style {
