@@ -1,13 +1,18 @@
 import { useCallback } from 'react';
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
-// pdfjs-dist ESM build
+// PDF.js loaded dynamically to prevent memory issues
 // @ts-ignore - pdfjs typing path
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+// import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 // @ts-ignore
-import pdfWorker from 'pdfjs-dist/build/pdf.worker?url';
+// import pdfWorker from 'pdfjs-dist/build/pdf.worker?url';
 
-(pdfjsLib as any).GlobalWorkerOptions.workerSrc = pdfWorker;
+// Dynamic PDF.js loading
+const loadPDFJS = async () => {
+  const pdfjsLib = await import('pdfjs-dist');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
+  return pdfjsLib;
+};
 
 // Legacy interface for backward compatibility
 export interface ResumeJSON {
@@ -206,6 +211,7 @@ export const useResumeParser = () => {
   }, []);
 
   const parsePdf = useCallback(async (file: File): Promise<ResumeJSON> => {
+    const pdfjsLib = await loadPDFJS();
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await (pdfjsLib as any).getDocument({ data: arrayBuffer }).promise;
     let fullText = '';

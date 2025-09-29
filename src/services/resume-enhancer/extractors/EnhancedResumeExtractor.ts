@@ -1,11 +1,16 @@
 import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent';
 import { supabase } from "@/integrations/supabase/client";
+// PDF.js loaded dynamically to prevent memory issues
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
-import * as pdfjsLib from 'pdfjs-dist';
+// import * as pdfjsLib from 'pdfjs-dist';
 import Tesseract from 'tesseract.js';
 
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Dynamic PDF.js loading
+const loadPDFJS = async () => {
+  const pdfjsLib = await import('pdfjs-dist');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
+  return pdfjsLib;
+};
 
 export class EnhancedResumeExtractor {
   private readonly SUPPORTED_FORMATS = [
@@ -203,6 +208,7 @@ export class EnhancedResumeExtractor {
   private async extractFromPDF(file: File): Promise<string> {
     console.log('📄 Extracting from PDF...');
     
+    const pdfjsLib = await loadPDFJS();
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
     const numPages = pdf.numPages;

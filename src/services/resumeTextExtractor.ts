@@ -3,7 +3,8 @@
  * Handles PDF, DOCX, and TXT files with better text extraction using proper libraries
  */
 
-import * as pdfjsLib from 'pdfjs-dist';
+// PDF.js loaded dynamically to prevent memory issues
+// import * as pdfjsLib from 'pdfjs-dist';
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import Tesseract from 'tesseract.js';
 import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
@@ -64,6 +65,9 @@ export class ResumeTextExtractor {
         console.log('PDF worker not ready, configuring...');
         await configurePDFWorker();
       }
+      
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
       
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ 
@@ -259,6 +263,8 @@ export class ResumeTextExtractor {
       console.log('Regular PDF extraction insufficient, trying OCR...');
       
       // Convert PDF to images and OCR each page
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       

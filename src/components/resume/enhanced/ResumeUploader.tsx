@@ -8,11 +8,15 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { EditorResume, createEmptyEditorResume } from '@/types/editor-resume';
-import * as pdfjsLib from 'pdfjs-dist';
+// PDF.js loaded dynamically to prevent memory issues
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';
-// Set PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Dynamic PDF.js loading to prevent memory issues
+const loadPDFJS = async () => {
+  const pdfjsLib = await import('pdfjs-dist');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
+  return pdfjsLib;
+};
 
 interface ResumeUploaderProps {
   onResumeExtracted: (extractedData: EditorResume) => void;
@@ -29,6 +33,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
 
   // Extract text from PDF
   const extractTextFromPDF = async (file: File): Promise<string> => {
+    const pdfjsLib = await loadPDFJS();
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
     let text = '';
