@@ -174,6 +174,8 @@ class CompletePerformanceSystem {
       turboCorInit: turboCore.initialized,
       appleEnhancementsEnabled: true,
       databaseOptimized: true,
+      optimizedPostsIntegrated: true,
+      realtimeCacheInvalidation: true,
       performanceMonitoring: typeof PerformanceObserver !== 'undefined'
     };
   }

@@ -39,15 +39,15 @@ const Network = () => {
   const { isMobile } = useMobileDetection();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { posts: optimizedPosts } = useOptimizedPosts();
+  const { posts: optimizedPosts, loading: optimizedLoading, error: optimizedError, invalidateCache } = useOptimizedPosts();
   
   // Enable real-time social updates with performance optimization
   useRealtimeSocialUpdates();
   
   const {
-    posts,
-    loading,
-    error,
+    posts: fallbackPosts,
+    loading: fallbackLoading,
+    error: fallbackError,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
@@ -58,6 +58,11 @@ const Network = () => {
     handleConnect,
     handleApply
   } = useLinkedInFeed();
+
+  // Use optimized posts when available, fallback to original feed
+  const posts = optimizedPosts && optimizedPosts.length > 0 ? optimizedPosts : fallbackPosts;
+  const loading = optimizedLoading && fallbackLoading;
+  const error = optimizedError || fallbackError;
 
   // SEO meta tags and structured data
   React.useEffect(() => {
@@ -121,6 +126,9 @@ const Network = () => {
               hasNextPage={hasNextPage}
               isFetchingNextPage={isFetchingNextPage}
               onLoadMore={fetchNextPage}
+              optimizedPosts={optimizedPosts}
+              loading={loading}
+              error={error}
             />
           </FastLoadSection>
         </MobileNavWrapper>
@@ -195,7 +203,7 @@ const Network = () => {
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
                 }>
-                  <Posts feedType="all" />
+                  <Posts feedType="all" optimizedPosts={optimizedPosts} loading={loading} error={error} />
                 </React.Suspense>
               </div>
             </FastLoadSection>
@@ -209,7 +217,7 @@ const Network = () => {
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
                 }>
-                  <Posts feedType="connections" />
+                  <Posts feedType="connections" optimizedPosts={optimizedPosts} loading={loading} error={error} />
                 </React.Suspense>
               </div>
             </FastLoadSection>

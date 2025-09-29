@@ -237,14 +237,7 @@ class DatabaseOptimizer {
 // Export singleton
 export const dbOptimizer = DatabaseOptimizer.getInstance();
 
-// Optimized hooks for components
-export const useOptimizedPosts = () => {
-  return {
-    getPosts: (limit?: number) => dbOptimizer.getPostsOptimized(limit),
-    invalidatePostsCache: () => dbOptimizer.invalidateCache('posts'),
-  };
-};
-
+// Optimized hook for notifications only
 export const useOptimizedNotifications = (userId: string) => {
   return {
     getNotifications: (limit?: number) => dbOptimizer.getNotificationsOptimized(userId, limit),

@@ -69,6 +69,9 @@ interface LinkedInMobileFeedProps {
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   onLoadMore?: () => void;
+  optimizedPosts?: any[];
+  loading?: boolean;
+  error?: string | Error | null;
 }
 
 const LinkedInPostCard: React.FC<{

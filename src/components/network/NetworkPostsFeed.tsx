@@ -33,10 +33,16 @@ interface NetworkPost {
 
 interface NetworkPostsFeedProps {
   feedType?: 'all' | 'smart';
+  optimizedPosts?: NetworkPost[];
+  loading?: boolean;
+  error?: Error | null;
 }
 
 export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({ 
-  feedType = 'all' 
+  feedType = 'all',
+  optimizedPosts,
+  loading: externalLoading,
+  error: externalError
 }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -45,8 +51,10 @@ export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({
   // Initialize real-time engagement for network module
   const engagement = useRealtimeEngagement('network');
 
-  // Fetch posts with real-time updates
-  const { data: posts = [], isLoading, error, refetch } = useQuery({
+  // Use optimized posts if provided, otherwise fetch with real-time updates
+  const shouldFetchData = !optimizedPosts || optimizedPosts.length === 0;
+  
+  const { data: fetchedPosts = [], isLoading: isFetching, error: fetchError, refetch } = useQuery({
     queryKey: ['network-posts', feedType],
     queryFn: async () => {
       if (!user) return [];
@@ -96,9 +104,14 @@ export const NetworkPostsFeed: React.FC<NetworkPostsFeedProps> = ({
       if (error) throw error;
       return data as NetworkPost[];
     },
-    enabled: !!user,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    enabled: !!user && shouldFetchData,
+    refetchInterval: shouldFetchData ? 30000 : false, // Only refresh if not using optimized data
   });
+
+  // Use optimized posts if available, otherwise use fetched data
+  const posts = optimizedPosts && optimizedPosts.length > 0 ? optimizedPosts : fetchedPosts;
+  const isLoading = externalLoading !== undefined ? externalLoading : isFetching;
+  const error = externalError || fetchError;
 
   // Listen for real-time engagement updates
   React.useEffect(() => {
