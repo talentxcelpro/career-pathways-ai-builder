@@ -205,13 +205,13 @@ Deno.serve(async (req) => {
     }
 
     // Update balance
-    const newBalance = (balance.txc_balance || 0) + reward.amount;
+    const newBalance = (balance.balance || 0) + reward.amount;
     const newTotalEarned = (balance.total_earned || 0) + reward.amount;
 
     const { error: updateError } = await supabaseClient
       .from('user_txc_balances')
       .update({
-        txc_balance: newBalance,
+        balance: newBalance,
         total_earned: newTotalEarned,
         last_activity_at: new Date().toISOString()
       })
