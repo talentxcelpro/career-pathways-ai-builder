@@ -162,16 +162,25 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   };
 
   const handleSubmit = async () => {
+    console.log('🚀 handleSubmit called');
+    console.log('Content:', content);
+    console.log('User:', user);
+    console.log('Is posting:', isPosting);
+    console.log('Is uploading:', isUploading);
+    
     if (!content.trim()) {
+      console.log('❌ No content provided');
       toast.error('Please write something before posting');
       return;
     }
 
     if (!user?.id) {
+      console.log('❌ No user found');
       toast.error('You must be logged in to create a post');
       return;
     }
 
+    console.log('✅ Starting post creation');
     setIsPosting(true);
     try {
       console.log('Creating post with user:', user.id);
@@ -406,7 +415,14 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
             </div>
 
             <Button 
-              onClick={handleSubmit} 
+              onClick={() => {
+                console.log('🔴 Button clicked!');
+                console.log('Button disabled?', !content.trim() || isPosting || isUploading);
+                console.log('Content trim check:', !content.trim());
+                console.log('Is posting:', isPosting);
+                console.log('Is uploading:', isUploading);
+                handleSubmit();
+              }}
               disabled={!content.trim() || isPosting || isUploading}
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
