@@ -23,7 +23,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
-import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+// TEMPORARILY DISABLED TXC - import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface Attachment {
@@ -40,7 +40,7 @@ interface CreatePostProps {
 
 export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
-  const { triggerPostCreated, triggerArticlePosted } = useTXCIntegration();
+  // TEMPORARILY DISABLED TXC - const { triggerPostCreated, triggerArticlePosted } = useTXCIntegration();
   const [content, setContent] = useState('');
   
   // URL detection for link previews
@@ -206,13 +206,13 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
       console.log('Post created successfully:', postData);
       onPostCreate?.(postData);
       
-      // Trigger TXC mining for post creation
-      const isLongContent = content.length > 500; // Consider articles as longer content
-      if (isLongContent) {
-        await triggerArticlePosted();
-      } else {
-        await triggerPostCreated();
-      }
+      // TEMPORARILY DISABLED TXC TRIGGERS
+      // const isLongContent = content.length > 500; // Consider articles as longer content
+      // if (isLongContent) {
+      //   await triggerArticlePosted();
+      // } else {
+      //   await triggerPostCreated();
+      // }
       
       // Reset form
       setContent('');

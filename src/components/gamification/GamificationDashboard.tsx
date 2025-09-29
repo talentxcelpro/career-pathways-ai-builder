@@ -22,7 +22,7 @@ import {
 import { useUserScores } from '@/hooks/useUserScores';
 import { useRealLeaderboard } from '@/hooks/useRealLeaderboard';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
-import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+// TEMPORARILY DISABLED TXC - import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { useUnifiedGamification } from '@/hooks/useUnifiedGamification';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +38,7 @@ export const GamificationDashboard: React.FC = () => {
   const { data: userScores } = useUserScores();
   const { userRanking } = useRealLeaderboard();
   const { balance, availableBalance, refreshBalance } = useTokenBalance();
-  const txcIntegration = useTXCIntegration();
+  // TEMPORARILY DISABLED TXC - const txcIntegration = useTXCIntegration();
   const { userRanking: unifiedUserRanking, userAchievements, triggerProfileCompleted } = useUnifiedGamification();
   const [recentEarning, setRecentEarning] = useState<number | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -74,22 +74,22 @@ export const GamificationDashboard: React.FC = () => {
     return () => clearInterval(balanceInterval);
   }, [user, refreshBalance]);
 
-  // Reduced auto-earning for more realistic experience
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (user && Math.random() > 0.95) { // 5% chance every 5 minutes
-        const actions = ['post_liked', 'comment_made'];
-        const randomAction = actions[Math.floor(Math.random() * actions.length)];
-        const earned = await txcIntegration.earnTXC(randomAction);
-        if (earned) {
-          setRecentEarning(Date.now());
-          setTimeout(() => setRecentEarning(null), 3000);
-        }
-      }
-    }, 300000); // Check every 5 minutes
-
-    return () => clearInterval(interval);
-  }, [user, txcIntegration]);
+  // TEMPORARILY DISABLED AUTO-EARNING TXC
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     if (user && Math.random() > 0.95) { // 5% chance every 5 minutes
+  //       const actions = ['post_liked', 'comment_made'];
+  //       const randomAction = actions[Math.floor(Math.random() * actions.length)];
+  //       const earned = await txcIntegration.earnTXC(randomAction);
+  //       if (earned) {
+  //         setRecentEarning(Date.now());
+  //         setTimeout(() => setRecentEarning(null), 3000);
+  //       }
+  //     }
+  //   }, 300000); // Check every 5 minutes
+  //
+  //   return () => clearInterval(interval);
+  // }, [user, txcIntegration]);
 
   // Enhanced stats with real-time TXC balance and real data only
   const stats = {
@@ -290,7 +290,8 @@ export const GamificationDashboard: React.FC = () => {
             <Button
               variant="outline"
               onClick={async () => {
-                await txcIntegration.triggerSocialActivity();
+                // TEMPORARILY DISABLED TXC
+                // await txcIntegration.triggerSocialActivity();
                 refreshBalance();
               }}
               className="border-green-200 text-green-700 hover:bg-green-50"
@@ -324,10 +325,11 @@ export const GamificationDashboard: React.FC = () => {
           className="h-16"
           onClick={async () => {
             await triggerProfileCompleted();
-            await txcIntegration.triggerProfileCompleted();
+            // TEMPORARILY DISABLED TXC
+            // await txcIntegration.triggerProfileCompleted();
             toast({
-              title: "TXC Earned! 🎉",
-              description: "Keep completing activities to earn more tokens!"
+              title: "Profile Updated! 🎉",
+              description: "Keep completing activities to earn more rewards!"
             });
           }}
         >
