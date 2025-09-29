@@ -29,24 +29,30 @@ export const EmailNotificationTest: React.FC = () => {
 
     setIsLoading(true);
     try {
+      console.log('Testing Amazon SES authentication...');
       const { data, error } = await supabase.functions.invoke('send-email-notification', {
         body: {
-          event_name: template || 'test_email',
+          event_name: 'test_email',
           recipient_email: email,
           recipient_name: name,
           name: name,
           platform_name: 'TalentXcel',
           support_email: 'support@talentxcel.in',
           current_year: '2025',
-          current_date: new Date().toLocaleDateString()
+          current_date: new Date().toLocaleDateString(),
+          test_message: 'Testing Amazon SES SMTP authentication'
         }
       });
 
       if (error) {
         console.error('Email test error:', error);
-        toast.error('Failed to send test email: ' + error.message);
+        if (error.message.includes('EAUTH') || error.message.includes('535')) {
+          toast.error('Amazon SES Authentication Failed - Check SMTP credentials');
+        } else {
+          toast.error('Failed to send test email: ' + error.message);
+        }
       } else {
-        toast.success('Test email sent successfully!');
+        toast.success('Test email sent successfully via Amazon SES!');
         console.log('Email result:', data);
         // Reset form
         setEmail('');
