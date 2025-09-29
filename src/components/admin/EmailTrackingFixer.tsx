@@ -181,7 +181,7 @@ export const EmailTrackingFixer: React.FC<EmailTrackingFixerProps> = ({ onComple
         </div>
 
         <div className="text-xs text-muted-foreground bg-blue-50 p-3 rounded-lg">
-          <strong>💡 Why this happened:</strong> Email services (SendGrid/Resend) need to be configured to send delivery confirmations 
+          <strong>💡 Why this happened:</strong> Email services (SendGrid/Amazon SES) need to be configured to send delivery confirmations 
           back to your application via webhooks. Without this, you only know emails left your system, not if they were delivered or opened.
         </div>
       </CardContent>
