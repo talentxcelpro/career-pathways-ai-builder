@@ -32,13 +32,14 @@ import { FollowingFollowersList } from "@/components/social/FollowingFollowersLi
 import { SubscriptionsManager } from "@/components/social/SubscriptionsManager";
 import { SocialNotifications } from "@/components/social/SocialNotifications";
 import { useRealtimeSocialUpdates } from "@/hooks/useRealtimeSocialUpdates";
+import { useOptimizedPosts } from "@/hooks/useOptimizedPerformance";
 
 
 const Network = () => {
   const { isMobile } = useMobileDetection();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getPosts } = useOptimizedPosts();
+  const { posts: optimizedPosts } = useOptimizedPosts();
   
   // Enable real-time social updates with performance optimization
   useRealtimeSocialUpdates();
