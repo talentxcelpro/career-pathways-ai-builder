@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Text as FabricText, Line } from 'fabric';
+// Dynamic fabric.js loading to prevent memory issues  
+// import { Canvas as FabricCanvas, Circle, Text as FabricText, Line } from 'fabric';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,7 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
   className
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>();
+  const [fabricCanvas, setFabricCanvas] = useState<any | null>();
   const [selectedNode, setSelectedNode] = useState<CareerNode | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [animating, setAnimating] = useState(false);
@@ -45,18 +46,23 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const canvas = new FabricCanvas(canvasRef.current, {
-      width: isFullscreen ? window.innerWidth : 800,
+    const initFabricCanvas = async () => {
+      const { Canvas } = await import('fabric');
+      const canvas = new Canvas(canvasRef.current, {
+        width: isFullscreen ? window.innerWidth : 800,
       height: isFullscreen ? window.innerHeight : 500,
       backgroundColor: '#fafafa',
       selection: false,
     });
 
-    setFabricCanvas(canvas);
+      setFabricCanvas(canvas);
 
-    return () => {
-      canvas.dispose();
+      return () => {
+        canvas.dispose();
+      };
     };
+    
+    initFabricCanvas();
   }, [isFullscreen]);
 
   useEffect(() => {
@@ -68,7 +74,8 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
     fabricCanvas.backgroundColor = '#fafafa';
 
     // Create connections between nodes with animation
-    const createConnections = () => {
+    const createConnections = async () => {
+      const { Line, Circle, Text } = await import('fabric');
       for (let i = 0; i < nodes.length - 1; i++) {
         const currentNode = nodes[i];
         const nextNode = nodes[i + 1];
@@ -91,7 +98,8 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
     };
 
     // Create nodes with simple styling (removed animations for stability)
-    const createNodes = () => {
+    const createNodes = async () => {
+      const { Circle, Text } = await import('fabric');
       nodes.forEach((node, index) => {
         const getNodeColor = () => {
           switch (node.status) {
@@ -112,7 +120,7 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
           selectable: false,
         });
 
-        const nodeText = new FabricText(String(node.level), {
+        const nodeText = new Text(String(node.level), {
           left: node.position.x - 8,
           top: node.position.y - 8,
           fontSize: 16,
@@ -121,7 +129,7 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
           selectable: false,
         });
 
-        const titleText = new FabricText(node.title, {
+        const titleText = new Text(node.title, {
           left: node.position.x - 40,
           top: node.position.y + 40,
           fontSize: 12,
@@ -153,10 +161,13 @@ export const InteractiveCareerPath: React.FC<InteractiveCareerPathProps> = ({
       });
     };
 
-    createConnections();
-    createNodes();
-
-    fabricCanvas.renderAll();
+    const initCanvas = async () => {
+      await createConnections();
+      await createNodes();
+      fabricCanvas.renderAll();
+    };
+    
+    initCanvas();
   }, [fabricCanvas, nodes, currentNodeId, onNodeClick]);
 
   const resetCanvas = () => {

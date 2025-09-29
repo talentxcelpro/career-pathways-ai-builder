@@ -42,20 +42,29 @@ export default defineConfig(({ mode }) => ({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           ui: ['lucide-react'],
+          // Separate heavy libraries into their own chunks
+          pdf: ['pdfjs-dist'],
+          ocr: ['tesseract.js'], 
+          fabric: ['fabric'],
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          supabase: ['@supabase/supabase-js'],
+          forms: ['react-hook-form', '@hookform/resolvers'],
+          charts: ['recharts'],
+          dnd: ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities', '@hello-pangea/dnd'],
         },
       },
     },
     // Optimize chunk size and performance
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 1000, // Increased from 500 to handle larger chunks
     sourcemap: mode === 'development',
-    // Aggressive minification
-    minify: 'terser',
+    // Aggressive minification with memory optimization
+    minify: mode === 'production' ? 'terser' : false,
     terserOptions: {
       compress: {
         drop_console: mode === 'production',
         drop_debugger: true,
         pure_funcs: mode === 'production' ? ['console.log', 'console.debug'] : [],
-        passes: 2,
+        passes: mode === 'production' ? 2 : 1, // Reduce passes in development
       },
       mangle: {
         safari10: true,
@@ -63,6 +72,8 @@ export default defineConfig(({ mode }) => ({
       format: {
         comments: false,
       },
+      // Memory optimization for large projects
+      maxWorkers: 1, // Reduce parallel workers to save memory
     },
     // Enable tree shaking
     treeshake: {

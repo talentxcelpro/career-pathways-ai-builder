@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 // PDF.js loaded dynamically to prevent memory issues
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 // import * as pdfjsLib from 'pdfjs-dist';
-import Tesseract from 'tesseract.js';
+// Tesseract.js loaded dynamically to prevent memory issues
+// import Tesseract from 'tesseract.js';
 
 // Dynamic PDF.js loading
 const loadPDFJS = async () => {
@@ -247,7 +248,8 @@ export class EnhancedResumeExtractor {
   private async extractFromImage(file: File): Promise<string> {
     console.log('🖼️ Extracting from image using OCR...');
     
-    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+    const Tesseract = await import('tesseract.js');
+    const { data: { text } } = await Tesseract.default.recognize(file, 'eng', {
       logger: (m) => console.log('OCR:', m)
     });
     
