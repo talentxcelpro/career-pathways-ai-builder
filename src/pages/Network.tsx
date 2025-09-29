@@ -20,7 +20,7 @@ import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
-import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { MobileNavWrapper } from "@/components/layout/MobileNavWrapper";
@@ -35,7 +35,7 @@ import { useRealtimeSocialUpdates } from "@/hooks/useRealtimeSocialUpdates";
 
 
 const Network = () => {
-  const { isMobile } = useMobileDetection();
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { user } = useAuth();
   
@@ -103,7 +103,9 @@ const Network = () => {
   }, []);
 
   // Mobile LinkedIn-style interface
+  console.log('Network.tsx - isMobile:', isMobile, 'user:', !!user);
   if (isMobile && user) {
+    console.log('Network.tsx - Rendering mobile interface with MobileNavWrapper');
     return (
       <MobileNavWrapper>
         <LinkedInMobileFeed

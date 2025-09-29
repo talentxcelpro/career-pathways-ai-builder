@@ -12,6 +12,8 @@ export const MobileNavWrapper: React.FC<MobileNavWrapperProps> = ({
   disableBottomNav = false 
 }) => {
   const isMobile = useIsMobile();
+  
+  console.log('MobileNavWrapper - isMobile:', isMobile, 'disableBottomNav:', disableBottomNav);
 
   return (
     <>

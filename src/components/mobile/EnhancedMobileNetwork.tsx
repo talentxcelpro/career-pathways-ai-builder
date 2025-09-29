@@ -1,11 +1,14 @@
 import React from 'react';
 import { EnhancedMobileFeed } from './EnhancedMobileFeed';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 
 export const EnhancedMobileNetwork: React.FC = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   if (!isMobile) {
     return (
@@ -22,8 +25,22 @@ export const EnhancedMobileNetwork: React.FC = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">TalentXcel</h1>
           <div className="flex items-center gap-3">
-            <Search className="h-5 w-5 text-muted-foreground" />
-            <Bell className="h-5 w-5 text-muted-foreground" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/mobile/search')}
+              className="p-2 hover:bg-muted/50"
+            >
+              <Search className="h-5 w-5 text-muted-foreground" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/network/notifications')}
+              className="p-2 hover:bg-muted/50"
+            >
+              <Bell className="h-5 w-5 text-muted-foreground" />
+            </Button>
           </div>
         </div>
       </div>
