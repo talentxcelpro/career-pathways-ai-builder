@@ -8,15 +8,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { ExtractionResult } from '@/types/resume';
-// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
-import * as pdfjsLib from 'pdfjs-dist';
+// PDF.js loaded dynamically to prevent memory issues
 import { useAIService } from '@/hooks/useAIService';
 import { aiDataToEditor } from '@/utils/aiParsingAdapters';
 import { EditorResume } from '@/types/editor-resume';
 import { editorToEnhanced } from '@/utils/resumeAdapters';
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+// Dynamic PDF.js loading to prevent memory issues
+const loadPDFJS = async () => {
+  const pdfjsLib = await import('pdfjs-dist');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+  return pdfjsLib;
+};
 
 interface ResumeUploaderProps {
   onExtractionComplete: (result: ExtractionResult) => void;
@@ -61,6 +64,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
   // File parsing functions
   const parsePDF = async (file: File): Promise<string> => {
     try {
+      const pdfjsLib = await loadPDFJS();
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = '';
