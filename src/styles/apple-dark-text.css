@@ -1,0 +1,229 @@
+/**
+ * Apple-inspired darker text improvements
+ * Enhanced contrast and readability without breaking existing styles
+ */
+
+:root {
+  /* Enhanced text color palette - Apple inspired */
+  --text-primary-dark: 210 11% 15%;       /* Darker primary text */
+  --text-secondary-dark: 210 9% 31%;      /* Darker secondary text */
+  --text-muted-dark: 210 6% 46%;          /* Darker muted text */
+  --text-accent-dark: 210 11% 23%;        /* Darker accent text */
+  
+  /* High contrast text colors */
+  --text-high-contrast: 210 11% 8%;       /* Maximum contrast */
+  --text-medium-contrast: 210 10% 25%;    /* Medium contrast */
+  --text-low-contrast: 210 8% 40%;        /* Low contrast for subtle text */
+  
+  /* Apple's text opacity system */
+  --text-opacity-primary: 0.95;           /* Primary content */
+  --text-opacity-secondary: 0.75;         /* Secondary content */
+  --text-opacity-tertiary: 0.55;          /* Tertiary content */
+  --text-opacity-disabled: 0.35;          /* Disabled state */
+}
+
+/* Enhanced text classes that work alongside existing system */
+.text-apple-primary {
+  color: hsl(var(--text-primary-dark) / var(--text-opacity-primary));
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.text-apple-secondary {
+  color: hsl(var(--text-secondary-dark) / var(--text-opacity-secondary));
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+.text-apple-muted {
+  color: hsl(var(--text-muted-dark) / var(--text-opacity-tertiary));
+  font-weight: 400;
+}
+
+.text-apple-high-contrast {
+  color: hsl(var(--text-high-contrast));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Apple-style heading enhancements */
+.heading-apple-enhanced {
+  color: hsl(var(--text-primary-dark));
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  text-rendering: optimizeLegibility;
+}
+
+.heading-apple-display {
+  color: hsl(var(--text-high-contrast));
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+/* Enhanced readability for body text */
+.body-apple-enhanced {
+  color: hsl(var(--text-secondary-dark));
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Apple-style button text */
+.button-text-apple {
+  color: hsl(var(--text-primary-dark));
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+
+/* Navigation text improvements */
+.nav-text-apple {
+  color: hsl(var(--text-medium-contrast));
+  font-weight: 500;
+  letter-spacing: 0;
+  transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-text-apple:hover {
+  color: hsl(var(--text-primary-dark));
+}
+
+.nav-text-apple.active {
+  color: hsl(var(--text-high-contrast));
+  font-weight: 600;
+}
+
+/* Form input text enhancements */
+.input-text-apple {
+  color: hsl(var(--text-primary-dark));
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.input-text-apple::placeholder {
+  color: hsl(var(--text-muted-dark) / var(--text-opacity-tertiary));
+  font-weight: 400;
+}
+
+/* Card content text improvements */
+.card-text-apple {
+  color: hsl(var(--text-secondary-dark));
+  line-height: 1.5;
+}
+
+.card-title-apple {
+  color: hsl(var(--text-primary-dark));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Label and caption enhancements */
+.label-apple {
+  color: hsl(var(--text-medium-contrast));
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.caption-apple {
+  color: hsl(var(--text-low-contrast));
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+/* Dark mode adjustments */
+.dark {
+  --text-primary-dark: 210 11% 85%;
+  --text-secondary-dark: 210 9% 69%;
+  --text-muted-dark: 210 6% 54%;
+  --text-accent-dark: 210 11% 77%;
+  --text-high-contrast: 210 11% 92%;
+  --text-medium-contrast: 210 10% 75%;
+  --text-low-contrast: 210 8% 60%;
+}
+
+/* Auto-enhance existing text elements without breaking them */
+h1, h2, h3, h4, h5, h6 {
+  color: hsl(var(--text-primary-dark)) !important;
+  letter-spacing: -0.015em;
+  text-rendering: optimizeLegibility;
+}
+
+p {
+  color: hsl(var(--text-secondary-dark));
+  line-height: 1.6;
+}
+
+/* Enhance existing button text */
+button, .btn {
+  color: hsl(var(--text-primary-dark));
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+
+/* Enhance existing navigation */
+nav a, .nav-link {
+  color: hsl(var(--text-medium-contrast));
+  font-weight: 500;
+  transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+nav a:hover, .nav-link:hover {
+  color: hsl(var(--text-primary-dark));
+}
+
+/* Enhance existing form inputs */
+input, textarea, select {
+  color: hsl(var(--text-primary-dark)) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: hsl(var(--text-muted-dark) / var(--text-opacity-tertiary)) !important;
+}
+
+/* Enhance existing labels */
+label {
+  color: hsl(var(--text-medium-contrast));
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Enhance existing cards */
+.card h3, .card h4 {
+  color: hsl(var(--text-primary-dark));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.card p {
+  color: hsl(var(--text-secondary-dark));
+  line-height: 1.5;
+}
+
+/* Subtle animation for text color transitions */
+* {
+  transition: color 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Text shadow for better contrast on light backgrounds */
+.text-contrast-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary-dark: 0 0% 0%;
+    --text-secondary-dark: 0 0% 20%;
+    --text-muted-dark: 0 0% 40%;
+  }
+  
+  .dark {
+    --text-primary-dark: 0 0% 100%;
+    --text-secondary-dark: 0 0% 80%;
+    --text-muted-dark: 0 0% 60%;
+  }
+}
