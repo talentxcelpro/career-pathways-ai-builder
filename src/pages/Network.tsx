@@ -19,7 +19,7 @@ import Posts from './network/Posts';
 import { updateMetaTags } from '@/utils/metaTags';
 import { ReferralNetworkAd } from "@/components/referral/ReferralNetworkAd";
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
-import { EnhancedMobileFeed } from "@/components/mobile/EnhancedMobileFeed";
+import { EnhancedMobileNetwork } from "@/components/mobile/EnhancedMobileNetwork";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { useLinkedInFeed } from "@/hooks/useLinkedInFeed";
 import { useAuth } from "@/contexts/AuthContext";
@@ -109,13 +109,13 @@ const Network = () => {
     };
   }, []);
 
-  // Mobile LinkedIn-style interface with performance optimization
+  // Mobile LinkedIn-style interface with post creation functionality
   if (isMobile && user) {
     return (
       <GiantAppWrapper preloadRoute="/network">
         <MobileNavWrapper>
           <FastLoadSection priority="high">
-            <EnhancedMobileFeed className="" />
+            <EnhancedMobileNetwork />
           </FastLoadSection>
         </MobileNavWrapper>
       </GiantAppWrapper>
