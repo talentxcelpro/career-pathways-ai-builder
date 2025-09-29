@@ -458,8 +458,16 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
   const isMobile = useIsMobile();
   const [showModulesLauncher, setShowModulesLauncher] = useState(false);
 
+  console.log('=== PageSpecificBottomNav Debug ===');
+  console.log('isMobile:', isMobile);
+  console.log('location.pathname:', location.pathname);
+  console.log('window.innerWidth:', typeof window !== 'undefined' ? window.innerWidth : 'undefined');
+
   // Don't render on desktop or in certain contexts
-  if (!isMobile) return null;
+  if (!isMobile) {
+    console.log('Not rendering bottom nav - not mobile');
+    return null;
+  }
 
   const navigationItems = getPageNavigation(location.pathname, navigate);
   const isDefaultNav = location.pathname === '/';
@@ -486,7 +494,7 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
       />
 
       <div className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
+        "fixed bottom-0 left-0 right-0 z-[100] bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
         "border-t border-white/10",
         className
       )}>

@@ -13,6 +13,10 @@ export const MobileNavWrapper: React.FC<MobileNavWrapperProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
+  console.log('=== MobileNavWrapper Debug ===');
+  console.log('isMobile:', isMobile);
+  console.log('disableBottomNav:', disableBottomNav);
+
   return (
     <>
       {children}
