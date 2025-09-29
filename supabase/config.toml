@@ -127,6 +127,12 @@ verify_jwt = false
 [functions.cv-activation]
 verify_jwt = false
 
+[functions.ai-cv-matcher]
+verify_jwt = false
+
+[functions.ai-cv-enhancer]
+verify_jwt = false
+
 [functions.bulk-download-cvs]
 verify_jwt = false
 

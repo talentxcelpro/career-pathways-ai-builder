@@ -300,4 +300,6 @@ export const Phase1Dashboard = () => {
       </Card>
     </div>
   );
-};
+}
+
+export default Phase1Dashboard;
