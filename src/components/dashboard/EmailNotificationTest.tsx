@@ -22,23 +22,23 @@ export const EmailNotificationTest: React.FC = () => {
   ];
 
   const handleSendTestEmail = async () => {
-    if (!email || !name || !template) {
-      toast.error('Please fill in all fields');
+    if (!email || !name) {
+      toast.error('Please fill in email and name');
       return;
     }
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('send-template-email', {
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
         body: {
-          template_name: template,
+          event_name: template || 'test_email',
           recipient_email: email,
           recipient_name: name,
-          template_data: {
-            first_name: name.split(' ')[0],
-            platform_name: 'TalentXcel',
-            test_mode: true
-          }
+          name: name,
+          platform_name: 'TalentXcel',
+          support_email: 'support@talentxcel.in',
+          current_year: '2025',
+          current_date: new Date().toLocaleDateString()
         }
       });
 
@@ -47,6 +47,7 @@ export const EmailNotificationTest: React.FC = () => {
         toast.error('Failed to send test email: ' + error.message);
       } else {
         toast.success('Test email sent successfully!');
+        console.log('Email result:', data);
         // Reset form
         setEmail('');
         setName('');
@@ -111,7 +112,7 @@ export const EmailNotificationTest: React.FC = () => {
 
         <Button 
           onClick={handleSendTestEmail}
-          disabled={isLoading || !email || !name || !template}
+          disabled={isLoading || !email || !name}
           className="w-full"
         >
           {isLoading ? (
