@@ -88,14 +88,19 @@ export const useTXCMining = () => {
     setIsProcessing(true);
 
     try {
-      // Call the earn-txc edge function
-      const { data, error } = await supabase.functions.invoke('earn-txc', {
-        body: {
-          action,
-          metadata
-        }
-      });
+      // TEMPORARILY DISABLED - DO NOT CALL TXC EDGE FUNCTIONS
+      console.log('TXC system temporarily disabled to fix posting issues');
+      return false;
       
+      // Call the earn-txc edge function
+      // const { data, error } = await supabase.functions.invoke('earn-txc', {
+      //   body: {
+      //     action,
+      //     metadata
+      //   }
+      // });
+      
+      /* TEMPORARILY DISABLED TXC
       if (data?.success) {
         // Show success message
         if (action === 'joining_bonus') {
@@ -119,6 +124,7 @@ export const useTXCMining = () => {
         // Silent fail for cooldown or other non-critical errors
         return false;
       }
+      */
       return false;
     } catch (error) {
       console.error('TXC earning error:', error);
