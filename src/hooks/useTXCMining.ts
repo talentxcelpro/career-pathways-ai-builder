@@ -119,6 +119,7 @@ export const useTXCMining = () => {
         // Silent fail for cooldown or other non-critical errors
         return false;
       }
+      return false;
     } catch (error) {
       console.error('TXC earning error:', error);
       return false;

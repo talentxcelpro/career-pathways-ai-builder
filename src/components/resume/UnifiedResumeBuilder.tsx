@@ -31,7 +31,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FileUploadZone } from './upload/FileUploadZone';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
-// PDF.js loaded dynamically to prevent memory issues
+// Configure PDF worker
+import * as pdfjsLib from 'pdfjs-dist';
 import { configurePDFWorker } from '@/utils/pdfWorkerConfig';
 
 // Initialize PDF worker

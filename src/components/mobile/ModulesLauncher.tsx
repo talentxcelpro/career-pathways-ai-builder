@@ -32,12 +32,7 @@ import {
   CreditCard,
   FileText,
   Grid3X3,
-  Layers,
-  Compass,
-  BriefcaseBusiness,
-  Store,
-  Sparkles,
-  GraduationCap as LearningIcon
+  Layers
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
@@ -85,21 +80,11 @@ const modules: ModuleItem[] = [
   // Career Modules
   {
     id: 'learning',
-    name: 'Learning Hub',
-    description: 'Comprehensive courses and skill development',
-    icon: LearningIcon,
+    name: 'Learning',
+    description: 'Courses and skill development',
+    icon: BookOpen,
     route: '/learning',
-    category: 'career',
-    isNew: true
-  },
-  {
-    id: 'career-map',
-    name: 'Career Map',
-    description: 'AI-powered career planning and roadmaps',
-    icon: Compass,
-    route: '/career-map',
-    category: 'career',
-    isNew: true
+    category: 'career'
   },
   {
     id: 'career-dashboard',
@@ -121,7 +106,7 @@ const modules: ModuleItem[] = [
   {
     id: 'passport',
     name: 'Career Passport',
-    description: 'Your professional journey tracker',
+    description: 'Your professional journey',
     icon: CreditCard,
     route: '/passport',
     category: 'career',
@@ -129,15 +114,6 @@ const modules: ModuleItem[] = [
   },
 
   // Tools Modules
-  {
-    id: 'resume-hub',
-    name: 'Resume Hub',
-    description: 'Enhanced resume builder with AI assistance',
-    icon: Sparkles,
-    route: '/resume/hub',
-    category: 'tools',
-    isNew: true
-  },
   {
     id: 'resume-builder',
     name: 'Resume Builder',
@@ -180,32 +156,6 @@ const modules: ModuleItem[] = [
     icon: GraduationCap,
     route: '/colleges',
     category: 'business'
-  },
-  {
-    id: 'employer-hub',
-    name: 'Employer Hub',
-    description: 'Comprehensive employer tools and dashboard',
-    icon: BriefcaseBusiness,
-    route: '/employer',
-    category: 'business',
-    isNew: true
-  },
-  {
-    id: 'services',
-    name: 'Services Marketplace',
-    description: 'Professional services and consulting',
-    icon: Store,
-    route: '/services',
-    category: 'business'
-  },
-  {
-    id: 'talentxcel-services',
-    name: 'TalentXcel Services',
-    description: 'Strategic talent solutions and consulting',
-    icon: Shield,
-    route: '/talentxcelservices',
-    category: 'business',
-    isPro: true
   },
 
   // Social & Engagement

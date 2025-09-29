@@ -14,7 +14,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { templateList } from "./templates/index";
 import { toast } from 'sonner';
 
-// PDF.js loaded dynamically to prevent memory issues
+// Import file processing libraries
+// import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
+import * as pdfjsLib from 'pdfjs-dist';
 import { configurePDFWorker } from '@/utils/pdfWorkerConfig';
 import { EnhancedResumeProcessor } from '@/services/enhancedResumeProcessor';
 

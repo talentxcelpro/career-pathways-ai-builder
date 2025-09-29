@@ -1,17 +1,11 @@
 import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent';
 import { supabase } from "@/integrations/supabase/client";
-// PDF.js loaded dynamically to prevent memory issues
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
-// import * as pdfjsLib from 'pdfjs-dist';
-// Tesseract.js loaded dynamically to prevent memory issues
-// import Tesseract from 'tesseract.js';
+import * as pdfjsLib from 'pdfjs-dist';
+import Tesseract from 'tesseract.js';
 
-// Dynamic PDF.js loading
-const loadPDFJS = async () => {
-  const pdfjsLib = await import('pdfjs-dist');
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
-  return pdfjsLib;
-};
+// Set up PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 export class EnhancedResumeExtractor {
   private readonly SUPPORTED_FORMATS = [
@@ -209,7 +203,6 @@ export class EnhancedResumeExtractor {
   private async extractFromPDF(file: File): Promise<string> {
     console.log('📄 Extracting from PDF...');
     
-    const pdfjsLib = await loadPDFJS();
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
     const numPages = pdf.numPages;
@@ -248,8 +241,7 @@ export class EnhancedResumeExtractor {
   private async extractFromImage(file: File): Promise<string> {
     console.log('🖼️ Extracting from image using OCR...');
     
-    const Tesseract = await import('tesseract.js');
-    const { data: { text } } = await Tesseract.default.recognize(file, 'eng', {
+    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
       logger: (m) => console.log('OCR:', m)
     });
     

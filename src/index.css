@@ -1,14 +1,13 @@
 
-/* Import mobile-first optimizations - must come first */
-@import url('./styles/mobile-first-global.css');
-@import './styles/apple-dark-text.css';
-@import './utils/completePerformanceSystem.css';
-
 /* Critical CSS - Inlined for above-the-fold content */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Import mobile-first optimizations */
+@import url('./styles/mobile-first-global.css');
+@import './styles/apple-dark-text.css';
 
 /* Native app-like styles */
 .native-app-style {
@@ -32,13 +31,6 @@
 
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-area-mobile {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  min-height: 100vh;
-  min-height: 100dvh;
 }
 
 /* Native app touch feedback */

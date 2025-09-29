@@ -66,11 +66,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip external API requests (like Supabase)
-  if (url.origin !== self.location.origin) {
-    return;
-  }
-
   // API requests - Network first, cache fallback
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(networkFirstStrategy(request));

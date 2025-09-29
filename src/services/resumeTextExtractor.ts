@@ -3,11 +3,9 @@
  * Handles PDF, DOCX, and TXT files with better text extraction using proper libraries
  */
 
-// PDF.js loaded dynamically to prevent memory issues
-// import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist';
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
-// Tesseract.js loaded dynamically to prevent memory issues
-// import Tesseract from 'tesseract.js';
+import Tesseract from 'tesseract.js';
 import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
 
 export class ResumeTextExtractor {
@@ -66,9 +64,6 @@ export class ResumeTextExtractor {
         console.log('PDF worker not ready, configuring...');
         await configurePDFWorker();
       }
-      
-      const pdfjsLib = await import('pdfjs-dist');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
       
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ 
@@ -223,8 +218,7 @@ export class ResumeTextExtractor {
     try {
       console.log('🔍 Starting OCR extraction from image...');
       
-      const Tesseract = await import('tesseract.js');
-      const { data: { text } } = await Tesseract.default.recognize(file, 'eng', {
+      const { data: { text } } = await Tesseract.recognize(file, 'eng', {
         logger: (m) => {
           if (m.status === 'recognizing text') {
             console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
@@ -265,8 +259,6 @@ export class ResumeTextExtractor {
       console.log('Regular PDF extraction insufficient, trying OCR...');
       
       // Convert PDF to images and OCR each page
-      const pdfjsLib = await import('pdfjs-dist');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/build/pdf.worker.min.js`;
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       
@@ -289,8 +281,7 @@ export class ResumeTextExtractor {
             canvas.toBlob((blob) => resolve(blob!), 'image/png');
           });
           
-          const Tesseract = await import('tesseract.js');
-          const { data: { text } } = await Tesseract.default.recognize(blob, 'eng');
+          const { data: { text } } = await Tesseract.recognize(blob, 'eng');
           
           if (text.trim()) {
             combinedText += text + '\n\n';

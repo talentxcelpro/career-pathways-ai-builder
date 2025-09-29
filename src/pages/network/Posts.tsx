@@ -10,8 +10,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
-import { TestPostButton } from "@/components/TestPostButton";
-
 import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import LinkPreview from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
@@ -43,17 +41,7 @@ import { GlobalSearch } from "@/components/ui/global-search";
 import { TrendingHashtags } from "@/components/network/TrendingHashtags";
 
 
-const Posts = ({ 
-  feedType = 'all', 
-  optimizedPosts, 
-  loading: externalLoading, 
-  error: externalError 
-}: { 
-  feedType?: 'all' | 'connections' | 'trending';
-  optimizedPosts?: any[];
-  loading?: boolean;
-  error?: string | Error | null;
-}) => {
+const Posts = ({ feedType = 'all' }: { feedType?: 'all' | 'connections' | 'trending' }) => {
   const [openComments, setOpenComments] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const feedFilter = feedType; // Use the prop instead of state
@@ -186,7 +174,7 @@ const Posts = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80 font-system text-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        {/* Error Boundary for mobile compatibility */}
+        {/* Feed Content */}
 
         {/* Three Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -341,19 +329,11 @@ const Posts = ({
             </div>
 
             {/* Create Post */}
-            <div className="space-y-4">
-              <EnhancedCreatePost onPostCreate={handlePostCreate} />
-            </div>
+            <EnhancedCreatePost onPostCreate={handlePostCreate} />
 
 {/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
             <div className="space-y-6">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
-              </React.Suspense>
+              <EnhancedNetworkPostsFeed feedType={feedFilter} searchTerm={searchTerm} />
             </div>
           </div>
 

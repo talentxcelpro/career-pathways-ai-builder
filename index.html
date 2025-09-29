@@ -5,21 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Deferred Google Analytics for better performance -->
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56"></script>
     <script>
-      // Defer GA loading until after critical resources
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-CMYNTTNT56');
-      
-      // Load GA script after critical path
-      setTimeout(() => {
-        const ga = document.createElement('script');
-        ga.async = true;
-        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56';
-        document.head.appendChild(ga);
-      }, 2000);
     </script>
     <title>TalentXcel - AI-Powered Career Platform</title>
     <meta name="description" content="Your Career. One Platform. Endless Possibilities. Find jobs, grow skills, network with professionals, and accelerate your career with AI-powered tools." />
@@ -36,39 +28,9 @@
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="//unpkg.com">
     
-    <!-- Critical resource hints for immediate performance -->
-    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZ.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/src/index.css" as="style">
-    <link rel="preload" href="/src/main.tsx" as="script" crossorigin>
-    
-    <!-- Optimized font loading with critical subset -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&subset=latin" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&subset=latin"></noscript>
-    
-    <!-- Critical CSS inline for instant render -->
-    <style>
-      /* Critical above-the-fold styles */
-      :root{--background:0 0% 100%;--foreground:240 10% 3.9%;--primary:240 5.9% 10%;--primary-foreground:0 0% 98%;}
-      *{border:0;margin:0;padding:0;box-sizing:border-box;}
-      body{font-family:Inter,system-ui,sans-serif;background:hsl(var(--background));color:hsl(var(--foreground));line-height:1.5;}
-      .min-h-screen{min-height:100vh;}
-      .flex{display:flex;}
-      .items-center{align-items:center;}
-      .justify-center{justify-content:center;}
-      .bg-background{background-color:hsl(var(--background));}
-      .text-primary{color:hsl(var(--primary));}
-      .animate-spin{animation:spin 1s linear infinite;}
-      @keyframes spin{to{transform:rotate(360deg);}}
-      .w-8{width:2rem;}.h-8{height:2rem;}
-      .border-2{border-width:2px;}
-      .border-primary{border-color:hsl(var(--primary));}
-      .border-t-transparent{border-top-color:transparent;}
-      .rounded-full{border-radius:9999px;}
-      .text-sm{font-size:0.875rem;}
-      .gap-4{gap:1rem;}
-      .flex-col{flex-direction:column;}
-      .text-muted-foreground{color:hsl(var(--muted-foreground));}
-    </style>
+    <!-- Optimized font loading with fallbacks -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -147,17 +109,8 @@
     </style>
     
     
-    <!-- Deferred Google One Tap Sign-In -->
-    <script>
-      // Load Google Sign-In after critical resources
-      setTimeout(() => {
-        const gsi = document.createElement('script');
-        gsi.src = 'https://accounts.google.com/gsi/client';
-        gsi.async = true;
-        gsi.defer = true;
-        document.head.appendChild(gsi);
-      }, 3000);
-    </script>
+    <!-- Google One Tap Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <!-- Structured Data -->
     <script type="application/ld+json">

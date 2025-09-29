@@ -108,18 +108,9 @@ export function useProfilePosts(userId: string) {
       location?: string;
       link_previews?: Array<{ url: string }>;
     }) => {
-      console.log('🚀 Creating post with data:', postData);
-      
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('❌ No user found, cannot create post');
-        throw new Error('Must be logged in to create posts');
-      }
-      
-      console.log('✅ User authenticated:', user.id);
+      if (!user) throw new Error('Must be logged in to create posts');
 
-      // TXC will be automatically awarded via database trigger
-      
       const { data, error } = await supabase
         .from('posts')
         .insert({
@@ -141,39 +132,30 @@ export function useProfilePosts(userId: string) {
       return data;
     },
     onSuccess: async () => {
-      console.log('✅ Post created successfully!');
-      toast.success('Post created successfully! +10 TXC earned');
-      
-      // Force refresh token balance immediately since realtime is failing
-      setTimeout(() => {
-        refreshBalance();
-        queryClient.invalidateQueries({ queryKey: ['token-balance'] });
-      }, 1000);
+      // Earn TXC for creating a post
+      try {
+        const earned = await earnTXC('post_created');
+        if (earned) {
+          await refreshBalance();
+          toast.success('🎉 Post created! +150 TXC earned!');
+        } else {
+          toast.success('Post created successfully!');
+        }
+      } catch (error) {
+        console.error('Error earning TXC:', error);
+        toast.success('Post created successfully!');
+      }
       
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
       queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['token-balance'] });
     },
     onError: (error) => {
-      console.error('❌ Create post error:', error);
       toast.error('Failed to create post');
+      console.error('Create post error:', error);
     }
   });
-
-  // Test function to create a post directly
-  const createTestPost = async () => {
-    console.log('🧪 Creating test post...');
-    try {
-      await createPost.mutateAsync({
-        content: "Hello from TalentXcel! This is a test post to verify the posting system is working correctly. 🚀",
-        post_type: "text",
-        visibility: "public",
-        origin: "network"
-      });
-    } catch (error) {
-      console.error('❌ Test post failed:', error);
-    }
-  };
 
   // Delete a post
   const deletePost = useMutation({
@@ -223,7 +205,6 @@ export function useProfilePosts(userId: string) {
     isLoading,
     createPost,
     deletePost,
-    togglePinPost,
-    createTestPost
+    togglePinPost
   };
 }

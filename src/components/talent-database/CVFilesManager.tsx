@@ -7,7 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { FileText, Download, User, Calendar, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-// PDF.js loaded dynamically to prevent memory issues
+import * as pdfjsLib from 'pdfjs-dist';
+// @ts-ignore - vite asset import for worker
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min?url';
+
+(pdfjsLib as any).GlobalWorkerOptions.workerSrc = pdfjsWorker;
 export const CVFilesManager = () => {
   const { data: cvFiles, isLoading, error } = useQuery({
     queryKey: ['cv-files'],
@@ -99,7 +103,6 @@ export const CVFilesManager = () => {
 
   const extractEmailFromPdf = async (fileUrl: string): Promise<string | null> => {
     try {
-      const pdfjsLib = await import('pdfjs-dist');
       const res = await fetch(fileUrl);
       const arrayBuffer = await res.arrayBuffer();
       const loadingTask = (pdfjsLib as any).getDocument({ data: arrayBuffer });

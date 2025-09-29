@@ -1,5 +1,4 @@
-// Tesseract.js loaded dynamically to prevent memory issues
-// import { createWorker } from 'tesseract.js';
+import { createWorker } from 'tesseract.js';
 import { EnhancedResumeProcessor, EnhancedResumeData } from './enhancedResumeProcessor';
 
 export class OCRResumeProcessor extends EnhancedResumeProcessor {
@@ -9,7 +8,6 @@ export class OCRResumeProcessor extends EnhancedResumeProcessor {
     if (this.ocrWorker) return;
     
     console.log('Initializing OCR worker...');
-    const { createWorker } = await import('tesseract.js');
     this.ocrWorker = await createWorker('eng');
     console.log('OCR worker initialized successfully');
   }

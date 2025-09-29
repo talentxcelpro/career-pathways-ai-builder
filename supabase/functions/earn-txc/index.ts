@@ -10,47 +10,26 @@ interface Database {
     Tables: {
       user_txc_balances: {
         Row: {
-          id?: string
           user_id: string
-          txc_balance: number
+          balance: number
           total_earned: number
           total_spent: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          user_id: string
-          txc_balance?: number
-          total_earned?: number
-          total_spent?: number
+          last_activity_at: string | null
         }
         Update: {
-          txc_balance?: number
+          balance?: number
           total_earned?: number
-          updated_at?: string
+          last_activity_at?: string
         }
       }
       txc_transactions: {
-        Row: {
-          id: string
-          user_id: string
-          amount: number
-          transaction_type: string
-          description?: string
-          activity_type?: string
-          reference_id?: string
-          source?: string
-          created_at: string
-          updated_at: string
-        }
         Insert: {
           user_id: string
           amount: number
           transaction_type: string
-          description?: string
+          description: string
           activity_type?: string
           reference_id?: string
-          source?: string
         }
       }
     }
@@ -187,9 +166,10 @@ Deno.serve(async (req) => {
         .from('user_txc_balances')
         .insert({
           user_id: user.id,
-          txc_balance: 0,
+          balance: 0,
           total_earned: 0,
-          total_spent: 0
+          total_spent: 0,
+          last_activity_at: new Date().toISOString()
         })
         .select()
         .single();
@@ -213,7 +193,7 @@ Deno.serve(async (req) => {
         transaction_type: 'mining',
         description: reward.description,
         activity_type: action,
-        source: 'earn_txc_function'
+        reference_id: metadata?.reference_id || null
       });
 
     if (txError) {
@@ -233,7 +213,7 @@ Deno.serve(async (req) => {
       .update({
         txc_balance: newBalance,
         total_earned: newTotalEarned,
-        updated_at: new Date().toISOString()
+        last_activity_at: new Date().toISOString()
       })
       .eq('user_id', user.id);
 

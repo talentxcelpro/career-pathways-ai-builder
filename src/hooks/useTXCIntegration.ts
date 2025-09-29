@@ -10,13 +10,13 @@ export const useTXCIntegration = () => {
   const { earnTXC } = useTXCMining();
   const { user } = useAuth();
 
-  // TEMPORARILY DISABLED - Auto-trigger daily login bonus when user loads the app
-  // useEffect(() => {
-  //   if (user) {
-  //     // Silent attempt to earn daily login bonus
-  //     earnTXC('daily_login');
-  //   }
-  // }, [user, earnTXC]);
+  // Auto-trigger daily login bonus when user loads the app
+  useEffect(() => {
+    if (user) {
+      // Silent attempt to earn daily login bonus
+      earnTXC('daily_login');
+    }
+  }, [user, earnTXC]);
 
   // Specific action triggers for different activities
   const triggerJobApplied = async (): Promise<boolean> => {

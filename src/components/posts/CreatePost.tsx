@@ -23,7 +23,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
-// TEMPORARILY DISABLED TXC - import { useTXCIntegration } from '@/hooks/useTXCIntegration';
+import { useTXCIntegration } from '@/hooks/useTXCIntegration';
 import { optimizedStorage } from '@/utils/optimizedStorage';
 
 interface Attachment {
@@ -40,7 +40,7 @@ interface CreatePostProps {
 
 export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   const { user } = useAuth();
-  // TEMPORARILY DISABLED TXC - const { triggerPostCreated, triggerArticlePosted } = useTXCIntegration();
+  const { triggerPostCreated, triggerArticlePosted } = useTXCIntegration();
   const [content, setContent] = useState('');
   
   // URL detection for link previews
@@ -162,125 +162,73 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
   };
 
   const handleSubmit = async () => {
-    console.log('🚀 handleSubmit called');
-    console.log('Content:', content);
-    console.log('User:', user);
-    console.log('Is posting:', isPosting);
-    console.log('Is uploading:', isUploading);
-    
     if (!content.trim()) {
-      console.log('❌ No content provided');
       toast.error('Please write something before posting');
       return;
     }
 
     if (!user?.id) {
-      console.log('❌ No user found');
       toast.error('You must be logged in to create a post');
       return;
     }
 
-    // Check network connectivity
-    if (!navigator.onLine) {
-      toast.error('No internet connection. Please check your network and try again.');
-      return;
-    }
-
-    console.log('✅ Starting post creation');
     setIsPosting(true);
-    
-    // Add retry logic for network issues
-    const maxRetries = 3;
-    let retryCount = 0;
-    
-    while (retryCount < maxRetries) {
-      try {
-        console.log(`Attempt ${retryCount + 1} - Creating post with user:`, user.id);
-        console.log('Post content:', content);
-        
-        // Prepare link previews data
-        const linkPreviews = detectedUrls.map(urlData => ({
-          url: urlData.url
-        }));
+    try {
+      console.log('Creating post with user:', user.id);
+      console.log('Post content:', content);
+      
+      // Prepare link previews data
+      const linkPreviews = detectedUrls.map(urlData => ({
+        url: urlData.url
+      }));
 
-        const { data: postData, error } = await supabase
-          .from('posts')
-          .insert({
-            content,
-            post_type: 'text',
-            author_id: user.id,
-            user_id: user.id,
-            media_urls: attachments.map(att => att.url),
-            location: location || null,
-            visibility: privacy,
-            origin: 'feed',
-            tags: [],
-            link_previews: linkPreviews.length > 0 ? linkPreviews : null
-          })
-          .select()
-          .single();
+      const { data: postData, error } = await supabase
+        .from('posts')
+        .insert({
+          content,
+          post_type: 'text',
+          author_id: user.id,
+          user_id: user.id,
+          media_urls: attachments.map(att => att.url),
+          location: location || null,
+          visibility: privacy,
+          tags: [],
+          link_previews: linkPreviews.length > 0 ? linkPreviews : null
+        })
+        .select()
+        .single();
 
-        if (error) {
-          console.error('Database error creating post:', error);
-          
-          // Handle specific error types
-          if (error.code === '42703') {
-            toast.error('Database schema issue detected. Please refresh the page and try again.');
-            return;
-          } else if (error.message?.includes('network') || error.message?.includes('timeout')) {
-            throw new Error('Network timeout - retrying...');
-          } else {
-            throw error;
-          }
-        }
-
-        console.log('Post created successfully:', postData);
-        onPostCreate?.(postData);
-        
-        // TEMPORARILY DISABLED TXC TRIGGERS
-        // const isLongContent = content.length > 500; // Consider articles as longer content
-        // if (isLongContent) {
-        //   await triggerArticlePosted();
-        // } else {
-        //   await triggerPostCreated();
-        // }
-        
-        // Reset form
-        setContent('');
-        setAttachments([]);
-        setLocation('');
-        setShowLocationInput(false);
-        setPrivacy('public');
-        
-        toast.success('Post created successfully!');
-        return; // Success, exit retry loop
-        
-      } catch (error) {
-        console.error(`Attempt ${retryCount + 1} failed:`, error);
-        retryCount++;
-        
-        if (retryCount >= maxRetries) {
-          // Final failure after all retries
-          console.error('Error creating post after all retries:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          
-          if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-            toast.error('Network error. Please check your connection and try again.');
-          } else if (errorMessage.includes('timeout')) {
-            toast.error('Request timed out. Please try again.');
-          } else if (errorMessage.includes('balance')) {
-            toast.error('Insufficient TXC balance. Please add funds to continue posting.');
-          } else {
-            toast.error(`Failed to create post: ${errorMessage}`);
-          }
-        } else {
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
+      if (error) {
+        console.error('Database error creating post:', error);
+        throw error;
       }
+
+      console.log('Post created successfully:', postData);
+      onPostCreate?.(postData);
+      
+      // Trigger TXC mining for post creation
+      const isLongContent = content.length > 500; // Consider articles as longer content
+      if (isLongContent) {
+        await triggerArticlePosted();
+      } else {
+        await triggerPostCreated();
+      }
+      
+      // Reset form
+      setContent('');
+      setAttachments([]);
+      setLocation('');
+      setShowLocationInput(false);
+      setPrivacy('public');
+      
+      toast.success('Post created successfully!');
+    } catch (error) {
+      console.error('Error creating post:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to create post: ${errorMessage}`);
+    } finally {
+      setIsPosting(false);
     }
-    
-    setIsPosting(false);
   };
 
   return (
@@ -458,14 +406,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreate }) => {
             </div>
 
             <Button 
-              onClick={() => {
-                console.log('🔴 Button clicked!');
-                console.log('Button disabled?', !content.trim() || isPosting || isUploading);
-                console.log('Content trim check:', !content.trim());
-                console.log('Is posting:', isPosting);
-                console.log('Is uploading:', isUploading);
-                handleSubmit();
-              }}
+              onClick={handleSubmit} 
               disabled={!content.trim() || isPosting || isUploading}
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"

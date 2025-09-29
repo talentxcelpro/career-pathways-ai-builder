@@ -1,11 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { NetworkPostCard } from './NetworkPostCard';
 import { NewPostsBanner } from './NewPostsBanner';
 import { useInfiniteNetworkFeed } from '@/hooks/useInfiniteNetworkFeed';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { getCustomStorageUrl } from '@/utils/storage';
@@ -15,33 +14,13 @@ interface EnhancedNetworkPostsFeedProps {
   searchTerm?: string;
 }
 
-// Error fallback component for the feed
-const FeedErrorFallback = ({ error, resetErrorBoundary }: { error: any, resetErrorBoundary: () => void }) => (
-  <div className="space-y-4">
-    <Alert variant="destructive">
-      <AlertCircle className="h-4 w-4" />
-      <AlertDescription className="flex items-center justify-between">
-        <span>Something went wrong loading the feed</span>
-        <Button variant="outline" size="sm" onClick={resetErrorBoundary}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Try again
-        </Button>
-      </AlertDescription>
-    </Alert>
-    <div className="bg-muted/30 rounded-lg p-8 text-center">
-      <p className="text-muted-foreground">
-        The network feed is temporarily unavailable. Please refresh the page or try again later.
-      </p>
-    </div>
-  </div>
-);
-
-const EnhancedNetworkPostsFeedCore: React.FC<EnhancedNetworkPostsFeedProps> = ({
+export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> = ({
   feedType,
   searchTerm
 }) => {
   const [openComments, setOpenComments] = React.useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  
   
   const {
     data,
@@ -248,24 +227,5 @@ const EnhancedNetworkPostsFeedCore: React.FC<EnhancedNetworkPostsFeedProps> = ({
         ) : null}
       </div>
     </div>
-  );
-};
-
-// Main component wrapped with error boundary
-export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> = (props) => {
-  return (
-    <ErrorBoundary
-      FallbackComponent={FeedErrorFallback}
-      onError={(error, errorInfo) => {
-        console.error('Network feed error:', error);
-        console.error('Error info:', errorInfo);
-      }}
-      onReset={() => {
-        // Optional: perform any cleanup or state reset
-        window.location.reload();
-      }}
-    >
-      <EnhancedNetworkPostsFeedCore {...props} />
-    </ErrorBoundary>
   );
 };

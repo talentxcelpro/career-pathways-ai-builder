@@ -9938,69 +9938,6 @@ export type Database = {
           },
         ]
       }
-      creator_earnings: {
-        Row: {
-          amount: number
-          created_at: string | null
-          creator_id: string
-          currency: string
-          id: string
-          source: string
-          transaction_id: string | null
-        }
-        Insert: {
-          amount: number
-          created_at?: string | null
-          creator_id: string
-          currency?: string
-          id?: string
-          source: string
-          transaction_id?: string | null
-        }
-        Update: {
-          amount?: number
-          created_at?: string | null
-          creator_id?: string
-          currency?: string
-          id?: string
-          source?: string
-          transaction_id?: string | null
-        }
-        Relationships: []
-      }
-      creator_subscriptions: {
-        Row: {
-          created_at: string | null
-          creator_id: string
-          expires_at: string | null
-          id: string
-          price: number
-          status: string
-          subscriber_id: string
-          tier: string
-        }
-        Insert: {
-          created_at?: string | null
-          creator_id: string
-          expires_at?: string | null
-          id?: string
-          price: number
-          status?: string
-          subscriber_id: string
-          tier?: string
-        }
-        Update: {
-          created_at?: string | null
-          creator_id?: string
-          expires_at?: string | null
-          id?: string
-          price?: number
-          status?: string
-          subscriber_id?: string
-          tier?: string
-        }
-        Relationships: []
-      }
       currency_rates: {
         Row: {
           base_currency: string
@@ -11793,39 +11730,6 @@ export type Database = {
           target_id?: string
           target_owner_id?: string | null
           target_type?: string
-        }
-        Relationships: []
-      }
-      engagement_metrics: {
-        Row: {
-          action_type: string
-          content_id: string
-          content_type: string
-          created_at: string | null
-          duration_seconds: number | null
-          id: string
-          metadata: Json | null
-          user_id: string | null
-        }
-        Insert: {
-          action_type: string
-          content_id: string
-          content_type: string
-          created_at?: string | null
-          duration_seconds?: number | null
-          id?: string
-          metadata?: Json | null
-          user_id?: string | null
-        }
-        Update: {
-          action_type?: string
-          content_id?: string
-          content_type?: string
-          created_at?: string | null
-          duration_seconds?: number | null
-          id?: string
-          metadata?: Json | null
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -28344,39 +28248,6 @@ export type Database = {
           },
         ]
       }
-      space_sessions: {
-        Row: {
-          avatar_config: Json | null
-          id: string
-          joined_at: string | null
-          left_at: string | null
-          position: Json | null
-          session_duration: number | null
-          space_id: string
-          user_id: string
-        }
-        Insert: {
-          avatar_config?: Json | null
-          id?: string
-          joined_at?: string | null
-          left_at?: string | null
-          position?: Json | null
-          session_duration?: number | null
-          space_id: string
-          user_id: string
-        }
-        Update: {
-          avatar_config?: Json | null
-          id?: string
-          joined_at?: string | null
-          left_at?: string | null
-          position?: Json | null
-          session_duration?: number | null
-          space_id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       sso_configurations: {
         Row: {
           attribute_mapping: Json | null
@@ -32757,35 +32628,6 @@ export type Database = {
         }
         Relationships: []
       }
-      video_intro_likes: {
-        Row: {
-          created_at: string
-          id: string
-          user_id: string
-          video_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          user_id: string
-          video_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          user_id?: string
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "video_intro_likes_video_id_fkey"
-            columns: ["video_id"]
-            isOneToOne: false
-            referencedRelation: "video_intros"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       video_intros: {
         Row: {
           created_at: string
@@ -32997,45 +32839,6 @@ export type Database = {
           title?: string | null
           type?: string
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      virtual_spaces: {
-        Row: {
-          created_at: string | null
-          creator_id: string
-          description: string | null
-          id: string
-          is_public: boolean | null
-          max_participants: number | null
-          name: string
-          space_config: Json | null
-          space_type: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          creator_id: string
-          description?: string | null
-          id?: string
-          is_public?: boolean | null
-          max_participants?: number | null
-          name: string
-          space_config?: Json | null
-          space_type?: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          creator_id?: string
-          description?: string | null
-          id?: string
-          is_public?: boolean | null
-          max_participants?: number | null
-          name?: string
-          space_config?: Json | null
-          space_type?: string
-          updated_at?: string | null
         }
         Relationships: []
       }
@@ -34358,7 +34161,7 @@ export type Database = {
         }[]
       }
       get_txc_activity_leaderboard: {
-        Args: Record<PropertyKey, never> | { limit_count?: number }
+        Args: Record<PropertyKey, never>
         Returns: {
           balance: number
           full_name: string
@@ -34396,12 +34199,11 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_user_leaderboard_rank: {
-        Args: { user_uuid: string }
+        Args: { target_user_id: string }
         Returns: {
           percentile: number
+          rank: number
           total_users: number
-          user_balance: number
-          user_rank: number
         }[]
       }
       get_user_pro_plan: {
@@ -34988,10 +34790,6 @@ export type Database = {
       update_trending_scores: {
         Args: Record<PropertyKey, never>
         Returns: undefined
-      }
-      update_txc_balance: {
-        Args: { amount: number; transaction_desc?: string; user_uuid: string }
-        Returns: Json
       }
       update_txc_balance_secure: {
         Args: {
