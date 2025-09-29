@@ -25218,6 +25218,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_rate_limits: {
+        Row: {
+          action_type: string
+          attempt_count: number | null
+          blocked_until: string | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          user_id: string | null
+          window_start: string | null
+        }
+        Insert: {
+          action_type: string
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          action_type?: string
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       seo_analytics: {
         Row: {
           avg_session_duration: number | null
@@ -34590,6 +34623,15 @@ export type Database = {
           p_status: string
         }
         Returns: string
+      }
+      log_security_attempt: {
+        Args: {
+          p_action_type?: string
+          p_ip_address?: unknown
+          p_success?: boolean
+          p_user_id?: string
+        }
+        Returns: boolean
       }
       log_security_event: {
         Args:
