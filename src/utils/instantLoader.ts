@@ -132,8 +132,13 @@ export const setupSmartCaching = () => {
   (window as any).cachedQuerySelector = cachedQuerySelector;
 };
 
-// Initialize all instant optimizations
+// Initialize all instant optimizations + giant app loader
 export const initInstantLoader = () => {
+  // Load giant app optimizations first
+  import('./giantAppLoader').then(({ giantAppLoader }) => {
+    giantAppLoader.init();
+  });
+  
   // Immediate optimizations
   addResourceHints();
   
@@ -151,5 +156,5 @@ export const initInstantLoader = () => {
   }
 };
 
-// Export for manual initialization
-// initInstantLoader();
+// Auto-initialize for maximum speed
+initInstantLoader();
