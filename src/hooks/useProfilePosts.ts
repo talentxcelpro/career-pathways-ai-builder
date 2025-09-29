@@ -132,17 +132,12 @@ export function useProfilePosts(userId: string) {
       return data;
     },
     onSuccess: async () => {
-      // Earn TXC for creating a post
+      // Temporarily disable TXC earning to ensure posts work
+      // TODO: Fix TXC function and re-enable
       try {
-        const earned = await earnTXC('post_created');
-        if (earned) {
-          await refreshBalance();
-          toast.success('🎉 Post created! +150 TXC earned!');
-        } else {
-          toast.success('Post created successfully!');
-        }
+        toast.success('Post created successfully!');
       } catch (error) {
-        console.error('Error earning TXC:', error);
+        console.error('Error in post creation:', error);
         toast.success('Post created successfully!');
       }
       
