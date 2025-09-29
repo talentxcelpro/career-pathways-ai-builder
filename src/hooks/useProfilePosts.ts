@@ -142,9 +142,7 @@ export function useProfilePosts(userId: string) {
       return data;
     },
     onSuccess: async () => {
-      // TEMPORARILY DISABLE TXC CALLS FOR POST CREATION - Fix TXC first
-      // This ensures posts work without TXC interference
-      
+      console.log('✅ Post created successfully!');
       toast.success('Post created successfully!');
       
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
@@ -153,10 +151,25 @@ export function useProfilePosts(userId: string) {
       queryClient.invalidateQueries({ queryKey: ['token-balance'] });
     },
     onError: (error) => {
+      console.error('❌ Create post error:', error);
       toast.error('Failed to create post');
-      console.error('Create post error:', error);
     }
   });
+
+  // Test function to create a post directly
+  const createTestPost = async () => {
+    console.log('🧪 Creating test post...');
+    try {
+      await createPost.mutateAsync({
+        content: "Hello from TalentXcel! This is a test post to verify the posting system is working correctly. 🚀",
+        post_type: "text",
+        visibility: "public",
+        origin: "network"
+      });
+    } catch (error) {
+      console.error('❌ Test post failed:', error);
+    }
+  };
 
   // Delete a post
   const deletePost = useMutation({
@@ -206,6 +219,7 @@ export function useProfilePosts(userId: string) {
     isLoading,
     createPost,
     deletePost,
-    togglePinPost
+    togglePinPost,
+    createTestPost
   };
 }
