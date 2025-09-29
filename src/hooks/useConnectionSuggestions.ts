@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useTXCMining } from './useTXCMining';
-import { useTokenBalance } from './useTokenBalance';
+// TEMPORARILY DISABLED TXC - import { useTXCMining } from './useTXCMining';
+// TEMPORARILY DISABLED TXC - import { useTokenBalance } from './useTokenBalance';
 
 export interface ConnectionSuggestion {
   id: string;
@@ -26,8 +26,8 @@ export interface ConnectionSuggestion {
 
 export const useConnectionSuggestions = () => {
   const queryClient = useQueryClient();
-  const { earnTXC } = useTXCMining();
-  const { refreshBalance } = useTokenBalance();
+  // TEMPORARILY DISABLED TXC - const { earnTXC } = useTXCMining();
+  // TEMPORARILY DISABLED TXC - const { refreshBalance } = useTokenBalance();
 
   // Fetch connection suggestions
   const { data: suggestions = [], isLoading, error } = useQuery({
@@ -102,19 +102,10 @@ export const useConnectionSuggestions = () => {
       queryClient.invalidateQueries({ queryKey: ['connection-suggestions'] });
       queryClient.invalidateQueries({ queryKey: ['connections'] });
       
-      // Try to earn TXC for connection
-      try {
-        const earned = await earnTXC('connection_made');
-        if (earned) {
-          await refreshBalance();
-          toast.success('🎉 Connection request sent! +75 TXC earned!');
-        } else {
-          toast.success('Connection request sent!');
-        }
-      } catch (error) {
-        console.error('Error earning TXC for connection:', error);
-        toast.success('Connection request sent!');
-      }
+      // TEMPORARILY DISABLED TXC
+      // const earned = await earnTXC('connection_made');
+      // console.log('TXC earned for connection:', earned);
+      toast.success('Connection request sent!');
     },
     onError: (error: any) => {
       if (error.message.includes('already exists')) {

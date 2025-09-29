@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const useDailyLoginBonus = () => {
   const { user } = useAuth();
-  const { earnTXC } = useTXCMining();
+  // TEMPORARILY DISABLED TXC - const { earnTXC } = useTXCMining();
   const { refreshBalance } = useTokenBalance();
   const [hasCheckedToday, setHasCheckedToday] = useState(false);
 
@@ -56,7 +56,7 @@ export const useDailyLoginBonus = () => {
     const timer = setTimeout(checkDailyBonus, 2000);
     return () => clearTimeout(timer);
     */
-  }, [user, hasCheckedToday, earnTXC, refreshBalance]);
+  }, [user, hasCheckedToday, /* earnTXC, */ refreshBalance]);
 
   return { hasCheckedToday };
 };
