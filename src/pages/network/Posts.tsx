@@ -11,6 +11,7 @@ import { PostActions } from "@/components/posts/PostActions";
 import { CommentsSection } from "@/components/posts/CommentsSection";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 import { TestPostButton } from "@/components/TestPostButton";
+import { DirectPostCreator } from "@/components/DirectPostCreator";
 import { CareerIntentBadge } from "@/components/posts/CareerIntentTags";
 import LinkPreview from "@/components/shared/LinkPreview";
 import { ProfileCompletionPrompt } from "@/components/profile/ProfileCompletionPrompt";
@@ -342,9 +343,7 @@ const Posts = ({
             {/* Create Post */}
             <div className="space-y-4">
               <EnhancedCreatePost onPostCreate={handlePostCreate} />
-              <div className="flex justify-center">
-                <TestPostButton />
-              </div>
+              <DirectPostCreator />
             </div>
 
 {/* Enhanced Network Posts Feed with Real-time, Infinite Scroll */}
