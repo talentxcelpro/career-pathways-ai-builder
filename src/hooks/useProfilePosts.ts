@@ -111,6 +111,9 @@ export function useProfilePosts(userId: string) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Must be logged in to create posts');
 
+      // Temporarily disable any TXC-related operations to fix posting
+      // The database schema issues with user_txc_balances need to be resolved separately
+      
       const { data, error } = await supabase
         .from('posts')
         .insert({
