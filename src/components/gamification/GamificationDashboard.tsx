@@ -43,8 +43,8 @@ export const GamificationDashboard: React.FC = () => {
   const [recentEarning, setRecentEarning] = useState<number | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   
-  // Initialize daily login bonus
-  useDailyLoginBonus();
+  // Initialize daily login bonus - TEMPORARILY DISABLED
+  // useDailyLoginBonus();
 
   // Fetch user profile
   const fetchUserProfile = async () => {

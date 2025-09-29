@@ -11,15 +11,16 @@ interface Database {
       user_txc_balances: {
         Row: {
           user_id: string
-          balance: number
+          txc_balance: number
           total_earned: number
           total_spent: number
-          last_activity_at: string | null
+          created_at: string
+          updated_at: string
         }
         Update: {
-          balance?: number
+          txc_balance?: number
           total_earned?: number
-          last_activity_at?: string
+          updated_at?: string
         }
       }
       txc_transactions: {
@@ -29,7 +30,7 @@ interface Database {
           transaction_type: string
           description: string
           activity_type?: string
-          reference_id?: string
+          source?: string
         }
       }
     }
@@ -166,10 +167,9 @@ Deno.serve(async (req) => {
         .from('user_txc_balances')
         .insert({
           user_id: user.id,
-          balance: 0,
+          txc_balance: 0,
           total_earned: 0,
-          total_spent: 0,
-          last_activity_at: new Date().toISOString()
+          total_spent: 0
         })
         .select()
         .single();
@@ -193,7 +193,7 @@ Deno.serve(async (req) => {
         transaction_type: 'mining',
         description: reward.description,
         activity_type: action,
-        reference_id: metadata?.reference_id || null
+        source: 'earn_txc_function'
       });
 
     if (txError) {
@@ -205,15 +205,15 @@ Deno.serve(async (req) => {
     }
 
     // Update balance
-    const newBalance = (balance.balance || 0) + reward.amount;
+    const newBalance = (balance.txc_balance || 0) + reward.amount;
     const newTotalEarned = (balance.total_earned || 0) + reward.amount;
 
     const { error: updateError } = await supabaseClient
       .from('user_txc_balances')
       .update({
-        balance: newBalance,
+        txc_balance: newBalance,
         total_earned: newTotalEarned,
-        last_activity_at: new Date().toISOString()
+        updated_at: new Date().toISOString()
       })
       .eq('user_id', user.id);
 

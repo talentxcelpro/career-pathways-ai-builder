@@ -132,14 +132,17 @@ export function useProfilePosts(userId: string) {
       return data;
     },
     onSuccess: async () => {
-      // Temporarily disable TXC earning to ensure posts work
-      // TODO: Fix TXC function and re-enable
+      // Try to earn TXC but don't let it block post creation success
       try {
-        toast.success('Post created successfully!');
+        await earnTXC('post_created');
+        await refreshBalance();
+        console.log('TXC earned for post creation');
       } catch (error) {
-        console.error('Error in post creation:', error);
-        toast.success('Post created successfully!');
+        console.warn('TXC earning failed for post, but post was created successfully:', error);
+        // Don't throw - post creation should succeed even if TXC fails
       }
+      
+      toast.success('Post created successfully!');
       
       queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
       queryClient.invalidateQueries({ queryKey: ['global-feed-posts'] });

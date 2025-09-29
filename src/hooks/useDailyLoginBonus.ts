@@ -12,6 +12,12 @@ export const useDailyLoginBonus = () => {
   const [hasCheckedToday, setHasCheckedToday] = useState(false);
 
   useEffect(() => {
+    // TEMPORARILY DISABLED - TXC system being fixed
+    // This prevents automatic daily login bonus calls that are causing UI errors
+    console.log('Daily login bonus temporarily disabled for debugging');
+    setHasCheckedToday(true);
+    
+    /* Original code - re-enable once TXC is fixed:
     if (!user || hasCheckedToday) return;
 
     const checkDailyBonus = async () => {
@@ -49,6 +55,7 @@ export const useDailyLoginBonus = () => {
     // Small delay to ensure other systems are loaded
     const timer = setTimeout(checkDailyBonus, 2000);
     return () => clearTimeout(timer);
+    */
   }, [user, hasCheckedToday, earnTXC, refreshBalance]);
 
   return { hasCheckedToday };
