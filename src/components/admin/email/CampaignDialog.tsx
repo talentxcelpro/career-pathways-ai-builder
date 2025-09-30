@@ -30,7 +30,6 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
     module_name: '',
     template_id: '',
     target_audience: 'all_users',
-    description: '',
   });
 
   const { data: templates } = useQuery({
@@ -97,7 +96,6 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
         module_name: '',
         template_id: '',
         target_audience: 'all_users',
-        description: '',
       });
       setScheduledDate(undefined);
       setSendImmediately(true);
@@ -140,16 +138,6 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
               onChange={(e) => setFormData({ ...formData, campaign_name: e.target.value })}
               placeholder="e.g., Spring 2024 Job Alerts"
               required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe the campaign purpose"
             />
           </div>
 
