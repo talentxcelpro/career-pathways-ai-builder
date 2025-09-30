@@ -134,58 +134,26 @@ export const EmailSystemTester = () => {
   const testEmailSending = async () => {
     setTesting(prev => ({ ...prev, emailSend: true }));
     try {
-      console.log('🧪 Testing email sending...');
+      console.log('🧪 Testing email sending via Amazon SES...');
       
-      const emailPayload = {
-        to: "talentxcelpro@gmail.com",
-        from: "TalentXcel <noreply@talentxcel.in>",
-        subject: "Test Email from TalentXcel System",
-        body: "<h1>✅ System Test Email</h1><p>This is a system test to verify email functionality.</p><p>Sent at: " + new Date().toLocaleString() + "</p>",
-        smtp: {
-          host: "email-smtp.eu-north-1.amazonaws.com",
-          port: "587",
-          user: "WILL_BE_SET_FROM_SUPABASE_SECRETS", 
-          pass: "WILL_BE_SET_FROM_SUPABASE_SECRETS"  
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
+        body: {
+          event_name: 'test_email',
+          recipient_email: 'talentxcelpro@gmail.com',
+          recipient_name: 'Test User'
         }
-      };
-      
-      console.log('📧 Email payload (secrets hidden):', { ...emailPayload, smtp: { ...emailPayload.smtp, user: '***', pass: '***' } });
-      
-      // Use direct fetch like SMTP test
-      const projectRef = 'dthlgsnakhoftinssokm';
-      const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-      
-      const url = `https://${projectRef}.supabase.co/functions/v1/send-email-smtp`;
-      console.log('🎯 Testing URL:', url);
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${anonKey}`,
-          'apikey': anonKey
-        },
-        body: JSON.stringify(emailPayload)
       });
       
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('📨 Email Send Response:', data, error);
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Response error:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText || 'Unknown error'}`);
-      }
-      
-      const data = await response.json();
-      console.log('📨 Email Send Response:', data);
+      if (error) throw error;
       
       setResults(prev => ({ ...prev, emailSend: data }));
       
       if (data?.success) {
         toast({
-          title: "✅ Email Sending Works!",
-          description: `Test email sent successfully. Message ID: ${data.messageId || 'N/A'}`
+          title: "✅ Email Sent Successfully!",
+          description: `Test email sent via ${data.region}. Message ID: ${data.messageId || 'N/A'}`
         });
       } else {
         toast({
@@ -200,12 +168,10 @@ export const EmailSystemTester = () => {
       setResults(prev => ({ ...prev, emailSend: { error: errorMessage } }));
       
       let description = errorMessage;
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
-        description = 'Network error - send-email-smtp function may not be deployed';
-      } else if (errorMessage.includes('404')) {
-        description = 'send-email-smtp function not found - May not be deployed yet';
-      } else if (errorMessage.includes('403') || errorMessage.includes('401')) {
-        description = 'Authentication error - Check API keys';
+      if (errorMessage.includes('not verified')) {
+        description = 'Email addresses not verified in AWS SES. Please verify sender and recipient in AWS Console.';
+      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        description = 'Network error - Function may not be deployed';
       }
       
       toast({
@@ -237,10 +203,10 @@ export const EmailSystemTester = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Email System Testing Dashboard
+            Amazon SES Email Testing
           </CardTitle>
           <CardDescription>
-            Test all components of your email system to ensure everything is working correctly
+            Test your Amazon SES integration (Region: Europe Stockholm). Make sure to verify email addresses in AWS SES first.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
