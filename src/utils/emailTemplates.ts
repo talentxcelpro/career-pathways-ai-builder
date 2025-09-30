@@ -17,6 +17,7 @@ export const EMAIL_VARIABLES = {
     { key: 'verification_code', label: 'Verification Code', example: '123456' },
     { key: 'date', label: 'Current Date', example: 'January 1, 2025' },
     { key: 'year', label: 'Current Year', example: '2025' },
+    { key: 'logo_url', label: 'Logo URL', example: 'https://talentxcel.in/assets/logo.png' },
   ],
   CONTENT: [
     { key: 'title', label: 'Title', example: 'Welcome!' },
@@ -65,13 +66,20 @@ export const BASE_EMAIL_TEMPLATE = `<!DOCTYPE html>
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     text-align: center;
     color: #fff;
-    padding: 60px 20px 50px 20px;
+    padding: 40px 20px;
+  }
+  .header img {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 10px;
+    display: inline-block;
   }
   .header h1 {
-    margin: 0;
-    font-size: 38px;
+    margin: 10px 0 0 0;
+    font-size: 28px;
     letter-spacing: 1px;
-    font-weight: 700;
+    font-weight: 600;
+    color: #fff;
   }
 
   .hero {
@@ -147,6 +155,7 @@ export const BASE_EMAIL_TEMPLATE = `<!DOCTYPE html>
 <body>
   <div class="container">
     <div class="header">
+      <img src="https://talentxcel.in/assets/logo.png" alt="TalentXcel Logo" />
       <h1>TalentXcel</h1>
     </div>
 
@@ -215,9 +224,12 @@ export function renderTemplate(template: string, variables: Record<string, strin
     const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
     rendered = rendered.replace(regex, String(value));
   }
-  // Add default year if not provided
+  // Add default values if not provided
   if (!variables.year) {
     rendered = rendered.replace(/{{year}}/g, new Date().getFullYear().toString());
+  }
+  if (!variables.logo_url) {
+    rendered = rendered.replace(/{{logo_url}}/g, 'https://talentxcel.in/assets/logo.png');
   }
   return rendered;
 }

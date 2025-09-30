@@ -74,6 +74,10 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
         description: 'Your career journey starts here',
         cta_text: 'Get Started',
         year: new Date().getFullYear().toString(),
+        logo_url: 'https://talentxcel.in/assets/logo.png',
+        location: 'Bangalore, India',
+        device: 'Chrome on Windows',
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       };
       setPreviewHtml(renderTemplate(formData.html_content, sampleData));
     }
