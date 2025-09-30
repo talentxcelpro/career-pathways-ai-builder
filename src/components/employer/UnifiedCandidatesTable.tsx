@@ -35,7 +35,8 @@ export const UnifiedCandidatesTable: React.FC = () => {
     activated: 0,
     pending: 0,
     cv_files: 0,
-    profiles: 0
+    profiles: 0,
+    pending_cvs: 0
   });
 
   useEffect(() => {
@@ -58,6 +59,12 @@ export const UnifiedCandidatesTable: React.FC = () => {
         return;
       }
 
+      // Get pending CVs count
+      const { count: pendingCVsCount } = await supabase
+        .from('cv_files')
+        .select('*', { count: 'exact', head: true })
+        .eq('parsing_status', 'pending');
+
       setCandidates(candidatesData || []);
       
       // Calculate stats
@@ -72,10 +79,11 @@ export const UnifiedCandidatesTable: React.FC = () => {
         activated: activatedCount,
         pending: pendingCount,
         cv_files: cvFilesCount,
-        profiles: profilesCount
+        profiles: profilesCount,
+        pending_cvs: pendingCVsCount || 0
       });
 
-      console.log(`📊 Loaded ${totalCandidates} candidates`);
+      console.log(`📊 Loaded ${totalCandidates} candidates, ${pendingCVsCount} pending CVs`);
       
     } catch (error) {
       console.error('Error in fetchCandidates:', error);
@@ -191,24 +199,35 @@ export const UnifiedCandidatesTable: React.FC = () => {
   };
 
   const processPendingCVs = async () => {
+    if (stats.pending_cvs === 0) {
+      toast.info('No pending CVs to process');
+      return;
+    }
+
     setProcessing(true);
     try {
+      console.log(`🚀 Starting CV processing for ${stats.pending_cvs} pending CVs...`);
+      
       const { data, error } = await supabase.functions.invoke('run-cv-processing', {
         body: {}
       });
       
       if (error) {
         console.error('CV processing error:', error);
-        toast.error('Failed to process CVs: ' + error.message);
+        toast.error(`Failed to process CVs: ${error.message}`);
       } else {
         console.log('CV processing result:', data);
-        toast.success('CV processing completed! Refreshing data...');
+        if (data?.success) {
+          toast.success(`🎉 Successfully processed ${stats.pending_cvs} CVs! Refreshing data...`);
+        } else {
+          toast.warning('CV processing completed with some issues. Check logs for details.');
+        }
         // Refresh the data after processing
         await fetchCandidates();
       }
     } catch (error) {
       console.error('Error in CV processing:', error);
-      toast.error('Failed to start CV processing');
+      toast.error(`Failed to start CV processing: ${error.message}`);
     } finally {
       setProcessing(false);
     }
@@ -224,6 +243,36 @@ export const UnifiedCandidatesTable: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Prominent Pending CVs Alert */}
+      {stats.pending_cvs > 0 && (
+        <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-300 rounded-xl p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-500/20 rounded-lg">
+                <AlertCircle className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-orange-900">⚠️ {stats.pending_cvs} CVs Ready for Processing</h3>
+                <p className="text-sm text-orange-700">Click "Process Pending CVs" to convert these into user accounts and send activation emails.</p>
+              </div>
+            </div>
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
+              onClick={processPendingCVs}
+              disabled={processing}
+            >
+              {processing ? (
+                <RefreshCw className="h-5 w-5 mr-3 animate-spin" />
+              ) : (
+                <Play className="h-5 w-5 mr-3" />
+              )}
+              🚀 Process Now
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
@@ -268,17 +317,17 @@ export const UnifiedCandidatesTable: React.FC = () => {
             </CardTitle>
             <div className="flex gap-2">
               <Button 
-                size="sm" 
-                variant="secondary" 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-blue-600 text-white font-semibold px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
                 onClick={processPendingCVs}
                 disabled={processing}
               >
                 {processing ? (
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  <RefreshCw className="h-5 w-5 mr-3 animate-spin" />
                 ) : (
-                  <Play className="h-4 w-4 mr-2" />
+                  <Play className="h-5 w-5 mr-3" />
                 )}
-                Process Pending CVs
+                🚀 Process Pending CVs ({stats.pending_cvs})
               </Button>
               <Button 
                 size="sm" 
@@ -289,6 +338,23 @@ export const UnifiedCandidatesTable: React.FC = () => {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
+              {stats.pending_cvs > 0 && (
+                <Button 
+                  size="sm" 
+                  variant="destructive"
+                  onClick={async () => {
+                    const { data, error } = await supabase.functions.invoke('fix-cv-processing', { body: {} });
+                    if (error) {
+                      toast.error('Direct CV processing failed: ' + error.message);
+                    } else {
+                      toast.success('Direct CV processing completed!');
+                      await fetchCandidates();
+                    }
+                  }}
+                >
+                  🔧 Test Direct Processing
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>

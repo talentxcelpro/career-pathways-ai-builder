@@ -41,7 +41,7 @@ export const CVDatabase: React.FC = () => {
           status,
           user_id,
           job_id,
-          jobs(title, company_name),
+          jobs!fk_job_applications_job_id(title, company_name),
           profiles(full_name, email, title)
         `)
         .order('applied_at', { ascending: false })
