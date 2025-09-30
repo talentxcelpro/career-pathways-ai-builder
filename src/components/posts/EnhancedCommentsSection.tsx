@@ -19,7 +19,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { MoreHorizontal, Edit, Trash2, Flag } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Flag, Smile } from 'lucide-react';
+import { EmojiPicker } from './EmojiPicker';
 
 interface EnhancedCommentsSectionProps {
   postId: string;
@@ -234,20 +235,25 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="mt-4 border-t pt-4 max-h-[500px] overflow-y-auto">
+    <div className="mt-4 border-t pt-4 max-h-[400px] overflow-y-auto">
       {/* Add Comment Form */}
-      <div className="flex space-x-3 mb-4">
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>You</AvatarFallback>
+      <div className="flex space-x-2 mb-4">
+        <Avatar className="h-7 w-7 flex-shrink-0">
+          <AvatarFallback className="text-xs">You</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <Textarea
             placeholder="Write a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[60px] max-h-[100px] resize-none text-sm"
+            className="min-h-[48px] max-h-[80px] resize-none text-sm"
           />
-          <div className="flex justify-end mt-2">
+          <div className="flex justify-between items-center mt-2">
+            <EmojiPicker onEmojiSelect={(emoji) => setNewComment(prev => prev + emoji)}>
+              <Button variant="ghost" size="sm" type="button">
+                <Smile className="h-4 w-4" />
+              </Button>
+            </EmojiPicker>
             <Button 
               onClick={handleAddComment}
               disabled={addCommentMutation.isPending || !newComment.trim()}
@@ -260,15 +266,15 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
       </div>
 
       {/* Comments List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {isLoading ? (
           <div className="text-sm text-muted-foreground">Loading comments...</div>
         ) : comments && comments.length > 0 ? (
           comments.map((comment: any) => (
-            <div key={comment.id} className="flex space-x-3">
-              <Avatar className="h-8 w-8">
+            <div key={comment.id} className="flex space-x-2">
+              <Avatar className="h-7 w-7 flex-shrink-0">
                 <AvatarImage src={comment.profiles?.profile_picture_url} />
-                <AvatarFallback>
+                <AvatarFallback className="text-xs">
                   {generateInitials(comment.profiles)}
                 </AvatarFallback>
               </Avatar>
@@ -298,13 +304,13 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-muted rounded-lg p-3">
+                  <div className="bg-muted rounded-lg p-2.5">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="font-medium text-sm">
+                        <div className="font-medium text-xs">
                           {formatDisplayName(comment.profiles)}
                         </div>
-                        <div className="text-sm mt-1">
+                        <div className="text-xs mt-1">
                           {comment.content}
                         </div>
                       </div>

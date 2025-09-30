@@ -32,24 +32,35 @@ export const PostActions: React.FC<PostActionsProps> = ({
   const queryClient = useQueryClient();
   const { createPostShareData } = useShareContent();
 
-  // Check if post is already saved on mount
+  // Check if post is already saved and liked on mount
   React.useEffect(() => {
-    const checkSavedStatus = async () => {
+    const checkStatus = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        const { data } = await supabase
+        // Check saved status
+        const { data: savedData } = await supabase
           .from('saved_posts')
           .select('id')
           .eq('post_id', postId)
           .eq('user_id', session.user.id)
           .single();
         
-        setIsSaved(!!data);
+        setIsSaved(!!savedData);
+
+        // Check liked status
+        const { data: likedData } = await supabase
+          .from('post_likes')
+          .select('id')
+          .eq('post_id', postId)
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setIsLiked(!!likedData);
       }
       setIsCheckingSaved(false);
     };
 
-    checkSavedStatus();
+    checkStatus();
   }, [postId]);
 
   // Like mutation

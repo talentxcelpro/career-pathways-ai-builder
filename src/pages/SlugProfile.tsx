@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { useSlugProfile } from '@/hooks/useSlugProfile';
 import { useSEO } from '@/hooks/useSEO';
 import { useViewportProfileTracking } from '@/hooks/useViewportProfileTracking';
@@ -156,13 +156,13 @@ const SlugProfile = () => {
                       <h3 className="font-semibold">Profile Stats</h3>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <div className="flex items-center justify-between">
+                      <Link to="/profile/viewers" className="flex items-center justify-between hover:bg-accent p-2 rounded-lg transition-colors -m-2">
                         <div className="flex items-center gap-2">
                           <Eye className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">Profile Views</span>
                         </div>
-                        <span className="font-semibold">{stats?.profileViews || 0} ({stats?.uniqueViewers || 0} unique)</span>
-                      </div>
+                        <span className="font-semibold text-primary">{stats?.profileViews || 0} ({stats?.uniqueViewers || 0} unique)</span>
+                      </Link>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4 text-muted-foreground" />
