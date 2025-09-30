@@ -30920,6 +30920,36 @@ export type Database = {
           },
         ]
       }
+      user_activation_tokens: {
+        Row: {
+          activated_at: string | null
+          created_at: string | null
+          cv_file_id: string | null
+          email: string
+          expires_at: string | null
+          id: string
+          token: string
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string | null
+          cv_file_id?: string | null
+          email: string
+          expires_at?: string | null
+          id?: string
+          token: string
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string | null
+          cv_file_id?: string | null
+          email?: string
+          expires_at?: string | null
+          id?: string
+          token?: string
+        }
+        Relationships: []
+      }
       user_activities: {
         Row: {
           activity_description: string | null
