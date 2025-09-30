@@ -18,6 +18,7 @@ import UserProfile from "../pages/UserProfile";
 import TXCPricing from "../pages/TXCPricing";
 import TXCMining from "../pages/TXCMining";
 import SlugProfile from "../pages/SlugProfile";
+import ProfileViewersList from "../pages/profile/ProfileViewersList";
 
 export const profileRoutes = [
   {
@@ -107,6 +108,12 @@ export const profileRoutes = [
     title: "Profile Analytics",
     to: "/profile/analytics",
     page: <ProfileAnalytics />,
+    isPublic: true,
+  },
+  {
+    title: "Profile Viewers",
+    to: "/profile/viewers",
+    page: <ProfileViewersList />,
     isPublic: true,
   },
   {

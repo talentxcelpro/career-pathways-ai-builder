@@ -234,7 +234,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="mt-4 border-t pt-4">
+    <div className="mt-4 border-t pt-4 max-h-[500px] overflow-y-auto">
       {/* Add Comment Form */}
       <div className="flex space-x-3 mb-4">
         <Avatar className="h-8 w-8">
@@ -245,7 +245,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
             placeholder="Write a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[80px] resize-none"
+            className="min-h-[60px] max-h-[100px] resize-none text-sm"
           />
           <div className="flex justify-end mt-2">
             <Button 
