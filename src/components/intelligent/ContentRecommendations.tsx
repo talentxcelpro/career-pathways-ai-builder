@@ -47,7 +47,7 @@ export const ContentRecommendations: React.FC<ContentRecommendationsProps> = ({
         navigate(`/mobile/reels?id=${item.id}`);
         break;
       case 'post':
-        navigate(`/mobile/network?post=${item.id}`);
+        navigate(`/network/people?post=${item.id}`);
         break;
       case 'job':
         navigate(`/jobs/${item.id}`);

@@ -388,7 +388,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Heart,
           label: 'Activity',
-          action: () => navigate('/mobile/network'),
+          action: () => navigate('/network/people'),
           isActive: false
         },
         {

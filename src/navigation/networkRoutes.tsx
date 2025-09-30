@@ -53,7 +53,7 @@ export const networkRoutes = [
   },
   {
     title: "Mobile Network",
-    to: "/mobile/network",
+    to: "/network/people",
     page: <MobileNetwork />,
     isPublic: true,
   },

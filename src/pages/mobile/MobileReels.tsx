@@ -72,7 +72,7 @@ export const MobileReels = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/mobile/network')}
+              onClick={() => navigate('/network/people')}
               className="flex flex-col items-center gap-1 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12 transition-all"
             >
               <Heart className="h-5 w-5" />
