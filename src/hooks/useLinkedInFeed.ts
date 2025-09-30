@@ -67,21 +67,53 @@ export const useLinkedInFeed = () => {
       const limit = 20; // Posts per page
       const offset = pageParam * limit;
 
-      // Fetch posts with related data
+      // Fetch posts without invalid foreign key joins
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select(`
-          *,
-          post_likes!left(id, user_id),
-          post_comments!left(id, content, created_at),
-          post_shares!left(id)
-        `)
-        .eq('visibility', 'public')
-        .eq('is_deleted', false)
+        .select('*')
+        .eq('is_public', true)
+        .eq('status', 'published')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
       if (postsError) throw postsError;
+      if (!postsData || postsData.length === 0) {
+        return { posts: [], nextPage: undefined, hasMore: false };
+      }
+
+      // Get post IDs for fetching related data
+      const postIds = postsData.map(post => post.id);
+
+      // Fetch likes, comments separately
+      const [likesResult, commentsResult] = await Promise.all([
+        supabase
+          .from('post_likes')
+          .select('post_id, user_id')
+          .in('post_id', postIds),
+        supabase
+          .from('post_comments')
+          .select('id, post_id, content, created_at, user_id')
+          .in('post_id', postIds)
+          .order('created_at', { ascending: false })
+      ]);
+
+      // Create maps for likes and comments
+      const likesMap = new Map<string, any[]>();
+      const commentsMap = new Map<string, any[]>();
+
+      likesResult.data?.forEach(like => {
+        if (!likesMap.has(like.post_id)) {
+          likesMap.set(like.post_id, []);
+        }
+        likesMap.get(like.post_id)?.push(like);
+      });
+
+      commentsResult.data?.forEach(comment => {
+        if (!commentsMap.has(comment.post_id)) {
+          commentsMap.set(comment.post_id, []);
+        }
+        commentsMap.get(comment.post_id)?.push(comment);
+      });
 
       // Get unique author IDs
       const authorIds = [...new Set(postsData.map(post => post.author_id).filter(Boolean))];
@@ -124,10 +156,12 @@ export const useLinkedInFeed = () => {
         const isConnection = connections.has(post.author_id);
         const isLiked = likedPosts.has(post.id);
         
+        // Get likes and comments for this post
+        const postLikes = likesMap.get(post.id) || [];
+        const postComments = commentsMap.get(post.id) || [];
+        
         // Get top comment
-        const topComment = post.post_comments && post.post_comments.length > 0 
-          ? post.post_comments[0] 
-          : null;
+        const topComment = postComments.length > 0 ? postComments[0] : null;
 
         // Determine content type and URL
         let contentType: 'video' | 'image' | 'text' | 'article' = 'text';
@@ -163,11 +197,11 @@ export const useLinkedInFeed = () => {
           },
           caption: post.content,
           stats: {
-            likes: post.post_likes?.length || 0,
-            comments: post.post_comments?.length || 0,
-            shares: post.post_shares?.length || 0,
+            likes: postLikes.length,
+            comments: postComments.length,
+            shares: 0, // Shares not implemented yet
             isLiked,
-            isBookmarked: false // TODO: Implement bookmarks
+            isBookmarked: false
           },
           isJobPost: post.content_type === 'job' || post.tags?.includes('job'),
           isPromoted: false, // TODO: Implement promoted posts
