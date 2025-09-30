@@ -23,45 +23,30 @@ const EmailSystemTest: React.FC = () => {
 
     setIsLoading(true);
     try {
-      console.log('Testing direct SMTP email to:', testEmail);
+      console.log('Testing direct SES email to:', testEmail);
       
-      const { data, error } = await supabase.functions.invoke('send-email-smtp', {
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
         body: {
-          to: testEmail,
-          subject: 'Direct SMTP Test - TalentXcel',
-          html: `
-            <html>
-              <body style="font-family: Arial, sans-serif; padding: 20px;">
-                <div style="max-width: 600px; margin: 0 auto;">
-                  <h1 style="color: #333;">Direct SMTP Test Email</h1>
-                  <p>This email was sent directly via SMTP using AWS SES.</p>
-                  <p><strong>Recipient:</strong> ${testEmail}</p>
-                  <p><strong>Date:</strong> ${new Date().toISOString()}</p>
-                  <p><strong>Function:</strong> send-email-smtp</p>
-                  <hr style="margin: 20px 0;">
-                  <p style="color: #666; font-size: 12px;">
-                    This is a test message to verify SMTP functionality.
-                  </p>
-                </div>
-              </body>
-            </html>
-          `
+          event_name: 'test_email',
+          recipient_email: testEmail,
+          recipient_name: 'Test User',
+          platform_name: 'TalentXcel'
         }
       });
       
       if (error) {
-        console.error('SMTP test failed:', error);
-        toast.error('SMTP test failed: ' + error.message);
+        console.error('SES test failed:', error);
+        toast.error('SES test failed: ' + error.message);
       } else if (data?.success) {
-        console.log('SMTP test successful:', data);
-        toast.success(`✅ Direct SMTP test successful! Message ID: ${data.messageId}`);
+        console.log('SES test successful:', data);
+        toast.success(`✅ Direct SES test successful!`);
       } else {
-        console.error('SMTP test returned error:', data);
-        toast.error('SMTP test failed: ' + (data?.error || 'Unknown error'));
+        console.error('SES test returned error:', data);
+        toast.error('SES test failed: ' + (data?.error || 'Unknown error'));
       }
     } catch (error: any) {
-      console.error('SMTP test error:', error);
-      toast.error('SMTP test failed: ' + error.message);
+      console.error('SES test error:', error);
+      toast.error('SES test failed: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -75,36 +60,30 @@ const EmailSystemTest: React.FC = () => {
 
     setIsLoading(true);
     try {
-      console.log('Testing notification email to:', testEmail);
+      console.log('Testing welcome email to:', testEmail);
       
       const { data, error } = await supabase.functions.invoke('send-email-notification', {
         body: {
-          event_name: 'welcome_email',
-          recipients: [
-            { 
-              recipient_email: testEmail, 
-              name: 'Test User',
-              user_name: 'Test User'
-            }
-          ],
-          platform_name: 'TalentXcel',
-          support_email: 'support@talentxcel.in'
+          event_name: 'welcome',
+          recipient_email: testEmail,
+          recipient_name: 'Test User',
+          platform_name: 'TalentXcel'
         }
       });
       
       if (error) {
-        console.error('Notification test failed:', error);
-        toast.error('Notification test failed: ' + error.message);
+        console.error('Welcome email test failed:', error);
+        toast.error('Welcome email test failed: ' + error.message);
       } else if (data?.success) {
-        console.log('Notification test successful:', data);
-        toast.success(`✅ Notification email sent! Success: ${data.stats?.successful}, Failed: ${data.stats?.failed}`);
+        console.log('Welcome email test successful:', data);
+        toast.success(`✅ Welcome email sent successfully!`);
       } else {
-        console.error('Notification test returned error:', data);
-        toast.error('Notification test failed: ' + (data?.error || 'Unknown error'));
+        console.error('Welcome email test returned error:', data);
+        toast.error('Welcome email test failed: ' + (data?.error || 'Unknown error'));
       }
     } catch (error: any) {
-      console.error('Notification test error:', error);
-      toast.error('Notification test failed: ' + error.message);
+      console.error('Welcome email test error:', error);
+      toast.error('Welcome email test failed: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -113,50 +92,51 @@ const EmailSystemTest: React.FC = () => {
   const cleanEmailQueue = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      console.log('Cleaning email queue...');
+      console.log('Processing email queue...');
       
-      const { data, error } = await supabase.functions.invoke('fix-email-automation', {
-        body: {
-          action: 'cleanup_old'
-        }
+      const { data, error } = await supabase.functions.invoke('process-email-queue', {
+        body: {}
       });
       
       if (error) {
-        console.error('Queue cleanup failed:', error);
-        toast.error('Queue cleanup failed: ' + error.message);
+        console.error('Queue processing failed:', error);
+        toast.error('Queue processing failed: ' + error.message);
       } else {
-        console.log('Queue cleanup successful:', data);
-        toast.success(`✅ Email queue cleaned! Processed: ${data.results?.total_processed || 0} emails`);
+        console.log('Queue processing successful:', data);
+        toast.success(`✅ Email queue processed! Sent: ${data.processed || 0}, Failed: ${data.failed || 0}`);
       }
     } catch (error: any) {
-      console.error('Queue cleanup error:', error);
-      toast.error('Queue cleanup failed: ' + error.message);
+      console.error('Queue processing error:', error);
+      toast.error('Queue processing failed: ' + error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const fixSMTPDNS = async (): Promise<void> => {
+  const checkSESHealth = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      console.log('Fixing SMTP DNS issues...');
+      console.log('Checking SES health and quota...');
       
-      const { data, error } = await supabase.functions.invoke('fix-smtp-dns', {
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
         body: {
-          action: 'fix_all'
+          event_name: 'profile_completion',
+          recipient_email: testEmail,
+          recipient_name: 'Health Check User',
+          platform_name: 'TalentXcel'
         }
       });
       
       if (error) {
-        console.error('SMTP DNS fix failed:', error);
-        toast.error('SMTP DNS fix failed: ' + error.message);
+        console.error('SES health check failed:', error);
+        toast.error('SES health check failed: ' + error.message);
       } else {
-        console.log('SMTP DNS fix successful:', data);
-        toast.success(`✅ SMTP DNS issues resolved! Fixed ${data.results?.fixed_failed_emails || 0} failed emails`);
+        console.log('SES health check successful:', data);
+        toast.success(`✅ SES is healthy! Profile completion email sent.`);
       }
     } catch (error: any) {
-      console.error('SMTP DNS fix error:', error);
-      toast.error('SMTP DNS fix failed: ' + error.message);
+      console.error('SES health check error:', error);
+      toast.error('SES health check failed: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -190,7 +170,7 @@ const EmailSystemTest: React.FC = () => {
             disabled={isLoading || !testEmail}
             className="w-full"
           >
-            {isLoading ? 'Testing...' : 'Test Direct SMTP'}
+            {isLoading ? 'Testing...' : 'Test SES Direct'}
           </Button>
           
           <Button 
@@ -199,7 +179,7 @@ const EmailSystemTest: React.FC = () => {
             variant="outline"
             className="w-full"
           >
-            {isLoading ? 'Testing...' : 'Test Notification'}
+            {isLoading ? 'Testing...' : 'Test Welcome'}
           </Button>
         </div>
 
@@ -210,26 +190,26 @@ const EmailSystemTest: React.FC = () => {
             variant="destructive"
             className="w-full"
           >
-            {isLoading ? 'Cleaning...' : 'Clean Queue'}
+            {isLoading ? 'Processing...' : 'Process Queue'}
           </Button>
 
           <Button 
-            onClick={fixSMTPDNS}
-            disabled={isLoading}
+            onClick={checkSESHealth}
+            disabled={isLoading || !testEmail}
             variant="secondary"
             className="w-full"
           >
-            {isLoading ? 'Fixing...' : 'Fix SMTP DNS'}
+            {isLoading ? 'Checking...' : 'SES Health Check'}
           </Button>
         </div>
 
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
           <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Email System Tests:</h4>
           <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-            <li>• <strong>Direct SMTP</strong> - Tests core SMTP function with AWS SES</li>
-            <li>• <strong>Notification</strong> - Tests template-based notification system</li>
-            <li>• <strong>Clean Queue</strong> - Removes stuck/invalid emails from queue</li>
-            <li>• <strong>Fix SMTP DNS</strong> - Resolves DNS issues and updates SMTP configuration</li>
+            <li>• <strong>Test SES Direct</strong> - Tests core test_email template with AWS SES</li>
+            <li>• <strong>Test Welcome</strong> - Tests welcome email template</li>
+            <li>• <strong>Process Queue</strong> - Processes pending emails in queue</li>
+            <li>• <strong>SES Health Check</strong> - Tests profile completion template</li>
             <li>• Check your inbox AND spam folder after testing</li>
             <li>• Monitor AWS SES dashboard for delivery statistics</li>
           </ul>
