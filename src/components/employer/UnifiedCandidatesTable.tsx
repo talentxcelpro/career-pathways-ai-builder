@@ -125,8 +125,8 @@ export const UnifiedCandidatesTable: React.FC = () => {
       const pendingCount = allCandidates.filter(c => 
         c.activation_status === 'pending'
       ).length;
-      const cvFilesCount = allCandidates.filter(c => c.source === 'cv_file' || c.source_type === 'cv_file').length;
-      const profilesCount = allCandidates.filter(c => c.source === 'platform' || c.source === 'application' || c.source_type === 'profile').length;
+      const cvFilesCount = allCandidates.filter(c => c.source_type === 'cv_file').length;
+      const profilesCount = allCandidates.filter(c => c.source_type === 'profile').length;
       
       setStats({
         total: totalCandidates,
@@ -137,7 +137,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
         pending_cvs: errorCVsCount || 0 // Show error CVs as they can be reprocessed
       });
 
-      console.log(`📊 Loaded ${totalCandidates} candidates, ${errorCVsCount || 0} error CVs that can be reprocessed`);
+      console.log(`📊 Stats: Total=${totalCandidates}, Activated=${activatedCount}, CV Files=${cvFilesCount}, Profiles=${profilesCount}, Error CVs=${errorCVsCount || 0}`);
       
     } catch (error) {
       console.error('Error in fetchCandidates:', error);
@@ -395,6 +395,27 @@ export const UnifiedCandidatesTable: React.FC = () => {
     }
   };
 
+  const testCVProcessing = async () => {
+    try {
+      console.log('🧪 Testing CV processing edge function...');
+      
+      const { data, error } = await supabase.functions.invoke('run-cv-processing', {
+        body: { healthCheck: true }
+      });
+      
+      if (error) {
+        console.error('Health check error:', error);
+        toast.error(`Health check failed: ${error.message}`);
+      } else {
+        console.log('Health check result:', data);
+        toast.success('✅ Edge function is working! Health check passed.');
+      }
+    } catch (error) {
+      console.error('Health check exception:', error);
+      toast.error(`Health check exception: ${error.message}`);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -504,17 +525,9 @@ export const UnifiedCandidatesTable: React.FC = () => {
                 <Button 
                   size="sm" 
                   variant="destructive"
-                  onClick={async () => {
-                    const { data, error } = await supabase.functions.invoke('fix-cv-processing', { body: {} });
-                    if (error) {
-                      toast.error('Direct CV processing failed: ' + error.message);
-                    } else {
-                      toast.success('Direct CV processing completed!');
-                      await fetchCandidates();
-                    }
-                  }}
+                  onClick={testCVProcessing}
                 >
-                  🔧 Test Direct Processing
+                  🧪 Test Edge Function
                 </Button>
               )}
             </div>

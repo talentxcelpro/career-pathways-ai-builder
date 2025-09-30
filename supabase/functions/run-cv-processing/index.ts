@@ -18,6 +18,28 @@ serve(async (req) => {
 
   try {
     console.log('🚀 Starting CV processing pipeline...');
+    
+    // Add health check response for empty body requests
+    const body = await req.text();
+    let requestData = {};
+    
+    if (body && body.trim()) {
+      try {
+        requestData = JSON.parse(body);
+      } catch (e) {
+        console.log('Could not parse request body, proceeding with empty object');
+      }
+    }
+    
+    if (requestData.healthCheck) {
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'CV Processing function is healthy',
+        timestamp: new Date().toISOString()
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
     // Get error CVs that can be reprocessed
     const { data: errorCVs, error: fetchError } = await supabase
