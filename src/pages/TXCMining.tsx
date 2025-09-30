@@ -157,11 +157,29 @@ const TXCMining: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Admin Panel for TXC Distribution */}
-        <div className="mb-8 space-y-4">
-          <ComprehensiveTXCDistribution />
-          <RetroactiveTXCAdmin />
-        </div>
+        {/* Symbolic Mining Visual */}
+        <Card className="mb-8 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <div className="relative inline-block mb-4">
+                <Coins className="h-20 w-20 text-green-600 animate-bounce" />
+                <Sparkles className="h-8 w-8 text-yellow-500 absolute -top-2 -right-2 animate-pulse" />
+              </div>
+              <h3 className="text-2xl font-bold text-green-700 mb-2">⛏️ Active Mining Session</h3>
+              <p className="text-muted-foreground mb-4">Your activities are earning TXC tokens in real-time!</p>
+              <div className="flex justify-center gap-4">
+                <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-lg shadow">
+                  <Zap className="h-5 w-5 text-yellow-500 mx-auto mb-1" />
+                  <p className="text-sm font-semibold">Fast Earning</p>
+                </div>
+                <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-lg shadow">
+                  <Trophy className="h-5 w-5 text-green-600 mx-auto mb-1" />
+                  <p className="text-sm font-semibold">Rewards Ready</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Mining Dashboard */}
         <TXCMiningDashboard />

@@ -93,22 +93,79 @@ const emailTemplates = {
     `
   },
   'social.new_post': {
-    subject: "{{author_name}} shared a new post on {{platform_name}}",
+    subject: "{{author_name}} shared a new post - TalentXcel",
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #2563eb;">New Post from Your Connection</h1>
-        <p>Hi {{recipient_name}},</p>
-        <p><strong>{{author_name}}</strong> just shared a new post:</p>
-        <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
-          <p style="margin: 0; color: #374151;">{{post_preview}}</p>
-        </div>
-        <p>Check out the full post and engage with your connection!</p>
-        <div style="margin: 30px 0;">
-          <a href="{{platform_url}}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Post</a>
-        </div>
-        <p style="color: #6b7280; font-size: 14px;">You're receiving this because you're connected with {{author_name}} on {{platform_name}}.</p>
-        <p>Best regards,<br>The {{platform_name}} Team</p>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <!-- Header with TalentXcel Branding -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 30px; text-align: center;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                      🌟 TalentXcel
+                    </h1>
+                    <p style="margin: 8px 0 0 0; color: #d1fae5; font-size: 14px;">India's Professional Network</p>
+                  </td>
+                </tr>
+                
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 24px; font-weight: 600;">New Post from Your Connection</h2>
+                    
+                    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Hi <strong>{{recipient_name}}</strong>,
+                    </p>
+                    
+                    <p style="margin: 0 0 25px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      <strong style="color: #10b981;">{{author_name}}</strong> just shared a new post:
+                    </p>
+                    
+                    <!-- Post Preview Box -->
+                    <div style="background: linear-gradient(to right, #f0fdf4, #dcfce7); padding: 24px; border-radius: 10px; margin: 0 0 30px 0; border-left: 4px solid #10b981;">
+                      <p style="margin: 0; color: #1f2937; font-size: 15px; line-height: 1.7; font-style: italic;">
+                        "{{post_preview}}"
+                      </p>
+                    </div>
+                    
+                    <p style="margin: 0 0 25px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                      Check out the full post and engage with your connection!
+                    </p>
+                    
+                    <!-- CTA Button -->
+                    <div style="text-align: center; margin: 35px 0;">
+                      <a href="https://talentxcel.in" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                        View Post →
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                    <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 13px; line-height: 1.6;">
+                      You're receiving this because you're connected with <strong>{{author_name}}</strong> on TalentXcel.
+                    </p>
+                    <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                      © 2025 TalentXcel. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
     `
   },
   'campaign.email': {
