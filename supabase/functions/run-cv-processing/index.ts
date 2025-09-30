@@ -19,40 +19,71 @@ serve(async (req) => {
   try {
     console.log('🚀 Starting CV processing pipeline...');
 
-    // Call the fix-cv-processing function
-    const { data: cvResult, error: cvError } = await supabase.functions.invoke('fix-cv-processing', {
-      body: {}
-    });
+    // Get pending CVs
+    const { data: pendingCVs, error: fetchError } = await supabase
+      .from('cv_files')
+      .select('*')
+      .eq('parsing_status', 'pending')
+      .limit(50);
 
-    if (cvError) {
-      console.error('❌ CV processing failed:', cvError);
+    if (fetchError) {
+      console.error('❌ Error fetching pending CVs:', fetchError);
       return new Response(JSON.stringify({
         success: false,
-        error: cvError.message,
-        step: 'cv_processing'
+        error: fetchError.message
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    console.log('✅ CV processing completed:', cvResult);
-
-    // Call email queue processing
-    const { data: emailResult, error: emailError } = await supabase.functions.invoke('process-email-queue', {
-      body: {}
-    });
-
-    if (emailError) {
-      console.error('⚠️ Email processing failed (non-critical):', emailError);
-    } else {
-      console.log('✅ Email processing completed:', emailResult);
+    if (!pendingCVs || pendingCVs.length === 0) {
+      console.log('✅ No pending CVs to process');
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'No pending CVs to process',
+        processed: 0
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
+
+    console.log(`📋 Found ${pendingCVs.length} pending CVs to process`);
+
+    let processed = 0;
+    let failed = 0;
+
+    // Process each CV
+    for (const cv of pendingCVs) {
+      try {
+        console.log(`🔄 Processing CV: ${cv.original_filename} (${cv.id})`);
+
+        // Call fix-cv-processing for this specific CV
+        const { data: result, error } = await supabase.functions.invoke('fix-cv-processing', {
+          body: { cvId: cv.id }
+        });
+
+        if (error) {
+          console.error(`❌ Failed to process CV ${cv.id}:`, error);
+          failed++;
+        } else {
+          console.log(`✅ Successfully processed CV ${cv.id}:`, result);
+          processed++;
+        }
+      } catch (error) {
+        console.error(`❌ Error processing CV ${cv.id}:`, error);
+        failed++;
+      }
+    }
+
+    console.log(`✅ Processing complete: ${processed} processed, ${failed} failed`);
 
     return new Response(JSON.stringify({
       success: true,
-      cvProcessing: cvResult,
-      emailProcessing: emailResult
+      message: `Processed ${processed} CVs, ${failed} failed`,
+      processed,
+      failed,
+      total: pendingCVs.length
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
