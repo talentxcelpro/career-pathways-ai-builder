@@ -1,5 +1,5 @@
 project_id = "dthlgsnakhoftinssokm"
-# EMERGENCY CLEANUP v2.1.0: Deploying only 42 functions, removing 200+ legacy - 2025-09-22T17:30
+# OPTIMIZED v3.0.0: Essential functions only - 2025-09-30
 
 [api]
 enabled = true
@@ -20,221 +20,67 @@ password_min_length = 8
 security_password_change_confirm = true
 security_update_password_require_reauthentication = true
 
-# Core Infrastructure
+# Core Infrastructure (Essential)
 [functions.health-check]
-verify_jwt = false
-
-[functions.admin-health-check]
-verify_jwt = false
-
-[functions.get-token-balance]
-verify_jwt = false
-
-[functions.initialize-user-txc]
 verify_jwt = false
 
 [functions.storage-proxy]
 verify_jwt = false
 
-# Authentication & Security
+# Authentication & Security (Essential)
 [functions.auth-service-root]
 verify_jwt = false
 
-[functions.secure-admin-validation]
-verify_jwt = false
-
-[functions.get-realtime-token]
-verify_jwt = false
-
-# Email System
+# Email System (Core only)
 [functions.unified-email-service]
 verify_jwt = false
 
 [functions.process-email-queue]
 verify_jwt = false
 
-[functions.end-to-end-email-test]
-verify_jwt = false
-
-[functions.optimize-email-queue]
-verify_jwt = false
-
-[functions.send-email-notification]
-verify_jwt = false
-
-[functions.email-webhook]
-verify_jwt = false
-
-# AI Services
-[functions.ai-agent]
-verify_jwt = false
-
+# AI Services (Core only)
 [functions.ai-chat]
-verify_jwt = false
-
-[functions.ai-comprehensive]
-verify_jwt = false
-
-[functions.ai-content-generator]
 verify_jwt = false
 
 [functions.ai-resume-parser]
 verify_jwt = false
 
-[functions.ai-ats-analyzer]
-verify_jwt = false
-
-[functions.ai-resume-content]
-verify_jwt = false
-
 [functions.ai-service-matching]
 verify_jwt = true
 
-# Testing
-[functions.simple-test]
-verify_jwt = false
-
-# Learning Management
-[functions.complete-course-content]
-verify_jwt = false
-
-[functions.course-content-generator]
-verify_jwt = false
-
-[functions.course-enhancement]
-verify_jwt = false
-
-[functions.fix-course-videos]
-verify_jwt = false
-
-# Job Management
+# Job Management (Essential)
 [functions.bulk-job-upload-v2]
 verify_jwt = false
 
-[functions.job-quality-checker]
-verify_jwt = false
-
-[functions.job-expiry-cleanup]
-verify_jwt = false
-
-# CV Processing
-[functions.cv-search]
-verify_jwt = false
-
+# CV Processing (Essential)
 [functions.cv-parser]
 verify_jwt = false
 
-[functions.cv-activation]
+[functions.cv-search]
 verify_jwt = false
 
-[functions.ai-cv-matcher]
-verify_jwt = false
-
-[functions.ai-cv-enhancer]
-verify_jwt = false
-
-[functions.enterprise-automation]
-verify_jwt = false
-
-[functions.enterprise-integrations]
-verify_jwt = false
-
-[functions.system-optimizer]
-verify_jwt = false
-
-[functions.bulk-download-cvs]
-verify_jwt = false
-
-[functions.comprehensive-resume-extractor]
-verify_jwt = false
-
-[functions.record-resume-download]
-verify_jwt = false
-
-# Payments
+# Payments (Essential)
 [functions.razorpay-create-order]
 verify_jwt = false
 
 [functions.razorpay-verify-payment]
 verify_jwt = false
 
-[functions.process-txc-purchase]
-verify_jwt = false
-
-[functions.txc-unified-purchase]
-verify_jwt = false
-
-[functions.claim-daily-bonus]
-verify_jwt = false
-
-# Notifications
+# Notifications (Essential)
 [functions.send-push-notification]
 verify_jwt = false
 
-[functions.register-push-token]
-verify_jwt = false
-
-[functions.webhook-notifications]
-verify_jwt = false
-
-# Utilities
-[functions.scrape-content]
-verify_jwt = false
-
-[functions.image-proxy]
-verify_jwt = false
-
-[functions.qr-generator]
-verify_jwt = false
-
-# Agent System
-[functions.agent-worker]
-verify_jwt = false
-
-# Course Management
-[functions.mass-course-population]
-verify_jwt = false
-
-# TXC Mining System
+# TXC System (Core)
 [functions.earn-txc]
 verify_jwt = false
 
-[functions.comprehensive-txc-distribution]
+# Essential Utilities
+[functions.image-proxy]
 verify_jwt = false
 
-[functions.retroactive-txc-rewards]
-verify_jwt = false
-
-# Job Generation
-[functions.generate-realistic-jobs]
-verify_jwt = false
-
-# Achievement System
-[functions.achievement-tracker]
-verify_jwt = false
-
-[functions.activity-reward-engine]
-verify_jwt = false
-
-# SEO System
-[functions.seo-automation-engine]
-verify_jwt = false
-
-# Monitoring & Cleanup
+# System Maintenance (Essential)
 [functions.database-cleanup]
 verify_jwt = false
 
-[functions.function-monitor]
-verify_jwt = false
-
-[functions.cost-optimizer]
-verify_jwt = false
-
-[functions.ultra-cost-optimizer]
-verify_jwt = false
-
 [functions.system-optimizer]
-verify_jwt = false
-
-[functions.cache-manager]
 verify_jwt = false
