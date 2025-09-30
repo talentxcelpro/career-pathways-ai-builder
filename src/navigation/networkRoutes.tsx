@@ -52,15 +52,10 @@ export const networkRoutes = [
     isPublic: true,
   },
   {
-    title: "Mobile Network",
-    to: "/network/people",
-    page: <MobileNetwork />,
-    isPublic: true,
-  },
-  {
     title: "Network People",
     to: "/network/people",
     page: <People />,
+    isPublic: true,
   },
   {
     title: "My Connections",
