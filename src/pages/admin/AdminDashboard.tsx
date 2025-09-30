@@ -13,6 +13,7 @@ import EmailSystemTest from '@/components/admin/EmailSystemTest';
 import { EmailQueueManager } from '@/components/admin/EmailQueueManager';
 import ProfileReminderEmailSender from '@/components/admin/ProfileReminderEmailSender';
 import { EmailNotificationTest } from '@/components/dashboard/EmailNotificationTest';
+import { SimpleEmailTest } from '@/components/admin/SimpleEmailTest';
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
@@ -90,10 +91,11 @@ const AdminDashboard = () => {
         </div>
 
         {/* Email System Test Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-8">
           <EmailSystemTest />
           <EmailQueueManager />
           <EmailNotificationTest />
+          <SimpleEmailTest />
         </div>
         
         <div className="mt-6">
