@@ -13,6 +13,7 @@ import { EnhancedPostMenu } from '@/components/posts/EnhancedPostMenu';
 import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
 import { useQueryClient } from '@tanstack/react-query';
+import { MobilePostComments } from './MobilePostComments';
 
 interface LinkedInPost {
   id: string;
@@ -86,6 +87,7 @@ const LinkedInPostCard: React.FC<{
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
   const [showFullCaption, setShowFullCaption] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   
   // URL detection for link previews
   const { detectedUrls } = useUrlDetection(post.caption || '');
@@ -300,11 +302,17 @@ const LinkedInPostCard: React.FC<{
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-2 rounded-xl transition-all duration-200"
-            onClick={() => onComment?.(post.id)}
+            onClick={() => setShowComments(true)}
           >
             <MessageCircle className="w-4 h-4" />
             <span className="text-sm font-medium">Comment</span>
           </Button>
+
+          <MobilePostComments 
+            isOpen={showComments}
+            onClose={() => setShowComments(false)}
+            postId={post.id}
+          />
 
           <Button
             variant="ghost"
