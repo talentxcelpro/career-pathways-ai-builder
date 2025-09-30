@@ -4,15 +4,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Eye, Clock, Crown } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfileViewersList() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const FREE_VIEWER_LIMIT = 5;
   const { data: viewers, isLoading } = useQuery({
-    queryKey: ['profile-viewers'],
+    queryKey: ['profile-viewers', user?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -33,8 +37,24 @@ export default function ProfileViewersList() {
 
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!user
   });
+
+  // Redirect if not authenticated
+  React.useEffect(() => {
+    if (!user && !isLoading) {
+      navigate('/auth/login');
+    }
+  }, [user, isLoading, navigate]);
+
+  if (!user) {
+    return null;
+  }
+
+  const totalViewers = viewers?.length || 0;
+  const displayedViewers = viewers?.slice(0, FREE_VIEWER_LIMIT) || [];
+  const hiddenViewersCount = Math.max(0, totalViewers - FREE_VIEWER_LIMIT);
 
   if (isLoading) {
     return (
@@ -57,19 +77,20 @@ export default function ProfileViewersList() {
             <CardTitle>Profile Viewers</CardTitle>
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            {viewers?.length || 0} people have viewed your profile
+            {totalViewers} {totalViewers === 1 ? 'person has' : 'people have'} viewed your profile
           </p>
         </CardHeader>
         <CardContent>
-          {!viewers || viewers.length === 0 ? (
+          {totalViewers === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Eye className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No profile views yet</p>
               <p className="text-sm mt-2">Share your profile to get more visibility!</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {viewers.map((view: any) => (
+            <>
+              <div className="space-y-4">
+                {displayedViewers.map((view: any) => (
                 <Link
                   key={view.id}
                   to={`/profile/${view.viewer?.id}`}
@@ -109,7 +130,27 @@ export default function ProfileViewersList() {
                   </div>
                 </Link>
               ))}
-            </div>
+              </div>
+
+              {/* Upgrade Prompt */}
+              {hiddenViewersCount > 0 && (
+                <Card className="mt-4 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+                  <CardContent className="p-6 text-center">
+                    <Crown className="h-12 w-12 mx-auto mb-3 text-primary" />
+                    <h3 className="font-semibold text-lg mb-2">
+                      Unlock {hiddenViewersCount} More {hiddenViewersCount === 1 ? 'Viewer' : 'Viewers'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Upgrade to Premium to see everyone who's viewed your profile and gain access to advanced analytics
+                    </p>
+                    <Button className="gap-2">
+                      <Crown className="h-4 w-4" />
+                      Upgrade to Premium
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

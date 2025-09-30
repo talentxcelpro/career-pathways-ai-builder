@@ -235,10 +235,10 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="mt-4 border-t pt-4 max-h-[400px] overflow-y-auto">
+    <div className="mt-4 border-t pt-4 max-h-[300px] md:max-h-[400px] overflow-y-auto">
       {/* Add Comment Form */}
-      <div className="flex space-x-2 mb-4">
-        <Avatar className="h-7 w-7 flex-shrink-0">
+      <div className="flex space-x-2 mb-3">
+        <Avatar className="h-6 w-6 md:h-7 md:w-7 flex-shrink-0">
           <AvatarFallback className="text-xs">You</AvatarFallback>
         </Avatar>
         <div className="flex-1">
@@ -246,33 +246,34 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
             placeholder="Write a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[48px] max-h-[80px] resize-none text-sm"
+            className="min-h-[40px] md:min-h-[48px] max-h-[60px] md:max-h-[80px] resize-none text-xs md:text-sm"
           />
-          <div className="flex justify-between items-center mt-2">
+          <div className="flex justify-between items-center mt-1.5">
             <EmojiPicker onEmojiSelect={(emoji) => setNewComment(prev => prev + emoji)}>
-              <Button variant="ghost" size="sm" type="button">
-                <Smile className="h-4 w-4" />
+              <Button variant="ghost" size="sm" type="button" className="h-7 px-2">
+                <Smile className="h-3.5 w-3.5" />
               </Button>
             </EmojiPicker>
             <Button 
               onClick={handleAddComment}
               disabled={addCommentMutation.isPending || !newComment.trim()}
               size="sm"
+              className="h-7 text-xs px-3"
             >
-              {addCommentMutation.isPending ? 'Posting...' : 'Comment'}
+              {addCommentMutation.isPending ? 'Posting...' : 'Post'}
             </Button>
           </div>
         </div>
       </div>
 
       {/* Comments List */}
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         {isLoading ? (
-          <div className="text-sm text-muted-foreground">Loading comments...</div>
+          <div className="text-xs md:text-sm text-muted-foreground">Loading comments...</div>
         ) : comments && comments.length > 0 ? (
           comments.map((comment: any) => (
-            <div key={comment.id} className="flex space-x-2">
-              <Avatar className="h-7 w-7 flex-shrink-0">
+            <div key={comment.id} className="flex space-x-1.5 md:space-x-2">
+              <Avatar className="h-6 w-6 md:h-7 md:w-7 flex-shrink-0">
                 <AvatarImage src={comment.profiles?.profile_picture_url} />
                 <AvatarFallback className="text-xs">
                   {generateInitials(comment.profiles)}
@@ -304,13 +305,13 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-muted rounded-lg p-2.5">
+                  <div className="bg-muted rounded-lg p-2 md:p-2.5">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="font-medium text-xs">
+                        <div className="font-medium text-[11px] md:text-xs">
                           {formatDisplayName(comment.profiles)}
                         </div>
-                        <div className="text-xs mt-1">
+                        <div className="text-[11px] md:text-xs mt-0.5 md:mt-1">
                           {comment.content}
                         </div>
                       </div>
@@ -318,8 +319,8 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
                       {/* Comment Actions */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                            <MoreHorizontal className="h-3 w-3" />
+                          <Button variant="ghost" size="sm" className="h-5 w-5 md:h-6 md:w-6 p-0">
+                            <MoreHorizontal className="h-2.5 w-2.5 md:h-3 md:w-3" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
@@ -354,7 +355,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
                 )}
                 
                 {editingCommentId !== comment.id && (
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-[10px] md:text-xs text-muted-foreground mt-0.5 md:mt-1">
                     {formatTimeAgo(comment.created_at)}
                     {comment.updated_at !== comment.created_at && (
                       <span className="ml-1">(edited)</span>
@@ -365,7 +366,7 @@ export const EnhancedCommentsSection: React.FC<EnhancedCommentsSectionProps> = (
             </div>
           ))
         ) : (
-          <div className="text-sm text-muted-foreground">No comments yet. Be the first to comment!</div>
+          <div className="text-xs md:text-sm text-muted-foreground">No comments yet. Be the first to comment!</div>
         )}
       </div>
     </div>
