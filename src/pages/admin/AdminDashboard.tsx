@@ -16,7 +16,7 @@ import { EmailNotificationTest } from '@/components/dashboard/EmailNotificationT
 import { useAdminStats } from '@/hooks/useAdminStats';
 import { useUserGrowthData } from '@/hooks/useUserGrowthData';
 import { useRecentActivity } from '@/hooks/useRecentActivity';
-import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
+import SystemHealthDashboard from '@/components/admin/SystemHealthDashboard';
 import { RealisticJobGenerator } from '@/components/admin/RealisticJobGenerator';
 import SocialTXCAwardPanel from '@/components/admin/SocialTXCAwardPanel';
 import { JoiningBonusPanel } from '@/components/admin/JoiningBonusPanel';

@@ -9,7 +9,7 @@ import Phase3Dashboard from './Phase3Dashboard';
 import Phase4Dashboard from './Phase4Dashboard';
 import { CostOptimizationDashboard } from '@/components/admin/CostOptimizationDashboard';
 import { UltraCostOptimizer } from '@/components/admin/UltraCostOptimizer';
-import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
+import SystemHealthDashboard from '@/components/admin/SystemHealthDashboard';
 import { PerformanceOptimizer } from '@/components/admin/PerformanceOptimizer';
 import { SecurityHardening } from '@/components/admin/SecurityHardening';
 

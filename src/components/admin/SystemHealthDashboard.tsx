@@ -59,11 +59,11 @@ export default function SystemHealthDashboard() {
         pending: emailData.filter(e => e.status === 'pending').length,
         failed: emailData.filter(e => e.status === 'failed').length,
         successRate: emailData.length ? (emailData.filter(e => e.status === 'sent').length / emailData.length) * 100 : 0,
-        queueHealth: 'good' as const
+        queueHealth: 'good' as 'good' | 'warning' | 'critical'
       };
 
-      if (emailHealth.pending > 100) emailHealth.queueHealth = 'warning' as const;
-      if (emailHealth.pending > 500 || emailHealth.successRate < 50) emailHealth.queueHealth = 'critical' as const;
+      if (emailHealth.pending > 100) emailHealth.queueHealth = 'warning';
+      if (emailHealth.pending > 500 || emailHealth.successRate < 50) emailHealth.queueHealth = 'critical';
 
       // Fetch function health logs
       const { data: functionLogs } = await supabase
