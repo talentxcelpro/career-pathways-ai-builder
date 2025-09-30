@@ -21509,6 +21509,108 @@ export type Database = {
         }
         Relationships: []
       }
+      processing_error_logs: {
+        Row: {
+          context: Json | null
+          created_at: string | null
+          error_message: string
+          error_type: string
+          file_id: string | null
+          filename: string | null
+          id: string
+          resolved: boolean | null
+          resolved_at: string | null
+          session_id: string | null
+          severity: string
+          stack_trace: string | null
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string | null
+          error_message: string
+          error_type: string
+          file_id?: string | null
+          filename?: string | null
+          id?: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          session_id?: string | null
+          severity?: string
+          stack_trace?: string | null
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string | null
+          error_message?: string
+          error_type?: string
+          file_id?: string | null
+          filename?: string | null
+          id?: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          session_id?: string | null
+          severity?: string
+          stack_trace?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processing_error_logs_file_id_fkey"
+            columns: ["file_id"]
+            isOneToOne: false
+            referencedRelation: "cv_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "processing_error_logs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "upload_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      processing_metrics: {
+        Row: {
+          avg_processing_time: number
+          cpu_usage: number
+          created_at: string | null
+          errors: number
+          files_processed: number
+          id: string
+          memory_usage: number
+          queue_depth: number
+          success_rate: number
+          system_load: number
+          timestamp: string | null
+        }
+        Insert: {
+          avg_processing_time?: number
+          cpu_usage?: number
+          created_at?: string | null
+          errors?: number
+          files_processed?: number
+          id?: string
+          memory_usage?: number
+          queue_depth?: number
+          success_rate?: number
+          system_load?: number
+          timestamp?: string | null
+        }
+        Update: {
+          avg_processing_time?: number
+          cpu_usage?: number
+          created_at?: string | null
+          errors?: number
+          files_processed?: number
+          id?: string
+          memory_usage?: number
+          queue_depth?: number
+          success_rate?: number
+          system_load?: number
+          timestamp?: string | null
+        }
+        Relationships: []
+      }
       proctoring_sessions: {
         Row: {
           ai_analysis: Json | null
@@ -30672,6 +30774,60 @@ export type Database = {
         }
         Relationships: []
       }
+      upload_sessions: {
+        Row: {
+          batch_size: number
+          completed_at: string | null
+          concurrent_processing: number
+          config: Json | null
+          created_at: string | null
+          created_by: string | null
+          failed_files: number
+          id: string
+          priority: string
+          processed_files: number
+          session_name: string
+          session_status: string
+          started_at: string | null
+          total_files: number
+          updated_at: string | null
+        }
+        Insert: {
+          batch_size?: number
+          completed_at?: string | null
+          concurrent_processing?: number
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          failed_files?: number
+          id?: string
+          priority?: string
+          processed_files?: number
+          session_name: string
+          session_status?: string
+          started_at?: string | null
+          total_files?: number
+          updated_at?: string | null
+        }
+        Update: {
+          batch_size?: number
+          completed_at?: string | null
+          concurrent_processing?: number
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          failed_files?: number
+          id?: string
+          priority?: string
+          processed_files?: number
+          session_name?: string
+          session_status?: string
+          started_at?: string | null
+          total_files?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       url_previews: {
         Row: {
           created_at: string
@@ -34950,6 +35106,32 @@ export type Database = {
           p_request_count?: number
           p_response_time_ms?: number
           p_status: string
+        }
+        Returns: string
+      }
+      log_processing_error: {
+        Args: {
+          p_context?: Json
+          p_error_message: string
+          p_error_type: string
+          p_file_id?: string
+          p_filename?: string
+          p_session_id?: string
+          p_severity?: string
+          p_stack_trace?: string
+        }
+        Returns: string
+      }
+      log_processing_metrics: {
+        Args: {
+          p_avg_processing_time: number
+          p_cpu_usage?: number
+          p_errors: number
+          p_files_processed: number
+          p_memory_usage?: number
+          p_queue_depth?: number
+          p_success_rate: number
+          p_system_load?: number
         }
         Returns: string
       }

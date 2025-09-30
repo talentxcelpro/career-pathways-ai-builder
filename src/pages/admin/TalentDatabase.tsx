@@ -11,6 +11,9 @@ import { TalentAnalytics } from '@/components/talent-database/TalentAnalytics';
 import { SetupGuide } from '@/components/talent-database/SetupGuide';
 import { CVFilesManager } from '@/components/talent-database/CVFilesManager';
 import NameFixerTool from '@/components/talent-database/NameFixerTool';
+import { ScalableUploadInterface } from '@/components/talent-database/ScalableUploadInterface';
+import { BulkUploadQueueManager } from '@/components/talent-database/BulkUploadQueueManager';
+import { ProcessingMonitor } from '@/components/talent-database/ProcessingMonitor';
 
 const TalentDatabase = () => {
   const [activeTab, setActiveTab] = useState('setup');
@@ -84,14 +87,26 @@ const TalentDatabase = () => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="setup" className="gap-2">
             <Settings className="h-4 w-4" />
             Setup
           </TabsTrigger>
+          <TabsTrigger value="scalable" className="gap-2">
+            <Upload className="h-4 w-4" />
+            Scalable Upload
+          </TabsTrigger>
           <TabsTrigger value="upload" className="gap-2">
             <Upload className="h-4 w-4" />
-            Bulk Upload
+            Standard Upload
+          </TabsTrigger>
+          <TabsTrigger value="queue" className="gap-2">
+            <Database className="h-4 w-4" />
+            Queue Manager
+          </TabsTrigger>
+          <TabsTrigger value="monitor" className="gap-2">
+            <FileText className="h-4 w-4" />
+            Monitor
           </TabsTrigger>
           <TabsTrigger value="cvfiles" className="gap-2">
             <File className="h-4 w-4" />
@@ -123,16 +138,58 @@ const TalentDatabase = () => {
           <SetupGuide />
         </TabsContent>
 
+        <TabsContent value="scalable" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Scalable CV Upload System (200k+ CVs)</CardTitle>
+              <CardDescription>
+                High-performance upload system designed for processing massive volumes of CVs with intelligent batching, queue management, and real-time monitoring
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScalableUploadInterface />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="upload" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Bulk CV Upload System</CardTitle>
+              <CardTitle>Standard Bulk CV Upload</CardTitle>
               <CardDescription>
-                Upload and process thousands of CVs automatically with AI-powered parsing
+                Upload and process CVs with basic AI-powered parsing (recommended for up to 10k files)
               </CardDescription>
             </CardHeader>
             <CardContent>
               <BulkUploadManager />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="queue" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Queue Management & Processing Control</CardTitle>
+              <CardDescription>
+                Monitor and control the processing queue for large-scale CV uploads with real-time status updates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BulkUploadQueueManager />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="monitor" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Processing Monitor & System Health</CardTitle>
+              <CardDescription>
+                Real-time monitoring of system performance, error tracking, and processing metrics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProcessingMonitor />
             </CardContent>
           </Card>
         </TabsContent>
