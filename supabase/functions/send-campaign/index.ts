@@ -97,10 +97,10 @@ Deno.serve(async (req) => {
     
     switch (campaign.target_audience) {
       case 'job_seekers':
-        query = query.eq('user_type', 'job_seeker');
+        query = query.eq('user_role', 'job_seeker');
         break;
       case 'employers':
-        query = query.eq('user_type', 'employer');
+        query = query.eq('user_role', 'employer');
         break;
       case 'active_users':
         query = query.gte('last_seen', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
