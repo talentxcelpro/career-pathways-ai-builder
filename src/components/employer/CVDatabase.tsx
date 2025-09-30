@@ -22,6 +22,7 @@ import { AppliedResumes } from './cv-database/AppliedResumes';
 import { PlatformCVs } from './cv-database/PlatformCVs';
 import { UnifiedCVSearch } from './cv-database/UnifiedCVSearch';
 import { OutreachModal } from './cv-database/OutreachModal';
+import { UnifiedCandidatesTable } from './UnifiedCandidatesTable';
 
 export const CVDatabase: React.FC = () => {
   const [selectedCVs, setSelectedCVs] = useState<string[]>([]);
@@ -290,15 +291,11 @@ export const CVDatabase: React.FC = () => {
                 <Badge variant="outline" className="text-xs text-blue-700 border-blue-300">Real-time</Badge>
               </div>
               <p className="text-blue-700/80 text-sm mt-1 font-medium">
-                Search and filter through all available candidates with real-time updates and duplication checking.
+                All candidates including CV uploads and user profiles with activation system.
               </p>
             </div>
             
-            <UnifiedCVSearch
-              selectedCVs={selectedCVs}
-              onSelectCV={handleSelectCV}
-              onSelectAll={handleSelectAll}
-            />
+            <UnifiedCandidatesTable />
           </TabsContent>
 
           <TabsContent value="applied" className="space-y-4">

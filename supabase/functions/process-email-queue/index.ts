@@ -44,15 +44,15 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get pending emails from queue, including retry logic
-    // Also get failed emails that can be retried (reset their status to pending)
+    // Get pending emails from new email_queue table
     const { data: pendingEmails, error: fetchError } = await supabase
-      .from('email_automation_queue')
+      .from('email_queue')
       .select('*')
-      .or('status.eq.pending,and(status.eq.failed,attempts.lt.3)')
-      .lte('scheduled_at', new Date().toISOString())
+      .eq('status', 'pending')
+      .lte('scheduled_for', new Date().toISOString())
+      .lt('attempts', 3)
       .order('created_at', { ascending: true })
-      .limit(50); // Process in batches
+      .limit(50);
 
     if (fetchError) {
       console.error('Error fetching emails:', fetchError);
@@ -80,46 +80,24 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const email of pendingEmails) {
       try {
-        console.log(`Processing email ${email.id} to ${email.recipient_email} via unified service (attempt ${(email.attempts || 0) + 1})`);
-
-        // Reset failed emails to pending status for retry
-        if (email.status === 'failed') {
-          console.log(`Retrying failed email ${email.id}`);
-          await supabase
-            .from('email_automation_queue')
-            .update({
-              status: 'pending',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', email.id);
-        }
+        console.log(`Processing email ${email.id} to ${email.to_email} (attempt ${(email.attempts || 0) + 1})`);
 
         // Increment attempts before processing
         await supabase
-          .from('email_automation_queue')
+          .from('email_queue')
           .update({
-            attempts: (email.attempts || 0) + 1,
-            updated_at: new Date().toISOString()
+            attempts: (email.attempts || 0) + 1
           })
           .eq('id', email.id);
 
-        // Prepare email data for unified service
-        const emailData = {
-          event_name: email.trigger_type, // Use trigger_type as event_name for unified service
-          recipient_email: email.recipient_email,
-          recipient_name: email.recipient_name || 'User',
-          ...email.template_data,
-          platform_name: 'TalentXcel',
-          support_email: 'support@talentxcel.in',
-          current_year: new Date().getFullYear().toString(),
-          current_date: new Date().toLocaleDateString()
-        };
-
-        console.log(`Calling unified email service for ${email.trigger_type}`);
-
-        // Call unified email notification service (centralized)
-        const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-email-notification', {
-          body: emailData
+        // Call unified email service directly with HTML content
+        const { data: emailResult, error: emailError } = await supabase.functions.invoke('unified-email-service', {
+          body: {
+            to: email.to_email,
+            subject: email.subject,
+            template: email.html_content,
+            priority: email.priority
+          }
         });
 
         if (emailError) {
@@ -134,103 +112,40 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log('Email sent successfully via unified service:', emailResult);
 
-        console.log(`Email sent successfully to ${email.recipient_email}`);
+        console.log(`Email sent successfully to ${email.to_email}`);
 
-        // Extract SES message ID from result for enhanced tracking
-        const sesMessageId = emailResult?.messageId || emailResult?.data?.MessageId || emailResult?.results?.[0]?.messageId;
-        const sesRegion = emailResult?.region || 'us-east-1';
-
-        // Check for suppressed emails before updating status
-        const isEmailSuppressed = await supabase
-          .from('email_suppression_list')
-          .select('email_address')
-          .eq('email_address', email.recipient_email)
-          .eq('is_active', true)
-          .single();
-
-        if (isEmailSuppressed.data) {
-          console.log(`Email ${email.recipient_email} is suppressed, skipping`);
-          await supabase
-            .from('email_automation_queue')
-            .update({
-              status: 'suppressed',
-              error_message: 'Email address is in suppression list',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', email.id);
-          continue;
-        }
-
-        // Update email status to sent and store SES message ID with region
+        // Update email status to sent
         await supabase
-          .from('email_automation_queue')
+          .from('email_queue')
           .update({
             status: 'sent',
             sent_at: new Date().toISOString(),
-            error_message: null,
-            ses_message_id: sesMessageId,
-            ses_region: sesRegion,
-            updated_at: new Date().toISOString()
+            error_message: null
           })
           .eq('id', email.id);
-
-        // Create comprehensive delivery tracking record
-        if (sesMessageId) {
-          await supabase
-            .from('email_delivery_tracking')
-            .insert({
-              email_automation_queue_id: email.id,
-              recipient_email: email.recipient_email,
-              ses_message_id: sesMessageId,
-              ses_region: sesRegion,
-              delivery_status: 'sent',
-              template_type: email.trigger_type,
-              sent_at: new Date().toISOString()
-            });
-
-          // Also create SES delivery log for monitoring
-          try {
-            await supabase
-              .from('ses_delivery_logs')
-              .insert({
-                message_id: sesMessageId,
-                recipient_email: email.recipient_email,
-                event_type: email.trigger_type,
-                template_name: email.trigger_type,
-                region: sesRegion,
-                status: 'sent',
-                sent_at: new Date().toISOString()
-              });
-            console.log('SES delivery log created');
-          } catch (logError) {
-            console.warn('Failed to create SES delivery log:', logError);
-          }
-        }
 
         processed++;
         results.push({
           email_id: email.id,
-          recipient: email.recipient_email,
-          status: 'sent',
-          template: email.trigger_type
+          recipient: email.to_email,
+          status: 'sent'
         });
 
       } catch (emailError: any) {
-        console.error(`Failed to send email ${email.id} to ${email.recipient_email}:`, emailError);
+        console.error(`Failed to send email ${email.id} to ${email.to_email}:`, emailError);
         
         const currentAttempts = (email.attempts || 0) + 1;
-        const newStatus = currentAttempts >= 3 ? 'failed' : 'pending';
+        const newStatus = currentAttempts >= email.max_attempts ? 'failed' : 'retry';
         
         // Update email with error status or mark for retry
         await supabase
-          .from('email_automation_queue')
+          .from('email_queue')
           .update({
             status: newStatus,
             error_message: emailError.message || 'Unknown error',
-            updated_at: new Date().toISOString(),
-            // Schedule retry in 5 minutes if not at max attempts
-            ...(newStatus === 'pending' && {
-              scheduled_at: new Date(Date.now() + 5 * 60 * 1000).toISOString()
+            // Schedule retry with exponential backoff
+            ...(newStatus === 'retry' && {
+              scheduled_for: new Date(Date.now() + Math.pow(2, currentAttempts) * 5 * 60000).toISOString()
             })
           })
           .eq('id', email.id);
@@ -241,9 +156,8 @@ const handler = async (req: Request): Promise<Response> => {
 
         results.push({
           email_id: email.id,
-          recipient: email.recipient_email,
+          recipient: email.to_email,
           status: newStatus,
-          template: email.trigger_type,
           error: emailError.message,
           attempts: currentAttempts
         });
