@@ -2445,6 +2445,54 @@ export type Database = {
         }
         Relationships: []
       }
+      email_automation_queue: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_retries: number | null
+          recipient_email: string
+          recipient_name: string | null
+          retry_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string | null
+          template_data: Json | null
+          trigger_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_retries?: number | null
+          recipient_email: string
+          recipient_name?: string | null
+          retry_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          template_data?: Json | null
+          trigger_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_retries?: number | null
+          recipient_email?: string
+          recipient_name?: string | null
+          retry_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          template_data?: Json | null
+          trigger_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       email_automation_settings: {
         Row: {
           conditions: Json | null

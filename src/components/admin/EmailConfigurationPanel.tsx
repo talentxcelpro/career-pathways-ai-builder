@@ -186,37 +186,15 @@ export const EmailConfigurationPanel = () => {
     try {
       console.log('🧪 Testing Amazon SES email system');
       
-      const emailPayload = {
-        to: testEmail,
-        subject: 'TalentXcel Amazon SES Configuration Test',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">✅ Amazon SES Configuration Test</h2>
-            <p>Hello,</p>
-            <p>This is a test email from TalentXcel's Amazon SES email system.</p>
-            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3>Configuration Details:</h3>
-              <ul>
-                <li><strong>Provider:</strong> Amazon SES</li>
-                <li><strong>Region:</strong> eu-north-1 (Stockholm)</li>
-                <li><strong>Function:</strong> send-email-aws-ses</li>
-                <li><strong>Timestamp:</strong> ${new Date().toLocaleString()}</li>
-              </ul>
-            </div>
-            <p>If you received this email, your Amazon SES configuration is working correctly!</p>
-            <hr style="margin: 30px 0;">
-            <p style="color: #6b7280; font-size: 14px;">
-              <strong>TalentXcel Email Service</strong><br>
-              This test was sent from the TalentXcel Admin Panel
-            </p>
-          </div>
-        `
-      };
+      console.log('📧 Sending test email via Amazon SES...');
       
-      console.log('📧 AWS SES Email payload:', emailPayload);
-      
-      const { data, error } = await supabase.functions.invoke('send-email-aws-ses', {
-        body: emailPayload
+      const { data, error } = await supabase.functions.invoke('send-email-notification', {
+        body: {
+          event_name: 'test_email',
+          recipient_email: testEmail,
+          recipient_name: 'Test User',
+          platform_name: 'TalentXcel'
+        }
       });
       
       console.log('📨 AWS SES Response:', { data, error });
