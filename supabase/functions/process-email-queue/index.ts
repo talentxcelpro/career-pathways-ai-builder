@@ -44,11 +44,12 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get pending emails from email_queue table
+    // Get pending emails from email_automation_queue table
     const { data: pendingEmails, error: fetchError } = await supabase
-      .from('email_queue')
+      .from('email_automation_queue')
       .select('*')
       .eq('status', 'pending')
+      .lte('scheduled_at', new Date().toISOString())
       .lt('retry_count', 3)
       .order('created_at', { ascending: true })
       .limit(50);
@@ -79,11 +80,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const email of pendingEmails) {
       try {
-        console.log(`Processing email ${email.id} to ${email.to_email} (attempt ${(email.retry_count || 0) + 1})`);
+        console.log(`Processing email ${email.id} to ${email.recipient_email} (attempt ${(email.retry_count || 0) + 1})`);
 
         // Increment retry_count before processing
         await supabase
-          .from('email_queue')
+          .from('email_automation_queue')
           .update({
             retry_count: (email.retry_count || 0) + 1
           })
@@ -92,11 +93,11 @@ const handler = async (req: Request): Promise<Response> => {
         // Call Amazon SES email notification service
         const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-email-notification', {
           body: {
-            event_name: email.template || 'test_email',
-            recipient_email: email.to_email,
+            event_name: email.trigger_type || 'test_email',
+            recipient_email: email.recipient_email,
             recipient_name: email.recipient_name || 'User',
             platform_name: 'TalentXcel',
-            data: email.data || {}
+            data: email.template_data || {}
           }
         });
 
@@ -112,11 +113,11 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log('Email sent successfully via Amazon SES:', emailResult);
 
-        console.log(`Email sent successfully to ${email.to_email}`);
+        console.log(`Email sent successfully to ${email.recipient_email}`);
 
         // Update email status to sent
         await supabase
-          .from('email_queue')
+          .from('email_automation_queue')
           .update({
             status: 'sent',
             sent_at: new Date().toISOString(),
@@ -127,19 +128,19 @@ const handler = async (req: Request): Promise<Response> => {
         processed++;
         results.push({
           email_id: email.id,
-          recipient: email.to_email,
+          recipient: email.recipient_email,
           status: 'sent'
         });
 
       } catch (emailError: any) {
-        console.error(`Failed to send email ${email.id} to ${email.to_email}:`, emailError);
+        console.error(`Failed to send email ${email.id} to ${email.recipient_email}:`, emailError);
         
         const currentRetries = (email.retry_count || 0) + 1;
         const newStatus = currentRetries >= (email.max_retries || 3) ? 'failed' : 'pending';
         
         // Update email with error status or mark for retry
         await supabase
-          .from('email_queue')
+          .from('email_automation_queue')
           .update({
             status: newStatus,
             error_message: emailError.message || 'Unknown error'
@@ -152,7 +153,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         results.push({
           email_id: email.id,
-          recipient: email.to_email,
+          recipient: email.recipient_email,
           status: newStatus,
           error: emailError.message,
           attempts: currentRetries
