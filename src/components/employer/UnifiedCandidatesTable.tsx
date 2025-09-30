@@ -119,10 +119,17 @@ export const UnifiedCandidatesTable: React.FC = () => {
       
       // Calculate stats
       const totalCandidates = allCandidates.length;
-      const activatedCount = allCandidates.filter(c => c.activation_status === 'activated').length;
-      const pendingCount = allCandidates.filter(c => c.activation_status === 'pending').length;
+      const activatedCount = allCandidates.filter(c => 
+        c.activation_status === 'active' || c.activation_status === 'activated'
+      ).length;
+      const pendingCount = allCandidates.filter(c => 
+        c.activation_status === 'pending'
+      ).length;
       const cvFilesCount = allCandidates.filter(c => c.source_type === 'cv_file').length;
       const profilesCount = allCandidates.filter(c => c.source_type === 'profile').length;
+      
+      // For pending CVs, check actual CV files with error status that could be reprocessed
+      const errorCVsCount = cvFiles?.filter(cv => cv.parsing_status === 'error').length || 0;
       
       setStats({
         total: totalCandidates,
@@ -130,10 +137,10 @@ export const UnifiedCandidatesTable: React.FC = () => {
         pending: pendingCount,
         cv_files: cvFilesCount,
         profiles: profilesCount,
-        pending_cvs: pendingCVsCount || 0
+        pending_cvs: errorCVsCount // Show error CVs as they can be reprocessed
       });
 
-      console.log(`📊 Loaded ${totalCandidates} candidates, ${pendingCVsCount} pending CVs`);
+      console.log(`📊 Loaded ${totalCandidates} candidates, ${errorCVsCount} error CVs that can be reprocessed`);
       
     } catch (error) {
       console.error('Error in fetchCandidates:', error);
@@ -410,8 +417,8 @@ export const UnifiedCandidatesTable: React.FC = () => {
                 <AlertCircle className="h-6 w-6 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-orange-900">⚠️ {stats.pending_cvs} CVs Ready for Processing</h3>
-                <p className="text-sm text-orange-700">Click "Process Pending CVs" to convert these into user accounts and send activation emails.</p>
+                <h3 className="font-semibold text-orange-900">⚠️ {stats.pending_cvs} CVs Need Reprocessing</h3>
+                <p className="text-sm text-orange-700">Click "Reprocess Error CVs" to retry parsing these CVs and convert them into user accounts.</p>
               </div>
             </div>
             <Button 
@@ -425,7 +432,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
               ) : (
                 <Play className="h-5 w-5 mr-3" />
               )}
-              🚀 Process Now
+              🚀 Reprocess Now
             </Button>
           </div>
         </div>
@@ -485,7 +492,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
                 ) : (
                   <Play className="h-5 w-5 mr-3" />
                 )}
-                🚀 Process Pending CVs ({stats.pending_cvs})
+                🔄 Reprocess Error CVs ({stats.pending_cvs})
               </Button>
               <Button 
                 size="sm" 
@@ -520,9 +527,9 @@ export const UnifiedCandidatesTable: React.FC = () => {
           {/* Add CV Files Section */}
           {stats.pending_cvs > 0 && (
             <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-              <h4 className="font-semibold text-orange-900 mb-2">📄 Pending CV Files ({stats.pending_cvs})</h4>
+              <h4 className="font-semibold text-orange-900 mb-2">📄 Error CV Files ({stats.pending_cvs})</h4>
               <p className="text-sm text-orange-700 mb-3">
-                These CV files are waiting to be processed into user profiles. Click "Process Pending CVs" to convert them.
+                These CV files had errors during initial processing. Click "Reprocess Error CVs" to retry parsing them.
               </p>
               <div className="text-xs text-orange-600">
                 Files will be parsed with AI → User profiles created → Activation emails sent
