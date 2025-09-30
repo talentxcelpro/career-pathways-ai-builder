@@ -26,7 +26,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
   const [sendImmediately, setSendImmediately] = useState(true);
   const [formData, setFormData] = useState({
     campaign_name: '',
-    campaign_type: 'broadcast',
+    campaign_type: 'one-time',
     module_name: '',
     template_id: '',
     target_audience: 'all_users',
@@ -92,7 +92,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
       onOpenChange(false);
       setFormData({
         campaign_name: '',
-        campaign_type: 'broadcast',
+        campaign_type: 'one-time',
         module_name: '',
         template_id: '',
         target_audience: 'all_users',
@@ -152,10 +152,9 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="broadcast">Broadcast</SelectItem>
-                  <SelectItem value="triggered">Triggered</SelectItem>
-                  <SelectItem value="drip">Drip Campaign</SelectItem>
-                  <SelectItem value="transactional">Transactional</SelectItem>
+                  <SelectItem value="one-time">One-Time Campaign</SelectItem>
+                  <SelectItem value="recurring">Recurring Campaign</SelectItem>
+                  <SelectItem value="trigger-based">Trigger-Based</SelectItem>
                 </SelectContent>
               </Select>
             </div>
