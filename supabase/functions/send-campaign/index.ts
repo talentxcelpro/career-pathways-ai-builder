@@ -98,61 +98,126 @@ Deno.serve(async (req) => {
     let users: any[] = [];
     
     try {
+      // Handle different audience types
       if (campaign.target_audience === 'all_users') {
         // Get all users with email
+        console.log("📧 Fetching all users...");
         const { data, error } = await supabase
           .from('profiles')
           .select('id, full_name, email')
           .not('email', 'is', null);
         
-        if (error) throw error;
+        if (error) {
+          console.error("❌ Error fetching all users:", error);
+          throw error;
+        }
         users = data || [];
-      } else {
-        // For role-based filtering, get users from user_roles table
-        const targetRole = campaign.target_audience === 'job_seekers' ? 'user' : 
-                          campaign.target_audience === 'employers' ? 'employer' : null;
+        console.log(`📧 Found ${users.length} users with emails`);
         
-        if (targetRole) {
-          const { data: roleData, error: roleError } = await supabase
-            .from('user_roles')
-            .select('user_id')
-            .eq('role', targetRole)
-            .eq('is_active', true);
-          
-          if (roleError) throw roleError;
-          
-          if (roleData && roleData.length > 0) {
-            const userIds = roleData.map(r => r.user_id);
-            const { data, error } = await supabase
-              .from('profiles')
-              .select('id, full_name, email')
-              .in('id', userIds)
-              .not('email', 'is', null);
-            
-            if (error) throw error;
-            users = data || [];
-          }
-        } else {
-          // Active/inactive users - use profiles table directly
-          const dateThreshold = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      } else if (campaign.target_audience === 'job_seekers') {
+        // Get job seekers (users with 'user' role)
+        console.log("📧 Fetching job seekers...");
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'user')
+          .eq('is_active', true);
+        
+        if (roleError) {
+          console.error("❌ Error fetching user roles:", roleError);
+          throw roleError;
+        }
+        
+        if (roleData && roleData.length > 0) {
+          const userIds = roleData.map(r => r.user_id);
           const { data, error } = await supabase
             .from('profiles')
             .select('id, full_name, email')
-            .not('email', 'is', null)
-            [campaign.target_audience === 'active_users' ? 'gte' : 'lt']('last_login_at', dateThreshold);
+            .in('id', userIds)
+            .not('email', 'is', null);
           
-          if (error) throw error;
+          if (error) {
+            console.error("❌ Error fetching profiles:", error);
+            throw error;
+          }
           users = data || [];
         }
+        console.log(`📧 Found ${users.length} job seekers`);
+        
+      } else if (campaign.target_audience === 'employers') {
+        // Get employers
+        console.log("📧 Fetching employers...");
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'employer')
+          .eq('is_active', true);
+        
+        if (roleError) {
+          console.error("❌ Error fetching employer roles:", roleError);
+          throw roleError;
+        }
+        
+        if (roleData && roleData.length > 0) {
+          const userIds = roleData.map(r => r.user_id);
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('id, full_name, email')
+            .in('id', userIds)
+            .not('email', 'is', null);
+          
+          if (error) {
+            console.error("❌ Error fetching employer profiles:", error);
+            throw error;
+          }
+          users = data || [];
+        }
+        console.log(`📧 Found ${users.length} employers`);
+        
+      } else if (campaign.target_audience === 'active_users') {
+        // Get active users (logged in within 30 days)
+        console.log("📧 Fetching active users...");
+        const dateThreshold = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .gte('last_login_at', dateThreshold)
+          .not('email', 'is', null);
+        
+        if (error) {
+          console.error("❌ Error fetching active users:", error);
+          throw error;
+        }
+        users = data || [];
+        console.log(`📧 Found ${users.length} active users`);
+        
+      } else if (campaign.target_audience === 'inactive_users') {
+        // Get inactive users (not logged in for 30+ days)
+        console.log("📧 Fetching inactive users...");
+        const dateThreshold = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .lt('last_login_at', dateThreshold)
+          .not('email', 'is', null);
+        
+        if (error) {
+          console.error("❌ Error fetching inactive users:", error);
+          throw error;
+        }
+        users = data || [];
+        console.log(`📧 Found ${users.length} inactive users`);
       }
+      
     } catch (fetchError: any) {
-      console.error("❌ Error fetching users:", fetchError);
-      throw new Error('Failed to fetch users: ' + fetchError.message);
+      console.error("❌ Critical error fetching users:", fetchError);
+      throw new Error('Failed to fetch users: ' + (fetchError.message || 'Unknown error'));
     }
 
     if (!users || users.length === 0) {
-      console.error("❌ No users found for audience:", campaign.target_audience);
-      throw new Error('No users found for target audience: ' + campaign.target_audience);
+      const errorMsg = `No users found for audience: ${campaign.target_audience}`;
+      console.error("❌", errorMsg);
+      throw new Error(errorMsg);
     }
 
     console.log(`📧 Found ${users.length} recipients`);
