@@ -159,22 +159,11 @@ const handler = async (req: Request): Promise<Response> => {
     
     try {
       sesClient = createSESClient(currentRegion);
-      
-      // Check SES quota before proceeding
       await checkSESQuota(sesClient);
-      console.log('SES quota check passed');
-      
-    } catch (regionError) {
-      console.log(`SES failed in ${currentRegion}, trying fallback region...`);
-      try {
-        currentRegion = 'us-east-1';
-        sesClient = createSESClient(currentRegion);
-        await checkSESQuota(sesClient);
-        console.log(`SES fallback to ${currentRegion} successful`);
-      } catch (fallbackError) {
-        console.error('All SES regions failed:', fallbackError);
-        throw new Error(`SES unavailable in all regions. Last error: ${(fallbackError as Error).message}`);
-      }
+      console.log(`SES quota check passed in ${currentRegion}`);
+    } catch (error) {
+      console.error(`SES failed in ${currentRegion}:`, error);
+      throw new Error(`SES unavailable in region ${currentRegion}. Error: ${error.message}`);
     }
 
     // Enhanced template retrieval with fallback hierarchy
