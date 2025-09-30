@@ -19,19 +19,42 @@ serve(async (req) => {
   try {
     console.log('🔧 Starting comprehensive CV processing...');
     
-    // Get all pending CV files
-    const { data: pendingCVs, error: fetchError } = await supabase
+    // Parse request body to check for specific CV ID
+    const body = await req.text();
+    let requestData = {};
+    
+    if (body && body.trim()) {
+      try {
+        requestData = JSON.parse(body);
+      } catch (e) {
+        console.log('Could not parse request body, proceeding with all error CVs');
+      }
+    }
+
+    // Get CVs that need reprocessing (both pending and error status)
+    let query = supabase
       .from('cv_files')
-      .select('*')
-      .eq('parsing_status', 'pending')
-      .order('created_at', { ascending: true });
+      .select('*');
+
+    if (requestData.cvId) {
+      // Process specific CV if ID provided
+      query = query.eq('id', requestData.cvId);
+      console.log(`🎯 Processing specific CV: ${requestData.cvId}`);
+    } else {
+      // Process all error and pending CVs that can be reprocessed
+      query = query.in('parsing_status', ['pending', 'error'])
+        .order('created_at', { ascending: true });
+      console.log('🔄 Processing all error and pending CVs');
+    }
+
+    const { data: pendingCVs, error: fetchError } = await query;
 
     if (fetchError) {
       console.error('Error fetching pending CVs:', fetchError);
       throw fetchError;
     }
 
-    console.log(`📊 Found ${pendingCVs?.length || 0} pending CVs to process`);
+    console.log(`📊 Found ${pendingCVs?.length || 0} CVs to reprocess (error + pending status)`);
 
     let processed = 0;
     let failed = 0;
@@ -51,11 +74,11 @@ serve(async (req) => {
           })
           .eq('id', cv.id);
 
-        // Check if already parsed
+        // Check if already parsed and has valid data
         let extractedData = cv.parsing_results;
         
-        // If no parsed data, call AI resume parser
-        if (!extractedData) {
+        // Re-parse if no data or if CV was in error status (always reprocess error CVs)
+        if (!extractedData || cv.parsing_status === 'error') {
           console.log(`🤖 Parsing CV with AI: ${cv.original_filename}`);
           
           const { data: parseResult, error: parseError } = await supabase.functions.invoke('ai-resume-parser', {
