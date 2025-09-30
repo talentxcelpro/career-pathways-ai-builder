@@ -91,6 +91,25 @@ const emailTemplates = {
         <p>Best regards,<br>The {{platform_name}} Team</p>
       </div>
     `
+  },
+  'social.new_post': {
+    subject: "{{author_name}} shared a new post on {{platform_name}}",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #2563eb;">New Post from Your Connection</h1>
+        <p>Hi {{recipient_name}},</p>
+        <p><strong>{{author_name}}</strong> just shared a new post:</p>
+        <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
+          <p style="margin: 0; color: #374151;">{{post_preview}}</p>
+        </div>
+        <p>Check out the full post and engage with your connection!</p>
+        <div style="margin: 30px 0;">
+          <a href="{{platform_url}}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Post</a>
+        </div>
+        <p style="color: #6b7280; font-size: 14px;">You're receiving this because you're connected with {{author_name}} on {{platform_name}}.</p>
+        <p>Best regards,<br>The {{platform_name}} Team</p>
+      </div>
+    `
   }
 };
 
