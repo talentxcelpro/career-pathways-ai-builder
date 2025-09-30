@@ -4,6 +4,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56"></script>
@@ -136,17 +139,26 @@
     <script src="/chunk-error-handler.js"></script>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Service Worker completely disabled to prevent version conflicts -->
+    <!-- Improved cache and version management -->
     <script>
-      // Aggressively disable all service workers to prevent "App Update Required" errors
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          registrations.forEach(registration => registration.unregister());
-        });
-        if ('caches' in window) {
-          caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+      (function() {
+        // Prevent caching issues by adding version check
+        const APP_VERSION = Date.now().toString();
+        sessionStorage.setItem('app_version', APP_VERSION);
+        
+        // Only clear service workers and caches on first load
+        const isFirstLoad = !sessionStorage.getItem('app_loaded');
+        
+        if (isFirstLoad && 'serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            registrations.forEach(registration => registration.unregister());
+          });
+          if ('caches' in window) {
+            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+          }
+          sessionStorage.setItem('app_loaded', 'true');
         }
-      }
+      })();
     </script>
   </body>
 </html>

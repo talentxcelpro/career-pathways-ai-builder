@@ -6,30 +6,52 @@ interface BundleErrorFallbackProps {
   resetErrorBoundary?: () => void;
 }
 
+// Check if error is actually a chunk loading error
+const isChunkLoadError = (error?: Error): boolean => {
+  if (!error) return false;
+  
+  const message = error.message?.toLowerCase() || '';
+  const stack = error.stack?.toLowerCase() || '';
+  
+  return (
+    error.name === 'ChunkLoadError' ||
+    message.includes('loading chunk') ||
+    message.includes('loading css chunk') ||
+    message.includes('failed to fetch dynamically imported module') ||
+    stack.includes('chunk')
+  );
+};
+
 export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({ 
   error, 
   resetErrorBoundary 
 }) => {
-  const handleRefresh = () => {
-    // Comprehensive cleanup to prevent version conflicts
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => registration.unregister());
-      });
+  // If this is not a chunk load error, try to recover silently
+  React.useEffect(() => {
+    if (!isChunkLoadError(error) && resetErrorBoundary) {
+      console.log('Non-chunk error detected, attempting silent recovery');
+      setTimeout(() => resetErrorBoundary(), 100);
     }
-    
+  }, [error, resetErrorBoundary]);
+
+  // Don't show the error screen for non-chunk errors
+  if (!isChunkLoadError(error)) {
+    return null;
+  }
+
+  const handleRefresh = () => {
+    // Clear all caches
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => caches.delete(name));
       });
     }
     
-    // Clear storage
-    localStorage.clear();
+    // Don't clear localStorage - only session storage
     sessionStorage.clear();
     
-    // Navigate to clean URL instead of reload
-    window.location.href = window.location.origin + window.location.pathname;
+    // Hard reload to bypass cache
+    window.location.reload();
   };
 
   return (
