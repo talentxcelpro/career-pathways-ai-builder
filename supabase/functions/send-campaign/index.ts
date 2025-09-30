@@ -27,28 +27,28 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log("📧 Campaign Email Service: Processing request...");
+    console.log("📧 Campaign Email Service: Starting...");
     
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Missing Supabase credentials");
+    }
+    
+    console.log("📧 Initializing Supabase client...");
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
+    console.log("📧 Parsing request body...");
     const { campaign_id }: CampaignRequest = await req.json();
     
     console.log("📧 Processing campaign:", campaign_id);
 
     // Get campaign details
+    console.log("📧 Fetching campaign:", campaign_id);
     const { data: campaign, error: campaignError } = await supabase
       .from('email_campaigns')
-      .select(`
-        *,
-        email_templates_v2!template_id (
-          html_template,
-          text_template,
-          subject_template
-        )
-      `)
+      .select('*')
       .eq('id', campaign_id)
       .single();
 
@@ -57,11 +57,21 @@ Deno.serve(async (req) => {
       throw new Error('Campaign not found: ' + (campaignError?.message || 'Unknown error'));
     }
 
-    // Get template
-    const template = campaign.email_templates_v2;
-    if (!template) {
-      throw new Error('Template not found for campaign');
+    console.log("📧 Campaign found, fetching template:", campaign.template_id);
+    
+    // Get template separately
+    const { data: template, error: templateError } = await supabase
+      .from('email_templates_v2')
+      .select('html_template, text_template, subject_template')
+      .eq('id', campaign.template_id)
+      .single();
+
+    if (templateError || !template) {
+      console.error('Template error:', templateError);
+      throw new Error('Template not found: ' + (templateError?.message || 'Unknown error'));
     }
+
+    console.log("📧 Template loaded successfully");
 
     // Get target users based on audience
     let query = supabase.from('profiles').select('id, full_name, email');
