@@ -17,7 +17,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('🔧 Starting CV processing fix...');
+    console.log('🔧 Starting comprehensive CV processing...');
     
     // Get all pending CV files
     const { data: pendingCVs, error: fetchError } = await supabase
@@ -35,6 +35,7 @@ serve(async (req) => {
 
     let processed = 0;
     let failed = 0;
+    let profilesCreated = 0;
 
     // Process each CV
     for (const cv of pendingCVs || []) {
@@ -50,63 +51,165 @@ serve(async (req) => {
           })
           .eq('id', cv.id);
 
-        // Call AI resume parser
-        const { data: parseResult, error: parseError } = await supabase.functions.invoke('ai-resume-parser', {
-          body: {
-            fileUrl: cv.file_url,
-            fileName: cv.original_filename,
-            fileType: cv.file_type,
-            cvFileId: cv.id
-          }
-        });
+        // Check if already parsed
+        let extractedData = cv.parsing_results;
+        
+        // If no parsed data, call AI resume parser
+        if (!extractedData) {
+          console.log(`🤖 Parsing CV with AI: ${cv.original_filename}`);
+          
+          const { data: parseResult, error: parseError } = await supabase.functions.invoke('ai-resume-parser', {
+            body: {
+              fileUrl: cv.file_url,
+              fileName: cv.original_filename,
+              fileType: cv.file_type,
+              cvFileId: cv.id
+            }
+          });
 
-        if (parseError) {
-          console.error(`❌ Parse error for ${cv.original_filename}:`, parseError);
+          if (parseError) {
+            console.error(`❌ Parse error for ${cv.original_filename}:`, parseError);
+            
+            await supabase
+              .from('cv_files')
+              .update({ 
+                parsing_status: 'error',
+                parsing_error: parseError.message,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', cv.id);
+              
+            failed++;
+            continue;
+          }
+
+          extractedData = parseResult?.extractedData;
+        }
+
+        // If we have extracted data, create profile
+        if (extractedData) {
+          const email = extractEmailFromCV(extractedData);
+          const fullName = extractNameFromCV(extractedData);
+          
+          if (email && fullName) {
+            console.log(`👤 Creating profile for ${email}`);
+            
+            // Check if profile already exists
+            const { data: existingProfile } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('email', email)
+              .single();
+
+            if (!existingProfile) {
+              // Create new profile
+              const profileData = {
+                id: crypto.randomUUID(),
+                email: email,
+                full_name: fullName,
+                title: extractTitleFromCV(extractedData),
+                location: extractLocationFromCV(extractedData),
+                about: extractAboutFromCV(extractedData),
+                skills: extractSkillsFromCV(extractedData),
+                experience_years: extractExperienceYearsFromCV(extractedData),
+                current_company: extractCurrentCompanyFromCV(extractedData),
+                industry: extractIndustryFromCV(extractedData),
+                resume_url: cv.file_url,
+                activation_status: 'pending',
+                cv_file_id: cv.id,
+                created_at: new Date().toISOString()
+              };
+
+              const { data: newProfile, error: profileError } = await supabase
+                .from('profiles')
+                .insert(profileData)
+                .select()
+                .single();
+
+              if (profileError) {
+                console.error(`❌ Profile creation error for ${email}:`, profileError);
+              } else {
+                console.log(`✅ Profile created for ${email}`);
+                profilesCreated++;
+
+                // Generate activation token
+                const token = crypto.randomUUID();
+                
+                // Save activation token
+                const { error: tokenError } = await supabase
+                  .from('user_activation_tokens')
+                  .insert({
+                    email,
+                    token,
+                    cv_file_id: cv.id
+                  });
+
+                if (!tokenError) {
+                  // Queue activation email
+                  await supabase
+                    .from('email_queue')
+                    .insert({
+                      to_email: email,
+                      subject: '🎯 Activate Your TalentXcel Profile',
+                      html_content: generateActivationEmail(email, token, extractedData, fullName),
+                      priority: 'high'
+                    });
+                  
+                  console.log(`📧 Activation email queued for ${email}`);
+                }
+
+                // Update CV file with user reference
+                await supabase
+                  .from('cv_files')
+                  .update({
+                    user_id: newProfile.id,
+                    parsing_status: 'completed',
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', cv.id);
+              }
+            } else {
+              console.log(`👤 Profile already exists for ${email}`);
+              
+              // Update CV file status
+              await supabase
+                .from('cv_files')
+                .update({
+                  user_id: existingProfile.id,
+                  parsing_status: 'completed',
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', cv.id);
+            }
+          } else {
+            console.error(`❌ Missing email or name for ${cv.original_filename}`);
+            
+            await supabase
+              .from('cv_files')
+              .update({ 
+                parsing_status: 'error',
+                parsing_error: 'Could not extract email or name from CV',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', cv.id);
+              
+            failed++;
+            continue;
+          }
+        } else {
+          console.error(`❌ No extracted data for ${cv.original_filename}`);
           
           await supabase
             .from('cv_files')
             .update({ 
               parsing_status: 'error',
-              parsing_error: parseError.message,
+              parsing_error: 'No data could be extracted from CV',
               updated_at: new Date().toISOString()
             })
             .eq('id', cv.id);
             
           failed++;
           continue;
-        }
-
-        // If parsing successful, create activation token and send email
-        if (parseResult?.success && parseResult?.extractedData) {
-          const email = extractEmailFromCV(parseResult.extractedData);
-          
-          if (email) {
-            console.log(`📧 Creating activation for ${email}`);
-            
-            // Generate activation token
-            const token = crypto.randomUUID();
-            
-            // Save activation token
-            const { error: tokenError } = await supabase
-              .from('user_activation_tokens')
-              .insert({
-                email,
-                token,
-                cv_file_id: cv.id
-              });
-
-            if (!tokenError) {
-              // Queue activation email
-              await supabase
-                .from('email_queue')
-                .insert({
-                  to_email: email,
-                  subject: '🎯 Activate Your TalentXcel Profile',
-                  html_content: generateActivationEmail(email, token, parseResult.extractedData),
-                  priority: 'high'
-                });
-            }
-          }
         }
 
         processed++;
@@ -131,15 +234,16 @@ serve(async (req) => {
       }
     }
 
-    console.log(`🎉 CV processing complete: ${processed} processed, ${failed} failed`);
+    console.log(`🎉 CV processing complete: ${processed} processed, ${failed} failed, ${profilesCreated} profiles created`);
 
     return new Response(JSON.stringify({
       success: true,
-      message: `Successfully processed ${processed} CVs, ${failed} failed`,
+      message: `Successfully processed ${processed} CVs, ${failed} failed, ${profilesCreated} new profiles created`,
       stats: {
         total_pending: pendingCVs?.length || 0,
         processed,
-        failed
+        failed,
+        profilesCreated
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -164,7 +268,9 @@ function extractEmailFromCV(parsingResults: any): string | null {
     parsingResults.profile?.email,
     parsingResults.personalInfo?.email, 
     parsingResults.contact?.email,
-    parsingResults.ats?.profile?.email
+    parsingResults.ats?.profile?.email,
+    parsingResults.contactInfo?.email,
+    parsingResults.basic_info?.email
   ];
   
   for (const email of patterns) {
@@ -178,9 +284,159 @@ function extractEmailFromCV(parsingResults: any): string | null {
   return emailMatch ? emailMatch[0].toLowerCase() : null;
 }
 
-function generateActivationEmail(email: string, token: string, cvData: any): string {
-  const name = cvData?.profile?.fullName || cvData?.profile?.name || cvData?.ats?.profile?.fullName || 'Professional';
-  const title = cvData?.experience?.[0]?.title || cvData?.ats?.experience?.[0]?.title || 'Professional';
+function extractNameFromCV(parsingResults: any): string | null {
+  if (!parsingResults) return null;
+  
+  const patterns = [
+    parsingResults.profile?.fullName,
+    parsingResults.profile?.name,
+    parsingResults.personalInfo?.name,
+    parsingResults.personalInfo?.fullName,
+    parsingResults.ats?.profile?.fullName,
+    parsingResults.ats?.profile?.name,
+    parsingResults.contactInfo?.name,
+    parsingResults.basic_info?.name,
+    parsingResults.basic_info?.fullName
+  ];
+  
+  for (const name of patterns) {
+    if (name && typeof name === 'string' && name.trim().length > 0) {
+      return name.trim();
+    }
+  }
+  
+  return null;
+}
+
+function extractTitleFromCV(parsingResults: any): string | null {
+  if (!parsingResults) return null;
+  
+  const patterns = [
+    parsingResults.profile?.title,
+    parsingResults.profile?.headline,
+    parsingResults.personalInfo?.title,
+    parsingResults.experience?.[0]?.title,
+    parsingResults.ats?.experience?.[0]?.title,
+    parsingResults.workExperience?.[0]?.title,
+    parsingResults.jobs?.[0]?.title
+  ];
+  
+  for (const title of patterns) {
+    if (title && typeof title === 'string' && title.trim().length > 0) {
+      return title.trim();
+    }
+  }
+  
+  return 'Professional';
+}
+
+function extractLocationFromCV(parsingResults: any): string | null {
+  if (!parsingResults) return null;
+  
+  const patterns = [
+    parsingResults.profile?.location,
+    parsingResults.personalInfo?.location,
+    parsingResults.contactInfo?.location,
+    parsingResults.basic_info?.location,
+    parsingResults.ats?.profile?.location
+  ];
+  
+  for (const location of patterns) {
+    if (location && typeof location === 'string' && location.trim().length > 0) {
+      return location.trim();
+    }
+  }
+  
+  return null;
+}
+
+function extractAboutFromCV(parsingResults: any): string | null {
+  if (!parsingResults) return null;
+  
+  const patterns = [
+    parsingResults.profile?.summary,
+    parsingResults.profile?.about,
+    parsingResults.summary,
+    parsingResults.objective,
+    parsingResults.ats?.profile?.summary
+  ];
+  
+  for (const about of patterns) {
+    if (about && typeof about === 'string' && about.trim().length > 0) {
+      return about.trim();
+    }
+  }
+  
+  return null;
+}
+
+function extractSkillsFromCV(parsingResults: any): string[] {
+  if (!parsingResults) return [];
+  
+  const skillsArrays = [
+    parsingResults.skills,
+    parsingResults.technicalSkills,
+    parsingResults.ats?.skills,
+    parsingResults.keySkills
+  ];
+  
+  let allSkills: string[] = [];
+  
+  for (const skillsData of skillsArrays) {
+    if (Array.isArray(skillsData)) {
+      allSkills = allSkills.concat(skillsData.filter(skill => 
+        typeof skill === 'string' && skill.trim().length > 0
+      ));
+    }
+  }
+  
+  // Remove duplicates and return first 10
+  return [...new Set(allSkills)].slice(0, 10);
+}
+
+function extractExperienceYearsFromCV(parsingResults: any): number {
+  if (!parsingResults) return 0;
+  
+  const experience = parsingResults.experience || parsingResults.workExperience || parsingResults.ats?.experience || [];
+  
+  if (Array.isArray(experience) && experience.length > 0) {
+    // Simple calculation based on number of jobs
+    return Math.min(experience.length * 2, 15); // Cap at 15 years
+  }
+  
+  return 0;
+}
+
+function extractCurrentCompanyFromCV(parsingResults: any): string | null {
+  if (!parsingResults) return null;
+  
+  const experience = parsingResults.experience || parsingResults.workExperience || parsingResults.ats?.experience || [];
+  
+  if (Array.isArray(experience) && experience.length > 0) {
+    const currentJob = experience[0];
+    if (currentJob?.company && typeof currentJob.company === 'string') {
+      return currentJob.company.trim();
+    }
+  }
+  
+  return null;
+}
+
+function extractIndustryFromCV(parsingResults: any): string | null {
+  // This could be enhanced with industry detection logic
+  const currentCompany = extractCurrentCompanyFromCV(parsingResults);
+  if (currentCompany) {
+    // Simple industry mapping - can be enhanced
+    if (currentCompany.toLowerCase().includes('tech') || currentCompany.toLowerCase().includes('software')) {
+      return 'Technology';
+    }
+  }
+  return null;
+}
+
+function generateActivationEmail(email: string, token: string, cvData: any, fullName: string): string {
+  const title = extractTitleFromCV(cvData) || 'Professional';
+  const location = extractLocationFromCV(cvData) || 'India';
   
   return `
     <!DOCTYPE html>
@@ -195,30 +451,32 @@ function generateActivationEmail(email: string, token: string, cvData: any): str
                 <h1 style="color: #2563eb;">🎯 TalentXcel</h1>
             </div>
             
-            <h2>Hi ${name}! 👋</h2>
+            <h2>Hi ${fullName}! 👋</h2>
             
-            <p>Great news! We've found your CV and created a profile for you on TalentXcel - India's leading professional network.</p>
+            <p>Great news! We've found your CV and created a professional profile for you on TalentXcel - India's leading career platform.</p>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Your Profile Preview:</h3>
-                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Name:</strong> ${fullName}</p>
                 <p><strong>Title:</strong> ${title}</p>
+                <p><strong>Location:</strong> ${location}</p>
                 <p><strong>Email:</strong> ${email}</p>
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-                <a href="${Deno.env.get('SUPABASE_URL')?.replace('/auth/v1', '')}/activate?token=${token}" 
+                <a href="https://talentxcel.in/activate?token=${token}" 
                    style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
                     🚀 Activate Your Profile
                 </a>
             </div>
             
-            <h3>What happens next?</h3>
+            <h3>What happens when you activate?</h3>
             <ul>
                 <li>✅ Access your personalized job recommendations</li>
-                <li>🤝 Connect with top employers in India</li>
-                <li>📈 Get AI-powered career insights</li>
+                <li>🤝 Connect with top employers across India</li>
+                <li>📈 Get AI-powered career insights and growth tips</li>
                 <li>💼 Apply to exclusive job opportunities</li>
+                <li>🎯 Build your professional network</li>
             </ul>
             
             <p style="margin-top: 30px; font-size: 14px; color: #666;">
@@ -226,7 +484,7 @@ function generateActivationEmail(email: string, token: string, cvData: any): str
             </p>
             
             <div style="border-top: 1px solid #eee; margin-top: 30px; padding-top: 20px; text-align: center; color: #666;">
-                <p>© 2024 TalentXcel. Connecting talent with opportunity.</p>
+                <p>© 2024 TalentXcel. Connecting talent with opportunity across India.</p>
             </div>
         </div>
     </body>

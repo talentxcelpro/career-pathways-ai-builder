@@ -59,20 +59,70 @@ export const UnifiedCandidatesTable: React.FC = () => {
         return;
       }
 
-      // Get pending CVs count
+      // Get pending CVs count from cv_files table
       const { count: pendingCVsCount } = await supabase
         .from('cv_files')
         .select('*', { count: 'exact', head: true })
         .eq('parsing_status', 'pending');
 
-      setCandidates(candidatesData || []);
+      // Get CV files that aren't yet in profiles
+      const { data: cvFiles, error: cvError } = await supabase
+        .from('cv_files')
+        .select(`
+          id,
+          original_filename,
+          parsing_status,
+          user_id,
+          file_url,
+          parsing_results,
+          created_at
+        `)
+        .eq('parsing_status', 'completed')
+        .order('created_at', { ascending: false });
+
+      // Combine candidates and CV data
+      let allCandidates = [...(candidatesData || [])];
+      
+      // Add CV files that don't have corresponding profiles yet
+      if (cvFiles) {
+        for (const cv of cvFiles) {
+          const existsInCandidates = allCandidates.some(c => c.cv_file_id === cv.id);
+          if (!existsInCandidates && cv.parsing_results) {
+            // Extract data from CV
+            const email = extractEmailFromResults(cv.parsing_results);
+            const fullName = extractNameFromResults(cv.parsing_results);
+            
+            if (email && fullName) {
+              allCandidates.push({
+                id: cv.id,
+                email: email,
+                full_name: fullName,
+                title: extractTitleFromResults(cv.parsing_results) || 'Professional',
+                location: extractLocationFromResults(cv.parsing_results) || '',
+                about: extractAboutFromResults(cv.parsing_results) || '',
+                skills: extractSkillsFromResults(cv.parsing_results),
+                experience_years: extractExperienceFromResults(cv.parsing_results),
+                current_company: extractCompanyFromResults(cv.parsing_results),
+                activation_status: 'pending',
+                cv_file_id: cv.id,
+                original_filename: cv.original_filename,
+                source_type: 'cv_file',
+                created_at: cv.created_at,
+                resume_url: cv.file_url
+              });
+            }
+          }
+        }
+      }
+
+      setCandidates(allCandidates);
       
       // Calculate stats
-      const totalCandidates = candidatesData?.length || 0;
-      const activatedCount = candidatesData?.filter(c => c.activation_status === 'activated').length || 0;
-      const pendingCount = candidatesData?.filter(c => c.activation_status === 'pending').length || 0;
-      const cvFilesCount = candidatesData?.filter(c => c.source_type === 'cv_file').length || 0;
-      const profilesCount = candidatesData?.filter(c => c.source_type === 'profile').length || 0;
+      const totalCandidates = allCandidates.length;
+      const activatedCount = allCandidates.filter(c => c.activation_status === 'activated').length;
+      const pendingCount = allCandidates.filter(c => c.activation_status === 'pending').length;
+      const cvFilesCount = allCandidates.filter(c => c.source_type === 'cv_file').length;
+      const profilesCount = allCandidates.filter(c => c.source_type === 'profile').length;
       
       setStats({
         total: totalCandidates,
@@ -91,6 +141,114 @@ export const UnifiedCandidatesTable: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper functions to extract data from CV parsing results
+  const extractEmailFromResults = (results: any): string | null => {
+    if (!results) return null;
+    const patterns = [
+      results.profile?.email,
+      results.personalInfo?.email,
+      results.contact?.email,
+      results.contactInfo?.email,
+      results.basic_info?.email
+    ];
+    for (const email of patterns) {
+      if (email && typeof email === 'string' && email.includes('@')) {
+        return email.trim().toLowerCase();
+      }
+    }
+    return null;
+  };
+
+  const extractNameFromResults = (results: any): string | null => {
+    if (!results) return null;
+    const patterns = [
+      results.profile?.fullName,
+      results.profile?.name,
+      results.personalInfo?.fullName,
+      results.personalInfo?.name,
+      results.contactInfo?.name,
+      results.basic_info?.name
+    ];
+    for (const name of patterns) {
+      if (name && typeof name === 'string' && name.trim().length > 0) {
+        return name.trim();
+      }
+    }
+    return null;
+  };
+
+  const extractTitleFromResults = (results: any): string | null => {
+    if (!results) return null;
+    const patterns = [
+      results.profile?.title,
+      results.experience?.[0]?.title,
+      results.workExperience?.[0]?.title
+    ];
+    for (const title of patterns) {
+      if (title && typeof title === 'string' && title.trim().length > 0) {
+        return title.trim();
+      }
+    }
+    return null;
+  };
+
+  const extractLocationFromResults = (results: any): string | null => {
+    if (!results) return null;
+    const patterns = [
+      results.profile?.location,
+      results.personalInfo?.location,
+      results.contactInfo?.location
+    ];
+    for (const location of patterns) {
+      if (location && typeof location === 'string' && location.trim().length > 0) {
+        return location.trim();
+      }
+    }
+    return null;
+  };
+
+  const extractAboutFromResults = (results: any): string | null => {
+    if (!results) return null;
+    const patterns = [
+      results.profile?.summary,
+      results.summary,
+      results.objective
+    ];
+    for (const about of patterns) {
+      if (about && typeof about === 'string' && about.trim().length > 0) {
+        return about.trim();
+      }
+    }
+    return null;
+  };
+
+  const extractSkillsFromResults = (results: any): string[] => {
+    if (!results) return [];
+    const skills = results.skills || results.technicalSkills || [];
+    if (Array.isArray(skills)) {
+      return skills.filter(skill => typeof skill === 'string' && skill.trim().length > 0).slice(0, 10);
+    }
+    return [];
+  };
+
+  const extractExperienceFromResults = (results: any): number => {
+    if (!results) return 0;
+    const experience = results.experience || results.workExperience || [];
+    if (Array.isArray(experience)) {
+      return Math.min(experience.length * 2, 15);
+    }
+    return 0;
+  };
+
+  const extractCompanyFromResults = (results: any): string | null => {
+    if (!results) return null;
+    const experience = results.experience || results.workExperience || [];
+    if (Array.isArray(experience) && experience.length > 0) {
+      return experience[0]?.company || null;
+    }
+    return null;
   };
 
   const sendActivationEmail = async (candidate: UnifiedCandidate) => {
@@ -359,6 +517,19 @@ export const UnifiedCandidatesTable: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Add CV Files Section */}
+          {stats.pending_cvs > 0 && (
+            <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+              <h4 className="font-semibold text-orange-900 mb-2">📄 Pending CV Files ({stats.pending_cvs})</h4>
+              <p className="text-sm text-orange-700 mb-3">
+                These CV files are waiting to be processed into user profiles. Click "Process Pending CVs" to convert them.
+              </p>
+              <div className="text-xs text-orange-600">
+                Files will be parsed with AI → User profiles created → Activation emails sent
+              </div>
+            </div>
+          )}
+          
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -368,6 +539,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
                   <th className="text-left p-3">Experience</th>
                   <th className="text-left p-3">Skills</th>
                   <th className="text-left p-3">Source</th>
+                  <th className="text-left p-3">CV File</th>
                   <th className="text-left p-3">Actions</th>
                 </tr>
               </thead>
@@ -413,9 +585,30 @@ export const UnifiedCandidatesTable: React.FC = () => {
                       </div>
                     </td>
                     <td className="p-3">
-                      <Badge variant={candidate.source_type === 'profile' ? 'default' : 'secondary'}>
-                        {candidate.source_type === 'profile' ? 'Profile' : 'CV Upload'}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={candidate.source_type === 'profile' ? 'default' : 'secondary'}>
+                          {candidate.source_type === 'profile' ? 'Profile' : 'CV Upload'}
+                        </Badge>
+                        {candidate.original_filename && (
+                          <span className="text-xs text-muted-foreground">
+                            📄 {candidate.original_filename.substring(0, 20)}...
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="flex flex-col gap-1">
+                        {candidate.original_filename && (
+                          <span className="text-xs font-medium text-blue-600">
+                            📎 {candidate.original_filename}
+                          </span>
+                        )}
+                        {candidate.cv_file_id && (
+                          <span className="text-xs text-muted-foreground">
+                            ID: {candidate.cv_file_id.substring(0, 8)}...
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-3">
                       <div className="flex gap-2">
