@@ -66,19 +66,21 @@ export const BASE_EMAIL_TEMPLATE = `<!DOCTYPE html>
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     text-align: center;
     color: #fff;
-    padding: 40px 20px;
+    padding: 30px 20px;
   }
   .header img {
-    max-width: 180px;
-    height: auto;
-    margin-bottom: 10px;
-    display: inline-block;
+    max-width: 200px;
+    width: auto;
+    height: 60px;
+    margin: 0 auto 15px auto;
+    display: block;
+    object-fit: contain;
   }
   .header h1 {
-    margin: 10px 0 0 0;
-    font-size: 28px;
+    margin: 0;
+    font-size: 32px;
     letter-spacing: 1px;
-    font-weight: 600;
+    font-weight: 700;
     color: #fff;
   }
 
@@ -155,8 +157,7 @@ export const BASE_EMAIL_TEMPLATE = `<!DOCTYPE html>
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://talentxcel.in/assets/talentxcel-logo.png" alt="TalentXcel Logo" />
-      <h1>TalentXcel</h1>
+      <img src="https://talentxcel.in/assets/talentxcel-logo.png" alt="TalentXcel" style="max-width: 200px; width: auto; height: 60px; margin: 0 auto 15px auto; display: block; object-fit: contain;" />
     </div>
 
     <div class="hero">
