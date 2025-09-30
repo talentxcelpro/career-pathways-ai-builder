@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { 
-  useJobsRealtime, 
-  useNetworkRealtime, 
-  useProfileRealtime,
-  useCollegesRealtime,
-  useConnectionsRealtime 
+  useConnectionsRealtime,
+  useMessagesRealtime,
+  useActivitiesRealtime,
+  useTXCRealtime,
+  useApplicationsRealtime 
 } from '@/hooks/useRealtimeUpdates';
 import { RealtimePayload } from '@/lib/realtimeManager';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,42 +28,42 @@ export const RealtimeDemo: React.FC = () => {
   const [testMessage, setTestMessage] = useState('');
   const { toast } = useToast();
 
-  // Jobs realtime
-  useJobsRealtime((payload) => {
-    addEvent('jobs', payload);
+  // Applications realtime
+  useApplicationsRealtime((payload) => {
+    addEvent('job_applications', payload);
     toast({
-      title: "Jobs Update",
-      description: `Job ${payload.eventType.toLowerCase()}d in real-time!`,
+      title: "Application Update",
+      description: `Application ${payload.eventType.toLowerCase()}d in real-time!`,
       duration: 3000,
     });
   });
 
-  // Network realtime (posts, comments, likes)
-  useNetworkRealtime((payload) => {
-    addEvent('network', payload);
+  // Messages realtime
+  useMessagesRealtime((payload) => {
+    addEvent('messages', payload);
     toast({
-      title: "Network Update", 
-      description: `${payload.table} ${payload.eventType.toLowerCase()}d in real-time!`,
+      title: "Message Update", 
+      description: `Message ${payload.eventType.toLowerCase()}d in real-time!`,
       duration: 3000,
     });
   });
 
-  // Profile realtime
-  useProfileRealtime((payload) => {
-    addEvent('profiles', payload);
+  // Activities realtime
+  useActivitiesRealtime((payload) => {
+    addEvent('user_activities', payload);
     toast({
-      title: "Profile Update",
-      description: `Profile ${payload.eventType.toLowerCase()}d in real-time!`,
+      title: "Activity Update",
+      description: `Activity ${payload.eventType.toLowerCase()}d in real-time!`,
       duration: 3000,
     });
   });
 
-  // Colleges realtime
-  useCollegesRealtime((payload) => {
-    addEvent('colleges', payload);
+  // TXC transactions realtime
+  useTXCRealtime((payload) => {
+    addEvent('txc_transactions', payload);
     toast({
-      title: "Colleges Update",
-      description: `${payload.table} ${payload.eventType.toLowerCase()}d in real-time!`,
+      title: "TXC Update",
+      description: `Transaction ${payload.eventType.toLowerCase()}d in real-time!`,
       duration: 3000,
     });
   });

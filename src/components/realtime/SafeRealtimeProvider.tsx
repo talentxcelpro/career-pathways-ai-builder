@@ -243,16 +243,6 @@ function getUpdateMessage(table: WatchedTable, payload: RealtimePayload): string
   const { eventType } = payload;
   
   switch (table) {
-    case 'jobs':
-      return eventType === 'INSERT' ? 'New job posted!' : 
-             eventType === 'UPDATE' ? 'Job updated!' : 
-             'Job removed';
-             
-    case 'posts':
-      return eventType === 'INSERT' ? 'New post in your network!' :
-             eventType === 'UPDATE' ? 'Post updated!' :
-             'Post removed';
-             
     case 'connections':
       return eventType === 'INSERT' ? 'New connection request!' :
              eventType === 'UPDATE' ? 'Connection updated!' :
@@ -261,18 +251,16 @@ function getUpdateMessage(table: WatchedTable, payload: RealtimePayload): string
     case 'messages':
       return eventType === 'INSERT' ? 'New message received!' : null;
       
-    case 'colleges':
-      return eventType === 'INSERT' ? 'New college added!' :
-             eventType === 'UPDATE' ? 'College information updated!' :
-             null;
-             
-    case 'ai_career_recommendations':
-      return eventType === 'INSERT' ? 'New career recommendation!' : null;
-      
     case 'job_applications':
       return eventType === 'INSERT' ? 'Application submitted!' :
              eventType === 'UPDATE' ? 'Application status updated!' :
              null;
+
+    case 'user_activities':
+      return eventType === 'INSERT' ? 'New activity!' : null;
+
+    case 'txc_transactions':
+      return eventType === 'INSERT' ? 'TXC transaction completed!' : null;
              
     default:
       return null;

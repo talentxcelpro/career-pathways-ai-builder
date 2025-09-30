@@ -1,22 +1,12 @@
 import { supabase } from '@/integrations/supabase/client';
 
-// All tables we want to watch for real-time updates
+// Minimal essential tables to prevent binding conflicts in production
 const TABLES_TO_WATCH = [
-  'jobs',
-  'posts', 
-  'profiles',
-  'companies',
-  'colleges',
   'connections',
-  'job_applications',
+  'job_applications', 
   'user_activities',
-  'ai_career_recommendations',
-  'ai_job_matches',
   'messages',
-  'post_comments',
-  'post_likes',
   'txc_transactions'
-  // Note: txc_balances table doesn't exist, so removed from watch list
 ] as const;
 
 export type WatchedTable = typeof TABLES_TO_WATCH[number];
@@ -107,23 +97,86 @@ class RealtimeManager {
   }
   
   /**
-   * Setup realtime connections with improved error handling
+   * Setup realtime connections with single channel approach to prevent binding conflicts
    */
   private _setupRealtimeConnections(isAuthenticated: boolean) {
-    // Try all tables regardless of authentication - let RLS handle permissions
-    const tablesToWatch = [...TABLES_TO_WATCH];
-
-    console.log('🎯 Watching tables:', tablesToWatch);
+    console.log('🎯 Setting up single realtime channel for production');
     console.log(`🔐 Authentication status: ${isAuthenticated ? 'authenticated' : 'unauthenticated'}`);
 
-    // Use a staggered approach to avoid overwhelming the system
-    tablesToWatch.forEach((table, index) => {
-      setTimeout(() => {
-        this.setupTableChannel(table);
-      }, index * 1000); // 1 second delay between each table
+    // Use a single channel for all critical tables to prevent binding conflicts
+    this.setupSingleRealtimeChannel();
+
+    console.log('✅ Production realtime system initialized with single channel approach');
+  }
+
+  /**
+   * Setup a single channel for all essential tables to prevent binding conflicts
+   */
+  private setupSingleRealtimeChannel() {
+    const channelName = 'production-realtime';
+    console.log(`🔗 Creating single channel: ${channelName}`);
+
+    const channel = supabase.channel(channelName);
+
+    // Subscribe to all essential tables in a single channel
+    TABLES_TO_WATCH.forEach(table => {
+      channel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table,
+        },
+        (payload) => {
+          const realtimePayload: RealtimePayload = {
+            eventType: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
+            new: payload.new || {},
+            old: payload.old || {},
+            table: table as WatchedTable,
+            schema: payload.schema,
+          };
+          this._handleIncomingEvent(table, realtimePayload, false);
+        }
+      );
     });
 
-    console.log('✅ Production realtime system initialized with improved error handling');
+    // Subscribe and track status for the single channel
+    channel.subscribe((status, err) => {
+      console.log(`📡 Production realtime status:`, status);
+      
+      if (status === 'SUBSCRIBED') {
+        console.log(`✅ Production realtime channel subscribed successfully`);
+        this.isInitialized = true;
+        // Mark all tables as connected
+        TABLES_TO_WATCH.forEach(table => {
+          this.channelStatuses.set(table, 'SUBSCRIBED');
+        });
+      } else if (status === 'CHANNEL_ERROR') {
+        console.warn(`⚠️ Production realtime channel error`);
+        if (err) {
+          console.warn('   - Error details:', err);
+        }
+        // Mark all tables as error
+        TABLES_TO_WATCH.forEach(table => {
+          this.channelStatuses.set(table, 'CHANNEL_ERROR');
+        });
+      } else if (status === 'CLOSED' || status === 'TIMED_OUT') {
+        console.warn(`🔒 Production realtime channel ${status.toLowerCase()}`);
+        this.channels.delete(channelName);
+        TABLES_TO_WATCH.forEach(table => {
+          this.channelStatuses.delete(table);
+        });
+        
+        // Schedule reconnection
+        setTimeout(() => {
+          if (!this.isCleaningUp) {
+            this.setupSingleRealtimeChannel();
+          }
+        }, 5000);
+      }
+    });
+
+    this.channels.set(channelName, channel);
   }
 
   /**

@@ -53,27 +53,6 @@ export function useRealtimeUpdates(
 }
 
 /**
- * Hook specifically for jobs updates
- */
-export function useJobsRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates('jobs', (_table, payload) => callback(payload));
-}
-
-/**
- * Hook specifically for posts/network updates
- */
-export function useNetworkRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates(['posts', 'post_comments', 'post_likes'], (_table, payload) => callback(payload));
-}
-
-/**
- * Hook specifically for profile updates
- */
-export function useProfileRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates('profiles', (_table, payload) => callback(payload));
-}
-
-/**
  * Hook specifically for connections updates
  */
 export function useConnectionsRealtime(callback: (payload: RealtimePayload) => void) {
@@ -88,17 +67,17 @@ export function useMessagesRealtime(callback: (payload: RealtimePayload) => void
 }
 
 /**
- * Hook specifically for college updates
+ * Hook specifically for user activities
  */
-export function useCollegesRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates(['colleges'], (_table, payload) => callback(payload));
+export function useActivitiesRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('user_activities', (_table, payload) => callback(payload));
 }
 
 /**
- * Hook for career recommendations updates
+ * Hook for TXC transactions updates
  */
-export function useCareerRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates(['ai_career_recommendations', 'ai_job_matches'], (_table, payload) => callback(payload));
+export function useTXCRealtime(callback: (payload: RealtimePayload) => void) {
+  useRealtimeUpdates('txc_transactions', (_table, payload) => callback(payload));
 }
 
 /**
@@ -106,11 +85,4 @@ export function useCareerRealtime(callback: (payload: RealtimePayload) => void) 
  */
 export function useApplicationsRealtime(callback: (payload: RealtimePayload) => void) {
   useRealtimeUpdates('job_applications', (_table, payload) => callback(payload));
-}
-
-/**
- * Hook for user activities updates
- */
-export function useActivitiesRealtime(callback: (payload: RealtimePayload) => void) {
-  useRealtimeUpdates('user_activities', (_table, payload) => callback(payload));
 }
