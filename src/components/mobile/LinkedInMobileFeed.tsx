@@ -14,6 +14,7 @@ import { useUrlDetection } from '@/hooks/useUrlDetection';
 import LinkPreview from '@/components/shared/LinkPreview';
 import { useQueryClient } from '@tanstack/react-query';
 import { MobilePostComments } from './MobilePostComments';
+import { MobilePostLikes } from './MobilePostLikes';
 
 interface LinkedInPost {
   id: string;
@@ -86,8 +87,10 @@ const LinkedInPostCard: React.FC<{
   const [isLiked, setIsLiked] = useState(post.stats.isLiked);
   const [isBookmarked, setIsBookmarked] = useState(post.stats.isBookmarked);
   const [likesCount, setLikesCount] = useState(post.stats.likes);
+  const [commentsCount, setCommentsCount] = useState(post.stats.comments);
   const [showFullCaption, setShowFullCaption] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
   
   // URL detection for link previews
   const { detectedUrls } = useUrlDetection(post.caption || '');
@@ -262,21 +265,29 @@ const LinkedInPostCard: React.FC<{
       )}
 
       {/* Engagement Info */}
-      {(post.stats.likes > 0 || post.stats.comments > 0) && (
+      {(likesCount > 0 || commentsCount > 0) && (
         <div className="px-5 py-3 border-b border-gray-50">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            {post.stats.likes > 0 && (
-              <div className="flex items-center space-x-1">
+            {likesCount > 0 && (
+              <button 
+                onClick={() => setShowLikes(true)}
+                className="flex items-center space-x-1 hover:text-blue-600 transition-colors"
+              >
                 <div className="flex items-center space-x-1">
                   <div className="w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-sm">
                     <ThumbsUp className="w-2.5 h-2.5 text-white fill-current" />
                   </div>
-                  <span className="font-medium">{likesCount} likes</span>
+                  <span className="font-medium">{likesCount} {likesCount === 1 ? 'like' : 'likes'}</span>
                 </div>
-              </div>
+              </button>
             )}
-            {post.stats.comments > 0 && (
-              <span className="font-medium">{post.stats.comments} comments</span>
+            {commentsCount > 0 && (
+              <button 
+                onClick={() => setShowComments(true)}
+                className="font-medium hover:text-blue-600 transition-colors"
+              >
+                {commentsCount} {commentsCount === 1 ? 'comment' : 'comments'}
+              </button>
             )}
           </div>
         </div>
@@ -311,6 +322,13 @@ const LinkedInPostCard: React.FC<{
           <MobilePostComments 
             isOpen={showComments}
             onClose={() => setShowComments(false)}
+            postId={post.id}
+            onCommentAdded={() => setCommentsCount(prev => prev + 1)}
+          />
+
+          <MobilePostLikes
+            isOpen={showLikes}
+            onClose={() => setShowLikes(false)}
             postId={post.id}
           />
 

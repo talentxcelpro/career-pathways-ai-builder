@@ -25,12 +25,14 @@ interface MobilePostCommentsProps {
   isOpen: boolean;
   onClose: () => void;
   postId: string;
+  onCommentAdded?: () => void;
 }
 
 export const MobilePostComments: React.FC<MobilePostCommentsProps> = ({
   isOpen,
   onClose,
-  postId
+  postId,
+  onCommentAdded
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -144,6 +146,9 @@ export const MobilePostComments: React.FC<MobilePostCommentsProps> = ({
       
       // Refresh comments to show the new one
       await loadComments();
+      
+      // Notify parent to update count
+      onCommentAdded?.();
       
       toast({
         title: "Comment posted!",
