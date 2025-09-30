@@ -68,6 +68,7 @@ import NewsManagement from "../pages/admin/NewsManagement";
 import EdgeFunctionsMonitor from "../pages/admin/EdgeFunctionsMonitor";
 import LinkedInImporter from "../pages/admin/LinkedInImporter";
 import EnterpriseOverview from "../pages/admin/EnterpriseOverview";
+import Phase1Dashboard from "../components/network/Phase1Dashboard";
 
 export const adminRoutes = [
   {
@@ -75,6 +76,13 @@ export const adminRoutes = [
     to: "/admin",
     icon: <Shield className="h-4 w-4" />,
     page: <AdminDashboard />,
+    isPublic: true,
+  },
+  {
+    title: "Phase 1",
+    to: "/admin/phase1",
+    icon: <Rocket className="h-4 w-4" />,
+    page: <Phase1Dashboard />,
     isPublic: true,
   },
   {
