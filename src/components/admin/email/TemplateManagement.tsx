@@ -10,12 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TemplateDialog } from './TemplateDialog';
 import { TemplatePreviewDialog } from './TemplatePreviewDialog';
 import { useToast } from '@/hooks/use-toast';
+import { TEMPLATE_CATEGORIES } from '@/utils/emailTemplates';
 
 export const TemplateManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
@@ -56,11 +58,13 @@ export const TemplateManagement = () => {
   }, [queryClient]);
 
   const filteredTemplates = templates?.filter(template => {
-    const matchesSearch = template.template_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = template.template_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         template.subject?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || 
                          (filterStatus === 'active' && template.is_active) ||
                          (filterStatus === 'inactive' && !template.is_active);
-    return matchesSearch && matchesStatus;
+    const matchesCategory = filterCategory === 'all' || template.category === filterCategory;
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
   const copyTemplateMutation = useMutation({
@@ -102,12 +106,26 @@ export const TemplateManagement = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search templates..."
+              placeholder="Search templates by name or subject..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {TEMPLATE_CATEGORIES.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  <span className="mr-2">{cat.icon}</span>
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Status" />
