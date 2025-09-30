@@ -27,7 +27,7 @@ const supabase = createClient(
 );
 
 // AWS SES Client with multi-region support
-const createSESClient = (region = 'us-east-1') => {
+const createSESClient = (region = 'eu-north-1') => {
   const accessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
   const secretAccessKey = Deno.env.get("AWS_SECRET_ACCESS_KEY");
 
@@ -45,7 +45,7 @@ const createSESClient = (region = 'us-east-1') => {
 };
 
 // AWS SESv2 Client for suppression list operations
-const createSESv2Client = (region = 'us-east-1') => {
+const createSESv2Client = (region = 'eu-north-1') => {
   const accessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
   const secretAccessKey = Deno.env.get("AWS_SECRET_ACCESS_KEY");
 
@@ -63,7 +63,7 @@ const createSESv2Client = (region = 'us-east-1') => {
 };
 
 // Get comprehensive SES account status
-const getSESAccountStatus = async (region = 'us-east-1') => {
+const getSESAccountStatus = async (region = 'eu-north-1') => {
   const sesClient = createSESClient(region);
 
   try {
@@ -159,7 +159,7 @@ const getSESAccountStatus = async (region = 'us-east-1') => {
 };
 
 // Get suppression list status
-const getSuppressionListStatus = async (region = 'us-east-1') => {
+const getSuppressionListStatus = async (region = 'eu-north-1') => {
   const sesClient = createSESv2Client(region);
 
   try {
@@ -198,7 +198,7 @@ const getSuppressionListStatus = async (region = 'us-east-1') => {
 };
 
 // Get configuration sets status
-const getConfigurationSetsStatus = async (region = 'us-east-1') => {
+const getConfigurationSetsStatus = async (region = 'eu-north-1') => {
   const sesClient = createSESClient(region);
 
   try {
@@ -240,7 +240,7 @@ const getConfigurationSetsStatus = async (region = 'us-east-1') => {
 };
 
 // Remove email from suppression list
-const removeFromSuppressionList = async (email: string, region = 'us-east-1') => {
+const removeFromSuppressionList = async (email: string, region = 'eu-north-1') => {
   const sesClient = createSESv2Client(region);
 
   try {
@@ -309,7 +309,7 @@ const handler = async (req: Request): Promise<Response> => {
     
     const url = new URL(req.url);
     const action = url.searchParams.get('action') || 'status';
-    const region = url.searchParams.get('region') || 'us-east-1';
+    const region = url.searchParams.get('region') || 'eu-north-1';
 
     switch (action) {
       case 'status':
@@ -404,7 +404,7 @@ const handler = async (req: Request): Promise<Response> => {
           error_message: error instanceof Error ? error.message : 'Unknown error',
           error_details: JSON.stringify(error),
           action: new URL(req.url).searchParams.get('action') || 'unknown',
-          region: new URL(req.url).searchParams.get('region') || 'us-east-1',
+          region: new URL(req.url).searchParams.get('region') || 'eu-north-1',
           created_at: new Date().toISOString()
         });
     } catch (logError) {

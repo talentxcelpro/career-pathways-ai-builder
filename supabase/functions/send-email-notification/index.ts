@@ -14,7 +14,7 @@ const supabase = createClient(
 );
 
 // AWS SES Client with multi-region fallback
-const createSESClient = (region = 'us-east-1') => {
+const createSESClient = (region = 'eu-north-1') => {
   const accessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
   const secretAccessKey = Deno.env.get("AWS_SECRET_ACCESS_KEY");
 
@@ -153,9 +153,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Processing ${recipientList.length} recipients for event: ${finalEventName}`);
 
-    // Create SES client with primary region
+    // Create SES client with primary region (Europe Stockholm)
     let sesClient;
-    let currentRegion = 'us-east-1';
+    let currentRegion = 'eu-north-1';
     
     try {
       sesClient = createSESClient(currentRegion);
@@ -167,7 +167,7 @@ const handler = async (req: Request): Promise<Response> => {
     } catch (regionError) {
       console.log(`SES failed in ${currentRegion}, trying fallback region...`);
       try {
-        currentRegion = 'eu-west-1';
+        currentRegion = 'us-east-1';
         sesClient = createSESClient(currentRegion);
         await checkSESQuota(sesClient);
         console.log(`SES fallback to ${currentRegion} successful`);

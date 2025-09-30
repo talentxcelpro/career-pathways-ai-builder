@@ -23,7 +23,7 @@ const createSESv2Client = () => {
   }
 
   return new SESv2Client({
-    region: 'us-east-1', // Primary region for suppression list management
+    region: 'eu-north-1', // Primary region for suppression list management
     credentials: {
       accessKeyId,
       secretAccessKey,
