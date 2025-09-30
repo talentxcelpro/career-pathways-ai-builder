@@ -93,20 +93,41 @@ Deno.serve(async (req) => {
     console.log("📧 Template loaded successfully");
 
     // Get target users based on audience
+    let userIds: string[] = [];
+    
+    // First, get user IDs based on role if needed
+    if (campaign.target_audience === 'job_seekers' || campaign.target_audience === 'employers') {
+      const targetRole = campaign.target_audience === 'job_seekers' ? 'user' : 'employer';
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', targetRole)
+        .eq('is_active', true);
+      
+      if (roleError) {
+        throw new Error('Failed to fetch user roles: ' + roleError.message);
+      }
+      
+      userIds = roleData?.map(r => r.user_id) || [];
+    }
+    
+    // Build profiles query
     let query = supabase.from('profiles').select('id, full_name, email');
     
+    // Apply filters based on audience
     switch (campaign.target_audience) {
       case 'job_seekers':
-        query = query.eq('user_role', 'job_seeker');
-        break;
       case 'employers':
-        query = query.eq('user_role', 'employer');
+        if (userIds.length === 0) {
+          throw new Error('No users found for target audience');
+        }
+        query = query.in('id', userIds);
         break;
       case 'active_users':
-        query = query.gte('last_seen', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+        query = query.gte('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
         break;
       case 'inactive_users':
-        query = query.lt('last_seen', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+        query = query.lt('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
         break;
       // 'all_users' - no filter
     }
