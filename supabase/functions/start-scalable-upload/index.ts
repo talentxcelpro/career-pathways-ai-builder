@@ -69,9 +69,10 @@ serve(async (req) => {
     const uploadSessionData = {
       id: sessionId,
       batch_name: config.batchName,
-      total_files: totalFiles,
+      total_files: totalFiles, // This matches the table column
       uploaded_by: user.id,
       processing_status: 'pending',
+      status: 'pending', // Add this field too
       upload_data: {
         config,
         estimatedDuration,

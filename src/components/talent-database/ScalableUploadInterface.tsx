@@ -117,32 +117,54 @@ export const ScalableUploadInterface = () => {
         throw new Error('For large uploads (>50k files), use max 3 concurrent processes');
       }
 
-      console.log('Starting upload with config:', {
+      console.log('🚀 Starting upload with config:', {
         config: uploadConfig,
         totalFiles: uploadedFiles.length,
         estimatedDuration: estimatedTime
       });
 
-      const { data, error } = await supabase.functions.invoke('start-scalable-upload', {
-        body: {
+      try {
+        // Get session first
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session?.access_token) {
+          throw new Error('Authentication required - please log in again');
+        }
+
+        console.log('🔐 Auth session valid, making function call...');
+
+        const requestBody = {
           config: uploadConfig,
           totalFiles: uploadedFiles.length,
           estimatedDuration: estimatedTime
-        }
-      });
+        };
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw error;
+        console.log('📤 Request body:', requestBody);
+
+        const { data, error } = await supabase.functions.invoke('start-scalable-upload', {
+          body: requestBody
+        });
+
+        if (error) {
+          console.error('❌ Supabase function error:', error);
+          throw new Error(`Function call failed: ${error.message}`);
+        }
+
+        console.log('✅ Function response:', data);
+        return data;
+        
+      } catch (funcError) {
+        console.error('💥 Function invocation failed:', funcError);
+        throw new Error(`Upload failed: ${funcError.message}`);
       }
-      return data;
     },
     onSuccess: (data) => {
+      console.log('🎉 Upload started successfully:', data);
       toast.success(`Upload started! Session ID: ${data.sessionId}`);
       // Start file upload process
       uploadFiles(data.sessionId);
     },
     onError: (error: any) => {
+      console.error('❌ Upload start failed:', error);
       toast.error(`Failed to start upload: ${error.message}`);
     }
   });
