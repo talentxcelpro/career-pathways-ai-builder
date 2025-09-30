@@ -130,7 +130,7 @@ export const ScalableUploadInterface = () => {
           throw new Error('Authentication required - please log in again');
         }
 
-        console.log('🔐 Auth session valid, making function call...');
+        console.log('🔐 Auth session valid, making direct HTTP call...');
 
         const requestBody = {
           config: uploadConfig,
@@ -140,16 +140,31 @@ export const ScalableUploadInterface = () => {
 
         console.log('📤 Request body:', requestBody);
 
-        const { data, error } = await supabase.functions.invoke('start-scalable-upload', {
-          body: requestBody
+        // Use direct HTTP call instead of supabase.functions.invoke
+        const { url } = getSupabaseConfig();
+        const response = await fetch(`${url}/functions/v1/start-scalable-upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'apikey': getSupabaseConfig().anonKey
+          },
+          body: JSON.stringify(requestBody),
         });
 
-        if (error) {
-          console.error('❌ Supabase function error:', error);
-          throw new Error(`Function call failed: ${error.message}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ HTTP Response not OK:', response.status, errorText);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
+        const data = await response.json();
         console.log('✅ Function response:', data);
+
+        if (!data.success) {
+          throw new Error(data.error || 'Unknown error occurred');
+        }
+
         return data;
         
       } catch (funcError) {
