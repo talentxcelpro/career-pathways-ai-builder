@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Send } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface CampaignDialogProps {
@@ -22,6 +23,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [scheduledDate, setScheduledDate] = useState<Date>();
+  const [sendImmediately, setSendImmediately] = useState(true);
   const [formData, setFormData] = useState({
     campaign_name: '',
     campaign_type: 'broadcast',
@@ -45,7 +47,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
 
   const createCampaignMutation = useMutation({
     mutationFn: async (data: typeof formData & { scheduled_at?: string }) => {
-      const { error } = await supabase.from('email_campaigns').insert({
+      const { data: campaignData, error } = await supabase.from('email_campaigns').insert({
         ...data,
         status: scheduledDate ? 'scheduled' : 'draft',
         total_recipients: 0,
@@ -53,15 +55,41 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
         emails_delivered: 0,
         emails_opened: 0,
         emails_clicked: 0,
-      });
+      }).select().single();
+      
       if (error) throw error;
+      return campaignData;
     },
-    onSuccess: () => {
+    onSuccess: async (campaignData) => {
       queryClient.invalidateQueries({ queryKey: ['email-campaigns'] });
-      toast({
-        title: 'Campaign created',
-        description: 'Email campaign created successfully',
-      });
+      
+      // If send immediately is checked, trigger the campaign
+      if (sendImmediately && !scheduledDate) {
+        try {
+          const { data, error } = await supabase.functions.invoke('send-campaign', {
+            body: { campaign_id: campaignData.id }
+          });
+          
+          if (error) throw error;
+          
+          toast({
+            title: 'Campaign launched!',
+            description: `${data.queued} emails queued successfully`,
+          });
+        } catch (error: any) {
+          toast({
+            title: 'Campaign created but sending failed',
+            description: error.message,
+            variant: 'destructive',
+          });
+        }
+      } else {
+        toast({
+          title: 'Campaign created',
+          description: scheduledDate ? 'Campaign scheduled successfully' : 'Campaign saved as draft',
+        });
+      }
+      
       onOpenChange(false);
       setFormData({
         campaign_name: '',
@@ -72,6 +100,7 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
         description: '',
       });
       setScheduledDate(undefined);
+      setSendImmediately(true);
     },
     onError: (error: any) => {
       toast({
@@ -201,25 +230,56 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Schedule Campaign (Optional)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start text-left font-normal">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {scheduledDate ? format(scheduledDate, 'PPP p') : 'Send immediately'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={scheduledDate}
-                  onSelect={setScheduledDate}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+          <div className="space-y-4 border rounded-lg p-4 bg-accent/50">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label className="text-base font-semibold flex items-center gap-2">
+                  <Send className="h-4 w-4" />
+                  Send Immediately
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Launch campaign right away and send emails to all recipients
+                </p>
+              </div>
+              <Switch
+                checked={sendImmediately && !scheduledDate}
+                onCheckedChange={setSendImmediately}
+                disabled={!!scheduledDate}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Or Schedule for Later</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-left font-normal"
+                    onClick={() => {
+                      if (scheduledDate) {
+                        setScheduledDate(undefined);
+                        setSendImmediately(true);
+                      }
+                    }}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {scheduledDate ? format(scheduledDate, 'PPP p') : 'Pick a date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={scheduledDate}
+                    onSelect={(date) => {
+                      setScheduledDate(date);
+                      if (date) setSendImmediately(false);
+                    }}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           <DialogFooter>
@@ -227,7 +287,14 @@ export const CampaignDialog = ({ open, onOpenChange }: CampaignDialogProps) => {
               Cancel
             </Button>
             <Button type="submit" disabled={createCampaignMutation.isPending}>
-              {createCampaignMutation.isPending ? 'Creating...' : 'Create Campaign'}
+              {createCampaignMutation.isPending 
+                ? 'Processing...' 
+                : sendImmediately && !scheduledDate 
+                  ? 'Create & Send Now' 
+                  : scheduledDate 
+                    ? 'Schedule Campaign' 
+                    : 'Save as Draft'
+              }
             </Button>
           </DialogFooter>
         </form>

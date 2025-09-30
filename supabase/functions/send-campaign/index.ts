@@ -1,0 +1,190 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface CampaignRequest {
+  campaign_id: string;
+}
+
+function renderTemplate(template: string, data: Record<string, any>): string {
+  let rendered = template;
+  for (const [key, value] of Object.entries(data)) {
+    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+    rendered = rendered.replace(regex, String(value || ''));
+  }
+  // Add defaults
+  rendered = rendered.replace(/{{year}}/g, new Date().getFullYear().toString());
+  rendered = rendered.replace(/{{logo_url}}/g, 'https://talentxcel.in/assets/talentxcel-logo.png');
+  return rendered;
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    console.log("📧 Campaign Email Service: Processing request...");
+    
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    const { campaign_id }: CampaignRequest = await req.json();
+    
+    console.log("📧 Processing campaign:", campaign_id);
+
+    // Get campaign details
+    const { data: campaign, error: campaignError } = await supabase
+      .from('email_campaigns')
+      .select('*, email_templates_v2(html_content, text_content, subject)')
+      .eq('id', campaign_id)
+      .single();
+
+    if (campaignError || !campaign) {
+      throw new Error('Campaign not found');
+    }
+
+    // Get template
+    const template = campaign.email_templates_v2;
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    // Get target users based on audience
+    let query = supabase.from('profiles').select('id, full_name, email');
+    
+    switch (campaign.target_audience) {
+      case 'job_seekers':
+        query = query.eq('user_type', 'job_seeker');
+        break;
+      case 'employers':
+        query = query.eq('user_type', 'employer');
+        break;
+      case 'active_users':
+        query = query.gte('last_seen', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+        break;
+      case 'inactive_users':
+        query = query.lt('last_seen', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+        break;
+      // 'all_users' - no filter
+    }
+
+    const { data: users, error: usersError } = await query;
+
+    if (usersError) {
+      throw new Error('Failed to fetch users: ' + usersError.message);
+    }
+
+    if (!users || users.length === 0) {
+      throw new Error('No users found for target audience');
+    }
+
+    console.log(`📧 Found ${users.length} recipients`);
+
+    // Update campaign status and recipient count
+    await supabase
+      .from('email_campaigns')
+      .update({
+        status: 'running',
+        total_recipients: users.length,
+        started_at: new Date().toISOString(),
+      })
+      .eq('id', campaign_id);
+
+    // Queue emails for each user
+    let queued = 0;
+    let failed = 0;
+
+    for (const user of users) {
+      try {
+        // Prepare user-specific data
+        const userData = {
+          username: user.full_name || 'User',
+          first_name: user.full_name?.split(' ')[0] || 'User',
+          last_name: user.full_name?.split(' ').slice(1).join(' ') || '',
+          email: user.email,
+          link: 'https://talentxcel.in',
+          title: campaign.campaign_name,
+          description: campaign.description || 'Check out what we have for you',
+          cta_text: 'Explore Now',
+          date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        };
+
+        // Render template with user data
+        const htmlContent = renderTemplate(template.html_content, userData);
+        const textContent = template.text_content 
+          ? renderTemplate(template.text_content, userData)
+          : '';
+        const subject = renderTemplate(template.subject, userData);
+
+        // Queue email
+        const { error: queueError } = await supabase
+          .from('email_queue')
+          .insert({
+            to_email: user.email,
+            subject: subject,
+            html_content: htmlContent,
+            text_content: textContent,
+            priority: 'normal',
+            status: 'pending',
+            metadata: {
+              campaign_id: campaign_id,
+              user_id: user.id,
+            },
+          });
+
+        if (queueError) {
+          console.error(`❌ Failed to queue email for ${user.email}:`, queueError);
+          failed++;
+        } else {
+          queued++;
+        }
+      } catch (error) {
+        console.error(`❌ Error processing user ${user.email}:`, error);
+        failed++;
+      }
+    }
+
+    console.log(`✅ Queued ${queued} emails, ${failed} failed`);
+
+    // Update campaign with results
+    await supabase
+      .from('email_campaigns')
+      .update({
+        emails_sent: queued,
+        status: failed === users.length ? 'failed' : 'running',
+      })
+      .eq('id', campaign_id);
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        message: `Campaign started: ${queued} emails queued`,
+        queued,
+        failed,
+        total: users.length,
+      }),
+      { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
+
+  } catch (error: any) {
+    console.error("❌ Campaign service error:", error);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error',
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
+  }
+});
