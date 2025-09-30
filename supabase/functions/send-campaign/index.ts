@@ -7,18 +7,32 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log("📧 Campaign service received request");
-  
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
-    console.log("📧 Parsing request body...");
-    const { campaign_id } = await req.json();
+    console.log("📧 Campaign service received request");
+    console.log("📧 Method:", req.method);
+    
+    // Handle CORS preflight
+    if (req.method === "OPTIONS") {
+      console.log("📧 Handling OPTIONS request");
+      return new Response(null, { headers: corsHeaders });
+    }
+
+    console.log("📧 About to parse request body...");
+    let requestBody;
+    try {
+      const text = await req.text();
+      console.log("📧 Raw body:", text);
+      requestBody = JSON.parse(text);
+      console.log("📧 Parsed body:", requestBody);
+    } catch (parseErr) {
+      console.error("❌ Parse error:", parseErr);
+      throw new Error("Failed to parse request body: " + parseErr.message);
+    }
+
+    const { campaign_id } = requestBody;
     
     if (!campaign_id) {
+      console.error("❌ No campaign_id in body");
       throw new Error("campaign_id is required");
     }
     
@@ -142,11 +156,26 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error("❌ Error:", error.message);
+    console.error("❌ Error:", error);
+    console.error("❌ Error message:", error?.message);
+    console.error("❌ Error stack:", error?.stack);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message,
+        error: error?.message || "Unknown error",
+        details: error?.toString(),
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
+    );
+  } catch (outerError: any) {
+    console.error("❌ Outer catch error:", outerError);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: "Critical error: " + outerError?.message,
       }),
       { 
         status: 500, 
