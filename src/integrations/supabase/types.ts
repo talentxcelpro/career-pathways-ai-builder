@@ -34368,6 +34368,14 @@ export type Database = {
           resume_url: string
         }[]
       }
+      get_table_sizes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          row_count: number
+          size_mb: number
+          table_name: string
+        }[]
+      }
       get_trending_job_locations: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -34818,6 +34826,12 @@ export type Database = {
       reject_team_invitation_request: {
         Args: { reason?: string; request_id: string }
         Returns: Json
+      }
+      remove_duplicate_profile_views: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          removed_count: number
+        }[]
       }
       send_bulk_notifications: {
         Args: {

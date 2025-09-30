@@ -67,9 +67,11 @@ export class RedisCache {
   async get<T>(key: string): Promise<T | null> {
     try {
       const value = await this.redis.get(key);
+      await this.increment('cache:hits');
       return value as T;
     } catch (error) {
       console.error('Redis get error:', error);
+      await this.increment('cache:misses');
       return null;
     }
   }
@@ -84,12 +86,13 @@ export class RedisCache {
 
       await this.redis.setex(key, ttl, JSON.stringify(value));
       
-      // Store cache tags for invalidation
+      // Store cache tags for invalidation with batch operations
       if (options?.tags) {
-        for (const tag of options.tags) {
+        const operations = options.tags.map(async (tag) => {
           await this.redis.sadd(`tag:${tag}`, key);
           await this.redis.expire(`tag:${tag}`, ttl);
-        }
+        });
+        await Promise.all(operations);
       }
 
       return true;
