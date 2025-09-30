@@ -20088,6 +20088,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_txc_balances: {
+        Row: {
+          created_at: string | null
+          total_earned: number
+          total_spent: number
+          txc_balance: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          total_earned?: number
+          total_spent?: number
+          txc_balance?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          total_earned?: number
+          total_spent?: number
+          txc_balance?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_verification_requests: {
         Row: {
           admin_notes: string | null
