@@ -185,53 +185,80 @@ export const ScalableUploadInterface = () => {
   });
 
   const uploadFiles = async (sessionId: string) => {
+    console.log('📁 Starting file upload process for session:', sessionId);
+    
     const batches = [];
     for (let i = 0; i < uploadedFiles.length; i += uploadConfig.batchSize) {
       batches.push(uploadedFiles.slice(i, i + uploadConfig.batchSize));
     }
 
+    console.log(`📦 Created ${batches.length} batches for upload`);
+
     for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
       const batch = batches[batchIndex];
       
       try {
+        console.log(`🚀 Processing batch ${batchIndex + 1}/${batches.length} with ${batch.length} files`);
+        
         const formData = new FormData();
         formData.append('sessionId', sessionId);
         formData.append('batchIndex', batchIndex.toString());
         formData.append('config', JSON.stringify(uploadConfig));
         
-        batch.forEach((file) => {
+        batch.forEach((file, index) => {
+          console.log(`📄 Adding file ${index + 1}: ${file.name} (${file.size} bytes)`);
           formData.append('files', file);
         });
 
         // Get auth token for direct function call
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) {
-          throw new Error('Authentication required');
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session?.access_token) {
+          console.error('❌ Authentication error:', sessionError);
+          throw new Error('Authentication required - please log in again');
         }
+
+        console.log('🔐 Auth session valid, making direct HTTP call to upload-file-batch...');
 
         // Make direct HTTP call to edge function
         const { url } = getSupabaseConfig();
-        const response = await fetch(`${url}/functions/v1/upload-file-batch`, {
+        const uploadUrl = `${url}/functions/v1/upload-file-batch`;
+        
+        console.log('📤 Making request to:', uploadUrl);
+        
+        const response = await fetch(uploadUrl, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
+            'apikey': getSupabaseConfig().anonKey
           },
           body: formData,
         });
 
+        console.log('📥 Upload response status:', response.status);
+
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Upload failed: ${errorText}`);
+          console.error('❌ HTTP Response not OK:', response.status, errorText);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
+        console.log('✅ Batch upload response:', data);
         
-        toast.success(`Batch ${batchIndex + 1}/${batches.length} uploaded successfully`);
+        if (!data.success) {
+          throw new Error(data.error || 'Upload failed');
+        }
+        
+        toast.success(`Batch ${batchIndex + 1}/${batches.length} uploaded successfully (${data.successCount}/${data.totalFiles} files)`);
         
       } catch (error: any) {
+        console.error(`💥 Batch ${batchIndex + 1} failed:`, error);
         toast.error(`Batch ${batchIndex + 1} failed: ${error.message}`);
       }
     }
+
+    console.log('🎉 File upload process completed for all batches');
+    toast.success('All batches processed! Check the admin panel for detailed results.');
   };
 
   const formatTime = (minutes: number) => {
