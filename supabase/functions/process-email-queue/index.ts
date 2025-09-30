@@ -136,10 +136,32 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log(`Email sent successfully to ${email.recipient_email}`);
 
-        // Extract SES message ID from result for tracking
-        const sesMessageId = emailResult?.messageId || emailResult?.data?.MessageId;
+        // Extract SES message ID from result for enhanced tracking
+        const sesMessageId = emailResult?.messageId || emailResult?.data?.MessageId || emailResult?.results?.[0]?.messageId;
+        const sesRegion = emailResult?.region || 'us-east-1';
 
-        // Update email status to sent and store SES message ID
+        // Check for suppressed emails before updating status
+        const isEmailSuppressed = await supabase
+          .from('email_suppression_list')
+          .select('email_address')
+          .eq('email_address', email.recipient_email)
+          .eq('is_active', true)
+          .single();
+
+        if (isEmailSuppressed.data) {
+          console.log(`Email ${email.recipient_email} is suppressed, skipping`);
+          await supabase
+            .from('email_automation_queue')
+            .update({
+              status: 'suppressed',
+              error_message: 'Email address is in suppression list',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', email.id);
+          continue;
+        }
+
+        // Update email status to sent and store SES message ID with region
         await supabase
           .from('email_automation_queue')
           .update({
@@ -147,11 +169,12 @@ const handler = async (req: Request): Promise<Response> => {
             sent_at: new Date().toISOString(),
             error_message: null,
             ses_message_id: sesMessageId,
+            ses_region: sesRegion,
             updated_at: new Date().toISOString()
           })
           .eq('id', email.id);
 
-        // Create delivery tracking record
+        // Create comprehensive delivery tracking record
         if (sesMessageId) {
           await supabase
             .from('email_delivery_tracking')
@@ -159,9 +182,29 @@ const handler = async (req: Request): Promise<Response> => {
               email_automation_queue_id: email.id,
               recipient_email: email.recipient_email,
               ses_message_id: sesMessageId,
+              ses_region: sesRegion,
               delivery_status: 'sent',
+              template_type: email.trigger_type,
               sent_at: new Date().toISOString()
             });
+
+          // Also create SES delivery log for monitoring
+          try {
+            await supabase
+              .from('ses_delivery_logs')
+              .insert({
+                message_id: sesMessageId,
+                recipient_email: email.recipient_email,
+                event_type: email.trigger_type,
+                template_name: email.trigger_type,
+                region: sesRegion,
+                status: 'sent',
+                sent_at: new Date().toISOString()
+              });
+            console.log('SES delivery log created');
+          } catch (logError) {
+            console.warn('Failed to create SES delivery log:', logError);
+          }
         }
 
         processed++;

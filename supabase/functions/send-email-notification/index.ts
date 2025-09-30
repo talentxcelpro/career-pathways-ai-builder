@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
-import { createTransport } from "npm:nodemailer";
+import { SESClient, SendEmailCommand, GetSendQuotaCommand, GetAccountSendingEnabledCommand } from "https://esm.sh/@aws-sdk/client-ses@3.490.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,60 +13,57 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-// SMTP transporter with enhanced error handling and validation
-const createSMTPTransporter = () => {
-  let host = Deno.env.get("SMTP_HOST");
-  const port = parseInt(Deno.env.get("SMTP_PORT") || "587");
-  const user = Deno.env.get("SMTP_USER");
-  const pass = Deno.env.get("SMTP_PASS");
+// AWS SES Client with multi-region fallback
+const createSESClient = (region = 'us-east-1') => {
+  const accessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
+  const secretAccessKey = Deno.env.get("AWS_SECRET_ACCESS_KEY");
 
-  // Clean up hostname - remove any prefixes like "Host: "
-  if (host && host.includes("Host:")) {
-    host = host.replace(/.*Host:\s*/, "").trim();
-  }
-  
-  // Validate and fix Amazon SES endpoints with fallback logic
-  const validSESEndpoints = [
-    "email-smtp.us-east-1.amazonaws.com", // Primary fallback (most reliable)
-    "email-smtp.eu-west-1.amazonaws.com", // EU Ireland  
-    "email-smtp.eu-central-1.amazonaws.com", // EU Frankfurt
-    "email-smtp.ap-south-1.amazonaws.com", // Asia Pacific Mumbai
-    "email-smtp.us-west-2.amazonaws.com" // US West Oregon
-  ];
-
-  // If host is provided but seems problematic (like eu-north-1), use fallback
-  if (host && (host.includes("eu-north-1") || !host.includes("amazonaws.com"))) {
-    console.log(`Detected potentially problematic host: ${host}, using reliable fallback`);
-    host = validSESEndpoints[0]; // Use US East as primary fallback
-  }
-  
-  // Set default Amazon SES endpoint if no host provided
-  if (!host) {
-    host = validSESEndpoints[0];
-    console.log("Using default reliable Amazon SES host");
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error(`Missing AWS credentials. AccessKey: ${accessKeyId ? 'SET' : 'MISSING'}, SecretKey: ${secretAccessKey ? 'SET' : 'MISSING'}`);
   }
 
-  console.log(`SMTP Configuration: host=${host}, port=${port}, user=${user ? 'SET' : 'NOT_SET'}, pass=${pass ? 'SET' : 'NOT_SET'}`);
-
-  if (!host || !user || !pass) {
-    throw new Error(`Missing SMTP configuration. Host: ${host ? 'SET' : 'MISSING'}, User: ${user ? 'SET' : 'MISSING'}, Pass: ${pass ? 'SET' : 'MISSING'}`);
-  }
-
-  return createTransport({
-    host: host,
-    port: port,
-    secure: port === 465, // true for 465, false for other ports
-    auth: {
-      user: user,
-      pass: pass,
+  return new SESClient({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
     },
-    connectionTimeout: 60000, // 60 seconds
-    greetingTimeout: 30000, // 30 seconds
-    socketTimeout: 60000, // 60 seconds
-    // Disable debug to reduce noise, enable if needed for troubleshooting
-    debug: false,
-    logger: false,
   });
+};
+
+// Function to check SES quota and sending status
+const checkSESQuota = async (sesClient: SESClient) => {
+  try {
+    // Check if account is enabled for sending
+    const enabledCommand = new GetAccountSendingEnabledCommand({});
+    const enabledResponse = await sesClient.send(enabledCommand);
+    
+    if (!enabledResponse.Enabled) {
+      throw new Error('AWS SES account is not enabled for sending');
+    }
+
+    // Get sending quota
+    const quotaCommand = new GetSendQuotaCommand({});
+    const quotaResponse = await sesClient.send(quotaCommand);
+    
+    const quota = {
+      maxSendRate: quotaResponse.MaxSendRate || 0,
+      max24HourSend: quotaResponse.Max24HourSend || 0,
+      sentLast24Hours: quotaResponse.SentLast24Hours || 0,
+      remainingQuota: (quotaResponse.Max24HourSend || 0) - (quotaResponse.SentLast24Hours || 0)
+    };
+
+    console.log('SES Quota Status:', quota);
+
+    if (quota.remainingQuota <= 0) {
+      throw new Error(`SES daily quota exceeded. Used: ${quota.sentLast24Hours}/${quota.max24HourSend}`);
+    }
+
+    return quota;
+  } catch (error) {
+    console.error('SES quota check failed:', error);
+    throw error;
+  }
 };
 
 // Function to replace placeholders in templates
@@ -81,6 +78,49 @@ function replacePlaceholders(template: string, data: Record<string, any>): strin
   });
 }
 
+// Enhanced SES sending with configuration sets and tagging
+const sendEmailWithSES = async (sesClient: SESClient, emailData: any) => {
+  const sendEmailCommand = new SendEmailCommand({
+    Source: Deno.env.get("SES_FROM_EMAIL") || "TalentXcel <noreply@talentxcel.in>",
+    Destination: {
+      ToAddresses: [emailData.toEmail],
+    },
+    Message: {
+      Subject: {
+        Data: emailData.subject,
+        Charset: "UTF-8",
+      },
+      Body: {
+        Html: {
+          Data: emailData.htmlContent,
+          Charset: "UTF-8",
+        },
+      },
+    },
+    // Add configuration set if available for tracking
+    ...(Deno.env.get("SES_CONFIGURATION_SET") && {
+      ConfigurationSetName: Deno.env.get("SES_CONFIGURATION_SET")
+    }),
+    // Add tags for better analytics
+    Tags: [
+      {
+        Name: "Source",
+        Value: "TalentXcel-Platform"
+      },
+      {
+        Name: "EventType",
+        Value: emailData.eventType || "notification"
+      },
+      {
+        Name: "Environment",
+        Value: Deno.env.get("ENVIRONMENT") || "production"
+      }
+    ],
+  });
+
+  return await sesClient.send(sendEmailCommand);
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -88,7 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    console.log('Unified email notification started with template validation...');
+    console.log('AWS SES email notification started...');
     const requestBody = await req.json();
     console.log('Request body:', JSON.stringify(requestBody));
 
@@ -112,6 +152,30 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`Processing ${recipientList.length} recipients for event: ${finalEventName}`);
+
+    // Create SES client with primary region
+    let sesClient;
+    let currentRegion = 'us-east-1';
+    
+    try {
+      sesClient = createSESClient(currentRegion);
+      
+      // Check SES quota before proceeding
+      await checkSESQuota(sesClient);
+      console.log('SES quota check passed');
+      
+    } catch (regionError) {
+      console.log(`SES failed in ${currentRegion}, trying fallback region...`);
+      try {
+        currentRegion = 'eu-west-1';
+        sesClient = createSESClient(currentRegion);
+        await checkSESQuota(sesClient);
+        console.log(`SES fallback to ${currentRegion} successful`);
+      } catch (fallbackError) {
+        console.error('All SES regions failed:', fallbackError);
+        throw new Error(`SES unavailable in all regions. Last error: ${(fallbackError as Error).message}`);
+      }
+    }
 
     // Enhanced template retrieval with fallback hierarchy
     let template;
@@ -211,14 +275,15 @@ const handler = async (req: Request): Promise<Response> => {
           <html>
             <body style="font-family: Arial, sans-serif; padding: 20px;">
               <div style="max-width: 600px; margin: 0 auto;">
-                <h1 style="color: #333;">Test Email</h1>
-                <p>This is a test email from {{platform_name}}.</p>
+                <h1 style="color: #333;">AWS SES Test Email</h1>
+                <p>This is a test email from {{platform_name}} via Amazon SES.</p>
                 <p>Recipient: {{recipient_email}}</p>
                 <p>Name: {{name}}</p>
                 <p>Date: {{current_date}}</p>
+                <p>Region: ${currentRegion}</p>
                 <hr style="margin: 20px 0;">
                 <p style="color: #666; font-size: 12px;">
-                  This is an automated test message. No action required.
+                  This is an automated test message sent via AWS SES. No action required.
                 </p>
               </div>
             </body>
@@ -239,35 +304,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Enhanced template validation with rich HTML requirements
     const htmlContent = template.html_template || template.content;
     if (!htmlContent || !htmlContent.includes('<') || !htmlContent.includes('>')) {
-      throw new Error(`Template ${template.name} must contain valid HTML content. Plain text templates are strictly prohibited.`);
-    }
-
-    // Advanced HTML structure validation for rich templates
-    const requiredElements = ['<html', '<body', '<div', '<table', '<p>', '<span'];
-    const hasRequiredStructure = requiredElements.some(element => htmlContent.includes(element));
-    
-    if (!hasRequiredStructure) {
-      throw new Error(`Template ${template.name} must contain proper HTML structure with elements like html, body, div, table, or paragraph tags.`);
-    }
-
-    // Check for email-optimized features
-    const emailOptimizations = {
-      hasTableLayout: htmlContent.includes('<table'),
-      hasInlineStyles: htmlContent.includes('style='),
-      hasResponsiveFeatures: htmlContent.includes('@media') || htmlContent.includes('max-width'),
-      hasImageOptimization: htmlContent.includes('alt=')
-    };
-
-    console.log('Template validation passed - enhanced HTML template detected:', emailOptimizations);
-
-    // Create SMTP transporter with validation
-    let transporter;
-    try {
-      transporter = createSMTPTransporter();
-      console.log('SMTP transporter created successfully');
-    } catch (transporterError) {
-      console.error('Failed to create SMTP transporter:', transporterError);
-      throw new Error(`SMTP configuration error: ${(transporterError as Error).message}`);
+      throw new Error(`Template ${template.name} must contain valid HTML content. Plain text templates are not supported.`);
     }
 
     let successCount = 0;
@@ -302,66 +339,78 @@ const handler = async (req: Request): Promise<Response> => {
         const subject = replacePlaceholders(template.subject, placeholderData);
         const emailContent = replacePlaceholders(htmlContent, placeholderData);
 
-        console.log(`Sending email to: ${recipient.recipient_email}`);
+        console.log(`Sending email via SES to: ${recipient.recipient_email}`);
 
-        // Send email with timeout and retries
-        const fromEmail = Deno.env.get("SMTP_FROM_EMAIL") || "TalentXcel <noreply@talentxcel.in>";
-        console.log(`Attempting to send email from: ${fromEmail}`);
-        
-        try {
-          await transporter.sendMail({
-            from: fromEmail,
-            to: recipient.recipient_email,
-            subject: subject,
-            html: emailContent,
-          });
-        } catch (smtpError: any) {
-          console.error(`SMTP send error for ${recipient.recipient_email}:`, {
-            code: smtpError.code,
-            command: smtpError.command,
-            response: smtpError.response,
-            responseCode: smtpError.responseCode,
-            message: smtpError.message
-          });
-          throw new Error(`SMTP Error: ${smtpError.code || 'UNKNOWN'} - ${smtpError.message}`);
-        }
+        // Send email with SES
+        const sesResult = await sendEmailWithSES(sesClient, {
+          toEmail: recipient.recipient_email,
+          subject: subject,
+          htmlContent: emailContent,
+          eventType: finalEventName
+        });
+
+        const messageId = sesResult.MessageId;
+        console.log(`SES email sent successfully to: ${recipient.recipient_email}, MessageId: ${messageId}`);
 
         successCount++;
         results.push({
           email: recipient.recipient_email,
-          status: 'success'
+          status: 'success',
+          messageId: messageId,
+          region: currentRegion
         });
 
-        console.log(`Email sent successfully to: ${recipient.recipient_email}`);
+        // Log SES success for monitoring
+        try {
+          await supabase
+            .from('ses_delivery_logs')
+            .insert({
+              message_id: messageId,
+              recipient_email: recipient.recipient_email,
+              event_type: finalEventName,
+              template_name: template.name,
+              region: currentRegion,
+              status: 'sent',
+              sent_at: new Date().toISOString()
+            });
+          console.log('SES delivery log created');
+        } catch (logError) {
+          console.warn('Failed to create SES delivery log:', logError);
+        }
 
-      } catch (emailError) {
-        console.error(`Failed to send email to ${recipient.recipient_email}:`, emailError);
+      } catch (emailError: any) {
+        console.error(`Failed to send SES email to ${recipient.recipient_email}:`, emailError);
+        
+        // Handle specific SES errors
+        let errorMessage = emailError.message;
+        if (emailError.name === 'MessageRejected') {
+          errorMessage = `Email rejected: ${emailError.message}`;
+        } else if (emailError.name === 'SendingPausedException') {
+          errorMessage = 'SES sending is paused for this account';
+        } else if (emailError.name === 'MailFromDomainNotVerifiedException') {
+          errorMessage = 'SES domain not verified';
+        }
+
         errorCount++;
         results.push({
           email: recipient.recipient_email,
           status: 'error',
-          error: (emailError as Error).message
+          error: errorMessage,
+          sesError: emailError.name
         });
       }
     }
 
-    // Close SMTP connection safely
-    try {
-      transporter.close();
-      console.log('SMTP connection closed successfully');
-    } catch (closeError) {
-      console.warn('Error closing SMTP connection:', closeError);
-    }
-
-    console.log(`Email processing completed. Success: ${successCount}, Errors: ${errorCount}`);
+    console.log(`SES email processing completed. Success: ${successCount}, Errors: ${errorCount}`);
 
     return new Response(JSON.stringify({
       success: true,
-      message: `Emails processed successfully`,
+      message: `Emails processed successfully via AWS SES`,
       stats: {
         total: recipientList.length,
         successful: successCount,
-        failed: errorCount
+        failed: errorCount,
+        region: currentRegion
       },
       results: results
     }), {
@@ -370,11 +419,27 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
   } catch (error: any) {
-    console.error("Error in send-email-notification function:", error);
+    console.error("Error in SES email notification function:", error);
+    
+    // Log critical SES errors for monitoring
+    try {
+      await supabase
+        .from('ses_error_logs')
+        .insert({
+          error_type: error.name || 'UnknownError',
+          error_message: error.message,
+          error_details: JSON.stringify(error),
+          created_at: new Date().toISOString()
+        });
+    } catch (logError) {
+      console.warn('Failed to log SES error:', logError);
+    }
+    
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: error.message,
+        errorType: error.name
       }),
       {
         status: 500,

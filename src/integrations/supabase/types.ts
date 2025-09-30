@@ -10809,6 +10809,8 @@ export type Database = {
           recipient_name: string | null
           scheduled_at: string | null
           sent_at: string | null
+          ses_message_id: string | null
+          ses_region: string | null
           status: string | null
           template_data: Json | null
           trigger_type: string
@@ -10824,6 +10826,8 @@ export type Database = {
           recipient_name?: string | null
           scheduled_at?: string | null
           sent_at?: string | null
+          ses_message_id?: string | null
+          ses_region?: string | null
           status?: string | null
           template_data?: Json | null
           trigger_type: string
@@ -10839,6 +10843,8 @@ export type Database = {
           recipient_name?: string | null
           scheduled_at?: string | null
           sent_at?: string | null
+          ses_message_id?: string | null
+          ses_region?: string | null
           status?: string | null
           template_data?: Json | null
           trigger_type?: string
@@ -11036,7 +11042,13 @@ export type Database = {
       email_delivery_tracking: {
         Row: {
           bounce_reason: string | null
+          bounce_subtype: string | null
+          bounce_type: string | null
+          bounced_at: string | null
           clicked_at: string | null
+          complained_at: string | null
+          complaint_subtype: string | null
+          complaint_type: string | null
           created_at: string | null
           delivery_status: string | null
           delivery_timestamp: string | null
@@ -11045,12 +11057,20 @@ export type Database = {
           message_id: string | null
           opened_at: string | null
           recipient_email: string
+          ses_region: string | null
           spam_score: number | null
+          template_type: string | null
           unsubscribed_at: string | null
         }
         Insert: {
           bounce_reason?: string | null
+          bounce_subtype?: string | null
+          bounce_type?: string | null
+          bounced_at?: string | null
           clicked_at?: string | null
+          complained_at?: string | null
+          complaint_subtype?: string | null
+          complaint_type?: string | null
           created_at?: string | null
           delivery_status?: string | null
           delivery_timestamp?: string | null
@@ -11059,12 +11079,20 @@ export type Database = {
           message_id?: string | null
           opened_at?: string | null
           recipient_email: string
+          ses_region?: string | null
           spam_score?: number | null
+          template_type?: string | null
           unsubscribed_at?: string | null
         }
         Update: {
           bounce_reason?: string | null
+          bounce_subtype?: string | null
+          bounce_type?: string | null
+          bounced_at?: string | null
           clicked_at?: string | null
+          complained_at?: string | null
+          complaint_subtype?: string | null
+          complaint_type?: string | null
           created_at?: string | null
           delivery_status?: string | null
           delivery_timestamp?: string | null
@@ -11073,7 +11101,9 @@ export type Database = {
           message_id?: string | null
           opened_at?: string | null
           recipient_email?: string
+          ses_region?: string | null
           spam_score?: number | null
+          template_type?: string | null
           unsubscribed_at?: string | null
         }
         Relationships: []
@@ -11312,6 +11342,54 @@ export type Database = {
           template_name?: string | null
           to_email?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      email_suppression_list: {
+        Row: {
+          bounce_subtype: string | null
+          bounce_type: string | null
+          complaint_subtype: string | null
+          complaint_type: string | null
+          created_at: string | null
+          diagnostic_code: string | null
+          email_address: string
+          id: string
+          is_active: boolean | null
+          reason: string | null
+          removed_at: string | null
+          suppression_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          bounce_subtype?: string | null
+          bounce_type?: string | null
+          complaint_subtype?: string | null
+          complaint_type?: string | null
+          created_at?: string | null
+          diagnostic_code?: string | null
+          email_address: string
+          id?: string
+          is_active?: boolean | null
+          reason?: string | null
+          removed_at?: string | null
+          suppression_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          bounce_subtype?: string | null
+          bounce_type?: string | null
+          complaint_subtype?: string | null
+          complaint_type?: string | null
+          created_at?: string | null
+          diagnostic_code?: string | null
+          email_address?: string
+          id?: string
+          is_active?: boolean | null
+          reason?: string | null
+          removed_at?: string | null
+          suppression_type?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -27215,6 +27293,240 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ses_account_metrics: {
+        Row: {
+          bounce_rate: number | null
+          bounce_suppressions: number | null
+          collected_at: string | null
+          complaint_rate: number | null
+          complaint_suppressions: number | null
+          health_issues: string[] | null
+          health_status: string | null
+          id: string
+          is_enabled: boolean
+          max_24hour_send: number | null
+          max_send_rate: number | null
+          quota_utilization_percent: number | null
+          region: string
+          reject_rate: number | null
+          remaining_quota: number | null
+          sent_last_24hours: number | null
+          total_config_sets: number | null
+          total_suppressed: number | null
+        }
+        Insert: {
+          bounce_rate?: number | null
+          bounce_suppressions?: number | null
+          collected_at?: string | null
+          complaint_rate?: number | null
+          complaint_suppressions?: number | null
+          health_issues?: string[] | null
+          health_status?: string | null
+          id?: string
+          is_enabled: boolean
+          max_24hour_send?: number | null
+          max_send_rate?: number | null
+          quota_utilization_percent?: number | null
+          region?: string
+          reject_rate?: number | null
+          remaining_quota?: number | null
+          sent_last_24hours?: number | null
+          total_config_sets?: number | null
+          total_suppressed?: number | null
+        }
+        Update: {
+          bounce_rate?: number | null
+          bounce_suppressions?: number | null
+          collected_at?: string | null
+          complaint_rate?: number | null
+          complaint_suppressions?: number | null
+          health_issues?: string[] | null
+          health_status?: string | null
+          id?: string
+          is_enabled?: boolean
+          max_24hour_send?: number | null
+          max_send_rate?: number | null
+          quota_utilization_percent?: number | null
+          region?: string
+          reject_rate?: number | null
+          remaining_quota?: number | null
+          sent_last_24hours?: number | null
+          total_config_sets?: number | null
+          total_suppressed?: number | null
+        }
+        Relationships: []
+      }
+      ses_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          id: string
+          is_resolved: boolean | null
+          message: string
+          metadata: Json | null
+          resolved_at: string | null
+          severity: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          message: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          message?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+        }
+        Relationships: []
+      }
+      ses_config_errors: {
+        Row: {
+          action: string | null
+          created_at: string | null
+          error_details: Json | null
+          error_message: string
+          id: string
+          region: string | null
+        }
+        Insert: {
+          action?: string | null
+          created_at?: string | null
+          error_details?: Json | null
+          error_message: string
+          id?: string
+          region?: string | null
+        }
+        Update: {
+          action?: string | null
+          created_at?: string | null
+          error_details?: Json | null
+          error_message?: string
+          id?: string
+          region?: string | null
+        }
+        Relationships: []
+      }
+      ses_delivery_logs: {
+        Row: {
+          bounce_reason: string | null
+          bounce_type: string | null
+          bounced_at: string | null
+          complained_at: string | null
+          complaint_type: string | null
+          created_at: string | null
+          delivered_at: string | null
+          event_type: string | null
+          id: string
+          message_id: string
+          processing_time_ms: number | null
+          recipient_email: string
+          region: string | null
+          sent_at: string | null
+          status: string
+          template_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bounce_reason?: string | null
+          bounce_type?: string | null
+          bounced_at?: string | null
+          complained_at?: string | null
+          complaint_type?: string | null
+          created_at?: string | null
+          delivered_at?: string | null
+          event_type?: string | null
+          id?: string
+          message_id: string
+          processing_time_ms?: number | null
+          recipient_email: string
+          region?: string | null
+          sent_at?: string | null
+          status?: string
+          template_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bounce_reason?: string | null
+          bounce_type?: string | null
+          bounced_at?: string | null
+          complained_at?: string | null
+          complaint_type?: string | null
+          created_at?: string | null
+          delivered_at?: string | null
+          event_type?: string | null
+          id?: string
+          message_id?: string
+          processing_time_ms?: number | null
+          recipient_email?: string
+          region?: string | null
+          sent_at?: string | null
+          status?: string
+          template_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ses_error_logs: {
+        Row: {
+          created_at: string | null
+          error_details: Json | null
+          error_message: string
+          error_type: string
+          id: string
+          region: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_details?: Json | null
+          error_message: string
+          error_type: string
+          id?: string
+          region?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_details?: Json | null
+          error_message?: string
+          error_type?: string
+          id?: string
+          region?: string | null
+        }
+        Relationships: []
+      }
+      ses_webhook_errors: {
+        Row: {
+          created_at: string | null
+          error_details: Json | null
+          error_message: string
+          id: string
+          webhook_body: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_details?: Json | null
+          error_message: string
+          id?: string
+          webhook_body?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_details?: Json | null
+          error_message?: string
+          id?: string
+          webhook_body?: string | null
+        }
+        Relationships: []
       }
       session_participants: {
         Row: {
