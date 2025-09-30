@@ -116,7 +116,7 @@ async function sendEmailViaSES(
   to: string, 
   subject: string, 
   htmlContent: string, 
-  region: string = 'us-east-1',
+  region: string = 'eu-north-1',
   attemptNumber: number = 1
 ): Promise<EmailSendResult> {
   const AWS_ACCESS_KEY_ID = Deno.env.get('AWS_ACCESS_KEY_ID');
@@ -262,9 +262,9 @@ async function sendEmailViaSES(
       console.error(`[Attempt ${attemptNumber}] ❌ SES Error:`, responseText);
       
       // Try fallback region if primary fails and we haven't tried it yet
-      if (region === 'us-east-1' && attemptNumber < 2) {
-        console.log('🔄 Attempting fallback to us-west-2 region...');
-        return await sendEmailViaSES(to, subject, htmlContent, 'us-west-2', attemptNumber + 1);
+      if (region === 'eu-north-1' && attemptNumber < 2) {
+        console.log('🔄 Attempting fallback to us-east-1 region...');
+        return await sendEmailViaSES(to, subject, htmlContent, 'us-east-1', attemptNumber + 1);
       }
       
       return {
