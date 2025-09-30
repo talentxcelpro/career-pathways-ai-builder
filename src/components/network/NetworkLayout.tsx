@@ -11,6 +11,8 @@ import Phase4Dashboard from './Phase4Dashboard';
 import { CostOptimizationDashboard } from '@/components/admin/CostOptimizationDashboard';
 import { UltraCostOptimizer } from '@/components/admin/UltraCostOptimizer';
 import { SystemHealthDashboard } from '@/components/admin/SystemHealthDashboard';
+import { PerformanceOptimizer } from '@/components/admin/PerformanceOptimizer';
+import { SecurityHardening } from '@/components/admin/SecurityHardening';
 
 interface NetworkLayoutProps {
   currentTab: string;
@@ -21,7 +23,7 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
   return (
     <div className="container mx-auto px-4 py-6">
       <Tabs value={currentTab} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-11">
+        <TabsList className="grid w-full grid-cols-13">
           <TabsTrigger value="people">People</TabsTrigger>
           <TabsTrigger value="requests">Requests</TabsTrigger>
           <TabsTrigger value="cv-upload">CV Upload</TabsTrigger>
@@ -33,6 +35,8 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
           <TabsTrigger value="optimize">💰 Optimize</TabsTrigger>
           <TabsTrigger value="ultra">🚨 Ultra</TabsTrigger>
           <TabsTrigger value="health">🏥 Health</TabsTrigger>
+          <TabsTrigger value="performance">⚡ Performance</TabsTrigger>
+          <TabsTrigger value="security">🔒 Security</TabsTrigger>
         </TabsList>
 
         <TabsContent value="people">
@@ -77,6 +81,12 @@ export default function NetworkLayout({ currentTab, onTabChange }: NetworkLayout
 
         <TabsContent value="health">
           <SystemHealthDashboard />
+        </TabsContent>
+        <TabsContent value="performance">
+          <PerformanceOptimizer />
+        </TabsContent>
+        <TabsContent value="security">
+          <SecurityHardening />
         </TabsContent>
       </Tabs>
     </div>
