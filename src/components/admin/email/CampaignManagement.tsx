@@ -27,6 +27,28 @@ export const CampaignManagement = () => {
     }
   });
 
+  // Real-time subscription for campaigns
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('email-campaigns-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_campaigns'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-campaigns'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'running': return 'default';

@@ -32,6 +32,28 @@ export const EventManagement = () => {
     }
   });
 
+  // Real-time subscription for events
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('email-events-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_event_definitions'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-events'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const toggleEventMutation = useMutation({
     mutationFn: async ({ id, isEnabled }: { id: string; isEnabled: boolean }) => {
       const { error } = await supabase

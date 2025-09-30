@@ -33,6 +33,28 @@ export const TemplateManagement = () => {
     }
   });
 
+  // Real-time subscription for templates
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('email-templates-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_templates_v2'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-templates'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const filteredTemplates = templates?.filter(template => {
     const matchesSearch = template.template_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || 

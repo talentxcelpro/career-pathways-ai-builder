@@ -1,10 +1,12 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Send, CheckCircle, Eye, MousePointer, XCircle } from 'lucide-react';
 
 export const EmailAnalyticsDashboard = () => {
+  const queryClient = useQueryClient();
+  
   const { data: stats, isLoading } = useQuery({
     queryKey: ['email-overview-stats'],
     queryFn: async () => {
@@ -43,6 +45,44 @@ export const EmailAnalyticsDashboard = () => {
       };
     }
   });
+
+  // Real-time subscription for analytics updates
+  React.useEffect(() => {
+    const queueChannel = supabase
+      .channel('analytics-queue-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_automation_queue'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-overview-stats'] });
+        }
+      )
+      .subscribe();
+
+    const eventsChannel = supabase
+      .channel('analytics-events-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_engagement_events'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-overview-stats'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(queueChannel);
+      supabase.removeChannel(eventsChannel);
+    };
+  }, [queryClient]);
 
   const statCards = [
     {

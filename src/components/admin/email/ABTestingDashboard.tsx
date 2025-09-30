@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,8 @@ import { Plus, Trophy } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export const ABTestingDashboard = () => {
+  const queryClient = useQueryClient();
+  
   const { data: tests, isLoading } = useQuery({
     queryKey: ['email-ab-tests'],
     queryFn: async () => {
@@ -20,6 +22,28 @@ export const ABTestingDashboard = () => {
       return data;
     }
   });
+
+  // Real-time subscription for A/B tests
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('email-ab-tests-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_ab_tests'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-ab-tests'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const calculateMetrics = (test: any) => {
     const variantAOpenRate = test.variant_a_sent > 0 

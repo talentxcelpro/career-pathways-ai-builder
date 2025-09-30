@@ -26,6 +26,28 @@ export const QueueMonitor = () => {
     refetchInterval: 10000, // Refresh every 10 seconds
   });
 
+  // Real-time subscription for queue updates
+  React.useEffect(() => {
+    const channel = supabase
+      .channel('email-queue-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'email_automation_queue'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['email-queue'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const processQueueMutation = useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.functions.invoke('process-email-queue');
