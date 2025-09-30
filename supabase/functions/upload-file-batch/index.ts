@@ -128,7 +128,7 @@ serve(async (req) => {
             file_type: file.type,
             file_size: file.size,
             batch_id: sessionId,
-            uploaded_by: user.id,
+            user_id: user.id,
             parsing_status: 'pending'
           })
           .select()
