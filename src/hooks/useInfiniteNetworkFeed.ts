@@ -49,22 +49,7 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
 
       let query = supabase
         .from('posts')
-        .select(`
-          *,
-          news_articles (
-            id,
-            title,
-            description,
-            url,
-            source_name,
-            author,
-            published_at,
-            image_url,
-            category,
-            tags,
-            is_trending
-          )
-        `)
+        .select('*')
         .eq('is_public', true)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
@@ -129,8 +114,6 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         return {
           ...post,
           profiles: profile,
-          news_article: post.news_articles && Array.isArray(post.news_articles) ? post.news_articles[0] : post.news_articles,
-          is_news_post: !!post.news_article_id,
           isLiked: Array.isArray(post.post_likes) && userId ? post.post_likes.some((like: any) => like.user_id === userId) : false,
           isSaved: Array.isArray(post.post_saves) && userId ? post.post_saves.some((save: any) => save.user_id === userId) : false,
         };
