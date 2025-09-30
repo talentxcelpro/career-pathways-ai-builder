@@ -60,6 +60,7 @@ interface LinkedInPost {
 
 interface LinkedInMobileFeedProps {
   posts: LinkedInPost[];
+  loading?: boolean;
   onLike?: (postId: string) => void;
   onBookmark?: (postId: string) => void;
   onShare?: (postId: string) => void;
@@ -355,6 +356,7 @@ const LinkedInPostCard: React.FC<{
 
 export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({ 
   posts, 
+  loading = false,
   onLike, 
   onBookmark, 
   onShare, 
@@ -444,14 +446,17 @@ export const LinkedInMobileFeed: React.FC<LinkedInMobileFeedProps> = ({
           </div>
         )}
 
-        {/* Empty State */}
-        {posts.length === 0 && !isFetchingNextPage && (
+        {/* Empty State - Only show if not loading */}
+        {posts.length === 0 && !loading && !isFetchingNextPage && (
           <div className="text-center py-12 px-4">
             <div className="bg-white rounded-3xl p-8 shadow-xl max-w-sm mx-auto border border-gray-100">
               <div className="text-4xl mb-4">📱</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No posts yet</h3>
-              <p className="text-gray-600 mb-6">Connect with professionals to see posts from your network</p>
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl h-12 font-medium">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Start Connecting</h3>
+              <p className="text-gray-600 mb-6">Connect with professionals to see their posts and updates</p>
+              <Button 
+                onClick={() => window.location.href = '/network/people'}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl h-12 font-medium"
+              >
                 Discover People
               </Button>
             </div>

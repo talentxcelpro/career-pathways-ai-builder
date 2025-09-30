@@ -111,6 +111,7 @@ const Network = () => {
       <MobileNavWrapper>
         <LinkedInMobileFeed
           posts={posts}
+          loading={loading}
           onLike={handleLike}
           onBookmark={handleBookmark}
           onShare={handleShare}
