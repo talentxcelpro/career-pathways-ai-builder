@@ -59,11 +59,11 @@ export const UnifiedCandidatesTable: React.FC = () => {
         return;
       }
 
-      // Get pending CVs count from cv_files table
-      const { count: pendingCVsCount } = await supabase
+      // Get error CVs count that can be reprocessed
+      const { count: errorCVsCount } = await supabase
         .from('cv_files')
         .select('*', { count: 'exact', head: true })
-        .eq('parsing_status', 'pending');
+        .eq('parsing_status', 'error');
 
       // Get CV files that aren't yet in profiles
       const { data: cvFiles, error: cvError } = await supabase
@@ -125,11 +125,8 @@ export const UnifiedCandidatesTable: React.FC = () => {
       const pendingCount = allCandidates.filter(c => 
         c.activation_status === 'pending'
       ).length;
-      const cvFilesCount = allCandidates.filter(c => c.source_type === 'cv_file').length;
-      const profilesCount = allCandidates.filter(c => c.source_type === 'profile').length;
-      
-      // For pending CVs, check actual CV files with error status that could be reprocessed
-      const errorCVsCount = cvFiles?.filter(cv => cv.parsing_status === 'error').length || 0;
+      const cvFilesCount = allCandidates.filter(c => c.source_type === 'cv_file' || c.cv_file_id).length;
+      const profilesCount = allCandidates.filter(c => c.source === 'platform' || c.source === 'application').length;
       
       setStats({
         total: totalCandidates,
@@ -137,10 +134,10 @@ export const UnifiedCandidatesTable: React.FC = () => {
         pending: pendingCount,
         cv_files: cvFilesCount,
         profiles: profilesCount,
-        pending_cvs: errorCVsCount // Show error CVs as they can be reprocessed
+        pending_cvs: errorCVsCount || 0 // Show error CVs as they can be reprocessed
       });
 
-      console.log(`📊 Loaded ${totalCandidates} candidates, ${errorCVsCount} error CVs that can be reprocessed`);
+      console.log(`📊 Loaded ${totalCandidates} candidates, ${errorCVsCount || 0} error CVs that can be reprocessed`);
       
     } catch (error) {
       console.error('Error in fetchCandidates:', error);
