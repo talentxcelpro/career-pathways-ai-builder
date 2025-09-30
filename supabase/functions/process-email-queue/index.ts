@@ -44,12 +44,12 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get pending emails from new email_queue table
+    // Get pending emails from email_queue table
     const { data: pendingEmails, error: fetchError } = await supabase
       .from('email_queue')
       .select('*')
       .eq('status', 'pending')
-      .lt('attempts', 3)
+      .lt('retry_count', 3)
       .order('created_at', { ascending: true })
       .limit(50);
 
@@ -79,23 +79,23 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const email of pendingEmails) {
       try {
-        console.log(`Processing email ${email.id} to ${email.to_email} (attempt ${(email.attempts || 0) + 1})`);
+        console.log(`Processing email ${email.id} to ${email.to_email} (attempt ${(email.retry_count || 0) + 1})`);
 
-        // Increment attempts before processing
+        // Increment retry_count before processing
         await supabase
           .from('email_queue')
           .update({
-            attempts: (email.attempts || 0) + 1
+            retry_count: (email.retry_count || 0) + 1
           })
           .eq('id', email.id);
 
-        // Call unified email service directly with HTML content
+        // Call unified email service directly with template content
         const { data: emailResult, error: emailError } = await supabase.functions.invoke('unified-email-service', {
           body: {
             to: email.to_email,
             subject: email.subject,
-            template: email.html_content,
-            priority: email.priority
+            template: email.template,
+            data: email.data
           }
         });
 
@@ -133,17 +133,15 @@ const handler = async (req: Request): Promise<Response> => {
       } catch (emailError: any) {
         console.error(`Failed to send email ${email.id} to ${email.to_email}:`, emailError);
         
-        const currentAttempts = (email.attempts || 0) + 1;
-        const newStatus = currentAttempts >= email.max_attempts ? 'failed' : 'retry';
+        const currentRetries = (email.retry_count || 0) + 1;
+        const newStatus = currentRetries >= (email.max_retries || 3) ? 'failed' : 'pending';
         
         // Update email with error status or mark for retry
         await supabase
           .from('email_queue')
           .update({
             status: newStatus,
-            error_message: emailError.message || 'Unknown error',
-            // Schedule retry with exponential backoff (removed scheduled_for since it doesn't exist)
-            // We'll rely on manual retry or periodic processing
+            error_message: emailError.message || 'Unknown error'
           })
           .eq('id', email.id);
 
@@ -156,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
           recipient: email.to_email,
           status: newStatus,
           error: emailError.message,
-          attempts: currentAttempts
+          attempts: currentRetries
         });
       }
     }
