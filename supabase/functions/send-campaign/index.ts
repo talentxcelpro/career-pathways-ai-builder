@@ -28,21 +28,40 @@ Deno.serve(async (req) => {
 
   try {
     console.log("📧 Campaign Email Service: Starting...");
+    console.log("📧 Request method:", req.method);
+    console.log("📧 Request URL:", req.url);
+    
+    // Parse request body first with error handling
+    let requestBody;
+    try {
+      const bodyText = await req.text();
+      console.log("📧 Raw request body:", bodyText);
+      requestBody = JSON.parse(bodyText);
+      console.log("📧 Parsed request body:", requestBody);
+    } catch (parseError) {
+      console.error("❌ Failed to parse request body:", parseError);
+      throw new Error("Invalid JSON in request body");
+    }
+
+    const { campaign_id } = requestBody as CampaignRequest;
+    
+    if (!campaign_id) {
+      console.error("❌ No campaign_id in request");
+      throw new Error("campaign_id is required");
+    }
+    
+    console.log("📧 Processing campaign:", campaign_id);
     
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     
     if (!supabaseUrl || !supabaseKey) {
+      console.error("❌ Missing environment variables");
       throw new Error("Missing Supabase credentials");
     }
     
     console.log("📧 Initializing Supabase client...");
     const supabase = createClient(supabaseUrl, supabaseKey);
-
-    console.log("📧 Parsing request body...");
-    const { campaign_id }: CampaignRequest = await req.json();
-    
-    console.log("📧 Processing campaign:", campaign_id);
 
     // Get campaign details
     console.log("📧 Fetching campaign:", campaign_id);
