@@ -34157,7 +34157,14 @@ export type Database = {
         Returns: number
       }
       calculate_engagement_score: {
-        Args: { p_post_id: string; p_time_decay_hours?: number }
+        Args:
+          | { p_post_id: string; p_time_decay_hours?: number }
+          | {
+              post_comments?: number
+              post_likes?: number
+              post_shares?: number
+              post_views?: number
+            }
         Returns: number
       }
       calculate_job_popularity: {
@@ -34192,7 +34199,14 @@ export type Database = {
         Returns: number
       }
       calculate_trending_score: {
-        Args: { p_time_period: string; p_topic: string; p_topic_type: string }
+        Args:
+          | {
+              comments_count?: number
+              hours_since_posted?: number
+              likes_count?: number
+              views_count?: number
+            }
+          | { p_time_period: string; p_topic: string; p_topic_type: string }
         Returns: number
       }
       calculate_txc_mining_reward: {
@@ -35330,6 +35344,10 @@ export type Database = {
           removed_count: number
         }[]
       }
+      secure_user_operation_wrapper: {
+        Args: { operation_data?: Json; operation_type: string; user_id: string }
+        Returns: Json
+      }
       send_bulk_notifications: {
         Args: {
           message: string
@@ -35633,7 +35651,9 @@ export type Database = {
         Returns: boolean
       }
       validate_admin_operation: {
-        Args: { _required_role?: Database["public"]["Enums"]["app_role"] }
+        Args:
+          | { _required_role?: Database["public"]["Enums"]["app_role"] }
+          | { minimum_role?: string }
         Returns: boolean
       }
       validate_bot_setup: {
