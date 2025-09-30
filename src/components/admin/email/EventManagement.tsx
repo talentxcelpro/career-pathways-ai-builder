@@ -9,12 +9,15 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Plus, Edit, Power } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { EventDialog } from './EventDialog';
 
 export const EventManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterModule, setFilterModule] = useState<string>('all');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   const { data: events, isLoading } = useQuery({
     queryKey: ['email-events'],
@@ -77,16 +80,17 @@ export const EventManagement = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Email Events ({filteredEvents?.length || 0})</span>
-          <Button size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Event
-          </Button>
-        </CardTitle>
-      </CardHeader>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Email Events ({filteredEvents?.length || 0})</span>
+            <Button size="sm" onClick={() => { setSelectedEvent(null); setDialogOpen(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Event
+            </Button>
+          </CardTitle>
+        </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-4">
           <div className="relative flex-1">
@@ -134,7 +138,11 @@ export const EventManagement = () => {
                     }
                   />
                 </div>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => { setSelectedEvent(event); setDialogOpen(true); }}
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
               </div>
@@ -149,5 +157,12 @@ export const EventManagement = () => {
         )}
       </CardContent>
     </Card>
+    
+    <EventDialog
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+      event={selectedEvent}
+    />
+    </>
   );
 };
