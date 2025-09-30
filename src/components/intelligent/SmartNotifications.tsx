@@ -128,7 +128,7 @@ export const SmartNotifications: React.FC<SmartNotificationsProps> = ({
           priority: 'low',
           timestamp: new Date().toISOString(),
           isRead: false,
-          actionUrl: '/mobile/network'
+          actionUrl: '/network'
         });
       }
 

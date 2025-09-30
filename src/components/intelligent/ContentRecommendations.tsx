@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ export const ContentRecommendations: React.FC<ContentRecommendationsProps> = ({
   className,
   maxItems = 5
 }) => {
+  const navigate = useNavigate();
   const { personalizedFeed, isLoading, trackBehavior } = useAdvancedFeedAlgorithm(module);
   const { goToProfile } = useProfileLinking();
 
@@ -39,16 +41,16 @@ export const ContentRecommendations: React.FC<ContentRecommendationsProps> = ({
       module 
     });
 
-    // Navigate based on content type
+    // Navigate based on content type using React Router
     switch (item.type) {
       case 'reel':
-        window.location.href = `/mobile/reels?id=${item.id}`;
+        navigate(`/mobile/reels?id=${item.id}`);
         break;
       case 'post':
-        window.location.href = `/mobile/network?post=${item.id}`;
+        navigate(`/mobile/network?post=${item.id}`);
         break;
       case 'job':
-        window.location.href = `/mobile/jobs?job=${item.id}`;
+        navigate(`/jobs/${item.id}`);
         break;
     }
   };
