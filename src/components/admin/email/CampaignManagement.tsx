@@ -91,23 +91,35 @@ export const CampaignManagement = () => {
 
   const sendCampaignMutation = useMutation({
     mutationFn: async (campaignId: string) => {
-      const { data, error } = await supabase.functions.invoke('send-campaign', {
-        body: { campaign_id: campaignId }
-      });
-      if (error) throw error;
-      return data;
+      console.log('🚀 Attempting to send campaign:', campaignId);
+      try {
+        const { data, error } = await supabase.functions.invoke('send-campaign', {
+          body: { campaign_id: campaignId }
+        });
+        console.log('📧 Function response:', { data, error });
+        if (error) {
+          console.error('❌ Function error:', error);
+          throw error;
+        }
+        return data;
+      } catch (err) {
+        console.error('❌ Mutation error:', err);
+        throw err;
+      }
     },
     onSuccess: (data) => {
+      console.log('✅ Campaign sent successfully:', data);
       queryClient.invalidateQueries({ queryKey: ['email-campaigns'] });
       toast({ 
         title: 'Campaign launched!', 
-        description: `${data.queued || 0} emails queued successfully`,
+        description: `${data?.queued || 0} emails queued successfully`,
       });
     },
     onError: (error: any) => {
+      console.error('❌ Send campaign error:', error);
       toast({ 
         title: 'Failed to send campaign', 
-        description: error.message,
+        description: error.message || 'Unknown error occurred',
         variant: 'destructive',
       });
     },
