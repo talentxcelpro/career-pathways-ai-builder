@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { VideoContent } from '@/components/feed/VideoContent';
 import { NewsCard } from '@/components/feed/NewsCard';
+import { MobileCreatePost } from './MobileCreatePost';
 
 interface Post {
   id: string;
@@ -395,6 +396,8 @@ export const EnhancedMobileFeed: React.FC<EnhancedMobileFeedProps> = ({ classNam
 
   return (
     <div className={`${className}`}>
+      {/* Create Post Section */}
+      <MobileCreatePost onPostCreate={() => refetch()} />
 
       {/* Posts Feed */}
       {isLoading && posts.length === 0 ? (
