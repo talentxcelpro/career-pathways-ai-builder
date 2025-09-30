@@ -7,12 +7,15 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Play, Pause, BarChart, Send } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { CampaignDialog } from './CampaignDialog';
+import { CampaignAnalyticsDialog } from './CampaignAnalyticsDialog';
 import { useToast } from '@/hooks/use-toast';
 
 export const CampaignManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [analyticsDialogOpen, setAnalyticsDialogOpen] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   
   const { data: campaigns, isLoading } = useQuery({
     queryKey: ['email-campaigns'],
@@ -151,7 +154,14 @@ export const CampaignManagement = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setSelectedCampaign(campaign);
+                              setAnalyticsDialogOpen(true);
+                            }}
+                          >
                             <BarChart className="h-4 w-4 mr-1" />
                             Analytics
                           </Button>
@@ -246,6 +256,12 @@ export const CampaignManagement = () => {
     <CampaignDialog
       open={dialogOpen}
       onOpenChange={setDialogOpen}
+    />
+    
+    <CampaignAnalyticsDialog
+      open={analyticsDialogOpen}
+      onOpenChange={setAnalyticsDialogOpen}
+      campaign={selectedCampaign}
     />
     </>
   );

@@ -41,18 +41,26 @@ Deno.serve(async (req) => {
     // Get campaign details
     const { data: campaign, error: campaignError } = await supabase
       .from('email_campaigns')
-      .select('*, email_templates_v2(html_content, text_content, subject)')
+      .select(`
+        *,
+        email_templates_v2!template_id (
+          html_template,
+          text_template,
+          subject_template
+        )
+      `)
       .eq('id', campaign_id)
       .single();
 
     if (campaignError || !campaign) {
-      throw new Error('Campaign not found');
+      console.error('Campaign error:', campaignError);
+      throw new Error('Campaign not found: ' + (campaignError?.message || 'Unknown error'));
     }
 
     // Get template
     const template = campaign.email_templates_v2;
     if (!template) {
-      throw new Error('Template not found');
+      throw new Error('Template not found for campaign');
     }
 
     // Get target users based on audience
@@ -116,11 +124,11 @@ Deno.serve(async (req) => {
         };
 
         // Render template with user data
-        const htmlContent = renderTemplate(template.html_content, userData);
-        const textContent = template.text_content 
-          ? renderTemplate(template.text_content, userData)
+        const htmlContent = renderTemplate(template.html_template, userData);
+        const textContent = template.text_template 
+          ? renderTemplate(template.text_template, userData)
           : '';
-        const subject = renderTemplate(template.subject, userData);
+        const subject = renderTemplate(template.subject_template, userData);
 
         // Queue email
         const { error: queueError } = await supabase
