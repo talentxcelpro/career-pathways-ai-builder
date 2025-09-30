@@ -158,7 +158,7 @@ serve(async (req) => {
                   console.log(`📧 Activation email queued for ${email}`);
                 }
 
-                // Update CV file with user reference
+                // Update CV file with user reference AND update profile with cv_file_id
                 await supabase
                   .from('cv_files')
                   .update({
@@ -167,11 +167,20 @@ serve(async (req) => {
                     updated_at: new Date().toISOString()
                   })
                   .eq('id', cv.id);
+
+                // Also update the profile to link back to CV file
+                await supabase
+                  .from('profiles')
+                  .update({
+                    cv_file_id: cv.id,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', newProfile.id);
               }
             } else {
               console.log(`👤 Profile already exists for ${email}`);
               
-              // Update CV file status
+              // Update CV file status AND link profile to CV
               await supabase
                 .from('cv_files')
                 .update({
@@ -180,6 +189,23 @@ serve(async (req) => {
                   updated_at: new Date().toISOString()
                 })
                 .eq('id', cv.id);
+
+              // Also update the profile to link back to CV file if not already linked
+              const { data: profileCheck } = await supabase
+                .from('profiles')
+                .select('cv_file_id')
+                .eq('id', existingProfile.id)
+                .single();
+
+              if (!profileCheck?.cv_file_id) {
+                await supabase
+                  .from('profiles')
+                  .update({
+                    cv_file_id: cv.id,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('id', existingProfile.id);
+              }
             }
           } else {
             console.error(`❌ Missing email or name for ${cv.original_filename}`);

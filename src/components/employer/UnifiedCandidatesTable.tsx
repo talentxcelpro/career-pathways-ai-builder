@@ -125,8 +125,8 @@ export const UnifiedCandidatesTable: React.FC = () => {
       const pendingCount = allCandidates.filter(c => 
         c.activation_status === 'pending'
       ).length;
-      const cvFilesCount = allCandidates.filter(c => c.source_type === 'cv_file' || c.cv_file_id).length;
-      const profilesCount = allCandidates.filter(c => c.source === 'platform' || c.source === 'application').length;
+      const cvFilesCount = allCandidates.filter(c => c.source === 'cv_file' || c.source_type === 'cv_file').length;
+      const profilesCount = allCandidates.filter(c => c.source === 'platform' || c.source === 'application' || c.source_type === 'profile').length;
       
       setStats({
         total: totalCandidates,

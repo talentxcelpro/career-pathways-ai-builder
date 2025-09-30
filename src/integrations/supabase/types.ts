@@ -30704,10 +30704,12 @@ export type Database = {
       }
       unified_candidates: {
         Row: {
+          activation_status: string | null
           application_data: Json | null
           applied_at: string | null
           company: string | null
           created_at: string | null
+          cv_file_id: string | null
           description: string | null
           email: string | null
           experience_years: number | null
@@ -30724,14 +30726,17 @@ export type Database = {
           resume_url: string | null
           skills: string[] | null
           source: string | null
+          source_type: string | null
           title: string | null
           updated_at: string | null
         }
         Insert: {
+          activation_status?: string | null
           application_data?: Json | null
           applied_at?: string | null
           company?: string | null
           created_at?: string | null
+          cv_file_id?: string | null
           description?: string | null
           email?: string | null
           experience_years?: number | null
@@ -30748,14 +30753,17 @@ export type Database = {
           resume_url?: string | null
           skills?: string[] | null
           source?: string | null
+          source_type?: string | null
           title?: string | null
           updated_at?: string | null
         }
         Update: {
+          activation_status?: string | null
           application_data?: Json | null
           applied_at?: string | null
           company?: string | null
           created_at?: string | null
+          cv_file_id?: string | null
           description?: string | null
           email?: string | null
           experience_years?: number | null
@@ -30772,6 +30780,7 @@ export type Database = {
           resume_url?: string | null
           skills?: string[] | null
           source?: string | null
+          source_type?: string | null
           title?: string | null
           updated_at?: string | null
         }
