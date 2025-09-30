@@ -17,6 +17,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     );
 
+    // Check if request has form data
+    const contentType = req.headers.get('content-type') || '';
+    
+    if (!contentType.includes('multipart/form-data')) {
+      throw new Error('Request must contain multipart/form-data');
+    }
+
     // Get form data
     const formData = await req.formData();
     const sessionId = formData.get('sessionId') as string;

@@ -20,6 +20,7 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getSupabaseConfig } from '@/config/constants';
 
 interface UploadConfig {
   batchName: string;
@@ -161,15 +162,32 @@ export const ScalableUploadInterface = () => {
         formData.append('batchIndex', batchIndex.toString());
         formData.append('config', JSON.stringify(uploadConfig));
         
-        batch.forEach((file, index) => {
-          formData.append(`files`, file);
+        batch.forEach((file) => {
+          formData.append('files', file);
         });
 
-        const { data, error } = await supabase.functions.invoke('upload-file-batch', {
-          body: formData
+        // Get auth token for direct function call
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+          throw new Error('Authentication required');
+        }
+
+        // Make direct HTTP call to edge function
+        const { url } = getSupabaseConfig();
+        const response = await fetch(`${url}/functions/v1/upload-file-batch`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: formData,
         });
 
-        if (error) throw error;
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Upload failed: ${errorText}`);
+        }
+
+        const data = await response.json();
         
         toast.success(`Batch ${batchIndex + 1}/${batches.length} uploaded successfully`);
         
