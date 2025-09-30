@@ -55,7 +55,7 @@ serve(async (req) => {
         results.push({
           optimization,
           status: 'failed',
-          details: { error: error.message }
+          details: { error: (error as Error).message }
         });
       }
     }
@@ -87,7 +87,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('System optimizer error:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: (error as Error).message,
       success: false 
     }), {
       status: 500,

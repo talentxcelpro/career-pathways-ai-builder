@@ -262,7 +262,7 @@ async function executeWorkflow(
         config, 
         startTime, 
         endTime: new Date().toISOString(),
-        error: error.message 
+        error: (error as Error).message 
       }
     }).eq('id', executionId);
     
