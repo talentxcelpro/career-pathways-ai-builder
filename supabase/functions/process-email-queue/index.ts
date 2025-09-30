@@ -49,7 +49,6 @@ const handler = async (req: Request): Promise<Response> => {
       .from('email_queue')
       .select('*')
       .eq('status', 'pending')
-      .lte('scheduled_for', new Date().toISOString())
       .lt('attempts', 3)
       .order('created_at', { ascending: true })
       .limit(50);
@@ -143,10 +142,8 @@ const handler = async (req: Request): Promise<Response> => {
           .update({
             status: newStatus,
             error_message: emailError.message || 'Unknown error',
-            // Schedule retry with exponential backoff
-            ...(newStatus === 'retry' && {
-              scheduled_for: new Date(Date.now() + Math.pow(2, currentAttempts) * 5 * 60000).toISOString()
-            })
+            // Schedule retry with exponential backoff (removed scheduled_for since it doesn't exist)
+            // We'll rely on manual retry or periodic processing
           })
           .eq('id', email.id);
 

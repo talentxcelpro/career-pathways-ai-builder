@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Eye, Download, Mail, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Eye, Download, Mail, FileText, CheckCircle, Clock, AlertCircle, RefreshCw, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +29,7 @@ interface UnifiedCandidate {
 export const UnifiedCandidatesTable: React.FC = () => {
   const [candidates, setCandidates] = useState<UnifiedCandidate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     activated: 0,
@@ -189,6 +190,30 @@ export const UnifiedCandidatesTable: React.FC = () => {
     `;
   };
 
+  const processPendingCVs = async () => {
+    setProcessing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('run-cv-processing', {
+        body: {}
+      });
+      
+      if (error) {
+        console.error('CV processing error:', error);
+        toast.error('Failed to process CVs: ' + error.message);
+      } else {
+        console.log('CV processing result:', data);
+        toast.success('CV processing completed! Refreshing data...');
+        // Refresh the data after processing
+        await fetchCandidates();
+      }
+    } catch (error) {
+      console.error('Error in CV processing:', error);
+      toast.error('Failed to start CV processing');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -236,10 +261,36 @@ export const UnifiedCandidatesTable: React.FC = () => {
       {/* Candidates Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            All Candidates ({candidates.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              All Candidates ({candidates.length})
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant="secondary" 
+                onClick={processPendingCVs}
+                disabled={processing}
+              >
+                {processing ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Play className="h-4 w-4 mr-2" />
+                )}
+                Process Pending CVs
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={fetchCandidates}
+                disabled={loading}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
