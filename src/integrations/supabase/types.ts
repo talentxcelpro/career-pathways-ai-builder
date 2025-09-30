@@ -35088,10 +35088,6 @@ export type Database = {
         Args: { p_token: string }
         Returns: boolean
       }
-      is_admin: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
       is_app_admin: {
         Args: { _user_id: string }
         Returns: boolean
@@ -35112,16 +35108,8 @@ export type Database = {
         Args: { domain_to_check: string }
         Returns: boolean
       }
-      is_employer: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
       is_ip_blocked: {
         Args: { p_ip_address: unknown }
-        Returns: boolean
-      }
-      is_premium_user: {
-        Args: { user_uuid: string }
         Returns: boolean
       }
       is_pro_user: {
@@ -35202,14 +35190,6 @@ export type Database = {
       }
       log_security_event: {
         Args:
-          | {
-              p_description: string
-              p_event_type: string
-              p_ip_address?: unknown
-              p_metadata?: Json
-              p_user_agent?: string
-              p_user_id: string
-            }
           | {
               p_description?: string
               p_event_type: string
