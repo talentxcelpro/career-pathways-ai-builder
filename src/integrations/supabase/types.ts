@@ -10152,6 +10152,7 @@ export type Database = {
         Row: {
           batch_id: string | null
           created_at: string | null
+          file_size: number | null
           file_size_bytes: number | null
           file_type: string
           file_url: string
@@ -10168,6 +10169,7 @@ export type Database = {
         Insert: {
           batch_id?: string | null
           created_at?: string | null
+          file_size?: number | null
           file_size_bytes?: number | null
           file_type: string
           file_url: string
@@ -10184,6 +10186,7 @@ export type Database = {
         Update: {
           batch_id?: string | null
           created_at?: string | null
+          file_size?: number | null
           file_size_bytes?: number | null
           file_type?: string
           file_url?: string

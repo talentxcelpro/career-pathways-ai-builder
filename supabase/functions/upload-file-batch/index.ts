@@ -94,8 +94,15 @@ serve(async (req) => {
       const file = files[i];
       
       try {
+        console.log(`📁 Processing file: ${file.name} (${file.size} bytes)`);
+        
+        // Sanitize filename for storage - remove special characters
+        const sanitizedName = file.name.replace(/[^\w\s.-]/g, '_');
+        
         // Upload file to storage
-        const fileName = `cv-uploads/${sessionId}/${batchIndex}_${i}_${file.name}`;
+        const fileName = `cv-uploads/${sessionId}/${batchIndex}_${i}_${sanitizedName}`;
+        console.log(`📤 Uploading to storage path: ${fileName}`);
+        
         const { data: uploadData, error: uploadError } = await supabaseClient.storage
           .from('cv-files')
           .upload(fileName, file, {
@@ -103,9 +110,16 @@ serve(async (req) => {
             upsert: false
           });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error(`❌ Storage upload failed for ${file.name}:`, uploadError);
+          throw uploadError;
+        }
+
+        console.log(`✅ File uploaded successfully: ${uploadData.path}`);
 
         // Create CV file record using admin client to bypass RLS
+        console.log(`💾 Creating database record for ${file.name}`);
+        
         const { data: cvFileData, error: cvFileError } = await supabaseAdmin
           .from('cv_files')
           .insert({
@@ -120,19 +134,32 @@ serve(async (req) => {
           .select()
           .single();
 
-        if (cvFileError) throw cvFileError;
+        if (cvFileError) {
+          console.error(`❌ Database insert failed for ${file.name}:`, cvFileError);
+          throw cvFileError;
+        }
+
+        console.log(`✅ Database record created with ID: ${cvFileData.id}`);
 
         // Queue for AI parsing if enabled
         if (config.autoGenerateProfiles) {
-          await supabaseClient.functions.invoke('cv-parser', {
-            body: {
-              fileUrl: uploadData.path,
-              fileName: file.name,
-              fileType: file.type,
-              batchId: sessionId,
-              cvFileId: cvFileData.id
-            }
-          });
+          console.log(`🤖 Queueing AI parsing for ${file.name}`);
+          
+          try {
+            await supabaseClient.functions.invoke('cv-parser', {
+              body: {
+                fileUrl: uploadData.path,
+                fileName: file.name,
+                fileType: file.type,
+                batchId: sessionId,
+                cvFileId: cvFileData.id
+              }
+            });
+            console.log(`✅ AI parsing queued for ${file.name}`);
+          } catch (parseError) {
+            console.warn(`⚠️ Failed to queue AI parsing for ${file.name}:`, parseError);
+            // Don't fail the upload if AI parsing fails to queue
+          }
         }
 
         uploadResults.push({
@@ -141,8 +168,14 @@ serve(async (req) => {
           cvFileId: cvFileData.id
         });
 
+        console.log(`🎉 Successfully processed file ${i + 1}/${files.length}: ${file.name}`);
+
       } catch (error) {
-        console.error(`Failed to process file ${file.name}:`, error);
+        console.error(`💥 Failed to process file ${file.name}:`, {
+          error: error.message,
+          stack: error.stack,
+          name: error.name
+        });
         uploadResults.push({
           success: false,
           fileName: file.name,
