@@ -250,29 +250,44 @@ export const useLinkedInFeed = () => {
   const handleLike = async (postId: string) => {
     if (!user) return;
 
-    // Optimistic update to avoid flicker
-    const key = ['linkedInMobilePosts'] as const;
-    const previous = queryClient.getQueryData<LinkedInPost[]>(key);
+    // Work with infinite query data structure
+    const queryKey = ['linkedInMobilePosts'] as const;
+    const previousData = queryClient.getQueryData<{
+      pages: Array<{ posts: LinkedInPost[]; nextPage?: number; hasMore: boolean }>;
+      pageParams: number[];
+    }>(queryKey);
 
     const toggleInCache = (liked: boolean) => {
-      if (!previous) return;
-      const updated = previous.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              stats: {
-                ...p.stats,
-                isLiked: liked,
-                likes: p.stats.likes + (liked ? 1 : -1),
-              },
-            }
-          : p
-      );
-      queryClient.setQueryData(key, updated);
+      if (!previousData) return;
+      
+      const updatedPages = previousData.pages.map(page => ({
+        ...page,
+        posts: page.posts.map(p =>
+          p.id === postId
+            ? {
+                ...p,
+                stats: {
+                  ...p.stats,
+                  isLiked: liked,
+                  likes: p.stats.likes + (liked ? 1 : -1),
+                },
+              }
+            : p
+        )
+      }));
+
+      queryClient.setQueryData(queryKey, {
+        ...previousData,
+        pages: updatedPages
+      });
     };
 
-    // Determine current like state from cache
-    const isCurrentlyLiked = previous?.find((p) => p.id === postId)?.stats.isLiked ?? false;
+    // Find current like state from flattened posts
+    const currentPost = previousData?.pages
+      .flatMap(page => page.posts)
+      .find(p => p.id === postId);
+    const isCurrentlyLiked = currentPost?.stats.isLiked ?? false;
+    
     // Apply optimistic toggle
     toggleInCache(!isCurrentlyLiked);
 
@@ -315,12 +330,12 @@ export const useLinkedInFeed = () => {
 
       // Optionally refresh in background without resetting list
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: key });
+        queryClient.invalidateQueries({ queryKey });
       }, 400);
     } catch (error) {
       console.error('Error toggling like:', error);
       // Revert optimistic update on error
-      if (previous) queryClient.setQueryData(key, previous);
+      if (previousData) queryClient.setQueryData(queryKey, previousData);
     }
   };
 
