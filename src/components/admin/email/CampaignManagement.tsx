@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Play, Pause, BarChart } from 'lucide-react';
+import { Plus, Play, Pause, BarChart, Send } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { CampaignDialog } from './CampaignDialog';
 import { useToast } from '@/hooks/use-toast';
@@ -86,6 +86,30 @@ export const CampaignManagement = () => {
     },
   });
 
+  const sendCampaignMutation = useMutation({
+    mutationFn: async (campaignId: string) => {
+      const { data, error } = await supabase.functions.invoke('send-campaign', {
+        body: { campaign_id: campaignId }
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['email-campaigns'] });
+      toast({ 
+        title: 'Campaign launched!', 
+        description: `${data.queued || 0} emails queued successfully`,
+      });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: 'Failed to send campaign', 
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-64">Loading campaigns...</div>;
   }
@@ -131,7 +155,17 @@ export const CampaignManagement = () => {
                             <BarChart className="h-4 w-4 mr-1" />
                             Analytics
                           </Button>
-                          {campaign.status === 'running' ? (
+                          {campaign.status === 'draft' ? (
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              onClick={() => sendCampaignMutation.mutate(campaign.id)}
+                              disabled={sendCampaignMutation.isPending}
+                            >
+                              <Send className="h-4 w-4 mr-1" />
+                              Send Now
+                            </Button>
+                          ) : campaign.status === 'running' ? (
                             <Button 
                               variant="outline" 
                               size="sm"
