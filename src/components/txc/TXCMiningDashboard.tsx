@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Coins, Clock, CheckCircle, Trophy, Zap, Sparkles, TrendingUp } from 'lucide-react';
 import { useTXCMining, TXC_MINING_REWARDS } from '@/hooks/useTXCMining';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useDailyLoginBonus } from '@/hooks/useDailyLoginBonus';
 import { formatTXC } from '@/types/txc-pricing';
 import txcMascot from '@/assets/txc-mascot.jpg';
 
@@ -14,6 +15,9 @@ export const TXCMiningDashboard: React.FC = () => {
   const { availableBalance, lifetimeEarned } = useTokenBalance();
   const [availableActions, setAvailableActions] = useState<string[]>([]);
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({});
+  
+  // Initialize daily login bonus system
+  useDailyLoginBonus();
 
   useEffect(() => {
     const fetchAvailableActions = async () => {

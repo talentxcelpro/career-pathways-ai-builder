@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { TXCMiningDashboard } from '@/components/txc/TXCMiningDashboard';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Coins, Zap, Trophy, Target, Gift, Sparkles, BarChart3, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
+import { useTXCMining } from '@/hooks/useTXCMining';
 import { formatTXC } from '@/types/txc-pricing';
 import txcMascot from '@/assets/txc-mascot.jpg';
 import { RetroactiveTXCAdmin } from '@/components/admin/RetroactiveTXCAdmin';
@@ -15,7 +16,27 @@ import { ComprehensiveTXCDistribution } from '@/components/admin/ComprehensiveTX
 const TXCMining: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { availableBalance } = useTokenBalance();
+  const { availableBalance, lifetimeEarned } = useTokenBalance();
+  const { earnTXC } = useTXCMining();
+  const [hasTriggeredWelcomeBonus, setHasTriggeredWelcomeBonus] = useState(false);
+  
+  // Auto-trigger welcome bonus for new users
+  useEffect(() => {
+    if (user && !hasTriggeredWelcomeBonus && availableBalance === 0 && lifetimeEarned === 0) {
+      const triggerWelcomeBonus = async () => {
+        try {
+          await earnTXC('joining_bonus');
+          setHasTriggeredWelcomeBonus(true);
+        } catch (error) {
+          console.log('Welcome bonus already claimed or unavailable');
+        }
+      };
+      
+      // Small delay to let other systems initialize
+      const timer = setTimeout(triggerWelcomeBonus, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [user, availableBalance, lifetimeEarned, earnTXC, hasTriggeredWelcomeBonus]);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">

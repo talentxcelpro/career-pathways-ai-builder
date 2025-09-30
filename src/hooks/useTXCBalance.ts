@@ -18,7 +18,7 @@ export const useTXCBalance = () => {
       try {
         const { data, error } = await supabase
           .from('txc_user_balances')
-          .select('balance')
+          .select('available_balance')
           .eq('user_id', user.id)
           .maybeSingle();
 
@@ -26,7 +26,7 @@ export const useTXCBalance = () => {
           console.error('Error fetching TXC balance:', error);
           setTxcBalance(0);
         } else {
-          setTxcBalance(data?.balance || 0);
+          setTxcBalance(data?.available_balance || 0);
         }
       } catch (error) {
         console.error('Error fetching TXC balance:', error);
@@ -50,7 +50,7 @@ export const useTXCBalance = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          const newBalance = payload.new?.balance;
+          const newBalance = payload.new?.available_balance;
           if (newBalance !== undefined) {
             setTxcBalance(newBalance);
           }
