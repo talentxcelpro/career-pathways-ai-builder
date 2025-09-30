@@ -179,6 +179,11 @@ const App = () => {
       
       // Initialize jobs-specific optimizations
       initializeJobsOptimizations(queryClient).catch(console.error);
+
+      // Enable route preloading for instant navigation
+      import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
+        enableRoutePreloading();
+      });
     } catch (error) {
       console.warn('App initialization error:', error);
     }
