@@ -32,13 +32,16 @@ export const CostOptimizationDashboard = () => {
     estimated_cost_reduction_percent: 0,
     optimizations_applied: 0
   });
-  const [cacheStats, setCacheStats] = useState({ entries: 0, totalSizeBytes: 0, keys: [] });
+  const [cacheStats, setCacheStats] = useState({ hits: 0, misses: 0, hitRate: 0 });
 
   useEffect(() => {
-    setCacheStats(CostOptimizer.getCacheStats());
-    const interval = setInterval(() => {
-      setCacheStats(CostOptimizer.getCacheStats());
-    }, 30000); // Update every 30 seconds
+    const fetchCacheStats = async () => {
+      const stats = await CostOptimizer.getCacheStats();
+      setCacheStats(stats);
+    };
+    
+    fetchCacheStats();
+    const interval = setInterval(fetchCacheStats, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
