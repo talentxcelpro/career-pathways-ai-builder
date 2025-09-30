@@ -226,3 +226,6 @@ verify_jwt = false
 
 [functions.function-monitor]
 verify_jwt = false
+
+[functions.cost-optimizer]
+verify_jwt = false
