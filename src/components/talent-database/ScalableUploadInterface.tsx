@@ -116,6 +116,12 @@ export const ScalableUploadInterface = () => {
         throw new Error('For large uploads (>50k files), use max 3 concurrent processes');
       }
 
+      console.log('Starting upload with config:', {
+        config: uploadConfig,
+        totalFiles: uploadedFiles.length,
+        estimatedDuration: estimatedTime
+      });
+
       const { data, error } = await supabase.functions.invoke('start-scalable-upload', {
         body: {
           config: uploadConfig,
@@ -124,7 +130,10 @@ export const ScalableUploadInterface = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: (data) => {
