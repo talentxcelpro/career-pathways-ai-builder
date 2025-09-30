@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from "@/components/ui/card";
@@ -263,7 +263,27 @@ const People = () => {
   };
 
   const handleMessage = (person: any) => {
-    navigate(`/network/messages/new?userId=${person.id}&name=${person.full_name}`);
+    if (!person?.id) return;
+    navigate(`/network/messages/new?userId=${person.id}&name=${encodeURIComponent(person.full_name || 'User')}`);
+  };
+
+  const handleViewPost = (activityId: string) => {
+    navigate(`/network/posts/${activityId}`);
+  };
+
+  const handleShareProfile = async (person: any) => {
+    const profileUrl = `${window.location.origin}${person.username ? `/profile/${person.username}` : `/p/${person.id}`}`;
+    try {
+      await navigator.share({
+        title: `Connect with ${person.full_name} on TalentXcel`,
+        text: `Check out ${person.full_name}'s profile on TalentXcel`,
+        url: profileUrl
+      });
+    } catch (error) {
+      // Fallback to clipboard
+      navigator.clipboard.writeText(profileUrl);
+      toast.success('Profile link copied to clipboard!');
+    }
   };
 
   const formatDisplayName = (profile: any) => {
@@ -290,6 +310,9 @@ const People = () => {
       default: return <Sparkles className="h-3 w-3" />;
     }
   };
+
+  // Memoize formatted results for better performance
+  const formattedResults = useMemo(() => results, [results]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
@@ -382,30 +405,30 @@ const People = () => {
               <Play className="h-5 w-5 text-blue-600" />
               Recent Activity
             </h3>
-            <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {recentActivity?.slice(0, 8).map((activity, index) => (
                 <div 
                   key={activity.id} 
-                  className="flex-shrink-0 text-center cursor-pointer group"
-                  onClick={() => handleProfileView(activity)}
+                  className="flex-shrink-0 text-center cursor-pointer group transform transition-all duration-300 hover:scale-110"
+                  onClick={() => handleViewPost(activity.id)}
                 >
                   <div className="relative mb-2">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-400 to-purple-500 p-0.5">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-400 via-purple-500 to-pink-500 p-0.5 group-hover:shadow-lg group-hover:shadow-purple-300 transition-shadow">
                       <Avatar className="w-full h-full border-2 border-white">
-                        <AvatarImage src={activity.profile_picture_url} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-100 to-purple-100">
+                        <AvatarImage src={activity.profile_picture_url || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-100 to-purple-100 text-sm font-semibold">
                           {generateInitials(activity)}
                         </AvatarFallback>
                       </Avatar>
                     </div>
-                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
+                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-md group-hover:scale-125 transition-transform">
                       {getActivityIcon(activity.activity_type)}
                     </div>
                   </div>
-                  <p className="text-xs font-medium text-gray-700 truncate w-16">
+                  <p className="text-xs font-medium text-gray-700 truncate w-16 group-hover:text-blue-600 transition-colors">
                     {activity.full_name?.split(' ')[0]}
                   </p>
-                  <p className="text-xs text-gray-500">{activity.time_ago}</p>
+                  <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">{activity.time_ago}</p>
                 </div>
               ))}
             </div>
