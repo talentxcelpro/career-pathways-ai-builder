@@ -110,8 +110,8 @@ async function sendEmailViaSES(to: string, subject: string, htmlContent: string)
     throw new Error('AWS credentials not configured');
   }
 
-  // Amazon SES configuration for Europe (Stockholm)
-  let currentRegion = 'eu-north-1'; // Primary region: Europe (Stockholm)
+  // Amazon SES configuration for US East (N. Virginia)
+  let currentRegion = 'us-east-1'; // Primary region: US East (N. Virginia)
   const fromEmail = 'TalentXcel <noreply@talentxcel.in>';
   
   const sesEndpoint = `https://email.${currentRegion}.amazonaws.com`;
@@ -232,9 +232,9 @@ async function sendEmailViaSES(to: string, subject: string, htmlContent: string)
     console.error('SES Error Response:', errorText);
     
     // Try fallback region if primary fails
-    if (currentRegion === 'eu-north-1') {
-      console.log('Trying fallback region eu-west-1 (Ireland)...');
-      currentRegion = 'eu-west-1';
+    if (currentRegion === 'us-east-1') {
+      console.log('Trying fallback region us-west-2 (Oregon)...');
+      currentRegion = 'us-west-2';
       // Recursive call with fallback region - simplified for demo
       throw new Error(`SES Error: ${response.status} - ${errorText}. Please check your SES configuration in ${currentRegion}.`);
     }
