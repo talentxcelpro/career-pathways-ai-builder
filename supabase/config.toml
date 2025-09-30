@@ -84,3 +84,10 @@ verify_jwt = false
 
 [functions.system-optimizer]
 verify_jwt = false
+
+[functions.job-expiry-cleanup]
+verify_jwt = false
+
+# Extension API
+[functions.extension-api-gateway]
+verify_jwt = false
