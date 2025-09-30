@@ -8,10 +8,13 @@ import { IPManagementPanel } from '@/components/admin/security/IPManagementPanel
 import { SessionManagementPanel } from '@/components/admin/security/SessionManagementPanel';
 import { SecurityMonitoringDashboard } from '@/components/admin/security/SecurityMonitoringDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, AlertTriangle, Ban, Monitor, Users, Globe, Activity } from 'lucide-react';
+import { Shield, AlertTriangle, Ban, Monitor, Users, Globe, Activity, Rocket } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const SecurityCenter = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const navigate = useNavigate();
 
   return (
     <UnifiedAdminLayout 
@@ -19,6 +22,18 @@ const SecurityCenter = () => {
       description="Comprehensive security management and monitoring"
     >
       <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div />
+          <Button 
+            onClick={() => navigate('/admin/phase1')}
+            className="flex items-center gap-2"
+            variant="outline"
+          >
+            <Rocket className="w-4 h-4" />
+            Phase 1 Dashboard
+          </Button>
+        </div>
+        
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
