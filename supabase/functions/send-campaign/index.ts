@@ -165,11 +165,11 @@ Deno.serve(async (req) => {
           .insert({
             to_email: user.email,
             subject: subject,
-            html_content: htmlContent,
-            text_content: textContent,
-            priority: 'normal',
+            template: htmlContent,
             status: 'pending',
-            metadata: {
+            data: {
+              text_content: textContent,
+              priority: 'normal',
               campaign_id: campaign_id,
               user_id: user.id,
             },
