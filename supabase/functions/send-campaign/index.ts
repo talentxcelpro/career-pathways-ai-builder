@@ -93,53 +93,66 @@ Deno.serve(async (req) => {
     console.log("📧 Template loaded successfully");
 
     // Get target users based on audience
-    let userIds: string[] = [];
+    console.log("📧 Fetching users for audience:", campaign.target_audience);
     
-    // First, get user IDs based on role if needed
-    if (campaign.target_audience === 'job_seekers' || campaign.target_audience === 'employers') {
-      const targetRole = campaign.target_audience === 'job_seekers' ? 'user' : 'employer';
-      const { data: roleData, error: roleError } = await supabase
-        .from('user_roles')
-        .select('user_id')
-        .eq('role', targetRole)
-        .eq('is_active', true);
-      
-      if (roleError) {
-        throw new Error('Failed to fetch user roles: ' + roleError.message);
-      }
-      
-      userIds = roleData?.map(r => r.user_id) || [];
-    }
+    let users: any[] = [];
     
-    // Build profiles query
-    let query = supabase.from('profiles').select('id, full_name, email');
-    
-    // Apply filters based on audience
-    switch (campaign.target_audience) {
-      case 'job_seekers':
-      case 'employers':
-        if (userIds.length === 0) {
-          throw new Error('No users found for target audience');
+    try {
+      if (campaign.target_audience === 'all_users') {
+        // Get all users with email
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .not('email', 'is', null);
+        
+        if (error) throw error;
+        users = data || [];
+      } else {
+        // For role-based filtering, get users from user_roles table
+        const targetRole = campaign.target_audience === 'job_seekers' ? 'user' : 
+                          campaign.target_audience === 'employers' ? 'employer' : null;
+        
+        if (targetRole) {
+          const { data: roleData, error: roleError } = await supabase
+            .from('user_roles')
+            .select('user_id')
+            .eq('role', targetRole)
+            .eq('is_active', true);
+          
+          if (roleError) throw roleError;
+          
+          if (roleData && roleData.length > 0) {
+            const userIds = roleData.map(r => r.user_id);
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('id, full_name, email')
+              .in('id', userIds)
+              .not('email', 'is', null);
+            
+            if (error) throw error;
+            users = data || [];
+          }
+        } else {
+          // Active/inactive users - use profiles table directly
+          const dateThreshold = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('id, full_name, email')
+            .not('email', 'is', null)
+            [campaign.target_audience === 'active_users' ? 'gte' : 'lt']('last_login_at', dateThreshold);
+          
+          if (error) throw error;
+          users = data || [];
         }
-        query = query.in('id', userIds);
-        break;
-      case 'active_users':
-        query = query.gte('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-        break;
-      case 'inactive_users':
-        query = query.lt('last_login_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-        break;
-      // 'all_users' - no filter
-    }
-
-    const { data: users, error: usersError } = await query;
-
-    if (usersError) {
-      throw new Error('Failed to fetch users: ' + usersError.message);
+      }
+    } catch (fetchError: any) {
+      console.error("❌ Error fetching users:", fetchError);
+      throw new Error('Failed to fetch users: ' + fetchError.message);
     }
 
     if (!users || users.length === 0) {
-      throw new Error('No users found for target audience');
+      console.error("❌ No users found for audience:", campaign.target_audience);
+      throw new Error('No users found for target audience: ' + campaign.target_audience);
     }
 
     console.log(`📧 Found ${users.length} recipients`);
