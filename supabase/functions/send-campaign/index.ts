@@ -6,46 +6,25 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+const handler = async (req: Request): Promise<Response> => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    console.log("📧 Campaign service received request");
-    console.log("📧 Method:", req.method);
-    
-    // Handle CORS preflight
-    if (req.method === "OPTIONS") {
-      console.log("📧 Handling OPTIONS request");
-      return new Response(null, { headers: corsHeaders });
-    }
-
-    console.log("📧 About to parse request body...");
-    let requestBody;
-    try {
-      const text = await req.text();
-      console.log("📧 Raw body:", text);
-      requestBody = JSON.parse(text);
-      console.log("📧 Parsed body:", requestBody);
-    } catch (parseErr) {
-      console.error("❌ Parse error:", parseErr);
-      throw new Error("Failed to parse request body: " + parseErr.message);
-    }
-
-    const { campaign_id } = requestBody;
+    const { campaign_id } = await req.json();
     
     if (!campaign_id) {
-      console.error("❌ No campaign_id in body");
       throw new Error("campaign_id is required");
     }
-    
-    console.log("📧 Campaign ID:", campaign_id);
     
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    console.log("📧 Fetching campaign...");
-    
-    // Get campaign
+    // Get campaign with template
     const { data: campaign, error: campaignError } = await supabase
       .from('email_campaigns')
       .select('*, email_templates_v2!inner(*)')
@@ -54,8 +33,6 @@ serve(async (req) => {
 
     if (campaignError) throw campaignError;
     if (!campaign) throw new Error('Campaign not found');
-
-    console.log("📧 Campaign found:", campaign.campaign_name);
 
     // Get users based on target audience
     let query = supabase
@@ -72,7 +49,7 @@ serve(async (req) => {
         .eq('is_active', true);
       
       if (roleData && roleData.length > 0) {
-        query = query.in('id', roleData.map(r => r.user_id));
+        query = query.in('id', roleData.map((r: any) => r.user_id));
       } else {
         throw new Error('No job seekers found');
       }
@@ -84,7 +61,7 @@ serve(async (req) => {
         .eq('is_active', true);
       
       if (roleData && roleData.length > 0) {
-        query = query.in('id', roleData.map(r => r.user_id));
+        query = query.in('id', roleData.map((r: any) => r.user_id));
       } else {
         throw new Error('No employers found');
       }
@@ -96,8 +73,6 @@ serve(async (req) => {
     if (!users || users.length === 0) {
       throw new Error('No users found for this audience');
     }
-
-    console.log(`📧 Found ${users.length} recipients`);
 
     // Update campaign status
     await supabase
@@ -132,9 +107,7 @@ serve(async (req) => {
       if (!queueError) queued++;
     }
 
-    console.log(`✅ Queued ${queued}/${users.length} emails`);
-
-    // Update campaign
+    // Update campaign with results
     await supabase
       .from('email_campaigns')
       .update({
@@ -156,14 +129,11 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
-    console.error("❌ Error:", error);
-    console.error("❌ Error message:", error?.message);
-    console.error("❌ Error stack:", error?.stack);
+    console.error("Error:", error);
     return new Response(
       JSON.stringify({ 
         success: false, 
         error: error?.message || "Unknown error",
-        details: error?.toString(),
       }),
       { 
         status: 500, 
@@ -171,4 +141,6 @@ serve(async (req) => {
       }
     );
   }
-});
+};
+
+serve(handler);
