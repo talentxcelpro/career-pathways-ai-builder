@@ -28,9 +28,8 @@ export const useVideoAutoplay = (
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [canPlayWithSound, setCanPlayWithSound] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const startTimeRef = useRef<number>(0);
-  const isIntersecting = useIntersectionObserver(containerRef, {
+  const [containerRef, isIntersecting] = useIntersectionObserver({
     threshold,
     rootMargin
   });

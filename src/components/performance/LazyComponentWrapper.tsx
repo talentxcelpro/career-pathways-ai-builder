@@ -1,7 +1,6 @@
 import React, { Suspense, lazy, ComponentType } from 'react';
 import { SkeletonCard } from '@/components/ui/SkeletonLoader';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { useRef } from 'react';
 
 interface LazyComponentWrapperProps {
   children: React.ReactNode;
@@ -18,8 +17,7 @@ export const LazyComponentWrapper: React.FC<LazyComponentWrapperProps> = ({
   rootMargin = '100px',
   threshold = 0.1,
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isIntersecting = useIntersectionObserver(ref, {
+  const [ref, isIntersecting] = useIntersectionObserver({
     rootMargin,
     threshold,
   });

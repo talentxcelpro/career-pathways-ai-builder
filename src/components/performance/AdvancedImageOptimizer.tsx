@@ -34,9 +34,8 @@ export const AdvancedImageOptimizer: React.FC<AdvancedImageOptimizerProps> = ({
   const [hasError, setHasError] = useState(false);
   const [imageSrc, setImageSrc] = useState<string>('');
   const imgRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   
-  const isVisible = useIntersectionObserver(containerRef, {
+  const [containerRef, isVisible] = useIntersectionObserver({
     threshold: 0.1,
     rootMargin: '50px'
   });

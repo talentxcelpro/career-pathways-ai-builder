@@ -46,9 +46,7 @@ export function MemoryOptimizedList<T extends ListItem>({
   keyExtractor = (item) => item.id,
   overscan = 5
 }: MemoryOptimizedListProps<T>) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  const isVisible = useIntersectionObserver(containerRef, {
+  const [containerRef, isVisible] = useIntersectionObserver({
     threshold: 0.1,
     rootMargin: '50px'
   });

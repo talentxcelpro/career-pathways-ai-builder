@@ -40,10 +40,9 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(!lazy || priority);
-  const imgRef = useRef<HTMLImageElement>(null);
 
   // Intersection observer for lazy loading
-  const isIntersecting = useIntersectionObserver(imgRef, {
+  const [imgRef, isIntersecting] = useIntersectionObserver({
     threshold,
     rootMargin: '50px'
   });
@@ -98,7 +97,6 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
 
   return (
     <div 
-      ref={imgRef}
       className={cn(
         'relative overflow-hidden rounded-md',
         className
@@ -107,29 +105,31 @@ export const FastImageLoader = memo<FastImageLoaderProps>(({
     >
       {(!isLoaded || hasError) && placeholder !== 'none' && getPlaceholderContent()}
       
-      {shouldLoad && (
-        <img
-          src={generateOptimizedSrc(src)}
-          srcSet={generateSrcSet(src)}
-          sizes={sizes}
-          alt={alt}
-          className={cn(
-            'w-full h-full object-cover transition-all duration-300',
-            isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105',
-            hasError && 'hidden'
-          )}
-          style={{ 
-            transitionDuration: `${fadeInDuration}ms`,
-            filter: blur && !isLoaded ? 'blur(5px)' : 'none'
-          }}
-          loading={priority ? 'eager' : 'lazy'}
-          onLoad={handleLoad}
-          onError={handleError}
-          width={width}
-          height={height}
-          decoding="async"
-        />
-      )}
+      <div ref={imgRef}>
+        {shouldLoad && (
+          <img
+            src={generateOptimizedSrc(src)}
+            srcSet={generateSrcSet(src)}
+            sizes={sizes}
+            alt={alt}
+            className={cn(
+              'w-full h-full object-cover transition-all duration-300',
+              isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105',
+              hasError && 'hidden'
+            )}
+            style={{ 
+              transitionDuration: `${fadeInDuration}ms`,
+              filter: blur && !isLoaded ? 'blur(5px)' : 'none'
+            }}
+            loading={priority ? 'eager' : 'lazy'}
+            onLoad={handleLoad}
+            onError={handleError}
+            width={width}
+            height={height}
+            decoding="async"
+          />
+        )}
+      </div>
       
       {hasError && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/10 backdrop-blur-sm">

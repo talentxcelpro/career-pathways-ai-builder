@@ -27,14 +27,13 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   const reels = data?.pages.flat() || [];
 
   // Load more reels when approaching the end
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-  useIntersectionObserverCallback(loadMoreRef,
+  const [loadMoreRef] = useIntersectionObserverCallback(
+    { threshold: 0.1 },
     useCallback(() => {
       if (hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage]),
-    { threshold: 0.1 }
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage])
   );
 
   // Set up intersection observer for each reel to track which one is active

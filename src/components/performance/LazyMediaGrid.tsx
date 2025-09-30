@@ -26,9 +26,8 @@ export const LazyMediaGrid: React.FC<LazyMediaGridProps> = ({
   showThumbnails = true
 }) => {
   const [loadedItems, setLoadedItems] = useState<Set<string>>(new Set());
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const isIntersecting = useIntersectionObserver(containerRef, {
+  const [containerRef, isIntersecting] = useIntersectionObserver({
     threshold: 0.1,
     rootMargin: '100px'
   });
