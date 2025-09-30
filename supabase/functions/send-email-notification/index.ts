@@ -112,7 +112,7 @@ async function sendEmailViaSES(to: string, subject: string, htmlContent: string)
 
   // Amazon SES configuration for US East (N. Virginia)
   let currentRegion = 'us-east-1'; // Primary region: US East (N. Virginia)
-  const fromEmail = 'TalentXcel <noreply@talentxcel.in>';
+  const fromEmail = 'noreply@talentxcel.in'; // Simplified format for AWS SES
   
   const sesEndpoint = `https://email.${currentRegion}.amazonaws.com`;
   
