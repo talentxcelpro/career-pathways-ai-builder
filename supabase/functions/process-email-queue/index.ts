@@ -89,19 +89,20 @@ const handler = async (req: Request): Promise<Response> => {
           })
           .eq('id', email.id);
 
-        // Call unified email service directly with template content
-        const { data: emailResult, error: emailError } = await supabase.functions.invoke('unified-email-service', {
+        // Call Amazon SES email notification service
+        const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-email-notification', {
           body: {
-            to: email.to_email,
-            subject: email.subject,
-            template: email.template,
-            data: email.data
+            event_name: email.template || 'test_email',
+            recipient_email: email.to_email,
+            recipient_name: email.recipient_name || 'User',
+            platform_name: 'TalentXcel',
+            data: email.data || {}
           }
         });
 
         if (emailError) {
-          console.error('Unified email service error details:', emailError);
-          throw new Error(`Unified email service error: ${emailError.message || 'Unknown error'}`);
+          console.error('Amazon SES email service error details:', emailError);
+          throw new Error(`Amazon SES email service error: ${emailError.message || 'Unknown error'}`);
         }
 
         if (!emailResult || !emailResult.success) {
@@ -109,7 +110,7 @@ const handler = async (req: Request): Promise<Response> => {
           throw new Error(`Email sending failed: ${emailResult?.error || 'Unknown error'}`);
         }
 
-        console.log('Email sent successfully via unified service:', emailResult);
+        console.log('Email sent successfully via Amazon SES:', emailResult);
 
         console.log(`Email sent successfully to ${email.to_email}`);
 

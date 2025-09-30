@@ -15,10 +15,10 @@ export const EmailNotificationTest: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const testTemplates = [
-    { value: 'welcome_email', label: 'Welcome Email' },
+    { value: 'test_email', label: 'Test Email (Amazon SES)' },
+    { value: 'welcome', label: 'Welcome Email' },
     { value: 'profile_completion', label: 'Profile Completion Reminder' },
-    { value: 'job_match', label: 'Job Match Notification' },
-    { value: 'application_confirmation', label: 'Application Confirmation' }
+    { value: 'job_match', label: 'Job Match Notification' }
   ];
 
   const handleSendTestEmail = async () => {
@@ -32,32 +32,32 @@ export const EmailNotificationTest: React.FC = () => {
       console.log('Testing Amazon SES authentication...');
       const { data, error } = await supabase.functions.invoke('send-email-notification', {
         body: {
-          event_name: 'test_email',
+          event_name: template || 'test_email',
           recipient_email: email,
           recipient_name: name,
-          name: name,
           platform_name: 'TalentXcel',
-          support_email: 'support@talentxcel.in',
-          current_year: '2025',
-          current_date: new Date().toLocaleDateString(),
-          test_message: 'Testing Amazon SES SMTP authentication'
+          data: {
+            job_title: 'Senior Software Engineer',
+            company_name: 'TechCorp Inc.',
+            location: 'San Francisco, CA',
+            test_message: 'Testing Amazon SES integration',
+            current_date: new Date().toLocaleDateString()
+          }
         }
       });
 
       if (error) {
-        console.error('Email test error:', error);
-        if (error.message.includes('EAUTH') || error.message.includes('535')) {
-          toast.error('Amazon SES Authentication Failed - Check SMTP credentials');
-        } else {
-          toast.error('Failed to send test email: ' + error.message);
-        }
-      } else {
-        toast.success('Test email sent successfully via Amazon SES!');
+        console.error('Amazon SES error:', error);
+        toast.error(`Amazon SES Error: ${error.message}`);
+      } else if (data?.success) {
+        toast.success('✅ Email sent successfully via Amazon SES!');
         console.log('Email result:', data);
         // Reset form
         setEmail('');
         setName('');
-        setTemplate('');
+        setTemplate('test_email');
+      } else {
+        toast.error(`Amazon SES Error: ${data?.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error sending test email:', error);
@@ -75,7 +75,7 @@ export const EmailNotificationTest: React.FC = () => {
           Email Test
         </CardTitle>
         <CardDescription>
-          Test email notifications and templates
+          Test Amazon SES email integration
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

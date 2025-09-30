@@ -31,7 +31,10 @@ verify_jwt = false
 [functions.auth-service-root]
 verify_jwt = false
 
-# Email System (Core only)
+# Email System (Amazon SES Integration)
+[functions.send-email-notification]
+verify_jwt = false
+
 [functions.unified-email-service]
 verify_jwt = false
 
