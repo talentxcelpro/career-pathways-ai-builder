@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.1";
-import { SESClient, PutSuppressedDestinationCommand, DeleteSuppressedDestinationCommand } from "https://esm.sh/@aws-sdk/client-ses@3.490.0";
+import { SESv2Client, PutSuppressedDestinationCommand, DeleteSuppressedDestinationCommand } from "https://esm.sh/@aws-sdk/client-sesv2@3.490.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,16 +13,16 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-// AWS SES Client
-const createSESClient = () => {
+// AWS SESv2 Client for suppression list management
+const createSESv2Client = () => {
   const accessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
   const secretAccessKey = Deno.env.get("AWS_SECRET_ACCESS_KEY");
 
   if (!accessKeyId || !secretAccessKey) {
-    throw new Error('Missing AWS credentials for SES client');
+    throw new Error('Missing AWS credentials for SESv2 client');
   }
 
-  return new SESClient({
+  return new SESv2Client({
     region: 'us-east-1', // Primary region for suppression list management
     credentials: {
       accessKeyId,
@@ -95,7 +95,7 @@ const handleBounce = async (bounceData: any) => {
 
       // Add to AWS SES suppression list
       try {
-        const sesClient = createSESClient();
+        const sesClient = createSESv2Client();
         await sesClient.send(new PutSuppressedDestinationCommand({
           EmailAddress: email,
           Reason: 'BOUNCE'
@@ -185,7 +185,7 @@ const handleComplaint = async (complaintData: any) => {
 
     // Add to AWS SES suppression list
     try {
-      const sesClient = createSESClient();
+      const sesClient = createSESv2Client();
       await sesClient.send(new PutSuppressedDestinationCommand({
         EmailAddress: email,
         Reason: 'COMPLAINT'
@@ -393,7 +393,7 @@ const handler = async (req: Request): Promise<Response> => {
       await supabase
         .from('ses_webhook_errors')
         .insert({
-          error_message: error.message,
+          error_message: error instanceof Error ? error.message : 'Unknown error',
           error_details: JSON.stringify(error),
           webhook_body: await req.text().catch(() => 'Failed to read body'),
           created_at: new Date().toISOString()
@@ -405,7 +405,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : 'Unknown error'
       }),
       {
         status: 500,

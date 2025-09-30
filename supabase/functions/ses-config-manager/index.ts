@@ -5,10 +5,15 @@ import {
   GetSendQuotaCommand, 
   GetSendStatisticsCommand,
   GetAccountSendingEnabledCommand,
-  ListSuppressedDestinationsCommand,
-  DeleteSuppressedDestinationCommand,
-  ListConfigurationSetsCommand
+  ListConfigurationSetsCommand,
+  DescribeConfigurationSetCommand
 } from "https://esm.sh/@aws-sdk/client-ses@3.490.0";
+
+import {
+  SESv2Client,
+  ListSuppressedDestinationsCommand,
+  DeleteSuppressedDestinationCommand
+} from "https://esm.sh/@aws-sdk/client-sesv2@3.490.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,6 +36,24 @@ const createSESClient = (region = 'us-east-1') => {
   }
 
   return new SESClient({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+};
+
+// AWS SESv2 Client for suppression list operations
+const createSESv2Client = (region = 'us-east-1') => {
+  const accessKeyId = Deno.env.get("AWS_ACCESS_KEY_ID");
+  const secretAccessKey = Deno.env.get("AWS_SECRET_ACCESS_KEY");
+
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error('Missing AWS credentials for SESv2 client');
+  }
+
+  return new SESv2Client({
     region,
     credentials: {
       accessKeyId,
@@ -113,12 +136,6 @@ const getSESAccountStatus = async (region = 'us-east-1') => {
         remainingQuota: (quotaResponse.Max24HourSend || 0) - (quotaResponse.SentLast24Hours || 0),
         utilizationPercentage: quotaUtilization
       },
-      reputation: reputationResponse ? {
-        bounceRate: reputationResponse.BounceRate || 0,
-        complaintRate: reputationResponse.ComplaintRate || 0,
-        deliveryDelay: reputationResponse.DeliveryDelay || false,
-        reputationTrackingEnabled: reputationResponse.ReputationTrackingEnabled || false
-      } : null,
       statistics: {
         totalSent,
         totalBounces,
@@ -143,7 +160,7 @@ const getSESAccountStatus = async (region = 'us-east-1') => {
 
 // Get suppression list status
 const getSuppressionListStatus = async (region = 'us-east-1') => {
-  const sesClient = createSESClient(region);
+  const sesClient = createSESv2Client(region);
 
   try {
     const suppressedDestinations = await sesClient.send(new ListSuppressedDestinationsCommand({
@@ -175,7 +192,7 @@ const getSuppressionListStatus = async (region = 'us-east-1') => {
       bounceSuppressions: 0,
       complaintSuppressions: 0,
       addresses: [],
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 };
@@ -202,7 +219,7 @@ const getConfigurationSetsStatus = async (region = 'us-east-1') => {
         configSetDetails.push({
           name: configSet.Name,
           details: null,
-          error: detailError.message
+          error: detailError instanceof Error ? detailError.message : 'Unknown error'
         });
       }
     }
@@ -217,14 +234,14 @@ const getConfigurationSetsStatus = async (region = 'us-east-1') => {
     return {
       totalConfigSets: 0,
       configSets: [],
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 };
 
 // Remove email from suppression list
 const removeFromSuppressionList = async (email: string, region = 'us-east-1') => {
-  const sesClient = createSESClient(region);
+  const sesClient = createSESv2Client(region);
 
   try {
     await sesClient.send(new DeleteSuppressedDestinationCommand({
@@ -384,7 +401,7 @@ const handler = async (req: Request): Promise<Response> => {
       await supabase
         .from('ses_config_errors')
         .insert({
-          error_message: error.message,
+          error_message: error instanceof Error ? error.message : 'Unknown error',
           error_details: JSON.stringify(error),
           action: new URL(req.url).searchParams.get('action') || 'unknown',
           region: new URL(req.url).searchParams.get('region') || 'us-east-1',
@@ -397,8 +414,8 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message,
-        errorType: error.name
+        error: error instanceof Error ? error.message : 'Unknown error',
+        errorType: error instanceof Error ? error.name : 'UnknownError'
       }),
       {
         status: 500,
