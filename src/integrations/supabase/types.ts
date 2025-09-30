@@ -2582,6 +2582,74 @@ export type Database = {
           },
         ]
       }
+      email_campaigns: {
+        Row: {
+          campaign_name: string
+          campaign_type: string
+          created_at: string | null
+          created_by: string | null
+          emails_bounced: number | null
+          emails_clicked: number | null
+          emails_delivered: number | null
+          emails_opened: number | null
+          emails_sent: number | null
+          id: string
+          module_name: string | null
+          scheduled_at: string | null
+          status: string | null
+          target_audience: Json | null
+          template_id: string | null
+          total_recipients: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          campaign_name: string
+          campaign_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          emails_bounced?: number | null
+          emails_clicked?: number | null
+          emails_delivered?: number | null
+          emails_opened?: number | null
+          emails_sent?: number | null
+          id?: string
+          module_name?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+          target_audience?: Json | null
+          template_id?: string | null
+          total_recipients?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          campaign_name?: string
+          campaign_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          emails_bounced?: number | null
+          emails_clicked?: number | null
+          emails_delivered?: number | null
+          emails_opened?: number | null
+          emails_sent?: number | null
+          id?: string
+          module_name?: string | null
+          scheduled_at?: string | null
+          status?: string | null
+          target_audience?: Json | null
+          template_id?: string | null
+          total_recipients?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_config_settings: {
         Row: {
           created_at: string | null
@@ -2738,6 +2806,42 @@ export type Database = {
           spam_score?: number | null
           template_type?: string | null
           unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      email_event_definitions: {
+        Row: {
+          created_at: string | null
+          description: string
+          event_key: string
+          event_name: string
+          id: string
+          is_enabled: boolean | null
+          module_name: string
+          priority: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          event_key: string
+          event_name: string
+          id?: string
+          is_enabled?: boolean | null
+          module_name: string
+          priority?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          event_key?: string
+          event_name?: string
+          id?: string
+          is_enabled?: boolean | null
+          module_name?: string
+          priority?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
