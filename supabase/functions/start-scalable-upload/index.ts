@@ -19,10 +19,18 @@ serve(async (req) => {
   }
 
   try {
-    console.log('🔧 Creating Supabase client...');
+    console.log('🔧 Creating Supabase clients...');
+    
+    // Create regular client for user authentication
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    );
+
+    // Create service role client for database operations (bypasses RLS)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
     console.log('📥 Parsing request body...');
@@ -69,10 +77,9 @@ serve(async (req) => {
     const uploadSessionData = {
       id: sessionId,
       batch_name: config.batchName,
-      total_files: totalFiles, // This matches the table column
+      total_files: totalFiles,
       uploaded_by: user.id,
       processing_status: 'pending',
-      status: 'pending', // Add this field too
       upload_data: {
         config,
         estimatedDuration,
@@ -83,9 +90,10 @@ serve(async (req) => {
       }
     };
 
-    console.log('💾 Creating upload session:', uploadSessionData);
+    console.log('💾 Creating upload session with admin client:', uploadSessionData);
 
-    const { data: uploadSession, error: sessionError } = await supabaseClient
+    // Use admin client to bypass RLS
+    const { data: uploadSession, error: sessionError } = await supabaseAdmin
       .from('bulk_upload_batches')
       .insert(uploadSessionData)
       .select()
