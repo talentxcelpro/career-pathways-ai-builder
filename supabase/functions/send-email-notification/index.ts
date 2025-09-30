@@ -110,6 +110,10 @@ const emailTemplates = {
         <p>Best regards,<br>The {{platform_name}} Team</p>
       </div>
     `
+  },
+  'campaign.email': {
+    subject: "{{subject}}",
+    html: "{{html_content}}"
   }
 };
 

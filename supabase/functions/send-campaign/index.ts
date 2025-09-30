@@ -159,20 +159,22 @@ Deno.serve(async (req) => {
           : '';
         const subject = renderTemplate(template.subject_template, userData);
 
-        // Queue email
+        // Queue email using automation queue
         const { error: queueError } = await supabase
-          .from('email_queue')
+          .from('email_automation_queue')
           .insert({
-            to_email: user.email,
-            subject: subject,
-            template: htmlContent,
-            status: 'pending',
-            data: {
-              text_content: textContent,
-              priority: 'normal',
+            recipient_email: user.email,
+            recipient_name: user.full_name || 'User',
+            trigger_type: 'campaign.email',
+            template_data: {
+              ...userData,
+              subject,
+              html_content: htmlContent,
               campaign_id: campaign_id,
-              user_id: user.id,
+              platform_name: 'TalentXcel',
             },
+            scheduled_at: new Date().toISOString(),
+            status: 'pending',
           });
 
         if (queueError) {
