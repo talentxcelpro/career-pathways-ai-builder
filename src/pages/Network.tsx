@@ -32,7 +32,7 @@ import { FollowingFollowersList } from "@/components/social/FollowingFollowersLi
 import { SubscriptionsManager } from "@/components/social/SubscriptionsManager";
 import { SocialNotifications } from "@/components/social/SocialNotifications";
 import { useRealtimeSocialUpdates } from "@/hooks/useRealtimeSocialUpdates";
-import { Phase1Dashboard } from "@/components/network/Phase1Dashboard";
+
 
 
 const Network = () => {
@@ -143,10 +143,6 @@ const Network = () => {
               <MessageSquare className="w-3 h-3" />
               <span className="hidden sm:inline text-xs">Feed</span>
             </TabsTrigger>
-            <TabsTrigger value="phase1" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1.5 px-2 sm:py-1 whitespace-nowrap font-apple-medium">
-              <Sparkles className="w-3 h-3" />
-              <span className="hidden sm:inline text-xs">Phase 1</span>
-            </TabsTrigger>
             <TabsTrigger value="smart-feed" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
               <Sparkles className="w-3 h-3" />
               <span className="hidden sm:inline text-xs">Smart Feed</span>
@@ -199,17 +195,6 @@ const Network = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="phase1" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <Phase1Dashboard />
-              </React.Suspense>
-            </div>
-          </TabsContent>
 
           <TabsContent value="smart-feed" className="mt-0">
             <div className="space-y-6 text-gray-900">
