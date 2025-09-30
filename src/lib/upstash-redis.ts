@@ -1,10 +1,4 @@
-import { Redis } from '@upstash/redis';
-
-// Replace the mock Redis with real Upstash Redis
-const redis = new Redis({
-  url: 'https://usw1-sacred-boa-34251.upstash.io', // Replace with your Upstash Redis URL
-  token: 'AYTyASQgNzI2YzM1YjItN2JjNy00Y2E0LWI1NDktOGY5ZWM3YzlhNWQ5ZjNlMGRjY2FiNDkyNDgzNzg5MGI5MDMzNWRlYjZmZWI=', // Replace with your Upstash token
-});
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds
@@ -14,11 +8,8 @@ export interface CacheOptions {
 
 export class UpstashRedisCache {
   private static instance: UpstashRedisCache;
-  private redis: Redis;
 
-  private constructor() {
-    this.redis = redis;
-  }
+  private constructor() {}
 
   static getInstance(): UpstashRedisCache {
     if (!UpstashRedisCache.instance) {
@@ -29,11 +20,14 @@ export class UpstashRedisCache {
 
   async get<T>(key: string): Promise<T | null> {
     try {
-      const value = await this.redis.get(key);
-      await this.increment('cache:hits');
-      return value as T;
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { action: 'get', key }
+      });
+      
+      if (error) throw error;
+      return data?.data ? JSON.parse(data.data) : null;
     } catch (error) {
-      console.error('Upstash Redis get error:', error);
+      console.error('Cache get error:', error);
       await this.increment('cache:misses');
       return null;
     }
@@ -41,81 +35,86 @@ export class UpstashRedisCache {
 
   async set<T>(key: string, value: T, options?: CacheOptions): Promise<boolean> {
     try {
-      const ttl = options?.ttl || 3600; // Default 1 hour
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { 
+          action: 'set', 
+          key, 
+          value, 
+          ttl: options?.ttl || 3600,
+          tag: options?.tags?.[0] // Use first tag for simplicity
+        }
+      });
       
-      await this.redis.setex(key, ttl, JSON.stringify(value));
-      
-      // Store cache tags for invalidation
-      if (options?.tags) {
-        const operations = options.tags.map(async (tag) => {
-          await this.redis.sadd(`tag:${tag}`, key);
-          await this.redis.expire(`tag:${tag}`, ttl);
-        });
-        await Promise.all(operations);
-      }
-
-      return true;
+      if (error) throw error;
+      return data?.success || false;
     } catch (error) {
-      console.error('Upstash Redis set error:', error);
+      console.error('Cache set error:', error);
       return false;
     }
   }
 
   async del(key: string): Promise<boolean> {
     try {
-      await this.redis.del(key);
-      return true;
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { action: 'del', key }
+      });
+      
+      if (error) throw error;
+      return data?.success || false;
     } catch (error) {
-      console.error('Upstash Redis delete error:', error);
+      console.error('Cache delete error:', error);
       return false;
     }
   }
 
   async invalidateByTag(tag: string): Promise<void> {
     try {
-      const keys = await this.redis.smembers(`tag:${tag}`);
-      if (keys.length > 0) {
-        await this.redis.del(...keys);
-        await this.redis.del(`tag:${tag}`);
-      }
+      await supabase.functions.invoke('cache-manager', {
+        body: { action: 'invalidateByTag', tag }
+      });
     } catch (error) {
-      console.error('Upstash Redis tag invalidation error:', error);
+      console.error('Cache tag invalidation error:', error);
     }
   }
 
   async exists(key: string): Promise<boolean> {
     try {
-      const result = await this.redis.exists(key);
-      return result === 1;
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { action: 'exists', key }
+      });
+      
+      if (error) throw error;
+      return data?.data || false;
     } catch (error) {
-      console.error('Upstash Redis exists error:', error);
+      console.error('Cache exists error:', error);
       return false;
     }
   }
 
   async increment(key: string, increment = 1): Promise<number> {
     try {
-      return await this.redis.incrby(key, increment);
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { action: 'increment', key, value: increment }
+      });
+      
+      if (error) throw error;
+      return data?.data || 0;
     } catch (error) {
-      console.error('Upstash Redis increment error:', error);
+      console.error('Cache increment error:', error);
       return 0;
     }
   }
 
   async getStats(): Promise<{ hits: number; misses: number; hitRate: number }> {
     try {
-      const hits = await this.redis.get('cache:hits') || 0;
-      const misses = await this.redis.get('cache:misses') || 0;
-      const total = Number(hits) + Number(misses);
-      const hitRate = total > 0 ? (Number(hits) / total) * 100 : 0;
-
-      return {
-        hits: Number(hits),
-        misses: Number(misses),
-        hitRate: Math.round(hitRate * 100) / 100
-      };
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { action: 'stats' }
+      });
+      
+      if (error) throw error;
+      return data?.data || { hits: 0, misses: 0, hitRate: 0 };
     } catch (error) {
-      console.error('Upstash Redis stats error:', error);
+      console.error('Cache stats error:', error);
       return { hits: 0, misses: 0, hitRate: 0 };
     }
   }
@@ -123,30 +122,29 @@ export class UpstashRedisCache {
   // Advanced caching methods for performance
   async mget<T>(keys: string[]): Promise<(T | null)[]> {
     try {
-      const values = await this.redis.mget(...keys);
-      return values.map(v => v as T | null);
+      const { data, error } = await supabase.functions.invoke('cache-manager', {
+        body: { action: 'mget', keys }
+      });
+      
+      if (error) throw error;
+      return data?.data || new Array(keys.length).fill(null);
     } catch (error) {
-      console.error('Upstash Redis mget error:', error);
+      console.error('Cache mget error:', error);
       return new Array(keys.length).fill(null);
     }
   }
 
   async mset(pairs: Record<string, any>, ttl?: number): Promise<boolean> {
     try {
-      const pipeline = this.redis.pipeline();
+      // For simplicity, we'll set each key individually
+      const promises = Object.entries(pairs).map(([key, value]) =>
+        this.set(key, value, { ttl })
+      );
       
-      Object.entries(pairs).forEach(([key, value]) => {
-        if (ttl) {
-          pipeline.setex(key, ttl, JSON.stringify(value));
-        } else {
-          pipeline.set(key, JSON.stringify(value));
-        }
-      });
-      
-      await pipeline.exec();
-      return true;
+      const results = await Promise.all(promises);
+      return results.every(result => result);
     } catch (error) {
-      console.error('Upstash Redis mset error:', error);
+      console.error('Cache mset error:', error);
       return false;
     }
   }

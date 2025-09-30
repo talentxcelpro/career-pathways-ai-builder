@@ -235,3 +235,6 @@ verify_jwt = false
 
 [functions.system-optimizer]
 verify_jwt = false
+
+[functions.cache-manager]
+verify_jwt = false
