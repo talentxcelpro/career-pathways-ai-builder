@@ -40,8 +40,39 @@ serve(async (req) => {
     const { extractedText, fileName: requestFileName } = requestBody;
     fileName = requestFileName || 'resume';
 
-    if (!extractedText) {
-      throw new Error('Missing extracted text');
+    if (!extractedText || extractedText.trim().length === 0) {
+      console.warn('⚠️ No extracted text provided, using fallback parsing');
+      
+      // Create a basic fallback resume when no text is provided
+      const fallbackResume = createFallbackResume('', fileName);
+      
+      const result = {
+        success: true,
+        data: {
+          structured_resume: fallbackResume,
+          raw_text: '',
+          field_confidence: [{ field: 'fallback', confidence: 30, note: 'No text extracted, using filename-based parsing' }],
+          ats_compatibility: { score: 30, note: 'Limited analysis - no text content available' },
+          content_quality: { overall_score: 30, note: 'Limited analysis - no text content available' },
+          key_metrics: {
+            years_experience: 0,
+            top_skills_matched: [],
+            confidence_score: 30,
+            completeness_percentage: 20,
+            fallback_mode: true,
+            extraction_issue: 'No text content available'
+          }
+        }
+      };
+      
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      });
     }
 
     console.log('Processing resume text for:', fileName);
