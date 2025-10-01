@@ -4,8 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { realtimeManager } from '@/lib/realtimeManager';
 import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
-import { useOptimizedRealtime } from '@/hooks/useOptimizedRealtime';
 import { useTXCRealtime } from '@/hooks/useTXCRealtime';
+import { consolidatedRealtimeManager } from '@/lib/consolidatedRealtimeManager';
 import { supabase } from '@/integrations/supabase/client';
 import { RefreshCw, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
@@ -14,7 +14,6 @@ export const RealtimeDiagnostics: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   
   const safeRealtime = useSafeRealtimeContext();
-  const optimizedRealtime = useOptimizedRealtime({ enableLogging: true });
   const txcRealtime = useTXCRealtime();
 
   const runDiagnostics = async () => {
@@ -47,11 +46,12 @@ export const RealtimeDiagnostics: React.FC = () => {
         usePollingFallback: safeRealtime.usePollingFallback
       };
 
-      // 4. Optimized Realtime Status
-      results.optimizedRealtime = {
-        isConnected: optimizedRealtime.isConnected,
-        connectedChannels: optimizedRealtime.connectedChannels,
-        channelStatus: optimizedRealtime.getChannelStatus()
+      // 4. Consolidated Realtime Status
+      const consolidatedStatus = consolidatedRealtimeManager.getStatus();
+      results.consolidatedRealtime = {
+        authInitialized: consolidatedStatus.authInitialized,
+        isAuthenticated: consolidatedStatus.isAuthenticated,
+        totalSubscriptions: consolidatedStatus.totalSubscriptions
       };
 
       // 5. TXC Realtime Status
@@ -242,14 +242,14 @@ export const RealtimeDiagnostics: React.FC = () => {
               </div>
             )}
 
-            {/* Optimized Realtime */}
-            {diagnostics.optimizedRealtime && (
+            {/* Consolidated Realtime */}
+            {diagnostics.consolidatedRealtime && (
               <div className="space-y-2">
-                <h4 className="font-semibold">Optimized Realtime</h4>
+                <h4 className="font-semibold">Consolidated Realtime</h4>
                 <div className="flex items-center gap-2">
-                  {getStatusBadge(diagnostics.optimizedRealtime.isConnected, 'Connected')}
+                  {getStatusBadge(diagnostics.consolidatedRealtime.authInitialized, 'Initialized')}
                   <span className="text-sm text-muted-foreground">
-                    {diagnostics.optimizedRealtime.connectedChannels} channels
+                    {diagnostics.consolidatedRealtime.totalSubscriptions} subscriptions
                   </span>
                 </div>
               </div>

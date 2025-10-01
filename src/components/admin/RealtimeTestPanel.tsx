@@ -8,7 +8,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { consolidatedRealtimeManager } from '@/lib/consolidatedRealtimeManager';
 import { useSafeRealtimeContext } from '@/components/realtime/SafeRealtimeProvider';
 import { useTXCRealtime } from '@/hooks/useTXCRealtime';
-import { useOptimizedRealtime } from '@/hooks/useOptimizedRealtime';
 import { Activity, Wifi, WifiOff, RefreshCw, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { RealtimeDiagnostics } from './RealtimeDiagnostics';
@@ -30,7 +29,6 @@ export const RealtimeTestPanel: React.FC = () => {
   // Get realtime contexts
   const realtimeContext = useSafeRealtimeContext();
   const txcRealtime = useTXCRealtime();
-  const optimizedRealtime = useOptimizedRealtime();
 
   // Consolidated realtime manager status
   const [consolidatedStatus, setConsolidatedStatus] = useState(() => consolidatedRealtimeManager.getStatus());
@@ -179,22 +177,19 @@ export const RealtimeTestPanel: React.FC = () => {
         }
       );
 
-      // Test 5: Check Optimized Realtime  
-      addTest('Optimized Realtime', 'pending', 'Checking optimized connection...');
+      // Test 5: Check Consolidated Realtime  
+      addTest('Consolidated Status', 'pending', 'Checking consolidated status...');
       setProgress(60);
       
       try {
-        updateTest('Optimized Realtime',
-          optimizedRealtime.isConnected ? 'success' : 'error',
-          `Optimized connected: ${optimizedRealtime.isConnected}, Channels: ${optimizedRealtime.connectedChannels}`,
-          {
-            isConnected: optimizedRealtime.isConnected,
-            connectedChannels: optimizedRealtime.connectedChannels,
-            channelStatus: optimizedRealtime.getChannelStatus()
-          }
+        const status = consolidatedRealtimeManager.getStatus();
+        updateTest('Consolidated Status',
+          status.authInitialized ? 'success' : 'error',
+          `Consolidated: ${status.totalSubscriptions} subscriptions`,
+          status
         );
       } catch (error) {
-        updateTest('Optimized Realtime', 'error', 'Optimized realtime check failed', error);
+        updateTest('Consolidated Status', 'error', 'Consolidated check failed', error);
       }
 
       // Test 6: Test actual database change detection
@@ -376,10 +371,10 @@ export const RealtimeTestPanel: React.FC = () => {
           <Card className="p-4">
             <div className="flex items-center gap-2">
               <RefreshCw className="h-4 w-4 text-purple-500" />
-              <span className="font-medium">Optimized Channels</span>
+              <span className="font-medium">Consolidated</span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              {optimizedRealtime.connectedChannels} connected
+              {consolidatedStatus.totalSubscriptions} subscriptions
             </p>
           </Card>
         </div>
