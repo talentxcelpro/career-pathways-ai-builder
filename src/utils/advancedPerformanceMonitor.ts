@@ -58,15 +58,16 @@ class AdvancedPerformanceMonitor {
       this.recordMetric('CLS', clsValue, this.getRating('CLS', clsValue));
     });
 
-    // Long Tasks
-    this.observeMetric('longtask', (entries) => {
-      entries.forEach((entry) => {
-        if (entry.duration > 50) {
-          console.warn(`⚠️ Long task detected: ${entry.duration.toFixed(2)}ms`);
-          this.recordMetric('LongTask', entry.duration, 'poor');
-        }
+    // Long Tasks - Only monitor in dev mode, threshold 100ms
+    if (import.meta.env.DEV) {
+      this.observeMetric('longtask', (entries) => {
+        entries.forEach((entry) => {
+          if (entry.duration > 100) {
+            this.recordMetric('LongTask', entry.duration, 'poor');
+          }
+        });
       });
-    });
+    }
 
     // Navigation Timing
     this.measureNavigationTiming();
@@ -75,12 +76,14 @@ class AdvancedPerformanceMonitor {
   private observeMetric(type: string, callback: (entries: PerformanceEntry[]) => void) {
     try {
       const observer = new PerformanceObserver((list) => {
-        callback(list.getEntries());
+        // Use requestIdleCallback to avoid blocking main thread
+        const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+        idleCallback(() => callback(list.getEntries()));
       });
-      observer.observe({ entryTypes: [type] });
+      observer.observe({ entryTypes: [type], buffered: false });
       this.observers.set(type, observer);
     } catch (e) {
-      console.warn(`Performance observer not supported: ${type}`);
+      // Silently fail if observer not supported
     }
   }
 
@@ -120,17 +123,17 @@ class AdvancedPerformanceMonitor {
     }
     this.metrics.get(name)!.push(metric);
 
-    // Log to console in dev mode
-    if (import.meta.env.DEV) {
+    // Only log Core Web Vitals in dev mode
+    if (import.meta.env.DEV && ['LCP', 'FID', 'CLS', 'TTFB'].includes(name)) {
       const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
       console.log(`${emoji} ${name}: ${value.toFixed(2)}ms (${rating})`);
     }
 
-    // Send to analytics in production
-    if (!import.meta.env.DEV && window.gtag) {
+    // Send to analytics in production (throttled)
+    if (!import.meta.env.DEV && window.gtag && Math.random() < 0.1) { // 10% sample rate
       window.gtag('event', 'performance_metric', {
         metric_name: name,
-        metric_value: value,
+        metric_value: Math.round(value),
         metric_rating: rating,
       });
     }
