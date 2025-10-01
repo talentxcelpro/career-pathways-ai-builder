@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, Sparkles, FileText, Target, BarChart3, Mail, Video, Globe } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import talentxcelLogo from "@/assets/talentxcel-logo.png";
+import talentxcelLogo from "@/assets/talentxcel-logo.webp";
 
 const UnifiedResumeHub = () => {
   const navigate = useNavigate();
