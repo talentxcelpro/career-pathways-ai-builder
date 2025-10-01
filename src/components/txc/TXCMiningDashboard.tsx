@@ -123,61 +123,6 @@ export const TXCMiningDashboard: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Available Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5" />
-            Available Actions
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {availableActions.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No actions available right now</p>
-              <p className="text-sm">Come back later for more earning opportunities!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {availableActions.map((action) => {
-                const reward = TXC_MINING_REWARDS[action];
-                const isLoading = loadingActions[action];
-                
-                return (
-                  <div key={action} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium">{reward.description}</h4>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        +{formatTXC(reward.amount)}
-                      </Badge>
-                    </div>
-                    
-                    <Button 
-                      onClick={() => handleEarnTXC(action)}
-                      disabled={isLoading || isProcessing}
-                      className="w-full"
-                      size="sm"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Clock className="h-4 w-4 mr-2 animate-spin" />
-                          Earning...
-                        </>
-                      ) : (
-                        <>
-                          <Coins className="h-4 w-4 mr-2" />
-                          Earn TXC
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* All Rewards Reference */}
       <Card>
