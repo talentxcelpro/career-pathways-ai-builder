@@ -20,6 +20,7 @@ import { ATSScoreDisplay, ATSDetailedAnalysis } from "@/components/resume/ats/AT
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { resumeTemplates } from "@/data/resumeTemplates";
+import { TemplateRenderer } from "@/components/resume/templates/TemplateRenderer";
 
 const UnifiedResumeBuilder = () => {
   const { id } = useParams();
@@ -450,40 +451,81 @@ const UnifiedResumeBuilder = () => {
                       >
                         <div className="p-4 space-y-3">
                           {/* Template Preview */}
-                          <div className="aspect-[8.5/11] bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center relative overflow-hidden group">
-                            {templateData.preview || templateData.thumbnailImage ? (
-                              <img 
-                                src={templateData.preview || templateData.thumbnailImage} 
-                                alt={`${template.name} preview`}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  // Fallback to placeholder on error
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            ) : (
-                              <div className="text-center p-4">
-                                <div className="text-xs font-mono text-muted-foreground mb-2">
-                                  {template.name}
-                                </div>
-                                <div className="space-y-1">
-                                  <div className="h-2 w-20 bg-primary/20 rounded mx-auto" />
-                                  <div className="h-1 w-16 bg-primary/10 rounded mx-auto" />
-                                  <div className="h-1 w-24 bg-primary/10 rounded mx-auto mt-3" />
-                                  <div className="h-1 w-20 bg-primary/10 rounded mx-auto" />
+                          <div className="aspect-[8.5/11] bg-white rounded-lg flex items-center justify-center relative overflow-hidden group border-2 border-muted">
+                            {/* CSS-based template preview */}
+                            <div className="w-full h-full p-3 text-[0.35rem] leading-tight">
+                              {/* Header */}
+                              <div className={`${templateData.designStyle.includes('two-column') ? 'flex gap-2' : 'text-center'} mb-2 pb-1 border-b border-gray-200`}>
+                                <div className={templateData.designStyle.includes('two-column') ? 'flex-1' : ''}>
+                                  <div className="h-1.5 bg-gray-800 rounded mb-0.5" style={{ width: '60%', margin: templateData.designStyle.includes('two-column') ? '0' : '0 auto' }} />
+                                  <div className="h-0.5 bg-gray-500 rounded mb-0.5" style={{ width: '45%', margin: templateData.designStyle.includes('two-column') ? '0' : '0 auto' }} />
+                                  <div className="h-0.5 bg-gray-400 rounded" style={{ width: '50%', margin: templateData.designStyle.includes('two-column') ? '0' : '0 auto' }} />
                                 </div>
                               </div>
+                              
+                              {/* Content */}
+                              <div className={`${templateData.designStyle.includes('two-column') ? 'flex gap-2' : ''}`}>
+                                {/* Main content */}
+                                <div className={templateData.designStyle.includes('two-column') ? 'flex-[2]' : ''}>
+                                  {/* Summary */}
+                                  <div className="mb-2">
+                                    <div className="h-0.5 bg-primary/70 rounded mb-0.5 w-1/3" />
+                                    <div className="space-y-0.5">
+                                      <div className="h-0.5 bg-gray-300 rounded w-full" />
+                                      <div className="h-0.5 bg-gray-300 rounded w-full" />
+                                      <div className="h-0.5 bg-gray-300 rounded w-3/4" />
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Experience */}
+                                  <div className="mb-2">
+                                    <div className="h-0.5 bg-primary/70 rounded mb-0.5 w-1/2" />
+                                    <div className="space-y-1">
+                                      <div className="space-y-0.5">
+                                        <div className="h-0.5 bg-gray-600 rounded w-2/3" />
+                                        <div className="h-0.5 bg-gray-400 rounded w-1/2" />
+                                        <div className="h-0.5 bg-gray-300 rounded w-full" />
+                                        <div className="h-0.5 bg-gray-300 rounded w-full" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Sidebar */}
+                                {templateData.designStyle.includes('two-column') && (
+                                  <div className="flex-1 bg-muted/30 rounded p-1.5">
+                                    <div className="mb-1.5">
+                                      <div className="h-0.5 bg-primary/70 rounded mb-0.5 w-2/3" />
+                                      <div className="space-y-0.5">
+                                        <div className="h-0.5 bg-gray-400 rounded w-full" />
+                                        <div className="h-0.5 bg-gray-400 rounded w-4/5" />
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="h-0.5 bg-primary/70 rounded mb-0.5 w-2/3" />
+                                      <div className="flex flex-wrap gap-0.5">
+                                        <div className="h-0.5 w-6 bg-primary/30 rounded" />
+                                        <div className="h-0.5 w-5 bg-primary/30 rounded" />
+                                        <div className="h-0.5 w-7 bg-primary/30 rounded" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Selection overlay */}
+                            {isSelected && (
+                              <div className="absolute inset-0 bg-primary/10 border-4 border-primary" />
                             )}
                             {isSelected && (
-                              <div className="absolute inset-0 bg-primary/10 border-2 border-primary" />
-                            )}
-                            {isSelected && (
-                              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1.5 shadow-lg">
+                              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1.5 shadow-lg ring-2 ring-white">
                                 <Check className="h-5 w-5" />
                               </div>
                             )}
+                            
                             {/* Hover overlay */}
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+                            <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-200" />
                           </div>
 
                           {/* Template Info */}
@@ -565,53 +607,52 @@ const UnifiedResumeBuilder = () => {
 
         {/* Right Panel - Live Preview */}
         <aside className="w-96 border-l border-border bg-muted/20 p-6 overflow-auto">
-          <div className="mb-4">
-            <h3 className="font-semibold mb-2">Live Preview</h3>
-            <p className="text-xs text-muted-foreground">See changes in real-time</p>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold mb-1">Live Preview</h3>
+              <p className="text-xs text-muted-foreground">Template: {resumeTemplates.find(t => t.id === selectedTemplateId)?.name || 'Classic'}</p>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {selectedTemplateId}
+            </Badge>
           </div>
           
-          <div className="bg-white rounded-lg shadow-lg p-8 aspect-[8.5/11]">
-            <div className="space-y-4">
-              <div className="text-center pb-4 border-b border-gray-200">
-                <h1 className="text-2xl font-bold">{resumeData?.personalInfo?.fullName || "Your Name"}</h1>
-                <p className="text-sm text-gray-600">{resumeData?.personalInfo?.email || "your.email@example.com"}</p>
-                <p className="text-sm text-gray-600">{resumeData?.personalInfo?.phone || "(123) 456-7890"}</p>
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden transform scale-90 origin-top">
+            {localData && (
+              <TemplateRenderer 
+                template={selectedTemplateId}
+                resumeData={localData}
+                customization={{
+                  colorScheme: {
+                    id: 'default',
+                    name: 'Default',
+                    primary: '#3b82f6',
+                    secondary: '#8b5cf6',
+                    accent: '#ec4899',
+                    text: '#1f2937',
+                    background: '#ffffff',
+                    isDefault: true
+                  },
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  spacing: 'normal',
+                  sections: [],
+                  layout: {
+                    headerStyle: 'centered',
+                    sectionSpacing: 'normal',
+                    borderStyle: 'subtle',
+                    iconStyle: 'minimal'
+                  }
+                }}
+                sectionOrder={['personalInfo', 'summary', 'experience', 'education', 'skills']}
+              />
+            )}
+            {!localData && (
+              <div className="p-8 text-center text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Loading resume data...</p>
               </div>
-              
-              <div>
-                <h2 className="text-lg font-semibold mb-2 text-gray-900">Professional Summary</h2>
-                <p className="text-sm text-gray-700">Your professional summary will appear here...</p>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold mb-2 text-gray-900">Experience</h2>
-                <div className="text-sm text-gray-700">
-                  <p className="font-medium">Job Title</p>
-                  <p className="text-gray-600">Company Name • Date Range</p>
-                  <ul className="list-disc ml-5 mt-1 space-y-1">
-                    <li>Achievement or responsibility</li>
-                    <li>Achievement or responsibility</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold mb-2 text-gray-900">Education</h2>
-                <div className="text-sm text-gray-700">
-                  <p className="font-medium">Degree</p>
-                  <p className="text-gray-600">University Name • Graduation Year</p>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold mb-2 text-gray-900">Skills</h2>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Skill 1</span>
-                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Skill 2</span>
-                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Skill 3</span>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </aside>
       </div>
