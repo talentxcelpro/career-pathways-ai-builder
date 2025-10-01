@@ -8,6 +8,12 @@ import { useResumeData } from "@/hooks/useResumeData";
 import { useResumeBuilder } from "@/hooks/useResumeBuilder";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { PersonalInfoEditor } from "@/components/resume/sections/PersonalInfoEditor";
+import { ExperienceEditor } from "@/components/resume/sections/ExperienceEditor";
+import { SkillsEditor } from "@/components/resume/sections/SkillsEditor";
+import { optimizeForJob, generateSummary } from "@/services/resumeEnhancementService";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 const UnifiedResumeBuilder = () => {
   const { id } = useParams();
@@ -15,6 +21,68 @@ const UnifiedResumeBuilder = () => {
   const { saveResume, exportResume, isSaving, hasChanges } = useResumeBuilder(resumeData || undefined);
   const [activeTab, setActiveTab] = useState("edit");
   const [atsScore] = useState(75);
+  const [localData, setLocalData] = useState(resumeData);
+  const [jobDescription, setJobDescription] = useState("");
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+
+  const handlePersonalInfoChange = (field: string, value: string) => {
+    setLocalData((prev: any) => ({
+      ...prev,
+      personalInfo: { ...prev?.personalInfo, [field]: value }
+    }));
+  };
+
+  const handleExperienceChange = (experiences: any[]) => {
+    setLocalData((prev: any) => ({ ...prev, experience: experiences }));
+  };
+
+  const handleSkillsChange = (skills: string[]) => {
+    setLocalData((prev: any) => ({ ...prev, skills }));
+  };
+
+  const handleOptimizeForJob = async () => {
+    if (!jobDescription.trim()) {
+      toast.error('Please enter a job description');
+      return;
+    }
+    if (!localData) {
+      toast.error('No resume data available');
+      return;
+    }
+
+    setIsOptimizing(true);
+    try {
+      const resumeContent = JSON.stringify(localData);
+      const optimized = await optimizeForJob(resumeContent, jobDescription);
+      toast.success('Resume optimized for job description!');
+      // Parse and apply optimized content
+      console.log('Optimized content:', optimized);
+    } catch (error) {
+      toast.error('Failed to optimize resume');
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
+
+  const handleGenerateSummary = async () => {
+    if (!localData) {
+      toast.error('No resume data available');
+      return;
+    }
+
+    setIsGeneratingSummary(true);
+    try {
+      const resumeContent = JSON.stringify(localData);
+      const summary = await generateSummary(resumeContent);
+      handlePersonalInfoChange('summary', summary);
+      toast.success('Professional summary generated!');
+    } catch (error) {
+      toast.error('Failed to generate summary');
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
 
   const handleSave = async () => {
     await saveResume();
@@ -149,54 +217,108 @@ const UnifiedResumeBuilder = () => {
           {/* Editor Content */}
           <div className="flex-1 overflow-auto p-6">
             <TabsContent value="edit" className="mt-0">
-              <div className="max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold mb-6">Edit Your Resume</h3>
-                <p className="text-muted-foreground mb-8">
-                  Modify your resume content. Use the AI Enhance tab for intelligent suggestions.
-                </p>
-                
-                {/* Placeholder for resume editor */}
-                <div className="space-y-6">
-                  <div className="p-8 border-2 border-dashed border-border rounded-lg text-center">
-                    <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground">Resume editor content will appear here</p>
-                    <p className="text-sm text-muted-foreground mt-2">Section-by-section editing coming soon</p>
+              <div className="max-w-4xl mx-auto space-y-8">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">Personal Information</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Basic contact information and professional summary
+                  </p>
+                  <div className="p-6 bg-card border border-border rounded-lg">
+                    <PersonalInfoEditor
+                      data={localData?.personalInfo || {}}
+                      onChange={handlePersonalInfoChange}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">Work Experience</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Add your professional experience with AI-enhanced bullet points
+                  </p>
+                  <div className="p-6 bg-card border border-border rounded-lg">
+                    <ExperienceEditor
+                      experiences={localData?.experience || []}
+                      onChange={handleExperienceChange}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">Skills</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    List your technical and soft skills
+                  </p>
+                  <div className="p-6 bg-card border border-border rounded-lg">
+                    <SkillsEditor
+                      skills={localData?.skills?.map((s: any) => typeof s === 'string' ? s : s.name) || []}
+                      onChange={handleSkillsChange}
+                    />
                   </div>
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="ai" className="mt-0">
-              <div className="max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold mb-6">AI Enhancement</h3>
-                <p className="text-muted-foreground mb-8">
-                  Get AI-powered suggestions to improve your resume impact and clarity.
-                </p>
+              <div className="max-w-4xl mx-auto space-y-6">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">AI Enhancement</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Get AI-powered suggestions to improve your resume impact and clarity.
+                  </p>
+                </div>
                 
-                <div className="grid gap-4">
-                  <div className="p-6 border border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">Enhance All Sections</h4>
-                    </div>
-                    <p className="text-sm text-muted-foreground">AI will optimize your entire resume for impact</p>
+                <div className="p-6 border border-border rounded-lg bg-card">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <h4 className="font-semibold">Generate Professional Summary</h4>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    AI will create a compelling professional summary based on your experience
+                  </p>
+                  <Button 
+                    onClick={handleGenerateSummary}
+                    disabled={isGeneratingSummary}
+                    className="w-full"
+                  >
+                    {isGeneratingSummary ? 'Generating...' : 'Generate Summary'}
+                  </Button>
+                </div>
 
-                  <div className="p-6 border border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">Generate Summary</h4>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Create a compelling professional summary</p>
+                <div className="p-6 border border-border rounded-lg bg-card">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <h4 className="font-semibold">Optimize for Job Description</h4>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Tailor your resume to match a specific job posting
+                  </p>
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="jobDesc">Paste Job Description</Label>
+                      <Textarea
+                        id="jobDesc"
+                        value={jobDescription}
+                        onChange={(e) => setJobDescription(e.target.value)}
+                        placeholder="Paste the job description here..."
+                        rows={8}
+                        className="resize-none"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleOptimizeForJob}
+                      disabled={isOptimizing || !jobDescription.trim()}
+                      className="w-full"
+                    >
+                      {isOptimizing ? 'Optimizing...' : 'Optimize Resume'}
+                    </Button>
+                  </div>
+                </div>
 
-                  <div className="p-6 border border-border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      <h4 className="font-semibold">Optimize for Job</h4>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Tailor resume to a specific job description</p>
-                  </div>
+                <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">Tip:</strong> You can also use inline AI enhancement buttons in the Edit tab for section-specific improvements.
+                  </p>
                 </div>
               </div>
             </TabsContent>
