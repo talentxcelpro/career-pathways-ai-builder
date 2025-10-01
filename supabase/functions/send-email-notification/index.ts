@@ -38,6 +38,7 @@ const emailTemplates = {
           <li>Connecting with professionals</li>
         </ul>
         <p>Best regards,<br>The {{platform_name}} Team</p>
+        <p style="margin-top: 30px; color: #9ca3af; font-size: 12px; text-align: center;">© {{current_year}} {{platform_name}}. All rights reserved.</p>
       </div>
     `
   },
@@ -56,6 +57,7 @@ const emailTemplates = {
         </ul>
         <p>A complete profile gets 5x more views!</p>
         <p>Best regards,<br>The {{platform_name}} Team</p>
+        <p style="margin-top: 30px; color: #9ca3af; font-size: 12px; text-align: center;">© {{current_year}} {{platform_name}}. All rights reserved.</p>
       </div>
     `
   },
@@ -73,6 +75,7 @@ const emailTemplates = {
         </div>
         <p>Don't wait - apply now to increase your chances!</p>
         <p>Best regards,<br>The {{platform_name}} Team</p>
+        <p style="margin-top: 30px; color: #9ca3af; font-size: 12px; text-align: center;">© {{current_year}} {{platform_name}}. All rights reserved.</p>
       </div>
     `
   },
@@ -89,6 +92,7 @@ const emailTemplates = {
         <p><strong>Amazon SES integration is functioning properly!</strong></p>
         <p><small>Timestamp: {{timestamp}}</small></p>
         <p>Best regards,<br>The {{platform_name}} Team</p>
+        <p style="margin-top: 30px; color: #9ca3af; font-size: 12px; text-align: center;">© {{current_year}} {{platform_name}}. All rights reserved.</p>
       </div>
     `
   },
@@ -418,11 +422,13 @@ const handler = async (req: Request): Promise<Response> => {
       recipient_name: requestData.recipient_name
     });
 
-    // Prepare template data
+    // Prepare template data with aliases for compatibility
     const templateData = {
       recipient_name: requestData.recipient_name || 'User',
+      user_name: requestData.recipient_name || 'User', // Alias for templates using {{user_name}}
       platform_name: requestData.platform_name || 'TalentXcel',
       timestamp: new Date().toISOString(),
+      current_year: '2025',
       ...requestData.data
     };
 
