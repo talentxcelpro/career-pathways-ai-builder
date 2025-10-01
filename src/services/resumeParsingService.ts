@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export interface ParsedResume {
   personalInfo: {
@@ -76,38 +77,52 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
     }
     
     console.log('✅ Extracted:', text.length, 'chars');
-    if (text.length < 50) throw new Error('Not enough text extracted');
+    if (text.length < 50) {
+      console.warn('⚠️ Not enough text extracted');
+      throw new Error('Could not extract enough text from the file. Please ensure your resume has readable text.');
+    }
 
     // Send to AI with fallback
     try {
+      console.log('🤖 Sending to AI parser...');
       const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
         body: { extractedText: text, fileName: file.name }
       });
 
-      console.log('📡 Edge function response:', { data, error });
+      console.log('📡 Edge function response:', { success: data?.success, hasData: !!data?.data });
       
       if (error) {
         console.error('❌ Edge function error:', error);
-        console.log('🔄 Using fallback parsing...');
+        console.log('🔄 Using enhanced fallback parsing...');
+        toast.info('Using basic text extraction - AI service unavailable');
         return parseFallback(text);
       }
       
       if (!data?.success) {
-        console.error('❌ AI parsing unsuccessful:', data);
-        console.log('🔄 Using fallback parsing...');
+        console.error('❌ AI parsing unsuccessful');
+        console.log('🔄 Using enhanced fallback parsing...');
+        toast.info('Using basic text extraction - AI parsing failed');
         return parseFallback(text);
       }
       
       const aiResume = data.data?.structured_resume;
-      if (!aiResume) {
-        console.log('🔄 No AI resume data, using fallback...');
+      if (!aiResume || !aiResume.name) {
+        console.log('🔄 No AI resume data or missing name, using fallback...');
+        toast.info('Using basic text extraction - incomplete AI response');
         return parseFallback(text);
       }
 
+      console.log('✅ AI Resume parsed successfully:', { 
+        name: aiResume.name, 
+        email: aiResume.email,
+        experienceCount: aiResume.work_experience?.length || 0 
+      });
+      toast.success('Resume parsed successfully with AI!');
       return transformAIResponse(aiResume);
     } catch (aiError) {
       console.error('❌ AI parsing failed:', aiError);
-      console.log('🔄 Using fallback parsing...');
+      console.log('🔄 Using enhanced fallback parsing...');
+      toast.info('Using basic text extraction - AI service error');
       return parseFallback(text);
     }
 
@@ -121,21 +136,53 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
  * Basic fallback parser when AI is unavailable
  */
 const parseFallback = (text: string): ParsedResume => {
+  console.log('🔄 Using fallback parsing...');
+  
   const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
   const phoneMatch = text.match(/[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/);
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   
-  // Try to find name in first few lines
-  const nameCandidate = lines[0] || 'Please edit your name';
+  // Extract name - look for proper name patterns at the start
+  let fullName = '';
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i];
+    // Skip if line is too long or has non-name patterns
+    if (line.length > 50) continue;
+    if (/\d{4}|\d+\s*(years?|months?)|experience|summary|objective|profile|resume/i.test(line)) continue;
+    if (emailMatch && line.includes(emailMatch[0])) continue;
+    if (phoneMatch && line.includes(phoneMatch[0])) continue;
+    // Check if it looks like a name (2-4 words, mostly letters)
+    const words = line.split(/\s+/);
+    if (words.length >= 2 && words.length <= 4 && /^[A-Za-z\s\-']+$/.test(line)) {
+      fullName = line;
+      break;
+    }
+  }
+  
+  // Extract location (look for city, state patterns)
+  const locationMatch = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*,?\s*[A-Z]{2,})/);
+  const location = locationMatch?.[0] || '';
+  
+  // Extract summary (first substantial paragraph)
+  let summary = '';
+  for (let i = 0; i < Math.min(10, lines.length); i++) {
+    const line = lines[i];
+    if (line.length > 100 && line.length < 500 && !line.includes('@') && !/^\d/.test(line)) {
+      summary = line;
+      break;
+    }
+  }
+  
+  console.log('📋 Fallback extracted:', { fullName, email: emailMatch?.[0], phone: phoneMatch?.[0], location, summaryLength: summary.length });
   
   return {
     personalInfo: {
-      fullName: nameCandidate.length < 50 ? nameCandidate : 'Please edit your name',
+      fullName: fullName || 'Please edit your name',
       email: emailMatch?.[0] || '',
       phone: phoneMatch?.[0] || '',
-      location: '',
+      location: location,
     },
-    summary: text.substring(0, 200),
+    summary: summary || text.substring(0, 200),
     experience: [],
     education: [],
     skills: {

@@ -499,36 +499,68 @@ function calculateContentQuality(resume: any, rawText: string) {
 }
 
 function createFallbackResume(text: string, fileName?: string): any {
+  console.log('🔄 Creating fallback resume from text...');
   const lines = text.split('\n').filter(line => line.trim());
   
-  // Try to extract basic info using simple patterns
-  const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
-  const phoneMatch = text.match(/(?:\+91|91)?[-.\s]?[789]\d{9}/);
+  // Extract email
+  const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+  const email = emailMatch?.[0] || '';
   
-  // Simple name extraction - take first non-empty line that looks like a name
+  // Extract phone
+  const phoneMatch = text.match(/[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/);
+  const phone = phoneMatch?.[0] || '';
+  
+  // Extract name - look for name patterns at the start
   let name = '';
-  for (const line of lines.slice(0, 5)) {
-    const trimmed = line.trim();
-    if (trimmed.length > 2 && trimmed.length < 50 && 
-        /^[a-zA-Z\s.'-]+$/.test(trimmed) && 
-        !trimmed.toLowerCase().includes('resume') &&
-        !trimmed.toLowerCase().includes('cv')) {
-      name = trimmed;
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i].trim();
+    // Skip if line is too long (likely not a name)
+    if (line.length > 50) continue;
+    // Skip if line has common non-name patterns
+    if (/\d{4}|\d+\s*(years?|months?)|experience|summary|objective|professional|profile|resume|curriculum|vitae/i.test(line)) continue;
+    // Skip if line has email or phone
+    if (email && line.includes(email)) continue;
+    if (phone && line.includes(phone)) continue;
+    // Check if it looks like a name (2-4 words, mostly letters)
+    const words = line.split(/\s+/);
+    if (words.length >= 2 && words.length <= 4 && /^[A-Za-z\s\-'.]+$/.test(line)) {
+      name = line;
       break;
     }
   }
   
-  // If no name found, use filename without extension
-  if (!name && fileName) {
-    name = fileName.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+  // Fallback to filename if no name found
+  if (!name && fileName && fileName !== 'resume') {
+    name = fileName.replace(/[_-]/g, ' ').replace(/\.(pdf|docx|doc|txt)$/i, '').trim();
   }
+  
+  // Extract location (look for city, state patterns)
+  const locationMatch = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*,?\s*[A-Z]{2,})/);
+  const location = locationMatch?.[0] || '';
+  
+  // Extract summary (first substantial paragraph)
+  let summary = '';
+  for (let i = 0; i < Math.min(15, lines.length); i++) {
+    const line = lines[i].trim();
+    if (line.length > 100 && line.length < 500 && !line.includes('@') && !/^\d/.test(line)) {
+      summary = line;
+      break;
+    }
+  }
+  
+  // If no summary, use first paragraph of text
+  if (!summary) {
+    summary = text.substring(0, 300).replace(/\s+/g, ' ').trim();
+  }
+  
+  console.log('📋 Fallback extracted:', { name, email, phone, location, summaryLength: summary.length });
 
   return {
     name: name || '',
-    email: emailMatch ? emailMatch[0] : '',
-    phone: phoneMatch ? phoneMatch[0] : '',
-    location: '',
-    summary: 'Resume processed with basic text extraction due to AI service limitations.',
+    email: email,
+    phone: phone,
+    location: location,
+    summary: summary,
     skills: {
       technical: [],
       soft: [],

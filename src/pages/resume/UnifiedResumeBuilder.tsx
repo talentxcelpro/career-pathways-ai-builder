@@ -34,9 +34,22 @@ const UnifiedResumeBuilder = () => {
   // Sync local data with resume data
   useEffect(() => {
     if (resumeData) {
+      console.log('📝 Resume data loaded:', resumeData);
       setLocalData(resumeData);
     }
   }, [resumeData]);
+
+  // Debug log when local data changes
+  useEffect(() => {
+    if (localData) {
+      console.log('📊 Local data updated:', {
+        name: localData.personalInfo?.fullName,
+        experience: localData.experience?.length,
+        education: localData.education?.length,
+        skills: localData.skills?.length || 0
+      });
+    }
+  }, [localData]);
 
   const handleAnalyzeATS = async () => {
     if (!localData) {
@@ -58,10 +71,14 @@ const UnifiedResumeBuilder = () => {
   };
 
   const handlePersonalInfoChange = (field: string, value: string) => {
-    setLocalData((prev: any) => ({
-      ...prev,
-      personalInfo: { ...prev?.personalInfo, [field]: value }
-    }));
+    console.log('✏️ Personal info changed:', field, value);
+    setLocalData((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        personalInfo: { ...prev.personalInfo, [field]: value }
+      };
+    });
   };
 
   const handleExperienceChange = (experiences: any[]) => {
