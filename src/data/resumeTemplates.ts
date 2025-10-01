@@ -7,21 +7,7 @@ export type ResumeTemplate = TemplateMetadata & {
   layout?: any;
 };
 
-type TemplateItem = Omit<TemplateMetadata, 'category' | 'format' | 'designStyle' | 'experienceLevel' | 'industry' | 'features'> & {
-  category: string;
-  format: string;
-  designStyle: string;
-  bestForRoles: string[];
-  experienceLevel: string[];
-  features: string[];
-  industry: string[];
-  colorSchemes: any[];
-  preview: string;
-  atsOptimized?: boolean;
-  isRecommended?: boolean;
-};
-
-export const resumeTemplates: TemplateItem[] = [
+export const resumeTemplates: ResumeTemplate[] = [
   {
     id: 'modern-professional',
     name: 'Modern Professional',
@@ -30,7 +16,7 @@ export const resumeTemplates: TemplateItem[] = [
     format: 'reverse-chronological',
     designStyle: 'single-column',
     bestForRoles: ['Software Engineer', 'Product Manager', 'Business Analyst'],
-    experienceLevel: ['mid-level', 'senior'],
+    experienceLevel: ['mid-level', 'senior'] as any,
     atsScore: 95,
     isPremium: false,
     isNewTemplate: true,
@@ -47,8 +33,8 @@ export const resumeTemplates: TemplateItem[] = [
         isDefault: true
       }
     ],
-    features: ['ats-optimized', 'single-column', 'modern-design', 'clean-layout'],
-    industry: ['technology', 'finance', 'consulting'],
+    features: ['ats-optimized', 'single-column', 'modern-design', 'clean-layout'] as any,
+    industry: ['technology', 'finance', 'consulting'] as any,
     usageCount: 0,
     rating: 4.8,
     preview: '/templates/modern-professional.png',
@@ -348,7 +334,7 @@ export const resumeTemplates: TemplateItem[] = [
 ];
 
 export const getTemplatesByCategory = (category: string): ResumeTemplate[] => {
-  return resumeTemplates.filter(t => t.category === category);
+  return resumeTemplates.filter(t => t.category === category as any);
 };
 
 export const getTemplateById = (id: string): ResumeTemplate | undefined => {

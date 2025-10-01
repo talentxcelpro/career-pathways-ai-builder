@@ -496,12 +496,6 @@ const CreativeTemplate: React.FC<{ resumeData: ResumeData; colors: any; fonts: a
 );
 
 // Convert CoreResumeData skills to simple array
-const convertSkills = (skills: any[]): string[] => {
-  if (!skills || skills.length === 0) return [];
-  if (typeof skills[0] === 'string') return skills;
-  return skills.map((s: any) => s.name || s.skill || String(s));
-};
-
 const convertSkills = (skills: any): string[] => {
   if (!skills || skills.length === 0) return [];
   if (typeof skills[0] === 'string') return skills;
@@ -519,18 +513,33 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
     ? { id: template, name: template, design_config: undefined }
     : template;
     
-  const colors = templateObj.design_config?.colors || { primary: '#2563eb', text: '#374151' };
-  const fonts = templateObj.design_config?.fonts || { header: 'Inter', body: 'Inter' };
+  const colors = templateObj?.design_config?.colors || { primary: '#2563eb', text: '#374151' };
+  const fonts = templateObj?.design_config?.fonts || { header: 'Inter', body: 'Inter' };
+  
+  // Convert resumeData to expected format
+  const formattedData = {
+    ...resumeData,
+    skills: convertSkills(resumeData.skills)
+  };
+
+  const tid = templateId || templateObj?.id || 'modern';
 
   const renderTemplate = () => {
-    switch (templateObj.id) {
+    switch (tid) {
       case 'classic':
+      case 'classic-professional':
+      case 'minimalist-ats':
+      case 'healthcare-medical':
         return <ClassicTemplate resumeData={formattedData} colors={colors} fonts={fonts} />;
       case 'creative':
+      case 'creative-portfolio':
+      case 'sales-marketing':
         return <CreativeTemplate resumeData={formattedData} colors={colors} fonts={fonts} />;
       case 'technical':
       case 'executive':
       case 'modern':
+      case 'modern-professional':
+      case 'tech-specialist':
       default:
         return <ModernTemplate resumeData={formattedData} colors={colors} fonts={fonts} />;
     }
