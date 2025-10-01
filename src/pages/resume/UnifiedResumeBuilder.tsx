@@ -429,10 +429,11 @@ const UnifiedResumeBuilder = () => {
                     return (
                       <Card 
                         key={template.id}
-                        className={`cursor-pointer transition-all hover:shadow-lg ${
-                          isSelected ? 'ring-2 ring-primary' : ''
+                        className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+                          isSelected ? 'ring-4 ring-primary shadow-xl border-primary' : 'hover:border-primary/50'
                         }`}
                         onClick={() => {
+                          console.log('Template clicked:', template.id);
                           setSelectedTemplateId(template.id);
                           if (updateResumeData && resumeData) {
                             updateResumeData({
@@ -442,28 +443,47 @@ const UnifiedResumeBuilder = () => {
                               }
                             });
                           }
-                          toast.success(`Template changed to ${template.name}`);
+                          toast.success(`✓ Template changed to ${template.name}`, {
+                            duration: 2000,
+                          });
                         }}
                       >
                         <div className="p-4 space-y-3">
                           {/* Template Preview */}
-                          <div className="aspect-[8.5/11] bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center relative overflow-hidden">
-                            <div className="text-center p-4">
-                              <div className="text-xs font-mono text-muted-foreground mb-2">
-                                {template.name}
-                              </div>
-                              <div className="space-y-1">
-                                <div className="h-2 w-20 bg-primary/20 rounded mx-auto" />
-                                <div className="h-1 w-16 bg-primary/10 rounded mx-auto" />
-                                <div className="h-1 w-24 bg-primary/10 rounded mx-auto mt-3" />
-                                <div className="h-1 w-20 bg-primary/10 rounded mx-auto" />
-                              </div>
-                            </div>
-                            {isSelected && (
-                              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
-                                <Check className="h-4 w-4" />
+                          <div className="aspect-[8.5/11] bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center relative overflow-hidden group">
+                            {templateData.preview || templateData.thumbnailImage ? (
+                              <img 
+                                src={templateData.preview || templateData.thumbnailImage} 
+                                alt={`${template.name} preview`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  // Fallback to placeholder on error
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className="text-center p-4">
+                                <div className="text-xs font-mono text-muted-foreground mb-2">
+                                  {template.name}
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="h-2 w-20 bg-primary/20 rounded mx-auto" />
+                                  <div className="h-1 w-16 bg-primary/10 rounded mx-auto" />
+                                  <div className="h-1 w-24 bg-primary/10 rounded mx-auto mt-3" />
+                                  <div className="h-1 w-20 bg-primary/10 rounded mx-auto" />
+                                </div>
                               </div>
                             )}
+                            {isSelected && (
+                              <div className="absolute inset-0 bg-primary/10 border-2 border-primary" />
+                            )}
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1.5 shadow-lg">
+                                <Check className="h-5 w-5" />
+                              </div>
+                            )}
+                            {/* Hover overlay */}
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
                           </div>
 
                           {/* Template Info */}
