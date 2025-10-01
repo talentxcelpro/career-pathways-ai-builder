@@ -1,98 +1,77 @@
-import { useEffect, FC } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { FC } from 'react';
 
 interface BundleErrorFallbackProps {
   error?: Error;
   resetErrorBoundary?: () => void;
 }
 
-// Check if error is actually a chunk loading error
-const isChunkLoadError = (error?: Error): boolean => {
-  if (!error) return false;
-  
-  const message = error.message?.toLowerCase() || '';
-  const stack = error.stack?.toLowerCase() || '';
-  
-  return (
-    error.name === 'ChunkLoadError' ||
-    message.includes('loading chunk') ||
-    message.includes('loading css chunk') ||
-    message.includes('failed to fetch dynamically imported module') ||
-    stack.includes('chunk')
-  );
-};
-
 export const BundleErrorFallback: FC<BundleErrorFallbackProps> = ({ 
   error, 
   resetErrorBoundary 
 }) => {
-  // If this is not a chunk load error, try to recover silently
-  useEffect(() => {
-    if (!isChunkLoadError(error) && resetErrorBoundary) {
-      console.log('Non-chunk error detected, attempting silent recovery');
-      setTimeout(() => resetErrorBoundary(), 100);
-    }
-  }, [error, resetErrorBoundary]);
-
-  // Don't show the error screen for non-chunk errors
-  if (!isChunkLoadError(error)) {
-    return null;
-  }
-
   const handleRefresh = () => {
-    // Clear all caches
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => caches.delete(name));
-      });
-    }
-    
-    // Don't clear localStorage - only session storage
-    sessionStorage.clear();
-    
-    // Hard reload to bypass cache
+    try {
+      if ('caches' in window) {
+        caches.keys().then(names => names.forEach(name => caches.delete(name)));
+      }
+      sessionStorage.clear();
+    } catch (e) {}
     window.location.reload();
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="text-center space-y-6 max-w-md">
-        <div className="text-destructive text-6xl mb-4">⚠️</div>
-        <h1 className="text-2xl font-bold text-foreground">App Update Required</h1>
-        <p className="text-muted-foreground">
-          We've detected a version mismatch. This usually happens after an app update.
-          Please refresh to get the latest version.
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      padding: '1rem',
+      backgroundColor: '#ffffff'
+    }}>
+      <div style={{ textAlign: 'center', maxWidth: '28rem' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          Please Refresh
+        </h1>
+        <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+          The app needs to reload. Click the button below.
         </p>
         
-        {error && (
-          <details className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-            <summary>Technical Details</summary>
-            <p className="mt-2 font-mono">{error.message}</p>
-          </details>
-        )}
+        <button 
+          onClick={handleRefresh}
+          style={{
+            width: '100%',
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            padding: '0.75rem 1rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            fontWeight: '500'
+          }}
+        >
+          Refresh App
+        </button>
         
-        <div className="space-y-3">
+        {resetErrorBoundary && (
           <button 
-            onClick={handleRefresh}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-3 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+            onClick={resetErrorBoundary}
+            style={{
+              width: '100%',
+              backgroundColor: '#f3f4f6',
+              color: '#374151',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              marginTop: '0.75rem'
+            }}
           >
-            <RefreshCw className="h-4 w-4" />
-            Refresh App
+            Try Again
           </button>
-          
-          {resetErrorBoundary && (
-            <button 
-              onClick={resetErrorBoundary}
-              className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md font-medium transition-colors"
-            >
-              Try Again
-            </button>
-          )}
-        </div>
-        
-        <p className="text-xs text-muted-foreground">
-          If this problem persists, please clear your browser cache and try again.
-        </p>
+        )}
       </div>
     </div>
   );
