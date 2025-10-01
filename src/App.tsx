@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { PageSpecificBottomNav } from '@/components/navigation/PageSpecificBottomNav';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -146,8 +146,8 @@ import { JobsPage } from "@/components/performance/LazyRoutes";
 import JobCategoryPage from "@/pages/seo/JobCategoryPage";
 import JobLocationPage from "@/pages/seo/JobLocationPage";
 
-const CareerPlatformShowcasePage = React.lazy(() => import("./pages/CareerPlatformShowcase"));
-const Jobs1 = React.lazy(() => import("./pages/Jobs1"));
+const CareerPlatformShowcasePage = lazy(() => import("./pages/CareerPlatformShowcase"));
+const Jobs1 = lazy(() => import("./pages/Jobs1"));
 
 // Create query client optimized for performance and SEO
 const queryClient = new QueryClient({
@@ -216,14 +216,14 @@ const App = () => {
           <BrowserRouter>
             <OptimizedAuthProvider>
               <NotificationProvider>
-              <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <SafeRealtimeProvider showToasts={false}>
                     <CopilotProvider>
                       <TooltipProvider>
                         <div className="min-h-screen flex flex-col">
                         <Navbar />
                         <main className="flex-1">
-                          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
+                          <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>
                               <Routes>
                                 {/* Final Launch Checklist Route */}
                                 <Route path="/launch/final" element={
@@ -241,41 +241,41 @@ const App = () => {
                 
                 {/* Specific Job Detail Routes - UUID patterns */}
                 <Route path="/jobs/:slugOrId" element={
-                  <React.Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<div>Loading...</div>}>
                     <JobDetails />
-                  </React.Suspense>
+                  </Suspense>
                 } />
                 
                 {/* Job Detail Route fallback for complex slugs */}
                 <Route path="/job/:slugOrId" element={
-                  <React.Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<div>Loading...</div>}>
                     <JobDetails />
-                  </React.Suspense>
+                  </Suspense>
                 } />
                 
                 {/* TalentXcel SEO Blueprint Routes */}
-                <Route path="/jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobsPage /></React.Suspense>} />
+                <Route path="/jobs" element={<Suspense fallback={<div>Loading...</div>}><JobsPage /></Suspense>} />
                 
                 {/* Category Pages */}
-                <Route path="/jobs/it-jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></React.Suspense>} />
-                <Route path="/jobs/engineering-jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></React.Suspense>} />
-                <Route path="/jobs/marketing-jobs" element={<React.Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></React.Suspense>} />
+                <Route path="/jobs/it-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
+                <Route path="/jobs/engineering-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
+                <Route path="/jobs/marketing-jobs" element={<Suspense fallback={<div>Loading...</div>}><JobCategoryPage /></Suspense>} />
                 
                 {/* Location Pages */}
-                <Route path="/jobs/bangalore" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
-                <Route path="/jobs/mumbai" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
-                <Route path="/jobs/delhi" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
-                <Route path="/jobs/hyderabad" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
-                <Route path="/jobs/chennai" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
-                <Route path="/jobs/pune" element={<React.Suspense fallback={<div>Loading...</div>}><JobLocationPage /></React.Suspense>} />
+                <Route path="/jobs/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/delhi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                <Route path="/jobs/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 
                 {/* Jobs Sitemap Routes - These patterns will match role/city combinations */}
-                <Route path="/jobs/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></React.Suspense>} />
-                <Route path="/jobs/:role/:industry/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></React.Suspense>} />
-                <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></React.Suspense>} />
-                <Route path="/jobs/:role/:salaryRange/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRoleSalaryCity /></React.Suspense>} />
-                <Route path="/jobs/remote/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByRemoteRoleCity /></React.Suspense>} />
-                <Route path="/jobs/top-companies/:company/:role/:city" element={<React.Suspense fallback={<div>Loading...</div>}><JobsByCompanyRoleCity /></React.Suspense>} />
+                <Route path="/jobs/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
+                <Route path="/jobs/:role/:industry/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleIndustryCity /></Suspense>} />
+                <Route path="/jobs/:role/:skill/:city/:experienceLevel" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleSkillCityLevel /></Suspense>} />
+                <Route path="/jobs/:role/:salaryRange/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleSalaryCity /></Suspense>} />
+                <Route path="/jobs/remote/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRemoteRoleCity /></Suspense>} />
+                <Route path="/jobs/top-companies/:company/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByCompanyRoleCity /></Suspense>} />
                                 
                                 {navItems.map((item: NavItem) => {
                                   console.log('🔍 Registering route:', item.to, 'Title:', item.title);
@@ -294,13 +294,13 @@ const App = () => {
                                 <Route path="/user/:id" element={<ProfileUrlRedirect />} />
                                 <Route path="/platform" element={<Platform />} />
                                 <Route path="/career-platform" element={
-                                  <React.Suspense fallback={
+                                  <Suspense fallback={
                                     <div className="flex items-center justify-center min-h-[50vh]">
                                       <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                     </div>
                                   }>
                                     <CareerPlatformShowcasePage />
-                                  </React.Suspense>
+                                  </Suspense>
                                 } />
 
                                 {/* AI Services Route */}
@@ -313,9 +313,9 @@ const App = () => {
                 {/* All other routes */}
                 <Route path="/career-dashboard" element={
                   <ProtectedRoute>
-                    <React.Suspense fallback={<div>Loading...</div>}>
+                    <Suspense fallback={<div>Loading...</div>}>
                       <CareerDashboard />
-                    </React.Suspense>
+                    </Suspense>
                   </ProtectedRoute>
                 } />
                 <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
@@ -343,10 +343,10 @@ const App = () => {
                                 <Route path="/provider/dashboard" element={<ProviderDashboard />} />
                                 
                                 {/* New TalentSpark Jobs Discovery */}
-                                <Route path="/jobs1" element={<React.Suspense fallback={<div>Loading...</div>}><Jobs1 /></React.Suspense>} />
+                                <Route path="/jobs1" element={<Suspense fallback={<div>Loading...</div>}><Jobs1 /></Suspense>} />
                                 
                                 <Route path="/dashboard" element={<UnifiedDashboard />} />
-                                <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
+                                <Route path="/mobile/reels" element={<Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></Suspense>} />
                                  <Route path="/mobile/passport" element={<MobilePassport />} />
                                  
                                  {/* Unified Resume Builder - Primary Routes */}
@@ -431,7 +431,7 @@ const App = () => {
                                 {/* Catchall 404 route - must be last */}
                                 <Route path="*" element={<NotFound />} />
                               </Routes>
-                            </React.Suspense>
+                            </Suspense>
                           </main>
                           
                          </div>
@@ -441,7 +441,7 @@ const App = () => {
                    
                    {/* Global Mobile Bottom Navigation */}
                    <PageSpecificBottomNav />
-                 </React.Suspense>
+                 </Suspense>
                    </NotificationProvider>
                  </OptimizedAuthProvider>
               </BrowserRouter>

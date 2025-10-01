@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode, FC } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { toast } from 'sonner';
@@ -44,7 +44,7 @@ export const useNotifications = () => {
   return context;
 };
 
-export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useOptimizedAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, FC, ReactNode } from 'react';
 import { initTalentXcelRealtime, cleanupRealtime, realtimeManager, WatchedTable, RealtimePayload } from '@/lib/realtimeManager';
 import { useSafeToast } from '@/hooks/useSafeToast';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,14 +13,14 @@ interface RealtimeContextType {
 const RealtimeContext = createContext<RealtimeContextType | null>(null);
 
 interface SafeRealtimeProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   showToasts?: boolean;
 }
 
 /**
  * Safe Realtime Provider that handles React dispatcher issues gracefully
  */
-export const SafeRealtimeProvider: React.FC<SafeRealtimeProviderProps> = ({ 
+export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
   children, 
   showToasts = false 
 }) => {
