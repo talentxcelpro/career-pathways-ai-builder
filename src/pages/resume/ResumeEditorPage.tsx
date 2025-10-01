@@ -142,7 +142,7 @@ export const ResumeEditorPage: React.FC<ResumeEditorPageProps> = ({ initialData:
       <Helmet>
         <title>Resume Builder & Editor | TalentXcel</title>
         <meta name="description" content="Upload, edit, and download your resume. Parse PDF/DOCX, edit sections, and export." />
-        <link rel="canonical" href="https://talentxcel.in/resume/new" />
+        <link rel="canonical" href="https://talentxcel.in/resume" />
       </Helmet>
       <h1 className="sr-only">Resume Builder and Editor</h1>
       

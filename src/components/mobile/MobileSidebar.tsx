@@ -66,7 +66,7 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
   ];
 
   const toolsNavItems = [
-    { to: '/resume/new', icon: FileText, label: 'TalentXcel Resume Builder', description: 'Create resume' },
+    { to: '/resume', icon: FileText, label: 'TalentXcel Resume Builder', description: 'Create resume' },
     { to: '/tools', icon: Wrench, label: 'Career Tools', description: 'AI-powered career tools' },
     { to: '/learning', icon: GraduationCap, label: 'Learning', description: 'Skill development' },
     { to: '/career-map', icon: Compass, label: 'Career Map', description: 'Plan your path' },

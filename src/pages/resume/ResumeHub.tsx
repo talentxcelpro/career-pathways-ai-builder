@@ -166,7 +166,7 @@ const ResumeHub = () => {
           content="Build professional resumes with AI. ATS-optimized templates, interview prep, portfolio builder, and career intelligence. Join 2M+ successful job seekers." 
         />
         <meta name="keywords" content="resume builder, AI resume, ATS optimization, cover letter, interview prep, portfolio builder, career tools" />
-        <link rel="canonical" href="https://talentxcel.in/resume/new" />
+        <link rel="canonical" href="https://talentxcel.in/resume" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">

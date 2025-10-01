@@ -130,7 +130,7 @@ const ResumeNew: React.FC = () => {
         <title>Resume Builder - Complete TalentXcel Career Toolkit | AI-Powered Resume Creation</title>
         <meta name="description" content="Everything you need to build, optimize, and land your next role with AI. Create professional resumes with our intelligent resume builder." />
         <meta name="keywords" content="resume builder, AI resume, career toolkit, job application, professional resume, ATS optimized" />
-        <link rel="canonical" href="https://talentxcel.in/resume/new" />
+        <link rel="canonical" href="https://talentxcel.in/resume" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 md:py-16 max-w-4xl">
@@ -148,9 +148,9 @@ const ResumeNew: React.FC = () => {
 
           {/* Primary Action Buttons */}
           <div className="space-y-3 md:space-y-4 mb-8 md:mb-16 px-4">
-            <Link to="/resume/new" className="block">
+            <Link to="/resume" className="block">
               <Button 
-                size="lg" 
+                size="lg"
                 className="w-full max-w-md h-12 md:h-14 text-base md:text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
               >
                 Start Building Resume

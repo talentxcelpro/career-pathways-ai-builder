@@ -623,7 +623,7 @@ export const MobileCareerPassport: React.FC = () => {
                   <Button
                     variant="outline"
                     className="w-full justify-between rounded-xl h-12"
-                    onClick={() => navigate('/resume/new')}
+                    onClick={() => navigate('/resume')}
                   >
                     <span>Create Resume</span>
                     <ArrowRight className="h-4 w-4" />
