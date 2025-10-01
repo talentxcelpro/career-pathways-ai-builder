@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { QRCodeSVG } from 'qrcode.react';
-import { Download, Share2, RefreshCw, Eye } from 'lucide-react';
+import { Download, Share2, RefreshCw, Eye, Gift } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -22,17 +22,46 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>('');
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && profileData) {
-      generateQRCode();
+      fetchReferralCode();
     }
   }, [user, profileData]);
+
+  const fetchReferralCode = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('referrals')
+        .select('referral_code')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (data?.referral_code) {
+        setReferralCode(data.referral_code);
+      }
+    } catch (error) {
+      console.error('Error fetching referral code:', error);
+    }
+    
+    // Generate QR after fetching referral code
+    generateQRCode();
+  };
 
   const generatePassportUrl = () => {
     const baseUrl = window.location.origin;
     const username = profileData?.username || user?.id;
-    return `${baseUrl}/passport/public/${username}`;
+    const basePassportUrl = `${baseUrl}/passport/public/${username}`;
+    
+    // Append referral code if available for automatic tracking
+    if (referralCode) {
+      return `${basePassportUrl}?ref=${referralCode}`;
+    }
+    
+    return basePassportUrl;
   };
 
   const generateQRCode = async () => {
@@ -207,6 +236,12 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
               <p className="text-sm text-muted-foreground">
                 Scan to view complete professional profile
               </p>
+              {referralCode && (
+                <Badge variant="outline" className="mt-2 text-xs bg-primary/5 border-primary/20">
+                  <Gift className="h-3 w-3 mr-1" />
+                  Auto-tracks referrals
+                </Badge>
+              )}
             </div>
 
             {/* Action buttons */}

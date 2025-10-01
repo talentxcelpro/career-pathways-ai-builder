@@ -24,6 +24,7 @@ import EnhancedQRGenerator from '@/components/passport/EnhancedQRGenerator';
 import ProfessionalCard from '@/components/passport/ProfessionalCard';
 import { CareerQRCard } from '@/components/qr/CareerQRCard';
 import { QRScanner } from '@/components/qr/QRScanner';
+import { NetworkGrowthCard } from '@/components/passport/NetworkGrowthCard';
 import { 
   QrCode, 
   Share2, 
@@ -458,6 +459,11 @@ export function CareerPassportDashboard() {
           </div>
         ) : displayData.profile && !hasAuthError ? (
           <div className="space-y-4">{/* Reduced spacing from space-y-8 to space-y-4 */}
+            {/* Network Growth Card - Only for passport owners */}
+            {!isPublicView && displayData.isOwner && (
+              <NetworkGrowthCard />
+            )}
+
             {/* Enhanced QR Generator for own profile */}
             {!isPublicView && displayData.isOwner && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{/* Reduced gap from gap-6 to gap-4 */}
