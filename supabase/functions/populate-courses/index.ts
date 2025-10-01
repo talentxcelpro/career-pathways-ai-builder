@@ -12,19 +12,35 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting course population...');
+    const { batchSize = 5, skipExisting = true } = await req.json().catch(() => ({}));
+    
+    console.log(`Starting course population with batch size: ${batchSize}, skipExisting: ${skipExisting}`);
     
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get all courses
-    console.log('Fetching courses...');
-    const { data: courses, error: coursesError } = await supabaseClient
+    // Get courses that need population
+    let coursesQuery = supabaseClient
       .from('courses')
       .select('id, title, category, difficulty_level')
       .order('title');
+
+    if (skipExisting) {
+      // Only get courses without modules
+      const { data: coursesWithModules } = await supabaseClient
+        .from('course_modules')
+        .select('course_id');
+      
+      const courseIdsWithModules = coursesWithModules?.map(m => m.course_id) || [];
+      
+      if (courseIdsWithModules.length > 0) {
+        coursesQuery = coursesQuery.not('id', 'in', `(${courseIdsWithModules.join(',')})`);
+      }
+    }
+
+    const { data: courses, error: coursesError } = await coursesQuery.limit(batchSize);
 
     if (coursesError) {
       console.error('Error fetching courses:', coursesError);
@@ -32,88 +48,129 @@ serve(async (req) => {
     }
     
     if (!courses || courses.length === 0) {
-      console.log('No courses found');
-      return new Response(JSON.stringify({ error: 'No courses found' }), {
-        status: 404,
+      console.log('No courses found to populate');
+      return new Response(JSON.stringify({ 
+        success: true,
+        message: 'All courses already populated',
+        coursesPopulated: 0,
+        modulesCreated: 0,
+        lessonsCreated: 0,
+        assessmentsCreated: 0,
+        remaining: 0
+      }), {
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    console.log(`Found ${courses.length} courses to populate`);
+    console.log(`Processing ${courses.length} courses`);
     let totalModules = 0;
     let totalLessons = 0;
     let totalAssessments = 0;
+    const errors: any[] = [];
 
-    // Populate each course with modules and lessons
+    // Process each course
     for (const course of courses) {
-      console.log(`Processing course: ${course.title}`);
-      const modules = getCourseModules(course.title, course.category, course.difficulty_level);
-      
-      for (const moduleInfo of modules) {
-        const { data: module, error: moduleError } = await supabaseClient
-          .from('course_modules')
-          .insert({
-            course_id: course.id,
-            title: moduleInfo.title,
-            description: moduleInfo.description,
-            module_order: moduleInfo.order,
-            duration_minutes: moduleInfo.duration
-          })
-          .select()
-          .single();
-
-        if (moduleError) {
-          console.error('Module error:', moduleError);
-          continue;
-        }
-
-        totalModules++;
-
-        if (module && moduleInfo.lessons) {
-          for (const lessonInfo of moduleInfo.lessons) {
-            const { error: lessonError } = await supabaseClient
-              .from('course_lessons')
+      try {
+        console.log(`Processing course: ${course.title}`);
+        const modules = getCourseModules(course.title, course.category, course.difficulty_level);
+        
+        for (const moduleInfo of modules) {
+          try {
+            const { data: module, error: moduleError } = await supabaseClient
+              .from('course_modules')
               .insert({
-                module_id: module.id,
-                title: lessonInfo.title,
-                content: lessonInfo.content,
-                lesson_type: lessonInfo.type,
-                video_url: null, // Videos will be added later
-                duration_minutes: lessonInfo.duration,
-                lesson_order: lessonInfo.order,
-                is_free: lessonInfo.isFree
-              });
+                course_id: course.id,
+                title: moduleInfo.title,
+                description: moduleInfo.description,
+                module_order: moduleInfo.order,
+                duration_minutes: moduleInfo.duration
+              })
+              .select()
+              .single();
 
-            if (!lessonError) {
-              totalLessons++;
-            } else {
-              console.error('Lesson error:', lessonError);
+            if (moduleError) {
+              console.error('Module error:', moduleError);
+              errors.push({ course: course.title, module: moduleInfo.title, error: moduleError.message });
+              continue;
             }
+
+            totalModules++;
+
+            if (module && moduleInfo.lessons) {
+              for (const lessonInfo of moduleInfo.lessons) {
+                try {
+                  const { error: lessonError } = await supabaseClient
+                    .from('course_lessons')
+                    .insert({
+                      module_id: module.id,
+                      title: lessonInfo.title,
+                      content: lessonInfo.content,
+                      lesson_type: lessonInfo.type,
+                      video_url: null,
+                      duration_minutes: lessonInfo.duration,
+                      lesson_order: lessonInfo.order,
+                      is_free: lessonInfo.isFree
+                    });
+
+                  if (!lessonError) {
+                    totalLessons++;
+                  } else {
+                    console.error('Lesson error:', lessonError);
+                    errors.push({ course: course.title, lesson: lessonInfo.title, error: lessonError.message });
+                  }
+                } catch (lessonException) {
+                  console.error('Lesson exception:', lessonException);
+                  errors.push({ course: course.title, lesson: lessonInfo.title, error: String(lessonException) });
+                }
+              }
+            }
+          } catch (moduleException) {
+            console.error('Module exception:', moduleException);
+            errors.push({ course: course.title, module: moduleInfo.title, error: String(moduleException) });
           }
         }
-      }
 
-      // Create ONE assessment per course (outside the module loop)
-      const { error: assessmentError } = await supabaseClient
-        .from('course_assessments')
-        .insert({
-          course_id: course.id,
-          title: `${course.title} - Final Assessment`,
-          description: `Comprehensive assessment covering all modules of ${course.title}`,
-          questions: getCourseAssessment(course.title),
-          passing_score: 75,
-          time_limit_minutes: 90,
-          max_attempts: 3
-        });
-      
-      if (!assessmentError) {
-        totalAssessments++;
-      } else {
-        console.error('Assessment error:', assessmentError);
+        // Create assessment for each course
+        try {
+          const { error: assessmentError } = await supabaseClient
+            .from('course_assessments')
+            .insert({
+              course_id: course.id,
+              title: `${course.title} - Final Assessment`,
+              description: `Comprehensive assessment covering all modules of ${course.title}`,
+              questions: getCourseAssessment(course.title),
+              passing_score: 75,
+              time_limit_minutes: 90,
+              max_attempts: 3
+            });
+          
+          if (!assessmentError) {
+            totalAssessments++;
+          } else {
+            console.error('Assessment error:', assessmentError);
+            errors.push({ course: course.title, type: 'assessment', error: assessmentError.message });
+          }
+        } catch (assessmentException) {
+          console.error('Assessment exception:', assessmentException);
+          errors.push({ course: course.title, type: 'assessment', error: String(assessmentException) });
+        }
+      } catch (courseException) {
+        console.error('Course exception:', courseException);
+        errors.push({ course: course.title, error: String(courseException) });
       }
     }
 
+    // Get remaining courses count
+    const { count: remainingCount } = await supabaseClient
+      .from('courses')
+      .select('*', { count: 'exact', head: true })
+      .not('id', 'in', `(${courses.map(c => c.id).join(',')})`);
+
     console.log(`Completed! Modules: ${totalModules}, Lessons: ${totalLessons}, Assessments: ${totalAssessments}`);
+    if (errors.length > 0) {
+      console.error('Errors encountered:', errors);
+    }
 
     return new Response(
       JSON.stringify({
@@ -122,22 +179,27 @@ serve(async (req) => {
         coursesPopulated: courses.length,
         modulesCreated: totalModules,
         lessonsCreated: totalLessons,
-        assessmentsCreated: totalAssessments
+        assessmentsCreated: totalAssessments,
+        remaining: remainingCount || 0,
+        errors: errors.length > 0 ? errors : undefined
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Fatal error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        success: false,
+        error: error.message,
+        details: String(error)
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
 
 function getCourseModules(courseTitle: string, category: string, level: string) {
-  // Return 7-9 comprehensive modules based on course
   const baseModules = [
     {
       title: 'Course Introduction & Fundamentals',
