@@ -123,7 +123,9 @@ export function useProfilePosts(userId: string) {
           visibility: postData.visibility || 'public',
           origin: postData.origin || 'profile',
           location: postData.location,
-          link_previews: postData.link_previews || []
+          link_previews: postData.link_previews || [],
+          status: 'published', // ✅ Explicitly set for email trigger
+          is_public: true // ✅ Explicitly set for email trigger
         })
         .select()
         .single();
