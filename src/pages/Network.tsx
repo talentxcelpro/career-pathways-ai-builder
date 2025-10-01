@@ -178,10 +178,6 @@ const Network = () => {
               <Sparkles className="w-3 h-3" />
               <span className="hidden sm:inline text-xs">AI Connect</span>
             </TabsTrigger>
-            <TabsTrigger value="news" className="flex items-center gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-apple-sm transition-apple text-xs py-1 px-2 whitespace-nowrap font-apple-medium">
-              <Newspaper className="w-3 h-3" />
-              <span className="hidden sm:inline text-xs">News</span>
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="feed" className="mt-0">
@@ -268,18 +264,6 @@ const Network = () => {
                 </div>
               }>
                 <EnhancedSmartConnectAI />
-              </React.Suspense>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="news" className="mt-0">
-            <div className="space-y-6 text-gray-900">
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              }>
-                <EnhancedNewsFeed showHero={true} />
               </React.Suspense>
             </div>
           </TabsContent>
