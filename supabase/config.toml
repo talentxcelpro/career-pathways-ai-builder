@@ -1,4 +1,16 @@
 project_id = "dthlgsnakhoftinssokm"
+
+[functions.enhance-section]
+verify_jwt = false
+
+[functions.comprehensive-ats-analyzer]
+verify_jwt = false
+
+[functions.smart-suggestions]
+verify_jwt = false
+
+[functions.job-specific-optimizer]
+verify_jwt = false
 # OPTIMIZED v3.0.0: Essential functions only - 2025-09-30
 
 [api]
