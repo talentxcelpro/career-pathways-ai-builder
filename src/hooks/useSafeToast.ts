@@ -1,4 +1,4 @@
-import React from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 /**
  * Safe toast hook that only executes when React dispatcher is available
@@ -6,8 +6,9 @@ import React from 'react';
  */
 export function useSafeToast() {
   // Check if React hooks dispatcher is available
-  const isReactReady = React.useMemo(() => {
+  const isReactReady = useMemo(() => {
     try {
+      const React = require('react');
       const ReactInternals = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
       return !!(ReactInternals && ReactInternals.ReactCurrentDispatcher && ReactInternals.ReactCurrentDispatcher.current);
     } catch {
@@ -16,7 +17,7 @@ export function useSafeToast() {
   }, []);
 
   // Safe state with fallback
-  const [state, setState] = React.useState(() => {
+  const [state, setState] = useState(() => {
     if (!isReactReady) {
       return { toasts: [] };
     }
@@ -32,7 +33,7 @@ export function useSafeToast() {
   });
 
   // Safe toast function with fallback
-  const toast = React.useCallback((options: any) => {
+  const toast = useCallback((options: any) => {
     if (!isReactReady) {
       // Fallback: log to console when React hooks are not ready
       console.log('Toast (fallback):', options);
@@ -49,7 +50,7 @@ export function useSafeToast() {
     }
   }, [isReactReady]);
 
-  const dismiss = React.useCallback((toastId?: string) => {
+  const dismiss = useCallback((toastId?: string) => {
     if (!isReactReady) {
       console.log('Toast dismiss (fallback):', toastId);
       return;
