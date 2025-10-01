@@ -126,6 +126,8 @@ import ServicesMarketplacePage from "./pages/ServicesMarketplacePage";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import { CompletedCareerIntelligenceSystem } from "./pages/CompletedCareerIntelligenceSystem";
 import { turboCore } from "@/utils/turboCore";
+import { advancedPerformanceMonitor } from "@/utils/advancedPerformanceMonitor";
+import { PerformanceDashboard } from "@/components/performance/PerformanceDashboard";
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
@@ -169,6 +171,8 @@ const App = () => {
   // Initialize turbo optimizations
   useEffect(() => {
     try {
+      const startTime = performance.now();
+      
       // Apply color scheme
       const savedColorScheme = localStorage.getItem('colorScheme');
       if (savedColorScheme) {
@@ -190,6 +194,9 @@ const App = () => {
       import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
         enableRoutePreloading();
       });
+
+      // Track initial load performance
+      advancedPerformanceMonitor.trackRouteChange('/', startTime);
     } catch (error) {
       console.warn('App initialization error:', error);
     }
@@ -438,13 +445,15 @@ const App = () => {
                      </CopilotProvider>
                    </SafeRealtimeProvider>
                    
-                   {/* Global Mobile Bottom Navigation */}
-                   <PageSpecificBottomNav />
-                 </Suspense>
-                   </NotificationProvider>
-                 </OptimizedAuthProvider>
+                    {/* Global Mobile Bottom Navigation */}
+                    <PageSpecificBottomNav />
+                  </Suspense>
+                    </NotificationProvider>
+                  </OptimizedAuthProvider>
               </BrowserRouter>
            </HelmetProvider>
+           {/* Performance Dashboard - Dev Mode Only */}
+           {import.meta.env.DEV && <PerformanceDashboard />}
          </QueryClientProvider>
      </ErrorBoundary>
   );
