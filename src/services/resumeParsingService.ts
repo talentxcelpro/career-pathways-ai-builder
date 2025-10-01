@@ -159,21 +159,54 @@ const parseFallback = (text: string): ParsedResume => {
     }
   }
   
-  // Enhanced name extraction with multiple strategies - VERY AGGRESSIVE
+  // Enhanced name extraction with multiple strategies - VERY AGGRESSIVE + SPACED NAME HANDLING
   let fullName = '';
   
-  // Strategy 1: Check very first line (most common location for names)
-  if (lines.length > 0) {
-    const firstLine = lines[0];
-    // If first line looks like a name (2-4 capitalized words, no special resume keywords)
-    if (!/^(RESUME|CV|CURRICULUM)/i.test(firstLine)) {
-      const words = firstLine.split(/\s+/);
-      if (words.length >= 2 && words.length <= 4 && /^[A-Z][A-Za-z\s\-'.]+$/.test(firstLine)) {
-        // Additional check: make sure it's not a common header phrase
-        if (!/PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS|OBJECTIVE/i.test(firstLine)) {
-          fullName = firstLine;
-          console.log('✅ Name found in first line:', fullName);
+  // Strategy 1: Check very first lines for spaced names like "E M I N  M A R D A N O V"
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i].replace(/[📍📞🔗✉️🌐]/g, '').replace(/[|]/g, '').trim();
+    
+    if (/^(RESUME|CV|CURRICULUM\s+VITAE|CONTACT|PERSONAL)/i.test(line)) continue;
+    
+    const normalizedLine = line.replace(/\s+/g, ' ').trim();
+    
+    // Check for spaced-out single letters: "E M I N M A R D A N O V" → "EMIN MARDANOV"
+    const spacedNameMatch = normalizedLine.match(/^([A-Z](?:\s+[A-Z])+)$/);
+    if (spacedNameMatch) {
+      fullName = spacedNameMatch[1].replace(/\s+/g, '');
+      console.log('✅ Name found (spaced letters):', fullName);
+      break;
+    }
+    
+    // Check for multi-word spaced name: "E M I N   M A R D A N O V"
+    const multiWordSpacedMatch = normalizedLine.match(/^([A-Z](?:\s+[A-Z])+)(?:\s{2,})([A-Z](?:\s+[A-Z])+)$/);
+    if (multiWordSpacedMatch) {
+      const firstName = multiWordSpacedMatch[1].replace(/\s+/g, '');
+      const lastName = multiWordSpacedMatch[2].replace(/\s+/g, '');
+      fullName = `${firstName} ${lastName}`;
+      console.log('✅ Name found (multi-word spaced):', fullName);
+      break;
+    }
+    
+    // Check for ALL CAPS (normal): "EMIN MARDANOV"
+    if (/^[A-Z\s]{4,60}$/.test(normalizedLine)) {
+      const words = normalizedLine.split(/\s+/).filter(w => w.length > 0);
+      if (words.length >= 2 && words.length <= 6) {
+        const nonNameKeywords = /^(BAKU|AZERBAIJAN|CIVIL|ENGINEER|MANAGER|SUPERVISOR|DEVELOPER|INDIA|USA|CONSTRUCTION|PROFESSIONAL)$/i;
+        if (!words.some(w => nonNameKeywords.test(w))) {
+          fullName = normalizedLine;
+          console.log('✅ Name found (ALL CAPS):', fullName);
+          break;
         }
+      }
+    }
+    
+    // Check for Title Case
+    if (/^[A-Z][a-z]+(\s+[A-Z][a-z]+){1,4}$/.test(normalizedLine)) {
+      if (!/PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS|OBJECTIVE/i.test(normalizedLine)) {
+        fullName = normalizedLine;
+        console.log('✅ Name found (Title Case):', fullName);
+        break;
       }
     }
   }
@@ -456,23 +489,42 @@ function extractEducationFromFallback(text: string, lines: string[]): any[] {
   return education;
 }
 
-// Helper: Extract technical skills
+// Helper: Extract technical skills - COMPREHENSIVE EXTRACTION
 function extractTechnicalSkillsFromText(text: string): string[] {
   const skills = new Set<string>();
-  const patterns = [
-    /\b(JavaScript|TypeScript|Python|Java|C\+\+|C#|Ruby|PHP|Go|Rust|Swift|Kotlin|Scala)\b/gi,
-    /\b(React|Angular|Vue|Svelte|Node\.?js|Express|Django|Flask|Spring|ASP\.NET|Laravel)\b/gi,
-    /\b(AWS|Azure|GCP|Google Cloud|Docker|Kubernetes|Jenkins|GitLab|CI\/CD|DevOps)\b/gi,
-    /\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Oracle|Cassandra|DynamoDB|NoSQL|Firebase)\b/gi,
-    /\b(HTML5?|CSS3?|SASS|SCSS|Less|Tailwind|Bootstrap|Material UI|Ant Design)\b/gi,
-    /\b(REST|GraphQL|gRPC|WebSocket|API|Microservices|Serverless|Lambda)\b/gi,
-    /\b(Git|GitHub|Bitbucket|SVN|Version Control|Jira|Confluence|Slack)\b/gi,
-    /\b(Agile|Scrum|Kanban|Waterfall|PMP|ITIL|Six Sigma|Lean)\b/gi
+  
+  // Civil Engineering specific skills (for construction/engineering resumes)
+  const civilEngPatterns = [
+    /\b(AutoCAD|Navisworks|MS\s+Project|Primavera\s+P6|Civil\s+3D|Revit)\b/gi,
+    /\b(Civil\s+[Ee]ngineering|Civil\s+[Ss]upervision|Site\s+[Ss]upervision|QA\/?QC|Quality\s+[Aa]ssurance|Quality\s+[Cc]ontrol)\b/gi,
+    /\b(Underground\s+[Uu]tilities|Underground\s+[Ii]nfrastructure|Manhole|Pipe\s+[Ii]nstallation)\b/gi,
+    /\b(Structural\s+[Ff]oundations?|Concrete|Steel\s+[Ss]tructures?|Excavation|Backfilling)\b/gi,
+    /\b(Pre-?[Cc]ommissioning|Road\s+[Cc]onstruction|Site\s+[Cc]oordination|HSE|Health\s+and\s+Safety)\b/gi
   ];
   
-  patterns.forEach(pattern => {
+  // General IT/Software skills
+  const techPatterns = [
+    /\b(JavaScript|TypeScript|Python|Java|C\+\+|C#|Ruby|PHP|Go|Rust|Swift|Kotlin)\b/gi,
+    /\b(React|Angular|Vue|Node\.?js|Express|Django|Flask|Spring|ASP\.NET)\b/gi,
+    /\b(AWS|Azure|GCP|Docker|Kubernetes|Jenkins|GitLab|CI\/CD|DevOps)\b/gi,
+    /\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Oracle|NoSQL|Firebase)\b/gi,
+    /\b(HTML5?|CSS3?|SASS|Tailwind|Bootstrap|Material\s+UI)\b/gi,
+    /\b(REST|GraphQL|API|Microservices|Serverless)\b/gi,
+    /\b(Git|GitHub|Jira|Confluence|Agile|Scrum)\b/gi
+  ];
+  
+  // MS Office and common business tools
+  const businessTools = [
+    /\b(MS\s+Office|Microsoft\s+Office|Excel|PowerPoint|Word|Outlook)\b/gi,
+    /\b(Google\s+Workspace|G\s+Suite|Sheets|Docs|Slides)\b/gi,
+    /\b(Slack|Teams|Microsoft\s+Teams|Zoom|Webex)\b/gi
+  ];
+  
+  const allPatterns = [...civilEngPatterns, ...techPatterns, ...businessTools];
+  
+  allPatterns.forEach(pattern => {
     const matches = text.match(pattern) || [];
-    matches.forEach(match => skills.add(match));
+    matches.forEach(match => skills.add(match.trim()));
   });
   
   return Array.from(skills);
@@ -489,13 +541,23 @@ function extractSoftSkillsFromText(text: string): string[] {
   return Array.from(skills);
 }
 
-// Helper: Extract languages
+// Helper: Extract languages with proficiency levels
 function extractLanguagesFromText(text: string): string[] {
   const languages = new Set<string>();
-  const pattern = /\b(English|Spanish|French|German|Chinese|Mandarin|Hindi|Arabic|Portuguese|Japanese|Korean|Italian|Russian|Dutch|Swedish|Tamil|Telugu|Bengali|Marathi)\b/gi;
   
-  const matches = text.match(pattern) || [];
-  matches.forEach(match => languages.add(match));
+  // Match languages WITH proficiency: "English (Fluent)", "Turkish (Fluent)", etc.
+  const languageWithProficiency = text.match(/\b(English|Spanish|French|German|Chinese|Mandarin|Hindi|Arabic|Portuguese|Japanese|Korean|Italian|Russian|Dutch|Swedish|Tamil|Telugu|Bengali|Marathi|Turkish|Azerbaijani|Persian)\s*\((?:Native|Fluent|Advanced|Intermediate|Basic|Conversational|Professional)\)/gi);
+  
+  if (languageWithProficiency) {
+    languageWithProficiency.forEach(lang => languages.add(lang.trim()));
+  }
+  
+  // Match standalone language names (fallback)
+  const standaloneLanguages = text.match(/\b(English|Spanish|French|German|Chinese|Mandarin|Hindi|Arabic|Portuguese|Japanese|Korean|Italian|Russian|Dutch|Swedish|Tamil|Telugu|Bengali|Marathi|Turkish|Azerbaijani|Persian)\b/gi);
+  
+  if (standaloneLanguages && languages.size === 0) {
+    standaloneLanguages.forEach(lang => languages.add(lang.trim()));
+  }
   
   return Array.from(languages);
 }

@@ -81,115 +81,153 @@ serve(async (req) => {
 
     console.log('Processing resume text for:', fileName);
 
-    const systemPrompt = `You are an expert resume parser. Extract EVERY detail from the resume EXACTLY as written.
+    const systemPrompt = `You are an expert AI resume parser. Your task is to extract EVERY detail from the resume with 100% accuracy, exactly as it appears.
 
-CRITICAL EXTRACTION RULES:
+⚠️ CRITICAL NAME EXTRACTION RULES (HIGHEST PRIORITY):
+1. The candidate's name is ALWAYS at the very top of the resume (first line or within first 3 lines)
+2. Names can appear in these formats:
+   - ALL CAPS: "EMIN MARDANOV"
+   - Spaced ALL CAPS: "E M I N   M A R D A N O V" (join letters: "EMIN MARDANOV")
+   - Title Case: "Emin Mardanov" or "Bharadwaj AVB"
+   - ALL CAPS with icons removed: "📍 EMIN MARDANOV 📞" → "EMIN MARDANOV"
 
-1. NAME EXTRACTION (HIGHEST PRIORITY):
-   - The name is ALWAYS the first prominent text at the top, often in ALL CAPS or large font
-   - Examples: "EMIN MARDANOV", "E M I N M A R D A N O V", "John Smith"
-   - Appears BEFORE any icons (📍📞), location, phone, or email
-   - NEVER extract: job titles (Engineer, Supervisor), locations (Baku, Azerbaijan), companies
-   - Look for 2-4 words that are person names, not roles or places
+3. NEVER extract as name:
+   ❌ Job titles: "Civil Engineer", "Construction Supervisor", "Manager"
+   ❌ Locations: "Baku, Azerbaijan", "India", "Mumbai"
+   ❌ Companies: "TCM-KT JV", "Maire Tecnimont"
+   ❌ Section headers: "PROFESSIONAL SUMMARY", "EXPERIENCE"
 
-2. CONTACT INFORMATION (extract exactly as shown):
-   - Phone with country codes (e.g., "+994 51 789 9614")
-   - Email addresses
-   - Location (City, Country format)
-   - LinkedIn, GitHub, portfolio URLs
+4. Name validation - must be:
+   ✅ 2-4 words (e.g., "Emin Mardanov", "John Michael Smith")
+   ✅ Capitalized properly (First letter caps or ALL CAPS)
+   ✅ Personal name, not a role or location
 
-3. PROFESSIONAL SUMMARY/OBJECTIVE:
-   - Extract the COMPLETE summary paragraph word-for-word
-   - Keep all sentences, achievements, and keywords
+📋 CONTACT INFORMATION (extract EXACTLY as shown):
+- Phone: Include country codes ("+994 51 789 9614")
+- Email: Full email address
+- Location: City, Country format ("Baku, Azerbaijan")
+- LinkedIn, GitHub, portfolio URLs
 
-4. WORK EXPERIENCE (extract EVERY job):
-   - Job title (exact, e.g., "Construction Civil Supervisor")
-   - Company name (exact, e.g., "TCM-KT JV Azerbaijan (Maire Tecnimont)")
-   - Project name if mentioned (e.g., "SOCAR HAOR Project")
-   - Location (e.g., "Baku, Azerbaijan")
-   - Start and end dates (e.g., "Jun 2019 – Present")
-   - ALL bullet points/responsibilities word-for-word
-   - Extract EVERY achievement
+💼 WORK EXPERIENCE (extract EVERY job with ALL details):
+For each position extract:
+- Job title (exact): "Construction Civil Supervisor"
+- Company (full name): "TCM-KT JV Azerbaijan (Maire Tecnimont)"
+- Project (if mentioned): "SOCAR HAOR Project"
+- Location: "Baku, Azerbaijan"
+- Dates (preserve format): "Jun 2019 – Present" or "February 2022 - March 2024"
+- ALL bullet points word-for-word as separate achievements
+- ALL responsibilities and accomplishments
 
-5. EDUCATION (extract ALL degrees):
-   - Degree name (exact, e.g., "Bachelor of Science in Civil Engineering")
-   - Institution (exact, e.g., "Azerbaijan University of Architecture and Construction")
-   - Location, dates, GPA, honors
+🎓 EDUCATION (extract ALL degrees):
+- Full degree name: "Bachelor of Science in Civil Engineering"
+- Institution: "Azerbaijan University of Architecture and Construction"
+- Location, graduation dates, GPA, honors, coursework
 
-6. CERTIFICATIONS & TRAINING (extract EVERY certification):
-   - Full certification name (e.g., "SA-8000 Social Accountability")
-   - Issuing organization
-   - Dates if mentioned
+📜 CERTIFICATIONS (extract EVERY certification):
+Extract ALL certifications exactly as listed:
+- "SA-8000 Social Accountability"
+- "Confined Space Safety Awareness"
+- "H2S Awareness Training"
+- "Working at Height Awareness"
+- Include issuing organization and dates if present
 
-7. TECHNICAL SKILLS (extract ALL):
-   - Software/Tools (e.g., "AutoCAD, Navisworks, MS Office")
-   - Expertise areas (e.g., "Civil supervision, underground utilities, QA/QC")
-   - Languages with proficiency (e.g., "English (Fluent), Turkish (Fluent)")
-   - Driving licenses (e.g., "B, C")
+🛠️ TECHNICAL SKILLS (extract comprehensively):
+Categorize skills properly:
+- Software/Tools: AutoCAD, Navisworks, MS Project, MS Office, Primavera P6
+- Technical Expertise: Civil supervision, QA/QC, underground utilities, site supervision, pre-commissioning, excavation
+- Languages WITH proficiency: "English (Fluent)", "Turkish (Fluent)", "Azerbaijani (Native)"
+- Soft Skills: Leadership, team management, project coordination
+- Other: Driving licenses ("B, C"), safety certifications
 
-8. CORE COMPETENCIES (if present):
-   - Extract all competency points
+📊 PROFESSIONAL SUMMARY:
+Extract the COMPLETE professional summary/objective paragraph word-for-word, including all experience mentions and achievements.
 
-9. PROJECTS & AWARDS (if any):
-   - Full details with dates and descriptions
+Return ONLY this JSON structure with ALL extracted data:
 
-Return JSON in this EXACT structure:
 {
-  "name": "<Person's actual name from top of resume>",
-  "email": "",
-  "phone": "", 
-  "location": "",
-  "linkedin": "",
-  "github": "",
-  "portfolio": "",
+  "name": "<CANDIDATE'S ACTUAL NAME - NOT JOB TITLE OR LOCATION>",
+  "email": "<email@domain.com>",
+  "phone": "<+country code phone>",
+  "location": "<City, Country>",
+  "linkedin": "<LinkedIn URL if present>",
+  "github": "<GitHub URL if present>",
+  "portfolio": "<Portfolio URL if present>",
   "summary": "<Complete professional summary paragraph>",
   "work_experience": [
     {
       "title": "<Exact job title>",
-      "company": "<Full company name with details>",
-      "location": "<Job location>",
-      "duration": "<Start Month Year – End Month Year or Present>",
-      "description": "",
-      "achievements": ["<All bullet points>"],
-      "technologies_used": []
+      "company": "<Full company name>",
+      "project": "<Project name if mentioned>",
+      "location": "<Work location>",
+      "duration": "<Start date – End date or Present>",
+      "description": "<Overall job description if any>",
+      "achievements": [
+        "<Bullet point 1>",
+        "<Bullet point 2>",
+        "<Bullet point 3>"
+      ],
+      "technologies_used": ["<tech1>", "<tech2>"]
     }
   ],
   "education": [
     {
       "degree": "<Full degree name>",
-      "institution": "<University/School name>",
-      "location": "",
-      "duration": "<Year range or graduation year>",
-      "gpa": "",
-      "relevant_coursework": [],
-      "honors": []
+      "institution": "<University/Institution name>",
+      "location": "<City, Country>",
+      "duration": "<Start year – End year or graduation year>",
+      "gpa": "<GPA if mentioned>",
+      "relevant_coursework": ["<course1>", "<course2>"],
+      "honors": ["<honor1>", "<honor2>"]
     }
   ],
   "certifications": [
     {
       "name": "<Full certification name>",
-      "issuer": "",
-      "date": ""
+      "issuer": "<Issuing organization>",
+      "date": "<Issue date>"
     }
   ],
   "skills": {
-    "technical": ["<Technical expertise areas>"],
-    "tools": ["<Software and tools>"],
-    "languages": ["<Language (Proficiency)>"],
-    "soft": ["<Core competencies>"],
-    "other": ["<Driving licenses, etc.>"]
+    "technical": ["<Civil supervision>", "<Underground utilities>", "<QA/QC>"],
+    "tools": ["<AutoCAD>", "<Navisworks>", "<MS Office>"],
+    "languages": ["<English (Fluent)>", "<Turkish (Fluent)>", "<Azerbaijani (Native)>"],
+    "soft": ["<Leadership>", "<Team management>"],
+    "other": ["<Driving License: B, C>"]
   },
   "projects": [],
+  "awards": [],
   "additional_links": []
 }
 
-CRITICAL NAME EXAMPLES:
-- "EMIN MARDANOV" at top → name: "EMIN MARDANOV"
-- "E M I N  M A R D A N O V" → name: "EMIN MARDANOV"
-- "Bharadwaj AVB" → name: "Bharadwaj AVB"
-- NOT "Civil Engineer" or "Baku, Azerbaijan"
+🔍 EXTRACTION EXAMPLES:
 
-Extract EVERY section and EVERY detail exactly as written in the CV.`;
+Example 1 - Spaced Name:
+Input: "E M I N   M A R D A N O V"
+Output: "name": "EMIN MARDANOV"
+
+Example 2 - ALL CAPS with icons:
+Input: "📍 EMIN MARDANOV 📞 +994 51 789 9614"
+Output: "name": "EMIN MARDANOV"
+
+Example 3 - Work Experience:
+Input: "Construction Civil Supervisor | TCM-KT JV Azerbaijan
+Jun 2019 – Present
+• Supervised underground infrastructure"
+Output: {
+  "title": "Construction Civil Supervisor",
+  "company": "TCM-KT JV Azerbaijan",
+  "duration": "Jun 2019 – Present",
+  "achievements": ["Supervised underground infrastructure"]
+}
+
+⚡ CRITICAL REMINDERS:
+1. Extract the candidate's REAL NAME from the top - not job title or location
+2. Extract EVERY certification listed
+3. Extract ALL technical skills and software
+4. Include proficiency levels for languages
+5. Keep ALL bullet points as separate achievement entries
+6. Preserve exact date formats
+7. Extract EVERY detail - be comprehensive like ChatGPT`;
 
     // Use Lovable AI (Gemini - FREE!)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -545,20 +583,43 @@ function createFallbackResume(text: string, fileName?: string): any {
   let name = '';
   
   // Strategy 1: Check very first lines for ALL CAPS or spaced names (e.g., "EMIN MARDANOV" or "E M I N  M A R D A N O V")
-  for (let i = 0; i < Math.min(3, lines.length); i++) {
-    const line = lines[i].replace(/[📍📞🔗]/g, '').trim(); // Remove icons
+  for (let i = 0; i < Math.min(5, lines.length); i++) {
+    const line = lines[i].replace(/[📍📞🔗✉️🌐]/g, '').replace(/[|]/g, '').trim(); // Remove icons and pipes
     
-    // Skip section headers
-    if (/^(RESUME|CV|CURRICULUM|CONTACT|PERSONAL)/i.test(line)) continue;
+    // Skip obvious section headers
+    if (/^(RESUME|CV|CURRICULUM\s+VITAE|CONTACT|PERSONAL\s+INFORMATION?|PROFILE)/i.test(line)) continue;
     
-    // Check for ALL CAPS names with possible extra spaces (E M I N  M A R D A N O V)
-    const normalizedLine = line.replace(/\s+/g, ' ').trim();
+    // Normalize spacing - handles "E M I N  M A R D A N O V" → "EMIN MARDANOV"
+    let normalizedLine = line.replace(/\s+/g, ' ').trim();
+    
+    // Check if this is a spaced-out name (each letter separated by space)
+    // Pattern: "E M I N M A R D A N O V" (individual letters with spaces)
+    const spacedNameMatch = normalizedLine.match(/^([A-Z](?:\s+[A-Z])+)$/);
+    if (spacedNameMatch) {
+      // Join the letters: "E M I N" → "EMIN"
+      name = spacedNameMatch[1].replace(/\s+/g, '');
+      console.log('✅ Name found (spaced letters):', name);
+      break;
+    }
+    
+    // Check for multi-word spaced name: "E M I N   M A R D A N O V" (with word gaps)
+    const multiWordSpacedMatch = normalizedLine.match(/^([A-Z](?:\s+[A-Z])+)(?:\s{2,})([A-Z](?:\s+[A-Z])+)$/);
+    if (multiWordSpacedMatch) {
+      const firstName = multiWordSpacedMatch[1].replace(/\s+/g, '');
+      const lastName = multiWordSpacedMatch[2].replace(/\s+/g, '');
+      name = `${firstName} ${lastName}`;
+      console.log('✅ Name found (multi-word spaced):', name);
+      break;
+    }
+    
+    // Check for ALL CAPS names (standard format: "EMIN MARDANOV")
     if (/^[A-Z\s]{4,60}$/.test(normalizedLine)) {
       const words = normalizedLine.split(/\s+/).filter(w => w.length > 0);
-      // Accept if 2-6 words (handles spaced letters like "E M I N M A R D A N O V")
-      if (words.length >= 2 && words.length <= 8) {
+      // Accept if 2-6 words
+      if (words.length >= 2 && words.length <= 6) {
         // Reject common non-name words
-        if (!words.some(w => /^(BAKU|AZERBAIJAN|CIVIL|ENGINEER|MANAGER|SUPERVISOR|DEVELOPER|INDIA|USA)$/i.test(w))) {
+        const nonNameWords = /^(BAKU|AZERBAIJAN|CIVIL|ENGINEER|MANAGER|SUPERVISOR|DEVELOPER|INDIA|USA|NEW\s+YORK|LONDON|SINGAPORE|CONSTRUCTION|PROFESSIONAL|SENIOR|JUNIOR|LEAD)$/i;
+        if (!words.some(w => nonNameWords.test(w))) {
           name = normalizedLine;
           console.log('✅ Name found (ALL CAPS):', name);
           break;
@@ -566,9 +627,10 @@ function createFallbackResume(text: string, fileName?: string): any {
       }
     }
     
-    // Check for Title Case names
+    // Check for Title Case names (e.g., "Emin Mardanov")
     if (/^[A-Z][a-z]+(\s+[A-Z][a-z]+){1,4}$/.test(normalizedLine)) {
-      if (!/PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS/i.test(normalizedLine)) {
+      const keywords = /PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS|OBJECTIVE|ABOUT/i;
+      if (!keywords.test(normalizedLine)) {
         name = normalizedLine;
         console.log('✅ Name found (Title Case):', name);
         break;
@@ -910,7 +972,7 @@ function extractEducationFromText(text: string, lines: string[]): any[] {
   return education;
 }
 
-// Extract skills from resume text
+// Extract skills from resume text - COMPREHENSIVE
 function extractSkillsFromText(text: string): any {
   const technicalSkills: string[] = [];
   const softSkills: string[] = [];
@@ -921,47 +983,47 @@ function extractSkillsFromText(text: string): any {
   // Find SKILLS section
   const lines = text.split('\n').map(l => l.trim());
   const skillsSectionIndex = lines.findIndex(line => 
-    /^(SKILLS|TECHNICAL\s+SKILLS|CORE\s+COMPETENCIES|EXPERTISE)/i.test(line)
+    /^(SKILLS|TECHNICAL\s+SKILLS|CORE\s+COMPETENCIES|EXPERTISE|PROFESSIONAL\s+SKILLS)/i.test(line)
   );
   
   if (skillsSectionIndex >= 0) {
-    const skillLines = lines.slice(skillsSectionIndex + 1, Math.min(skillsSectionIndex + 20, lines.length));
+    const skillLines = lines.slice(skillsSectionIndex + 1, Math.min(skillsSectionIndex + 30, lines.length));
     
     for (const line of skillLines) {
       // Stop at next major section
-      if (/^(EXPERIENCE|EDUCATION|CERTIFICATIONS|PROJECTS|AWARDS)/i.test(line)) break;
+      if (/^(EXPERIENCE|EDUCATION|CERTIFICATIONS?|PROJECTS?|AWARDS?|WORK\s+HISTORY)/i.test(line)) break;
       
-      // Extract Software/Tools
-      if (/software|tools/i.test(line)) {
-        const toolsMatch = line.match(/(?:Software|Tools):\s*(.+)/i);
+      // Extract Software/Tools (AutoCAD, Navisworks, etc.)
+      if (/software|tools?/i.test(line)) {
+        const toolsMatch = line.match(/(?:Software|Tools?):\s*(.+)/i);
         if (toolsMatch) {
           toolsMatch[1].split(/[,;]/).forEach(tool => {
             const cleaned = tool.trim();
-            if (cleaned) tools.push(cleaned);
+            if (cleaned && cleaned.length > 1) tools.push(cleaned);
           });
         }
         continue;
       }
       
-      // Extract Expertise
-      if (/expertise|specialization/i.test(line)) {
-        const expertiseMatch = line.match(/(?:Expertise|Specialization):\s*(.+)/i);
+      // Extract Expertise/Specialization (Civil supervision, QA/QC, etc.)
+      if (/expertise|specialization|technical\s+skills/i.test(line)) {
+        const expertiseMatch = line.match(/(?:Expertise|Specialization|Technical\s+Skills):\s*(.+)/i);
         if (expertiseMatch) {
           expertiseMatch[1].split(/[,;]/).forEach(skill => {
             const cleaned = skill.trim();
-            if (cleaned) technicalSkills.push(cleaned);
+            if (cleaned && cleaned.length > 2) technicalSkills.push(cleaned);
           });
         }
         continue;
       }
       
-      // Extract Languages with proficiency
-      if (/languages/i.test(line)) {
-        const langMatch = line.match(/Languages:\s*(.+)/i);
+      // Extract Languages WITH proficiency (English (Fluent), Turkish (Fluent), etc.)
+      if (/languages?/i.test(line)) {
+        const langMatch = line.match(/Languages?:\s*(.+)/i);
         if (langMatch) {
           langMatch[1].split(/[,;]/).forEach(lang => {
             const cleaned = lang.trim();
-            if (cleaned) languages.push(cleaned);
+            if (cleaned && cleaned.length > 1) languages.push(cleaned);
           });
         }
         continue;
@@ -974,6 +1036,14 @@ function extractSkillsFromText(text: string): any {
           other.push('Driving License: ' + licenseMatch[1].trim());
         }
         continue;
+      }
+      
+      // Generic skill extraction (bullet points or comma-separated)
+      if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+        const skillText = line.replace(/^[•\-*]\s*/, '').trim();
+        if (skillText.length > 2 && skillText.length < 100) {
+          technicalSkills.push(skillText);
+        }
       }
     }
   }
