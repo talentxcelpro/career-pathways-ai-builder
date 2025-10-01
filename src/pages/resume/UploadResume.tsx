@@ -93,10 +93,10 @@ const UploadResume = () => {
             <div className="space-y-6">
               {/* File Upload Area */}
               <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-12 text-center hover:border-primary/50 hover:bg-primary/5 transition-all">
-                <input
+              <input
                   type="file"
                   id="resume-upload"
-                  accept=".pdf,.doc,.docx,.txt"
+                  accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.jpg,.jpeg,.png"
                   onChange={handleFileChange}
                   className="hidden"
                   disabled={uploading}
@@ -118,8 +118,8 @@ const UploadResume = () => {
                       <Upload className="h-16 w-16 mx-auto text-muted-foreground" />
                       <div>
                         <p className="font-semibold text-lg text-foreground">Click to upload</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Supports PDF, DOC, DOCX, or TXT files
+                      <p className="text-sm text-muted-foreground mt-1">
+                          Supports PDF, DOC, DOCX, TXT, RTF, ODT, and Images
                         </p>
                         <p className="text-xs text-muted-foreground mt-2">Maximum file size: 10MB</p>
                       </div>

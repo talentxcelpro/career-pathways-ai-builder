@@ -58,15 +58,21 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     const file = acceptedFiles[0];
     if (!file) return;
 
-    // Validate file type
+    // Validate file type - accept all common document and image formats
     const allowedTypes = [
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/msword'
+      'application/msword',
+      'text/plain',
+      'application/rtf',
+      'application/vnd.oasis.opendocument.text',
+      'image/jpeg',
+      'image/jpg',
+      'image/png'
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Please upload a PDF or Word document');
+      toast.error('Please upload a supported document format (PDF, DOC, DOCX, TXT, RTF, ODT, or Image)');
       return;
     }
 
@@ -325,7 +331,12 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     accept: {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'application/msword': ['.doc']
+      'application/msword': ['.doc'],
+      'text/plain': ['.txt'],
+      'application/rtf': ['.rtf'],
+      'application/vnd.oasis.opendocument.text': ['.odt'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png']
     },
     maxFiles: 1,
     disabled: isUploading
@@ -478,7 +489,7 @@ export const ResumeUploader: React.FC<ResumeUploaderProps> = ({
                     }
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Supports PDF, DOC, and DOCX files (max 10MB)
+                    Supports PDF, DOC, DOCX, TXT, RTF, ODT, JPG, PNG (max 10MB)
                   </p>
                 </div>
               </div>
