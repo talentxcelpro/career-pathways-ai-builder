@@ -27,7 +27,7 @@ export const AppleFooter = () => {
             <h3 className="font-semibold text-slate-900 mb-4">Product</h3>
             <ul className="space-y-3 text-slate-600">
               <li>
-                <Link to="/resume-builder" className="hover:text-slate-900 transition-colors font-light">
+                <Link to="/resume" className="hover:text-slate-900 transition-colors font-light">
                   TalentXcel Resume Builder
                 </Link>
               </li>

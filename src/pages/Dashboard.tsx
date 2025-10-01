@@ -105,7 +105,7 @@ const Dashboard = () => {
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'resume':
-        navigate('/tools/resume-builder');
+        navigate('/resume');
         break;
       case 'jobs':
         navigate('/jobs');
@@ -356,7 +356,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-xs cursor-pointer hover:bg-white/50 rounded px-2 py-1 transition-colors"
-                       onClick={() => navigate('/tools/resume-builder')}>
+                       onClick={() => navigate('/resume')}>
                     <span className="text-slate-600">Resume downloads</span>
                     <div className="flex items-center gap-1">
                       <span className="font-medium text-slate-800">+{userStats.resumeViews}</span>

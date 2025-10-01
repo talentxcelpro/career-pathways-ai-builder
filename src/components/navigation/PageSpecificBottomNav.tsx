@@ -323,7 +323,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
           label: 'AI Build',
           action: () => {
             // Navigate to resume builder
-            navigate('/tools/resume-builder');
+            navigate('/resume');
           },
           isPrimary: true
         },

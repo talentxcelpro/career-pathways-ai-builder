@@ -84,12 +84,12 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
         const newId = (inserted as any)?.id as string | undefined;
         if (newId) {
           toast({ title: 'Resume ready', description: 'Opening advanced editor...' });
-          navigate(`/resume/editor/${newId}`);
+          navigate(`/resume/build/${newId}`);
           return;
         }
       } else {
         toast({ title: 'Start editing', description: 'Sign in to save your work.' });
-        navigate('/resume/new', { state: { resumeData: content } });
+        navigate('/resume/build', { state: { resumeData: content } });
         return;
       }
     } catch (e) {

@@ -174,7 +174,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Button 
             className="h-24 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-            onClick={() => navigate('/tools/resume-builder')}
+            onClick={() => navigate('/resume')}
           >
             <div className="text-center">
               <FileText className="h-6 w-6 mx-auto mb-2" />

@@ -86,7 +86,7 @@ export const InternalLinks: React.FC<InternalLinksProps> = ({ currentPage }) => 
             <h3 className="font-semibold text-foreground mb-2">Career Tools</h3>
             <ul className="space-y-1">
               <li>
-                <Link to="/resume-builder" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/resume" className="text-muted-foreground hover:text-primary transition-colors">
                   AI Resume Builder
                 </Link>
               </li>
@@ -117,7 +117,7 @@ export const InternalLinks: React.FC<InternalLinksProps> = ({ currentPage }) => 
             <Link to="/network" className="text-sm text-primary hover:underline mr-4">
               Meet Professionals
             </Link>
-            <Link to="/resume-builder" className="text-sm text-primary hover:underline mr-4">
+            <Link to="/resume" className="text-sm text-primary hover:underline mr-4">
               Build Resume
             </Link>
             <Link to="/learning" className="text-sm text-primary hover:underline">

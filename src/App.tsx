@@ -60,6 +60,7 @@ import ResumeNew from './pages/resume/ResumeNew';
 import UnifiedResumeHub from './pages/resume/UnifiedResumeHub';
 import UnifiedResumeBuilder from './pages/resume/UnifiedResumeBuilder';
 import UnifiedUploadPage from './pages/resume/UnifiedUploadPage';
+import { LegacyRouteRedirect } from './components/resume/LegacyRouteRedirect';
 import Tools from './pages/Tools';
 import SEODashboard from './pages/SEODashboard';
 import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
@@ -345,18 +346,45 @@ const App = () => {
                                 <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
                                  <Route path="/mobile/passport" element={<MobilePassport />} />
                                  
-                                {/* Unified Resume Builder */}
-                                 <Route path="/resume" element={<UnifiedResumeHub />} />
-                                 <Route path="/resume/upload" element={<UnifiedUploadPage />} />
-                                 <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
-                                 <Route path="/resume/build/:id" element={<UnifiedResumeBuilder />} />
-                                 
-                                 {/* Legacy Resume Routes - kept for backward compatibility */}
-                                 <Route path="/resume-builder/upload-enhanced" element={<EnhancedUploadResume />} />
-                                 <Route path="/resume/builder" element={<ResumeBuilderV2 />} />
-                                 <Route path="/resume/templates" element={<ResumeTemplates />} />
-                                 <Route path="/resume/edit/:id" element={<ResumeEdit />} />
-                                 <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
+                                 {/* Unified Resume Builder - Primary Routes */}
+                                  <Route path="/resume" element={<UnifiedResumeHub />} />
+                                  <Route path="/resume/upload" element={<UnifiedUploadPage />} />
+                                  <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
+                                  <Route path="/resume/build/:id" element={<UnifiedResumeBuilder />} />
+                                  
+                                  {/* Legacy Resume Routes - Redirects to Unified Builder */}
+                                  <Route 
+                                    path="/resume-builder/upload-enhanced" 
+                                    element={
+                                      <LegacyRouteRedirect 
+                                        to="/resume/upload" 
+                                        message="Upgrading to our new resume builder..."
+                                      />
+                                    } 
+                                  />
+                                  <Route 
+                                    path="/resume/builder" 
+                                    element={
+                                      <LegacyRouteRedirect 
+                                        to="/resume" 
+                                        message="Taking you to the new resume hub..."
+                                      />
+                                    } 
+                                  />
+                                  <Route 
+                                    path="/resume/edit/:id" 
+                                    element={
+                                      <LegacyRouteRedirect 
+                                        to="/resume/build" 
+                                        includeId={true}
+                                        message="Opening your resume in the enhanced editor..."
+                                      />
+                                    } 
+                                  />
+                                  
+                                  {/* Keep these for now - may integrate later */}
+                                  <Route path="/resume/templates" element={<ResumeTemplates />} />
+                                  <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
                                 <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
                                 <Route path="/talent-database" element={<AdminLayout><TalentDatabase /></AdminLayout>} />
                                 <Route path="/admin/security" element={<AdminLayout><SecurityCenter /></AdminLayout>} />
