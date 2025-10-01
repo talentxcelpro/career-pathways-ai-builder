@@ -60,6 +60,9 @@ import ResumeNew from './pages/resume/ResumeNew';
 import UnifiedResumeHub from './pages/resume/UnifiedResumeHub';
 import UnifiedResumeBuilder from './pages/resume/UnifiedResumeBuilder';
 import UnifiedUploadPage from './pages/resume/UnifiedUploadPage';
+import MyResumes from './pages/resume/MyResumes';
+import ATSChecker from './pages/resume/ATSChecker';
+import ResumeAnalytics from './pages/resume/ResumeAnalytics';
 import { LegacyRouteRedirect } from './components/resume/LegacyRouteRedirect';
 import Tools from './pages/Tools';
 import SEODashboard from './pages/SEODashboard';
@@ -348,9 +351,16 @@ const App = () => {
                                  
                                  {/* Unified Resume Builder - Primary Routes */}
                                   <Route path="/resume" element={<UnifiedResumeHub />} />
+                                  <Route path="/resume/new" element={<LegacyRouteRedirect to="/resume/" message="Redirecting to Resume Hub..." />} />
                                   <Route path="/resume/upload" element={<UnifiedUploadPage />} />
                                   <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
                                   <Route path="/resume/build/:id" element={<UnifiedResumeBuilder />} />
+                                  <Route path="/resume/dashboard" element={<MyResumes />} />
+                                  <Route path="/resume/ats-check" element={<ATSChecker />} />
+                                  <Route path="/resume/analytics" element={<ResumeAnalytics />} />
+                                  <Route path="/resume/cover-letter" element={<UnifiedResumeBuilder />} />
+                                  <Route path="/resume/interview-prep" element={<UnifiedResumeBuilder />} />
+                                  <Route path="/resume/portfolio" element={<UnifiedResumeBuilder />} />
                                   
                                   {/* Legacy Resume Routes - Redirects to Unified Builder */}
                                   <Route 

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Sparkles, FileText, Target, BarChart3, Mail, Video, Globe, BookOpen } from "lucide-react";
+import { Upload, Sparkles, FileText, Target, BarChart3, Mail, Video, Globe } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import talentxcelLogo from "@/assets/talentxcel-logo.png";
 
 const UnifiedResumeHub = () => {
   const navigate = useNavigate();
@@ -81,11 +82,20 @@ const UnifiedResumeHub = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container mx-auto px-4 py-12 max-w-7xl">
+          {/* Logo in top-left corner */}
+          <div className="absolute top-6 left-6">
+            <img 
+              src={talentxcelLogo} 
+              alt="TalentXcel Logo" 
+              className="h-10 w-10 object-contain"
+            />
+          </div>
+
           {/* Hero Section */}
           <div className="text-center mb-16 animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              AI-Powered Resume Builder
+              TalentXcel AI-Powered Resume Builder
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Build Your Perfect Resume
