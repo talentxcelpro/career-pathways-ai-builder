@@ -130,6 +130,9 @@ import { advancedPerformanceMonitor } from "@/utils/advancedPerformanceMonitor";
 import { PerformanceDashboard } from "@/components/performance/PerformanceDashboard";
 import { ConnectionStatusIndicator } from "@/components/realtime/ConnectionStatusIndicator";
 import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
+import { useViralMechanics } from '@/hooks/useViralMechanics';
+import { useStreaks } from '@/hooks/useStreaks';
+import React from 'react';
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
@@ -170,8 +173,21 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  // Phase 5: Initialize viral mechanics and streak tracking
+  const { trackConversion } = useViralMechanics();
+  const { updateStreak } = useStreaks();
+
   // Initialize turbo optimizations
   useEffect(() => {
+    // Check for referral code in URL and track conversion
+    const params = new URLSearchParams(window.location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      trackConversion(refCode);
+    }
+    
+    // Update daily streak on app load
+    updateStreak();
     try {
       const startTime = performance.now();
       
