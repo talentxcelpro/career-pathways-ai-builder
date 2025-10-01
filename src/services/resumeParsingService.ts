@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { extractTextFromFile } from "@/utils/resumeTextExtraction";
 
 export interface ParsedResume {
   personalInfo: {
@@ -55,93 +56,28 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
   try {
     console.log('🚀 Starting resume parsing for:', file.name, 'Type:', file.type, 'Size:', file.size);
     
-    // Extract text from the file first
-    let extractedText = '';
+    // Use the proven extraction utility
+    console.log('📄 Extracting text using proven utility...');
+    const extractedText = await extractTextFromFile(file);
     
-    // Check file extension as fallback
-    const fileName = file.name.toLowerCase();
-    const isPDF = file.type.includes('pdf') || fileName.endsWith('.pdf');
-    const isDOCX = file.type.includes('word') || 
-                   file.type.includes('document') || 
-                   file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-                   file.type === 'application/msword' ||
-                   fileName.endsWith('.docx') || 
-                   fileName.endsWith('.doc');
-    
-    if (isPDF) {
-      // For PDF files, use pdfjs-dist
-      console.log('📄 Processing PDF file...');
-      try {
-        const pdfjsLib = await import('pdfjs-dist');
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-        
-        const arrayBuffer = await file.arrayBuffer();
-        console.log('📄 PDF ArrayBuffer size:', arrayBuffer.byteLength);
-        
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        console.log('📄 PDF loaded, pages:', pdf.numPages);
-        
-        let fullText = '';
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items.map((item: any) => item.str).join(' ');
-          fullText += pageText + '\n';
-          console.log(`📄 Page ${i} extracted, length: ${pageText.length}`);
-        }
-        extractedText = fullText;
-        console.log('✅ PDF extraction complete, total length:', extractedText.length);
-      } catch (pdfError) {
-        console.error('❌ PDF extraction failed:', pdfError);
-        throw new Error(`Failed to extract text from PDF: ${pdfError instanceof Error ? pdfError.message : 'Unknown error'}`);
-      }
-    } else if (isDOCX) {
-      // For DOCX files
-      console.log('📝 Processing DOCX file with multiple extraction attempts...');
-      try {
-        const mammoth = await import('mammoth');
-        const arrayBuffer = await file.arrayBuffer();
-        console.log('📝 DOCX ArrayBuffer size:', arrayBuffer.byteLength);
-        
-        // Try extractRawText first
-        console.log('📝 Attempting mammoth.extractRawText...');
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        extractedText = result.value;
-        console.log('✅ DOCX extraction complete, length:', extractedText.length);
-        
-        // If extraction yielded very little, log warning
-        if (extractedText.length < 10) {
-          console.warn('⚠️ DOCX extraction yielded very little text:', extractedText);
-          
-          // Try convertToHtml as fallback
-          console.log('📝 Attempting mammoth.convertToHtml as fallback...');
-          const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
-          console.log('📝 HTML conversion result length:', htmlResult.value.length);
-          
-          // Strip HTML tags to get text
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = htmlResult.value;
-          const textFromHtml = tempDiv.textContent || tempDiv.innerText || '';
-          console.log('📝 Text from HTML length:', textFromHtml.length);
-          
-          if (textFromHtml.length > extractedText.length) {
-            extractedText = textFromHtml;
-            console.log('✅ Using HTML-extracted text instead');
-          }
-        }
-      } catch (docxError) {
-        console.error('❌ DOCX extraction failed:', docxError);
-        throw new Error(`Failed to extract text from DOCX: ${docxError instanceof Error ? docxError.message : 'Unknown error'}`);
-      }
-    } else if (file.type === 'text/plain') {
-      // For text files
-      console.log('📝 Processing text file...');
-      extractedText = await file.text();
-      console.log('✅ Text file read, length:', extractedText.length);
-    } else {
-      console.warn('⚠️ Unsupported file type:', file.type);
-      throw new Error(`Unsupported file type: ${file.type}. Please upload PDF, DOCX, or TXT files.`);
+    console.log('📋 Extracted text length:', extractedText.length);
+    if (extractedText.length > 0) {
+      console.log('📋 First 500 chars:', extractedText.substring(0, 500));
+      console.log('📋 Last 200 chars:', extractedText.substring(Math.max(0, extractedText.length - 200)));
     }
+    
+    // Validate extraction before sending to AI
+    if (!extractedText || extractedText.trim().length < 50) {
+      console.error('❌ Extraction failed or insufficient text:', extractedText.length, 'chars');
+      throw new Error(
+        'Could not extract enough text from the resume. Please ensure:\n' +
+        '1. The file is not corrupted\n' +
+        '2. The file contains readable text (not just images)\n' +
+        '3. Try saving the file in a different format (PDF or DOCX)'
+      );
+    }
+    
+    console.log('✅ Text extraction successful, proceeding to AI parsing...');
 
     console.log('📋 Extracted text length:', extractedText.length);
     console.log('📋 First 200 chars:', extractedText.substring(0, 200));
@@ -240,22 +176,6 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
       }
     };
   }
-};
-
-/**
- * Extract text from a file for AI processing
- */
-export const extractTextFromFile = async (file: File): Promise<string> => {
-  const fileType = file.type;
-
-  // For text files, read directly
-  if (fileType === 'text/plain') {
-    return await file.text();
-  }
-
-  // For PDF and DOCX, we'll need the edge function to handle extraction
-  // Return empty string here and let the edge function handle it
-  return '';
 };
 
 /**
