@@ -1080,6 +1080,7 @@ export type Database = {
           invited_by: string | null
           is_active: boolean | null
           joined_at: string | null
+          permissions: Json | null
           role: string
           updated_at: string | null
           user_id: string
@@ -1091,6 +1092,7 @@ export type Database = {
           invited_by?: string | null
           is_active?: boolean | null
           joined_at?: string | null
+          permissions?: Json | null
           role?: string
           updated_at?: string | null
           user_id: string
@@ -1102,6 +1104,7 @@ export type Database = {
           invited_by?: string | null
           is_active?: boolean | null
           joined_at?: string | null
+          permissions?: Json | null
           role?: string
           updated_at?: string | null
           user_id?: string
