@@ -4,7 +4,6 @@ import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from 'react-error-boundary';
 import { LandingPage } from '@/components/landing/LandingPage';
-import { GoogleOneTapIndicator } from '@/components/auth/GoogleOneTapIndicator';
 import { FinalLaunchRunner } from '@/components/deployment/FinalLaunchRunner';
 import { LaunchStatusSummary } from '@/components/admin/LaunchStatusSummary';
 import { useAuth } from '@/contexts/AuthContext';
