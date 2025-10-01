@@ -1,13 +1,9 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-
-// Ensure React is properly loaded
-if (!React || !React.useState) {
-  console.error('React not properly loaded');
-  throw new Error('React module loading error');
-}
 
 interface OptimizedAuthContextType {
   user: User | null;

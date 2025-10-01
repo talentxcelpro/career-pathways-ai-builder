@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState, FC, ReactNode } from 'react';
+import React from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { FC, ReactNode } from 'react';
 import { initTalentXcelRealtime, cleanupRealtime, realtimeManager, WatchedTable, RealtimePayload } from '@/lib/realtimeManager';
 import { supabase } from '@/integrations/supabase/client';
 
