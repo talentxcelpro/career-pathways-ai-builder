@@ -120,8 +120,8 @@ export const resumeRoutes = [
     isPublic: true,
   },
   {
-    title: "TalentXcel Resume Builder",
-    to: "/resume",
+    title: "Resume Builder Wizard",
+    to: "/resume/wizard",
     icon: <Sparkles className="h-4 w-4" />,
     page: <TalentXcelResumeBuilder />,
     isPublic: true,
