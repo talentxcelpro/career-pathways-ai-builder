@@ -121,3 +121,7 @@ verify_jwt = false
 # Extension API
 [functions.extension-api-gateway]
 verify_jwt = false
+
+# Learning Hub
+[functions.populate-courses]
+verify_jwt = false

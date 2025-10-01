@@ -91,6 +91,7 @@ import { AdminScrapedJobApplications } from "@/components/admin/AdminScrapedJobA
 import EdgeFunctionsMonitor from "@/pages/admin/EdgeFunctionsMonitor";
 import NewsManagement from "@/pages/admin/NewsManagement";
 import EmailAutomation from "@/pages/admin/EmailAutomation";
+import PopulateCoursesAdmin from "@/pages/admin/PopulateCoursesAdmin";
 import NewsPage from "@/pages/NewsPage";
 import AIServicesPage from "@/pages/AIServicesPage";
 import JobsByRole from "@/pages/JobsByRole";
@@ -425,6 +426,7 @@ const App = () => {
                                 <Route path="/admin/edge-functions-monitor" element={<AdminLayout><EdgeFunctionsMonitor /></AdminLayout>} />
                                 <Route path="/admin/news-management" element={<AdminLayout><NewsManagement /></AdminLayout>} />
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
+                                <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
                                 <Route path="/admin/course-management" element={
                                   <AdminLayout>
