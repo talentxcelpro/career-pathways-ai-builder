@@ -47,9 +47,6 @@ const Index = () => {
         </div>
       )}
     >
-      {!disableOneTap && !user && (
-        <GoogleOneTapIndicator isActive={!user} />
-      )}
       {showFinalLaunch ? <FinalLaunchRunner /> : showLaunchStatus ? <LaunchStatusSummary /> : <LandingPage />}
     </ErrorBoundary>
   );

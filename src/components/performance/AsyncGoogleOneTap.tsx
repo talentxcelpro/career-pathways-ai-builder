@@ -28,10 +28,8 @@ export const AsyncGoogleOneTap = () => {
       document.head.appendChild(script);
     };
 
-    // Delay loading by 2 seconds to prioritize critical content
-    const timer = setTimeout(loadGoogleOneTap, 2000);
-
-    return () => clearTimeout(timer);
+    // Load immediately for instant Google One Tap
+    loadGoogleOneTap();
   }, []);
 
   return null; // This component doesn't render anything
