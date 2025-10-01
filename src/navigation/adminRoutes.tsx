@@ -69,6 +69,7 @@ import EdgeFunctionsMonitor from "../pages/admin/EdgeFunctionsMonitor";
 import LinkedInImporter from "../pages/admin/LinkedInImporter";
 import EnterpriseOverview from "../pages/admin/EnterpriseOverview";
 import Phase1Dashboard from "../components/network/Phase1Dashboard";
+import BulkUserImports from "../pages/admin/BulkUserImports";
 
 export const adminRoutes = [
   {
@@ -76,6 +77,13 @@ export const adminRoutes = [
     to: "/admin",
     icon: <Shield className="h-4 w-4" />,
     page: <AdminDashboard />,
+    isPublic: true,
+  },
+  {
+    title: "Bulk User Imports",
+    to: "/admin/bulk-imports",
+    icon: <Upload className="h-4 w-4" />,
+    page: <BulkUserImports />,
     isPublic: true,
   },
   {
