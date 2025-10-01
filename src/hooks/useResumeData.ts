@@ -63,12 +63,29 @@ export const useResumeData = () => {
         setIsNewResume(true);
       } else if (data) {
         console.log('Found resume data:', data);
+        console.log('📊 Database content structure:', {
+          hasPersonalInfo: !!data.content?.personalInfo,
+          hasSummary: !!(data.content?.summary || data.content?.personalInfo?.summary),
+          experienceCount: data.content?.experience?.length || 0,
+          educationCount: data.content?.education?.length || 0,
+          email: data.content?.personalInfo?.email,
+          name: data.content?.personalInfo?.fullName
+        });
         setIsNewResume(false);
         
         try {
           // Convert from editor format to core format
           const editorData = data.content;
+          console.log('🔄 Converting editor data to core format...');
           const coreData = editorToCore(editorData);
+          
+          console.log('✅ Conversion successful:', {
+            name: coreData.personalInfo.fullName,
+            email: coreData.personalInfo.email,
+            summary: coreData.personalInfo.summary?.substring(0, 50) + '...',
+            experienceCount: coreData.experience.length,
+            educationCount: coreData.education.length
+          });
           
           // Update metadata from database
           coreData.metadata = {

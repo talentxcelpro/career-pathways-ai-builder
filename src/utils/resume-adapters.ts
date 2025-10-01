@@ -318,15 +318,15 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   
   // Personal Info
   core.personalInfo = {
-    fullName: editor.personalInfo.fullName,
-    professionalTitle: editor.personalInfo.professionalTitle,
-    email: editor.personalInfo.email,
-    phone: editor.personalInfo.phone,
-    location: editor.personalInfo.location,
-    linkedin: editor.personalInfo.linkedin,
-    github: editor.personalInfo.github,
-    website: editor.personalInfo.website,
-    summary: editor.personalInfo.summary,
+    fullName: editor.personalInfo?.fullName || '',
+    professionalTitle: editor.personalInfo?.professionalTitle || '',
+    email: editor.personalInfo?.email || '',
+    phone: editor.personalInfo?.phone || '',
+    location: editor.personalInfo?.location || '',
+    linkedin: editor.personalInfo?.linkedin || '',
+    github: editor.personalInfo?.github || '',
+    website: editor.personalInfo?.website || '',
+    summary: editor.personalInfo?.summary || (editor as any).summary || '',
   };
   
   // Experience
@@ -417,7 +417,7 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   }));
   
   // Awards
-  core.awards = editor.awards.map(award => ({
+  core.awards = (editor.awards || []).map(award => ({
     id: award.id,
     name: award.name,
     issuer: award.issuer,
@@ -426,7 +426,7 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   }));
   
   // Volunteer Work
-  core.volunteerWork = editor.volunteerExperience.map(vol => ({
+  core.volunteerWork = (editor.volunteerExperience || []).map(vol => ({
     id: vol.id,
     role: vol.role,
     organization: vol.organization,
@@ -438,7 +438,7 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   }));
   
   // References
-  core.references = editor.references.map(ref => ({
+  core.references = (editor.references || []).map(ref => ({
     id: ref.id,
     name: ref.name,
     title: '',
@@ -449,16 +449,16 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   }));
   
   // Interests
-  core.interests = editor.interests;
+  core.interests = editor.interests || [];
   
   // Settings
   core.settings = {
-    templateId: editor.settings.templateId,
-    colorScheme: editor.branding.colorScheme,
-    fontFamily: editor.settings.fontFamily,
-    fontSize: editor.settings.fontSize,
+    templateId: editor.settings?.templateId || 'modern',
+    colorScheme: editor.branding?.colorScheme || 'blue',
+    fontFamily: editor.settings?.fontFamily || 'Inter',
+    fontSize: editor.settings?.fontSize || 14,
     spacing: 'normal',
-    sectionOrder: editor.settings.sectionOrder,
+    sectionOrder: editor.settings?.sectionOrder || ['personalInfo', 'experience', 'education', 'skills'],
   };
   
   return core;
