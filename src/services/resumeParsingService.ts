@@ -123,10 +123,14 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
 const parseFallback = (text: string): ParsedResume => {
   const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
   const phoneMatch = text.match(/[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/);
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  
+  // Try to find name in first few lines
+  const nameCandidate = lines[0] || 'Please edit your name';
   
   return {
     personalInfo: {
-      fullName: 'Please edit your name',
+      fullName: nameCandidate.length < 50 ? nameCandidate : 'Please edit your name',
       email: emailMatch?.[0] || '',
       phone: phoneMatch?.[0] || '',
       location: '',
@@ -138,7 +142,9 @@ const parseFallback = (text: string): ParsedResume => {
       technical: [],
       soft: [],
       languages: []
-    }
+    },
+    certifications: [],
+    projects: []
   };
 };
 

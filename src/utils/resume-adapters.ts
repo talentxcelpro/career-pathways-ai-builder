@@ -330,7 +330,7 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   };
   
   // Experience
-  core.experience = editor.experience.map(exp => ({
+  core.experience = (editor.experience || []).map(exp => ({
     id: exp.id,
     title: exp.title,
     company: exp.company,
@@ -339,12 +339,12 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
     endDate: exp.endDate,
     current: !exp.endDate || exp.endDate.toLowerCase().includes('present'),
     description: exp.description,
-    achievements: exp.achievements,
-    technologies: exp.technologies,
+    achievements: exp.achievements || [],
+    technologies: exp.technologies || [],
   }));
   
   // Education
-  core.education = editor.education.map(edu => ({
+  core.education = (editor.education || []).map(edu => ({
     id: edu.id,
     degree: edu.degree,
     institution: edu.institution,
@@ -352,7 +352,7 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
     startDate: edu.startDate,
     endDate: edu.endDate,
     description: edu.description,
-    relevantCoursework: edu.achievements,
+    relevantCoursework: edu.achievements || [],
   }));
   
   // Skills - Convert grouped skills to individual skill objects
@@ -397,16 +397,16 @@ export function editorToCore(editor: EditorResume): CoreResumeData {
   core.skills = skills;
   
   // Projects
-  core.projects = editor.projects.map(proj => ({
+  core.projects = (editor.projects || []).map(proj => ({
     id: proj.id,
     name: proj.name,
     description: proj.description,
-    technologies: proj.technologies,
+    technologies: proj.technologies || [],
     url: proj.link,
   }));
   
   // Certifications
-  core.certifications = editor.certifications.map(cert => ({
+  core.certifications = (editor.certifications || []).map(cert => ({
     id: cert.id,
     name: cert.name,
     issuer: cert.issuer,
