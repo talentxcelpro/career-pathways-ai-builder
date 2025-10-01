@@ -13,7 +13,7 @@ export const JobAnalyticsWidget: React.FC<JobAnalyticsWidgetProps> = ({
   jobId, 
   isExternal = false 
 }) => {
-  const { data: analytics, isLoading } = useJobAnalytics(jobId);
+  const { applicationAnalytics: analytics, isLoading } = useJobAnalytics(90);
 
   if (!isExternal) {
     return null; // Only show for external jobs
@@ -43,76 +43,36 @@ export const JobAnalyticsWidget: React.FC<JobAnalyticsWidgetProps> = ({
     );
   }
 
-  const conversionRate = analytics.redirect_conversion_rate || 0;
-  const getConversionColor = (rate: number) => {
-    if (rate >= 80) return 'text-green-600 bg-green-50';
-    if (rate >= 60) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
-  };
-
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <TrendingUp className="h-4 w-4" />
-          Job Performance Analytics
+          Application Analytics
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-500" />
-              <span className="text-sm font-medium">Internal Applications</span>
-            </div>
+            <span className="text-sm font-medium">Total Applications</span>
             <div className="text-2xl font-bold text-blue-600">
-              {analytics.total_internal_applications}
+              {analytics.total}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Applied through TalentXcel
-            </p>
           </div>
           
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <ExternalLink className="h-4 w-4 text-purple-500" />
-              <span className="text-sm font-medium">External Redirects</span>
-            </div>
+            <span className="text-sm font-medium">Interview Rate</span>
             <div className="text-2xl font-bold text-purple-600">
-              {analytics.total_external_redirects}
+              {analytics.interviewRate.toFixed(1)}%
             </div>
-            <p className="text-xs text-muted-foreground">
-              Clicked "Complete Application"
-            </p>
           </div>
         </div>
 
-        <div className="border-t pt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Conversion Rate</span>
-            <Badge 
-              variant="secondary" 
-              className={getConversionColor(conversionRate)}
-            >
-              {conversionRate.toFixed(1)}%
-            </Badge>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500" 
-              style={{ width: `${Math.min(conversionRate, 100)}%` }}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Percentage of users who completed external application after applying internally
-          </p>
+        <div className="grid grid-cols-3 gap-2 text-sm">
+          <div>Pending: {analytics.pending}</div>
+          <div>In Review: {analytics.inReview}</div>
+          <div>Interviewed: {analytics.interviewed}</div>
         </div>
-
-        {analytics.last_updated && (
-          <div className="text-xs text-muted-foreground border-t pt-2">
-            Last updated: {new Date(analytics.last_updated).toLocaleString()}
-          </div>
-        )}
       </CardContent>
     </Card>
   );
