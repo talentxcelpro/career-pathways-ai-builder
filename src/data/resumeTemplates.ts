@@ -7,7 +7,21 @@ export type ResumeTemplate = TemplateMetadata & {
   layout?: any;
 };
 
-export const resumeTemplates: ResumeTemplate[] = [
+type TemplateItem = Omit<TemplateMetadata, 'category' | 'format' | 'designStyle' | 'experienceLevel' | 'industry' | 'features'> & {
+  category: string;
+  format: string;
+  designStyle: string;
+  bestForRoles: string[];
+  experienceLevel: string[];
+  features: string[];
+  industry: string[];
+  colorSchemes: any[];
+  preview: string;
+  atsOptimized?: boolean;
+  isRecommended?: boolean;
+};
+
+export const resumeTemplates: TemplateItem[] = [
   {
     id: 'modern-professional',
     name: 'Modern Professional',

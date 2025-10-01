@@ -49,10 +49,11 @@ interface Template {
 }
 
 interface TemplateRendererProps {
-  resumeData: ResumeData;
-  template: Template | string;
+  resumeData: any;
+  templateId?: string;
+  template?: Template | string;
   className?: string;
-  customization?: any; // For backward compatibility
+  customization?: any;
   sectionOrder?: string[];
 }
 
@@ -494,9 +495,23 @@ const CreativeTemplate: React.FC<{ resumeData: ResumeData; colors: any; fonts: a
   </div>
 );
 
+// Convert CoreResumeData skills to simple array
+const convertSkills = (skills: any[]): string[] => {
+  if (!skills || skills.length === 0) return [];
+  if (typeof skills[0] === 'string') return skills;
+  return skills.map((s: any) => s.name || s.skill || String(s));
+};
+
+const convertSkills = (skills: any): string[] => {
+  if (!skills || skills.length === 0) return [];
+  if (typeof skills[0] === 'string') return skills;
+  return skills.map((s: any) => s.name || s.skill || String(s));
+};
+
 export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   resumeData,
   template,
+  templateId,
   className
 }) => {
   // Handle both string and Template object types
@@ -510,14 +525,14 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
   const renderTemplate = () => {
     switch (templateObj.id) {
       case 'classic':
-        return <ClassicTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
+        return <ClassicTemplate resumeData={formattedData} colors={colors} fonts={fonts} />;
       case 'creative':
-        return <CreativeTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
+        return <CreativeTemplate resumeData={formattedData} colors={colors} fonts={fonts} />;
       case 'technical':
       case 'executive':
       case 'modern':
       default:
-        return <ModernTemplate resumeData={resumeData} colors={colors} fonts={fonts} />;
+        return <ModernTemplate resumeData={formattedData} colors={colors} fonts={fonts} />;
     }
   };
 
