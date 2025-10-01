@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState, FC, ReactNode } from 'react';
 import { initTalentXcelRealtime, cleanupRealtime, realtimeManager, WatchedTable, RealtimePayload } from '@/lib/realtimeManager';
-import { useSafeToast } from '@/hooks/useSafeToast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface RealtimeContextType {
@@ -45,8 +44,9 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
     }
   });
 
-  // Use safe toast hook
-  const { toast, isReady: toastReady } = useSafeToast();
+
+  // Toast is optional - only use if showToasts is enabled
+  const { toast } = showToasts ? require('@/hooks/use-toast') : { toast: () => {} };
 
   useEffect(() => {
     let mounted = true;
@@ -87,7 +87,7 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
         }
 
         // Show toast notifications safely
-        if (showToasts && toastReady) {
+        if (showToasts) {
           try {
             const message = getUpdateMessage(table, payload);
             if (message) {
@@ -190,7 +190,7 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
                 console.log('🔄 Safe realtime not working, enabling polling fallback...');
                 setState(prev => ({ ...prev, usePollingFallback: true }));
                 
-                if (showToasts && toastReady) {
+                if (showToasts) {
                   toast({
                     title: "Connection Status",
                     description: "Using polling for updates while realtime reconnects...",
@@ -222,7 +222,7 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
         console.error('Cleanup error:', error);
       }
     };
-  }, [showToasts, toastReady, state.usePollingFallback]);
+  }, [showToasts, state.usePollingFallback]);
 
   const contextValue: RealtimeContextType = {
     isConnected: state.isConnected,
