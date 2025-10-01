@@ -94,10 +94,10 @@ export function coreToLegacy(core: CoreTemplate): ResumeTemplate {
   return {
     id: core.metadata.id,
     name: core.metadata.name,
-    category: capitalizeFirst(core.metadata.category),
+    category: core.metadata.category as any,
     description: core.metadata.description,
     preview: core.metadata.previewImage,
-    features: core.metadata.features,
+    features: core.metadata.features as any,
     atsScore: core.metadata.atsScore,
     isRecommended: core.metadata.isRecommended,
     isPremium: core.metadata.isPremium,
@@ -106,14 +106,27 @@ export function coreToLegacy(core: CoreTemplate): ResumeTemplate {
         id: core.customization.colorScheme.id,
         name: core.customization.colorScheme.name,
         primary: hslToHex(core.customization.colorScheme.primary),
-        accent: hslToHex(core.customization.colorScheme.accent)
+        secondary: hslToHex(core.customization.colorScheme.secondary || core.customization.colorScheme.primary),
+        accent: hslToHex(core.customization.colorScheme.accent),
+        text: hslToHex(core.customization.colorScheme.text || 'hsl(0, 0%, 0%)'),
+        background: hslToHex(core.customization.colorScheme.background || 'hsl(0, 0%, 100%)'),
+        isDefault: true
       }
     ],
     layout: {
       columns: core.customization.layout.columns,
       typography: capitalizeFirst(core.customization.typography.id.replace('-', ' '))
-    }
-  };
+    },
+    // Add required TemplateMetadata fields with defaults
+    format: 'reverse-chronological' as any,
+    designStyle: 'single-column' as any,
+    bestForRoles: [],
+    experienceLevel: [] as any,
+    tags: [],
+    industry: [] as any,
+    usageCount: 0,
+    rating: 0
+  } as ResumeTemplate;
 }
 
 // Convert legacy customization to core customization
