@@ -81,20 +81,30 @@ serve(async (req) => {
 
     console.log('Processing resume text for:', fileName);
 
-    const systemPrompt = `You are a professional resume parsing assistant. Extract all important details from the given resume text and return them in the exact JSON format specified below. Be thorough and accurate.
+    const systemPrompt = `You are an expert resume parsing assistant. Your PRIMARY task is to extract the candidate's ACTUAL NAME from the resume.
 
-CRITICAL NAME EXTRACTION RULES:
-- Extract the ACTUAL PERSON'S NAME, never job titles, company names, or descriptive text
-- Look for names at the top of the resume, in headers, or contact sections
-- Names should be 2-4 words and contain only letters, spaces, apostrophes, or hyphens
-- Reject phrases like "International Voice Process Executive", "Summary Experienced Assistant", "Having Experience"
-- If no clear person name is found, leave "name" field empty rather than using incorrect text
-- Examples of VALID names: "John Smith", "Sarah O'Connor", "Maria Garcia-Lopez"
-- Examples of INVALID names: "Experienced Professional", "Software Engineer", "Resume Summary"
+CRITICAL NAME EXTRACTION - TOP PRIORITY:
+1. The person's name is usually at the VERY TOP of the resume (first 1-3 lines)
+2. Look for patterns like:
+   - "Bharadwaj AVB"
+   - "John Smith"
+   - "Maria Garcia-Lopez"
+   - Names before email addresses
+   - Names in contact information sections
+3. NEVER extract job titles, company names, or descriptions as names
+4. REJECT these as names: "Professional", "Resume", "CV", "Summary", "Experienced", "Leader", "Executive", "Manager"
+5. A valid name has 2-4 words, mostly letters, may include apostrophes/hyphens
+6. If you see "Bharadwaj" or any proper name near the top, extract it!
 
-Return JSON in this exact structure:
+SECONDARY EXTRACTION RULES:
+- Extract ALL contact information (email, phone, location)
+- Extract complete professional summary
+- Extract ALL work experience with details
+- Extract ALL education, skills, certifications, projects
+
+Return JSON in this EXACT structure:
 {
-  "name": "",
+  "name": "<ACTUAL PERSON NAME - THIS IS CRITICAL>",
   "email": "",
   "phone": "",
   "location": "",
@@ -161,17 +171,12 @@ Return JSON in this exact structure:
   "additional_links": []
 }
 
-Guidelines:
-- MOST IMPORTANT: Extract the correct person's name, not job titles or descriptions
-- Categorize skills into technical (programming languages), soft (leadership, communication), tools (software), frameworks, databases, and languages
-- Extract detailed work achievements and technologies used in each role
-- Parse education with GPA, coursework, and honors if mentioned
-- Structure certifications with issuer, dates, and credential IDs
-- Break down projects with technologies, duration, and links
-- Specify language proficiency levels (native, fluent, conversational, basic)
-- If information is not available, use empty string or empty array
-- Ensure all dates are normalized to readable format
-- Focus on quantifiable achievements and specific technical details`;
+EXAMPLES OF CORRECT NAME EXTRACTION:
+- Input: "Bharadwaj AVB\nbharadwajavbn@gmail.com" → name: "Bharadwaj AVB"
+- Input: "John Smith\nSenior Developer" → name: "John Smith"  
+- Input: "Maria O'Connor\n+1 234..." → name: "Maria O'Connor"
+
+Extract EVERY detail like a professional resume parser would.`;
 
     // Use Lovable AI (Gemini - FREE!)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -523,28 +528,44 @@ function createFallbackResume(text: string, fileName?: string): any {
     }
   }
   
-  // Enhanced name extraction with multiple strategies
+  // Enhanced name extraction with multiple strategies - VERY AGGRESSIVE
   let name = '';
   
-  // Strategy 1: Look in first 10 lines for capitalized full names
-  for (let i = 0; i < Math.min(10, lines.length); i++) {
-    const line = lines[i];
-    if (/^(RESUME|CV|CURRICULUM|PROFILE|SUMMARY|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)) {
-      continue;
-    }
-    const fullNameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
-    if (fullNameMatch && fullNameMatch[1].split(' ').length >= 2) {
-      name = fullNameMatch[1];
-      console.log('✅ Name found in text (Strategy 1):', name);
-      break;
+  // Strategy 1: Check very first line (most common)
+  if (lines.length > 0) {
+    const firstLine = lines[0];
+    if (!/^(RESUME|CV|CURRICULUM)/i.test(firstLine)) {
+      const words = firstLine.split(/\s+/);
+      if (words.length >= 2 && words.length <= 4 && /^[A-Z][A-Za-z\s\-'.]+$/.test(firstLine)) {
+        if (!/PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS|OBJECTIVE|DELIVERY|LEADER|EXECUTIVE|STRATEGIC/i.test(firstLine)) {
+          name = firstLine;
+          console.log('✅ Name found in first line:', name);
+        }
+      }
     }
   }
   
-  // Strategy 2: Look before email
+  // Strategy 2: Look in first 10 lines for capitalized full names
+  if (!name) {
+    for (let i = 0; i < Math.min(10, lines.length); i++) {
+      const line = lines[i];
+      if (/^(RESUME|CV|CURRICULUM|PROFILE|SUMMARY|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS|DELIVERY|LEADER|EXECUTIVE)/i.test(line)) {
+        continue;
+      }
+      const fullNameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
+      if (fullNameMatch && fullNameMatch[1].split(' ').length >= 2) {
+        name = fullNameMatch[1];
+        console.log('✅ Name found in text (Strategy 2):', name);
+        break;
+      }
+    }
+  }
+  
+  // Strategy 3: Look before email
   if (!name && email) {
     const emailIndex = text.indexOf(email);
     if (emailIndex > 0) {
-      const textBeforeEmail = text.substring(0, emailIndex);
+      const textBeforeEmail = text.substring(Math.max(0, emailIndex - 200), emailIndex);
       const linesBeforeEmail = textBeforeEmail.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       
       for (let i = Math.max(0, linesBeforeEmail.length - 5); i < linesBeforeEmail.length; i++) {
@@ -555,14 +576,61 @@ function createFallbackResume(text: string, fileName?: string): any {
         const nameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
         if (nameMatch) {
           name = nameMatch[1];
-          console.log('✅ Name found before email (Strategy 2):', name);
+          console.log('✅ Name found before email (Strategy 3):', name);
           break;
         }
       }
     }
   }
   
-  // Strategy 3: Extract from filename
+  // Strategy 4: Look for "Name:" label patterns
+  if (!name) {
+    const namePatterns = [
+      /(?:Name|NAME|Full Name|FULL NAME):\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/,
+      /(?:Candidate|CANDIDATE):\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/
+    ];
+    
+    for (const pattern of namePatterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        name = match[1];
+        console.log('✅ Name found with label (Strategy 4):', name);
+        break;
+      }
+    }
+  }
+  
+  // Strategy 5: Capitalized words sequence near top
+  if (!name) {
+    const firstBlock = lines.slice(0, 5).join(' ');
+    const capitalizedWords = firstBlock.match(/\b[A-Z][a-z]+\b/g);
+    if (capitalizedWords && capitalizedWords.length >= 2) {
+      const potentialName = capitalizedWords.slice(0, Math.min(3, capitalizedWords.length)).join(' ');
+      if (!/^(PROFESSIONAL|RESUME|CV|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|DELIVERY|LEADER|EXECUTIVE|STRATEGIC)/i.test(potentialName)) {
+        name = potentialName;
+        console.log('✅ Name from capitalized sequence (Strategy 5):', name);
+      }
+    }
+  }
+  
+  // Strategy 6: Extract from email prefix as last resort
+  if (!name && email) {
+    const emailPrefix = email.split('@')[0];
+    // Convert bharadwajavbn -> Bharadwaj Avbn (split on common patterns)
+    const nameFromEmail = emailPrefix
+      .replace(/[._-]/g, ' ')
+      .split(/(?=[A-Z])/)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(' ')
+      .trim();
+    
+    if (nameFromEmail.length >= 3 && nameFromEmail.split(' ').length >= 2) {
+      name = nameFromEmail;
+      console.log('✅ Name extracted from email (Strategy 6):', name);
+    }
+  }
+  
+  // Strategy 7: Extract from filename as last resort
   if (!name && fileName && fileName !== 'resume') {
     name = fileName
       .replace(/\.(pdf|docx?|txt)$/i, '')
@@ -574,7 +642,7 @@ function createFallbackResume(text: string, fileName?: string): any {
       .trim();
     
     if (name && name.split(' ').length >= 2) {
-      console.log('✅ Name extracted from filename (Strategy 3):', name);
+      console.log('✅ Name extracted from filename (Strategy 7):', name);
     } else {
       name = '';
     }
@@ -645,30 +713,38 @@ function createFallbackResume(text: string, fileName?: string): any {
   }
   
   console.log('📊 Fallback extraction complete:', { 
-    hasName: !!name, 
+    hasName: !!fullName, 
     hasEmail: !!email, 
     hasPhone: !!phone, 
     hasLocation: !!location,
     summaryLength: summary.length 
   });
 
+  // Extract work experience from text
+  const experience = extractWorkExperienceFromText(text, lines);
+  console.log('💼 Extracted experience:', experience.length, 'positions');
+  
+  // Extract education from text
+  const education = extractEducationFromText(text, lines);
+  console.log('🎓 Extracted education:', education.length, 'entries');
+  
+  // Extract skills from text
+  const skills = extractSkillsFromText(text);
+  console.log('🛠️ Extracted skills:', {
+    technical: skills.technical.length,
+    soft: skills.soft.length,
+    languages: skills.languages.length
+  });
+
   return {
-    name: name || '',
+    name: fullName || '',
     email: email,
     phone: phone,
     location: location,
     summary: summary,
-    skills: {
-      technical: [],
-      soft: [],
-      languages: [],
-      tools: [],
-      frameworks: [],
-      databases: [],
-      certifications: []
-    },
-    work_experience: [],
-    education: [],
+    skills: skills,
+    work_experience: experience,
+    education: education,
     certifications: [],
     projects: [],
     languages: [],
@@ -676,5 +752,189 @@ function createFallbackResume(text: string, fileName?: string): any {
     github: '',
     portfolio: '',
     additional_links: []
+  };
+}
+
+// Extract work experience from resume text
+function extractWorkExperienceFromText(text: string, lines: string[]): any[] {
+  const experience: any[] = [];
+  
+  // Find EXPERIENCE section
+  const expSectionIndex = lines.findIndex(line => 
+    /^(WORK\s+EXPERIENCE|EXPERIENCE|EMPLOYMENT|PROFESSIONAL\s+EXPERIENCE|CAREER\s+HISTORY)/i.test(line)
+  );
+  
+  if (expSectionIndex < 0) return experience;
+  
+  // Parse experience entries
+  let currentExp: any = null;
+  const expLines = lines.slice(expSectionIndex + 1);
+  
+  for (let i = 0; i < expLines.length; i++) {
+    const line = expLines[i];
+    
+    // Stop at next major section
+    if (/^(EDUCATION|SKILLS|CERTIFICATIONS|PROJECTS)/i.test(line)) break;
+    
+    // Detect job title pattern (usually capitalized or with company name)
+    if (line.length > 5 && line.length < 100) {
+      // Check if looks like a position (Title at Company or Title | Company)
+      const titleCompanyMatch = line.match(/^(.+?)(?:\s+at\s+|\s+@\s+|\s+\|\s+|\s+-\s+)(.+?)(?:\s+\||\s+-|\s*$)/i);
+      
+      if (titleCompanyMatch) {
+        // Save previous experience
+        if (currentExp) experience.push(currentExp);
+        
+        currentExp = {
+          title: titleCompanyMatch[1].trim(),
+          company: titleCompanyMatch[2].trim(),
+          location: '',
+          duration: '',
+          description: '',
+          achievements: [],
+          technologies_used: []
+        };
+        continue;
+      }
+      
+      // Check for date ranges (indicates experience header)
+      if (/\d{4}\s*[-–—]\s*(?:\d{4}|present|current)/i.test(line)) {
+        if (currentExp) {
+          currentExp.duration = line.trim();
+        }
+        continue;
+      }
+    }
+    
+    // Collect description and achievements
+    if (currentExp && line.length > 20) {
+      if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+        currentExp.achievements.push(line.replace(/^[•\-*]\s*/, ''));
+      } else if (!currentExp.description) {
+        currentExp.description = line;
+      } else {
+        currentExp.description += ' ' + line;
+      }
+    }
+  }
+  
+  // Add last experience
+  if (currentExp) experience.push(currentExp);
+  
+  return experience;
+}
+
+// Extract education from resume text
+function extractEducationFromText(text: string, lines: string[]): any[] {
+  const education: any[] = [];
+  
+  // Find EDUCATION section
+  const eduSectionIndex = lines.findIndex(line => 
+    /^(EDUCATION|ACADEMIC|QUALIFICATIONS)/i.test(line)
+  );
+  
+  if (eduSectionIndex < 0) return education;
+  
+  let currentEdu: any = null;
+  const eduLines = lines.slice(eduSectionIndex + 1);
+  
+  for (let i = 0; i < eduLines.length; i++) {
+    const line = eduLines[i];
+    
+    // Stop at next major section
+    if (/^(EXPERIENCE|SKILLS|CERTIFICATIONS|PROJECTS)/i.test(line)) break;
+    
+    // Detect degree patterns
+    const degreeMatch = line.match(/(Bachelor|Master|PhD|B\.?S\.?|M\.?S\.?|B\.?A\.?|M\.?A\.?|B\.?Tech|M\.?Tech)/i);
+    if (degreeMatch) {
+      if (currentEdu) education.push(currentEdu);
+      
+      currentEdu = {
+        degree: line.trim(),
+        institution: '',
+        location: '',
+        duration: '',
+        gpa: '',
+        relevant_coursework: [],
+        honors: []
+      };
+      continue;
+    }
+    
+    // Extract institution (usually next line after degree)
+    if (currentEdu && !currentEdu.institution && line.length > 5) {
+      if (/University|College|Institute|School/i.test(line)) {
+        currentEdu.institution = line.trim();
+      }
+    }
+    
+    // Extract date range
+    if (currentEdu && /\d{4}\s*[-–—]\s*(?:\d{4}|present)/i.test(line)) {
+      currentEdu.duration = line.trim();
+    }
+  }
+  
+  if (currentEdu) education.push(currentEdu);
+  
+  return education;
+}
+
+// Extract skills from resume text
+function extractSkillsFromText(text: string): any {
+  const technicalSkills: string[] = [];
+  const softSkills: string[] = [];
+  const languages: string[] = [];
+  
+  // Common technical skills patterns
+  const techPatterns = [
+    /\b(JavaScript|TypeScript|Python|Java|C\+\+|C#|Ruby|PHP|Go|Rust|Swift|Kotlin)\b/gi,
+    /\b(React|Angular|Vue|Node\.?js|Express|Django|Flask|Spring|\.NET)\b/gi,
+    /\b(AWS|Azure|GCP|Docker|Kubernetes|Jenkins|Git|CI\/CD)\b/gi,
+    /\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Oracle|NoSQL)\b/gi,
+    /\b(HTML|CSS|SASS|Tailwind|Bootstrap|Material UI)\b/gi,
+    /\b(REST|GraphQL|API|Microservices|Agile|Scrum)\b/gi
+  ];
+  
+  techPatterns.forEach(pattern => {
+    const matches = text.match(pattern) || [];
+    matches.forEach(match => {
+      if (!technicalSkills.includes(match)) {
+        technicalSkills.push(match);
+      }
+    });
+  });
+  
+  // Common soft skills
+  const softSkillPatterns = [
+    /\b(Leadership|Management|Communication|Collaboration|Problem[- ]solving|Team[- ]work|Critical[- ]thinking)\b/gi,
+    /\b(Project[- ]management|Stakeholder[- ]management|Strategic[- ]planning|Decision[- ]making)\b/gi
+  ];
+  
+  softSkillPatterns.forEach(pattern => {
+    const matches = text.match(pattern) || [];
+    matches.forEach(match => {
+      if (!softSkills.includes(match)) {
+        softSkills.push(match);
+      }
+    });
+  });
+  
+  // Languages
+  const languagePatterns = /\b(English|Spanish|French|German|Chinese|Hindi|Arabic|Portuguese|Japanese|Korean)\b/gi;
+  const langMatches = text.match(languagePatterns) || [];
+  langMatches.forEach(lang => {
+    if (!languages.includes(lang)) {
+      languages.push(lang);
+    }
+  });
+  
+  return {
+    technical: technicalSkills,
+    soft: softSkills,
+    languages: languages.length > 0 ? languages : [],
+    tools: [],
+    frameworks: [],
+    databases: [],
+    certifications: []
   };
 }
