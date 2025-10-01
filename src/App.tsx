@@ -25,9 +25,6 @@ import { initializePerformanceOptimizations } from '@/utils/performanceOptimizat
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
-import { performanceMonitor } from '@/utils/performanceMonitor';
-import { registerServiceWorker } from '@/utils/serviceWorkerRegistration';
-import { inlineCriticalCSS } from '@/utils/criticalCSSInliner';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
@@ -179,16 +176,7 @@ const App = () => {
     try {
       const startTime = performance.now();
       
-      // Inline critical CSS for instant first paint
-      inlineCriticalCSS();
-      
-      // Register service worker for aggressive caching
-      registerServiceWorker();
-      
-      // Initialize performance monitoring (singleton pattern)
-      // Metrics will be tracked automatically
-      
-      // Apply color scheme
+      // Apply color scheme immediately
       const savedColorScheme = localStorage.getItem('colorScheme');
       if (savedColorScheme) {
         document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
@@ -199,32 +187,28 @@ const App = () => {
         turboCore.init();
       }
 
-      // Initialize performance optimizations
-      initializePerformanceOptimizations();
-      
-      // Initialize jobs-specific optimizations
-      initializeJobsOptimizations(queryClient).catch(console.error);
+      // Defer non-critical optimizations to avoid blocking initial render
+      const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+      idleCallback(() => {
+        // Initialize performance optimizations
+        initializePerformanceOptimizations();
+        
+        // Initialize jobs-specific optimizations
+        initializeJobsOptimizations(queryClient).catch(console.error);
 
-      // Enable route preloading for instant navigation
-      import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
-        enableRoutePreloading();
+        // Enable route preloading for instant navigation
+        import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
+          enableRoutePreloading();
+        });
+
+        // Initialize AI-powered performance features
+        import('@/hooks/usePredictivePreloading').then(({ routePredictor }) => {
+          console.log('🤖 AI-powered performance features initialized');
+        });
+
+        // Track initial load performance
+        advancedPerformanceMonitor.trackRouteChange('/', startTime);
       });
-
-      // Initialize AI-powered performance features
-      import('@/hooks/usePredictivePreloading').then(({ routePredictor }) => {
-        console.log('🤖 AI-powered performance features initialized');
-      });
-
-      // Track initial load performance
-      advancedPerformanceMonitor.trackRouteChange('/', startTime);
-      
-      // Log performance metrics after load
-      if (import.meta.env.DEV) {
-        setTimeout(() => {
-          const metrics = performanceMonitor.getMetrics();
-          console.log('📊 Performance Metrics:', metrics);
-        }, 3000);
-      }
     } catch (error) {
       console.warn('App initialization error:', error);
     }

@@ -86,7 +86,8 @@ export const AppleHeroSection = () => {
                 <img
                   src={careerPassportPreview}
                   alt="TalentXcel Career Passport - Professional dashboard for tracking career progress"
-                  loading="eager"
+                  loading="lazy"
+                  decoding="async"
                   width="600"
                   height="400"
                   className="block w-full h-auto object-cover"

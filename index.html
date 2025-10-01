@@ -8,13 +8,20 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56"></script>
+    <!-- Google Analytics - Deferred -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-CMYNTTNT56');
+      
+      // Load GA script asynchronously after page load
+      window.addEventListener('load', () => {
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56';
+        script.async = true;
+        document.head.appendChild(script);
+      });
     </script>
     <title>TalentXcel - AI-Powered Career Platform</title>
     <meta name="description" content="Your Career. One Platform. Endless Possibilities. Find jobs, grow skills, network with professionals, and accelerate your career with AI-powered tools." />
@@ -147,26 +154,11 @@
     <script src="/chunk-error-handler.js"></script>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Improved cache and version management -->
+    <!-- Performance optimization script -->
     <script>
-      (function() {
-        // Prevent caching issues by adding version check
-        const APP_VERSION = Date.now().toString();
-        sessionStorage.setItem('app_version', APP_VERSION);
-        
-        // Only clear service workers and caches on first load
-        const isFirstLoad = !sessionStorage.getItem('app_loaded');
-        
-        if (isFirstLoad && 'serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => registration.unregister());
-          });
-          if ('caches' in window) {
-            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-          }
-          sessionStorage.setItem('app_loaded', 'true');
-        }
-      })();
+      // Quick version tracking only
+      const APP_VERSION = Date.now().toString();
+      sessionStorage.setItem('app_version', APP_VERSION);
     </script>
   </body>
 </html>
