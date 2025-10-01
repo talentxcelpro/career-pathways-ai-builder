@@ -81,153 +81,131 @@ serve(async (req) => {
 
     console.log('Processing resume text for:', fileName);
 
-    const systemPrompt = `You are an expert AI resume parser. Your task is to extract EVERY detail from the resume with 100% accuracy, exactly as it appears.
+    const systemPrompt = `You are an expert AI resume parser. Extract EVERY detail with 100% accuracy.
 
-⚠️ CRITICAL NAME EXTRACTION RULES (HIGHEST PRIORITY):
-1. The candidate's name is ALWAYS at the very top of the resume (first line or within first 3 lines)
-2. Names can appear in these formats:
-   - ALL CAPS: "EMIN MARDANOV"
-   - Spaced ALL CAPS: "E M I N   M A R D A N O V" (join letters: "EMIN MARDANOV")
-   - Title Case: "Emin Mardanov" or "Bharadwaj AVB"
-   - ALL CAPS with icons removed: "📍 EMIN MARDANOV 📞" → "EMIN MARDANOV"
+🎯 NAME EXTRACTION (CRITICAL - LINE 1 OF RESUME):
+The candidate's name is in the FIRST LINE or top section.
+- Extract EXACTLY as written: "Aasim Syed", "EMIN MARDANOV", "John Smith"
+- If spaced: "E M I N   M A R D A N O V" → join to "EMIN MARDANOV"
+- Remove icons: "📍 JOHN DOE 📞" → "JOHN DOE"
 
-3. NEVER extract as name:
-   ❌ Job titles: "Civil Engineer", "Construction Supervisor", "Manager"
-   ❌ Locations: "Baku, Azerbaijan", "India", "Mumbai"
-   ❌ Companies: "TCM-KT JV", "Maire Tecnimont"
-   ❌ Section headers: "PROFESSIONAL SUMMARY", "EXPERIENCE"
+❌ NEVER extract these as names:
+- Job titles: "Senior Process Executive", "Civil Engineer"
+- Locations: "Madhapur, Hyderabad", "Baku, Azerbaijan"  
+- Companies: "Infosys", "Microsoft"
 
-4. Name validation - must be:
-   ✅ 2-4 words (e.g., "Emin Mardanov", "John Michael Smith")
-   ✅ Capitalized properly (First letter caps or ALL CAPS)
-   ✅ Personal name, not a role or location
+📍 CONTACT DETAILS (extract exactly):
+- Phone: Include country code if present ("+91 8408858300" or "8408858300")
+- Email: Full address ("syedben80@gmail.com")
+- Location: Full address ("Madhapur, Hyderabad 500081") or city/country
+- URLs: LinkedIn, GitHub, portfolio
 
-📋 CONTACT INFORMATION (extract EXACTLY as shown):
-- Phone: Include country codes ("+994 51 789 9614")
-- Email: Full email address
-- Location: City, Country format ("Baku, Azerbaijan")
-- LinkedIn, GitHub, portfolio URLs
+📝 PROFESSIONAL SUMMARY:
+Extract the COMPLETE summary paragraph without truncation or corruption.
 
-💼 WORK EXPERIENCE (extract EVERY job with ALL details):
-For each position extract:
-- Job title (exact): "Construction Civil Supervisor"
-- Company (full name): "TCM-KT JV Azerbaijan (Maire Tecnimont)"
-- Project (if mentioned): "SOCAR HAOR Project"
-- Location: "Baku, Azerbaijan"
-- Dates (preserve format): "Jun 2019 – Present" or "February 2022 - March 2024"
-- ALL bullet points word-for-word as separate achievements
-- ALL responsibilities and accomplishments
+💼 WORK EXPERIENCE (most recent first):
+For EACH job, extract separately and completely:
 
-🎓 EDUCATION (extract ALL degrees):
-- Full degree name: "Bachelor of Science in Civil Engineering"
-- Institution: "Azerbaijan University of Architecture and Construction"
-- Location, graduation dates, GPA, honors, coursework
-
-📜 CERTIFICATIONS (extract EVERY certification):
-Extract ALL certifications exactly as listed:
-- "SA-8000 Social Accountability"
-- "Confined Space Safety Awareness"
-- "H2S Awareness Training"
-- "Working at Height Awareness"
-- Include issuing organization and dates if present
-
-🛠️ TECHNICAL SKILLS (extract comprehensively):
-Categorize skills properly:
-- Software/Tools: AutoCAD, Navisworks, MS Project, MS Office, Primavera P6
-- Technical Expertise: Civil supervision, QA/QC, underground utilities, site supervision, pre-commissioning, excavation
-- Languages WITH proficiency: "English (Fluent)", "Turkish (Fluent)", "Azerbaijani (Native)"
-- Soft Skills: Leadership, team management, project coordination
-- Other: Driving licenses ("B, C"), safety certifications
-
-📊 PROFESSIONAL SUMMARY:
-Extract the COMPLETE professional summary/objective paragraph word-for-word, including all experience mentions and achievements.
-
-Return ONLY this JSON structure with ALL extracted data:
-
+Structure:
 {
-  "name": "<CANDIDATE'S ACTUAL NAME - NOT JOB TITLE OR LOCATION>",
-  "email": "<email@domain.com>",
-  "phone": "<+country code phone>",
-  "location": "<City, Country>",
-  "linkedin": "<LinkedIn URL if present>",
-  "github": "<GitHub URL if present>",
-  "portfolio": "<Portfolio URL if present>",
-  "summary": "<Complete professional summary paragraph>",
+  "title": "Exact job title from resume",
+  "company": "Full company name including 'Worked for' if present",
+  "duration": "Month YYYY – Month YYYY" (preserve exact format),
+  "location": "Work location if mentioned",
+  "description": "Brief role description if any",
+  "achievements": [
+    "Full bullet point 1 - complete sentence",
+    "Full bullet point 2 - complete sentence",
+    "Full bullet point 3 - complete sentence"
+  ]
+}
+
+Example parsing:
+Input: "Senior Process Executive
+Infosys - Worked for Microsoft
+July 2024 – December 2024
+- Resolved technical and payment-related issues for Microsoft users via chat and voice support, ensuring high customer satisfaction.
+- Performed password resets through troubleshooting."
+
+Output: {
+  "title": "Senior Process Executive",
+  "company": "Infosys - Worked for Microsoft",
+  "duration": "July 2024 – December 2024",
+  "location": "",
+  "description": "",
+  "achievements": [
+    "Resolved technical and payment-related issues for Microsoft users via chat and voice support, ensuring high customer satisfaction.",
+    "Performed password resets through troubleshooting."
+  ]
+}
+
+🎓 EDUCATION (separate from experience!):
+{
+  "degree": "Full degree name",
+  "institution": "Full institution name",
+  "duration": "YYYY – YYYY",
+  "location": "Location if present",
+  "gpa": "GPA if present"
+}
+
+🛠️ SKILLS:
+Categorize ALL skills:
+- technical: ["Mac/Windows Support", "JAMF", "Okta", "MDM Administration"]
+- tools: ["AutoCAD", "Confluence", "Slack"]
+- soft: ["Problem-solving", "Leadership", "Stakeholder management"]
+- languages: [{"language": "English", "proficiency": "Fluent"}]
+
+📜 CERTIFICATIONS/AWARDS:
+{
+  "name": "Full award/cert name",
+  "issuer": "Issuing organization",
+  "date": "Date if present"
+}
+
+Return ONLY this JSON:
+{
+  "name": "CANDIDATE ACTUAL NAME",
+  "email": "email@domain.com",
+  "phone": "+XX XXXXXXXXXX or XXXXXXXXXX",
+  "location": "Full location from resume",
+  "linkedin": "URL if present",
+  "github": "URL if present",
+  "portfolio": "URL if present",
+  "summary": "COMPLETE professional summary without truncation",
   "work_experience": [
     {
-      "title": "<Exact job title>",
-      "company": "<Full company name>",
-      "project": "<Project name if mentioned>",
-      "location": "<Work location>",
-      "duration": "<Start date – End date or Present>",
-      "description": "<Overall job description if any>",
-      "achievements": [
-        "<Bullet point 1>",
-        "<Bullet point 2>",
-        "<Bullet point 3>"
-      ],
-      "technologies_used": ["<tech1>", "<tech2>"]
+      "title": "Job Title",
+      "company": "Company Name",
+      "duration": "Month YYYY – Month YYYY or Present",
+      "location": "Location",
+      "description": "Description if any",
+      "achievements": ["Bullet 1", "Bullet 2", "Bullet 3"],
+      "technologies_used": ["Tech1", "Tech2"]
     }
   ],
   "education": [
     {
-      "degree": "<Full degree name>",
-      "institution": "<University/Institution name>",
-      "location": "<City, Country>",
-      "duration": "<Start year – End year or graduation year>",
-      "gpa": "<GPA if mentioned>",
-      "relevant_coursework": ["<course1>", "<course2>"],
-      "honors": ["<honor1>", "<honor2>"]
+      "degree": "Degree Name",
+      "institution": "Institution",
+      "duration": "YYYY – YYYY",
+      "location": "Location",
+      "gpa": "GPA"
     }
   ],
   "certifications": [
     {
-      "name": "<Full certification name>",
-      "issuer": "<Issuing organization>",
-      "date": "<Issue date>"
+      "name": "Cert Name",
+      "issuer": "Issuer",
+      "date": "Date"
     }
   ],
   "skills": {
-    "technical": ["<Civil supervision>", "<Underground utilities>", "<QA/QC>"],
-    "tools": ["<AutoCAD>", "<Navisworks>", "<MS Office>"],
-    "languages": ["<English (Fluent)>", "<Turkish (Fluent)>", "<Azerbaijani (Native)>"],
-    "soft": ["<Leadership>", "<Team management>"],
-    "other": ["<Driving License: B, C>"]
-  },
-  "projects": [],
-  "awards": [],
-  "additional_links": []
-}
-
-🔍 EXTRACTION EXAMPLES:
-
-Example 1 - Spaced Name:
-Input: "E M I N   M A R D A N O V"
-Output: "name": "EMIN MARDANOV"
-
-Example 2 - ALL CAPS with icons:
-Input: "📍 EMIN MARDANOV 📞 +994 51 789 9614"
-Output: "name": "EMIN MARDANOV"
-
-Example 3 - Work Experience:
-Input: "Construction Civil Supervisor | TCM-KT JV Azerbaijan
-Jun 2019 – Present
-• Supervised underground infrastructure"
-Output: {
-  "title": "Construction Civil Supervisor",
-  "company": "TCM-KT JV Azerbaijan",
-  "duration": "Jun 2019 – Present",
-  "achievements": ["Supervised underground infrastructure"]
-}
-
-⚡ CRITICAL REMINDERS:
-1. Extract the candidate's REAL NAME from the top - not job title or location
-2. Extract EVERY certification listed
-3. Extract ALL technical skills and software
-4. Include proficiency levels for languages
-5. Keep ALL bullet points as separate achievement entries
-6. Preserve exact date formats
-7. Extract EVERY detail - be comprehensive like ChatGPT`;
+    "technical": ["Skill1", "Skill2"],
+    "tools": ["Tool1", "Tool2"],
+    "soft": ["Soft1", "Soft2"],
+    "languages": [{"language": "Language", "proficiency": "Level"}]
+  }
+}`;
 
     // Use Lovable AI (Gemini - FREE!)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -240,7 +218,7 @@ Output: {
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Parse this resume text:\n\n${extractedText.substring(0, 30000)}` }
+          { role: 'user', content: `Extract ALL information from this resume. Focus on accuracy and completeness:\n\n${extractedText.substring(0, 30000)}` }
         ],
         temperature: 0.3,
       }),
