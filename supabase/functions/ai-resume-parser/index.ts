@@ -2,6 +2,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -12,7 +14,6 @@ const corsHeaders = {
 serve(async (req) => {
   console.log('=== AI Resume Parser Function Called ===');
   console.log('Method:', req.method);
-  console.log('Headers:', Object.fromEntries(req.headers.entries()));
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -31,9 +32,8 @@ serve(async (req) => {
 
   let fileName = 'resume';
   try {
-    const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAiApiKey) {
-      throw new Error('Missing OpenAI API key');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('Missing LOVABLE_API_KEY');
     }
 
     const requestBody = await req.json();
@@ -76,9 +76,6 @@ serve(async (req) => {
     }
 
     console.log('Processing resume text for:', fileName);
-
-    // Import AI fallback utility
-    const { generateJSONWithFallback } = await import('../_shared/ai-fallback.ts');
 
     const systemPrompt = `You are a professional resume parsing assistant. Extract all important details from the given resume text and return them in the exact JSON format specified below. Be thorough and accurate.
 
@@ -172,19 +169,66 @@ Guidelines:
 - Ensure all dates are normalized to readable format
 - Focus on quantifiable achievements and specific technical details`;
 
-    // Use AI fallback for better reliability
-    const aiResult = await generateJSONWithFallback(
-      systemPrompt,
-      `Parse this resume text:\n\n${extractedText}`,
-      {
-        model: 'gpt-5-mini-2025-08-07',
-        maxTokens: 2000,
-        temperature: 0.3
-      }
-    );
+    // Use Lovable AI (Gemini - FREE!)
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: `Parse this resume text:\n\n${extractedText.substring(0, 8000)}` }
+        ],
+        temperature: 0.3,
+      }),
+    });
 
-    console.log(`✅ Resume parsed successfully using ${aiResult.provider}`);
-    const parsedResume = aiResult.data;
+    if (!response.ok) {
+      if (response.status === 429) {
+        console.error('Rate limit exceeded');
+        return new Response(
+          JSON.stringify({ error: "Rate limits exceeded. Please try again shortly." }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      if (response.status === 402) {
+        console.error('Payment required');
+        return new Response(
+          JSON.stringify({ error: "AI credits exhausted." }),
+          {
+            status: 402,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      throw new Error(`AI gateway error: ${response.status}`);
+    }
+
+    const aiData = await response.json();
+    const parsedText = aiData.choices[0].message.content;
+
+    console.log('Raw AI response received');
+
+    // Extract JSON from response (handle markdown code blocks)
+    let parsedResume;
+    try {
+      // Remove markdown code blocks if present
+      const jsonMatch = parsedText.match(/```json\n([\s\S]*?)\n```/) || 
+                        parsedText.match(/```\n([\s\S]*?)\n```/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : parsedText;
+      
+      parsedResume = JSON.parse(jsonStr);
+      
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', parseError);
+      parsedResume = createFallbackResume(extractedText, fileName);
+    }
     
     // Validate parsed resume structure
     if (!parsedResume || typeof parsedResume !== 'object') {

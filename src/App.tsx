@@ -59,6 +59,7 @@ import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
 import UnifiedResumeHub from './pages/resume/UnifiedResumeHub';
 import UnifiedResumeBuilder from './pages/resume/UnifiedResumeBuilder';
+import UnifiedUploadPage from './pages/resume/UnifiedUploadPage';
 import Tools from './pages/Tools';
 import SEODashboard from './pages/SEODashboard';
 import PublicResumeBuilder from './pages/tools/PublicResumeBuilder';
@@ -344,8 +345,9 @@ const App = () => {
                                 <Route path="/mobile/reels" element={<React.Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></React.Suspense>} />
                                  <Route path="/mobile/passport" element={<MobilePassport />} />
                                  
-                                 {/* Unified Resume Builder */}
+                                {/* Unified Resume Builder */}
                                  <Route path="/resume" element={<UnifiedResumeHub />} />
+                                 <Route path="/resume/upload" element={<UnifiedUploadPage />} />
                                  <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
                                  <Route path="/resume/build/:id" element={<UnifiedResumeBuilder />} />
                                  
