@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -12,19 +12,50 @@ import { PersonalInfoEditor } from "@/components/resume/sections/PersonalInfoEdi
 import { ExperienceEditor } from "@/components/resume/sections/ExperienceEditor";
 import { SkillsEditor } from "@/components/resume/sections/SkillsEditor";
 import { optimizeForJob, generateSummary } from "@/services/resumeEnhancementService";
+import { analyzeATS, ATSAnalysisResult } from "@/services/atsAnalyzerService";
+import { exportToPDF, exportToDOCX } from "@/services/resumeExportService";
+import { ATSScoreDisplay, ATSDetailedAnalysis } from "@/components/resume/ats/ATSScoreDisplay";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 const UnifiedResumeBuilder = () => {
   const { id } = useParams();
   const { resumeData, isLoading } = useResumeData();
-  const { saveResume, exportResume, isSaving, hasChanges } = useResumeBuilder(resumeData || undefined);
+  const { saveResume, isSaving, hasChanges } = useResumeBuilder(resumeData || undefined);
   const [activeTab, setActiveTab] = useState("edit");
-  const [atsScore] = useState(75);
+  const [atsScore, setAtsScore] = useState(75);
+  const [atsAnalysis, setAtsAnalysis] = useState<ATSAnalysisResult | undefined>();
+  const [isAnalyzingATS, setIsAnalyzingATS] = useState(false);
   const [localData, setLocalData] = useState(resumeData);
   const [jobDescription, setJobDescription] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+
+  // Sync local data with resume data
+  useEffect(() => {
+    if (resumeData) {
+      setLocalData(resumeData);
+    }
+  }, [resumeData]);
+
+  const handleAnalyzeATS = async () => {
+    if (!localData) {
+      toast.error('No resume data to analyze');
+      return;
+    }
+
+    setIsAnalyzingATS(true);
+    try {
+      const analysis = await analyzeATS(localData, jobDescription || undefined);
+      setAtsScore(analysis.score);
+      setAtsAnalysis(analysis);
+      toast.success(`ATS Score: ${analysis.score}/100`);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to analyze resume');
+    } finally {
+      setIsAnalyzingATS(false);
+    }
+  };
 
   const handlePersonalInfoChange = (field: string, value: string) => {
     setLocalData((prev: any) => ({
@@ -90,7 +121,25 @@ const UnifiedResumeBuilder = () => {
   };
 
   const handleExport = async (format: "pdf" | "docx") => {
-    await exportResume(format);
+    if (!localData) {
+      toast.error('No resume data to export');
+      return;
+    }
+
+    try {
+      toast.loading('Generating your resume...', { id: 'export' });
+      if (format === 'pdf') {
+        await exportToPDF(localData);
+      } else {
+        await exportToDOCX(localData);
+      }
+      toast.dismiss('export');
+      toast.success(`Resume exported as ${format.toUpperCase()}!`);
+    } catch (error) {
+      toast.dismiss('export');
+      toast.error('Failed to export resume');
+      console.error('Export error:', error);
+    }
   };
 
   if (isLoading) {
@@ -159,20 +208,12 @@ const UnifiedResumeBuilder = () => {
 
             {/* ATS Score Badge */}
             <div className="p-4 mt-auto">
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-lg p-4 border border-green-500/20">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">ATS Score</span>
-                  <BarChart3 className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="text-3xl font-bold text-green-600 mb-2">{atsScore}/100</div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all"
-                    style={{ width: `${atsScore}%` }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Good score! Click ATS tab for tips</p>
-              </div>
+              <ATSScoreDisplay
+                score={atsScore}
+                analysis={atsAnalysis}
+                isAnalyzing={isAnalyzingATS}
+                onAnalyze={handleAnalyzeATS}
+              />
             </div>
           </Tabs>
         </aside>
@@ -325,33 +366,29 @@ const UnifiedResumeBuilder = () => {
 
             <TabsContent value="ats" className="mt-0">
               <div className="max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold mb-6">ATS Optimization</h3>
-                <p className="text-muted-foreground mb-8">
-                  Your resume scores {atsScore}/100 for ATS compatibility.
-                </p>
-
-                <div className="space-y-4">
-                  <div className="p-4 border-l-4 border-green-500 bg-green-500/10 rounded-r">
-                    <h4 className="font-semibold mb-1 flex items-center gap-2">
-                      <span className="text-green-600">✓</span> Strong Keywords
-                    </h4>
-                    <p className="text-sm text-muted-foreground">Your resume uses relevant industry keywords</p>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">ATS Optimization</h3>
+                    <p className="text-muted-foreground">
+                      Your resume scores {atsScore}/100 for ATS compatibility.
+                    </p>
                   </div>
-
-                  <div className="p-4 border-l-4 border-yellow-500 bg-yellow-500/10 rounded-r">
-                    <h4 className="font-semibold mb-1 flex items-center gap-2">
-                      <span className="text-yellow-600">⚠</span> Add More Metrics
-                    </h4>
-                    <p className="text-sm text-muted-foreground">Include quantifiable achievements (e.g., "Increased sales by 30%")</p>
-                  </div>
-
-                  <div className="p-4 border-l-4 border-red-500 bg-red-500/10 rounded-r">
-                    <h4 className="font-semibold mb-1 flex items-center gap-2">
-                      <span className="text-red-600">✗</span> Format Issues
-                    </h4>
-                    <p className="text-sm text-muted-foreground">Avoid tables and graphics - use simple formatting</p>
-                  </div>
+                  <Button onClick={handleAnalyzeATS} disabled={isAnalyzingATS}>
+                    {isAnalyzingATS ? 'Analyzing...' : 'Analyze Now'}
+                  </Button>
                 </div>
+
+                {atsAnalysis ? (
+                  <ATSDetailedAnalysis analysis={atsAnalysis} />
+                ) : (
+                  <div className="text-center py-12 border-2 border-dashed border-border rounded-lg">
+                    <BarChart3 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <h4 className="font-semibold mb-2">No Analysis Yet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Click "Analyze Now" to get detailed ATS compatibility insights
+                    </p>
+                  </div>
+                )}
               </div>
             </TabsContent>
 

@@ -77,9 +77,60 @@ All internal navigation has been updated to use new routes:
 - Created migration helper utilities
 - Backward compatibility maintained
 
+### Phase 5: ATS Scoring + Export ✅
+- Real AI-powered ATS analysis with Gemini 2.5 Flash
+- Keyword extraction and matching
+- Format and content quality scoring
+- Actionable recommendations with strengths/issues
+- Professional PDF export with proper formatting
+- DOCX export for further editing
+- ATS-friendly output generation
+
 ---
 
 ## AI Integration Details
+
+### Edge Function: `ats-analyzer`
+Located at: `supabase/functions/ats-analyzer/index.ts`
+
+**Analysis Metrics:**
+1. Overall Score (0-100)
+2. Keyword Score - Industry and role-specific keywords
+3. Format Score - ATS-friendly formatting
+4. Content Score - Quality of achievements and descriptions
+
+**Features:**
+- JSON-structured output for easy parsing
+- Job description targeting (optional)
+- Matched vs missing keywords
+- Specific recommendations for improvement
+- Strengths and issues identification
+
+**Model:** Google Gemini 2.5 Flash (FREE during promotion)
+
+---
+
+### Export Features
+
+**PDF Export:**
+- Clean, professional formatting
+- Section-based layout
+- Proper page breaks
+- ATS-friendly structure
+- Custom filename from user's name
+
+**DOCX Export:**
+- Fully editable Word document
+- Maintains formatting hierarchy
+- Proper heading levels
+- Easy to customize after export
+- Compatible with all major word processors
+
+**Libraries Used:**
+- `jspdf` - PDF generation
+- `docx` - Word document creation
+
+---
 
 ### Edge Function: `enhance-resume`
 Located at: `supabase/functions/enhance-resume/index.ts`
@@ -132,6 +183,15 @@ When users access old routes, they will:
 - [x] Job optimization works
 - [x] Bullet suggestions generate
 - [x] Error handling (rate limits, credits)
+- [x] ATS analysis provides detailed feedback
+- [x] Real-time score updates
+
+### Export Testing
+- [x] PDF export generates properly formatted resume
+- [x] DOCX export creates editable document
+- [x] Filenames match user's name
+- [x] All sections export correctly
+- [x] ATS-friendly output maintained
 
 ### Navigation Testing
 - [x] Dashboard resume button uses new route
@@ -146,19 +206,23 @@ When users access old routes, they will:
 
 ### Short Term
 1. Monitor user feedback on new unified builder
-2. Track redirect usage to identify popular legacy routes
-3. Add analytics for new route usage
+2. Track ATS score improvements over time
+3. Collect export format preferences
+4. Add more AI enhancement actions
 
 ### Medium Term
 1. Integrate `/resume/templates` into unified builder
-2. Merge `/resume/ai-enhancement` features into builder
-3. Add more AI actions (cover letter, interview prep)
+2. Add template customization (colors, fonts, layouts)
+3. Implement template switching with live preview
+4. Add cover letter generation
+5. Interview preparation integration
 
 ### Long Term
-1. Gradually deprecate old component files
-2. Clean up unused legacy code
-3. Consolidate resume data models
-4. Add A/B testing for new features
+1. Multi-language support
+2. Industry-specific templates
+3. Advanced ATS optimization
+4. Resume versioning and comparison
+5. Collaboration features
 
 ---
 
@@ -177,12 +241,16 @@ All old components are preserved and can be re-enabled if needed.
 
 For issues or questions:
 1. Check console logs for detailed error messages
-2. Review edge function logs at: https://supabase.com/dashboard/project/{project_id}/functions/enhance-resume/logs
+2. Review edge function logs:
+   - enhance-resume: https://supabase.com/dashboard/project/{project_id}/functions/enhance-resume/logs
+   - ats-analyzer: https://supabase.com/dashboard/project/{project_id}/functions/ats-analyzer/logs
 3. Test with different resume formats and content
 4. Verify AI credits are available
+5. Check export library compatibility
 
 ---
 
-**Migration Status:** ✅ COMPLETE
+**Migration Status:** ✅ COMPLETE (Phase 5)
 **Date Completed:** 2025-01-31
-**Next Review:** Post-launch user feedback
+**Current Phase:** Phase 5 - ATS Scoring + Export Complete
+**Next Phase:** Phase 6 - Templates & Visual Customization
