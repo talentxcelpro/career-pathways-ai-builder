@@ -158,15 +158,15 @@ const UnifiedResumeBuilder = () => {
       </Helmet>
 
       <div className="flex h-screen overflow-hidden bg-background">
-        {/* Left Sidebar */}
-        <aside className="w-64 border-r border-border bg-card flex flex-col">
-          <div className="p-4 border-b border-border">
-            <h2 className="font-semibold text-lg">Resume Builder</h2>
-            <p className="text-xs text-muted-foreground mt-1">AI-Powered Editor</p>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex">
+          {/* Left Sidebar */}
+          <aside className="w-64 border-r border-border bg-card flex flex-col">
+            <div className="p-4 border-b border-border">
+              <h2 className="font-semibold text-lg">Resume Builder</h2>
+              <p className="text-xs text-muted-foreground mt-1">AI-Powered Editor</p>
+            </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-            <TabsList className="grid grid-cols-1 gap-2 p-4 bg-transparent">
+            <TabsList className="grid grid-cols-1 gap-2 p-4 bg-transparent flex-none">
               <TabsTrigger 
                 value="edit" 
                 className="justify-start data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -215,8 +215,7 @@ const UnifiedResumeBuilder = () => {
                 onAnalyze={handleAnalyzeATS}
               />
             </div>
-          </Tabs>
-        </aside>
+          </aside>
 
         {/* Center Panel - Editor */}
         <main className="flex-1 flex flex-col overflow-hidden">
@@ -257,7 +256,7 @@ const UnifiedResumeBuilder = () => {
 
           {/* Editor Content */}
           <div className="flex-1 overflow-auto p-6">
-            <TabsContent value="edit" className="mt-0">
+            <TabsContent value="edit" className="mt-0 h-full">
               <div className="max-w-4xl mx-auto space-y-8">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Personal Information</h3>
@@ -446,6 +445,7 @@ const UnifiedResumeBuilder = () => {
             </TabsContent>
           </div>
         </main>
+        </Tabs>
 
         {/* Right Panel - Live Preview */}
         <aside className="w-96 border-l border-border bg-muted/20 p-6 overflow-auto">
