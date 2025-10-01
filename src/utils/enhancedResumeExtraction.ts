@@ -110,12 +110,13 @@ export class EnhancedResumeExtractor {
   private static async callAIParser(extractedText: string, fileName: string): Promise<EnhancedParsingResult> {
     try {
       console.log('🤖 Calling AI resume parser...');
+      console.log('📝 Extracted text length:', extractedText.length);
+      console.log('📋 First 200 chars:', extractedText.substring(0, 200));
       
       const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
         body: {
-          file: `data:text/plain;base64,${btoa(extractedText)}`,
-          fileName,
-          fileType: 'text/plain'
+          extractedText: extractedText,
+          fileName: fileName
         }
       });
 
@@ -124,7 +125,13 @@ export class EnhancedResumeExtractor {
         throw new Error(error.message || 'AI parsing failed');
       }
 
+      if (!data || !data.success) {
+        console.error('AI parser returned unsuccessful result:', data);
+        throw new Error(data?.error || 'AI parsing returned unsuccessful result');
+      }
+
       console.log('✅ AI parsing completed successfully');
+      console.log('📊 Parsed data structure:', Object.keys(data.data || {}));
       return { success: data.success, data: data.data, error: data.error };
     } catch (error) {
       console.error('❌ AI parser failed:', error);
