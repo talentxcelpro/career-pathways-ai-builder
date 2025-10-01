@@ -129,6 +129,7 @@ import { turboCore } from "@/utils/turboCore";
 import { advancedPerformanceMonitor } from "@/utils/advancedPerformanceMonitor";
 import { PerformanceDashboard } from "@/components/performance/PerformanceDashboard";
 import { ConnectionStatusIndicator } from "@/components/realtime/ConnectionStatusIndicator";
+import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
 import AdminVideoManager from "./pages/AdminVideoManager";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import CourseDetail from "./pages/learning/CourseDetail";
@@ -453,6 +454,8 @@ const App = () => {
                   </OptimizedAuthProvider>
               </BrowserRouter>
            </HelmetProvider>
+           {/* Mobile Status Bar - Shows offline/battery status */}
+           <MobileStatusBar />
            {/* Real-time Connection Status */}
            <ConnectionStatusIndicator />
            {/* Performance Dashboard - Dev Mode Only */}
