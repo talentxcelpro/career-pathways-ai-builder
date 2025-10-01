@@ -82,18 +82,14 @@ const UnifiedResumeHub = () => {
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container mx-auto px-4 py-12 max-w-7xl">
-          {/* Logo in top-left corner */}
-          <div className="absolute top-6 left-6">
-            <img 
-              src={talentxcelLogo} 
-              alt="TalentXcel Logo" 
-              className="h-10 w-10 object-contain"
-            />
-          </div>
-
           {/* Hero Section */}
           <div className="text-center mb-16 animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <img 
+                src={talentxcelLogo} 
+                alt="TalentXcel Logo" 
+                className="h-5 w-5 object-contain"
+              />
               <Sparkles className="h-4 w-4" />
               TalentXcel AI-Powered Resume Builder
             </div>

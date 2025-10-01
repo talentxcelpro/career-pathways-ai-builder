@@ -180,7 +180,7 @@ Guidelines:
         model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Parse this resume text:\n\n${extractedText.substring(0, 8000)}` }
+          { role: 'user', content: `Parse this resume text:\n\n${extractedText.substring(0, 30000)}` }
         ],
         temperature: 0.3,
       }),
