@@ -1,51 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-jobs.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-companies.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
     <loc>https://talentxcel.in/sitemap-network.xml</loc>
-    <lastmod>2025-10-01</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-resume.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-tools.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-learning.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-careermap.xml</loc>
-    <lastmod>2025-10-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-careerpassport.xml</loc>
-    <lastmod>2025-10-01</lastmod>
+    <loc>https://talentxcel.in/sitemap-jobs.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://talentxcel.in/sitemap-employer.xml</loc>
-    <lastmod>2025-10-01</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-companies.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-resume.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-tools.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-services.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-learning.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-careermap.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-careerpassport.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://talentxcel.in/sitemap-marketplace.xml</loc>
-    <lastmod>2025-10-01</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://talentxcel.in/sitemap-events.xml</loc>
-    <lastmod>2025-10-01</lastmod>
   </sitemap>
 </sitemapindex>
