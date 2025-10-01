@@ -81,60 +81,85 @@ serve(async (req) => {
 
     console.log('Processing resume text for:', fileName);
 
-    const systemPrompt = `You are an expert resume parsing assistant. Your PRIMARY task is to extract the candidate's ACTUAL NAME from the resume.
+    const systemPrompt = `You are an expert resume parser. Extract EVERY detail from the resume EXACTLY as written.
 
-CRITICAL NAME EXTRACTION - TOP PRIORITY:
-1. The person's name is usually at the VERY TOP of the resume (first 1-3 lines)
-2. Look for patterns like:
-   - "Bharadwaj AVB"
-   - "John Smith"
-   - "Maria Garcia-Lopez"
-   - Names before email addresses
-   - Names in contact information sections
-3. NEVER extract job titles, company names, or descriptions as names
-4. REJECT these as names: "Professional", "Resume", "CV", "Summary", "Experienced", "Leader", "Executive", "Manager"
-5. A valid name has 2-4 words, mostly letters, may include apostrophes/hyphens
-6. If you see "Bharadwaj" or any proper name near the top, extract it!
+CRITICAL EXTRACTION RULES:
 
-SECONDARY EXTRACTION RULES:
-- Extract ALL contact information (email, phone, location)
-- Extract complete professional summary
-- Extract ALL work experience with details
-- Extract ALL education, skills, certifications, projects
+1. NAME EXTRACTION (HIGHEST PRIORITY):
+   - The name is ALWAYS the first prominent text at the top, often in ALL CAPS or large font
+   - Examples: "EMIN MARDANOV", "E M I N M A R D A N O V", "John Smith"
+   - Appears BEFORE any icons (📍📞), location, phone, or email
+   - NEVER extract: job titles (Engineer, Supervisor), locations (Baku, Azerbaijan), companies
+   - Look for 2-4 words that are person names, not roles or places
+
+2. CONTACT INFORMATION (extract exactly as shown):
+   - Phone with country codes (e.g., "+994 51 789 9614")
+   - Email addresses
+   - Location (City, Country format)
+   - LinkedIn, GitHub, portfolio URLs
+
+3. PROFESSIONAL SUMMARY/OBJECTIVE:
+   - Extract the COMPLETE summary paragraph word-for-word
+   - Keep all sentences, achievements, and keywords
+
+4. WORK EXPERIENCE (extract EVERY job):
+   - Job title (exact, e.g., "Construction Civil Supervisor")
+   - Company name (exact, e.g., "TCM-KT JV Azerbaijan (Maire Tecnimont)")
+   - Project name if mentioned (e.g., "SOCAR HAOR Project")
+   - Location (e.g., "Baku, Azerbaijan")
+   - Start and end dates (e.g., "Jun 2019 – Present")
+   - ALL bullet points/responsibilities word-for-word
+   - Extract EVERY achievement
+
+5. EDUCATION (extract ALL degrees):
+   - Degree name (exact, e.g., "Bachelor of Science in Civil Engineering")
+   - Institution (exact, e.g., "Azerbaijan University of Architecture and Construction")
+   - Location, dates, GPA, honors
+
+6. CERTIFICATIONS & TRAINING (extract EVERY certification):
+   - Full certification name (e.g., "SA-8000 Social Accountability")
+   - Issuing organization
+   - Dates if mentioned
+
+7. TECHNICAL SKILLS (extract ALL):
+   - Software/Tools (e.g., "AutoCAD, Navisworks, MS Office")
+   - Expertise areas (e.g., "Civil supervision, underground utilities, QA/QC")
+   - Languages with proficiency (e.g., "English (Fluent), Turkish (Fluent)")
+   - Driving licenses (e.g., "B, C")
+
+8. CORE COMPETENCIES (if present):
+   - Extract all competency points
+
+9. PROJECTS & AWARDS (if any):
+   - Full details with dates and descriptions
 
 Return JSON in this EXACT structure:
 {
-  "name": "<ACTUAL PERSON NAME - THIS IS CRITICAL>",
+  "name": "<Person's actual name from top of resume>",
   "email": "",
-  "phone": "",
+  "phone": "", 
   "location": "",
-  "summary": "",
-  "skills": {
-    "technical": [],
-    "soft": [],
-    "languages": [],
-    "tools": [],
-    "frameworks": [],
-    "databases": [],
-    "certifications": []
-  },
+  "linkedin": "",
+  "github": "",
+  "portfolio": "",
+  "summary": "<Complete professional summary paragraph>",
   "work_experience": [
     {
-      "company": "",
-      "title": "",
-      "duration": "",
-      "location": "",
+      "title": "<Exact job title>",
+      "company": "<Full company name with details>",
+      "location": "<Job location>",
+      "duration": "<Start Month Year – End Month Year or Present>",
       "description": "",
-      "achievements": [],
+      "achievements": ["<All bullet points>"],
       "technologies_used": []
     }
   ],
   "education": [
     {
-      "degree": "",
-      "institution": "",
-      "duration": "",
+      "degree": "<Full degree name>",
+      "institution": "<University/School name>",
       "location": "",
+      "duration": "<Year range or graduation year>",
       "gpa": "",
       "relevant_coursework": [],
       "honors": []
@@ -142,41 +167,29 @@ Return JSON in this EXACT structure:
   ],
   "certifications": [
     {
-      "name": "",
+      "name": "<Full certification name>",
       "issuer": "",
-      "date": "",
-      "expiry": "",
-      "credential_id": ""
+      "date": ""
     }
   ],
-  "projects": [
-    {
-      "name": "",
-      "description": "",
-      "technologies": [],
-      "duration": "",
-      "link": "",
-      "role": ""
-    }
-  ],
-  "languages": [
-    {
-      "language": "",
-      "proficiency": ""
-    }
-  ],
-  "linkedin": "",
-  "github": "",
-  "portfolio": "",
+  "skills": {
+    "technical": ["<Technical expertise areas>"],
+    "tools": ["<Software and tools>"],
+    "languages": ["<Language (Proficiency)>"],
+    "soft": ["<Core competencies>"],
+    "other": ["<Driving licenses, etc.>"]
+  },
+  "projects": [],
   "additional_links": []
 }
 
-EXAMPLES OF CORRECT NAME EXTRACTION:
-- Input: "Bharadwaj AVB\nbharadwajavbn@gmail.com" → name: "Bharadwaj AVB"
-- Input: "John Smith\nSenior Developer" → name: "John Smith"  
-- Input: "Maria O'Connor\n+1 234..." → name: "Maria O'Connor"
+CRITICAL NAME EXAMPLES:
+- "EMIN MARDANOV" at top → name: "EMIN MARDANOV"
+- "E M I N  M A R D A N O V" → name: "EMIN MARDANOV"
+- "Bharadwaj AVB" → name: "Bharadwaj AVB"
+- NOT "Civil Engineer" or "Baku, Azerbaijan"
 
-Extract EVERY detail like a professional resume parser would.`;
+Extract EVERY section and EVERY detail exactly as written in the CV.`;
 
     // Use Lovable AI (Gemini - FREE!)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -531,16 +544,34 @@ function createFallbackResume(text: string, fileName?: string): any {
   // Enhanced name extraction with multiple strategies - VERY AGGRESSIVE
   let name = '';
   
-  // Strategy 1: Check very first line (most common)
-  if (lines.length > 0) {
-    const firstLine = lines[0];
-    if (!/^(RESUME|CV|CURRICULUM)/i.test(firstLine)) {
-      const words = firstLine.split(/\s+/);
-      if (words.length >= 2 && words.length <= 4 && /^[A-Z][A-Za-z\s\-'.]+$/.test(firstLine)) {
-        if (!/PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS|OBJECTIVE|DELIVERY|LEADER|EXECUTIVE|STRATEGIC/i.test(firstLine)) {
-          name = firstLine;
-          console.log('✅ Name found in first line:', name);
+  // Strategy 1: Check very first lines for ALL CAPS or spaced names (e.g., "EMIN MARDANOV" or "E M I N  M A R D A N O V")
+  for (let i = 0; i < Math.min(3, lines.length); i++) {
+    const line = lines[i].replace(/[📍📞🔗]/g, '').trim(); // Remove icons
+    
+    // Skip section headers
+    if (/^(RESUME|CV|CURRICULUM|CONTACT|PERSONAL)/i.test(line)) continue;
+    
+    // Check for ALL CAPS names with possible extra spaces (E M I N  M A R D A N O V)
+    const normalizedLine = line.replace(/\s+/g, ' ').trim();
+    if (/^[A-Z\s]{4,60}$/.test(normalizedLine)) {
+      const words = normalizedLine.split(/\s+/).filter(w => w.length > 0);
+      // Accept if 2-6 words (handles spaced letters like "E M I N M A R D A N O V")
+      if (words.length >= 2 && words.length <= 8) {
+        // Reject common non-name words
+        if (!words.some(w => /^(BAKU|AZERBAIJAN|CIVIL|ENGINEER|MANAGER|SUPERVISOR|DEVELOPER|INDIA|USA)$/i.test(w))) {
+          name = normalizedLine;
+          console.log('✅ Name found (ALL CAPS):', name);
+          break;
         }
+      }
+    }
+    
+    // Check for Title Case names
+    if (/^[A-Z][a-z]+(\s+[A-Z][a-z]+){1,4}$/.test(normalizedLine)) {
+      if (!/PROFESSIONAL|SUMMARY|PROFILE|EXPERIENCE|EDUCATION|SKILLS/i.test(normalizedLine)) {
+        name = normalizedLine;
+        console.log('✅ Name found (Title Case):', name);
+        break;
       }
     }
   }
@@ -713,7 +744,7 @@ function createFallbackResume(text: string, fileName?: string): any {
   }
   
   console.log('📊 Fallback extraction complete:', { 
-    hasName: !!fullName, 
+    hasName: !!name, 
     hasEmail: !!email, 
     hasPhone: !!phone, 
     hasLocation: !!location,
@@ -737,7 +768,7 @@ function createFallbackResume(text: string, fileName?: string): any {
   });
 
   return {
-    name: fullName || '',
+    name: name || '',
     email: email,
     phone: phone,
     location: location,
@@ -884,57 +915,155 @@ function extractSkillsFromText(text: string): any {
   const technicalSkills: string[] = [];
   const softSkills: string[] = [];
   const languages: string[] = [];
+  const tools: string[] = [];
+  const other: string[] = [];
   
-  // Common technical skills patterns
+  // Find SKILLS section
+  const lines = text.split('\n').map(l => l.trim());
+  const skillsSectionIndex = lines.findIndex(line => 
+    /^(SKILLS|TECHNICAL\s+SKILLS|CORE\s+COMPETENCIES|EXPERTISE)/i.test(line)
+  );
+  
+  if (skillsSectionIndex >= 0) {
+    const skillLines = lines.slice(skillsSectionIndex + 1, Math.min(skillsSectionIndex + 20, lines.length));
+    
+    for (const line of skillLines) {
+      // Stop at next major section
+      if (/^(EXPERIENCE|EDUCATION|CERTIFICATIONS|PROJECTS|AWARDS)/i.test(line)) break;
+      
+      // Extract Software/Tools
+      if (/software|tools/i.test(line)) {
+        const toolsMatch = line.match(/(?:Software|Tools):\s*(.+)/i);
+        if (toolsMatch) {
+          toolsMatch[1].split(/[,;]/).forEach(tool => {
+            const cleaned = tool.trim();
+            if (cleaned) tools.push(cleaned);
+          });
+        }
+        continue;
+      }
+      
+      // Extract Expertise
+      if (/expertise|specialization/i.test(line)) {
+        const expertiseMatch = line.match(/(?:Expertise|Specialization):\s*(.+)/i);
+        if (expertiseMatch) {
+          expertiseMatch[1].split(/[,;]/).forEach(skill => {
+            const cleaned = skill.trim();
+            if (cleaned) technicalSkills.push(cleaned);
+          });
+        }
+        continue;
+      }
+      
+      // Extract Languages with proficiency
+      if (/languages/i.test(line)) {
+        const langMatch = line.match(/Languages:\s*(.+)/i);
+        if (langMatch) {
+          langMatch[1].split(/[,;]/).forEach(lang => {
+            const cleaned = lang.trim();
+            if (cleaned) languages.push(cleaned);
+          });
+        }
+        continue;
+      }
+      
+      // Extract Driving License
+      if (/driving|license/i.test(line)) {
+        const licenseMatch = line.match(/(?:Driving\s+License|License):\s*(.+)/i);
+        if (licenseMatch) {
+          other.push('Driving License: ' + licenseMatch[1].trim());
+        }
+        continue;
+      }
+    }
+  }
+  
+  // Civil Engineering specific skills
+  const civilEngSkills = [
+    /\b(Civil\s+[Ee]ngineering|Civil\s+[Ss]upervision|Site\s+[Ss]upervision|QA\/?QC|Quality\s+[Aa]ssurance)\b/gi,
+    /\b(Underground\s+[Uu]tilities|Underground\s+[Ii]nfrastructure|Manhole\s+[Ii]nstallation|Pipe\s+[Ii]nstallation)\b/gi,
+    /\b(Structural\s+[Ff]oundations?|Concrete\s+[Ff]oundations?|Steel\s+[Ss]tructures?)\b/gi,
+    /\b(Pre-?[Cc]ommissioning|Excavation|Backfilling|Road\s+[Ss]tructure)\b/gi,
+    /\b(HSE|Health\s+and\s+Safety|Safety\s+[Ss]tandards?|Safety\s+[Cc]ompliance)\b/gi,
+    /\b(Construction\s+[Mm]anagement|Project\s+[Dd]elivery|Site\s+[Cc]oordination)\b/gi
+  ];
+  
+  civilEngSkills.forEach(pattern => {
+    const matches = text.match(pattern) || [];
+    matches.forEach(match => {
+      const normalized = match.trim();
+      if (!technicalSkills.some(s => s.toLowerCase() === normalized.toLowerCase())) {
+        technicalSkills.push(normalized);
+      }
+    });
+  });
+  
+  // General technical skills patterns (IT, Engineering, etc.)
   const techPatterns = [
-    /\b(JavaScript|TypeScript|Python|Java|C\+\+|C#|Ruby|PHP|Go|Rust|Swift|Kotlin)\b/gi,
+    /\b(AutoCAD|Navisworks|Revit|STAAD|ETABS|SAP2000|Primavera|MS\s+Project)\b/gi,
+    /\b(JavaScript|TypeScript|Python|Java|C\+\+|C#|Ruby|PHP|Go|Rust)\b/gi,
     /\b(React|Angular|Vue|Node\.?js|Express|Django|Flask|Spring|\.NET)\b/gi,
     /\b(AWS|Azure|GCP|Docker|Kubernetes|Jenkins|Git|CI\/CD)\b/gi,
-    /\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Oracle|NoSQL)\b/gi,
-    /\b(HTML|CSS|SASS|Tailwind|Bootstrap|Material UI)\b/gi,
-    /\b(REST|GraphQL|API|Microservices|Agile|Scrum)\b/gi
+    /\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Oracle)\b/gi,
+    /\b(Excel|Word|Outlook|PowerPoint|MS\s+Office)\b/gi
   ];
   
   techPatterns.forEach(pattern => {
     const matches = text.match(pattern) || [];
     matches.forEach(match => {
-      if (!technicalSkills.includes(match)) {
-        technicalSkills.push(match);
+      const normalized = match.trim();
+      if (!tools.some(s => s.toLowerCase() === normalized.toLowerCase())) {
+        tools.push(normalized);
       }
     });
   });
   
-  // Common soft skills
+  // Common soft skills and competencies
   const softSkillPatterns = [
-    /\b(Leadership|Management|Communication|Collaboration|Problem[- ]solving|Team[- ]work|Critical[- ]thinking)\b/gi,
-    /\b(Project[- ]management|Stakeholder[- ]management|Strategic[- ]planning|Decision[- ]making)\b/gi
+    /\b(Leadership|Management|Communication|Collaboration|Problem[- ]solving|Team[- ]?work)\b/gi,
+    /\b(Project\s+[Mm]anagement|Stakeholder\s+[Mm]anagement|Strategic\s+[Pp]lanning)\b/gi,
+    /\b(Critical\s+[Tt]hinking|Decision[- ]making|Time\s+[Mm]anagement|[Aa]daptability)\b/gi,
+    /\b([Ee]ffective\s+[Cc]ommunicat|[Cc]ross[- ]functional|[Mm]ulticultural\s+[Tt]eams)\b/gi,
+    /\b([Rr]isk\s+[Ii]dentification|[Tt]roubleshooting|[Pp]roject\s+[Mm]ilestones)\b/gi
   ];
   
   softSkillPatterns.forEach(pattern => {
     const matches = text.match(pattern) || [];
     matches.forEach(match => {
-      if (!softSkills.includes(match)) {
-        softSkills.push(match);
+      const normalized = match.trim();
+      if (!softSkills.some(s => s.toLowerCase() === normalized.toLowerCase())) {
+        softSkills.push(normalized);
       }
     });
   });
   
   // Languages
-  const languagePatterns = /\b(English|Spanish|French|German|Chinese|Hindi|Arabic|Portuguese|Japanese|Korean)\b/gi;
-  const langMatches = text.match(languagePatterns) || [];
-  langMatches.forEach(lang => {
-    if (!languages.includes(lang)) {
-      languages.push(lang);
+  if (languages.length === 0) {
+    const languagePatterns = /\b(English|Spanish|French|German|Chinese|Hindi|Arabic|Portuguese|Japanese|Korean|Turkish|Azerbaijani|Russian|Italian)\b\s*\([Ff]luent|[Nn]ative|[Bb]asic|[Cc]onversational|[Aa]dvanced\)?/gi;
+    const langMatches = text.match(languagePatterns) || [];
+    langMatches.forEach(lang => {
+      if (!languages.some(l => l.toLowerCase().includes(lang.toLowerCase()))) {
+        languages.push(lang.trim());
+      }
+    });
+    
+    // Also check for simple language mentions
+    if (languages.length === 0) {
+      const simpleLangPattern = /\b(English|Spanish|French|German|Chinese|Hindi|Arabic|Turkish|Azerbaijani|Russian)\b/gi;
+      const simpleMatches = text.match(simpleLangPattern) || [];
+      simpleMatches.slice(0, 5).forEach(lang => {
+        if (!languages.includes(lang)) {
+          languages.push(lang);
+        }
+      });
     }
-  });
+  }
   
   return {
     technical: technicalSkills,
+    tools: tools,
     soft: softSkills,
-    languages: languages.length > 0 ? languages : [],
-    tools: [],
-    frameworks: [],
-    databases: [],
-    certifications: []
+    languages: languages,
+    other: other
   };
 }
