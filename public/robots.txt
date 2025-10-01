@@ -1,33 +1,13 @@
 # ==========================================================
-# TalentXcel Robots.txt - Ultra-Enterprise SEO Configuration
-# Modules: Jobs, Companies, Network, Resume, Tools, Learning,
-# Colleges, Career Map, Career Passport, Employer, Marketplace,
-# Events + Global SEO Scaling
+# TalentXcel Robots.txt - Enterprise SEO Configuration
+# Optimized for performance and compliance
 # ==========================================================
 
-User-agent: *
-Allow: /
-Crawl-delay: 2
-
 # ==========================================================
-# 1. JOBS MODULE
-# ----------------------------------------------------------
-# - Thousands of job pages, roles, skills, locations
-# - High priority for job seekers & aggregators
+# SPECIFIC BOT RULES (Must come before User-agent: *)
 # ==========================================================
-Allow: /jobs/
-Allow: /jobs/location/
-Allow: /jobs/location/*/
-Allow: /jobs/role/
-Allow: /jobs/skill/
-Allow: /jobs/company/
-Allow: /jobs/industry/
-Allow: /jobs/category/
-Disallow: /jobs/apply/
-Disallow: /jobs/dashboard/
-Disallow: /jobs/my-applications/
 
-# Aggregator Bots (controlled crawl)
+# Job Aggregator Bots
 User-agent: Indeed
 Allow: /jobs/
 Crawl-delay: 5
@@ -44,204 +24,141 @@ User-agent: JoobleBot
 Allow: /jobs/
 Crawl-delay: 8
 
-# ==========================================================
-# 2. COMPANIES MODULE
-# ----------------------------------------------------------
-# - Company profiles, reviews, open jobs
-# ==========================================================
-Allow: /companies/
-Allow: /companies/location/
-Allow: /companies/industry/
-Allow: /companies/reviews/
-Allow: /companies/jobs/
-Disallow: /companies/admin/
-Disallow: /companies/settings/
-
-# ==========================================================
-# 3. NETWORK MODULE
-# ----------------------------------------------------------
-# - Professional profiles, posts, connections
-# ==========================================================
-Allow: /network/
-Allow: /network/profiles/
-Allow: /network/posts/
-Allow: /network/feeds/
-Disallow: /network/messages/
-Disallow: /network/notifications/
-Disallow: /network/settings/
-
-# ==========================================================
-# 4. RESUME BUILDER MODULE
-# ----------------------------------------------------------
-# - Public templates indexable
-# - Private resumes restricted
-# ==========================================================
-Allow: /resume/templates/
-Allow: /resume/examples/
-Allow: /resume/guides/
-Disallow: /resume/user/
-Disallow: /resume/private/
-Disallow: /resume/edit/
-
-# ==========================================================
-# 5. TOOLS MODULE
-# ----------------------------------------------------------
-# - Career calculators & tools
-# ==========================================================
-Allow: /tools/
-Allow: /tools/cover-letter/
-Allow: /tools/salary/
-Allow: /tools/ats-check/
-Allow: /tools/job-match/
-Disallow: /tools/internal/
-Disallow: /tools/private/
-
-# ==========================================================
-# 6. LEARNING HUB MODULE
-# ----------------------------------------------------------
-# - Courses, learning paths, certifications
-# ==========================================================
-Allow: /learning/
-Allow: /learning/courses/
-Allow: /learning/paths/
-Allow: /learning/categories/
-Allow: /learning/certifications/
-Disallow: /learning/my-courses/
-Disallow: /learning/progress/
-Disallow: /learning/dashboard/
-
-# ==========================================================
-# 7. COLLEGES MODULE
-# ----------------------------------------------------------
-# - College profiles, rankings, reviews
-# ==========================================================
-Allow: /colleges/
-Allow: /colleges/location/
-Allow: /colleges/courses/
-Allow: /colleges/rankings/
-Disallow: /colleges/admin/
-Disallow: /colleges/private/
-
-# ==========================================================
-# 8. CAREER MAP MODULE
-# ----------------------------------------------------------
-# - Role-based 5-year roadmaps
-# ==========================================================
-Allow: /careermap/
-Allow: /careermap/role/
-Allow: /careermap/industry/
-Allow: /careermap/skills/
-Disallow: /careermap/private/
-Disallow: /careermap/user/
-
-# ==========================================================
-# 9. CAREER PASSPORT MODULE
-# ----------------------------------------------------------
-# - Achievements, certifications, skills
-# ==========================================================
-Allow: /careerpassport/public/
-Allow: /careerpassport/badges/
-Allow: /careerpassport/certifications/
-Disallow: /careerpassport/user/
-Disallow: /careerpassport/private/
-
-# ==========================================================
-# 10. EMPLOYER HUB MODULE
-# ----------------------------------------------------------
-# - Employer branding & job posting
-# ==========================================================
-Allow: /employer/company-profile/
-Allow: /employer/jobs/
-Allow: /employer/branding/
-Disallow: /employer/settings/
-Disallow: /employer/dashboard/
-Disallow: /employer/private/
-
-# ==========================================================
-# 11. MARKETPLACE MODULE
-# ----------------------------------------------------------
-# - Freelancers, mentors, services
-# ==========================================================
-Allow: /marketplace/
-Allow: /marketplace/skills/
-Allow: /marketplace/freelancers/
-Allow: /marketplace/mentors/
-Allow: /marketplace/services/
-Disallow: /marketplace/orders/
-Disallow: /marketplace/private/
-
-# ==========================================================
-# 12. EVENTS MODULE
-# ----------------------------------------------------------
-# - Job fairs, webinars, workshops
-# ==========================================================
-Allow: /events/
-Allow: /events/location/
-Allow: /events/category/
-Allow: /events/webinars/
-Disallow: /events/private/
-Disallow: /events/settings/
-
-# ==========================================================
-# MEDIA & SOCIAL CRAWLERS
-# ==========================================================
+# Media Crawlers
 User-agent: Googlebot-Image
 Allow: /uploads/images/
+Allow: /lovable-uploads/
+
 User-agent: Googlebot-Video
 Allow: /uploads/videos/
+
 User-agent: AdsBot-Google
 Allow: /
 
+# Social Media Bots
 User-agent: Twitterbot
 Allow: /
+
 User-agent: facebookexternalhit
 Allow: /
+
 User-agent: LinkedInBot
 Allow: /
+
 User-agent: WhatsApp
 Allow: /
+
 User-agent: TelegramBot
 Allow: /
 
-# ==========================================================
 # AI & ML Crawlers
-# ==========================================================
 User-agent: ChatGPT-User
 Allow: /
+
 User-agent: GPTBot
 Allow: /
+
 User-agent: Google-Extended
 Allow: /
+
 User-agent: PerplexityBot
 Allow: /
+
 User-agent: ClaudeBot
 Allow: /
 
-# ==========================================================
 # SEO & Analysis Crawlers
-# ==========================================================
 User-agent: AhrefsBot
 Allow: /
+Crawl-delay: 5
+
 User-agent: SemrushBot
 Allow: /
+Crawl-delay: 5
+
 User-agent: MJ12bot
 Allow: /
+Crawl-delay: 10
+
 User-agent: ScreamingFrogSEOSpider
 Allow: /
 
 # ==========================================================
-# Internationalization
-# ----------------------------------------------------------
-# - Support for multi-country targeting in future
+# GENERAL RULES (All other bots)
 # ==========================================================
-Allow: /in/
-Allow: /us/
-Allow: /uk/
-Allow: /global/
-Allow: /intl/*/
+User-agent: *
+Allow: /
+Crawl-delay: 2
 
 # ==========================================================
-# Parameter & File Restrictions
+# PRIVATE & RESTRICTED AREAS
+# ==========================================================
+
+# Authentication & User Private Areas
+Disallow: /auth/
+Disallow: /api/auth/
+Disallow: /api/user/
+Disallow: /api/private/
+
+# Jobs Module - Private Areas
+Disallow: /jobs/apply/
+Disallow: /jobs/dashboard/
+Disallow: /jobs/my-applications/
+
+# Companies - Admin Areas
+Disallow: /companies/admin/
+Disallow: /companies/settings/
+
+# Network - Private Areas
+Disallow: /network/messages/
+Disallow: /network/notifications/
+Disallow: /network/settings/
+
+# Resume - Private Areas
+Disallow: /resume/user/
+Disallow: /resume/private/
+Disallow: /resume/edit/
+Disallow: /resume/my-resumes/
+
+# Tools - Private Areas
+Disallow: /tools/internal/
+Disallow: /tools/private/
+
+# Learning - Private Areas
+Disallow: /learning/my-courses/
+Disallow: /learning/progress/
+Disallow: /learning/dashboard/
+
+# Colleges - Admin Areas
+Disallow: /colleges/admin/
+Disallow: /colleges/private/
+
+# Career Map - Private Areas
+Disallow: /careermap/private/
+Disallow: /careermap/user/
+
+# Career Passport - Private Areas
+Disallow: /careerpassport/user/
+Disallow: /careerpassport/private/
+
+# Employer - Private Areas
+Disallow: /employer/settings/
+Disallow: /employer/dashboard/
+Disallow: /employer/private/
+
+# Marketplace - Private Areas
+Disallow: /marketplace/orders/
+Disallow: /marketplace/private/
+
+# Events - Private Areas
+Disallow: /events/private/
+Disallow: /events/settings/
+
+# Admin Areas
+Disallow: /admin/
+
+# ==========================================================
+# PARAMETER & FILE RESTRICTIONS
 # ==========================================================
 Disallow: /*?*utm_*
 Disallow: /*?*ref=*
@@ -253,32 +170,13 @@ Disallow: /*.doc$
 Disallow: /*.docx$
 
 # ==========================================================
-# API Control
+# SITEMAP DECLARATIONS
 # ==========================================================
-Allow: /api/sitemap
-Allow: /api/rss
-Allow: /api/search
-Allow: /api/public/
-Disallow: /api/private/
-Disallow: /api/auth/
-Disallow: /api/user/
-
-# ==========================================================
-# Performance & Crawl Optimization
-# ==========================================================
-Crawl-delay: 1
-Request-rate: 30/60s
-Visit-time: 0100-0500
-
-# ==========================================================
-# Host & Sitemap Declarations
-# ==========================================================
-Host: https://talentxcel.in
 
 # Master Sitemap Index
 Sitemap: https://talentxcel.in/sitemap-index.xml
 
-# Module-wise Sitemaps
+# Module-wise Sitemaps (Generated Dynamically)
 Sitemap: https://talentxcel.in/sitemap-jobs.xml
 Sitemap: https://talentxcel.in/sitemap-companies.xml
 Sitemap: https://talentxcel.in/sitemap-network.xml
@@ -291,4 +189,3 @@ Sitemap: https://talentxcel.in/sitemap-careerpassport.xml
 Sitemap: https://talentxcel.in/sitemap-employer.xml
 Sitemap: https://talentxcel.in/sitemap-marketplace.xml
 Sitemap: https://talentxcel.in/sitemap-events.xml
-Sitemap: https://talentxcel.in/rss-feed.xml

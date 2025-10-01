@@ -125,3 +125,7 @@ verify_jwt = false
 # Learning Hub
 [functions.populate-courses]
 verify_jwt = false
+
+# SEO & Sitemaps
+[functions.generate-sitemap]
+verify_jwt = false
