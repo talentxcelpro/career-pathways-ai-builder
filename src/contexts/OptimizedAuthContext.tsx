@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +21,7 @@ export const useOptimizedAuth = () => {
   return context;
 };
 
-export const OptimizedAuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);

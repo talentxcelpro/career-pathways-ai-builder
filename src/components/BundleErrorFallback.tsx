@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, FC } from 'react';
 import { RefreshCw } from 'lucide-react';
 
 interface BundleErrorFallbackProps {
@@ -22,12 +22,12 @@ const isChunkLoadError = (error?: Error): boolean => {
   );
 };
 
-export const BundleErrorFallback: React.FC<BundleErrorFallbackProps> = ({ 
+export const BundleErrorFallback: FC<BundleErrorFallbackProps> = ({ 
   error, 
   resetErrorBoundary 
 }) => {
   // If this is not a chunk load error, try to recover silently
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isChunkLoadError(error) && resetErrorBoundary) {
       console.log('Non-chunk error detected, attempting silent recovery');
       setTimeout(() => resetErrorBoundary(), 100);
