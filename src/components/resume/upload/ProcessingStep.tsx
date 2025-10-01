@@ -189,7 +189,8 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
 
       setParsedData(transformedData);
       setProcessingComplete(true);
-      onProcessingComplete(transformedData);
+      // Call completion handler immediately - wizard will handle navigation
+      setTimeout(() => onProcessingComplete(transformedData), 100);
 
     } catch (error) {
       console.error('❌ Resume processing failed:', error);
@@ -311,7 +312,7 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
     );
   }
 
-  // Show success state with option to provide feedback
+  // Show processing indicator while waiting for navigation
   if (processingComplete && !processingError && !showEmptyDataGuidance) {
     return (
       <div className="text-center space-y-4">
@@ -320,27 +321,11 @@ export const ProcessingStep: React.FC<ProcessingStepProps> = ({
         </div>
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Resume Processed Successfully!
+            Parsing Complete!
           </h3>
           <p className="text-gray-600 mb-4">
-            Your resume has been parsed and enhanced using advanced AI techniques.
+            Preparing your resume...
           </p>
-          
-          {parsedData?.processingMetrics?.extractionMethod === 'ocr' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-800">
-                📷 We used OCR technology to extract text from your image-based resume
-              </p>
-            </div>
-          )}
-          
-          <Button 
-            variant="outline" 
-            onClick={() => setShowFeedback(true)}
-            className="mt-2"
-          >
-            Provide Feedback
-          </Button>
         </div>
       </div>
     );

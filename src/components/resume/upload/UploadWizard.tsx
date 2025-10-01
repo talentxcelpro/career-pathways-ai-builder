@@ -83,7 +83,8 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
         if (error) throw error;
         const newId = (inserted as any)?.id as string | undefined;
         if (newId) {
-          toast({ title: 'Resume ready', description: 'Opening advanced editor...' });
+          toast({ title: 'Resume ready', description: 'Opening editor...' });
+          // Navigate immediately, don't wait
           navigate(`/resume/build/${newId}`);
           return;
         }
@@ -93,10 +94,9 @@ export const UploadWizard: React.FC<UploadWizardProps> = ({ onComplete }) => {
         return;
       }
     } catch (e) {
-      console.error('Auto-save failed:', e);
-      toast({ title: 'Saved locally', description: 'Auto-save failed, continuing...' });
-      setResumeData(content);
-      handleNext();
+      console.error('Save failed:', e);
+      toast({ title: 'Opening editor', description: 'Continuing without save...' });
+      navigate('/resume/build', { state: { resumeData: content } });
     }
   };
 
