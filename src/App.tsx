@@ -55,7 +55,6 @@ import { SilentAuthHandler } from "./components/auth/SilentAuthHandler";
 import { MobileAppInitializer } from "./components/MobileAppInitializer";
 import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 
-import EnhancedUploadResume from './pages/resume/EnhancedUploadResume';
 import ResumeNew from './pages/resume/ResumeNew';
 import UnifiedResumeHub from './pages/resume/UnifiedResumeHub';
 import UnifiedResumeBuilder from './pages/resume/UnifiedResumeBuilder';

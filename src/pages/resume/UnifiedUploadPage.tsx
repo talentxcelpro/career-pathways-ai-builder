@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { UnifiedUploadWizard } from "@/components/resume/UnifiedUploadWizard";
+import UploadResume from "./UploadResume";
 
 const UnifiedUploadPage = () => {
   return (
@@ -13,7 +13,7 @@ const UnifiedUploadPage = () => {
         <link rel="canonical" href="https://talentxcel.in/resume/upload" />
       </Helmet>
 
-      <UnifiedUploadWizard />
+      <UploadResume />
     </>
   );
 };

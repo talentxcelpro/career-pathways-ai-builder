@@ -1,34 +1,40 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { UploadWizard } from '@/components/resume/upload/UploadWizard';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ThreePaneResumeBuilder } from '@/components/resume/enhanced/ThreePaneResumeBuilder';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Button } from '@/components/ui/button';
+import { Upload } from 'lucide-react';
 
-const TalentXcelResumeBuilder: React.FC = () => {
+const TalentXcelResumeBuilder = () => {
   console.log('🎯 TalentXcelResumeBuilder component is rendering!');
   const { id } = useParams();
+  const navigate = useNavigate();
   const [resumeData, setResumeData] = useState<any>(null);
-  
-  const handleUploadComplete = (data: any) => {
-    console.log('Upload completed with data:', data);
-    setResumeData(data);
-  };
 
-  // If no resume data, show upload wizard
-  if (!resumeData) {
+  // If no resume data, redirect to upload
+  if (!resumeData && !id) {
     return (
-      <ErrorBoundary>
-        <UploadWizard onComplete={handleUploadComplete} />
-      </ErrorBoundary>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold">No Resume Data</h2>
+          <p className="text-muted-foreground">Please upload a resume first</p>
+          <Button onClick={() => navigate('/resume/upload')}>
+            <Upload className="h-4 w-4 mr-2" />
+            Upload Resume
+          </Button>
+        </div>
+      </div>
     );
   }
 
-  // After upload, show the three-pane builder with proper props
+  // Show the three-pane builder with proper props
   return (
-    <ThreePaneResumeBuilder 
-      data={resumeData} 
-      onChange={setResumeData}
-    />
+    <ErrorBoundary>
+      <ThreePaneResumeBuilder 
+        data={resumeData} 
+        onChange={setResumeData}
+      />
+    </ErrorBoundary>
   );
 };
 

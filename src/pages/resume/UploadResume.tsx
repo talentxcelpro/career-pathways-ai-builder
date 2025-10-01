@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,18 @@ const UploadResume = () => {
 
     setUploading(true);
     try {
+      toast({ title: 'Parsing resume...', description: 'Please wait while we extract your information.' });
+      
       // Parse resume
       const parsedData = await parseResumeFile(file);
       
-      // Save and navigate
+      toast({ title: 'Resume parsed successfully!', description: 'Opening editor...' });
+      
+      // Check if user is authenticated
       const { data: auth } = await supabase.auth.getUser();
+      
       if (auth?.user) {
+        // User is logged in - save to database
         const title = parsedData?.personalInfo?.fullName
           ? `${parsedData.personalInfo.fullName}'s Resume`
           : 'My Resume';
@@ -50,12 +56,13 @@ const UploadResume = () => {
         
         const newId = inserted?.id;
         if (newId) {
+          // Navigate to editor with saved resume ID
           navigate(`/resume/build/${newId}`);
           return;
         }
       }
       
-      // Not signed in - go to editor with data
+      // Not signed in or save failed - go to editor with data in state
       navigate('/resume/build', { state: { resumeData: parsedData } });
       
     } catch (error) {
@@ -71,18 +78,21 @@ const UploadResume = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-12">
       <div className="max-w-2xl mx-auto px-4">
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Upload Your Resume</h1>
-          <p className="text-gray-600">Upload your resume and we'll help you enhance it</p>
+          <h1 className="text-4xl font-bold mb-3">Upload Your Resume</h1>
+          <p className="text-muted-foreground text-lg">
+            Upload your resume and we'll help you enhance it
+          </p>
         </div>
 
-        <Card>
+        <Card className="shadow-lg">
           <CardContent className="p-8">
             <div className="space-y-6">
               {/* File Upload Area */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-12 text-center hover:border-primary/50 hover:bg-primary/5 transition-all">
                 <input
                   type="file"
                   id="resume-upload"
@@ -93,19 +103,25 @@ const UploadResume = () => {
                 />
                 <label htmlFor="resume-upload" className="cursor-pointer block">
                   {file ? (
-                    <div className="space-y-3">
-                      <FileText className="h-12 w-12 mx-auto text-blue-600" />
+                    <div className="space-y-4">
+                      <FileText className="h-16 w-16 mx-auto text-primary" />
                       <div>
-                        <p className="font-medium text-gray-900">{file.name}</p>
-                        <p className="text-sm text-gray-500">Click to change file</p>
+                        <p className="font-semibold text-lg text-foreground">{file.name}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                        <p className="text-sm text-primary mt-2">Click to change file</p>
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <Upload className="h-12 w-12 mx-auto text-gray-400" />
+                    <div className="space-y-4">
+                      <Upload className="h-16 w-16 mx-auto text-muted-foreground" />
                       <div>
-                        <p className="font-medium text-gray-700">Click to upload</p>
-                        <p className="text-sm text-gray-500">PDF, DOC, DOCX, or TXT</p>
+                        <p className="font-semibold text-lg text-foreground">Click to upload</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Supports PDF, DOC, DOCX, or TXT files
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">Maximum file size: 10MB</p>
                       </div>
                     </div>
                   )}
@@ -122,18 +138,30 @@ const UploadResume = () => {
                 {uploading ? (
                   <>
                     <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Processing...
+                    Processing Resume...
                   </>
                 ) : (
                   <>
                     <Upload className="h-5 w-5 mr-2" />
-                    Upload and Continue
+                    Parse & Continue to Editor
                   </>
                 )}
               </Button>
+
+              {/* Info */}
+              <div className="bg-muted/50 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground text-center">
+                  Your resume will be parsed and you'll be taken directly to the editor to review and enhance it.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Privacy Notice */}
+        <div className="text-center mt-6 text-sm text-muted-foreground">
+          <p>🔒 Your data is secure. We never share your information.</p>
+        </div>
       </div>
     </div>
   );
