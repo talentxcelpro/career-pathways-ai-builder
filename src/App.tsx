@@ -172,47 +172,44 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  // Initialize turbo optimizations
+  // Minimal initialization - defer everything non-critical
   useEffect(() => {
+    // Apply color scheme synchronously (critical for avoiding flash)
     try {
-      const startTime = performance.now();
-      
-      // Apply color scheme immediately
       const savedColorScheme = localStorage.getItem('colorScheme');
       if (savedColorScheme) {
         document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
       }
-      
-      // Initialize turbo core only if not already initialized
-      if (turboCore && typeof turboCore.init === 'function') {
-        turboCore.init();
-      }
+    } catch {}
 
-      // Defer non-critical optimizations to avoid blocking initial render
-      const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-      idleCallback(() => {
-        // Initialize performance optimizations
-        initializePerformanceOptimizations();
+    // Defer ALL optimizations to after initial paint
+    setTimeout(() => {
+      try {
+        const startTime = performance.now();
         
-        // Initialize jobs-specific optimizations
-        initializeJobsOptimizations(queryClient).catch(console.error);
+        // Initialize turbo core
+        if (turboCore?.init) turboCore.init();
 
-        // Enable route preloading for instant navigation
-        import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
-          enableRoutePreloading();
+        // Defer everything else to idle time
+        const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+        idleCallback(() => {
+          initializePerformanceOptimizations();
+          initializeJobsOptimizations(queryClient).catch(console.error);
+          
+          import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
+            enableRoutePreloading();
+          });
+
+          import('@/hooks/usePredictivePreloading').then(() => {
+            console.log('🤖 AI-powered performance features initialized');
+          });
+
+          advancedPerformanceMonitor.trackRouteChange('/', startTime);
         });
-
-        // Initialize AI-powered performance features
-        import('@/hooks/usePredictivePreloading').then(({ routePredictor }) => {
-          console.log('🤖 AI-powered performance features initialized');
-        });
-
-        // Track initial load performance
-        advancedPerformanceMonitor.trackRouteChange('/', startTime);
-      });
-    } catch (error) {
-      console.warn('App initialization error:', error);
-    }
+      } catch (error) {
+        console.warn('App initialization error:', error);
+      }
+    }, 0);
   }, []);
 
   // Check if this is a subdomain - simplified as fallback only

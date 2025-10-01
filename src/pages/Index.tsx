@@ -16,35 +16,29 @@ const Index = () => {
   const showFinalLaunch = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('final_launch') === '1';
   const showLaunchStatus = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('launch_status') === '1';
 
-  // Detect iOS Safari to avoid potential One Tap issues
+  // Detect iOS Safari asynchronously
   useEffect(() => {
-    try {
-      const ua = navigator.userAgent || '';
-      const isIOS = /iP(hone|od|ad)/.test(ua);
-      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-      setDisableOneTap(isIOS && isSafari);
-    } catch {
-      setDisableOneTap(false);
-    }
+    setTimeout(() => {
+      try {
+        const ua = navigator.userAgent || '';
+        const isIOS = /iP(hone|od|ad)/.test(ua);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+        setDisableOneTap(isIOS && isSafari);
+      } catch {
+        setDisableOneTap(false);
+      }
+    }, 100);
   }, []);
-  // Redirect logged-in users immediately
-  if (user) {
-    console.log('🚀 Redirecting logged-in user to /network');
-    return <Navigate to="/network" replace />;
-  }
 
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background mobile-optimized">
-        <div className="text-center space-y-4 px-4">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-muted-foreground">Loading TalentXcel...</p>
-        </div>
-      </div>
-    );
-  }
+  // Handle redirect after render for logged-in users
+  useEffect(() => {
+    if (user && !loading) {
+      console.log('🚀 Redirecting logged-in user to /network');
+      window.location.href = '/network';
+    }
+  }, [user, loading]);
 
+  // Render immediately - no loading state blocking
   return (
     <ErrorBoundary
       FallbackComponent={() => (

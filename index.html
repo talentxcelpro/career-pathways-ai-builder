@@ -30,25 +30,33 @@
     <link rel="icon" href="/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png" type="image/png">
     <link rel="canonical" href="https://talentxcel.in/" />
     
-    <!-- Critical DNS prefetch and preconnect for performance -->
+    <!-- Critical preconnect only -->
     <link rel="preconnect" href="https://dthlgsnakhoftinssokm.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://vitals.vercel-insights.com" crossorigin>
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="//unpkg.com">
-    <link rel="dns-prefetch" href="//accounts.google.com">
+    
+    <!-- Preload hero image with highest priority -->
+    <link rel="preload" href="/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png" as="image" fetchpriority="high">
     
     <!-- Preload critical JavaScript -->
     <link rel="modulepreload" href="/src/main.tsx">
     
-    <!-- Resource hints for faster navigation -->
-    <link rel="prefetch" href="/network">
-    <link rel="prefetch" href="/jobs">
-    
-    <!-- Optimized font loading with fallbacks -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+    <!-- Inline critical font CSS -->
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: local('Inter'), local('Inter-Regular'), url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2) format('woff2');
+      }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: local('Inter SemiBold'), local('Inter-SemiBold'), url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiJ-Ek-_EeA.woff2) format('woff2');
+      }
+    </style>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -91,15 +99,9 @@
     <meta name="mobile-web-app-capable" content="yes" />
     
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" as="style" />
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Apple-inspired Professional Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Load additional font weights asynchronously -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"></noscript>
     
     <!-- Apple System Font Fallback CSS -->
     <style>
@@ -154,11 +156,15 @@
     <script src="/chunk-error-handler.js"></script>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Performance optimization script -->
-    <script>
-      // Quick version tracking only
-      const APP_VERSION = Date.now().toString();
-      sessionStorage.setItem('app_version', APP_VERSION);
-    </script>
+    <!-- Inline critical CSS for instant render -->
+    <style>
+      body{margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      #root{min-height:100vh;opacity:0;animation:fadeIn .2s ease-out forwards}
+      @keyframes fadeIn{to{opacity:1}}
+      .min-h-screen{min-height:100vh}
+      .flex{display:flex}
+      .items-center{align-items:center}
+      .justify-center{justify-content:center}
+    </style>
   </body>
 </html>
