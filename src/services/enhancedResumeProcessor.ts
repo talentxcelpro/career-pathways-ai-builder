@@ -914,19 +914,186 @@ Please provide comprehensive extraction with contextual enhancements.
 
 
   private extractBasicPersonalInfo(text: string) {
-    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-    const phoneRegex = /(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})/;
-    const nameRegex = /^([A-Z][a-z]+ [A-Z][a-z]+)/m;
+    console.log('🔍 Extracting basic personal info from text...');
     
-    const email = text.match(emailRegex)?.[0] || '';
-    const phone = text.match(phoneRegex)?.[0] || '';
-    const name = text.match(nameRegex)?.[1] || '';
+    // Enhanced email extraction
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    const emailMatches = text.match(emailRegex);
+    const email = emailMatches?.[0] || '';
     
-    // Try to extract summary from first paragraph
-    const lines = text.split('\n').filter(line => line.trim().length > 0);
-    const summary = lines.find(line => line.length > 50 && !line.includes('@') && !line.includes('http')) || '';
+    // Enhanced phone extraction with international support
+    const phonePatterns = [
+      /\+?\d{1,3}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}/g, // International
+      /\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, // US format
+      /\d{10,}/g // Plain digits
+    ];
     
-    return { name, email, phone, location: '', summary };
+    let phone = '';
+    for (const pattern of phonePatterns) {
+      const matches = text.match(pattern);
+      if (matches && matches[0] && matches[0].length >= 10) {
+        phone = matches[0];
+        break;
+      }
+    }
+    
+    // Enhanced name extraction - look for names near the top, before email/phone
+    let name = '';
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    
+    // Try multiple name detection strategies
+    const nameStrategies = [
+      // Strategy 1: Look for capitalized full names in first 10 lines
+      () => {
+        for (let i = 0; i < Math.min(10, lines.length); i++) {
+          const line = lines[i];
+          // Skip lines with common resume keywords
+          if (/^(RESUME|CV|CURRICULUM|PROFILE|SUMMARY|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)) {
+            continue;
+          }
+          // Match full names (2-4 words, each capitalized)
+          const fullNameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
+          if (fullNameMatch && fullNameMatch[1].split(' ').length >= 2) {
+            return fullNameMatch[1];
+          }
+        }
+        return null;
+      },
+      
+      // Strategy 2: Look for names before contact info
+      () => {
+        const emailIndex = text.indexOf(email);
+        if (emailIndex > 0) {
+          const textBeforeEmail = text.substring(0, emailIndex);
+          const linesBeforeEmail = textBeforeEmail.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          
+          for (let i = Math.max(0, linesBeforeEmail.length - 5); i < linesBeforeEmail.length; i++) {
+            const line = linesBeforeEmail[i];
+            if (/^(RESUME|CV|CURRICULUM|PROFILE|SUMMARY|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)) {
+              continue;
+            }
+            const nameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
+            if (nameMatch) {
+              return nameMatch[1];
+            }
+          }
+        }
+        return null;
+      },
+      
+      // Strategy 3: Look for name patterns with common formats
+      () => {
+        const namePattern = /(?:Name|NAME):\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/;
+        const match = text.match(namePattern);
+        return match?.[1] || null;
+      },
+      
+      // Strategy 4: Look for capitalized words at the very beginning
+      () => {
+        const firstLines = lines.slice(0, 5).join(' ');
+        const capitalizedWords = firstLines.match(/\b[A-Z][a-z]+\b/g);
+        if (capitalizedWords && capitalizedWords.length >= 2) {
+          // Take first 2-3 capitalized words that form a name
+          const potentialName = capitalizedWords.slice(0, Math.min(3, capitalizedWords.length)).join(' ');
+          if (potentialName.split(' ').length >= 2 && 
+              !/^(PROFESSIONAL|RESUME|CV|SUMMARY|PROFILE|EXPERIENCE|EDUCATION)/i.test(potentialName)) {
+            return potentialName;
+          }
+        }
+        return null;
+      }
+    ];
+    
+    // Try each strategy until we find a valid name
+    for (const strategy of nameStrategies) {
+      const result = strategy();
+      if (result && result.length >= 3 && result.length <= 50) {
+        name = result;
+        console.log('✅ Name extracted using strategy:', result);
+        break;
+      }
+    }
+    
+    // Enhanced location extraction
+    let location = '';
+    const locationPatterns = [
+      /(?:Location|Address|City):\s*([A-Z][a-zA-Z\s,.-]+(?:,\s*[A-Z]{2})?)/i,
+      /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*,\s*(?:[A-Z]{2}|[A-Z][a-z]+))\b/g, // City, State
+      /\b([A-Z][a-z]+,\s*India|India)\b/gi, // India-specific
+      /\b(Mumbai|Delhi|Bangalore|Hyderabad|Chennai|Kolkata|Pune|Ahmedabad|Baku|Azerbaijan)/gi // Common cities
+    ];
+    
+    for (const pattern of locationPatterns) {
+      const matches = text.match(pattern);
+      if (matches && matches[0]) {
+        // Clean up location
+        location = matches[0]
+          .replace(/^(Location|Address|City):\s*/i, '')
+          .replace(/\s*\n.*/g, '') // Remove anything after newline
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        // Validate location doesn't contain common resume keywords
+        if (!/^(PROFESSIONAL|SUMMARY|EXPERIENCE|EDUCATION|SKILLS)/i.test(location)) {
+          console.log('✅ Location extracted:', location);
+          break;
+        }
+      }
+    }
+    
+    // Enhanced summary extraction
+    let summary = '';
+    const summaryKeywords = ['SUMMARY', 'PROFILE', 'OBJECTIVE', 'ABOUT'];
+    let summaryStartIndex = -1;
+    
+    // Find summary section
+    for (const keyword of summaryKeywords) {
+      const keywordIndex = lines.findIndex(line => 
+        line.toUpperCase().includes(keyword) && 
+        line.length < 30
+      );
+      if (keywordIndex >= 0) {
+        summaryStartIndex = keywordIndex + 1;
+        break;
+      }
+    }
+    
+    // Extract summary paragraphs
+    if (summaryStartIndex >= 0) {
+      const summaryLines = [];
+      for (let i = summaryStartIndex; i < Math.min(summaryStartIndex + 10, lines.length); i++) {
+        const line = lines[i];
+        // Stop at next section header
+        if (/^(EXPERIENCE|EDUCATION|SKILLS|WORK|EMPLOYMENT)/i.test(line)) {
+          break;
+        }
+        if (line.length > 30 && !line.includes('@')) {
+          summaryLines.push(line);
+        }
+      }
+      summary = summaryLines.join(' ');
+    }
+    
+    // Fallback: use first substantial paragraph
+    if (!summary) {
+      const substantialLine = lines.find(line => 
+        line.length > 80 && 
+        !line.includes('@') && 
+        !line.match(/^[A-Z\s]+$/) && // Not all caps header
+        !/^(RESUME|CV|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)
+      );
+      summary = substantialLine || '';
+    }
+    
+    console.log('📊 Extraction results:', { 
+      name: name || 'Not found', 
+      email: email || 'Not found',
+      phone: phone || 'Not found',
+      location: location || 'Not found',
+      summaryLength: summary.length 
+    });
+    
+    return { name, email, phone, location, summary };
   }
 
   private extractBasicExperience(text: string) {
@@ -1013,29 +1180,47 @@ Please provide comprehensive extraction with contextual enhancements.
   }
 
   private performEnhancedFallbackExtraction(text: string, fileName: string, fileType: string): any {
-    console.log('🔄 Performing enhanced fallback extraction...');
+    console.log('🔄 Performing enhanced fallback extraction with actual data extraction...');
     
-    const cleanName = this.extractNameFromFilename(fileName);
+    // First, try to extract actual data from the text
+    const extractedPersonalInfo = this.extractBasicPersonalInfo(text);
+    const extractedExperience = this.extractBasicExperience(text);
+    const extractedEducation = this.extractBasicEducation(text);
+    const extractedSkills = this.extractBasicSkills(text);
+    
+    console.log('📊 Extracted data:', {
+      hasName: !!extractedPersonalInfo.name,
+      hasEmail: !!extractedPersonalInfo.email,
+      hasPhone: !!extractedPersonalInfo.phone,
+      hasLocation: !!extractedPersonalInfo.location,
+      experienceCount: extractedExperience.length,
+      educationCount: extractedEducation.length
+    });
+    
+    // Use extracted data if available, otherwise use filename-based fallback
+    const cleanName = extractedPersonalInfo.name || this.extractNameFromFilename(fileName);
     const fileInfo = this.analyzeFilename(fileName);
     
-    // Generate professional resume structure with enhanced fallback data
+    // Merge extracted data with generated fallback
     return {
       personalInfo: {
         fullName: cleanName,
-        email: '',
-        phone: '',
-        location: '',
-        summary: `Experienced ${fileInfo.experienceLevel.toLowerCase()} professional in ${fileInfo.field.toLowerCase()} with a proven track record of delivering high-quality solutions. Skilled in modern technologies and methodologies with strong problem-solving abilities and collaborative mindset.`,
+        email: extractedPersonalInfo.email || '',
+        phone: extractedPersonalInfo.phone || '',
+        location: extractedPersonalInfo.location || '',
+        summary: extractedPersonalInfo.summary || `Experienced ${fileInfo.experienceLevel.toLowerCase()} professional in ${fileInfo.field.toLowerCase()} with a proven track record of delivering high-quality solutions. Skilled in modern technologies and methodologies with strong problem-solving abilities and collaborative mindset.`,
         linkedin: '',
         website: '',
         profilePicture: '',
         dateOfBirth: '',
         gender: '',
-        confidence: 0.7
+        confidence: extractedPersonalInfo.name ? 0.8 : 0.7
       },
-      experience: this.generateFallbackExperience(fileInfo),
-      education: this.generateFallbackEducation(fileInfo),
-      skills: this.generateFallbackSkills(fileInfo),
+      experience: extractedExperience.length > 0 ? extractedExperience : this.generateFallbackExperience(fileInfo),
+      education: extractedEducation.length > 0 ? extractedEducation : this.generateFallbackEducation(fileInfo),
+      skills: (extractedSkills.technical.length > 0 || extractedSkills.soft.length > 0) ? 
+        this.mergeExtractedSkillsWithFallback(extractedSkills, fileInfo) : 
+        this.generateFallbackSkills(fileInfo),
       projects: this.generateFallbackProjects(fileInfo),
       certifications: this.generateFallbackCertifications(fileInfo),
       awards: [],
@@ -1311,5 +1496,30 @@ Please provide comprehensive extraction with contextual enhancements.
     };
     
     return skills[field] || skills['Software Engineering'];
+  }
+
+  private mergeExtractedSkillsWithFallback(extracted: any, fileInfo: { field: string }): any {
+    const fallbackSkills = this.generateFallbackSkills(fileInfo);
+    
+    // Merge extracted technical skills with fallback structure
+    const mergedTechnical = {
+      programming: [...extracted.technical.map((s: any) => ({
+        skill: s.skill || s,
+        proficiency: s.proficiency || 'Intermediate',
+        category: s.category || 'Programming Languages'
+      })), ...fallbackSkills.technical.programming].slice(0, 10),
+      frameworks: fallbackSkills.technical.frameworks,
+      databases: fallbackSkills.technical.databases,
+      tools: fallbackSkills.technical.tools,
+      cloud: fallbackSkills.technical.cloud,
+      confidence: 0.8
+    };
+    
+    return {
+      technical: mergedTechnical,
+      soft: extracted.soft.length > 0 ? extracted.soft : fallbackSkills.soft,
+      languages: fallbackSkills.languages,
+      certifications: fallbackSkills.certifications
+    };
   }
 }

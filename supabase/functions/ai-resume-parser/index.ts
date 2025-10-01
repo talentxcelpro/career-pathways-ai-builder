@@ -499,61 +499,158 @@ function calculateContentQuality(resume: any, rawText: string) {
 }
 
 function createFallbackResume(text: string, fileName?: string): any {
-  console.log('🔄 Creating fallback resume from text...');
-  const lines = text.split('\n').filter(line => line.trim());
+  console.log('🔄 Creating enhanced fallback resume with actual data extraction...');
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   
-  // Extract email
-  const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+  // Enhanced email extraction
+  const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   const email = emailMatch?.[0] || '';
+  console.log('📧 Email found:', email || 'None');
   
-  // Extract phone
-  const phoneMatch = text.match(/[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/);
-  const phone = phoneMatch?.[0] || '';
+  // Enhanced phone extraction with international support
+  const phonePatterns = [
+    /\+?\d{1,3}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}/g,
+    /\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g,
+    /\d{10,}/g
+  ];
+  let phone = '';
+  for (const pattern of phonePatterns) {
+    const matches = text.match(pattern);
+    if (matches && matches[0] && matches[0].length >= 10) {
+      phone = matches[0];
+      console.log('📞 Phone found:', phone);
+      break;
+    }
+  }
   
-  // Extract name - look for name patterns at the start
+  // Enhanced name extraction with multiple strategies
   let name = '';
-  for (let i = 0; i < Math.min(5, lines.length); i++) {
-    const line = lines[i].trim();
-    // Skip if line is too long (likely not a name)
-    if (line.length > 50) continue;
-    // Skip if line has common non-name patterns
-    if (/\d{4}|\d+\s*(years?|months?)|experience|summary|objective|professional|profile|resume|curriculum|vitae/i.test(line)) continue;
-    // Skip if line has email or phone
-    if (email && line.includes(email)) continue;
-    if (phone && line.includes(phone)) continue;
-    // Check if it looks like a name (2-4 words, mostly letters)
-    const words = line.split(/\s+/);
-    if (words.length >= 2 && words.length <= 4 && /^[A-Za-z\s\-'.]+$/.test(line)) {
-      name = line;
+  
+  // Strategy 1: Look in first 10 lines for capitalized full names
+  for (let i = 0; i < Math.min(10, lines.length); i++) {
+    const line = lines[i];
+    if (/^(RESUME|CV|CURRICULUM|PROFILE|SUMMARY|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)) {
+      continue;
+    }
+    const fullNameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
+    if (fullNameMatch && fullNameMatch[1].split(' ').length >= 2) {
+      name = fullNameMatch[1];
+      console.log('✅ Name found in text (Strategy 1):', name);
       break;
     }
   }
   
-  // Fallback to filename if no name found
+  // Strategy 2: Look before email
+  if (!name && email) {
+    const emailIndex = text.indexOf(email);
+    if (emailIndex > 0) {
+      const textBeforeEmail = text.substring(0, emailIndex);
+      const linesBeforeEmail = textBeforeEmail.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      
+      for (let i = Math.max(0, linesBeforeEmail.length - 5); i < linesBeforeEmail.length; i++) {
+        const line = linesBeforeEmail[i];
+        if (/^(RESUME|CV|CURRICULUM|PROFILE|SUMMARY|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)) {
+          continue;
+        }
+        const nameMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})$/);
+        if (nameMatch) {
+          name = nameMatch[1];
+          console.log('✅ Name found before email (Strategy 2):', name);
+          break;
+        }
+      }
+    }
+  }
+  
+  // Strategy 3: Extract from filename
   if (!name && fileName && fileName !== 'resume') {
-    name = fileName.replace(/[_-]/g, ' ').replace(/\.(pdf|docx|doc|txt)$/i, '').trim();
+    name = fileName
+      .replace(/\.(pdf|docx?|txt)$/i, '')
+      .replace(/^(resume|cv)[\s\-_]*/i, '')
+      .replace(/[\-_]/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
+      .trim();
+    
+    if (name && name.split(' ').length >= 2) {
+      console.log('✅ Name extracted from filename (Strategy 3):', name);
+    } else {
+      name = '';
+    }
   }
   
-  // Extract location (look for city, state patterns)
-  const locationMatch = text.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*,?\s*[A-Z]{2,})/);
-  const location = locationMatch?.[0] || '';
+  // Enhanced location extraction
+  let location = '';
+  const locationPatterns = [
+    /(?:Location|Address|City):\s*([A-Z][a-zA-Z\s,.-]+(?:,\s*[A-Z]{2})?)/i,
+    /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*,\s*(?:[A-Z]{2}|[A-Z][a-z]+))\b/g,
+    /\b([A-Z][a-z]+,\s*India|India)\b/gi,
+    /\b(Mumbai|Delhi|Bangalore|Hyderabad|Chennai|Kolkata|Pune|Ahmedabad|Baku|Azerbaijan|New York|London|Singapore|Dubai)/gi
+  ];
   
-  // Extract summary (first substantial paragraph)
+  for (const pattern of locationPatterns) {
+    const matches = text.match(pattern);
+    if (matches && matches[0]) {
+      location = matches[0]
+        .replace(/^(Location|Address|City):\s*/i, '')
+        .replace(/\s*\n.*/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      if (!/^(PROFESSIONAL|SUMMARY|EXPERIENCE|EDUCATION|SKILLS)/i.test(location)) {
+        console.log('📍 Location found:', location);
+        break;
+      }
+    }
+  }
+  
+  // Enhanced summary extraction
   let summary = '';
-  for (let i = 0; i < Math.min(15, lines.length); i++) {
-    const line = lines[i].trim();
-    if (line.length > 100 && line.length < 500 && !line.includes('@') && !/^\d/.test(line)) {
-      summary = line;
+  const summaryKeywords = ['SUMMARY', 'PROFILE', 'PROFESSIONAL SUMMARY', 'OBJECTIVE', 'ABOUT'];
+  let summaryStartIndex = -1;
+  
+  for (const keyword of summaryKeywords) {
+    const index = lines.findIndex(line => 
+      line.toUpperCase().includes(keyword) && 
+      line.length < 40
+    );
+    if (index >= 0) {
+      summaryStartIndex = index + 1;
       break;
     }
   }
   
-  // If no summary, use first paragraph of text
-  if (!summary) {
-    summary = text.substring(0, 300).replace(/\s+/g, ' ').trim();
+  if (summaryStartIndex >= 0) {
+    const summaryLines = [];
+    for (let i = summaryStartIndex; i < Math.min(summaryStartIndex + 10, lines.length); i++) {
+      const line = lines[i];
+      if (/^(EXPERIENCE|EDUCATION|SKILLS|WORK|EMPLOYMENT)/i.test(line)) break;
+      if (line.length > 30 && !line.includes('@')) {
+        summaryLines.push(line);
+      }
+    }
+    summary = summaryLines.join(' ');
+    console.log('📝 Summary found, length:', summary.length);
   }
   
-  console.log('📋 Fallback extracted:', { name, email, phone, location, summaryLength: summary.length });
+  if (!summary) {
+    const substantialLine = lines.find(line => 
+      line.length > 80 && 
+      !line.includes('@') && 
+      !line.match(/^[A-Z\s]+$/) &&
+      !/^(RESUME|CV|PROFESSIONAL|EXPERIENCE|EDUCATION|SKILLS)/i.test(line)
+    );
+    summary = substantialLine || 'Experienced professional with demonstrated expertise and a track record of delivering results.';
+  }
+  
+  console.log('📊 Fallback extraction complete:', { 
+    hasName: !!name, 
+    hasEmail: !!email, 
+    hasPhone: !!phone, 
+    hasLocation: !!location,
+    summaryLength: summary.length 
+  });
 
   return {
     name: name || '',
