@@ -6,7 +6,7 @@ import TalentXcelResumeBuilder from "@/pages/resume/TalentXcelResumeBuilder";
 import ResumeEditorV1 from "@/pages/resume/ResumeEditorV1";
 import ResumeHub from "@/pages/resume/ResumeHub";
 import TemplateGallery from "@/pages/resume/TemplateGallery";
-import UploadParser from "@/pages/resume/UploadParser";
+import UnifiedUploadPage from "@/pages/resume/UnifiedUploadPage";
 import AIResumeBuilder from "@/pages/resume/AIResumeBuilder";
 import ATSOptimizer from "@/pages/resume/ATSOptimizer";
 import CoverLetterStudio from "@/pages/resume/CoverLetterStudio";
@@ -39,7 +39,7 @@ export const resumeRoutes = [
     title: "Upload Resume",
     to: "/resume/upload",
     icon: <Upload className="h-4 w-4" />,
-    page: <UploadParser />,
+    page: <UnifiedUploadPage />,
     isPublic: true,
   },
   {
