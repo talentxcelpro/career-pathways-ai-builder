@@ -23,8 +23,11 @@ import { MetaTags } from '@/components/seo/MetaTags';
 import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
-import { GoogleOneTap } from '@/components/auth/GoogleOneTap';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
+import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
+import { performanceMonitor } from '@/utils/performanceMonitor';
+import { registerServiceWorker } from '@/utils/serviceWorkerRegistration';
+import { inlineCriticalCSS } from '@/utils/criticalCSSInliner';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
@@ -176,6 +179,15 @@ const App = () => {
     try {
       const startTime = performance.now();
       
+      // Inline critical CSS for instant first paint
+      inlineCriticalCSS();
+      
+      // Register service worker for aggressive caching
+      registerServiceWorker();
+      
+      // Initialize performance monitoring (singleton pattern)
+      // Metrics will be tracked automatically
+      
       // Apply color scheme
       const savedColorScheme = localStorage.getItem('colorScheme');
       if (savedColorScheme) {
@@ -205,6 +217,14 @@ const App = () => {
 
       // Track initial load performance
       advancedPerformanceMonitor.trackRouteChange('/', startTime);
+      
+      // Log performance metrics after load
+      if (import.meta.env.DEV) {
+        setTimeout(() => {
+          const metrics = performanceMonitor.getMetrics();
+          console.log('📊 Performance Metrics:', metrics);
+        }, 3000);
+      }
     } catch (error) {
       console.warn('App initialization error:', error);
     }
@@ -232,10 +252,11 @@ const App = () => {
               <NotificationProvider>
               <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
                   <SafeRealtimeProvider showToasts={false}>
-                    <CopilotProvider>
-                      <TooltipProvider>
-                        <PhaseInitializer />
-                        <div className="min-h-screen flex flex-col">
+                     <CopilotProvider>
+                       <TooltipProvider>
+                         <PhaseInitializer />
+                         <AsyncGoogleOneTap />
+                         <div className="min-h-screen flex flex-col">
                         <Navbar />
                         <main className="flex-1">
                           <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading...</div>}>

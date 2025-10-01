@@ -1,0 +1,62 @@
+// Critical CSS for above-the-fold content
+export const inlineCriticalCSS = () => {
+  const criticalCSS = `
+    /* Critical CSS for instant first paint */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Loading spinner */
+    .initial-loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f3f4f6;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Glass morphism base */
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Hide initially to prevent FOUC */
+    #root {
+      opacity: 0;
+      animation: fadeIn 0.3s ease-in forwards;
+      animation-delay: 0.1s;
+    }
+    
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  `;
+
+  const style = document.createElement('style');
+  style.textContent = criticalCSS;
+  style.id = 'critical-css';
+  
+  const existingCriticalCSS = document.getElementById('critical-css');
+  if (!existingCriticalCSS) {
+    document.head.insertBefore(style, document.head.firstChild);
+  }
+};
