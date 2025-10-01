@@ -164,7 +164,7 @@ export const NetworkGrowthCard: React.FC = () => {
               size="sm"
               asChild
             >
-              <Link to="/refer-and-earn">
+              <Link to="/passport">
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Full Details
               </Link>
