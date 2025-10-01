@@ -21,7 +21,7 @@ export const EnhancedMobileNetwork: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="bg-background border-b border-border/20 px-4 py-3">
+      <div className="glass-navbar px-4 py-3 gpu-accelerated">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">TalentXcel</h1>
           <div className="flex items-center gap-3">
