@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload, FileText, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { parseResumeFile } from "@/services/resumeParsingService";
 
 const UploadResume = () => {
@@ -24,12 +24,12 @@ const UploadResume = () => {
 
     setUploading(true);
     try {
-      toast({ title: 'Parsing resume...', description: 'Please wait while we extract your information.' });
+      toast.info('Parsing resume...', { description: 'Please wait while we extract your information.' });
       
       // Parse resume
       const parsedData = await parseResumeFile(file);
       
-      toast({ title: 'Resume parsed successfully!', description: 'Opening editor...' });
+      toast.success('Resume parsed successfully!', { description: 'Opening editor...' });
       
       // Check if user is authenticated
       const { data: auth } = await supabase.auth.getUser();
@@ -67,10 +67,10 @@ const UploadResume = () => {
       
     } catch (error) {
       console.error('Upload failed:', error);
-      toast({ 
-        title: 'Upload failed', 
-        description: error instanceof Error ? error.message : 'Please try again',
-        variant: 'destructive'
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error('Upload Failed', { 
+        description: errorMessage,
+        duration: 5000,
       });
     } finally {
       setUploading(false);

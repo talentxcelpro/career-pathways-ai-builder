@@ -78,63 +78,116 @@ export const parseResumeFile = async (file: File): Promise<ParsedResume> => {
     console.log('✅ Extracted:', text.length, 'chars');
     if (text.length < 50) throw new Error('Not enough text extracted');
 
-    // Send to AI
-    const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
-      body: { extractedText: text, fileName: file.name }
-    });
+    // Send to AI with fallback
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-resume-parser', {
+        body: { extractedText: text, fileName: file.name }
+      });
 
-    if (error || !data?.success) throw new Error('AI parsing failed');
-    
-    const aiResume = data.data?.structured_resume;
-    if (!aiResume) throw new Error('No resume data returned');
+      console.log('📡 Edge function response:', { data, error });
+      
+      if (error) {
+        console.error('❌ Edge function error:', error);
+        console.log('🔄 Using fallback parsing...');
+        return parseFallback(text);
+      }
+      
+      if (!data?.success) {
+        console.error('❌ AI parsing unsuccessful:', data);
+        console.log('🔄 Using fallback parsing...');
+        return parseFallback(text);
+      }
+      
+      const aiResume = data.data?.structured_resume;
+      if (!aiResume) {
+        console.log('🔄 No AI resume data, using fallback...');
+        return parseFallback(text);
+      }
 
-    return {
-      personalInfo: {
-        fullName: aiResume.name || '',
-        email: aiResume.email || '',
-        phone: aiResume.phone || '',
-        location: aiResume.location || '',
-        linkedin: aiResume.linkedin,
-        website: aiResume.portfolio || aiResume.github
-      },
-      summary: aiResume.summary,
-      experience: (aiResume.work_experience || []).map((exp: any, index: number) => ({
-        id: `exp-${index}`,
-        title: exp.title || '',
-        company: exp.company || '',
-        location: exp.location || '',
-        startDate: exp.duration?.split('-')[0]?.trim() || '',
-        endDate: exp.duration?.split('-')[1]?.trim() || 'Present',
-        current: exp.duration?.toLowerCase().includes('present') || false,
-        description: exp.description || '',
-        achievements: exp.achievements || []
-      })),
-      education: (aiResume.education || []).map((edu: any, index: number) => ({
-        id: `edu-${index}`,
-        degree: edu.degree || '',
-        school: edu.institution || '',
-        location: edu.location || '',
-        startDate: edu.duration?.split('-')[0]?.trim() || '',
-        endDate: edu.duration?.split('-')[1]?.trim() || '',
-        gpa: edu.gpa
-      })),
-      skills: {
-        technical: Array.isArray(aiResume.skills?.technical) 
-          ? aiResume.skills.technical 
-          : Object.values(aiResume.skills || {}).flat(),
-        soft: aiResume.skills?.soft || [],
-        languages: (aiResume.languages || []).map((lang: any) => 
-          typeof lang === 'string' ? lang : lang.language
-        )
-      },
-      certifications: aiResume.certifications || [],
-      projects: aiResume.projects || []
-    };
+      return transformAIResponse(aiResume);
+    } catch (aiError) {
+      console.error('❌ AI parsing failed:', aiError);
+      console.log('🔄 Using fallback parsing...');
+      return parseFallback(text);
+    }
 
   } catch (error) {
     console.error('❌ Parse error:', error);
     throw error;
   }
+};
+
+/**
+ * Basic fallback parser when AI is unavailable
+ */
+const parseFallback = (text: string): ParsedResume => {
+  const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+  const phoneMatch = text.match(/[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}/);
+  
+  return {
+    personalInfo: {
+      fullName: 'Please edit your name',
+      email: emailMatch?.[0] || '',
+      phone: phoneMatch?.[0] || '',
+      location: '',
+    },
+    summary: text.substring(0, 200),
+    experience: [],
+    education: [],
+    skills: {
+      technical: [],
+      soft: [],
+      languages: []
+    }
+  };
+};
+
+/**
+ * Transform AI response to ParsedResume format
+ */
+const transformAIResponse = (aiResume: any): ParsedResume => {
+  return {
+    personalInfo: {
+      fullName: aiResume.name || '',
+      email: aiResume.email || '',
+      phone: aiResume.phone || '',
+      location: aiResume.location || '',
+      linkedin: aiResume.linkedin,
+      website: aiResume.portfolio || aiResume.github
+    },
+    summary: aiResume.summary,
+    experience: (aiResume.work_experience || []).map((exp: any, index: number) => ({
+      id: `exp-${index}`,
+      title: exp.title || '',
+      company: exp.company || '',
+      location: exp.location || '',
+      startDate: exp.duration?.split('-')[0]?.trim() || '',
+      endDate: exp.duration?.split('-')[1]?.trim() || 'Present',
+      current: exp.duration?.toLowerCase().includes('present') || false,
+      description: exp.description || '',
+      achievements: exp.achievements || []
+    })),
+    education: (aiResume.education || []).map((edu: any, index: number) => ({
+      id: `edu-${index}`,
+      degree: edu.degree || '',
+      school: edu.institution || '',
+      location: edu.location || '',
+      startDate: edu.duration?.split('-')[0]?.trim() || '',
+      endDate: edu.duration?.split('-')[1]?.trim() || '',
+      gpa: edu.gpa
+    })),
+    skills: {
+      technical: Array.isArray(aiResume.skills?.technical) 
+        ? aiResume.skills.technical 
+        : Object.values(aiResume.skills || {}).flat(),
+      soft: aiResume.skills?.soft || [],
+      languages: (aiResume.languages || []).map((lang: any) => 
+        typeof lang === 'string' ? lang : lang.language
+      )
+    },
+    certifications: aiResume.certifications || [],
+    projects: aiResume.projects || []
+  };
 };
 
 /**
