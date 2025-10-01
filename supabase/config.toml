@@ -57,6 +57,12 @@ verify_jwt = false
 [functions.ats-analyzer]
 verify_jwt = false
 
+[functions.generate-cover-letter]
+verify_jwt = false
+
+[functions.generate-interview-prep]
+verify_jwt = false
+
 [functions.ai-service-matching]
 verify_jwt = true
 

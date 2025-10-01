@@ -44,11 +44,14 @@ export const enableRoutePreloading = () => {
 
   // Preload on mouseenter
   document.addEventListener('mouseenter', (e) => {
-    const target = (e.target as HTMLElement).closest('a[href]');
-    if (target) {
-      const href = target.getAttribute('href');
-      if (href && href.startsWith('/')) {
-        preloadRoute(href);
+    const target = e.target;
+    if (target && target instanceof HTMLElement) {
+      const link = target.closest('a[href]');
+      if (link) {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('/')) {
+          preloadRoute(href);
+        }
       }
     }
   }, { passive: true, capture: true });

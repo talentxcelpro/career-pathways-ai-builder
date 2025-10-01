@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { JobTargetingPanel } from './JobTargetingPanel';
 import { LinkedInSyncPanel } from './LinkedInSyncPanel';
+import { CoverLetterPanel } from './CoverLetterPanel';
+import { InterviewPrepPanel } from './InterviewPrepPanel';
 import { NewAnalyticsDashboard } from '../analytics/NewAnalyticsDashboard';
 import { coreToEditor, editorToCore } from '@/utils/resume-adapters';
 
@@ -29,6 +31,8 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
   const [isTargetingOpen, setTargetingOpen] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showLinkedIn, setShowLinkedIn] = useState(false);
+  const [showCoverLetter, setShowCoverLetter] = useState(false);
+  const [showInterviewPrep, setShowInterviewPrep] = useState(false);
 
   console.log('EnhancedResumeBuilder state:', {
     resumeData: !!resumeData,
@@ -122,6 +126,22 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           📊 Analytics
         </Button>
         <Button 
+          onClick={() => setShowInterviewPrep(true)} 
+          variant="outline"
+          size="sm"
+          aria-label="Interview prep"
+        >
+          💬 Interview Prep
+        </Button>
+        <Button 
+          onClick={() => setShowCoverLetter(true)} 
+          variant="outline"
+          size="sm"
+          aria-label="Generate cover letter"
+        >
+          📝 Cover Letter
+        </Button>
+        <Button 
           onClick={() => setShowLinkedIn(true)} 
           variant="outline"
           size="sm"
@@ -161,6 +181,20 @@ export const EnhancedResumeBuilder: React.FC<EnhancedResumeBuilderProps> = ({
           </div>
         </div>
       )}
+
+      {/* Cover Letter Panel */}
+      <CoverLetterPanel
+        isOpen={showCoverLetter}
+        onClose={() => setShowCoverLetter(false)}
+        resumeData={resumeData}
+      />
+
+      {/* Interview Prep Panel */}
+      <InterviewPrepPanel
+        isOpen={showInterviewPrep}
+        onClose={() => setShowInterviewPrep(false)}
+        resumeData={resumeData}
+      />
 
       {/* Analytics Dashboard */}
       {showAnalytics && resumeId && (
